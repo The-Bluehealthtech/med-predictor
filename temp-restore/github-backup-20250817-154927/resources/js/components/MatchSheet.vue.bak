@@ -1,0 +1,243 @@
+<template>
+  <div class="container mx-auto py-8">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold">Feuille de match</h2>
+        <button @click="goBack" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+          Retour au dashboard
+        </button>
+      </div>
+      <div v-if="loading" class="text-gray-500">Chargement...</div>
+      <div v-else>
+        <div class="mb-4">
+          <div class="flex justify-between">
+            <div>
+              <span class="font-semibold">Compétition :</span> {{ match?.competition?.name }}<br>
+              <span class="font-semibold">Date :</span> {{ formatDate(match?.match_date) }}
+            </div>
+            <div>
+              <span class="font-semibold">Statut :</span> <span :class="statusColor(matchSheet?.status)">{{ statusLabel(matchSheet?.status) }}</span>
+            </div>
+          </div>
+          <div class="mt-2">
+            <span class="font-semibold">Domicile :</span> {{ match?.home_team?.name }}
+            <span class="mx-2 font-bold">{{ matchSheet?.home_team_score }} - {{ matchSheet?.away_team_score }}</span>
+            <span class="font-semibold">Extérieur :</span> {{ match?.away_team?.name }}
+          </div>
+        </div>
+        <div class="mb-4 flex gap-4">
+          <div>
+            <label class="block text-sm font-medium">Score domicile</label>
+            <input type="number" v-model.number="form.home_team_score" min="0" class="border rounded px-2 py-1 w-20" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Score extérieur</label>
+            <input type="number" v-model.number="form.away_team_score" min="0" class="border rounded px-2 py-1 w-20" />
+          </div>
+        </div>
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold">Événements du match</span>
+            <button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" @click="showEventModal = true">+ Ajouter un événement</button>
+          </div>
+          <ul>
+            <li v-for="(event, idx) in form.events" :key="idx" class="mb-1 flex items-center gap-2">
+              <span>{{ eventTypeIcon(event.type) }}</span>
+              <span>{{ event.minute }}'</span>
+              <span>{{ event.team_name }}</span>
+              <span>{{ event.player_name }}</span>
+              <span>{{ eventTypeLabel(event.type) }}</span>
+              <span v-if="event.description">- {{ event.description }}</span>
+              <button class="ml-2 text-red-600 hover:underline" @click="removeEvent(idx)">Supprimer</button>
+            </li>
+          </ul>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium">Notes</label>
+          <textarea v-model="form.notes" class="border rounded px-2 py-1 w-full" rows="2"></textarea>
+        </div>
+        <div class="flex gap-4 justify-end">
+          <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" @click="saveDraft" :disabled="saving">Sauvegarder le brouillon</button>
+          <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700" @click="submitSheet" :disabled="submitting">Soumettre</button>
+        </div>
+        <div v-if="error" class="text-red-600 mt-2">{{ error }}</div>
+        <div v-if="success" class="text-green-600 mt-2">{{ success }}</div>
+      </div>
+      <EventModal
+        v-if="showEventModal"
+        :teams="teams"
+        @close="showEventModal = false"
+        @save="addEvent"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import axios from 'axios';
+import EventModal from './EventModal.vue';
+
+const route = useRoute();
+const router = useRouter();
+
+const match = ref(null);
+const matchSheet = ref(null);
+const loading = ref(true);
+const error = ref('');
+const success = ref('');
+const saving = ref(false);
+const submitting = ref(false);
+const showEventModal = ref(false);
+
+const form = ref({
+  home_team_score: 0,
+  away_team_score: 0,
+  notes: '',
+  events: []
+});
+
+const teams = ref([]); // Pour la modale
+
+const fetchMatchSheet = async () => {
+  loading.value = true;
+  error.value = '';
+  try {
+    const res = await axios.get(`/api/referee/match-sheets/${route.params.id}`);
+    match.value = res.data.data.match;
+    matchSheet.value = res.data.data.match_sheet;
+    form.value.home_team_score = matchSheet.value.home_team_score;
+    form.value.away_team_score = matchSheet.value.away_team_score;
+    form.value.notes = matchSheet.value.notes || '';
+    form.value.events = (matchSheet.value.events || []).map(ev => ({
+      ...ev,
+      player_name: ev.player ? `${ev.player.first_name} ${ev.player.last_name}` : '',
+      team_name: ev.team ? ev.team.name : ''
+    }));
+    // Charger les équipes et joueurs pour la modale
+    teams.value = [];
+    if (match.value.home_team) {
+      teams.value.push({
+        id: match.value.home_team.id,
+        name: match.value.home_team.name,
+        players: match.value.home_team.players || []
+      });
+    }
+    if (match.value.away_team) {
+      teams.value.push({
+        id: match.value.away_team.id,
+        name: match.value.away_team.name,
+        players: match.value.away_team.players || []
+      });
+    }
+  } catch (e) {
+    error.value = e.response?.data?.message || 'Erreur lors du chargement de la feuille de match';
+  } finally {
+    loading.value = false;
+  }
+};
+
+const saveDraft = async () => {
+  saving.value = true;
+  error.value = '';
+  success.value = '';
+  try {
+    await axios.post(`/api/referee/match-sheets/${route.params.id}`, form.value);
+    success.value = 'Brouillon sauvegardé !';
+    await fetchMatchSheet();
+  } catch (e) {
+    error.value = e.response?.data?.message || 'Erreur lors de la sauvegarde';
+  } finally {
+    saving.value = false;
+  }
+};
+
+const submitSheet = async () => {
+  submitting.value = true;
+  error.value = '';
+  success.value = '';
+  try {
+    await axios.post(`/api/referee/match-sheets/${route.params.id}/submit`);
+    success.value = 'Feuille de match soumise pour validation !';
+    await fetchMatchSheet();
+  } catch (e) {
+    error.value = e.response?.data?.message || 'Erreur lors de la soumission';
+  } finally {
+    submitting.value = false;
+  }
+};
+
+const addEvent = (event) => {
+  // Récupérer le nom du joueur et de l'équipe pour affichage
+  const team = teams.value.find(t => t.id == event.team_id);
+  const player = team ? (team.players.find(p => p.id == event.player_id) || {}) : {};
+  form.value.events.push({
+    ...event,
+    team_name: team ? team.name : '',
+    player_name: player ? `${player.first_name} ${player.last_name}` : ''
+  });
+};
+
+const removeEvent = (idx) => {
+  form.value.events.splice(idx, 1);
+};
+
+const goBack = () => {
+  router.push({ name: 'referee-dashboard' });
+};
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleString('fr-FR');
+};
+
+const statusLabel = (status) => {
+  switch (status) {
+    case 'draft': return 'Brouillon';
+    case 'submitted': return 'Soumis';
+    case 'validated': return 'Validé';
+    case 'rejected': return 'Rejeté';
+    default: return status;
+  }
+};
+
+const statusColor = (status) => {
+  switch (status) {
+    case 'draft': return 'text-gray-600';
+    case 'submitted': return 'text-yellow-600';
+    case 'validated': return 'text-green-600';
+    case 'rejected': return 'text-red-600';
+    default: return '';
+  }
+};
+
+const eventTypeLabel = (type) => {
+  switch (type) {
+    case 'goal': return 'But';
+    case 'yellow_card': return 'Carton jaune';
+    case 'red_card': return 'Carton rouge';
+    case 'substitution': return 'Remplacement';
+    case 'injury': return 'Blessure';
+    default: return type;
+  }
+};
+const eventTypeIcon = (type) => {
+  switch (type) {
+    case 'goal': return '⚽';
+    case 'yellow_card': return '🟨';
+    case 'red_card': return '🟥';
+    case 'substitution': return '🔄';
+    case 'injury': return '🏥';
+    default: return '📝';
+  }
+};
+
+watch(() => route.params.id, fetchMatchSheet, { immediate: true });
+</script>
+
+<style scoped>
+.container {
+  max-width: 900px;
+}
+</style> 

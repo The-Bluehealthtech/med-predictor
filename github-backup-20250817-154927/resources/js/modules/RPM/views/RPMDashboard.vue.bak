@@ -1,0 +1,44 @@
+<template>
+    <div class="rpm-dashboard">
+        <div class="debug-banner">
+            <h1>🚨 RPM DASHBOARD DEBUG BANNER 🚨</h1>
+            <p>This banner should be visible if Vue is working!</p>
+        </div>
+
+        <div class="main-content">
+            <h2>RPM Dashboard</h2>
+            <p>Welcome to the RPM (Recovery Performance Management) system.</p>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    name: "RPMDashboard",
+    mounted() {
+        console.log("🎯 RPMDashboard component mounted!");
+    },
+};
+</script>
+
+<style scoped>
+.rpm-dashboard {
+    padding: 20px;
+}
+
+.debug-banner {
+    background: linear-gradient(45deg, #0066ff, #00ccff);
+    color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    text-align: center;
+    border: 3px solid yellow;
+}
+
+.main-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+</style>

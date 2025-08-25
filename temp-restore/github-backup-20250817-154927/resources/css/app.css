@@ -1,0 +1,112 @@
+/* FIFA Design System */
+@import './fifa-design-system.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--fifa-font-family);
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -moz-tab-size: 4;
+  tab-size: 4;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fifa-font-family);
+  font-size: var(--fifa-text-base);
+  line-height: var(--fifa-line-height-normal);
+  color: var(--fifa-gray-900);
+  background-color: var(--fifa-gray-50);
+}
+
+/* Utility Classes */
+.fifa-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--fifa-spacing-xs) var(--fifa-spacing-sm);
+  font-size: var(--fifa-text-xs);
+  font-weight: var(--fifa-font-weight-medium);
+  border-radius: var(--fifa-radius-full);
+  white-space: nowrap;
+}
+
+.fifa-badge-primary {
+  background: var(--fifa-blue-light);
+  color: var(--fifa-blue-primary);
+}
+
+.fifa-badge-success {
+  background: var(--fifa-success-light);
+  color: var(--fifa-success);
+}
+
+.fifa-badge-warning {
+  background: var(--fifa-warning-light);
+  color: var(--fifa-warning);
+}
+
+.fifa-badge-error {
+  background: var(--fifa-error-light);
+  color: var(--fifa-error);
+}
+
+/* Vue.js Specific Styles */
+[v-cloak] {
+  display: none;
+}
+
+/* Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--fifa-transition-normal);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform var(--fifa-transition-normal);
+}
+
+.slide-enter-from {
+  transform: translateX(-100%);
+}
+
+.slide-leave-to {
+  transform: translateX(100%);
+}
+
+/* Responsive Utilities */
+@media (max-width: 640px) {
+  .fifa-hidden-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 641px) {
+  .fifa-hidden-desktop {
+    display: none !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .fifa-no-print {
+    display: none !important;
+  }
+  
+  .fifa-print-only {
+    display: block !important;
+  }
+}

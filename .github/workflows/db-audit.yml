@@ -1,0 +1,172 @@
+name: Database Audit
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Exécution hebdomadaire le dimanche à 2h du matin
+    - cron: '0 2 * * 0'
+  workflow_dispatch: # Exécution manuelle
+
+jobs:
+  db-audit:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        php-version: [8.1, 8.2, 8.3]
+        laravel-version: [10.*]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, sqlite3
+        coverage: none
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Get composer cache directory
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      
+    - name: Cache composer dependencies
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-php-
+        
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+        
+    - name: Copy environment file
+      run: cp .env.example .env
+      
+    - name: Generate application key
+      run: php artisan key:generate
+      
+    - name: Create SQLite database
+      run: |
+        touch database/database.sqlite
+        echo "DB_CONNECTION=sqlite" >> .env
+        echo "DB_DATABASE=database/database.sqlite" >> .env
+        
+    - name: Run migrations
+      run: php artisan migrate --force
+      
+    - name: Run database audit
+      run: php artisan project:db:audit
+      
+    - name: Upload audit report
+      uses: actions/upload-artifact@v3
+      with:
+        name: db-audit-report-${{ github.run_number }}
+        path: storage/logs/db-audit-*.log
+        retention-days: 30
+        
+    - name: Parse audit results
+      id: audit-results
+      run: |
+        # Trouver le rapport le plus récent
+        LATEST_REPORT=$(ls -t storage/logs/db-audit-*.log | head -1)
+        
+        # Extraire le score de propreté
+        CLEANLINESS_SCORE=$(grep -o '"cleanliness_score": "[^"]*"' "$LATEST_REPORT" | cut -d'"' -f4 | sed 's/%//')
+        
+        # Extraire les statistiques
+        TOTAL_TABLES=$(grep -o '"total_tables": [0-9]*' "$LATEST_REPORT" | cut -d':' -f2 | tr -d ' ')
+        ORPHAN_TABLES=$(grep -o '"orphan_tables": \[[^]]*\]' "$LATEST_REPORT" | grep -o '"[^"]*"' | wc -l)
+        UNUSED_MODELS=$(grep -o '"unused_models": \[[^]]*\]' "$LATEST_REPORT" | grep -o '"[^"]*"' | wc -l)
+        
+        # Calculer le pourcentage de tables orphelines
+        ORPHAN_TABLES_PERCENT=$((ORPHAN_TABLES * 100 / TOTAL_TABLES))
+        
+        echo "cleanliness_score=$CLEANLINESS_SCORE" >> $GITHUB_OUTPUT
+        echo "total_tables=$TOTAL_TABLES" >> $GITHUB_OUTPUT
+        echo "orphan_tables=$ORPHAN_TABLES" >> $GITHUB_OUTPUT
+        echo "unused_models=$UNUSED_MODELS" >> $GITHUB_OUTPUT
+        echo "orphan_tables_percent=$ORPHAN_TABLES_PERCENT" >> $GITHUB_OUTPUT
+        
+    - name: Check audit quality
+      run: |
+        # Vérifier le score de propreté
+        if [ "${{ steps.audit-results.outputs.cleanliness_score }}" -lt 80 ]; then
+          echo "⚠️  Score de propreté bas: ${{ steps.audit-results.outputs.cleanliness_score }}%"
+          echo "Recommandation: Nettoyer le code avant de merger"
+        fi
+        
+        # Vérifier le pourcentage de tables orphelines
+        if [ "${{ steps.audit-results.outputs.orphan_tables_percent }}" -gt 20 ]; then
+          echo "⚠️  Trop de tables orphelines: ${{ steps.audit-results.outputs.orphan_tables_percent }}%"
+          echo "Recommandation: Créer des modèles pour les tables ou les supprimer"
+        fi
+        
+        # Vérifier les modèles non utilisés
+        if [ "${{ steps.audit-results.outputs.unused_models }}" -gt 10 ]; then
+          echo "⚠️  Trop de modèles non utilisés: ${{ steps.audit-results.outputs.unused_models }}"
+          echo "Recommandation: Vérifier l'utilité de ces modèles"
+        fi
+        
+    - name: Comment PR with audit results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+          
+          const auditComment = comments.find(comment => 
+            comment.body.includes('🔍 Database Audit Results')
+          );
+          
+          const commentBody = `🔍 **Database Audit Results**
+          
+          📊 **Score de Propreté**: ${{ steps.audit-results.outputs.cleanliness_score }}%
+          🗃️ **Tables**: ${{ steps.audit-results.outputs.total_tables }} total
+          ❌ **Tables Orphelines**: ${{ steps.audit-results.outputs.orphan_tables }}
+          🏗️ **Modèles Non Utilisés**: ${{ steps.audit-results.outputs.unused_models }}
+          
+          📋 **Rapport Complet**: [Télécharger l'artifact](#)
+          
+          ---
+          *Audit automatique exécuté le ${{ github.event.head_commit.timestamp }}*
+          `;
+          
+          if (auditComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: auditComment.id,
+              body: commentBody,
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody,
+            });
+          }
+          
+    - name: Fail on critical issues
+      if: |
+        steps.audit-results.outputs.cleanliness_score < '70' ||
+        steps.audit-results.outputs.orphan_tables_percent > '30'
+      run: |
+        echo "❌ Audit critique détecté !"
+        echo "Score de propreté: ${{ steps.audit-results.outputs.cleanliness_score }}%"
+        echo "Tables orphelines: ${{ steps.audit-results.outputs.orphan_tables_percent }}%"
+        exit 1

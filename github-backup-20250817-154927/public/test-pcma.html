@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test PCMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">🧪 Test PCMA</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">🔍 Test Server Connection</h3>
+            <button onclick="testServer()" class="px-4 py-2 bg-blue-500 text-white rounded">Test Server</button>
+            <div id="server-result" class="mt-4 p-4 bg-gray-50 rounded"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">🔍 Test API Proxies</h3>
+            <button onclick="testICD11()" class="px-4 py-2 bg-green-500 text-white rounded mr-2">Test ICD-11</button>
+            <button onclick="testVidal()" class="px-4 py-2 bg-blue-500 text-white rounded mr-2">Test VIDAL</button>
+            <button onclick="testAllergies()" class="px-4 py-2 bg-purple-500 text-white rounded">Test Allergies</button>
+            <div id="api-result" class="mt-4 p-4 bg-gray-50 rounded"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">📊 Console Logs</h3>
+            <div id="console-logs" class="text-sm font-mono bg-black text-green-400 p-4 rounded max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simple logging
+        function log(message) {
+            console.log(message);
+            const logsDiv = document.getElementById('console-logs');
+            logsDiv.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        // Test server connection
+        async function testServer() {
+            const resultDiv = document.getElementById('server-result');
+            log('=== TESTING SERVER CONNECTION ===');
+            
+            try {
+                const response = await fetch('/test');
+                const data = await response.json();
+                
+                if (data.status === 'ok') {
+                    resultDiv.innerHTML = '<div class="text-green-600">✅ Server is working!</div>';
+                    log('✅ Server connection successful');
+                } else {
+                    resultDiv.innerHTML = '<div class="text-red-600">❌ Server error</div>';
+                    log('❌ Server returned error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-600">❌ Connection error: ${error.message}</div>`;
+                log(`❌ Connection error: ${error.message}`);
+            }
+        }
+
+        // Test ICD-11 API
+        async function testICD11() {
+            const resultDiv = document.getElementById('api-result');
+            log('=== TESTING ICD-11 API ===');
+            
+            try {
+                const response = await fetch('/api/proxy/icd11?q=cardio&filters=["cardiovascular"]');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="text-green-600">✅ ICD-11 API working!</div>
+                        <div class="text-sm text-gray-600">Found ${data.results.length} results</div>
+                    `;
+                    log('✅ ICD-11 API successful');
+                } else {
+                    resultDiv.innerHTML = '<div class="text-red-600">❌ ICD-11 API error</div>';
+                    log('❌ ICD-11 API error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-600">❌ ICD-11 error: ${error.message}</div>`;
+                log(`❌ ICD-11 error: ${error.message}`);
+            }
+        }
+
+        // Test VIDAL API
+        async function testVidal() {
+            const resultDiv = document.getElementById('api-result');
+            log('=== TESTING VIDAL API ===');
+            
+            try {
+                const response = await fetch('/api/proxy/vidal?q=doliprane');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="text-green-600">✅ VIDAL API working!</div>
+                        <div class="text-sm text-gray-600">Found ${data.results.length} results</div>
+                    `;
+                    log('✅ VIDAL API successful');
+                } else {
+                    resultDiv.innerHTML = '<div class="text-red-600">❌ VIDAL API error</div>';
+                    log('❌ VIDAL API error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-600">❌ VIDAL error: ${error.message}</div>`;
+                log(`❌ VIDAL error: ${error.message}`);
+            }
+        }
+
+        // Test Allergies API
+        async function testAllergies() {
+            const resultDiv = document.getElementById('api-result');
+            log('=== TESTING ALLERGIES API ===');
+            
+            try {
+                const response = await fetch('/api/proxy/allergies?q=penicillin');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="text-green-600">✅ Allergies API working!</div>
+                        <div class="text-sm text-gray-600">Found ${data.results.length} results</div>
+                    `;
+                    log('✅ Allergies API successful');
+                } else {
+                    resultDiv.innerHTML = '<div class="text-red-600">❌ Allergies API error</div>';
+                    log('❌ Allergies API error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-600">❌ Allergies error: ${error.message}</div>`;
+                log(`❌ Allergies error: ${error.message}`);
+            }
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', function() {
+            log('=== PAGE LOADED ===');
+            log('Ready to test PCMA functionality');
+        });
+    </script>
+</body>
+</html> 

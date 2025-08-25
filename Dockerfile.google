@@ -1,0 +1,7 @@
+FROM gcr.io/cloudrun/hello
+
+# Copier notre fichier HTML personnalisé
+RUN echo '<!DOCTYPE html><html><head><title>FIT Platform v3.0</title><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;text-align:center;padding:50px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center}h1{font-size:3.5em;margin-bottom:20px}.status{background:rgba(255,255,255,0.1);padding:25px;border-radius:15px;max-width:600px;margin:20px auto}p{font-size:1.2em;margin:10px 0}</style></head><body><h1>🚀 FIT Platform v3.0</h1><div class="status"><p><strong>✅ Successfully deployed on Google Cloud!</strong></p><p>Date: <span id="date"></span></p><p>Ready for configuration with <strong>fit.tbhc.uk</strong></p></div><script>document.getElementById("date").textContent=new Date().toLocaleString();</script></body></html>' > /var/www/index.html
+
+# Exposer le port 8080
+EXPOSE 8080

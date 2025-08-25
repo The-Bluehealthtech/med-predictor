@@ -1,0 +1,1 @@
+<x-app-layout><div id="rpm-attendance"></div></x-app-layout>

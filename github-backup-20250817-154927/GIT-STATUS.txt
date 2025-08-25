@@ -1,0 +1,525 @@
+On branch main
+Your branch is ahead of 'origin/main' by 11 commits.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   SAUVEGARDE-FIFA-TMS-v2.0.0.md
+	modified:   app/Http/Controllers/ClubManagementController.php
+	modified:   app/Http/Controllers/CompetitionManagementController.php
+	modified:   app/Http/Controllers/DashboardController.php
+	modified:   app/Http/Controllers/MedicalModuleController.php
+	modified:   app/Http/Controllers/PlayerPortalController.php
+	modified:   app/Models/Association.php
+	modified:   app/Models/Competition.php
+	modified:   app/Models/Player.php
+	modified:   app/Models/PlayerPerformance.php
+	modified:   app/Models/Season.php
+	modified:   bootstrap/app.php
+	modified:   config/fifa.php
+	modified:   cookies.txt
+	deleted:    database/migrations/2025_07_20_220314_create_performances_table.php
+	modified:   database/seeders/DatabaseSeeder.php
+	modified:   database/seeders/HealthRecordSeeder.php
+	modified:   database/seeders/PCMASeeder.php
+	deleted:    med-predictor-complete.tar.gz
+	modified:   package-lock.json
+	modified:   package.json
+	modified:   public/build/manifest.json
+	modified:   public/images/default_club.svg
+	modified:   public/images/default_flag.svg
+	modified:   public/images/default_player.svg
+	modified:   resources/views/auth/login.blade.php
+	modified:   resources/views/competition-management/index.blade.php
+	modified:   resources/views/dashboard.blade.php
+	modified:   resources/views/health-records/create-tabs.blade.php
+	modified:   resources/views/modules/index.blade.php
+	modified:   resources/views/pcma/show.blade.php
+	modified:   resources/views/player-portal/debug.blade.php
+	modified:   resources/views/player-portal/documents.blade.php
+	modified:   resources/views/player-portal/fifa-debug.blade.php
+	modified:   resources/views/player-portal/fifa-ultimate-simple.blade.php
+	modified:   resources/views/player-portal/matches.blade.php
+	modified:   resources/views/player-portal/medical-records-simple.blade.php
+	modified:   resources/views/player-portal/player-360-card.blade.php
+	modified:   resources/views/player-portal/settings.blade.php
+	modified:   resources/views/player-portal/test.blade.php
+	modified:   resources/views/players/index.blade.php
+	modified:   resources/views/test-minimal.blade.php
+	modified:   resources/views/test-simple.blade.php
+	modified:   routes/web.php
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.env.laravel
+	CLUB-LOGO-ROUTE-FIX-SUMMARY.md
+	CLUB-LOGOS-IMPLEMENTATION-SUMMARY.md
+	DATABASE_COVERAGE_ANALYSIS.md
+	DATASET_ANALYTICS_README.md
+	FLAG-LOGO-IMPLEMENTATION-SUMMARY.md
+	FTF-CORRECTION-SUMMARY.md
+	FTF-SIMPLIFICATION-SUMMARY.md
+	HEADER-FLAGS-IMPLEMENTATION-BACKUP-ORIGINAL.md
+	HEADER-FLAGS-IMPLEMENTATION-COMPLETE-SUMMARY.md
+	IMPORT-SUMMARY.md
+	INTEGRATION-FIFA-LOGOS.md
+	LOGO-DISPLAY-FIX-SUMMARY.md
+	LOGO-SIZES-DOUBLED-SUMMARY.md
+	MEDICAL_TAB_IMPROVEMENTS.md
+	PERFORMANCE-SYSTEM-README.md
+	PORTAIL-JOUEUR-LOGOS-FIX-SUMMARY.md
+	PORTAL_JOUEUR_README.md
+	README-DATASET.md
+	RESUME-AMELIORATIONS-FINAL.md
+	RESUME-FINAL-IMPLEMENTATION.md
+	ROUTE-PORTAIL-JOUEUR-FIX-SUMMARY.md
+	ROUTES-AND-SIZES-FIX-SUMMARY.md
+	SAUVEGARDE-FIT-COMPLETE-FINAL.md
+	SAUVEGARDE-PORTAL-JOUEUR-DRAPEAUX-OK.md
+	SIMPLE-LOGOS-SOLUTION-SUMMARY.md
+	SOLUTION-LOGO-FTF.md
+	TUNISIAN_LEAGUE_DATASET_README.md
+	VIEW-FIX-SUMMARY.md
+	add-missing-data.php
+	analyse-hero-zone.php
+	analyse-images-visuelles.php
+	analyse-portal-joueur-online.php
+	app/Helpers/CountryCodeHelper.php
+	app/Helpers/CountryHelper.php
+	app/Helpers/FlagHelper.php
+	app/Http/Controllers/AdminController.php
+	app/Http/Controllers/Api/JoueurController.php
+	app/Http/Controllers/Api/LicenseHistoryController.php
+	app/Http/Controllers/Api/PlayerLicenseHistoryController.php
+	app/Http/Controllers/AssociationLogoController.php
+	app/Http/Controllers/AuthController.php
+	app/Http/Controllers/DatasetAnalyticsController.php
+	app/Http/Controllers/FIFAPortalController.php
+	app/Http/Controllers/FIFATestController.php
+	app/Http/Controllers/FifaDashboardController.php
+	app/Http/Controllers/FifaWorkingController.php
+	app/Http/Controllers/PlayerAccessController.php
+	app/Http/Controllers/PlayerPerformanceController.php
+	app/Http/Controllers/PlayerPhotoController.php
+	app/Http/Controllers/PlayerPortalController_OLD.php
+	app/Http/Controllers/PlayerSelectionController.php
+	app/Http/Controllers/RealFIFAController.php
+	app/Http/Controllers/TestAuthController.php
+	app/Http/Controllers/TestBladeController.php
+	app/Http/Controllers/TestFIFAController.php
+	app/Http/Middleware/AuthSessionMiddleware.php
+	app/Models/Joueur.php
+	app/Models/MatchMetric.php
+	app/Models/MatchPerformance.php
+	app/Models/NationalTeamCallup.php
+	app/Models/Nationality.php
+	app/Models/PlayerLicenseHistory.php
+	app/Models/PlayerMatchDetailedStats.php
+	app/Models/PlayerTrophy.php
+	app/Models/SocialMediaAlert.php
+	app/Models/TrainingSession.php
+	app/Services/TrainingCompensationCalculator.php
+	backup-fit-complete.sh
+	backups/
+	clean-and-import.php
+	create-ftf-logo.php
+	database/migrations/2024_01_15_create_player_performances_table.php
+	database/migrations/2025_08_11_160200_create_joueurs_table.php
+	database/migrations/2025_08_12_000001_create_player_detailed_stats_table.php
+	database/migrations/2025_08_12_000002_create_player_connected_devices_table.php
+	database/migrations/2025_08_12_000003_create_player_real_time_health_table.php
+	database/migrations/2025_08_12_000004_create_player_sdoh_data_table.php
+	database/migrations/2025_08_12_000005_create_player_match_detailed_stats_table.php
+	database/migrations/2025_08_12_000006_enhance_joueurs_table_with_missing_fields.php
+	database/migrations/2025_08_12_003100_add_missing_columns_to_joueurs_table.php
+	database/migrations/2025_08_12_184438_create_national_team_callups_table.php
+	database/migrations/2025_08_12_184442_create_training_sessions_table.php
+	database/migrations/2025_08_12_184445_create_medical_appointments_table.php
+	database/migrations/2025_08_12_184448_create_social_media_alerts_table.php
+	database/migrations/2025_08_12_185333_create_match_performances_table.php
+	database/migrations/2025_08_12_185905_create_player_trophies_table.php
+	database/migrations/2025_08_12_190441_add_image_fields_to_players_clubs_associations.php
+	database/migrations/2025_08_12_191904_add_fifa_stats_to_players.php
+	database/migrations/2025_08_13_080234_create_match_results_table.php
+	database/migrations/2025_08_13_114135_create_medical_records_table.php
+	database/migrations/2025_08_13_114140_create_device_monitoring_table.php
+	database/migrations/2025_08_13_114146_create_doping_controls_table.php
+	database/migrations/2025_08_14_065324_add_photo_fields_to_players_table.php
+	database/migrations/2025_08_14_093749_create_match_metrics_table.php
+	database/migrations/2025_08_14_161335_add_agent_fields_to_players_table.php
+	database/migrations/2025_08_17_001234_create_player_license_histories_table.php
+	database/seeders/AdminUserSeeder.php
+	database/seeders/AthleteSeeder.php
+	database/seeders/AuthTestSeeder.php
+	database/seeders/DeviceMonitoringSeeder.php
+	database/seeders/DopingControlsSeeder.php
+	database/seeders/ImageSeeder.php
+	database/seeders/JoueursSeeder.php
+	database/seeders/MatchMetricsSeeder.php
+	database/seeders/MatchPerformanceSeeder.php
+	database/seeders/MatchResultsSeeder.php
+	database/seeders/MedicalRecordsSeeder.php
+	database/seeders/PlayerAgentSeeder.php
+	database/seeders/PlayerDetailedDataSeeder.php
+	database/seeders/PlayerPerformanceSeeder.php
+	database/seeders/PlayerPerformanceStatsSeeder.php
+	database/seeders/PlayerTrophySeeder.php
+	database/seeders/PlayerUserSeeder.php
+	database/seeders/PortalDataSeeder.php
+	database/seeders/SimplePlayerStatsSeeder.php
+	database/seeders/SimpleSeeder.php
+	database/seeders/SimpleTunisianPlayersSeeder.php
+	database/seeders/TunisianLeaguePlayersSeeder.php
+	dataset-50-joueurs-tunisie-2024-2025.json
+	debug-fifa-js-realtime.html
+	debug-fifa-real-time.php
+	debug-fifa-simple.php
+	debug-fifa-visual.html
+	debug-hierarchie-conteneurs.html
+	debug-onglets-performance.html
+	debug-portail-principal.html
+	debug-portal-data.php
+	debug-user-session.php
+	debug-visibilite-fifa.html
+	diagnostic-donnees-reelles.php
+	docs/
+	fifa-tms-config-example.env
+	fix-club-logos-real.php
+	fix-flag-urls.php
+	fix-match-dates.php
+	fix-user-session.php
+	generate-dataset-simple.php
+	generate-dataset.php
+	get-real-club-logos.php
+	import-basic-corrected.php
+	import-basic.php
+	import-dataset-adapted.php
+	import-dataset.php
+	import-simple.php
+	new_function.js
+	new_function.txt
+	patient_portal.html
+	portail-patient-original.html
+	public/associations/
+	public/clubs/
+	public/fifa-complete-fixed.html
+	public/fifa-complete.html
+	public/fifa-messi.html
+	public/fifa-test-simple.html
+	public/fifa-test.html
+	public/fifa-working-final.html
+	public/images/associations/
+	public/images/clubs/
+	public/images/flags/
+	public/images/players/
+	public/js/portail-joueur.js
+	public/js/tab-view.js
+	public/portail-patient.html
+	public/test-simple.html
+	public/test-vue.html
+	replace_function.py
+	replace_function.sh
+	resources/js/components/AdvancedStats.vue
+	resources/js/components/ComparisonAnalysis.vue
+	resources/js/components/CountryFlag.vue
+	resources/js/components/FifaAssociationLogo.vue
+	resources/js/components/MatchStats.vue
+	resources/js/components/NationalLeagueLogo.vue
+	resources/js/components/PerformanceDashboard.vue
+	resources/js/components/PlayerPerformance.vue
+	resources/js/components/TrendAnalysis.vue
+	resources/views/admin/dashboard.blade.php
+	resources/views/associations/
+	resources/views/club-management/logo/
+	resources/views/components/association-logo-simple.blade.php
+	resources/views/components/association-logo-working.blade.php
+	resources/views/components/association-logo.blade.php
+	resources/views/components/club-logo-inline.blade.php
+	resources/views/components/club-logo-working.blade.php
+	resources/views/components/club-logo.blade.php
+	resources/views/components/country-flag.blade.php
+	resources/views/components/fifa-association-logo.blade.php
+	resources/views/components/flag-logo-display.blade.php
+	resources/views/components/flag-logo-inline.blade.php
+	resources/views/components/test-logo.blade.php
+	resources/views/dataset-analytics.blade.php
+	resources/views/debug-fifa-js-realtime.blade.php
+	resources/views/debug-fifa-visual.blade.php
+	resources/views/debug-hierarchie-conteneurs.blade.php
+	resources/views/debug-onglets-performance.blade.php
+	resources/views/debug-portail-principal.blade.php
+	resources/views/debug-visibilite-fifa.blade.php
+	resources/views/demo-clubs-ftf.blade.php
+	resources/views/demo-logos-officiels.blade.php
+	resources/views/demo-vrais-logos-ftf.blade.php
+	resources/views/errors/
+	resources/views/fifa-portal-integrated.blade.php
+	resources/views/fifa-portal-integrated.blade.php.backup
+	resources/views/fifa-portal-integrated.blade.php.backup-20250816-104016
+	resources/views/fifa-portal-integrated.blade.php.backup-ORIGINAL
+	resources/views/fifa-simple-test.blade.php
+	resources/views/logos-clubs-ftf.blade.php
+	resources/views/logos-originaux-ftf.blade.php
+	resources/views/modules/fixtures/
+	resources/views/modules/rankings/
+	resources/views/player-access/
+	resources/views/player-portal/fifa-complete.blade.php
+	resources/views/player-portal/fifa-stable.blade.php
+	resources/views/player-portal/fifa-ultimate-working.blade.php
+	resources/views/player-portal/fifa-working.blade.php
+	resources/views/player-portal/test-vue.blade.php
+	resources/views/player-selection-simple.blade.php
+	resources/views/player-selection.blade.php
+	resources/views/player/
+	resources/views/portail-joueur-FONCTIONNEL-DRAPEAUX-OK.blade.php
+	resources/views/portail-joueur-avant-correction.blade.php
+	resources/views/portail-joueur-clean.blade.php
+	resources/views/portail-joueur-colonnes-corrigees.blade.php
+	resources/views/portail-joueur-completement-corrige.blade.php
+	resources/views/portail-joueur-corrige-simple.blade.php
+	resources/views/portail-joueur-division-zero-final.blade.php
+	resources/views/portail-joueur-donnees-completes.blade.php
+	resources/views/portail-joueur-donnees-finales.blade.php
+	resources/views/portail-joueur-exact-image.blade.php
+	resources/views/portail-joueur-final-backup.blade.php
+	resources/views/portail-joueur-final-complet.blade.php
+	resources/views/portail-joueur-final-corrige-dynamique-BACKUP-20250815-131050.blade.php
+	resources/views/portail-joueur-final-corrige-dynamique-ERREUR-20250815-132018.blade.php
+	resources/views/portail-joueur-final-corrige-dynamique-backup-2.blade.php
+	resources/views/portail-joueur-final-corrige-dynamique-backup-3.blade.php
+	resources/views/portail-joueur-final-corrige-dynamique-backup-4.blade.php
+	resources/views/portail-joueur-final-corrige-dynamique-backup-5.blade.php
+	resources/views/portail-joueur-final-corrige-dynamique-backup-6.blade.php
+	resources/views/portail-joueur-final-corrige-dynamique-backup.blade.php
+	resources/views/portail-joueur-final-corrige-dynamique.blade.php
+	resources/views/portail-joueur-final-corrige.blade.php
+	resources/views/portail-joueur-final.blade.php
+	resources/views/portail-joueur-html-nettoye.blade.php
+	resources/views/portail-joueur-js-clean.blade.php
+	resources/views/portail-joueur-js-fixed.blade.php
+	resources/views/portail-joueur-latest-corrige.blade.php
+	resources/views/portail-joueur-ligne291-corrige.blade.php
+	resources/views/portail-joueur-nettoye.blade.php
+	resources/views/portail-joueur-original-dynamique.blade.php
+	resources/views/portail-joueur-original-restored.blade.php
+	resources/views/portail-joueur-performances-corrige.blade.php
+	resources/views/portail-joueur-safe-corrige.blade.php
+	resources/views/portail-joueur-simple-corrige.blade.php
+	resources/views/portail-joueur-simple-fifa.blade.php
+	resources/views/portail-joueur-simplifie.blade.php
+	resources/views/portail-joueur-specifique-corrige.blade.php
+	resources/views/portail-joueur-statiques-corrigees.blade.php
+	resources/views/portail-joueur-syntaxe-corrige.blade.php
+	resources/views/portail-joueur-syntaxe-minimal.blade.php
+	resources/views/portail-joueur.blade.php
+	resources/views/test-association-logo.blade.php
+	resources/views/test-association-system.blade.php
+	resources/views/test-auth.blade.php
+	resources/views/test-clubs-ftf-simple.blade.php
+	resources/views/test-clubs-ftf.blade.php
+	resources/views/test-clubs-reels.blade.php
+	resources/views/test-fifa-debug.blade.php
+	resources/views/test-fifa-direct.blade.php
+	resources/views/test-fifa-js.blade.php
+	resources/views/test-fifa-performance.blade.php
+	resources/views/test-integration-fifa.blade.php
+	resources/views/test-logo-ftf.blade.php
+	resources/views/test-logos-portail.blade.php
+	resources/views/test-medical.blade.php
+	resources/views/test-performance-system.blade.php
+	resources/views/test-performance-working.blade.php
+	resources/views/test-portail-club-logos.blade.php
+	resources/views/test-portail-direct.blade.php
+	resources/views/test-portail-final.blade.php
+	resources/views/test-portal-context.blade.php
+	resources/views/test-portal-debug.blade.php
+	resources/views/test-portal-exact.blade.php
+	resources/views/test-portal-simple.blade.php
+	resources/views/test-portal-simulation.blade.php
+	resources/views/test-simple-portal.blade.php
+	resources/views/test-tabs.blade.php
+	resources/views/test-ultra-simple.blade.php
+	resources/views/test-vue-debug.blade.php
+	restaurer-portail-fonctionnel.sh
+	restore-fifa-portal.sh
+	scripts/add-dynamic-alt-attributes.php
+	scripts/add-dynamic-classes.php
+	scripts/add-dynamic-images-alt.php
+	scripts/add-final-missing-variables.php
+	scripts/add-missing-variables-simple.php
+	scripts/add-photos-logos-database.php
+	scripts/add-safe-dynamic-css.php
+	scripts/add-tunisian-players-corrected.php
+	scripts/add-tunisian-players-final.php
+	scripts/add-variables-manually.php
+	scripts/analyze-dynamic-coverage.php
+	scripts/check-tunisian-league-data.php
+	scripts/clean-final-replacement.php
+	scripts/clean-portal-data-aggressive.php
+	scripts/clean-portal-data-smart.php
+	scripts/clean-portal-data.php
+	scripts/copy-exact-portal-patient.php
+	scripts/correction-division-zero-final.php
+	scripts/correction-division-zero.php
+	scripts/correction-donnees-simples.php
+	scripts/correction-javascript-finale.php
+	scripts/correction-latest.php
+	scripts/correction-methode-latest.php
+	scripts/create-default-images.php
+	scripts/debug-portal-error.php
+	scripts/download-frmf-logo.js
+	scripts/download-ftf-club-logos.js
+	scripts/download-ftf-logos-public-sources.js
+	scripts/download-ftf-logos-worldsoccerpins.js
+	scripts/download-official-logos.js
+	scripts/download-real-ftf-logos.js
+	scripts/final-100-percent-dynamic.php
+	scripts/final-check.php
+	scripts/final-cleanup.php
+	scripts/final-complete-dynamic-injection.php
+	scripts/final-complete-replacement.php
+	scripts/fix-aggressive-variables.php
+	scripts/fix-all-css-syntax.php
+	scripts/fix-all-n.php
+	scripts/fix-all-remaining-static.php
+	scripts/fix-all-static-values.php
+	scripts/fix-all-undefined-variables.php
+	scripts/fix-column-names.php
+	scripts/fix-css-styles.php
+	scripts/fix-database-structure.php
+	scripts/fix-fifa-ratings.php
+	scripts/fix-final-syntax.php
+	scripts/fix-final-variables-mapping.php
+	scripts/fix-html-content-syntax.php
+	scripts/fix-javascript-errors.php
+	scripts/fix-line-291-only.php
+	scripts/fix-only-syntax.php
+	scripts/fix-performances-recentes.php
+	scripts/fix-remaining-static-data.php
+	scripts/fix-specific-n.php
+	scripts/fix-specific-static.php
+	scripts/fix-syntax-error.php
+	scripts/fix-variable-n.php
+	scripts/fix-vue-js-portal.php
+	scripts/generate-complete-player-data.php
+	scripts/generate-ftf-club-logos.js
+	scripts/generate-ftf-logos-with-sharp.js
+	scripts/generate-ftf-test-logos.js
+	scripts/generate-player-access-code.php
+	scripts/generate-tunisian-league-data.php
+	scripts/injection-ciblee-finale.php
+	scripts/injection-donnees-finales.php
+	scripts/injection-photos-reelles.php
+	scripts/nettoyage-complet-final.php
+	scripts/nettoyage-final-html.php
+	scripts/nettoyage-final-variables.php
+	scripts/remplacement-complet-donnees.php
+	scripts/remplacement-complet-final.php
+	scripts/remplacement-final-complet.php
+	scripts/restore-and-fix-simple.php
+	scripts/restore-clean-css.php
+	scripts/restore-correct-portal.php
+	scripts/restore-css-styles.php
+	scripts/restore-exact-portal-patient.php
+	scripts/restore-full-visual-with-dynamic-data.php
+	scripts/restore-original-css.php
+	scripts/restore-original-layout.php
+	scripts/restore-portal-clean.php
+	scripts/restore-working-css.php
+	scripts/sadio-mane-access.php
+	scripts/safe-fix-static-data.php
+	scripts/show-tunisian-data.php
+	scripts/simple-dynamic-replacement.php
+	scripts/smart-dynamic-replacement.php
+	scripts/solution-definitive.php
+	scripts/test-all-variables-fixed.php
+	scripts/test-auth-simple.php
+	scripts/test-blade-render.php
+	scripts/test-clean-css.php
+	scripts/test-club-logos.js
+	scripts/test-exact-portal-patient.php
+	scripts/test-final-complet.php
+	scripts/test-final-css.php
+	scripts/test-final-fixed.php
+	scripts/test-final-portal.php
+	scripts/test-final-system.php
+	scripts/test-final-vue-fix.php
+	scripts/test-javascript-fixed.php
+	scripts/test-medical-tab-improvements.php
+	scripts/test-n-fixed.php
+	scripts/test-original-layout.php
+	scripts/test-player-access.php
+	scripts/test-portal-css.php
+	scripts/test-portal-system.php
+	scripts/test-portal.php
+	scripts/test-real-portal-patient.php
+	scripts/test-simple-portal.php
+	scripts/test-system-final.php
+	scripts/test-vrais-logos-ftf.js
+	scripts/ultimate-cleanup.php
+	scripts/ultra-aggressive-replacement.php
+	scripts/update-fifa-logos.js
+	scripts/update-national-logos-monthly.sh
+	scripts/update-national-logos.js
+	scripts/update-portal-with-images.php
+	scripts/verifier-logos-ftf.js
+	scripts/verify-clean-portal.php
+	test-age-controller.php
+	test-all-zones-same-size.php
+	test-blade-simple.php
+	test-club-logo-route.php
+	test-club-logos.php
+	test-competition-controller.php
+	test-competition-data.php
+	test-competition-view-fix.php
+	test-corrections-donnees.php
+	test-data-access.php
+	test-dataset-integration.php
+	test-fifa-debug.html
+	test-fifa-direct.html
+	test-fifa-direct.php
+	test-fifa-js.html
+	test-fifa-performance.blade.php
+	test-fifa-portal-debug.php
+	test-fifa-sync.php
+	test-final-complet.php
+	test-final-header-flags.php
+	test-final-images.php
+	test-final-implementation.php
+	test-flag-logo-components.php
+	test-flagsapi-components.html
+	test-ftf-logo-display.php
+	test-ftf-simplification.php
+	test-header-flags.php
+	test-hero-zone-enriched.php
+	test-images-chargement.php
+	test-integration-fifa.blade.php
+	test-jsk-fix.php
+	test-login.sh
+	test-logo-sizes.php
+	test-logos-display.php
+	test-logos-rapide.php
+	test-logos-simple.php
+	test-methode-portal-joueur.php
+	test-onglet-licences.php
+	test-performance-working.blade.php
+	test-portail-direct.html
+	test-portail-joueur-logos.php
+	test-redirection-search.php
+	test-route-fix.php
+	test-routes-fix.php
+	test-search-functionality.php
+	test-simple-logos.php
+	test-urls-images.php
+	test-view-fix.php
+	test-view-rendering.php
+	test-vraies-images.php
+	test-vue-simple.blade.php
+	update-club-logos-simple.php
+	update-club-logos.php
+	update-ftf-real-logo.php
+	validate-dataset.php
+	verify-ftf-association.php
+
+no changes added to commit (use "git add" and/or "git commit -a")

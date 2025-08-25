@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\Competition;
 use App\Models\Club;
 use App\Models\Association;
 use App\Models\FifaConnectId;
 use App\Models\User;
 use App\Services\FifaConnectService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use App\Models\GameMatch; // Added this import for GameMatch
-use App\Models\MatchModel; // Added this import for MatchModel
+use App\Models\GameMatch;
+use App\Models\MatchModel;
 
 class CompetitionManagementController extends Controller
 {
@@ -145,20 +145,35 @@ class CompetitionManagementController extends Controller
         }
     }
 
-    public function show(Competition $competition)
+    public function show($id)
     {
-        $this->authorizeCompetitionAccess($competition);
+        $user = Auth::user();
         
-        // Load competition with teams and their clubs
-        $competition->load(['association', 'fifaConnectId', 'teams.club', 'teams.players', 'validatedBy']);
-        
-        // Paginate matches separately for better performance
-        $matches = $competition->matches()
-            ->with(['homeTeam.club', 'awayTeam.club'])
-            ->orderBy('match_date', 'asc')
-            ->paginate(20); // Show 20 matches per page
-        
-        return view('competition-management.show', compact('competition', 'matches'));
+        if (!$user) {
+            abort(403);
+        }
+
+        // Récupérer la compétition avec ses relations
+        $competition = Competition::with(['fifaConnectId', 'season', 'association'])
+            ->find($id);
+
+        if (!$competition) {
+            abort(404);
+        }
+
+        // Vérifier les permissions selon le rôle
+        if (!in_array($user->role, ['system_admin', 'admin'])) {
+            if (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
+                // Vérifier que la compétition appartient à l'association de l'utilisateur
+                if ($competition->association_id !== $user->association_id) {
+                    abort(403);
+                }
+            } else {
+                abort(403);
+            }
+        }
+
+        return view('competition-management.show', compact('competition'));
     }
 
     public function edit(Competition $competition)
@@ -1086,7 +1101,7 @@ class CompetitionManagementController extends Controller
             'players.*' => 'required|exists:players,id',
         ]);
 
-        // Service d’éligibilité
+        // Service d'éligibilité
         $eligibilityService = app(\App\Services\PlayerEligibilityService::class);
         $season = $competition->season;
         foreach ($request->players as $playerId) {

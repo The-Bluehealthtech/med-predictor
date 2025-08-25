@@ -1,0 +1,104 @@
+{
+  "timestamp": "2025-07-23T15:34:47.412Z",
+  "summary": {
+    "frKeys": 644,
+    "enKeys": 644,
+    "modules": 9,
+    "translationRate": 25.6,
+    "identicalCount": 479,
+    "translatedCount": 165
+  },
+  "modules": [
+    {
+      "name": "landing",
+      "frKeys": 34,
+      "enKeys": 34,
+      "hasTranslation": true
+    },
+    {
+      "name": "menu",
+      "frKeys": 2,
+      "enKeys": 2,
+      "hasTranslation": true
+    },
+    {
+      "name": "navigation",
+      "frKeys": 34,
+      "enKeys": 34,
+      "hasTranslation": true
+    },
+    {
+      "name": "dashboard",
+      "frKeys": 37,
+      "enKeys": 37,
+      "hasTranslation": true
+    },
+    {
+      "name": "rpm",
+      "frKeys": 24,
+      "enKeys": 24,
+      "hasTranslation": true
+    },
+    {
+      "name": "dtn",
+      "frKeys": 14,
+      "enKeys": 14,
+      "hasTranslation": true
+    },
+    {
+      "name": "referee",
+      "frKeys": 10,
+      "enKeys": 10,
+      "hasTranslation": true
+    },
+    {
+      "name": "player",
+      "frKeys": 18,
+      "enKeys": 18,
+      "hasTranslation": true
+    },
+    {
+      "name": "common",
+      "frKeys": 462,
+      "enKeys": 462,
+      "hasTranslation": true
+    }
+  ],
+  "criticalElements": [
+    {
+      "name": "Titre principal",
+      "key": "landing.hero.title",
+      "frValue": "Intelligence Football & Santé",
+      "enValue": "Football Intelligence & Health",
+      "hasTranslation": true
+    },
+    {
+      "name": "Navigation Dashboard",
+      "key": "navigation.main.dashboard",
+      "frValue": "Tableau de bord",
+      "enValue": "Dashboard",
+      "hasTranslation": true
+    },
+    {
+      "name": "Titre Dashboard",
+      "key": "dashboard.title",
+      "frValue": "Tableau de bord Med Predictor",
+      "enValue": "Med Predictor Dashboard",
+      "hasTranslation": true
+    },
+    {
+      "name": "Menu Accueil",
+      "key": "menu.home",
+      "frValue": "Accueil",
+      "enValue": "Home",
+      "hasTranslation": true
+    },
+    {
+      "name": "Déconnexion",
+      "key": "navigation.dropdowns.user.logout",
+      "frValue": "Déconnexion",
+      "enValue": "Logout",
+      "hasTranslation": true
+    }
+  ]
+}

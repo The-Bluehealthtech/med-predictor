@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagramme Dentaire Précis - Zones Cliquables</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .dental-chart-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-section {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .image-container {
+            position: relative;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            width: 100%;
+            height: 600px;
+        }
+        
+        .dental-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            opacity: 0.9;
+        }
+        
+        .tooth-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .tooth-zone {
+            position: absolute;
+            width: 25px;
+            height: 15px;
+            border: 2px solid #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: bold;
+            color: #1f2937;
+            border-radius: 3px;
+        }
+        
+        .tooth-zone:hover {
+            background: rgba(59, 130, 246, 0.4);
+            border-color: #1d4ed8;
+            transform: scale(1.2);
+            z-index: 10;
+        }
+        
+        .tooth-zone.selected {
+            background: rgba(59, 130, 246, 0.6);
+            border-color: #1d4ed8;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
+            z-index: 10;
+        }
+        
+        .info-section {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .tooth-info {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .tooth-details {
+            margin-top: 15px;
+        }
+        
+        .tooth-details p {
+            margin: 8px 0;
+            color: #4a5568;
+        }
+        
+        .no-selection {
+            text-align: center;
+            color: #718096;
+            font-style: italic;
+        }
+        
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .stats {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .stats h4 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            background: #f7fafc;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #718096;
+        }
+        
+        .history {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .history h4 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        
+        .history-item {
+            background: #f7fafc;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #4a5568;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .image-info {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .image-info h5 {
+            margin: 0 0 10px 0;
+            color: #234e52;
+        }
+        
+        .image-info p {
+            margin: 5px 0;
+            color: #2d3748;
+            font-size: 0.9em;
+        }
+        
+        .debug-info {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="header">
+                <h1>🦷 Diagramme Dentaire Précis - Zones Cliquables</h1>
+                <p>Version avec zones cliquables précises et sélection des dents</p>
+            </div>
+            
+            <div class="content">
+                <div class="image-info">
+                    <h5>📸 Image de Référence Directe</h5>
+                    <p><strong>Source :</strong> Votre image réaliste de dents</p>
+                    <p><strong>Fichier :</strong> dental-reference.jpg (71KB)</p>
+                    <p><strong>Méthode :</strong> Image directe + zones cliquables précises</p>
+                </div>
+                
+                <div class="debug-info">
+                    <h5>🔧 Mode Debug</h5>
+                    <p><strong>Instructions :</strong> Cliquez sur les zones bleues pour sélectionner les dents</p>
+                    <p><strong>Dent sélectionnée :</strong> <span v-if="selectedTooth" style="color: #3b82f6; font-weight: bold;">{{ selectedTooth }}</span><span v-else style="color: #718096;">Aucune</span></p>
+                    <p><strong>Total clics :</strong> {{ toothHistory.length }}</p>
+                </div>
+                
+                <div class="dental-chart-container">
+                    <div class="chart-section">
+                        <h3>📊 Diagramme Dentaire Précis</h3>
+                        <div class="image-container">
+                            <img src="/images/dental-reference.jpg?v=precise&ts=202508062025" alt="Diagramme dentaire réaliste" class="dental-image">
+                            <div class="tooth-overlay">
+                                <!-- Dents supérieures (quadrants 1 et 2) -->
+                                <!-- Quadrant 1 (droite supérieure) -->
+                                <div class="tooth-zone" style="top: 20%; left: 42%;" data-tooth-id="11">11</div>
+                                <div class="tooth-zone" style="top: 20%; left: 37%;" data-tooth-id="12">12</div>
+                                <div class="tooth-zone" style="top: 20%; left: 32%;" data-tooth-id="13">13</div>
+                                <div class="tooth-zone" style="top: 20%; left: 27%;" data-tooth-id="14">14</div>
+                                <div class="tooth-zone" style="top: 20%; left: 22%;" data-tooth-id="15">15</div>
+                                <div class="tooth-zone" style="top: 20%; left: 17%;" data-tooth-id="16">16</div>
+                                <div class="tooth-zone" style="top: 20%; left: 12%;" data-tooth-id="17">17</div>
+                                <div class="tooth-zone" style="top: 20%; left: 7%;" data-tooth-id="18">18</div>
+                                
+                                <!-- Quadrant 2 (gauche supérieure) -->
+                                <div class="tooth-zone" style="top: 20%; left: 58%;" data-tooth-id="21">21</div>
+                                <div class="tooth-zone" style="top: 20%; left: 63%;" data-tooth-id="22">22</div>
+                                <div class="tooth-zone" style="top: 20%; left: 68%;" data-tooth-id="23">23</div>
+                                <div class="tooth-zone" style="top: 20%; left: 73%;" data-tooth-id="24">24</div>
+                                <div class="tooth-zone" style="top: 20%; left: 78%;" data-tooth-id="25">25</div>
+                                <div class="tooth-zone" style="top: 20%; left: 83%;" data-tooth-id="26">26</div>
+                                <div class="tooth-zone" style="top: 20%; left: 88%;" data-tooth-id="27">27</div>
+                                <div class="tooth-zone" style="top: 20%; left: 93%;" data-tooth-id="28">28</div>
+                                
+                                <!-- Dents inférieures (quadrants 3 et 4) -->
+                                <!-- Quadrant 3 (gauche inférieure) -->
+                                <div class="tooth-zone" style="top: 70%; left: 58%;" data-tooth-id="31">31</div>
+                                <div class="tooth-zone" style="top: 70%; left: 63%;" data-tooth-id="32">32</div>
+                                <div class="tooth-zone" style="top: 70%; left: 68%;" data-tooth-id="33">33</div>
+                                <div class="tooth-zone" style="top: 70%; left: 73%;" data-tooth-id="34">34</div>
+                                <div class="tooth-zone" style="top: 70%; left: 78%;" data-tooth-id="35">35</div>
+                                <div class="tooth-zone" style="top: 70%; left: 83%;" data-tooth-id="36">36</div>
+                                <div class="tooth-zone" style="top: 70%; left: 88%;" data-tooth-id="37">37</div>
+                                <div class="tooth-zone" style="top: 70%; left: 93%;" data-tooth-id="38">38</div>
+                                
+                                <!-- Quadrant 4 (droite inférieure) -->
+                                <div class="tooth-zone" style="top: 70%; left: 42%;" data-tooth-id="41">41</div>
+                                <div class="tooth-zone" style="top: 70%; left: 37%;" data-tooth-id="42">42</div>
+                                <div class="tooth-zone" style="top: 70%; left: 32%;" data-tooth-id="43">43</div>
+                                <div class="tooth-zone" style="top: 70%; left: 27%;" data-tooth-id="44">44</div>
+                                <div class="tooth-zone" style="top: 70%; left: 22%;" data-tooth-id="45">45</div>
+                                <div class="tooth-zone" style="top: 70%; left: 17%;" data-tooth-id="46">46</div>
+                                <div class="tooth-zone" style="top: 70%; left: 12%;" data-tooth-id="47">47</div>
+                                <div class="tooth-zone" style="top: 70%; left: 7%;" data-tooth-id="48">48</div>
+                            </div>
+                        </div>
+                        <div class="controls">
+                            <button @click="clearSelection" class="btn">🗑️ Effacer la sélection</button>
+                            <button @click="selectRandomTooth" class="btn">🎲 Sélectionner aléatoire</button>
+                            <button @click="refreshPage" class="btn">🔄 Actualiser la page</button>
+                            <button @click="toggleDebug" class="btn">🔧 Mode Debug</button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <div v-if="selectedTooth" class="tooth-info">
+                            <h3>🦷 Dent sélectionnée : {{ selectedTooth }}</h3>
+                            <div class="tooth-details">
+                                <p><strong>Type :</strong> {{ getToothType(selectedTooth) }}</p>
+                                <p><strong>Quadrant :</strong> {{ getQuadrant(selectedTooth) }}</p>
+                                <p><strong>Position :</strong> {{ getPosition(selectedTooth) }}</p>
+                            </div>
+                        </div>
+                        <div v-else class="no-selection">
+                            <h3>👆 Cliquez sur une zone bleue</h3>
+                            <p>Les zones cliquables sont visibles en bleu</p>
+                        </div>
+                        
+                        <div class="stats">
+                            <h4>📈 Statistiques</h4>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ toothHistory.length }}</div>
+                                    <div class="stat-label">Sélections</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ uniqueTeeth.length }}</div>
+                                    <div class="stat-label">Dents uniques</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="history">
+                            <h4>📝 Historique des sélections</h4>
+                            <div v-for="(tooth, index) in toothHistory.slice(-5)" :key="index" class="history-item">
+                                {{ tooth }} ({{ getToothType(tooth) }})
+                            </div>
+                            <div v-if="toothHistory.length === 0" class="no-selection">
+                                Aucune sélection encore
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const { createApp, ref, computed } = Vue;
+        
+        createApp({
+            setup() {
+                const selectedTooth = ref(null);
+                const toothHistory = ref([]);
+                const debugMode = ref(true);
+                
+                const uniqueTeeth = computed(() => {
+                    return [...new Set(toothHistory.value)];
+                });
+                
+                const initializeDentalChart = () => {
+                    console.log('Diagramme dentaire précis initialisé');
+                    // Ajouter les écouteurs d'événements pour toutes les zones de dents
+                    const toothZones = document.querySelectorAll('.tooth-zone');
+                    toothZones.forEach(zone => {
+                        zone.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const toothId = this.getAttribute('data-tooth-id');
+                            selectTooth(toothId);
+                            console.log('Zone cliquée:', toothId);
+                        });
+                    });
+                };
+                
+                const selectTooth = (toothId) => {
+                    // Désélectionner la dent précédemment sélectionnée
+                    if (selectedTooth.value) {
+                        const prevZone = document.querySelector(`[data-tooth-id="${selectedTooth.value}"]`);
+                        if (prevZone) {
+                            prevZone.classList.remove('selected');
+                        }
+                    }
+                    
+                    // Sélectionner la nouvelle dent
+                    selectedTooth.value = toothId;
+                    const zone = document.querySelector(`[data-tooth-id="${toothId}"]`);
+                    if (zone) {
+                        zone.classList.add('selected');
+                    }
+                    
+                    toothHistory.value.push(toothId);
+                    console.log('Dent sélectionnée:', toothId);
+                };
+                
+                const clearSelection = () => {
+                    selectedTooth.value = null;
+                    const selectedZone = document.querySelector('.tooth-zone.selected');
+                    if (selectedZone) {
+                        selectedZone.classList.remove('selected');
+                    }
+                };
+                
+                const selectRandomTooth = () => {
+                    const teeth = ['11', '12', '13', '14', '15', '16', '17', '18',
+                                  '21', '22', '23', '24', '25', '26', '27', '28',
+                                  '31', '32', '33', '34', '35', '36', '37', '38',
+                                  '41', '42', '43', '44', '45', '46', '47', '48'];
+                    const randomTooth = teeth[Math.floor(Math.random() * teeth.length)];
+                    selectTooth(randomTooth);
+                };
+                
+                const refreshPage = () => {
+                    window.location.reload();
+                };
+                
+                const toggleDebug = () => {
+                    debugMode.value = !debugMode.value;
+                    const zones = document.querySelectorAll('.tooth-zone');
+                    zones.forEach(zone => {
+                        if (debugMode.value) {
+                            zone.style.border = '2px solid #3b82f6';
+                            zone.style.background = 'rgba(59, 130, 246, 0.1)';
+                        } else {
+                            zone.style.border = '1px solid transparent';
+                            zone.style.background = 'rgba(59, 130, 246, 0.05)';
+                        }
+                    });
+                };
+                
+                const getToothType = (toothId) => {
+                    const position = parseInt(toothId.slice(1));
+                    if (position <= 2) return 'Incisive';
+                    if (position === 3) return 'Canine';
+                    if (position <= 5) return 'Prémolaire';
+                    return 'Molaire';
+                };
+                
+                const getQuadrant = (toothId) => {
+                    const quadrant = toothId.slice(0, 1);
+                    const names = {
+                        '1': 'Supérieur Droit',
+                        '2': 'Supérieur Gauche', 
+                        '3': 'Inférieur Gauche',
+                        '4': 'Inférieur Droit'
+                    };
+                    return names[quadrant] || 'Inconnu';
+                };
+                
+                const getPosition = (toothId) => {
+                    return toothId.slice(1);
+                };
+                
+                // Initialiser quand le DOM est prêt
+                document.addEventListener('DOMContentLoaded', initializeDentalChart);
+                
+                return {
+                    selectedTooth,
+                    toothHistory,
+                    uniqueTeeth,
+                    debugMode,
+                    initializeDentalChart,
+                    selectTooth,
+                    clearSelection,
+                    selectRandomTooth,
+                    refreshPage,
+                    toggleDebug,
+                    getToothType,
+                    getQuadrant,
+                    getPosition
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html> 

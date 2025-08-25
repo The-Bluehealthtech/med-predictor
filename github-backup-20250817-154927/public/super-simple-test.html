@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Simple Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">🧪 Super Simple Test</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">🔍 Test Basic JavaScript</h3>
+            <button onclick="testBasicJS()" class="px-4 py-2 bg-blue-500 text-white rounded">Test Basic JS</button>
+            <div id="basic-result" class="mt-4 p-4 bg-gray-50 rounded"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">🔍 Test Search Dropdown</h3>
+            <input type="text" id="search-input" placeholder="Type 'cardio' to test" class="w-full px-3 py-2 border border-gray-300 rounded-md mb-4">
+            <div id="search-results" class="mt-4 p-4 bg-gray-50 rounded"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">📊 Console Logs</h3>
+            <div id="console-logs" class="text-sm font-mono bg-black text-green-400 p-4 rounded max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simple logging
+        function log(message) {
+            console.log(message);
+            const logsDiv = document.getElementById('console-logs');
+            logsDiv.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        // Test basic JavaScript
+        function testBasicJS() {
+            const resultDiv = document.getElementById('basic-result');
+            log('=== TESTING BASIC JAVASCRIPT ===');
+            
+            try {
+                resultDiv.innerHTML = '<div class="text-green-600">✅ Basic JavaScript is working!</div>';
+                log('✅ Basic JavaScript test successful');
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-600">❌ JavaScript error: ${error.message}</div>`;
+                log(`❌ JavaScript error: ${error.message}`);
+            }
+        }
+
+        // Simulated search data
+        const searchData = {
+            cardiovascular: [
+                { id: 'cv_001', title: 'Hypertension artérielle', code: 'I10' },
+                { id: 'cv_002', title: 'Infarctus du myocarde', code: 'I21' },
+                { id: 'cv_003', title: 'Angine de poitrine', code: 'I20' },
+                { id: 'cv_004', title: 'Insuffisance cardiaque', code: 'I50' },
+                { id: 'cv_005', title: 'Arythmie cardiaque', code: 'I49' },
+                { id: 'cv_006', title: 'Cardiomyopathie', code: 'I42' },
+                { id: 'cv_007', title: 'Maladie coronarienne', code: 'I25' },
+                { id: 'cv_008', title: 'Valvulopathie cardiaque', code: 'I34' },
+                { id: 'cv_009', title: 'Cardiologie générale', code: 'CV001' },
+                { id: 'cv_010', title: 'Pathologie cardiovasculaire', code: 'CV002' }
+            ],
+            medications: [
+                { id: 'med_001', title: 'Doliprane 500mg', dosage: 'Comprimé 500mg' },
+                { id: 'med_002', title: 'Aspirine 100mg', dosage: 'Comprimé 100mg' },
+                { id: 'med_003', title: 'Ibuprofène 400mg', dosage: 'Comprimé 400mg' },
+                { id: 'med_004', title: 'Paracétamol 1000mg', dosage: 'Comprimé 1000mg' },
+                { id: 'med_005', title: 'Atorvastatine 20mg', dosage: 'Comprimé 20mg' }
+            ],
+            allergies: [
+                { id: 'all_001', title: 'Allergie aux pénicillines', severity: 'Sévère', type: 'Médicamenteuse' },
+                { id: 'all_002', title: 'Allergie aux céphalosporines', severity: 'Modérée', type: 'Médicamenteuse' },
+                { id: 'all_003', title: 'Allergie aux sulfamides', severity: 'Sévère', type: 'Médicamenteuse' },
+                { id: 'all_004', title: 'Allergie à l\'aspirine', severity: 'Modérée', type: 'Médicamenteuse' },
+                { id: 'all_005', title: 'Allergie aux AINS', severity: 'Sévère', type: 'Médicamenteuse' }
+            ]
+        };
+
+        // Search function
+        function performSearch(query) {
+            log(`🔍 Searching for: ${query}`);
+            
+            const results = [];
+            
+            // Search in all categories
+            Object.keys(searchData).forEach(category => {
+                searchData[category].forEach(item => {
+                    // More flexible search - check if any part matches
+                    const searchTerms = query.toLowerCase().split(' ');
+                    const itemText = `${item.title} ${item.code || ''} ${item.dosage || ''} ${item.severity || ''} ${item.type || ''}`.toLowerCase();
+                    
+                    const matches = searchTerms.some(term => 
+                        itemText.includes(term) || 
+                        item.title.toLowerCase().includes(term) ||
+                        (item.code && item.code.toLowerCase().includes(term)) ||
+                        (item.dosage && item.dosage.toLowerCase().includes(term))
+                    );
+                    
+                    if (matches) {
+                        results.push({ ...item, category });
+                    }
+                });
+            });
+            
+            log(`✅ Found ${results.length} results`);
+            return results;
+        }
+
+        // Display search results
+        function displayResults(results) {
+            const resultsDiv = document.getElementById('search-results');
+            
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<div class="text-gray-500">Aucun résultat trouvé</div>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = results.map(item => `
+                <div class="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0" 
+                     onclick="selectItem('${item.id}', '${item.title.replace(/'/g, "\\'")}', '${item.category}')">
+                    <div class="font-medium text-gray-900">${item.title}</div>
+                    <div class="text-sm text-gray-600">
+                        ${item.code || item.dosage || ''}
+                        ${item.severity ? ` • ${item.severity}` : ''}
+                        ${item.type ? ` • ${item.type}` : ''}
+                        <span class="text-blue-600">(${item.category})</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Select item function
+        function selectItem(id, title, category) {
+            log(`🎯 Selected: ${title} (${category})`);
+            alert(`Selected: ${title}\nCategory: ${category}\nID: ${id}`);
+        }
+
+        // Initialize search functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            log('=== PAGE LOADED ===');
+            
+            const searchInput = document.getElementById('search-input');
+            
+            if (searchInput) {
+                log('✅ Search input found');
+                
+                let searchTimeout;
+                
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.trim();
+                    
+                    // Clear previous timeout
+                    if (searchTimeout) {
+                        clearTimeout(searchTimeout);
+                    }
+                    
+                    // Hide results if query is empty
+                    if (query.length === 0) {
+                        document.getElementById('search-results').innerHTML = '';
+                        return;
+                    }
+                    
+                    // Search after 300ms delay
+                    searchTimeout = setTimeout(() => {
+                        const results = performSearch(query);
+                        displayResults(results);
+                    }, 300);
+                });
+                
+                log('✅ Search event listener added');
+            } else {
+                log('❌ Search input not found');
+            }
+        });
+
+        // Auto-test on page load
+        window.addEventListener('load', function() {
+            log('=== WINDOW LOADED ===');
+            log('Ready to test search functionality');
+        });
+    </script>
+</body>
+</html> 

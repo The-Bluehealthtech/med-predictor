@@ -1,0 +1,32 @@
+<template>
+    <div>
+        <h2>Examen de la demande de licence</h2>
+        <div>
+            <p>Joueur : {{ license.playerName }}</p>
+            <p>Saison : {{ license.season }}</p>
+            <p>Statut : {{ license.status }}</p>
+            <p>Documents :</p>
+            <ul>
+                <li v-for="doc in license.documents" :key="doc">{{ doc }}</li>
+            </ul>
+        </div>
+        <button @click="approveLicense">Approuver</button>
+        <button @click="openRejectModal">Rejeter</button>
+        <button @click="openRequestInfoModal">Demander plus d'infos</button>
+        <!-- Modales pour rejet/demande info -->
+    </div>
+</template>
+
+<script setup>
+import { ref } from "vue";
+const license = ref({}); // À charger via API ou props
+function approveLicense() {
+    // Appel API pour approuver
+}
+function openRejectModal() {
+    // Ouvre modale pour motif de rejet
+}
+function openRequestInfoModal() {
+    // Ouvre modale pour motif info
+}
+</script>

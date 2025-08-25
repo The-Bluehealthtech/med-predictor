@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="250" height="300" viewBox="0 0 250 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="250" height="300" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Title -->
+  <text x="125" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b">Radiographie Périapicale</text>
+  
+  <!-- Gum line -->
+  <line x1="30" y1="120" x2="220" y2="120" stroke="#64748b" stroke-width="2"/>
+  
+  <!-- Single tooth with root -->
+  <g fill="#f1f5f9" stroke="#94a3b8" stroke-width="1">
+    <!-- Crown -->
+    <rect x="100" y="80" width="30" height="40" rx="3"/>
+    <!-- Root -->
+    <path d="M 100 120 L 95 140 L 100 160 L 130 160 L 135 140 L 130 120 Z" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+  </g>
+  
+  <!-- Adjacent teeth (partial) -->
+  <g fill="#f1f5f9" stroke="#94a3b8" stroke-width="1">
+    <rect x="70" y="80" width="25" height="40" rx="2"/>
+    <rect x="135" y="80" width="25" height="40" rx="2"/>
+  </g>
+  
+  <!-- Dental filling in the main tooth -->
+  <circle cx="115" cy="95" r="3" fill="#fbbf24"/>
+  
+  <!-- Root canal -->
+  <path d="M 115 100 L 115 150" stroke="#64748b" stroke-width="1" stroke-dasharray="2,2"/>
+  
+  <!-- Apical lesion (if present) -->
+  <ellipse cx="115" cy="170" rx="8" ry="5" fill="#ef4444" opacity="0.7"/>
+  
+  <!-- Bone structure -->
+  <g stroke="#94a3b8" stroke-width="0.5" opacity="0.6">
+    <line x1="50" y1="180" x2="200" y2="180"/>
+    <line x1="50" y1="190" x2="200" y2="190"/>
+    <line x1="50" y1="200" x2="200" y2="200"/>
+    <line x1="50" y1="210" x2="200" y2="210"/>
+    <line x1="50" y1="220" x2="200" y2="220"/>
+  </g>
+  
+  <!-- Labels -->
+  <text x="125" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Vue Périapicale</text>
+  <text x="125" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#94a3b8">Dent complète avec racine</text>
+  
+  <!-- Anatomical labels -->
+  <g font-family="Arial, sans-serif" font-size="8" fill="#64748b">
+    <text x="40" y="110">Gencive</text>
+    <text x="40" y="200">Os alvéolaire</text>
+    <text x="40" y="170">Lésion apicale</text>
+  </g>
+  
+  <!-- Arrows -->
+  <g stroke="#64748b" stroke-width="1" marker-end="url(#arrowhead)">
+    <line x1="60" y1="110" x2="95" y2="110"/>
+    <line x1="60" y1="200" x2="95" y2="200"/>
+    <line x1="60" y1="170" x2="95" y2="170"/>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+    </marker>
+  </defs>
+</svg> 

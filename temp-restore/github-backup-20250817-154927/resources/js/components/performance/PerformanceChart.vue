@@ -1,0 +1,337 @@
+<template>
+  <div class="performance-chart">
+    <div class="chart-header">
+      <h3 class="chart-title">{{ title }}</h3>
+      <div class="chart-controls">
+        <select v-model="chartType" @change="updateChartType" class="chart-type-select">
+          <option value="line">{{ $t('auto.key397') }}</option>
+          <option value="bar">{{ $t('auto.key398') }}</option>
+          <option value="radar">{{ $t('auto.key399') }}</option>
+          <option value="doughnut">{{ $t('auto.key400') }}</option>
+        </select>
+        <select v-model="timeRange" @change="updateTimeRange" class="time-range-select">
+          <option value="7d">{{ $t('auto.key401') }}</option>
+          <option value="30d">{{ $t('auto.key402') }}</option>
+          <option value="90d">{{ $t('auto.key403') }}</option>
+          <option value="1y">{{ $t('auto.key404') }}</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="chart-container">
+      <canvas ref="chartCanvas" :id="chartId"></canvas>
+    </div>
+    
+    <div v-if="showLegend" class="chart-legend">
+      <div v-for="(dataset, index) in datasets" :key="index" class="legend-item">
+        <div class="legend-color" :style="{ backgroundColor: dataset.borderColor }"></div>
+        <span class="legend-label">{{ dataset.label }}</span>
+        <span class="legend-value">{{ getDatasetAverage(dataset) }}</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import Chart from 'chart.js/auto'
+
+export default {
+  name: 'PerformanceChart',
+  props: {
+    title: {
+      type: String,
+      required: true
+    },
+    chartId: {
+      type: String,
+      required: true
+    },
+    datasets: {
+      type: Array,
+      required: true
+    },
+    labels: {
+      type: Array,
+      required: true
+    },
+    chartType: {
+      type: String,
+      default: 'line'
+    },
+    timeRange: {
+      type: String,
+      default: '30d'
+    },
+    showLegend: {
+      type: Boolean,
+      default: true
+    },
+    height: {
+      type: String,
+      default: '300px'
+    }
+  },
+  data() {
+    return {
+      chart: null,
+      localChartType: this.chartType,
+      localTimeRange: this.timeRange
+    }
+  },
+  mounted() {
+    this.initChart()
+  },
+  beforeUnmount() {
+    if (this.chart) {
+      this.chart.destroy()
+    }
+  },
+  watch: {
+    datasets: {
+      handler(newDatasets) {
+        this.updateChartData(newDatasets)
+      },
+      deep: true
+    },
+    labels: {
+      handler(newLabels) {
+        this.updateChartLabels(newLabels)
+      }
+    }
+  },
+  methods: {
+    initChart() {
+      const ctx = this.$refs.chartCanvas.getContext('2d')
+      
+      this.chart = new Chart(ctx, {
+        type: this.localChartType,
+        data: {
+          labels: this.labels,
+          datasets: this.datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleColor: '#fff',
+              bodyColor: '#fff',
+              borderColor: '#fff',
+              borderWidth: 1
+            }
+          },
+          scales: this.getScales(),
+          elements: this.getElements()
+        }
+      })
+    },
+    
+    updateChartType() {
+      if (this.chart) {
+        this.chart.config.type = this.localChartType
+        this.chart.update()
+      }
+    },
+    
+    updateTimeRange() {
+      this.$emit('timeRangeChanged', this.localTimeRange)
+    },
+    
+    updateChartData(newDatasets) {
+      if (this.chart) {
+        this.chart.data.datasets = newDatasets
+        this.chart.update()
+      }
+    },
+    
+    updateChartLabels(newLabels) {
+      if (this.chart) {
+        this.chart.data.labels = newLabels
+        this.chart.update()
+      }
+    },
+    
+    getScales() {
+      if (this.localChartType === 'radar') {
+        return {
+          r: {
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              stepSize: 20
+            }
+          }
+        }
+      } else if (this.localChartType === 'doughnut') {
+        return {}
+      } else {
+        return {
+          x: {
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)'
+            }
+          },
+          y: {
+            beginAtZero: true,
+            max: 100,
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)'
+            }
+          }
+        }
+      }
+    },
+    
+    getElements() {
+      if (this.localChartType === 'line') {
+        return {
+          line: {
+            tension: 0.4
+          },
+          point: {
+            radius: 4,
+            hoverRadius: 6
+          }
+        }
+      } else if (this.localChartType === 'bar') {
+        return {
+          bar: {
+            borderRadius: 4
+          }
+        }
+      }
+      return {}
+    },
+    
+    getDatasetAverage(dataset) {
+      if (!dataset.data || dataset.data.length === 0) return 0
+      const sum = dataset.data.reduce((acc, val) => acc + val, 0)
+      return (sum / dataset.data.length).toFixed(1)
+    },
+    
+    // Méthodes publiques pour les mises à jour externes
+    updateData(newData) {
+      this.updateChartData(newData)
+    },
+    
+    addDataset(dataset) {
+      if (this.chart) {
+        this.chart.data.datasets.push(dataset)
+        this.chart.update()
+      }
+    },
+    
+    removeDataset(index) {
+      if (this.chart && this.chart.data.datasets[index]) {
+        this.chart.data.datasets.splice(index, 1)
+        this.chart.update()
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+.performance-chart {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.chart-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.chart-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chart-type-select,
+.time-range-select {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background-color: white;
+  color: #374151;
+}
+
+.chart-type-select:focus,
+.time-range-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.chart-container {
+  position: relative;
+  height: v-bind(height);
+  margin-bottom: 1rem;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legend-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.legend-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+@media (max-width: 768px) {
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .chart-controls {
+    width: 100%;
+  }
+  
+  .chart-type-select,
+  .time-range-select {
+    flex: 1;
+  }
+}
+</style> 

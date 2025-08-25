@@ -1,0 +1,126 @@
+{
+  "timestamp": "2025-07-23T15:26:55.157Z",
+  "fixedCount": 24,
+  "fixedKeys": [
+    {
+      "path": "rpm.rpm.sessionsListComponent",
+      "from": "Composant SessionsList - En cours de développement",
+      "to": "SessionsList Component - Under development"
+    },
+    {
+      "path": "rpm.rpm.sessionDetailComponent",
+      "from": "Composant SessionDetail - En cours de développement",
+      "to": "SessionDetail Component - Under development"
+    },
+    {
+      "path": "rpm.rpm.sessionAttendanceComponent",
+      "from": "Composant SessionAttendance - En cours de développement",
+      "to": "SessionAttendance Component - Under development"
+    },
+    {
+      "path": "rpm.rpm.syncComponent",
+      "from": "Composant RPMSync - En cours de développement",
+      "to": "RPMSync Component - Under development"
+    },
+    {
+      "path": "rpm.rpm.settingsComponent",
+      "from": "Composant RPMSettings - En cours de développement",
+      "to": "RPMSettings Component - Under development"
+    },
+    {
+      "path": "rpm.rpm.reportsComponent",
+      "from": "Composant RPMReports - En cours de développement",
+      "to": "RPMReports Component - Under development"
+    },
+    {
+      "path": "dtn.dtn.selectionPlayersComponent",
+      "from": "Composant SelectionPlayers - En cours de développement",
+      "to": "SelectionPlayers Component - Under development"
+    },
+    {
+      "path": "dtn.dtn.selectionFormComponent",
+      "from": "Composant SelectionForm - En cours de développement",
+      "to": "SelectionForm Component - Under development"
+    },
+    {
+      "path": "dtn.dtn.selectionDetailComponent",
+      "from": "Composant SelectionDetail - En cours de développement",
+      "to": "SelectionDetail Component - Under development"
+    },
+    {
+      "path": "dtn.dtn.nationalityLabel",
+      "from": "Nationalité:",
+      "to": "Nationality:"
+    },
+    {
+      "path": "referee.referee.matchSheet",
+      "from": "Feuille de match",
+      "to": "Match sheet"
+    },
+    {
+      "path": "referee.referee.matchEvents",
+      "from": "Événements du match",
+      "to": "Match events"
+    },
+    {
+      "path": "referee.referee.matchInterval",
+      "from": "Intervalle entre matchs (jours)",
+      "to": "Interval between matches (days)"
+    },
+    {
+      "path": "player.player.loadDetailComponent",
+      "from": "Composant PlayerLoadDetail - En cours de développement",
+      "to": "PlayerLoadDetail Component - Under development"
+    },
+    {
+      "path": "player.player.joueur",
+      "from": "Joueur",
+      "to": "Player"
+    },
+    {
+      "path": "player.player.joueurFr",
+      "from": "Joueur",
+      "to": "Player"
+    },
+    {
+      "path": "player.player.joueurFr2",
+      "from": "Joueur",
+      "to": "Player"
+    },
+    {
+      "path": "player.player.joueurRequired",
+      "from": "Joueur *",
+      "to": "Player *"
+    },
+    {
+      "path": "player.player.eligiblePlayers",
+      "from": "Joueurs Éligibles",
+      "to": "Eligible Players"
+    },
+    {
+      "path": "player.player.joueurFr3",
+      "from": "Joueur",
+      "to": "Player"
+    },
+    {
+      "path": "player.player.joueurFr4",
+      "from": "Joueur",
+      "to": "Player"
+    },
+    {
+      "path": "common.common.matchesListComponent",
+      "from": "Composant MatchesList - En cours de développement",
+      "to": "MatchesList Component - Under development"
+    },
+    {
+      "path": "common.common.matchDetailComponent",
+      "from": "Composant MatchDetail - En cours de développement",
+      "to": "MatchDetail Component - Under development"
+    },
+    {
+      "path": "common.common.teamDetailComponent",
+      "from": "Composant TeamDetail - En cours de développement",
+      "to": "TeamDetail Component - Under development"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+<x-app-layout><div id="dtn-teams"></div></x-app-layout>

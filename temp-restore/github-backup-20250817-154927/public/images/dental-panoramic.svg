@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="200" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Title -->
+  <text x="200" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b">Panoramique Dentaire</text>
+  
+  <!-- Jaw outline -->
+  <path d="M 50 80 Q 100 60 150 70 Q 200 80 250 70 Q 300 60 350 80 Q 360 100 350 120 Q 300 140 250 130 Q 200 120 150 130 Q 100 140 50 120 Q 40 100 50 80 Z" 
+        fill="none" stroke="#64748b" stroke-width="2"/>
+  
+  <!-- Teeth -->
+  <!-- Upper teeth -->
+  <g fill="#f1f5f9" stroke="#94a3b8" stroke-width="1">
+    <!-- Upper right molars -->
+    <rect x="320" y="75" width="8" height="12" rx="1"/>
+    <rect x="310" y="75" width="8" height="12" rx="1"/>
+    <rect x="300" y="75" width="8" height="12" rx="1"/>
+    
+    <!-- Upper right premolars -->
+    <rect x="285" y="75" width="8" height="12" rx="1"/>
+    <rect x="275" y="75" width="8" height="12" rx="1"/>
+    
+    <!-- Upper right canine -->
+    <rect x="265" y="75" width="6" height="12" rx="1"/>
+    
+    <!-- Upper right incisors -->
+    <rect x="255" y="75" width="6" height="12" rx="1"/>
+    <rect x="245" y="75" width="6" height="12" rx="1"/>
+    <rect x="235" y="75" width="6" height="12" rx="1"/>
+    <rect x="225" y="75" width="6" height="12" rx="1"/>
+    
+    <!-- Upper left incisors -->
+    <rect x="175" y="75" width="6" height="12" rx="1"/>
+    <rect x="165" y="75" width="6" height="12" rx="1"/>
+    <rect x="155" y="75" width="6" height="12" rx="1"/>
+    <rect x="145" y="75" width="6" height="12" rx="1"/>
+    
+    <!-- Upper left canine -->
+    <rect x="135" y="75" width="6" height="12" rx="1"/>
+    
+    <!-- Upper left premolars -->
+    <rect x="125" y="75" width="8" height="12" rx="1"/>
+    <rect x="115" y="75" width="8" height="12" rx="1"/>
+    
+    <!-- Upper left molars -->
+    <rect x="100" y="75" width="8" height="12" rx="1"/>
+    <rect x="90" y="75" width="8" height="12" rx="1"/>
+    <rect x="80" y="75" width="8" height="12" rx="1"/>
+  </g>
+  
+  <!-- Lower teeth -->
+  <g fill="#f1f5f9" stroke="#94a3b8" stroke-width="1">
+    <!-- Lower right molars -->
+    <rect x="320" y="113" width="8" height="12" rx="1"/>
+    <rect x="310" y="113" width="8" height="12" rx="1"/>
+    <rect x="300" y="113" width="8" height="12" rx="1"/>
+    
+    <!-- Lower right premolars -->
+    <rect x="285" y="113" width="8" height="12" rx="1"/>
+    <rect x="275" y="113" width="8" height="12" rx="1"/>
+    
+    <!-- Lower right canine -->
+    <rect x="265" y="113" width="6" height="12" rx="1"/>
+    
+    <!-- Lower right incisors -->
+    <rect x="255" y="113" width="6" height="12" rx="1"/>
+    <rect x="245" y="113" width="6" height="12" rx="1"/>
+    <rect x="235" y="113" width="6" height="12" rx="1"/>
+    <rect x="225" y="113" width="6" height="12" rx="1"/>
+    
+    <!-- Lower left incisors -->
+    <rect x="175" y="113" width="6" height="12" rx="1"/>
+    <rect x="165" y="113" width="6" height="12" rx="1"/>
+    <rect x="155" y="113" width="6" height="12" rx="1"/>
+    <rect x="145" y="113" width="6" height="12" rx="1"/>
+    
+    <!-- Lower left canine -->
+    <rect x="135" y="113" width="6" height="12" rx="1"/>
+    
+    <!-- Lower left premolars -->
+    <rect x="125" y="113" width="8" height="12" rx="1"/>
+    <rect x="115" y="113" width="8" height="12" rx="1"/>
+    
+    <!-- Lower left molars -->
+    <rect x="100" y="113" width="8" height="12" rx="1"/>
+    <rect x="90" y="113" width="8" height="12" rx="1"/>
+    <rect x="80" y="113" width="8" height="12" rx="1"/>
+  </g>
+  
+  <!-- Wisdom teeth (partially visible) -->
+  <g fill="#e2e8f0" stroke="#94a3b8" stroke-width="1">
+    <rect x="330" y="75" width="6" height="12" rx="1"/>
+    <rect x="330" y="113" width="6" height="12" rx="1"/>
+    <rect x="70" y="75" width="6" height="12" rx="1"/>
+    <rect x="70" y="113" width="6" height="12" rx="1"/>
+  </g>
+  
+  <!-- Dental fillings (some teeth have fillings) -->
+  <g fill="#fbbf24">
+    <circle cx="245" cy="81" r="1.5"/>
+    <circle cx="235" cy="81" r="1.5"/>
+    <circle cx="165" cy="81" r="1.5"/>
+    <circle cx="155" cy="81" r="1.5"/>
+    <circle cx="245" cy="119" r="1.5"/>
+    <circle cx="235" cy="119" r="1.5"/>
+    <circle cx="165" cy="119" r="1.5"/>
+    <circle cx="155" cy="119" r="1.5"/>
+  </g>
+  
+  <!-- Labels -->
+  <text x="200" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Vue Panoramique</text>
+  <text x="200" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#94a3b8">Dents du haut et du bas</text>
+  
+  <!-- Scale indicator -->
+  <line x1="50" y1="180" x2="90" y2="180" stroke="#64748b" stroke-width="1"/>
+  <text x="70" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#64748b">4cm</text>
+</svg> 

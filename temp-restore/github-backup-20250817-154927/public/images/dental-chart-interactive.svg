@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" style="background: #f8fafc;">
+  <defs>
+    <style>
+      .tooth {
+        fill: transparent;
+        stroke: #3b82f6;
+        stroke-width: 2;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .tooth:hover {
+        fill: rgba(59, 130, 246, 0.3);
+        stroke: #1d4ed8;
+        stroke-width: 3;
+        cursor: pointer;
+      }
+      .tooth.selected {
+        fill: rgba(59, 130, 246, 0.6);
+        stroke: #1d4ed8;
+        stroke-width: 4;
+        cursor: pointer;
+      }
+      .tooth-number {
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        font-weight: bold;
+        fill: #1f2937;
+        text-anchor: middle;
+        pointer-events: none;
+      }
+      .dental-image {
+        opacity: 0.8;
+      }
+    </style>
+  </defs>
+  
+  <!-- Image de référence en arrière-plan -->
+  <image href="/images/dental-reference.jpg" x="50" y="30" width="700" height="320" class="dental-image"/>
+  
+  <!-- Titre -->
+  <text x="400" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#1f2937">
+    Diagramme Dentaire Interactif - Notation FDI
+  </text>
+  
+  <!-- Dents supérieures (quadrants 1 et 2) -->
+  <!-- Quadrant 1 (droite supérieure) -->
+  <g id="quadrant-1">
+    <!-- Dent 11 -->
+    <path class="tooth" data-tooth-id="11" d="M 350 100 L 370 100 L 370 120 L 350 120 Z"/>
+    <text class="tooth-number" x="360" y="113">11</text>
+    
+    <!-- Dent 12 -->
+    <path class="tooth" data-tooth-id="12" d="M 320 100 L 340 100 L 340 120 L 320 120 Z"/>
+    <text class="tooth-number" x="330" y="113">12</text>
+    
+    <!-- Dent 13 -->
+    <path class="tooth" data-tooth-id="13" d="M 290 100 L 310 100 L 310 120 L 290 120 Z"/>
+    <text class="tooth-number" x="300" y="113">13</text>
+    
+    <!-- Dent 14 -->
+    <path class="tooth" data-tooth-id="14" d="M 260 100 L 280 100 L 280 120 L 260 120 Z"/>
+    <text class="tooth-number" x="270" y="113">14</text>
+    
+    <!-- Dent 15 -->
+    <path class="tooth" data-tooth-id="15" d="M 230 100 L 250 100 L 250 120 L 230 120 Z"/>
+    <text class="tooth-number" x="240" y="113">15</text>
+    
+    <!-- Dent 16 -->
+    <path class="tooth" data-tooth-id="16" d="M 200 100 L 220 100 L 220 120 L 200 120 Z"/>
+    <text class="tooth-number" x="210" y="113">16</text>
+    
+    <!-- Dent 17 -->
+    <path class="tooth" data-tooth-id="17" d="M 170 100 L 190 100 L 190 120 L 170 120 Z"/>
+    <text class="tooth-number" x="180" y="113">17</text>
+    
+    <!-- Dent 18 -->
+    <path class="tooth" data-tooth-id="18" d="M 140 100 L 160 100 L 160 120 L 140 120 Z"/>
+    <text class="tooth-number" x="150" y="113">18</text>
+  </g>
+  
+  <!-- Quadrant 2 (gauche supérieure) -->
+  <g id="quadrant-2">
+    <!-- Dent 21 -->
+    <path class="tooth" data-tooth-id="21" d="M 430 100 L 450 100 L 450 120 L 430 120 Z"/>
+    <text class="tooth-number" x="440" y="113">21</text>
+    
+    <!-- Dent 22 -->
+    <path class="tooth" data-tooth-id="22" d="M 460 100 L 480 100 L 480 120 L 460 120 Z"/>
+    <text class="tooth-number" x="470" y="113">22</text>
+    
+    <!-- Dent 23 -->
+    <path class="tooth" data-tooth-id="23" d="M 490 100 L 510 100 L 510 120 L 490 120 Z"/>
+    <text class="tooth-number" x="500" y="113">23</text>
+    
+    <!-- Dent 24 -->
+    <path class="tooth" data-tooth-id="24" d="M 520 100 L 540 100 L 540 120 L 520 120 Z"/>
+    <text class="tooth-number" x="530" y="113">24</text>
+    
+    <!-- Dent 25 -->
+    <path class="tooth" data-tooth-id="25" d="M 550 100 L 570 100 L 570 120 L 550 120 Z"/>
+    <text class="tooth-number" x="560" y="113">25</text>
+    
+    <!-- Dent 26 -->
+    <path class="tooth" data-tooth-id="26" d="M 580 100 L 600 100 L 600 120 L 580 120 Z"/>
+    <text class="tooth-number" x="590" y="113">26</text>
+    
+    <!-- Dent 27 -->
+    <path class="tooth" data-tooth-id="27" d="M 610 100 L 630 100 L 630 120 L 610 120 Z"/>
+    <text class="tooth-number" x="620" y="113">27</text>
+    
+    <!-- Dent 28 -->
+    <path class="tooth" data-tooth-id="28" d="M 640 100 L 660 100 L 660 120 L 640 120 Z"/>
+    <text class="tooth-number" x="650" y="113">28</text>
+  </g>
+  
+  <!-- Dents inférieures (quadrants 3 et 4) -->
+  <!-- Quadrant 3 (gauche inférieure) -->
+  <g id="quadrant-3">
+    <!-- Dent 31 -->
+    <path class="tooth" data-tooth-id="31" d="M 430 280 L 450 280 L 450 300 L 430 300 Z"/>
+    <text class="tooth-number" x="440" y="293">31</text>
+    
+    <!-- Dent 32 -->
+    <path class="tooth" data-tooth-id="32" d="M 460 280 L 480 280 L 480 300 L 460 300 Z"/>
+    <text class="tooth-number" x="470" y="293">32</text>
+    
+    <!-- Dent 33 -->
+    <path class="tooth" data-tooth-id="33" d="M 490 280 L 510 280 L 510 300 L 490 300 Z"/>
+    <text class="tooth-number" x="500" y="293">33</text>
+    
+    <!-- Dent 34 -->
+    <path class="tooth" data-tooth-id="34" d="M 520 280 L 540 280 L 540 300 L 520 300 Z"/>
+    <text class="tooth-number" x="530" y="293">34</text>
+    
+    <!-- Dent 35 -->
+    <path class="tooth" data-tooth-id="35" d="M 550 280 L 570 280 L 570 300 L 550 300 Z"/>
+    <text class="tooth-number" x="560" y="293">35</text>
+    
+    <!-- Dent 36 -->
+    <path class="tooth" data-tooth-id="36" d="M 580 280 L 600 280 L 600 300 L 580 300 Z"/>
+    <text class="tooth-number" x="590" y="293">36</text>
+    
+    <!-- Dent 37 -->
+    <path class="tooth" data-tooth-id="37" d="M 610 280 L 630 280 L 630 300 L 610 300 Z"/>
+    <text class="tooth-number" x="620" y="293">37</text>
+    
+    <!-- Dent 38 -->
+    <path class="tooth" data-tooth-id="38" d="M 640 280 L 660 280 L 660 300 L 640 300 Z"/>
+    <text class="tooth-number" x="650" y="293">38</text>
+  </g>
+  
+  <!-- Quadrant 4 (droite inférieure) -->
+  <g id="quadrant-4">
+    <!-- Dent 41 -->
+    <path class="tooth" data-tooth-id="41" d="M 350 280 L 370 280 L 370 300 L 350 300 Z"/>
+    <text class="tooth-number" x="360" y="293">41</text>
+    
+    <!-- Dent 42 -->
+    <path class="tooth" data-tooth-id="42" d="M 320 280 L 340 280 L 340 300 L 320 300 Z"/>
+    <text class="tooth-number" x="330" y="293">42</text>
+    
+    <!-- Dent 43 -->
+    <path class="tooth" data-tooth-id="43" d="M 290 280 L 310 280 L 310 300 L 290 300 Z"/>
+    <text class="tooth-number" x="300" y="293">43</text>
+    
+    <!-- Dent 44 -->
+    <path class="tooth" data-tooth-id="44" d="M 260 280 L 280 280 L 280 300 L 260 300 Z"/>
+    <text class="tooth-number" x="270" y="293">44</text>
+    
+    <!-- Dent 45 -->
+    <path class="tooth" data-tooth-id="45" d="M 230 280 L 250 280 L 250 300 L 230 300 Z"/>
+    <text class="tooth-number" x="240" y="293">45</text>
+    
+    <!-- Dent 46 -->
+    <path class="tooth" data-tooth-id="46" d="M 200 280 L 220 280 L 220 300 L 200 300 Z"/>
+    <text class="tooth-number" x="210" y="293">46</text>
+    
+    <!-- Dent 47 -->
+    <path class="tooth" data-tooth-id="47" d="M 170 280 L 190 280 L 190 300 L 170 300 Z"/>
+    <text class="tooth-number" x="180" y="293">47</text>
+    
+    <!-- Dent 48 -->
+    <path class="tooth" data-tooth-id="48" d="M 140 280 L 160 280 L 160 300 L 140 300 Z"/>
+    <text class="tooth-number" x="150" y="293">48</text>
+  </g>
+  
+  <!-- Légende -->
+  <g id="legend" transform="translate(50, 350)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1f2937">Légende :</text>
+    <text x="0" y="15" font-family="Arial, sans-serif" font-size="10" fill="#6b7280">• Cliquez sur une dent pour la sélectionner</text>
+    <text x="0" y="28" font-family="Arial, sans-serif" font-size="10" fill="#6b7280">• Notation FDI : Quadrant + Position (ex: 11 = quadrant 1, position 1)</text>
+  </g>
+  
+  <!-- JavaScript supprimé pour éviter les conflits avec Vue.js -->
+  <!-- L'interactivité est gérée par Vue.js dans le formulaire principal -->
+</svg> 

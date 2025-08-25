@@ -1,0 +1,325 @@
+<template>
+  <div class="modal-overlay" @click="$emit('close')">
+    <div class="modal-content" @click.stop>
+      <div class="modal-header">
+        <h3 class="text-xl font-bold">
+          {{ $t('auto.key1') }}
+        </h3>
+        <button @click="$emit('close')" class="close-btn">
+          {{ $t('auto.key2') }}
+        </button>
+      </div>
+
+      <form @submit.prevent="submitForm" class="space-y-4">
+        <!-- Matchday -->
+        <div>
+          <label class="block text-sm font-medium mb-2">Journée</label>
+          <input
+            {{ $t('auto.key3') }}
+            {{ $t('auto.key4') }}
+            {{ $t('auto.key5') }}
+            {{ $t('auto.key6') }}
+            {{ $t('auto.key7') }}
+            :disabled="editingMatch"
+          />
+        </div>
+
+        <!-- Home Team -->
+        <div>
+          <label class="block text-sm font-medium mb-2">Équipe à domicile</label>
+          <select
+            {{ $t('auto.key8') }}
+            {{ $t('auto.key6') }}
+            {{ $t('auto.key7') }}
+          >
+            <option value="">Sélectionner une équipe</option>
+            <option
+              {{ $t('auto.key11') }}
+              :key="team.id"
+              :value="team.id"
+            >
+              {{ $t('auto.key12') }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Away Team -->
+        <div>
+          <label class="block text-sm font-medium mb-2">Équipe à l'extérieur</label>
+          <select
+            {{ $t('auto.key13') }}
+            {{ $t('auto.key6') }}
+            {{ $t('auto.key7') }}
+          >
+            <option value="">Sélectionner une équipe</option>
+            <option
+              {{ $t('auto.key16') }}
+              :key="team.id"
+              :value="team.id"
+            >
+              {{ $t('auto.key12') }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Date and Time -->
+        <div>
+          <label class="block text-sm font-medium mb-2">Date et heure</label>
+          <input
+            {{ $t('auto.key18') }}
+            {{ $t('auto.key19') }}
+            {{ $t('auto.key6') }}
+            {{ $t('auto.key7') }}
+          />
+        </div>
+
+        <!-- Venue -->
+        <div>
+          <label class="block text-sm font-medium mb-2">Terrain</label>
+          <select
+            {{ $t('auto.key22') }}
+            {{ $t('auto.key7') }}
+          >
+            <option value="">Sélectionner un terrain</option>
+            <option
+              {{ $t('auto.key24') }}
+              :key="venue"
+              :value="venue"
+            >
+              {{ $t('auto.key25') }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Error Messages -->
+        <div v-if="errors.length > 0" class="error-messages">
+          <div
+            {{ $t('auto.key26') }}
+            :key="error"
+            {{ $t('auto.key27') }}
+          >
+            {{ $t('auto.key28') }}
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex gap-4 pt-4">
+          <button
+            {{ $t('auto.key29') }}
+            :disabled="isSubmitting"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          >
+            <span v-if="isSubmitting">Enregistrement...</span>
+            <span v-else>{{ editingMatch ? 'Modifier' : 'Enregistrer' }}</span>
+          </button>
+          <button
+            {{ $t('auto.key30') }}
+            @click="$emit('close')"
+            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+          >
+            {{ $t('auto.key31') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, computed, onMounted, watch } from 'vue'
+import axios from 'axios'
+
+export default {
+  name: 'AddMatchModal',
+  props: {
+    competition: {
+      type: Object,
+      {{ $t('auto.key6') }}: true
+    },
+    matchday: {
+      type: Number,
+      {{ $t('auto.key6') }}: true
+    },
+    match: {
+      type: Object,
+      default: null
+    },
+    venues: {
+      type: Array,
+      default: () => []
+    },
+    teams: {
+      type: Array,
+      default: () => []
+    }
+  },
+  emits: ['close', 'match-created', 'match-updated'],
+  setup(props, { emit }) {
+    const form = ref({
+      matchday: props.matchday,
+      home_team_id: '',
+      away_team_id: '',
+      scheduled_at: '',
+      venue: ''
+    })
+    
+    const errors = ref([])
+    const isSubmitting = ref(false)
+
+    const editingMatch = computed(() => props.match)
+
+    const availableHomeTeams = computed(() => {
+      return props.teams.filter(team => team.id !== form.value.away_team_id)
+    })
+
+    const availableAwayTeams = computed(() => {
+      return props.teams.filter(team => team.id !== form.value.home_team_id)
+    })
+
+    const initializeForm = () => {
+      if (editingMatch.value) {
+        // Editing existing match
+        form.value = {
+          matchday: editingMatch.value.matchday,
+          home_team_id: editingMatch.value.home_team.id,
+          away_team_id: editingMatch.value.away_team.id,
+          scheduled_at: formatDateTimeForInput(editingMatch.value.scheduled_at),
+          venue: editingMatch.value.venue || ''
+        }
+      } else {
+        // Creating new match
+        form.value = {
+          matchday: props.matchday,
+          home_team_id: '',
+          away_team_id: '',
+          scheduled_at: '',
+          venue: ''
+        }
+      }
+      errors.value = []
+    }
+
+    const formatDateTimeForInput = (dateString) => {
+      const date = new Date(dateString)
+      return date.toISOString().slice(0, 16)
+    }
+
+    const validateForm = () => {
+      errors.value = []
+
+      if (form.value.home_team_id === form.value.away_team_id) {
+        errors.value.push('Une équipe ne peut pas jouer contre elle-même.')
+      }
+
+      if (!form.value.scheduled_at) {
+        errors.value.push('La date et l\'heure sont requises.')
+      } else {
+        const selectedDate = new Date(form.value.scheduled_at)
+        const now = new Date()
+        if (selectedDate <= now) {
+          errors.value.push('La date et l\'heure doivent être dans le futur.')
+        }
+      }
+
+      return errors.value.length === 0
+    }
+
+    const submitForm = async () => {
+      if (!validateForm()) {
+        return
+      }
+
+      isSubmitting.value = true
+      errors.value = []
+
+      try {
+        if (editingMatch.value) {
+          // Update existing match
+          const response = await axios.put(
+            `/api/calendar/matches/${editingMatch.value.id}`,
+            form.value
+          )
+          emit('match-updated', response.data.data)
+        } else {
+          // Create new match
+          const response = await axios.post(
+            `/api/calendar/competitions/${props.competition.id}/matches/validate-and-create`,
+            form.value
+          )
+          emit('match-created', response.data.data)
+        }
+      } catch (error) {
+        console.error('Form submission failed:', error)
+        
+        if (error.response?.status === 422) {
+          const errorData = error.response.data
+          if (errorData.message) {
+            errors.value.push(errorData.message)
+          }
+          if (errorData.errors) {
+            Object.values(errorData.errors).forEach(errorArray => {
+              errors.value.push(...errorArray)
+            })
+          }
+        } else {
+          errors.value.push('Une erreur est survenue lors de l\'enregistrement.')
+        }
+      } finally {
+        isSubmitting.value = false
+      }
+    }
+
+    // Watch for changes in matchday prop
+    watch(() => props.matchday, (newMatchday) => {
+      if (!editingMatch.value) {
+        form.value.matchday = newMatchday
+      }
+    })
+
+    // Watch for changes in match prop
+    watch(() => props.match, () => {
+      initializeForm()
+    }, { immediate: true })
+
+    onMounted(() => {
+      initializeForm()
+    })
+
+    return {
+      form,
+      errors,
+      isSubmitting,
+      editingMatch,
+      availableHomeTeams,
+      availableAwayTeams,
+      submitForm
+    }
+  }
+}
+</script>
+
+<style scoped>
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto;
+}
+
+.modal-header {
+  @apply flex justify-between items-center mb-4 pb-2 border-b;
+}
+
+.close-btn {
+  @apply text-2xl text-gray-500 hover:text-gray-700 cursor-pointer;
+}
+
+.error-messages {
+  @apply space-y-2;
+}
+
+.error-message {
+  @apply text-red-600 text-sm bg-red-50 p-2 rounded border border-red-200;
+}
+</style> 

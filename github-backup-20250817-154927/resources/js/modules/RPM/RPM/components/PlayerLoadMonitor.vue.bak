@@ -1,0 +1,6 @@
+<template>
+    <div class="p-4">Player Load Monitor (RPM)</div>
+</template>
+<script>
+export default { name: "PlayerLoadMonitor" };
+</script>

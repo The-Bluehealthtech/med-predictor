@@ -65,6 +65,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\CleanupEplFirstTeams::class,
+        \App\Console\Commands\ProjectDbAudit::class,
     ];
 
     /**

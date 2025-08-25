@@ -1,0 +1,43 @@
+<template>
+    <div
+        style="
+            background: red;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            text-align: center;
+        "
+    >
+        <h1>🔴 DEBUG VUE.JS</h1>
+        <p>Si vous voyez ce message rouge, Vue.js fonctionne !</p>
+        <p>Compteur: {{ count }}</p>
+        <button
+            @click="count++"
+            style="
+                background: white;
+                color: red;
+                padding: 10px;
+                border: none;
+                font-size: 18px;
+                cursor: pointer;
+            "
+        >
+            CLICK ME
+        </button>
+    </div>
+</template>
+
+<script>
+export default {
+    name: "DebugTest",
+    data() {
+        return {
+            count: 0,
+        };
+    },
+    mounted() {
+        console.log("🔴 DebugTest component mounted!");
+        alert("Vue.js fonctionne ! Composant DebugTest monté.");
+    },
+};
+</script>

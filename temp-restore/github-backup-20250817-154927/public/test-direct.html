@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Direct</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .working { background: green; color: white; padding: 20px; }
+        .broken { background: red; color: white; padding: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Test Vue.js Direct</h1>
+    
+    <!-- Test si Vue.js charge -->
+    <div id="test1" class="broken">
+        <h2>Test 1: Vue disponible?</h2>
+        <p id="vue-check">Vue.js non détecté</p>
+    </div>
+    
+    <!-- Test Vue.js simple -->
+    <div id="test2" class="broken">
+        <h2>Test 2: Vue.js simple</h2>
+        <p>{{ message }}</p>
+        <button @click="click">Click</button>
+    </div>
+    
+    <script>
+        // Test 1: Vérifier si Vue est disponible
+        if (typeof Vue !== 'undefined') {
+            document.getElementById('vue-check').textContent = 'Vue.js détecté!';
+            document.getElementById('test1').className = 'working';
+        }
+        
+        // Test 2: Monter Vue.js simple
+        if (typeof Vue !== 'undefined') {
+            try {
+                const { createApp } = Vue;
+                createApp({
+                    data() {
+                        return {
+                            message: 'Vue.js fonctionne!'
+                        }
+                    },
+                    methods: {
+                        click() {
+                            this.message = 'Cliqué!';
+                        }
+                    },
+                    mounted() {
+                        console.log('Vue test mounted');
+                        document.getElementById('test2').className = 'working';
+                    }
+                }).mount('#test2');
+            } catch (e) {
+                console.error('Erreur Vue:', e);
+            }
+        }
+    </script>
+</body>
+</html>

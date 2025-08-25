@@ -1,0 +1,6 @@
+<template>
+    <div class="p-4">National Teams management (DTN)</div>
+</template>
+<script>
+export default { name: "NationalTeams" };
+</script>

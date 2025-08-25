@@ -1,0 +1,266 @@
+<template>
+  <div class="modal-overlay" @click="closeModal">
+    <div class="modal-content" @click.stop>
+      <div class="modal-header">
+        <h5 class="modal-title">{{ $t('auto.key286') }}</h5>
+        <button @click="closeModal" class="btn-close" aria-label="Close"></button>
+      </div>
+      
+      <form @submit.prevent="createPlayer">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="first_name" class="form-label">{{ $t('auto.key287') }}</label>
+                <input 
+                  type="text" 
+                  v-model="form.first_name" 
+                  class="form-control" 
+                  required
+                  :disabled="loading"
+                >
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="last_name" class="form-label">{{ $t('auto.key288') }}</label>
+                <input 
+                  type="text" 
+                  v-model="form.last_name" 
+                  class="form-control" 
+                  required
+                  :disabled="loading"
+                >
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="email" class="form-label">{{ $t('auto.key289') }}</label>
+                <input 
+                  type="email" 
+                  v-model="form.email" 
+                  class="form-control" 
+                  required
+                  :disabled="loading"
+                >
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="phone" class="form-label">{{ $t('auto.key290') }}</label>
+                <input 
+                  type="tel" 
+                  v-model="form.phone" 
+                  class="form-control"
+                  :disabled="loading"
+                >
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="date_of_birth" class="form-label">{{ $t('auto.key291') }}</label>
+                <input 
+                  type="date" 
+                  v-model="form.date_of_birth" 
+                  class="form-control" 
+                  required
+                  :disabled="loading"
+                >
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="nationality" class="form-label">{{ $t('auto.key292') }}</label>
+                <input 
+                  type="text" 
+                  v-model="form.nationality" 
+                  class="form-control"
+                  :disabled="loading"
+                >
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="position" class="form-label">{{ $t('auto.key293') }}</label>
+                <select v-model="form.position" class="form-select" :disabled="loading">
+                  <option value="">{{ $t('auto.key294') }}</option>
+                  <option value="Goalkeeper">{{ $t('auto.key295') }}</option>
+                  <option value="Defender">{{ $t('auto.key296') }}</option>
+                  <option value="Midfielder">{{ $t('auto.key297') }}</option>
+                  <option value="Forward">{{ $t('auto.key298') }}</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="club_id" class="form-label">{{ $t('auto.key299') }}</label>
+                <select v-model="form.club_id" class="form-select" :disabled="loading">
+                  <option value="">{{ $t('auto.key300') }}</option>
+                  <option v-for="club in clubs" :key="club.id" :value="club.id">
+                    {{ club.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="notes" class="form-label">{{ $t('auto.key301') }}</label>
+            <textarea 
+              v-model="form.notes" 
+              class="form-control" 
+              rows="3"
+              :disabled="loading"
+            ></textarea>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" @click="closeModal" class="btn btn-secondary" :disabled="loading">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" :disabled="loading || !isFormValid">
+            <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+            Add Player
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script>
+import apiService from '../services/ApiService.js';
+
+export default {
+  name: 'CreatePlayerModal',
+  data() {
+    return {
+      loading: false,
+      clubs: [],
+      form: {
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        date_of_birth: '',
+        nationality: '',
+        position: '',
+        club_id: '',
+        notes: ''
+      }
+    };
+  },
+  computed: {
+    isFormValid() {
+      return this.form.first_name && 
+             this.form.last_name && 
+             this.form.email && 
+             this.form.date_of_birth;
+    }
+  },
+  async mounted() {
+    await this.loadClubs();
+  },
+  methods: {
+    async loadClubs() {
+      try {
+        const response = await apiService.getClubs();
+        if (response.success) {
+          this.clubs = response.data.data || [];
+        }
+      } catch (error) {
+        console.error('Error loading clubs:', error);
+      }
+    },
+    
+    async createPlayer() {
+      if (!this.isFormValid) return;
+      
+      try {
+        this.loading = true;
+        
+        const response = await apiService.createPlayer(this.form);
+        
+        if (response.success) {
+          this.$emit('created', response.data);
+          this.closeModal();
+        } else {
+          this.$emit('error', response.error || 'Failed to create player');
+        }
+      } catch (error) {
+        console.error('Error creating player:', error);
+        this.$emit('error', error.message);
+      } finally {
+        this.loading = false;
+      }
+    },
+    
+    closeModal() {
+      this.$emit('close');
+    }
+  }
+};
+</script>
+
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.modal-footer {
+  padding: 1rem;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+</style> 

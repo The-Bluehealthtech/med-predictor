@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Dropdown Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">🧪 Simple Dropdown Test</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">🔍 Test Cardiovascular History</h3>
+            
+            <div class="relative">
+                <input type="text" 
+                       id="cardiovascular_search" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                       placeholder="Rechercher des conditions cardio-vasculaires..."
+                       autocomplete="off">
+                <div id="cardiovascular_results" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
+                <input type="hidden" id="cardiovascular_history" name="cardiovascular_history" value="">
+                <div id="cardiovascular_selected" class="mt-2 space-y-1"></div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">📊 Console Logs</h3>
+            <div id="console-logs" class="text-sm font-mono bg-black text-green-400 p-4 rounded max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simple logging
+        function log(message) {
+            console.log(message);
+            const logsDiv = document.getElementById('console-logs');
+            logsDiv.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        // Global variables
+        let searchTimeout;
+        let selectedItems = [];
+
+        // Search function
+        async function searchICD11(query, filters, resultsDiv, selectedItems, selectedDiv, hiddenInput, config) {
+            try {
+                log('🔍 Starting search for: ' + query);
+                
+                // Show loading state
+                resultsDiv.innerHTML = '<div class="p-3 text-gray-500">Recherche en cours...</div>';
+                resultsDiv.classList.remove('hidden');
+
+                // Call our proxy
+                const response = await fetch(`/api/proxy/icd11?q=${encodeURIComponent(query)}&filters=${encodeURIComponent(JSON.stringify(filters))}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                log('📡 Response status: ' + response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                log('✅ Data received: ' + JSON.stringify(data, null, 2));
+
+                if (data.success && data.results && data.results.length > 0) {
+                    // Display results
+                    resultsDiv.innerHTML = data.results.map(item => `
+                        <div class="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200" 
+                             onclick="selectItem('${item.id}', '${item.title}', 'cardiovascular_history', 'cardiovascular_selected')">
+                            <div class="font-medium">${item.title}</div>
+                            <div class="text-sm text-gray-500">${item.code}</div>
+                        </div>
+                    `).join('');
+                    
+                    log('✅ Results displayed');
+                } else {
+                    resultsDiv.innerHTML = '<div class="p-3 text-gray-500">Aucun résultat trouvé</div>';
+                    log('⚠️ No results found');
+                }
+
+            } catch (error) {
+                log('❌ Error: ' + error.message);
+                resultsDiv.innerHTML = '<div class="p-3 text-red-500">Erreur: ' + error.message + '</div>';
+            }
+        }
+
+        // Select item function
+        function selectItem(id, title, hiddenInputId, selectedDivId) {
+            log('🎯 Selecting item: ' + title);
+            
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const selectedDiv = document.getElementById(selectedDivId);
+            
+            // Add to selected items
+            selectedItems.push({ id, title });
+            
+            // Update hidden input
+            hiddenInput.value = JSON.stringify(selectedItems);
+            
+            // Update display
+            selectedDiv.innerHTML = selectedItems.map(item => `
+                <div class="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2 mb-2">
+                    <span class="text-sm">${item.title}</span>
+                    <button onclick="removeItem('${item.id}', '${hiddenInputId}', '${selectedDivId}')" 
+                            class="ml-2 text-blue-600 hover:text-blue-800">×</button>
+                </div>
+            `).join('');
+            
+            // Hide results
+            document.getElementById('cardiovascular_results').classList.add('hidden');
+            
+            log('✅ Item selected and displayed');
+        }
+
+        // Remove item function
+        function removeItem(id, hiddenInputId, selectedDivId) {
+            log('🗑️ Removing item: ' + id);
+            
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const selectedDiv = document.getElementById(selectedDivId);
+            
+            // Remove from selected items
+            selectedItems = selectedItems.filter(item => item.id !== id);
+            
+            // Update hidden input
+            hiddenInput.value = JSON.stringify(selectedItems);
+            
+            // Update display
+            selectedDiv.innerHTML = selectedItems.map(item => `
+                <div class="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2 mb-2">
+                    <span class="text-sm">${item.title}</span>
+                    <button onclick="removeItem('${item.id}', '${hiddenInputId}', '${selectedDivId}')" 
+                            class="ml-2 text-blue-600 hover:text-blue-800">×</button>
+                </div>
+            `).join('');
+            
+            log('✅ Item removed');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            log('=== PAGE LOADED ===');
+            
+            const searchInput = document.getElementById('cardiovascular_search');
+            const resultsDiv = document.getElementById('cardiovascular_results');
+            
+            if (searchInput && resultsDiv) {
+                log('✅ Elements found');
+                
+                // Add input event listener
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.trim();
+                    
+                    // Clear previous timeout
+                    if (searchTimeout) {
+                        clearTimeout(searchTimeout);
+                    }
+                    
+                    // Hide results if query is empty
+                    if (query.length === 0) {
+                        resultsDiv.classList.add('hidden');
+                        return;
+                    }
+                    
+                    // Search after 300ms delay
+                    searchTimeout = setTimeout(() => {
+                        log('🔍 Searching for: ' + query);
+                        searchICD11(query, ['cardiovascular'], resultsDiv, selectedItems, 'cardiovascular_selected', 'cardiovascular_history', {});
+                    }, 300);
+                });
+                
+                log('✅ Event listeners added');
+            } else {
+                log('❌ Elements not found');
+            }
+        });
+
+        // Hide results when clicking outside
+        document.addEventListener('click', function(e) {
+            const resultsDiv = document.getElementById('cardiovascular_results');
+            const searchInput = document.getElementById('cardiovascular_search');
+            
+            if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
+                resultsDiv.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html> 

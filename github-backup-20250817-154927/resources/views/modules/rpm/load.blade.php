@@ -1,0 +1,1 @@
+<x-app-layout><div id="rpm-load"></div></x-app-layout>

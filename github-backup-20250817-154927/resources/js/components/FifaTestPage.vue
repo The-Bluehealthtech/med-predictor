@@ -1,0 +1,237 @@
+<template>
+    <div class="fifa-test-page">
+        <div class="fifa-container">
+            <h1 class="fifa-title">{{ $t('auto.key202') }}</h1>
+
+            <!-- Test des couleurs FIFA -->
+            <FifaCard class="mb-6">
+                <template #header>
+                    <h3 class="fifa-card-title">{{ $t('auto.key203') }}</h3>
+                </template>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="fifa-color-swatch fifa-primary">Primary</div>
+                    <div class="fifa-color-swatch fifa-secondary">
+                        Secondary
+                    </div>
+                    <div class="fifa-color-swatch fifa-accent">Accent</div>
+                    <div class="fifa-color-swatch fifa-neutral">Neutral</div>
+                </div>
+            </FifaCard>
+
+            <!-- Test des boutons -->
+            <FifaCard class="mb-6">
+            <template>
+                    <h3 class="fifa-card-title">{{ $t('auto.key204') }}</h3>
+                </template>ate>
+                <div class="flex flex-wrap gap-4">
+                    <FifaButton variant="primary">Primary</FifaButton>
+                    <FifaButton variant="secondary">Secondary</FifaButton>
+                    <FifaButton variant="accent">Accent</FifaButton>
+                    <FifaButton variant="outline">Outline</FifaButton>
+                    <FifaButton variant="ghost">Ghost</FifaButton>
+                </div>
+            </FifaCard>
+
+            <!-- Test des cartes -->
+            <FifaCard class="mb-6">
+            <template>
+                    <h3 class="fifa-card-title">{{ $t('auto.key205') }}</h3>
+                </template>ate>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FifaCard variant="elevated">
+                   <template>
+                            <h4 class="fifa-card-title">{{ $t('auto.key206') }}</h4>
+                        </template>late>
+                        <p class="fifa-text">
+                            Cette carte a un effet d'élévation avec ombre
+                            portée.
+                        </p>
+                    </FifaCard>
+
+                    <FifaCard variant="bordered">
+                <template>
+                            <h4 class="fifa-card-title">{{ $t('auto.key207') }}</h4>
+                        </template>emplate>
+                        <p class="fifa-text">
+                            Cette carte a une bordure FIFA distinctive.
+                        </p>
+                    </FifaCard>
+                </div>
+            </FifaCard>
+
+            <!-- Test de la navigation -->
+            <FifaCard class="mb-6">
+     <template>
+                    <h3 class="fifa-card-title">{{ $t('auto.key208') }}</h3>
+                </template></template>
+                <div class="fifa-nav-preview">
+                    <div class="fifa-nav-item active">
+                        <svg
+                            class="fifa-nav-icon"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+                            />
+                        </svg>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="fifa-nav-item">
+                        <svg
+                            class="fifa-nav-icon"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"
+                            />
+                        </svg>
+                        <span>Joueurs</span>
+                    </div>
+                </div>
+            </FifaCard>
+
+            <!-- Test des animations -->
+            <FifaCard class="mb-6">
+        <template>
+                    <h3 class="fifa-card-title">{{ $t('auto.key209') }}</h3>
+                </template>emplate>
+                <div class="flex flex-wrap gap-4">
+                    <div class="fifa-animation-test fifa-hover-lift">
+                        Hover Lift
+                    </div>
+                    <div class="fifa-animation-test fifa-hover-glow">
+                        Hover Glow
+                    </div>
+                    <div class="fifa-animation-test fifa-pulse">Pulse</div>
+                </div>
+            </FifaCard>
+
+            <!-- Statut de l'application -->
+            <FifaCard class="mb-6">
+          <template>
+                    <h3 class="fifa-card-title">{{ $t('auto.key210') }}</h3>
+                </template>plate>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="fifa-stat">
+                        <div class="fifa-stat-value">
+                            {{ stats.components }}
+                        </div>
+                        <div class="fifa-stat-label">Composants</div>
+                    </div>
+                    <div class="fifa-stat">
+                        <div class="fifa-stat-value">{{ stats.routes }}</div>
+                        <div class="fifa-stat-label">Routes</div>
+                    </div>
+                    <div class="fifa-stat">
+                        <div class="fifa-stat-value">{{ stats.uptime }}</div>
+                        <div class="fifa-stat-label">Uptime (s)</div>
+                    </div>
+                </div>
+            </FifaCard>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import FifaCard from "./FifaCard.vue";
+import FifaButton from "./FifaButton.vue";
+
+const stats = ref({
+    components: 0,
+    routes: 0,
+    uptime: 0,
+});
+
+onMounted(() => {
+    stats.value = {
+        components: 5,
+        routes: 4,
+        uptime: Math.floor(Date.now() / 1000) % 3600,
+    };
+});
+</script>
+
+<style scoped>
+.fifa-test-page {
+    min-height: 100vh;
+    background: var(--fifa-bg-gradient);
+    padding: var(--fifa-spacing-6);
+}
+
+.fifa-color-swatch {
+    height: 60px;
+    border-radius: var(--fifa-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.fifa-nav-preview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--fifa-spacing-2);
+}
+
+.fifa-nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--fifa-spacing-3);
+    padding: var(--fifa-spacing-3);
+    border-radius: var(--fifa-radius-md);
+    background: var(--fifa-bg-card);
+    transition: var(--fifa-transition);
+    cursor: pointer;
+}
+
+.fifa-nav-item:hover {
+    background: var(--fifa-bg-hover);
+    transform: translateX(4px);
+}
+
+.fifa-nav-item.active {
+    background: var(--fifa-primary);
+    color: white;
+}
+
+.fifa-nav-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.fifa-animation-test {
+    padding: var(--fifa-spacing-4);
+    background: var(--fifa-primary);
+    color: white;
+    border-radius: var(--fifa-radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--fifa-transition);
+}
+
+.fifa-stat {
+    text-align: center;
+    padding: var(--fifa-spacing-4);
+    background: var(--fifa-bg-card);
+    border-radius: var(--fifa-radius-md);
+    border: 1px solid var(--fifa-border);
+}
+
+.fifa-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--fifa-primary);
+    margin-bottom: var(--fifa-spacing-2);
+}
+
+.fifa-stat-label {
+    font-size: 0.875rem;
+    color: var(--fifa-text-secondary);
+    font-weight: 500;
+}
+</style>

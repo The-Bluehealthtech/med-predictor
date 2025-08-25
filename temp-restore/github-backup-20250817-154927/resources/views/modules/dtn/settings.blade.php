@@ -1,0 +1,1 @@
+<x-app-layout><div id="dtn-settings"></div></x-app-layout>

@@ -1,0 +1,166 @@
+{
+  "timestamp": "2025-07-23T15:33:56.612Z",
+  "summary": {
+    "total": 26,
+    "passed": 20,
+    "failed": 6
+  },
+  "results": [
+    {
+      "key": "navigation.brand.fit",
+      "fr": "FIT",
+      "en": "FIT",
+      "status": "identical"
+    },
+    {
+      "key": "navigation.brand.intelligence",
+      "fr": "Intelligence",
+      "en": "Intelligence",
+      "status": "identical"
+    },
+    {
+      "key": "navigation.brand.football",
+      "fr": "Football",
+      "en": "Football",
+      "status": "identical"
+    },
+    {
+      "key": "navigation.brand.health",
+      "fr": "Santé",
+      "en": "Health",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.brand.fifaConnect",
+      "fr": "FIFA Connect",
+      "en": "FIFA Connect",
+      "status": "identical"
+    },
+    {
+      "key": "navigation.main.dashboard",
+      "fr": "Tableau de bord",
+      "en": "Dashboard",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.main.players",
+      "fr": "Joueurs",
+      "en": "Players",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.main.competitions",
+      "fr": "Compétitions",
+      "en": "Competitions",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.main.performance",
+      "fr": "Performance",
+      "en": "Performance",
+      "status": "identical"
+    },
+    {
+      "key": "navigation.main.medical",
+      "fr": "Médical",
+      "en": "Medical",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.main.transfers",
+      "fr": "Transferts",
+      "en": "Transfers",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.main.fifa",
+      "fr": "FIFA",
+      "en": "FIFA",
+      "status": "identical"
+    },
+    {
+      "key": "navigation.main.admin",
+      "fr": "Administration",
+      "en": "Admin",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.players.playerDashboard",
+      "fr": "Tableau de bord joueur",
+      "en": "Player Dashboard",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.players.playerRegistration",
+      "fr": "Inscription joueur",
+      "en": "Player Registration",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.competitions.leagueChampionship",
+      "fr": "Championnat de ligue",
+      "en": "League Championship",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.competitions.competitionManagement",
+      "fr": "Gestion des compétitions",
+      "en": "Competition Management",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.competitions.rankings",
+      "fr": "Classements",
+      "en": "Rankings",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.fifa.fifaSyncDashboard",
+      "fr": "Tableau de bord sync FIFA",
+      "en": "FIFA Sync Dashboard",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.fifa.fifaDashboard",
+      "fr": "Tableau de bord FIFA",
+      "en": "FIFA Dashboard",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.admin.backOffice",
+      "fr": "Bureau de gestion",
+      "en": "Back Office",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.admin.userManagement",
+      "fr": "Gestion des utilisateurs",
+      "en": "User Management",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.admin.roleManagement",
+      "fr": "Gestion des rôles",
+      "en": "Role Management",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.user.profile",
+      "fr": "Profil",
+      "en": "Profile",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.user.settings",
+      "fr": "Paramètres",
+      "en": "Settings",
+      "status": "passed"
+    },
+    {
+      "key": "navigation.dropdowns.user.logout",
+      "fr": "Déconnexion",
+      "en": "Logout",
+      "status": "passed"
+    }
+  ]
+}

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lionel Messi - FIFA Ultimate Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="fifa-app" class="min-h-screen">
+        <!-- Hero Zone -->
+        <div class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 p-8 mb-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col lg:flex-row items-center lg:items-start space-y-6 lg:space-y-0 lg:space-x-8">
+                    <!-- Photo du joueur -->
+                    <div class="relative">
+                        <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+                            <img src="https://cdn.futbin.com/content/fifa23/img/players/158023.png" 
+                                 alt="Lionel Messi" 
+                                 class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-4xl" style="display: none;">
+                                LM
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Informations du joueur -->
+                    <div class="text-center lg:text-left flex-1">
+                        <h1 class="text-3xl lg:text-4xl font-bold mb-1 text-white">Lionel Messi</h1>
+                        <div class="text-lg text-yellow-400 font-semibold mb-3">⭐ FIFA Ultimate Legend</div>
+                        
+                        <!-- Logos club et association -->
+                        <div class="flex items-center justify-center lg:justify-start space-x-4 mb-4">
+                            <div class="flex items-center space-x-2">
+                                <img src="https://logos-world.net/wp-content/uploads/2020/06/Paris-Saint-Germain-PSG-Logo.png" 
+                                     alt="Chelsea FC" 
+                                     class="w-8 h-8 object-contain">
+                                <span class="text-lg font-medium text-white">Chelsea FC</span>
+                            </div>
+                            
+                            <div class="w-px h-6 bg-white/30"></div>
+                            <div class="flex items-center space-x-2">
+                                <img src="https://flagcdn.com/w40/ar.png" 
+                                     alt="The Football Association" 
+                                     class="w-6 h-4 object-cover rounded">
+                                <span class="text-sm text-white">The Football Association</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Statistiques saison actuelle -->
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                            <div class="p-2 bg-white/10 rounded">
+                                <div class="font-bold text-green-400">12</div>
+                                <div class="opacity-70 text-white">Buts saison</div>
+                            </div>
+                            <div class="p-2 bg-white/10 rounded">
+                                <div class="font-bold text-blue-400">8</div>
+                                <div class="opacity-70 text-white">Assists</div>
+                            </div>
+                            <div class="p-2 bg-white/10 rounded">
+                                <div class="font-bold text-purple-400">28</div>
+                                <div class="opacity-70 text-white">Matchs</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ratings FIFA -->
+                    <div class="text-center">
+                        <div class="flex space-x-3 mb-2">
+                            <div class="bg-gradient-to-br from-yellow-400 to-orange-500 text-black p-4 rounded-lg shadow-lg">
+                                <div class="text-3xl font-bold">93</div>
+                                <div class="text-xs">OVR</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-yellow-400 to-orange-500 text-black p-3 rounded-lg shadow-lg">
+                                <div class="text-2xl font-bold">82</div>
+                                <div class="text-xs">POT</div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-white/90">FIFA Ultimate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation des onglets -->
+        <div class="max-w-7xl mx-auto px-4">
+            
+            <!-- Navigation des onglets -->
+            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                <button 
+                    v-for="tab in navigationTabs" 
+                    :key="tab.id"
+                    @click="changeTab(tab.id)"
+                    :class="[
+                        'px-4 py-2 rounded-lg font-medium transition-all duration-200',
+                        activeTab === tab.id 
+                            ? 'bg-blue-600 text-white shadow-lg' 
+                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    ]"
+                >
+                    <i :class="tab.icon" class="mr-2"></i>
+                    {{ tab.name }}
+                    <span v-if="tab.count" class="ml-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">
+                        {{ tab.count }}
+                    </span>
+                </button>
+            </div>
+            
+            <!-- Contenu des onglets -->
+            <div class="bg-gray-800 rounded-lg p-6 min-h-96">
+                <!-- Onglet Performance -->
+                <div v-if="activeTab === 'performance'" class="space-y-6">
+                    <h2 class="text-3xl font-bold text-blue-400 mb-6">Performance</h2>
+                    
+                    <!-- Statistiques offensives -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div v-for="stat in offensiveStats" :key="stat.name" 
+                             class="bg-gray-700 p-4 rounded-lg border-l-4 border-green-500">
+                            <h3 class="font-semibold text-green-400">{{ stat.name }}</h3>
+                            <p class="text-2xl font-bold">{{ stat.display }}</p>
+                            <div class="w-full bg-gray-600 rounded-full h-2 mt-2">
+                                <div class="bg-green-500 h-2 rounded-full" :style="{width: stat.percentage + '%'}"></div>
+                            </div>
+                            <div class="text-xs text-gray-400 mt-1">
+                                Équipe: {{ stat.teamAvg }} | Ligue: {{ stat.leagueAvg }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Statistiques physiques -->
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-4">Statistiques Physiques</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div v-for="stat in physicalStats" :key="stat.name" 
+                                 class="bg-gray-700 p-4 rounded-lg border-l-4 border-blue-500">
+                                <h3 class="font-semibold text-blue-400">{{ stat.name }}</h3>
+                                <p class="text-2xl font-bold">{{ stat.display }}</p>
+                                <div class="w-full bg-gray-600 rounded-full h-2 mt-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" :style="{width: stat.percentage + '%'}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Onglet Notifications -->
+                <div v-if="activeTab === 'notifications'" class="space-y-4">
+                    <h2 class="text-2xl font-bold text-blue-400">Notifications</h2>
+                    
+                    <!-- Filtres -->
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <button 
+                            v-for="filter in notificationFilters" 
+                            :key="filter.id"
+                            @click="filterNotifications(filter.id)"
+                            :class="[
+                                'px-4 py-2 rounded-lg font-medium transition-all duration-200',
+                                activeNotificationFilter === filter.id 
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                            ]"
+                        >
+                            <i :class="filter.icon" class="mr-2"></i>
+                            {{ filter.name }}
+                            <span class="ml-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">
+                                {{ filter.count }}
+                            </span>
+                        </button>
+                    </div>
+                    
+                    <!-- Liste des notifications -->
+                    <div class="space-y-3">
+                        <div v-for="notification in getFilteredNotifications()" :key="notification.id"
+                             class="bg-gray-700 p-4 rounded-lg border-l-4 border-blue-500">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-semibold text-lg">{{ notification.title }}</h3>
+                                    <p class="text-gray-300 mt-1">{{ notification.message }}</p>
+                                    <span class="text-sm text-gray-400 mt-2 block">{{ notification.date }}</span>
+                                </div>
+                                <span :class="[
+                                    'px-2 py-1 rounded-full text-xs font-medium',
+                                    notification.priority === 'high' ? 'bg-red-500' : 
+                                    notification.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                                ]">
+                                    {{ notification.priority === 'high' ? 'HAUTE' : 
+                                       notification.priority === 'medium' ? 'MOYENNE' : 'FAIBLE' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Onglet Santé -->
+                <div v-if="activeTab === 'health'" class="space-y-6">
+                    <h2 class="text-3xl font-bold text-blue-400 mb-6">Santé & Bien-être</h2>
+                    
+                    <!-- Scores globaux -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-green-400">Score Global</h3>
+                            <p class="text-3xl font-bold">{{ healthData.globalScore }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-blue-400">Physique</h3>
+                            <p class="text-3xl font-bold">{{ healthData.physicalScore }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-purple-400">Mental</h3>
+                            <p class="text-3xl font-bold">{{ healthData.mentalScore }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-yellow-400">Sommeil</h3>
+                            <p class="text-3xl font-bold">{{ healthData.sleepScore }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-indigo-400">Social</h3>
+                            <p class="text-3xl font-bold">{{ healthData.socialScore }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-red-400">Risque Blessure</h3>
+                            <p class="text-3xl font-bold">{{ healthData.injuryRisk }}%</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Onglet Devices -->
+                <div v-if="activeTab === 'devices'" class="space-y-6">
+                    <h2 class="text-3xl font-bold text-blue-400 mb-6">Devices</h2>
+                    
+                    <!-- Résumé -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-green-400">Appareils Connectés</h3>
+                            <p class="text-3xl font-bold">{{ deviceData.connectedDevices }}</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-blue-400">Points de Données</h3>
+                            <p class="text-3xl font-bold">{{ deviceData.dailyDataPoints }}</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-yellow-400">Dernière Sync</h3>
+                            <p class="text-3xl font-bold">{{ deviceData.lastSync }}</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-purple-400">Fréquence Cardiaque</h3>
+                            <p class="text-3xl font-bold">{{ deviceData.recentData.heartRate }} bpm</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Liste des appareils -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div v-for="device in deviceData.devices" :key="device.id"
+                             class="bg-gray-700 p-4 rounded-lg border-l-4 border-green-500">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-semibold text-green-400">{{ device.name }}</h3>
+                                    <p class="text-gray-300">{{ device.type }}</p>
+                                    <p class="text-sm text-gray-400">{{ device.brand }}</p>
+                                </div>
+                                <i :class="device.icon" class="text-3xl text-blue-400"></i>
+                            </div>
+                            <div class="mt-3 flex justify-between items-center">
+                                <span :class="device.connected ? 'text-green-400' : 'text-red-400'">
+                                    {{ device.connected ? 'Connecté' : 'Déconnecté' }}
+                                </span>
+                                <span v-if="device.batteryLevel" class="text-yellow-400">
+                                    Batterie: {{ device.batteryLevel }}%
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-400 mt-2">{{ device.lastData }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Onglet Doping -->
+                <div v-if="activeTab === 'doping'" class="space-y-6">
+                    <h2 class="text-3xl font-bold text-blue-400 mb-6">Dopage</h2>
+                    
+                    <!-- Informations générales -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-green-400">Dernier Contrôle</h3>
+                            <p class="text-2xl font-bold">{{ dopingData.lastControl }}</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-blue-400">Prochain Contrôle</h3>
+                            <p class="text-2xl font-bold">{{ dopingData.nextControl }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Historique des contrôles -->
+                    <div class="space-y-3">
+                        <h3 class="text-xl font-bold text-blue-400">Historique des Contrôles</h3>
+                        <div v-for="control in dopingData.controlHistory" :key="control.id"
+                             class="bg-gray-700 p-4 rounded-lg border-l-4 border-green-500">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-semibold">{{ control.type }}</h4>
+                                    <p class="text-gray-300">{{ control.location }} - {{ control.date }}</p>
+                                    <p class="text-sm text-gray-400 mt-1">{{ control.notes }}</p>
+                                </div>
+                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-500">
+                                    {{ control.result }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Onglet SDOH -->
+                <div v-if="activeTab === 'sdoh'" class="space-y-6">
+                    <h2 class="text-3xl font-bold text-blue-400 mb-6">SDOH - Déterminants Sociaux de la Santé</h2>
+                    
+                    <!-- Scores SDOH -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-green-400">Environnement</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.environment }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-blue-400">Soutien Social</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.socialSupport }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-purple-400">Accès Soins</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.healthcareAccess }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-yellow-400">Situation Financière</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.financialStatus }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-indigo-400">Bien-être Mental</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.mentalWellbeing }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-pink-400">Éducation</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.education }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-orange-400">Emploi</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.employment }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-teal-400">Communauté</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.community }}/100</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 Test FIFA Dashboard - Script chargé');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 DOM chargé, initialisation Vue.js...');
+            
+            try {
+                if (typeof Vue === 'undefined') {
+                    throw new Error('❌ Vue.js n\'est pas chargé');
+                }
+                
+                console.log('✅ Vue.js détecté, version:', Vue.version);
+                const { createApp } = Vue;
+                
+                console.log('🔧 Création de l\'application Vue...');
+                const app = createApp({
+                    data() {
+                        return {
+                            activeTab: 'performance',
+                            activeNotificationFilter: 'all',
+                            navigationTabs: [
+                                { id: 'performance', name: 'Performance', icon: 'fas fa-chart-line', count: null },
+                                { id: 'notifications', name: 'Notifications', icon: 'fas fa-bell', count: 12 },
+                                { id: 'health', name: 'Santé & Bien-être', icon: 'fas fa-heart', count: null },
+                                { id: 'devices', name: 'Devices', icon: 'fas fa-mobile-alt', count: 3 },
+                                { id: 'doping', name: 'Dopage', icon: 'fas fa-vial', count: null },
+                                { id: 'sdoh', name: 'SDOH', icon: 'fas fa-globe', count: 5 }
+                            ],
+                            notificationFilters: [
+                                { id: 'all', name: 'Toutes', icon: 'fas fa-bell', count: 12 },
+                                { id: 'national', name: 'Équipe Nationale', icon: 'fas fa-flag', count: 2 },
+                                { id: 'training', name: 'Entraînements', icon: 'fas fa-dumbbell', count: 3 },
+                                { id: 'matches', name: 'Matchs', icon: 'fas fa-futbol', count: 2 },
+                                { id: 'medical', name: 'Médical', icon: 'fas fa-user-md', count: 2 },
+                                { id: 'social', name: 'Réseaux Sociaux', icon: 'fas fa-share-alt', count: 3 }
+                            ],
+                            offensiveStats: [
+                                { name: 'Buts marqués', display: '12', percentage: 85, teamAvg: '8.5', leagueAvg: '7.2' },
+                                { name: 'Tirs cadrés', display: '42', percentage: 78, teamAvg: '35.2', leagueAvg: '32.1' },
+                                { name: 'Tirs totaux', display: '67', percentage: 72, teamAvg: '58.4', leagueAvg: '55.7' },
+                                { name: 'Précision tirs', display: '78%', percentage: 78, teamAvg: '65%', leagueAvg: '62%' },
+                                { name: 'Passes décisives', display: '8', percentage: 90, teamAvg: '6.8', leagueAvg: '5.9' },
+                                { name: 'Passes clés', display: '28', percentage: 88, teamAvg: '22.1', leagueAvg: '19.8' },
+                                { name: 'Centres réussis', display: '18', percentage: 75, teamAvg: '15.3', leagueAvg: '13.7' },
+                                { name: 'Dribbles réussis', display: '89', percentage: 92, teamAvg: '45.2', leagueAvg: '38.9' }
+                            ],
+                            physicalStats: [
+                                { name: 'Distance parcourue', display: '245 km', percentage: 88, teamAvg: '198 km', leagueAvg: '185 km' },
+                                { name: 'Vitesse maximale', display: '36.2 km/h', percentage: 95, teamAvg: '32.1 km/h', leagueAvg: '30.8 km/h' },
+                                { name: 'Vitesse moyenne', display: '12.3 km/h', percentage: 82, teamAvg: '11.2 km/h', leagueAvg: '10.9 km/h' },
+                                { name: 'Sprints', display: '156', percentage: 90, teamAvg: '128', leagueAvg: '115' },
+                                { name: 'Accélérations', display: '234', percentage: 87, teamAvg: '198', leagueAvg: '185' },
+                                { name: 'Décélérations', display: '198', percentage: 85, teamAvg: '172', leagueAvg: '165' },
+                                { name: 'Changements direction', display: '89', percentage: 88, teamAvg: '76', leagueAvg: '72' },
+                                { name: 'Sautes', display: '12', percentage: 70, teamAvg: '15.2', leagueAvg: '14.8' }
+                            ],
+                            healthData: {
+                                globalScore: 87,
+                                physicalScore: 89,
+                                mentalScore: 85,
+                                sleepScore: 86,
+                                socialScore: 88,
+                                injuryRisk: 15
+                            },
+                            deviceData: {
+                                connectedDevices: 3,
+                                dailyDataPoints: 1440,
+                                lastSync: '2 min',
+                                devices: [
+                                    { id: 1, name: 'Polar H10', type: 'Capteur cardiaque', brand: 'Polar', icon: 'fas fa-heartbeat', connected: true, batteryLevel: 85, lastData: 'Il y a 2 min' },
+                                    { id: 2, name: 'WHOOP 4.0', type: 'Tracker fitness', brand: 'WHOOP', icon: 'fas fa-running', connected: true, batteryLevel: 62, lastData: 'Il y a 5 min' },
+                                    { id: 3, name: 'GPS Catapult', type: 'Tracker GPS', brand: 'Catapult', icon: 'fas fa-satellite', connected: true, batteryLevel: 92, lastData: 'Il y a 1 min' }
+                                ],
+                                recentData: {
+                                    heartRate: 68,
+                                    steps: 15420,
+                                    sleep: '7h32',
+                                    calories: 2847
+                                }
+                            },
+                            dopingData: {
+                                lastControl: '28/02/2025',
+                                nextControl: '15/04/2025',
+                                controlHistory: [
+                                    { id: 1, type: 'Contrôle inopiné', date: '28/02/2025', location: 'Centre d\'entraînement', status: 'completed', result: 'négatif', substances: 'Aucune substance interdite détectée', notes: 'Contrôle standard, aucun problème détecté' },
+                                    { id: 2, type: 'Contrôle post-match', date: '15/02/2025', location: 'Stade de France', status: 'completed', result: 'négatif', substances: 'Aucune substance interdite détectée', notes: 'Contrôle après match France vs Italie' }
+                                ],
+                                atuDeclarations: [
+                                    { id: 1, substance: 'Ventoline (Salbutamol)', reason: 'Asthme d\'effort', dosage: '100mcg par inhalation', frequency: 'Avant entraînement si nécessaire', doctor: 'Dr. Jean Martin', startDate: '01/09/2024', endDate: '31/08/2025', status: 'active', riskLevel: 'low' }
+                                ]
+                            },
+                            sdohData: {
+                                environment: 85,
+                                socialSupport: 90,
+                                healthcareAccess: 75,
+                                financialStatus: 80,
+                                mentalWellbeing: 88,
+                                education: 92,
+                                employment: 87,
+                                community: 85
+                            },
+                            notificationData: {
+                                'all': [
+                                    { id: 1, title: 'Convocación Selección Argentina', message: 'Convocado para partidos vs Brasil y Uruguay', date: '15/03/2025', priority: 'high', type: 'national' },
+                                    { id: 2, title: 'Entrenamiento Selección', message: 'Sesión técnica mañana 9:00 AM', date: '14/03/2025', priority: 'medium', type: 'national' },
+                                    { id: 3, title: 'Entrenamiento Técnico', message: 'Sesión de pases y finalización', date: '13/03/2025', priority: 'medium', type: 'training' },
+                                    { id: 4, title: 'Entrenamiento Físico', message: 'Circuitos de velocidad y resistencia', date: '12/03/2025', priority: 'medium', type: 'training' },
+                                    { id: 5, title: 'Recuperación Activa', message: 'Sesión de estiramientos y yoga', date: '11/03/2025', priority: 'low', type: 'training' },
+                                    { id: 6, title: 'Próximo Partido', message: 'Chelsea vs Manchester City - Domingo 16/03', date: '10/03/2025', priority: 'high', type: 'matches' },
+                                    { id: 7, title: 'Análisis Rival', message: 'Revisión táctica Manchester City', date: '09/03/2025', priority: 'medium', type: 'matches' },
+                                    { id: 8, title: 'Control Médico', message: 'Revisión rutinaria con Dr. Martínez', date: '08/03/2025', priority: 'medium', type: 'medical' },
+                                    { id: 9, title: 'Fisioterapia', message: 'Sesión de recuperación muscular', date: '07/03/2025', priority: 'medium', type: 'medical' },
+                                    { id: 10, title: 'Mensaje de Fan', message: 'Mensaje de apoyo de @fan_chelsea', date: '06/03/2025', priority: 'low', type: 'social' },
+                                    { id: 11, title: 'Tendencia Twitter', message: '#MessiChelsea trending en Argentina', date: '05/03/2025', priority: 'low', type: 'social' },
+                                    { id: 12, title: 'Instagram Live', message: 'Solicitud de entrevista en vivo', date: '04/03/2025', priority: 'low', type: 'social' }
+                                ],
+                                'national': [
+                                    { id: 1, title: 'Convocación Selección Argentina', message: 'Convocado para partidos vs Brasil y Uruguay', date: '15/03/2025', priority: 'high', type: 'national' },
+                                    { id: 2, title: 'Entrenamiento Selección', message: 'Sesión técnica mañana 9:00 AM', date: '14/03/2025', priority: 'medium', type: 'national' }
+                                ],
+                                'training': [
+                                    { id: 3, title: 'Entrenamiento Técnico', message: 'Sesión de pases y finalización', date: '13/03/2025', priority: 'medium', type: 'training' },
+                                    { id: 4, title: 'Entrenamiento Físico', message: 'Circuitos de velocidad y resistencia', date: '12/03/2025', priority: 'medium', type: 'training' },
+                                    { id: 5, title: 'Recuperación Activa', message: 'Sesión de estiramientos y yoga', date: '11/03/2025', priority: 'low', type: 'training' }
+                                ],
+                                'matches': [
+                                    { id: 6, title: 'Próximo Partido', message: 'Chelsea vs Manchester City - Domingo 16/03', date: '10/03/2025', priority: 'high', type: 'matches' },
+                                    { id: 7, title: 'Análisis Rival', message: 'Revisión táctica Manchester City', date: '09/03/2025', priority: 'medium', type: 'matches' }
+                                ],
+                                'medical': [
+                                    { id: 8, title: 'Control Médico', message: 'Revisión rutinaria con Dr. Martínez', date: '08/03/2025', priority: 'medium', type: 'medical' },
+                                    { id: 9, title: 'Fisioterapia', message: 'Sesión de recuperación muscular', date: '07/03/2025', priority: 'medium', type: 'medical' }
+                                ],
+                                'social': [
+                                    { id: 10, title: 'Mensaje de Fan', message: 'Mensaje de apoyo de @fan_chelsea', date: '06/03/2025', priority: 'low', type: 'social' },
+                                    { id: 11, title: 'Tendencia Twitter', message: '#MessiChelsea trending en Argentina', date: '05/03/2025', priority: 'low', type: 'social' },
+                                    { id: 12, title: 'Instagram Live', message: 'Solicitud de entrevista en vivo', date: '04/03/2025', priority: 'low', type: 'social' }
+                                ]
+                            }
+                        }
+                    },
+                    mounted() {
+                        console.log('🎯 Vue.js monté avec succès !');
+                        console.log('📊 Onglets disponibles:', this.navigationTabs);
+                        console.log('🔍 Onglet actif:', this.activeTab);
+                    },
+                    methods: {
+                        changeTab(tabId) {
+                            console.log('🔄 Changement d\'onglet vers:', tabId);
+                            this.activeTab = tabId;
+                        },
+                        filterNotifications(filterId) {
+                            console.log('🔍 Filtrage des notifications:', filterId);
+                            this.activeNotificationFilter = filterId;
+                        },
+                        getFilteredNotifications() {
+                            if (this.activeNotificationFilter === 'all') {
+                                return this.notificationData.all || [];
+                            }
+                            return this.notificationData[this.activeNotificationFilter] || [];
+                        }
+                    }
+                });
+                
+                console.log('🔧 Application Vue créée, montage en cours...');
+                app.mount('#fifa-app');
+                console.log('✅ Application Vue montée avec succès !');
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de l\'initialisation de Vue.js:', error);
+                document.body.innerHTML += `
+                    <div style="position: fixed; top: 20px; right: 20px; background: red; color: white; padding: 20px; border-radius: 8px; z-index: 9999;">
+                        <h3>❌ Erreur Vue.js</h3>
+                        <p>${error.message}</p>
+                        <p>Vérifiez la console pour plus de détails</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

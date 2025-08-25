@@ -1,0 +1,6 @@
+<template>
+    <div class="p-4">Match Preparation (RPM)</div>
+</template>
+<script>
+export default { name: "MatchPreparation" };
+</script>

@@ -1,0 +1,1 @@
+<x-app-layout><div id="dtn-medical"></div></x-app-layout>

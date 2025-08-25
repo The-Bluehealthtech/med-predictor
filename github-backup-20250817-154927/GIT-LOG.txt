@@ -1,0 +1,20 @@
+e28afe7 📚 DOC: Ajout du résumé de sauvegarde FIFA TMS v2.0.0
+7dacf07 🏆 FEAT: Intégration complète FIFA TMS (Transfer Matching System)
+550cad9 🧹 NETTOYAGE COMPLET : Données simulées supprimées - Structure Vue.js restaurée
+edcee30 🔧 CORRECTION : Vue.js et onglets restaurés - Données simulées remplacées
+c9151d0 🏥 MÉDICAL DYNAMIQUE : Service créé et intégré avec succès
+db2e9de 🚀 SANTÉ DYNAMIQUE : Service créé et intégré rapidement
+5d66431 🎯 NOTIFICATIONS DYNAMIQUES : Intégrées avec succès
+465bc2c 🎯 AUDIT COMPLET : Vérification des données réelles dans tous les onglets
+e6958a5 🎯 INTÉGRATION: Résumé de Saison & Évolution des Performances - Données statiques intégrées avec succès
+c71b9cd 🚀 MEGA UPDATE: Statistiques de Performance Dynamiques Implémentées
+87d00e9 🔍 VÉRIFICATION COMPLÈTE: Données Profil vs Base de Données
+c3e94ce 📏 OPTIMISATION TAILLE: Graphique Radar SDOH Agrandi
+a6fcef2 🌟 AJOUT SDOH: Déterminants Sociaux de la Santé
+5c271a3 🎉 MEGA UPDATE: Portail Joueur FIFA Ultimate Dashboard Complet
+ff0eea8 Fix PCMA create route: Correct controller variable names
+39b21f3 Update README with comprehensive platform documentation
+07f8133 Add complete deployment setup and documentation
+777224c Add FIT service deployment configuration
+73d22e4 Remove large file and update .gitignore
+f7f42cf Release v0.3 of FIT

@@ -1,0 +1,167 @@
+stages:
+  - setup
+  - audit
+  - report
+  - quality-gate
+
+variables:
+  PHP_VERSION: "8.2"
+  COMPOSER_CACHE_DIR: "$CI_PROJECT_DIR/.composer-cache"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .composer-cache/
+    - vendor/
+
+setup:
+  stage: setup
+  image: php:${PHP_VERSION}-fpm
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq git unzip sqlite3 libsqlite3-dev libzip-dev
+    - docker-php-ext-install zip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - composer config cache-dir $COMPOSER_CACHE_DIR
+  script:
+    - composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-zip
+    - cp .env.example .env
+    - php artisan key:generate
+    - touch database/database.sqlite
+    - echo "DB_CONNECTION=sqlite" >> .env
+    - echo "DB_DATABASE=database/database.sqlite" >> .env
+    - php artisan migrate --force
+  artifacts:
+    paths:
+      - vendor/
+      - .env
+      - database/database.sqlite
+    expire_in: 1 hour
+
+database-audit:
+  stage: audit
+  image: php:${PHP_VERSION}-fpm
+  dependencies:
+    - setup
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq sqlite3 jq
+    - composer config cache-dir $COMPOSER_CACHE_DIR
+  script:
+    - composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-zip
+    - php artisan project:db:audit
+    - |
+      LATEST_REPORT=$(ls -t storage/logs/db-audit-*.log | head -1)
+      CLEANLINESS_SCORE=$(grep -o '"cleanliness_score": "[^"]*"' "$LATEST_REPORT" | cut -d'"' -f4 | sed 's/%//')
+      TOTAL_TABLES=$(grep -o '"total_tables": [0-9]*' "$LATEST_REPORT" | cut -d':' -f2 | tr -d ' ')
+      ORPHAN_TABLES=$(grep -o '"orphan_tables": \[[^]]*\]' "$LATEST_REPORT" | grep -o '"[^"]*"' | wc -l)
+      UNUSED_MODELS=$(grep -o '"unused_models": \[[^]]*\]' "$LATEST_REPORT" | grep -o '"[^"]*"' | wc -l)
+      ORPHAN_TABLES_PERCENT=$((ORPHAN_TABLES * 100 / TOTAL_TABLES))
+      echo "CLEANLINESS_SCORE=$CLEANLINESS_SCORE" >> build.env
+      echo "TOTAL_TABLES=$TOTAL_TABLES" >> build.env
+      echo "ORPHAN_TABLES=$ORPHAN_TABLES" >> build.env
+      echo "UNUSED_MODELS=$UNUSED_MODELS" >> build.env
+      echo "ORPHAN_TABLES_PERCENT=$ORPHAN_TABLES_PERCENT" >> build.env
+      echo "�� Résultats de l'audit:"
+      echo "�� Score de propreté: ${CLEANLINESS_SCORE}%"
+      echo "🗃️ Tables totales: ${TOTAL_TABLES}"
+      echo "❌ Tables orphelines: ${ORPHAN_TABLES}"
+      echo "🏗️ Modèles non utilisés: ${UNUSED_MODELS}"
+      echo "�� Pourcentage tables orphelines: ${ORPHAN_TABLES_PERCENT}%"
+  artifacts:
+    paths:
+      - storage/logs/db-audit-*.log
+      - build.env
+    reports:
+      junit: audit-results.xml
+    expire_in: 1 week
+
+generate-report:
+  stage: report
+  image: alpine:latest
+  dependencies:
+    - database-audit
+  before_script:
+    - apk add --no-cache jq
+  script:
+    - |
+      source build.env
+      cat > audit-report.html << 'EOF'
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+          <meta charset="UTF-8">
+          <title>Rapport d'Audit Base de Données</title>
+          <style>
+              body { font-family: Arial, sans-serif; margin: 40px; }
+              .header { background: #f8f9fa; padding: 20px; border-radius: 8px; }
+              .score { font-size: 2em; font-weight: bold; }
+              .good { color: #28a745; }
+              .warning { color: #ffc107; }
+              .danger { color: #dc3545; }
+              .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
+              .metric { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+          </style>
+      </head>
+      <body>
+          <div class="header">
+              <h1>🔍 Rapport d'Audit Base de Données</h1>
+              <p>Généré le: $(date)</p>
+          </div>
+          <div class="metrics">
+              <div class="metric">
+                  <h3>📊 Score de Propreté</h3>
+                  <div class="score $([ $CLEANLINESS_SCORE -ge 80 ] && echo 'good' || ([ $CLEANLINESS_SCORE -ge 70 ] && echo 'warning') || echo 'danger')">
+                      ${CLEANLINESS_SCORE}%
+                  </div>
+              </div>
+              <div class="metric">
+                  <h3>��️ Tables Totales</h3>
+                  <div class="score">${TOTAL_TABLES}</div>
+              </div>
+              <div class="metric">
+                  <h3>❌ Tables Orphelines</h3>
+                  <div class="score $([ $ORPHAN_TABLES -eq 0 ] && echo 'good' || ([ $ORPHAN_TABLES -le 5 ] && echo 'warning') || echo 'danger')">
+                      ${ORPHAN_TABLES}
+                  </div>
+              </div>
+              <div class="metric">
+                  <h3>🏗️ Modèles Non Utilisés</h3>
+                  <div class="score $([ $UNUSED_MODELS -eq 0 ] && echo 'good' || ([ $UNUSED_MODELS -le 3 ] && echo 'warning') || echo 'danger')">
+                      ${UNUSED_MODELS}
+                  </div>
+              </div>
+          </div>
+      </body>
+      </html>
+      EOF
+      echo "📄 Rapport HTML généré avec succès"
+  artifacts:
+    paths:
+      - audit-report.html
+    expire_in: 1 month
+
+quality-gate:
+  stage: quality-gate
+  image: alpine:latest
+  dependencies:
+    - database-audit
+  script:
+    - |
+      source build.env
+      echo "�� Vérification de la qualité..."
+      if [ "$CLEANLINESS_SCORE" -lt 70 ]; then
+          echo "❌ Score de propreté critique: ${CLEANLINESS_SCORE}%"
+          exit 1
+      fi
+      if [ "$ORPHAN_TABLES_PERCENT" -gt 30 ]; then
+          echo "❌ Trop de tables orphelines: ${ORPHAN_TABLES_PERCENT}%"
+          exit 1
+      fi
+      if [ "$UNUSED_MODELS" -gt 15 ]; then
+          echo "❌ Trop de modèles non utilisés: ${UNUSED_MODELS}"
+          exit 1
+      fi
+      echo "✅ Tous les critères de qualité sont respectés"
+      echo "�� Score de propreté: ${CLEANLINESS_SCORE}%"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

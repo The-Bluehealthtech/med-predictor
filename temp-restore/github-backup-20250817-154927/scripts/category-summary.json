@@ -1,0 +1,79 @@
+{
+  "landing": {
+    "keyCount": 34,
+    "sampleKeys": [
+      "hero",
+      "features",
+      "profiles",
+      "footer",
+      "login"
+    ]
+  },
+  "menu": {
+    "keyCount": 2,
+    "sampleKeys": [
+      "home",
+      "dashboard"
+    ]
+  },
+  "dashboard": {
+    "keyCount": 37,
+    "sampleKeys": [
+      "title",
+      "welcome",
+      "logout",
+      "loading",
+      "total_matches"
+    ]
+  },
+  "rpm": {
+    "keyCount": 24,
+    "sampleKeys": [
+      "rpm.newSession",
+      "rpm.debugBanner",
+      "rpm.dashboard",
+      "rpm.welcomeMessage",
+      "rpm.sessionsList"
+    ]
+  },
+  "dtn": {
+    "keyCount": 14,
+    "sampleKeys": [
+      "dtn.selectionPlayers",
+      "dtn.selectionPlayersComponent",
+      "dtn.selectionForm",
+      "dtn.selectionFormComponent",
+      "dtn.selectionDetail"
+    ]
+  },
+  "referee": {
+    "keyCount": 10,
+    "sampleKeys": [
+      "referee.myMatches",
+      "referee.matchSheet",
+      "referee.matchEvents",
+      "referee.tournamentManagement",
+      "referee.selectPlayers"
+    ]
+  },
+  "player": {
+    "keyCount": 18,
+    "sampleKeys": [
+      "player.loadDetail",
+      "player.loadDetailComponent",
+      "player.profilePicture",
+      "player.management",
+      "player.player"
+    ]
+  },
+  "common": {
+    "keyCount": 462,
+    "sampleKeys": [
+      "common.exportPerformance",
+      "common.debugMessage",
+      "common.matchesList",
+      "common.matchesListComponent",
+      "common.matchDetail"
+    ]
+  }
+}

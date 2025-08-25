@@ -1,0 +1,1 @@
+<x-app-layout><div id="rpm-sync"></div></x-app-layout>

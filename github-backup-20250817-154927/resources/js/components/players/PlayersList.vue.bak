@@ -1,0 +1,1025 @@
+<template>
+    <div class="fifa-players">
+        <!-- Header -->
+        <div class="fifa-players__header">
+            <div class="fifa-players__header-content">
+                <div class="fifa-players__header-left">
+                    <h1 class="fifa-players__title">Players Management</h1>
+                    <p class="fifa-players__subtitle">
+                        Manage player registrations and profiles
+                    </p>
+                </div>
+
+                <div class="fifa-players__header-right">
+                    <FifaButton
+                        variant="primary"
+                        size="lg"
+                        @click="showCreateModal = true"
+                    >
+                        <template #default>
+                            <svg
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                class="fifa-btn__icon"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                            Add New Player
+                        </template>
+                    </FifaButton>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="fifa-players__filters">
+            <div class="fifa-players__search">
+                <div class="fifa-players__search-input">
+                    <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        class="fifa-players__search-icon"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                    <input
+                        v-model="searchQuery"
+                        type="text"
+                        placeholder="Search players..."
+                        class="fifa-players__input"
+                    />
+                </div>
+            </div>
+
+            <div class="fifa-players__filters-right">
+                <select v-model="selectedStatus" class="fifa-players__select">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="suspended">Suspended</option>
+                </select>
+
+                <select v-model="selectedPosition" class="fifa-players__select">
+                    <option value="">All Positions</option>
+                    <option value="goalkeeper">Goalkeeper</option>
+                    <option value="defender">Defender</option>
+                    <option value="midfielder">Midfielder</option>
+                    <option value="forward">Forward</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Players Grid -->
+        <div class="fifa-players__grid">
+            <FifaCard
+                v-for="player in filteredPlayers"
+                :key="player.id"
+                class="fifa-players__card"
+                hoverable
+                clickable
+                @click="selectPlayer(player)"
+            >
+                <div class="fifa-players__card-content">
+                    <div class="fifa-players__card-header">
+                        <div class="fifa-players__avatar">
+                            <img
+                                :src="
+                                    player.avatar ||
+                                    '/images/defaults/player-avatar.png'
+                                "
+                                :alt="player.name"
+                            />
+                            <div
+                                class="fifa-players__status"
+                                :class="`fifa-players__status--${player.status}`"
+                            ></div>
+                        </div>
+
+                        <div class="fifa-players__card-info">
+                            <h3 class="fifa-players__player-name">
+                                {{ player.name }}
+                            </h3>
+                            <p class="fifa-players__player-position">
+                                {{ player.position }}
+                            </p>
+                            <p class="fifa-players__player-number">
+                                #{{ player.number }}
+                            </p>
+                        </div>
+
+                        <div class="fifa-players__card-actions">
+                            <button
+                                class="fifa-players__action-btn"
+                                @click.stop="editPlayer(player)"
+                            >
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path
+                                        d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+                                    />
+                                </svg>
+                            </button>
+
+                            <button
+                                class="fifa-players__action-btn"
+                                @click.stop="viewPlayer(player)"
+                            >
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="fifa-players__card-stats">
+                        <div class="fifa-players__stat">
+                            <span class="fifa-players__stat-label">Age</span>
+                            <span class="fifa-players__stat-value">{{
+                                player.age
+                            }}</span>
+                        </div>
+
+                        <div class="fifa-players__stat">
+                            <span class="fifa-players__stat-label">Height</span>
+                            <span class="fifa-players__stat-value"
+                                >{{ player.height }}cm</span
+                            >
+                        </div>
+
+                        <div class="fifa-players__stat">
+                            <span class="fifa-players__stat-label">Weight</span>
+                            <span class="fifa-players__stat-value"
+                                >{{ player.weight }}kg</span
+                            >
+                        </div>
+                    </div>
+
+                    <div class="fifa-players__card-footer">
+                        <div
+                            class="fifa-players__license-status"
+                            :class="`fifa-players__license-status--${player.licenseStatus}`"
+                        >
+                            <span class="fifa-players__license-text">{{
+                                player.licenseStatus
+                            }}</span>
+                        </div>
+
+                        <div class="fifa-players__last-update">
+                            Updated {{ formatDate(player.updatedAt) }}
+                        </div>
+                    </div>
+                </div>
+            </FifaCard>
+        </div>
+
+        <!-- Pagination -->
+        <div class="fifa-players__pagination">
+            <button
+                class="fifa-players__pagination-btn"
+                :disabled="currentPage === 1"
+                @click="currentPage--"
+            >
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                        fill-rule="evenodd"
+                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                    />
+                </svg>
+                Previous
+            </button>
+
+            <div class="fifa-players__pagination-info">
+                Page {{ currentPage }} of {{ totalPages }}
+            </div>
+
+            <button
+                class="fifa-players__pagination-btn"
+                :disabled="currentPage === totalPages"
+                @click="currentPage++"
+            >
+                Next
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                        fill-rule="evenodd"
+                        d="7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd"
+                    />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Create Player Modal -->
+        <div
+            v-if="showCreateModal"
+            class="fifa-modal-overlay"
+            @click="showCreateModal = false"
+        >
+            <div class="fifa-modal" @click.stop>
+                <div class="fifa-modal-header">
+                    <h2 class="fifa-modal-title">Add New Player</h2>
+                    <button
+                        class="fifa-modal-close"
+                        @click="showCreateModal = false"
+                    >
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd"
+                            />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="fifa-modal-body">
+                    <form @submit.prevent="createPlayer" class="fifa-form">
+                        <div class="fifa-form-group">
+                            <label class="fifa-form-label">Full Name</label>
+                            <input
+                                v-model="newPlayer.name"
+                                type="text"
+                                class="fifa-form-input"
+                                required
+                            />
+                        </div>
+
+                        <div class="fifa-form-row">
+                            <div class="fifa-form-group">
+                                <label class="fifa-form-label">Position</label>
+                                <select
+                                    v-model="newPlayer.position"
+                                    class="fifa-form-select"
+                                    required
+                                >
+                                    <option value="">Select Position</option>
+                                    <option value="goalkeeper">
+                                        Goalkeeper
+                                    </option>
+                                    <option value="defender">Defender</option>
+                                    <option value="midfielder">
+                                        Midfielder
+                                    </option>
+                                    <option value="forward">Forward</option>
+                                </select>
+                            </div>
+
+                            <div class="fifa-form-group">
+                                <label class="fifa-form-label"
+                                    >Jersey Number</label
+                                >
+                                <input
+                                    v-model="newPlayer.number"
+                                    type="number"
+                                    class="fifa-form-input"
+                                    min="1"
+                                    max="99"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div class="fifa-form-row">
+                            <div class="fifa-form-group">
+                                <label class="fifa-form-label"
+                                    >Date of Birth</label
+                                >
+                                <input
+                                    v-model="newPlayer.dateOfBirth"
+                                    type="date"
+                                    class="fifa-form-input"
+                                    required
+                                />
+                            </div>
+
+                            <div class="fifa-form-group">
+                                <label class="fifa-form-label"
+                                    >Nationality</label
+                                >
+                                <input
+                                    v-model="newPlayer.nationality"
+                                    type="text"
+                                    class="fifa-form-input"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div class="fifa-form-row">
+                            <div class="fifa-form-group">
+                                <label class="fifa-form-label"
+                                    >Height (cm)</label
+                                >
+                                <input
+                                    v-model="newPlayer.height"
+                                    type="number"
+                                    class="fifa-form-input"
+                                    min="150"
+                                    max="220"
+                                    required
+                                />
+                            </div>
+
+                            <div class="fifa-form-group">
+                                <label class="fifa-form-label"
+                                    >Weight (kg)</label
+                                >
+                                <input
+                                    v-model="newPlayer.weight"
+                                    type="number"
+                                    class="fifa-form-input"
+                                    min="40"
+                                    max="120"
+                                    required
+                                />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="fifa-modal-footer">
+                    <FifaButton
+                        variant="secondary"
+                        @click="showCreateModal = false"
+                    >
+                        Cancel
+                    </FifaButton>
+                    <FifaButton
+                        variant="primary"
+                        @click="createPlayer"
+                        :loading="creating"
+                    >
+                        Create Player
+                    </FifaButton>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import { ref, computed, onMounted } from "vue";
+import FifaCard from "../FifaCard.vue";
+import FifaButton from "../FifaButton.vue";
+
+export default {
+    name: "PlayersList",
+    components: {
+        FifaCard,
+        FifaButton,
+    },
+    setup() {
+        const players = ref([]);
+        const searchQuery = ref("");
+        const selectedStatus = ref("");
+        const selectedPosition = ref("");
+        const currentPage = ref(1);
+        const showCreateModal = ref(false);
+        const creating = ref(false);
+
+        const newPlayer = ref({
+            name: "",
+            position: "",
+            number: "",
+            dateOfBirth: "",
+            nationality: "",
+            height: "",
+            weight: "",
+        });
+
+        // Mock data
+        const mockPlayers = [
+            {
+                id: 1,
+                name: "Lionel Messi",
+                position: "Forward",
+                number: 10,
+                age: 36,
+                height: 170,
+                weight: 72,
+                status: "active",
+                licenseStatus: "valid",
+                avatar: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=100&h=100&fit=crop&crop=face",
+                updatedAt: new Date("2024-01-15"),
+            },
+            {
+                id: 2,
+                name: "Cristiano Ronaldo",
+                position: "Forward",
+                number: 7,
+                age: 39,
+                height: 187,
+                weight: 84,
+                status: "active",
+                licenseStatus: "valid",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+                updatedAt: new Date("2024-01-14"),
+            },
+            {
+                id: 3,
+                name: "Kevin De Bruyne",
+                position: "Midfielder",
+                number: 17,
+                age: 32,
+                height: 181,
+                weight: 76,
+                status: "active",
+                licenseStatus: "expired",
+                avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
+                updatedAt: new Date("2024-01-13"),
+            },
+        ];
+
+        const filteredPlayers = computed(() => {
+            let filtered = mockPlayers;
+
+            if (searchQuery.value) {
+                filtered = filtered.filter((player) =>
+                    player.name
+                        .toLowerCase()
+                        .includes(searchQuery.value.toLowerCase())
+                );
+            }
+
+            if (selectedStatus.value) {
+                filtered = filtered.filter(
+                    (player) => player.status === selectedStatus.value
+                );
+            }
+
+            if (selectedPosition.value) {
+                filtered = filtered.filter(
+                    (player) =>
+                        player.position.toLowerCase() === selectedPosition.value
+                );
+            }
+
+            return filtered;
+        });
+
+        const totalPages = computed(() =>
+            Math.ceil(filteredPlayers.value.length / 10)
+        );
+
+        const formatDate = (date) => {
+            return new Intl.DateTimeFormat("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+            }).format(date);
+        };
+
+        const selectPlayer = (player) => {
+            console.log("Selected player:", player);
+        };
+
+        const editPlayer = (player) => {
+            console.log("Edit player:", player);
+        };
+
+        const viewPlayer = (player) => {
+            console.log("View player:", player);
+        };
+
+        const createPlayer = async () => {
+            creating.value = true;
+
+            try {
+                // Simulate API call
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                const player = {
+                    id: Date.now(),
+                    ...newPlayer.value,
+                    age:
+                        new Date().getFullYear() -
+                        new Date(newPlayer.value.dateOfBirth).getFullYear(),
+                    status: "active",
+                    licenseStatus: "pending",
+                    avatar: null,
+                    updatedAt: new Date(),
+                };
+
+                mockPlayers.unshift(player);
+                showCreateModal.value = false;
+
+                // Reset form
+                newPlayer.value = {
+                    name: "",
+                    position: "",
+                    number: "",
+                    dateOfBirth: "",
+                    nationality: "",
+                    height: "",
+                    weight: "",
+                };
+
+                window.showNotification(
+                    "success",
+                    "Player created successfully!"
+                );
+            } catch (error) {
+                window.showNotification("error", "Failed to create player");
+            } finally {
+                creating.value = false;
+            }
+        };
+
+        onMounted(() => {
+            players.value = mockPlayers;
+        });
+
+        return {
+            players,
+            searchQuery,
+            selectedStatus,
+            selectedPosition,
+            currentPage,
+            showCreateModal,
+            creating,
+            newPlayer,
+            filteredPlayers,
+            totalPages,
+            formatDate,
+            selectPlayer,
+            editPlayer,
+            viewPlayer,
+            createPlayer,
+        };
+    },
+};
+</script>
+
+<style scoped>
+.fifa-players {
+    padding: var(--fifa-spacing-xl);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header */
+.fifa-players__header {
+    margin-bottom: var(--fifa-spacing-2xl);
+}
+
+.fifa-players__header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fifa-players__title {
+    font-size: var(--fifa-text-3xl);
+    font-weight: var(--fifa-font-weight-bold);
+    color: var(--fifa-gray-900);
+    margin: 0 0 var(--fifa-spacing-xs) 0;
+}
+
+.fifa-players__subtitle {
+    font-size: var(--fifa-text-lg);
+    color: var(--fifa-gray-600);
+    margin: 0;
+}
+
+/* Filters */
+.fifa-players__filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--fifa-spacing-xl);
+    gap: var(--fifa-spacing-lg);
+}
+
+.fifa-players__search {
+    flex: 1;
+    max-width: 400px;
+}
+
+.fifa-players__search-input {
+    position: relative;
+}
+
+.fifa-players__search-icon {
+    position: absolute;
+    left: var(--fifa-spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--fifa-gray-400);
+}
+
+.fifa-players__input {
+    width: 100%;
+    padding: var(--fifa-spacing-md) var(--fifa-spacing-md)
+        var(--fifa-spacing-md) calc(var(--fifa-spacing-md) * 2 + 20px);
+    border: 1px solid var(--fifa-gray-300);
+    border-radius: var(--fifa-radius-lg);
+    font-size: var(--fifa-text-sm);
+    transition: all var(--fifa-transition-normal);
+}
+
+.fifa-players__input:focus {
+    outline: none;
+    border-color: var(--fifa-blue-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.fifa-players__filters-right {
+    display: flex;
+    gap: var(--fifa-spacing-md);
+}
+
+.fifa-players__select {
+    padding: var(--fifa-spacing-md);
+    border: 1px solid var(--fifa-gray-300);
+    border-radius: var(--fifa-radius-lg);
+    font-size: var(--fifa-text-sm);
+    background: var(--fifa-white);
+    cursor: pointer;
+    transition: all var(--fifa-transition-normal);
+}
+
+.fifa-players__select:focus {
+    outline: none;
+    border-color: var(--fifa-blue-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Grid */
+.fifa-players__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--fifa-spacing-lg);
+    margin-bottom: var(--fifa-spacing-2xl);
+}
+
+.fifa-players__card {
+    transition: all var(--fifa-transition-normal);
+}
+
+.fifa-players__card:hover {
+    transform: translateY(-4px);
+}
+
+.fifa-players__card-content {
+    padding: var(--fifa-spacing-lg);
+}
+
+.fifa-players__card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--fifa-spacing-md);
+    margin-bottom: var(--fifa-spacing-lg);
+}
+
+.fifa-players__avatar {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.fifa-players__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fifa-players__status {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--fifa-white);
+}
+
+.fifa-players__status--active {
+    background: var(--fifa-success);
+}
+
+.fifa-players__status--inactive {
+    background: var(--fifa-gray-400);
+}
+
+.fifa-players__status--suspended {
+    background: var(--fifa-error);
+}
+
+.fifa-players__card-info {
+    flex: 1;
+}
+
+.fifa-players__player-name {
+    font-size: var(--fifa-text-lg);
+    font-weight: var(--fifa-font-weight-semibold);
+    color: var(--fifa-gray-900);
+    margin: 0 0 var(--fifa-spacing-xs) 0;
+}
+
+.fifa-players__player-position {
+    font-size: var(--fifa-text-sm);
+    color: var(--fifa-gray-600);
+    margin: 0 0 var(--fifa-spacing-xs) 0;
+}
+
+.fifa-players__player-number {
+    font-size: var(--fifa-text-sm);
+    font-weight: var(--fifa-font-weight-medium);
+    color: var(--fifa-blue-primary);
+    margin: 0;
+}
+
+.fifa-players__card-actions {
+    display: flex;
+    gap: var(--fifa-spacing-xs);
+}
+
+.fifa-players__action-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--fifa-gray-100);
+    border-radius: var(--fifa-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--fifa-transition-normal);
+}
+
+.fifa-players__action-btn:hover {
+    background: var(--fifa-gray-200);
+}
+
+.fifa-players__action-btn svg {
+    width: 16px;
+    height: 16px;
+    color: var(--fifa-gray-600);
+}
+
+.fifa-players__card-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--fifa-spacing-md);
+    margin-bottom: var(--fifa-spacing-lg);
+    padding: var(--fifa-spacing-md);
+    background: var(--fifa-gray-50);
+    border-radius: var(--fifa-radius-md);
+}
+
+.fifa-players__stat {
+    text-align: center;
+}
+
+.fifa-players__stat-label {
+    display: block;
+    font-size: var(--fifa-text-xs);
+    color: var(--fifa-gray-500);
+    margin-bottom: var(--fifa-spacing-xs);
+}
+
+.fifa-players__stat-value {
+    display: block;
+    font-size: var(--fifa-text-sm);
+    font-weight: var(--fifa-font-weight-semibold);
+    color: var(--fifa-gray-900);
+}
+
+.fifa-players__card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--fifa-spacing-md);
+    border-top: 1px solid var(--fifa-gray-200);
+}
+
+.fifa-players__license-status {
+    padding: var(--fifa-spacing-xs) var(--fifa-spacing-sm);
+    border-radius: var(--fifa-radius-full);
+    font-size: var(--fifa-text-xs);
+    font-weight: var(--fifa-font-weight-medium);
+}
+
+.fifa-players__license-status--valid {
+    background: var(--fifa-success-light);
+    color: var(--fifa-success);
+}
+
+.fifa-players__license-status--expired {
+    background: var(--fifa-error-light);
+    color: var(--fifa-error);
+}
+
+.fifa-players__license-status--pending {
+    background: var(--fifa-warning-light);
+    color: var(--fifa-warning);
+}
+
+.fifa-players__last-update {
+    font-size: var(--fifa-text-xs);
+    color: var(--fifa-gray-500);
+}
+
+/* Pagination */
+.fifa-players__pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--fifa-spacing-lg);
+}
+
+.fifa-players__pagination-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--fifa-spacing-xs);
+    padding: var(--fifa-spacing-sm) var(--fifa-spacing-md);
+    border: 1px solid var(--fifa-gray-300);
+    background: var(--fifa-white);
+    border-radius: var(--fifa-radius-md);
+    font-size: var(--fifa-text-sm);
+    cursor: pointer;
+    transition: all var(--fifa-transition-normal);
+}
+
+.fifa-players__pagination-btn:hover:not(:disabled) {
+    background: var(--fifa-gray-50);
+    border-color: var(--fifa-gray-400);
+}
+
+.fifa-players__pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.fifa-players__pagination-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.fifa-players__pagination-info {
+    font-size: var(--fifa-text-sm);
+    color: var(--fifa-gray-600);
+}
+
+/* Modal */
+.fifa-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.fifa-modal {
+    background: var(--fifa-white);
+    border-radius: var(--fifa-radius-xl);
+    box-shadow: var(--fifa-shadow-xl);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.fifa-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--fifa-spacing-xl);
+    border-bottom: 1px solid var(--fifa-gray-200);
+}
+
+.fifa-modal-title {
+    font-size: var(--fifa-text-xl);
+    font-weight: var(--fifa-font-weight-semibold);
+    color: var(--fifa-gray-900);
+    margin: 0;
+}
+
+.fifa-modal-close {
+    background: none;
+    border: none;
+    padding: var(--fifa-spacing-sm);
+    border-radius: var(--fifa-radius-md);
+    cursor: pointer;
+    transition: background var(--fifa-transition-normal);
+}
+
+.fifa-modal-close:hover {
+    background: var(--fifa-gray-100);
+}
+
+.fifa-modal-close svg {
+    width: 20px;
+    height: 20px;
+    color: var(--fifa-gray-600);
+}
+
+.fifa-modal-body {
+    padding: var(--fifa-spacing-xl);
+}
+
+.fifa-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--fifa-spacing-md);
+    padding: var(--fifa-spacing-xl);
+    border-top: 1px solid var(--fifa-gray-200);
+}
+
+/* Form */
+.fifa-form-group {
+    margin-bottom: var(--fifa-spacing-lg);
+}
+
+.fifa-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--fifa-spacing-lg);
+}
+
+.fifa-form-label {
+    display: block;
+    font-size: var(--fifa-text-sm);
+    font-weight: var(--fifa-font-weight-medium);
+    color: var(--fifa-gray-700);
+    margin-bottom: var(--fifa-spacing-xs);
+}
+
+.fifa-form-input,
+.fifa-form-select {
+    width: 100%;
+    padding: var(--fifa-spacing-md);
+    border: 1px solid var(--fifa-gray-300);
+    border-radius: var(--fifa-radius-md);
+    font-size: var(--fifa-text-sm);
+    transition: all var(--fifa-transition-normal);
+}
+
+.fifa-form-input:focus,
+.fifa-form-select:focus {
+    outline: none;
+    border-color: var(--fifa-blue-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .fifa-players {
+        padding: var(--fifa-spacing-lg);
+    }
+
+    .fifa-players__header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--fifa-spacing-lg);
+    }
+
+    .fifa-players__filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .fifa-players__search {
+        max-width: none;
+    }
+
+    .fifa-players__filters-right {
+        justify-content: stretch;
+    }
+
+    .fifa-players__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fifa-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .fifa-modal {
+        width: 95%;
+        margin: var(--fifa-spacing-lg);
+    }
+}
+</style>

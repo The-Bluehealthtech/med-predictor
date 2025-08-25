@@ -1,0 +1,36 @@
+{
+  "header": {
+    "title": "Welcome to FIT – Football Intelligence"
+  },
+  "footer": {
+    "fifa": "FIFA",
+    "tbhc": "The Blue HealthTech",
+    "language": "Language",
+    "admin_login": "Admin Login",
+    "support": "Support",
+    "copyright": "© 2024 FIT – Football Intelligence & Tracking. Powered by The Blue HealthTech."
+  },
+  "dashboard": {
+    "select_module": "Select Your Module",
+    "description": "Choose from our comprehensive suite of football intelligence tools designed to enhance performance, streamline operations, and provide actionable insights for your organization."
+  },
+  "modules": {
+    "medical": {
+      "title": "Medical Module",
+      "description": "Health and performance data tracking, medical assessments, and fitness monitoring for players and staff."
+    },
+    "licensing": {
+      "title": "Licensing Module",
+      "description": "Player registrations, license management, approvals, and compliance tracking for all stakeholders."
+    },
+    "competitions": {
+      "title": "Competitions",
+      "description": "Tournament management, match scheduling, results tracking, and competition administration."
+    },
+    "analytics": {
+      "title": "Analytics & Reports",
+      "description": "Statistical analysis, performance reports, data visualization, and insights generation."
+    },
+    "access": "Access Module →"
+  }
+} 

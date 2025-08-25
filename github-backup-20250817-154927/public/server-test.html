@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">🖥️ Server Test</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">🔍 Test Laravel Routes</h3>
+            <button onclick="testLaravelRoutes()" class="px-4 py-2 bg-blue-500 text-white rounded">Test Laravel Routes</button>
+            <div id="laravel-result" class="mt-4 p-4 bg-gray-50 rounded"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">🔍 Test API Proxies</h3>
+            <button onclick="testAPIProxies()" class="px-4 py-2 bg-green-500 text-white rounded">Test API Proxies</button>
+            <div id="api-result" class="mt-4 p-4 bg-gray-50 rounded"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">📊 Console Logs</h3>
+            <div id="console-logs" class="text-sm font-mono bg-black text-green-400 p-4 rounded max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simple logging
+        function log(message) {
+            console.log(message);
+            const logsDiv = document.getElementById('console-logs');
+            logsDiv.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        // Test Laravel routes
+        async function testLaravelRoutes() {
+            const resultDiv = document.getElementById('laravel-result');
+            log('=== TESTING LARAVEL ROUTES ===');
+            
+            try {
+                const response = await fetch('/test');
+                const data = await response.json();
+                
+                if (data.status === 'ok') {
+                    resultDiv.innerHTML = '<div class="text-green-600">✅ Laravel routes are working!</div>';
+                    log('✅ Laravel routes successful');
+                } else {
+                    resultDiv.innerHTML = '<div class="text-red-600">❌ Laravel routes error</div>';
+                    log('❌ Laravel routes error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-600">❌ Laravel error: ${error.message}</div>`;
+                log(`❌ Laravel error: ${error.message}`);
+            }
+        }
+
+        // Test API proxies
+        async function testAPIProxies() {
+            const resultDiv = document.getElementById('api-result');
+            log('=== TESTING API PROXIES ===');
+            
+            try {
+                const response = await fetch('/api/proxy/icd11?q=cardio');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="text-green-600">✅ API proxies are working!</div>
+                        <div class="text-sm text-gray-600">Found ${data.results.length} results</div>
+                    `;
+                    log('✅ API proxies successful');
+                } else {
+                    resultDiv.innerHTML = '<div class="text-red-600">❌ API proxies error</div>';
+                    log('❌ API proxies error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-600">❌ API error: ${error.message}</div>`;
+                log(`❌ API error: ${error.message}`);
+            }
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', function() {
+            log('=== PAGE LOADED ===');
+            log('Ready to test server functionality');
+        });
+    </script>
+</body>
+</html> 

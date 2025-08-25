@@ -1,0 +1,442 @@
+import './bootstrap';
+
+import Alpine from 'alpinejs';
+import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import { createPinia } from 'pinia';
+
+// Import all Vue components
+import RefereeDashboard from './components/RefereeDashboard.vue';
+import MatchSheet from './components/MatchSheet.vue';
+import Dashboard from './components/Dashboard.vue';
+import CreateMatchModal from './components/CreateMatchModal.vue';
+import CreatePlayerModal from './components/CreatePlayerModal.vue';
+import LicenseQueueModal from './components/LicenseQueueModal.vue';
+import PlayerDashboard from './components/PlayerDashboard.vue';
+import FootballTypeSelector from './components/FootballTypeSelector.vue';
+import DynamicDashboard from './components/DynamicDashboard.vue';
+import FifaSyncDashboard from './components/FifaSyncDashboard.vue';
+import FitDashboard from './components/FitDashboard.vue';
+import MedicalModule from './components/MedicalModule.vue';
+import LicensingModule from './components/LicensingModule.vue';
+import CompetitionsModule from './components/CompetitionsModule.vue';
+import AnalyticsModule from './components/AnalyticsModule.vue';
+import Navigation from './components/Navigation.vue';
+
+// Import transfer components
+import TransferList from './components/transfers/TransferList.vue';
+import TransferCreateModal from './components/transfers/TransferCreateModal.vue';
+import DailyPassport from './components/transfers/DailyPassport.vue';
+
+// Import performance components
+// import PerformanceChart from './components/performance/PerformanceChart.vue';
+import PerformanceMetrics from './components/performance/PerformanceMetrics.vue';
+import AIRecommendationCard from './components/performance/AIRecommendationCard.vue';
+
+// Import League Championship components
+import LeagueDashboard from './components/LeagueChampionship/LeagueDashboard.vue';
+import CompetitionSchedule from './components/LeagueChampionship/CompetitionSchedule.vue';
+import CompetitionStandings from './components/LeagueChampionship/CompetitionStandings.vue';
+import RosterSubmission from './components/LeagueChampionship/RosterSubmission.vue';
+import AddMatchModal from './components/LeagueChampionship/AddMatchModal.vue';
+import ManualScheduler from './components/LeagueChampionship/ManualScheduler.vue';
+
+// Import license components
+import LicenseReview from './components/licenses/LicenseReview.vue';
+import LicenseQueue from './components/licenses/LicenseQueue.vue';
+import LicenseRequestForm from './components/licenses/LicenseRequestForm.vue';
+import ClubPlayerManagement from './components/licenses/ClubPlayerManagement.vue';
+
+// Import API Service
+import apiService from './services/ApiService.js';
+
+// Enhanced router configuration with all Vue components
+const routes = [
+    // Dashboard routes
+    {
+        path: '/dashboard',
+        name: 'dashboard',
+        component: Dashboard,
+        meta: { title: 'Dashboard', icon: 'home' }
+    },
+    {
+        path: '/dynamic-dashboard',
+        name: 'dynamic-dashboard',
+        component: DynamicDashboard,
+        meta: { title: 'Dynamic Dashboard', icon: 'chart' }
+    },
+    {
+        path: '/fit-dashboard',
+        name: 'fit-dashboard',
+        component: FitDashboard,
+        meta: { title: 'FIT Dashboard', icon: 'fitness' }
+    },
+    
+    // Player routes
+    {
+        path: '/player-dashboard',
+        name: 'player-dashboard',
+        component: PlayerDashboard,
+        meta: { title: 'Player Dashboard', icon: 'user', requiresAuth: true }
+    },
+    
+    // League Championship routes
+    {
+        path: '/league-championship',
+        name: 'league-championship',
+        component: LeagueDashboard,
+        meta: { title: 'League Championship', icon: 'trophy' }
+    },
+    {
+        path: '/league-championship/schedule',
+        name: 'league-schedule',
+        component: CompetitionSchedule,
+        meta: { title: 'Competition Schedule', icon: 'calendar' }
+    },
+    {
+        path: '/league-championship/standings',
+        name: 'league-standings',
+        component: CompetitionStandings,
+        meta: { title: 'Competition Standings', icon: 'list' }
+    },
+    
+    // Transfer routes
+    {
+        path: '/transfers',
+        name: 'transfers',
+        component: TransferList,
+        meta: { title: 'Transfers', icon: 'exchange' }
+    },
+    {
+        path: '/transfers/create',
+        name: 'transfer-create',
+        component: TransferCreateModal,
+        meta: { title: 'Create Transfer', icon: 'plus' }
+    },
+    {
+        path: '/daily-passport',
+        name: 'daily-passport',
+        component: DailyPassport,
+        meta: { title: 'Daily Passport', icon: 'passport' }
+    },
+    
+    // Performance routes
+    {
+        path: '/performances',
+        name: 'performances',
+        component: PerformanceMetrics,
+        meta: { title: 'Performance Metrics', icon: 'chart' }
+    },
+    // {
+    //     path: '/performances/analytics',
+    //     name: 'performance-analytics',
+    //     component: PerformanceChart,
+    //     meta: { title: 'Performance Analytics', icon: 'analytics' }
+    // },
+    {
+        path: '/performances/ai-recommendations',
+        name: 'ai-recommendations',
+        component: AIRecommendationCard,
+        meta: { title: 'AI Recommendations', icon: 'brain' }
+    },
+    
+    // Medical routes
+    {
+        path: '/medical',
+        name: 'medical',
+        component: MedicalModule,
+        meta: { title: 'Medical Module', icon: 'heart' }
+    },
+    
+    // Licensing routes
+    {
+        path: '/licensing',
+        name: 'licensing',
+        component: LicensingModule,
+        meta: { title: 'Licensing', icon: 'certificate' }
+    },
+    {
+        path: '/licenses/queue',
+        name: 'license-queue',
+        component: LicenseQueue,
+        meta: { title: 'License Queue', icon: 'queue' }
+    },
+    {
+        path: '/licenses/review',
+        name: 'license-review',
+        component: LicenseReview,
+        meta: { title: 'License Review', icon: 'review' }
+    },
+    {
+        path: '/licenses/request',
+        name: 'license-request',
+        component: LicenseRequestForm,
+        meta: { title: 'License Request', icon: 'request' }
+    },
+    
+    // Competition routes
+    {
+        path: '/competitions',
+        name: 'competitions',
+        component: CompetitionsModule,
+        meta: { title: 'Competitions', icon: 'trophy' }
+    },
+    
+    // Analytics routes
+    {
+        path: '/analytics',
+        name: 'analytics',
+        component: AnalyticsModule,
+        meta: { title: 'Analytics', icon: 'chart' }
+    },
+    
+    // Referee routes
+    {
+        path: '/referee/dashboard',
+        name: 'referee-dashboard',
+        component: RefereeDashboard,
+        meta: { title: 'Referee Dashboard', icon: 'whistle' }
+    },
+    {
+        path: '/referee/match/:id',
+        name: 'referee-match-sheet',
+        component: MatchSheet,
+        props: true,
+        meta: { title: 'Match Sheet', icon: 'clipboard' }
+    },
+    
+    // FIFA routes
+    {
+        path: '/fifa/sync-dashboard',
+        name: 'fifa-sync-dashboard',
+        component: FifaSyncDashboard,
+        meta: { title: 'FIFA Sync Dashboard', icon: 'fifa' }
+    },
+    
+    // Utility routes
+    {
+        path: '/football-type-selector',
+        name: 'football-type-selector',
+        component: FootballTypeSelector,
+        meta: { title: 'Football Type Selector', icon: 'settings' }
+    }
+];
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes,
+    scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) {
+            return savedPosition;
+        } else {
+            return { top: 0 };
+        }
+    }
+});
+
+// Navigation guard for authentication
+router.beforeEach((to, from, next) => {
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const isAuthenticated = document.querySelector('meta[name="user-authenticated"]')?.content === 'true';
+    
+    if (requiresAuth && !isAuthenticated) {
+        next('/login');
+    } else {
+        next();
+    }
+});
+
+// Configuration d'Axios pour les tokens CSRF
+import axios from 'axios';
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+axios.defaults.withCredentials = true;
+
+// Récupérer le token CSRF de Laravel
+const token = document.head.querySelector('meta[name="csrf-token"]');
+if (token) {
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+}
+
+// Enhanced Vue app creation with better error handling and UI/UX
+function createVueApp() {
+    const app = createApp({
+        data() {
+            return {
+                loading: false,
+                error: null,
+                notifications: {
+                    success: null,
+                    error: null,
+                    warning: null,
+                    info: null
+                },
+                userPermissions: {},
+                currentRoute: null
+            }
+        },
+        mounted() {
+            this.initializeApp();
+        },
+        methods: {
+            initializeApp() {
+                this.loadUserPermissions();
+                this.setupGlobalErrorHandling();
+                this.setupNotifications();
+            },
+            
+            loadUserPermissions() {
+                // Load user permissions from meta tags or API
+                const permissionsMeta = document.querySelector('meta[name="user-permissions"]');
+                if (permissionsMeta) {
+                    try {
+                        this.userPermissions = JSON.parse(permissionsMeta.content);
+                    } catch (e) {
+                        console.warn('Failed to parse user permissions');
+                    }
+                }
+            },
+            
+            setupGlobalErrorHandling() {
+                // Global error handler
+                this.$nextTick(() => {
+                    window.addEventListener('unhandledrejection', (event) => {
+                        console.error('Unhandled promise rejection:', event.reason);
+                        this.showNotification('error', 'An unexpected error occurred. Please try again.');
+                    });
+                });
+            },
+            
+            setupNotifications() {
+                // Auto-hide notifications after 5 seconds
+                setInterval(() => {
+                    Object.keys(this.notifications).forEach(key => {
+                        if (this.notifications[key]) {
+                            setTimeout(() => {
+                                this.notifications[key] = null;
+                            }, 5000);
+                        }
+                    });
+                }, 1000);
+            },
+            
+            showNotification(type, message, duration = 5000) {
+                this.notifications[type] = message;
+                
+                if (duration > 0) {
+                    setTimeout(() => {
+                        this.notifications[type] = null;
+                    }, duration);
+                }
+            },
+            
+            hasPermission(permission) {
+                return this.userPermissions[permission] || false;
+            },
+            
+            setLoading(loading) {
+                this.loading = loading;
+            }
+        }
+    });
+    
+    const pinia = createPinia();
+    
+    // Use router and Pinia
+    app.use(router);
+    app.use(pinia);
+    
+    // Make API service globally available
+    app.config.globalProperties.$api = apiService;
+    
+    // Register all components globally
+    const components = {
+        CreateMatchModal,
+        CreatePlayerModal,
+        LicenseQueueModal,
+        PlayerDashboard,
+        FootballTypeSelector,
+        DynamicDashboard,
+        FifaSyncDashboard,
+        FitDashboard,
+        MedicalModule,
+        LicensingModule,
+        CompetitionsModule,
+        AnalyticsModule,
+        TransferList,
+        TransferCreateModal,
+        DailyPassport,
+        PerformanceChart,
+        PerformanceMetrics,
+        AIRecommendationCard,
+        LeagueDashboard,
+        CompetitionSchedule,
+        CompetitionStandings,
+        RosterSubmission,
+        AddMatchModal,
+        ManualScheduler,
+        LicenseReview,
+        LicenseQueue,
+        LicenseRequestForm,
+        ClubPlayerManagement,
+        RefereeDashboard,
+        MatchSheet,
+        Dashboard
+    };
+    
+    Object.entries(components).forEach(([name, component]) => {
+        app.component(name, component);
+    });
+    
+    return app;
+}
+
+// Mount applications to different elements
+const mountPoints = [
+    { id: 'app', name: 'Main App' },
+    { id: 'player-dashboard-app', name: 'Player Dashboard' },
+    { id: 'fit-dashboard-app', name: 'FIT Dashboard' },
+    { id: 'transfer-list-app', name: 'Transfer List' },
+    { id: 'daily-passport-app', name: 'Daily Passport' },
+    { id: 'match-app', name: 'Match App' },
+    { id: 'league-championship-app', name: 'League Championship' }
+];
+
+mountPoints.forEach(({ id, name }) => {
+    const element = document.getElementById(id);
+    if (element) {
+        try {
+            const app = createVueApp();
+            app.mount(`#${id}`);
+            console.log(`✅ ${name} mounted successfully`);
+        } catch (error) {
+            console.error(`❌ Failed to mount ${name}:`, error);
+            element.innerHTML = `
+                <div class="flex items-center justify-center min-h-64">
+                    <div class="text-center">
+                        <div class="text-red-600 mb-4">
+                            <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Application Error</h3>
+                        <p class="text-gray-600 mb-4">Failed to load ${name}. Please refresh the page.</p>
+                        <button onclick="window.location.reload()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
+                            Refresh Page
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+});
+
+// Alpine.js pour le reste de l'application
+window.Alpine = Alpine;
+Alpine.start();
+
+// Export for external use
+window.VueApp = {
+    router,
+    createVueApp,
+    apiService
+};

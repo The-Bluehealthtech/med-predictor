@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple API Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">🧪 Test Simple API</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">🔍 Test ICD-11 API</h3>
+            <input type="text" id="test-input" placeholder="Type 'cardio' to test" class="w-full px-3 py-2 border border-gray-300 rounded-md mb-4">
+            <button onclick="testICD11()" class="px-4 py-2 bg-blue-500 text-white rounded">Test ICD-11 API</button>
+            <div id="results" class="mt-4 p-4 bg-gray-50 rounded"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">📊 Console Logs</h3>
+            <div id="console-logs" class="text-sm font-mono bg-black text-green-400 p-4 rounded max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simple logging function
+        function log(message) {
+            console.log(message);
+            const logsDiv = document.getElementById('console-logs');
+            logsDiv.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        // Test ICD-11 API
+        async function testICD11() {
+            const query = document.getElementById('test-input').value || 'cardio';
+            const resultsDiv = document.getElementById('results');
+            
+            log('=== STARTING ICD-11 API TEST ===');
+            log(`Query: "${query}"`);
+            
+            try {
+                log('🔍 Calling ICD-11 API...');
+                
+                const response = await fetch('https://icd.who.int/icdapi/2/2019-04/content/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Accept-Language': 'fr'
+                    },
+                    body: JSON.stringify({
+                        q: query,
+                        propertiesToBeSearched: ["Title", "Definition"],
+                        useFlexisearch: true,
+                        flatResults: false,
+                        highlightingEnabled: false
+                    })
+                });
+
+                log(`Response status: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                log('✅ API Response received');
+                log(`Found ${data.destinationEntities?.length || 0} results`);
+                
+                if (data.destinationEntities && data.destinationEntities.length > 0) {
+                    const results = data.destinationEntities.slice(0, 5).map(entity => ({
+                        id: entity.id,
+                        title: entity.title,
+                        code: entity.id
+                    }));
+                    
+                    resultsDiv.innerHTML = `
+                        <h4 class="font-semibold mb-2">✅ ICD-11 API Results:</h4>
+                        ${results.map(item => `
+                            <div class="p-2 bg-blue-50 border border-blue-200 rounded mb-2">
+                                <strong>${item.title}</strong> (${item.code})
+                            </div>
+                        `).join('')}
+                    `;
+                    
+                    log('✅ Results displayed successfully');
+                } else {
+                    resultsDiv.innerHTML = '<div class="text-red-500">No results found</div>';
+                    log('⚠️ No results found');
+                }
+
+            } catch (error) {
+                log(`❌ ERROR: ${error.message}`);
+                resultsDiv.innerHTML = `<div class="text-red-500">Error: ${error.message}</div>`;
+                
+                // Try fallback
+                log('🔄 Trying fallback with simulated data...');
+                const fallbackResults = [
+                    { id: 'cv_001', title: 'Hypertension artérielle', code: 'I10' },
+                    { id: 'cv_002', title: 'Infarctus du myocarde', code: 'I21' },
+                    { id: 'cv_003', title: 'Angine de poitrine', code: 'I20' }
+                ];
+                
+                resultsDiv.innerHTML = `
+                    <h4 class="font-semibold mb-2">⚠️ Fallback Results (Simulated):</h4>
+                    ${fallbackResults.map(item => `
+                        <div class="p-2 bg-yellow-50 border border-yellow-200 rounded mb-2">
+                            <strong>${item.title}</strong> (${item.code})
+                        </div>
+                    `).join('')}
+                `;
+                log('✅ Fallback results displayed');
+            }
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', function() {
+            log('=== PAGE LOADED ===');
+            log('Ready to test APIs');
+        });
+    </script>
+</body>
+</html> 

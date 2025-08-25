@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .tooth { fill: #f0f0f0; stroke: #333; stroke-width: 2; cursor: pointer; }
+      .tooth:hover { fill: #e0e0e0; }
+      .tooth.selected { fill: #ffcccc; }
+      .tooth.cavity { fill: #ff9999; }
+      .tooth.crown { fill: #ffffcc; }
+      .tooth.missing { fill: #cccccc; }
+      .tooth-label { font-family: Arial, sans-serif; font-size: 12px; text-anchor: middle; }
+      .chart-title { font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle; }
+    </style>
+  </defs>
+  
+  <!-- Titre -->
+  <text x="400" y="30" class="chart-title">Diagramme Dentaire Interactif</text>
+  
+  <!-- Dents supérieures (1-16) -->
+  <!-- 1er quadrant (droite supérieure) -->
+  <g id="teeth-upper-right">
+    <rect class="tooth" x="600" y="100" width="30" height="40" data-tooth="1" onclick="selectTooth(1)"/>
+    <text x="615" y="125" class="tooth-label">1</text>
+    
+    <rect class="tooth" x="570" y="100" width="30" height="40" data-tooth="2" onclick="selectTooth(2)"/>
+    <text x="585" y="125" class="tooth-label">2</text>
+    
+    <rect class="tooth" x="540" y="100" width="30" height="40" data-tooth="3" onclick="selectTooth(3)"/>
+    <text x="555" y="125" class="tooth-label">3</text>
+    
+    <rect class="tooth" x="510" y="100" width="30" height="40" data-tooth="4" onclick="selectTooth(4)"/>
+    <text x="525" y="125" class="tooth-label">4</text>
+    
+    <rect class="tooth" x="480" y="100" width="30" height="40" data-tooth="5" onclick="selectTooth(5)"/>
+    <text x="495" y="125" class="tooth-label">5</text>
+    
+    <rect class="tooth" x="450" y="100" width="30" height="40" data-tooth="6" onclick="selectTooth(6)"/>
+    <text x="465" y="125" class="tooth-label">6</text>
+    
+    <rect class="tooth" x="420" y="100" width="30" height="40" data-tooth="7" onclick="selectTooth(7)"/>
+    <text x="435" y="125" class="tooth-label">7</text>
+    
+    <rect class="tooth" x="390" y="100" width="30" height="40" data-tooth="8" onclick="selectTooth(8)"/>
+    <text x="405" y="125" class="tooth-label">8</text>
+  </g>
+  
+  <!-- 2ème quadrant (gauche supérieure) -->
+  <g id="teeth-upper-left">
+    <rect class="tooth" x="200" y="100" width="30" height="40" data-tooth="9" onclick="selectTooth(9)"/>
+    <text x="215" y="125" class="tooth-label">9</text>
+    
+    <rect class="tooth" x="230" y="100" width="30" height="40" data-tooth="10" onclick="selectTooth(10)"/>
+    <text x="245" y="125" class="tooth-label">10</text>
+    
+    <rect class="tooth" x="260" y="100" width="30" height="40" data-tooth="11" onclick="selectTooth(11)"/>
+    <text x="275" y="125" class="tooth-label">11</text>
+    
+    <rect class="tooth" x="290" y="100" width="30" height="40" data-tooth="12" onclick="selectTooth(12)"/>
+    <text x="305" y="125" class="tooth-label">12</text>
+    
+    <rect class="tooth" x="320" y="100" width="30" height="40" data-tooth="13" onclick="selectTooth(13)"/>
+    <text x="335" y="125" class="tooth-label">13</text>
+    
+    <rect class="tooth" x="350" y="100" width="30" height="40" data-tooth="14" onclick="selectTooth(14)"/>
+    <text x="365" y="125" class="tooth-label">14</text>
+    
+    <rect class="tooth" x="380" y="100" width="30" height="40" data-tooth="15" onclick="selectTooth(15)"/>
+    <text x="395" y="125" class="tooth-label">15</text>
+    
+    <rect class="tooth" x="410" y="100" width="30" height="40" data-tooth="16" onclick="selectTooth(16)"/>
+    <text x="425" y="125" class="tooth-label">16</text>
+  </g>
+  
+  <!-- Dents inférieures (17-32) -->
+  <!-- 3ème quadrant (gauche inférieure) -->
+  <g id="teeth-lower-left">
+    <rect class="tooth" x="200" y="300" width="30" height="40" data-tooth="17" onclick="selectTooth(17)"/>
+    <text x="215" y="325" class="tooth-label">17</text>
+    
+    <rect class="tooth" x="230" y="300" width="30" height="40" data-tooth="18" onclick="selectTooth(18)"/>
+    <text x="245" y="325" class="tooth-label">18</text>
+    
+    <rect class="tooth" x="260" y="300" width="30" height="40" data-tooth="19" onclick="selectTooth(19)"/>
+    <text x="275" y="325" class="tooth-label">19</text>
+    
+    <rect class="tooth" x="290" y="300" width="30" height="40" data-tooth="20" onclick="selectTooth(20)"/>
+    <text x="305" y="325" class="tooth-label">20</text>
+    
+    <rect class="tooth" x="320" y="300" width="30" height="40" data-tooth="21" onclick="selectTooth(21)"/>
+    <text x="335" y="325" class="tooth-label">21</text>
+    
+    <rect class="tooth" x="350" y="300" width="30" height="40" data-tooth="22" onclick="selectTooth(22)"/>
+    <text x="365" y="325" class="tooth-label">22</text>
+    
+    <rect class="tooth" x="380" y="300" width="30" height="40" data-tooth="23" onclick="selectTooth(23)"/>
+    <text x="395" y="325" class="tooth-label">23</text>
+    
+    <rect class="tooth" x="410" y="300" width="30" height="40" data-tooth="24" onclick="selectTooth(24)"/>
+    <text x="425" y="325" class="tooth-label">24</text>
+  </g>
+  
+  <!-- 4ème quadrant (droite inférieure) -->
+  <g id="teeth-lower-right">
+    <rect class="tooth" x="600" y="300" width="30" height="40" data-tooth="25" onclick="selectTooth(25)"/>
+    <text x="615" y="325" class="tooth-label">25</text>
+    
+    <rect class="tooth" x="570" y="300" width="30" height="40" data-tooth="26" onclick="selectTooth(26)"/>
+    <text x="585" y="325" class="tooth-label">26</text>
+    
+    <rect class="tooth" x="540" y="300" width="30" height="40" data-tooth="27" onclick="selectTooth(27)"/>
+    <text x="555" y="325" class="tooth-label">27</text>
+    
+    <rect class="tooth" x="510" y="300" width="30" height="40" data-tooth="28" onclick="selectTooth(28)"/>
+    <text x="525" y="325" class="tooth-label">28</text>
+    
+    <rect class="tooth" x="480" y="300" width="30" height="40" data-tooth="29" onclick="selectTooth(29)"/>
+    <text x="495" y="325" class="tooth-label">29</text>
+    
+    <rect class="tooth" x="450" y="300" width="30" height="40" data-tooth="30" onclick="selectTooth(30)"/>
+    <text x="465" y="325" class="tooth-label">30</text>
+    
+    <rect class="tooth" x="420" y="300" width="30" height="40" data-tooth="31" onclick="selectTooth(31)"/>
+    <text x="435" y="325" class="tooth-label">31</text>
+    
+    <rect class="tooth" x="390" y="300" width="30" height="40" data-tooth="32" onclick="selectTooth(32)"/>
+    <text x="405" y="325" class="tooth-label">32</text>
+  </g>
+  
+  <!-- Légende -->
+  <g id="legend" transform="translate(50, 450)">
+    <text x="0" y="0" class="chart-title">Légende :</text>
+    <rect x="0" y="20" width="20" height="20" class="tooth"/>
+    <text x="30" y="35" class="tooth-label">Normal</text>
+    <rect x="0" y="50" width="20" height="20" class="tooth cavity"/>
+    <text x="30" y="65" class="tooth-label">Cavité</text>
+    <rect x="0" y="80" width="20" height="20" class="tooth crown"/>
+    <text x="30" y="95" class="tooth-label">Couronne</text>
+    <rect x="0" y="110" width="20" height="20" class="tooth missing"/>
+    <text x="30" y="125" class="tooth-label">Manquante</text>
+  </g>
+  
+  <!-- Instructions -->
+  <text x="400" y="580" class="tooth-label">Cliquez sur une dent pour changer son état</text>
+</svg>
+
+<script>
+function selectTooth(toothNumber) {
+    const tooth = document.querySelector(`[data-tooth="${toothNumber}"]`);
+    if (!tooth) return;
+    
+    // Cycle through states: normal -> cavity -> crown -> missing -> normal
+    const states = ['', 'cavity', 'crown', 'missing'];
+    let currentState = '';
+    
+    for (let state of states) {
+        if (tooth.classList.contains(state)) {
+            currentState = state;
+            break;
+        }
+    }
+    
+    // Remove all state classes
+    tooth.classList.remove('cavity', 'crown', 'missing', 'selected');
+    
+    // Add next state
+    const currentIndex = states.indexOf(currentState);
+    const nextIndex = (currentIndex + 1) % states.length;
+    const nextState = states[nextIndex];
+    
+    if (nextState) {
+        tooth.classList.add(nextState);
+    }
+    
+    // Add selected class temporarily
+    tooth.classList.add('selected');
+    setTimeout(() => tooth.classList.remove('selected'), 500);
+    
+    console.log(`Dent ${toothNumber} : ${nextState || 'normal'}`);
+}
+</script> 

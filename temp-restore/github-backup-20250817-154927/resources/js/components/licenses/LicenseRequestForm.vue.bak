@@ -1,0 +1,36 @@
+<template>
+    <div class="modal">
+        <h3>
+            Demande de licence pour {{ player.first_name }}
+            {{ player.last_name }}
+        </h3>
+        <form @submit.prevent="submitRequest">
+            <label>Saison :</label>
+            <input v-model="season" required />
+            <label>Documents :</label>
+            <input type="file" multiple @change="handleFiles" />
+            <button type="submit">Soumettre la demande</button>
+            <button type="button" @click="$emit('close')">Fermer</button>
+        </form>
+        <div v-if="licenseStatus">
+            <p>Statut actuel : {{ licenseStatus }}</p>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { ref, watch, toRefs } from "vue";
+const props = defineProps({ player: Object });
+const season = ref("");
+const licenseStatus = ref("");
+const documents = ref([]);
+
+function handleFiles(event) {
+    documents.value = Array.from(event.target.files);
+}
+
+function submitRequest() {
+    // Appel API pour soumettre la demande
+    // ...
+}
+</script>

@@ -1,0 +1,6 @@
+<template>
+    <div class="p-4">Technical Planning (DTN)</div>
+</template>
+<script>
+export default { name: "TechnicalPlanning" };
+</script>

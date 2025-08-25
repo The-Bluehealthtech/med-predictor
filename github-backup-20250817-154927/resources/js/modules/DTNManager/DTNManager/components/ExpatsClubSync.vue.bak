@@ -1,0 +1,6 @@
+<template>
+    <div class="p-4">Expatriate Club Synchronization (DTN)</div>
+</template>
+<script>
+export default { name: "ExpatsClubSync" };
+</script>

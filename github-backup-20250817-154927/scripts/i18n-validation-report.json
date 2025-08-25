@@ -1,0 +1,1987 @@
+{
+  "timestamp": "2025-07-23T15:26:57.094Z",
+  "summary": {
+    "totalKeysFr": 609,
+    "totalKeysEn": 609,
+    "missingKeys": 0,
+    "identicalValues": 473,
+    "emptyValues": 0,
+    "untranslatedValues": 19
+  },
+  "issues": {
+    "missingKeys": [],
+    "identicalValues": [
+      {
+        "path": "dashboard.date",
+        "value": "Date"
+      },
+      {
+        "path": "dashboard.score",
+        "value": "Score"
+      },
+      {
+        "path": "dashboard.actions",
+        "value": "Actions"
+      },
+      {
+        "path": "dashboard.club",
+        "value": "Club"
+      },
+      {
+        "path": "dashboard.type",
+        "value": "Type"
+      },
+      {
+        "path": "dashboard.na",
+        "value": "N/A"
+      },
+      {
+        "path": "rpm.rpm.debugBanner",
+        "value": "🚨 RPM DASHBOARD DEBUG BANNER 🚨"
+      },
+      {
+        "path": "rpm.rpm.dashboard",
+        "value": "RPM Dashboard"
+      },
+      {
+        "path": "rpm.rpm.welcomeMessage",
+        "value": "Welcome to the RPM (Recovery Performance Management) system."
+      },
+      {
+        "path": "rpm.rpm.sessionsList",
+        "value": "SessionsList"
+      },
+      {
+        "path": "rpm.rpm.sessionDetail",
+        "value": "SessionDetail"
+      },
+      {
+        "path": "rpm.rpm.sessionAttendance",
+        "value": "SessionAttendance"
+      },
+      {
+        "path": "rpm.rpm.sync",
+        "value": "RPMSync"
+      },
+      {
+        "path": "rpm.rpm.settings",
+        "value": "RPMSettings"
+      },
+      {
+        "path": "rpm.rpm.reports",
+        "value": "RPMReports"
+      },
+      {
+        "path": "rpm.rpm.portal",
+        "value": "RPM Portal"
+      },
+      {
+        "path": "rpm.rpm.trainingCalendar",
+        "value": "Training Calendar (RPM)"
+      },
+      {
+        "path": "rpm.rpm.sessionEditor",
+        "value": "Session Editor (RPM)"
+      },
+      {
+        "path": "rpm.rpm.playerLoadMonitor",
+        "value": "Player Load Monitor (RPM)"
+      },
+      {
+        "path": "rpm.rpm.matchPreparation",
+        "value": "Match Preparation (RPM)"
+      },
+      {
+        "path": "rpm.rpm.attendanceTracker",
+        "value": "Attendance Tracker (RPM)"
+      },
+      {
+        "path": "rpm.rpm.trainingSessions",
+        "value": "Training Sessions:"
+      },
+      {
+        "path": "rpm.rpm.trainingSessionsCount",
+        "value": "Training Sessions:"
+      },
+      {
+        "path": "dtn.dtn.selectionPlayers",
+        "value": "SelectionPlayers"
+      },
+      {
+        "path": "dtn.dtn.selectionForm",
+        "value": "SelectionForm"
+      },
+      {
+        "path": "dtn.dtn.selectionDetail",
+        "value": "SelectionDetail"
+      },
+      {
+        "path": "dtn.dtn.dashboard",
+        "value": "DTN Manager Dashboard"
+      },
+      {
+        "path": "dtn.dtn.technicalPlanning",
+        "value": "Technical Planning (DTN)"
+      },
+      {
+        "path": "dtn.dtn.nationalTeams",
+        "value": "National Teams management (DTN)"
+      },
+      {
+        "path": "dtn.dtn.medicalClubInterface",
+        "value": "Medical Club Interface (DTN)"
+      },
+      {
+        "path": "dtn.dtn.internationalSelections",
+        "value": "International Selections management (DTN)"
+      },
+      {
+        "path": "dtn.dtn.expatriateClubSync",
+        "value": "Expatriate Club Synchronization (DTN)"
+      },
+      {
+        "path": "dtn.dtn.nationality",
+        "value": "Nationality"
+      },
+      {
+        "path": "referee.referee.tournamentManagement",
+        "value": "Tournament and match management"
+      },
+      {
+        "path": "referee.referee.selectPlayers",
+        "value": "Select 11-18 players for your match roster"
+      },
+      {
+        "path": "referee.referee.loadingMatch",
+        "value": "Loading match details..."
+      },
+      {
+        "path": "referee.referee.currentStandings",
+        "value": "Current standings based on match results"
+      },
+      {
+        "path": "referee.referee.manageSchedule",
+        "value": "Manage match schedule and generate fixtures"
+      },
+      {
+        "path": "referee.referee.allMatches",
+        "value": "All matches in this competition"
+      },
+      {
+        "path": "player.player.loadDetail",
+        "value": "PlayerLoadDetail"
+      },
+      {
+        "path": "player.player.profilePicture",
+        "value": "📸 Profile Picture"
+      },
+      {
+        "path": "player.player.management",
+        "value": "Players Management"
+      },
+      {
+        "path": "player.player.player",
+        "value": "Player"
+      },
+      {
+        "path": "player.player.playersOnly",
+        "value": "Players Only"
+      },
+      {
+        "path": "player.player.totalPlayers",
+        "value": "Total Players"
+      },
+      {
+        "path": "player.player.profile",
+        "value": "Profile"
+      },
+      {
+        "path": "player.player.totalPlayersCount",
+        "value": "Total Players"
+      },
+      {
+        "path": "player.player.addNew",
+        "value": "Add New Player"
+      },
+      {
+        "path": "player.player.availablePlayers",
+        "value": "Available Players"
+      },
+      {
+        "path": "common.common.matchesList",
+        "value": "MatchesList"
+      },
+      {
+        "path": "common.common.matchDetail",
+        "value": "MatchDetail"
+      },
+      {
+        "path": "common.common.teamDetail",
+        "value": "TeamDetail"
+      },
+      {
+        "path": "common.common.qualifications",
+        "value": "Qualifications"
+      },
+      {
+        "path": "common.common.date",
+        "value": "Date"
+      },
+      {
+        "path": "common.common.debugBanner",
+        "value": "🔴 ULTRA DEBUG VUE.JS"
+      },
+      {
+        "path": "common.common.action",
+        "value": "Action"
+      },
+      {
+        "path": "common.common.soccerBall",
+        "value": "⚽"
+      },
+      {
+        "path": "common.common.ghsScore",
+        "value": "GHS Score"
+      },
+      {
+        "path": "common.common.chart",
+        "value": "📊"
+      },
+      {
+        "path": "common.common.injuryRisk",
+        "value": "Injury Risk"
+      },
+      {
+        "path": "common.common.trend",
+        "value": "📈"
+      },
+      {
+        "path": "common.common.contribution",
+        "value": "Contribution"
+      },
+      {
+        "path": "common.common.clipboard",
+        "value": "📋"
+      },
+      {
+        "path": "common.common.active",
+        "value": "Active"
+      },
+      {
+        "path": "common.common.key81",
+        "value": "👤 Personal Information"
+      },
+      {
+        "path": "common.common.key82",
+        "value": "Name:"
+      },
+      {
+        "path": "common.common.key83",
+        "value": "FIFA ID:"
+      },
+      {
+        "path": "common.common.key84",
+        "value": "Position:"
+      },
+      {
+        "path": "common.common.key85",
+        "value": "Club:"
+      },
+      {
+        "path": "common.common.key86",
+        "value": "📋 License Status"
+      },
+      {
+        "path": "common.common.key87",
+        "value": "Status:"
+      },
+      {
+        "path": "common.common.key88",
+        "value": "Expires:"
+      },
+      {
+        "path": "common.common.key89",
+        "value": "🏆 Career Stats"
+      },
+      {
+        "path": "common.common.key90",
+        "value": "Matches:"
+      },
+      {
+        "path": "common.common.key92",
+        "value": "Health Records:"
+      },
+      {
+        "path": "common.common.key93",
+        "value": "📊 GHS Breakdown"
+      },
+      {
+        "path": "common.common.key94",
+        "value": "Physical:"
+      },
+      {
+        "path": "common.common.key95",
+        "value": "Mental:"
+      },
+      {
+        "path": "common.common.key96",
+        "value": "Civic:"
+      },
+      {
+        "path": "common.common.key97",
+        "value": "💪 Fitness Data"
+      },
+      {
+        "path": "common.common.key98",
+        "value": "Sleep Score:"
+      },
+      {
+        "path": "common.common.key99",
+        "value": "Risk Score:"
+      },
+      {
+        "path": "common.common.key100",
+        "value": "🏥 General Health Score"
+      },
+      {
+        "path": "common.common.key101",
+        "value": "Physical:"
+      },
+      {
+        "path": "common.common.key102",
+        "value": "Mental:"
+      },
+      {
+        "path": "common.common.key103",
+        "value": "Civic:"
+      },
+      {
+        "path": "common.common.key104",
+        "value": "Sleep:"
+      },
+      {
+        "path": "common.common.key105",
+        "value": "🤖 AI Suggestions"
+      },
+      {
+        "path": "common.common.key106",
+        "value": "No AI suggestions available"
+      },
+      {
+        "path": "common.common.key107",
+        "value": "📊 Data Contribution"
+      },
+      {
+        "path": "common.common.key108",
+        "value": "Contribution Score:"
+      },
+      {
+        "path": "common.common.key109",
+        "value": "Data Value:"
+      },
+      {
+        "path": "common.common.key110",
+        "value": "Last Export:"
+      },
+      {
+        "path": "common.common.key111",
+        "value": "📈 Activity Summary"
+      },
+      {
+        "path": "common.common.key112",
+        "value": "Matches Contributed:"
+      },
+      {
+        "path": "common.common.key114",
+        "value": "Health Records:"
+      },
+      {
+        "path": "common.common.key115",
+        "value": "F"
+      },
+      {
+        "path": "common.common.key116",
+        "value": "T"
+      },
+      {
+        "path": "common.common.key117",
+        "value": "FOOTBALL"
+      },
+      {
+        "path": "common.common.key118",
+        "value": "INTELLIGENCE"
+      },
+      {
+        "path": "common.common.key119",
+        "value": "& TRACKING"
+      },
+      {
+        "path": "common.common.key120",
+        "value": "FIFA Connect"
+      },
+      {
+        "path": "common.common.key121",
+        "value": "Access Module"
+      },
+      {
+        "path": "common.common.key122",
+        "value": "🏥 Medical Module"
+      },
+      {
+        "path": "common.common.key123",
+        "value": "Health and performance data tracking"
+      },
+      {
+        "path": "common.common.key126",
+        "value": "Compétition :"
+      },
+      {
+        "path": "common.common.key127",
+        "value": "Date :"
+      },
+      {
+        "path": "common.common.key128",
+        "value": "Statut :"
+      },
+      {
+        "path": "common.common.key129",
+        "value": "Domicile :"
+      },
+      {
+        "path": "common.common.key130",
+        "value": "Extérieur :"
+      },
+      {
+        "path": "common.common.key131",
+        "value": "Score domicile"
+      },
+      {
+        "path": "common.common.key132",
+        "value": "Score extérieur"
+      },
+      {
+        "path": "common.common.key134",
+        "value": "+ Ajouter un événement"
+      },
+      {
+        "path": "common.common.key135",
+        "value": "Supprimer"
+      },
+      {
+        "path": "common.common.key136",
+        "value": "Notes"
+      },
+      {
+        "path": "common.common.key137",
+        "value": "Sauvegarder le brouillon"
+      },
+      {
+        "path": "common.common.key138",
+        "value": "Soumettre"
+      },
+      {
+        "path": "common.common.key139",
+        "value": "📋 Licensing Module"
+      },
+      {
+        "path": "common.common.key141",
+        "value": "License Queue"
+      },
+      {
+        "path": "common.common.key144",
+        "value": "Club"
+      },
+      {
+        "path": "common.common.key145",
+        "value": "Type"
+      },
+      {
+        "path": "common.common.key147",
+        "value": "Submitted"
+      },
+      {
+        "path": "common.common.key148",
+        "value": "Actions"
+      },
+      {
+        "path": "common.common.key149",
+        "value": "Close"
+      },
+      {
+        "path": "common.common.key150",
+        "value": "FR"
+      },
+      {
+        "path": "common.common.key151",
+        "value": "EN"
+      },
+      {
+        "path": "common.common.key152",
+        "value": "⚽"
+      },
+      {
+        "path": "common.common.key153",
+        "value": "🏆"
+      },
+      {
+        "path": "common.common.key154",
+        "value": "🏛️"
+      },
+      {
+        "path": "common.common.key155",
+        "value": "🏥"
+      },
+      {
+        "path": "common.common.key156",
+        "value": "⚖️"
+      },
+      {
+        "path": "common.common.key157",
+        "value": "⚙️"
+      },
+      {
+        "path": "common.common.key158",
+        "value": "🔴 FORCE DISPLAY VUE.JS"
+      },
+      {
+        "path": "common.common.key160",
+        "value": "FIT"
+      },
+      {
+        "path": "common.common.key161",
+        "value": "Football Intelligence & Tracking"
+      },
+      {
+        "path": "common.common.key162",
+        "value": "Enterprise Sports Management Platform"
+      },
+      {
+        "path": "common.common.key163",
+        "value": "Documentation"
+      },
+      {
+        "path": "common.common.key164",
+        "value": "Support"
+      },
+      {
+        "path": "common.common.key165",
+        "value": "Admin Portal"
+      },
+      {
+        "path": "common.common.key166",
+        "value": "⚽"
+      },
+      {
+        "path": "common.common.key167",
+        "value": "11-a-side Football"
+      },
+      {
+        "path": "common.common.key168",
+        "value": "Get Started"
+      },
+      {
+        "path": "common.common.key169",
+        "value": "⚽"
+      },
+      {
+        "path": "common.common.key170",
+        "value": "Women's Football"
+      },
+      {
+        "path": "common.common.key171",
+        "value": "Get Started"
+      },
+      {
+        "path": "common.common.key172",
+        "value": "⚽"
+      },
+      {
+        "path": "common.common.key173",
+        "value": "Futsal"
+      },
+      {
+        "path": "common.common.key174",
+        "value": "Get Started"
+      },
+      {
+        "path": "common.common.key175",
+        "value": "⚽"
+      },
+      {
+        "path": "common.common.key176",
+        "value": "Beach Soccer"
+      },
+      {
+        "path": "common.common.key177",
+        "value": "Get Started"
+      },
+      {
+        "path": "common.common.key178",
+        "value": "Why Choose FIT Platform?"
+      },
+      {
+        "path": "common.common.key179",
+        "value": "Advanced Analytics"
+      },
+      {
+        "path": "common.common.key180",
+        "value": "Real-time performance tracking and data-driven insights for better decision making."
+      },
+      {
+        "path": "common.common.key181",
+        "value": "Health Monitoring"
+      },
+      {
+        "path": "common.common.key182",
+        "value": "Comprehensive health tracking and medical prediction tools for player safety."
+      },
+      {
+        "path": "common.common.key183",
+        "value": "Compliance & Security"
+      },
+      {
+        "path": "common.common.key184",
+        "value": "Enterprise-grade security and regulatory compliance for all football formats."
+      },
+      {
+        "path": "common.common.key185",
+        "value": "FIT"
+      },
+      {
+        "path": "common.common.key186",
+        "value": "Football Intelligence & Tracking"
+      },
+      {
+        "path": "common.common.key187",
+        "value": "Platform"
+      },
+      {
+        "path": "common.common.key188",
+        "value": "Features"
+      },
+      {
+        "path": "common.common.key189",
+        "value": "Pricing"
+      },
+      {
+        "path": "common.common.key190",
+        "value": "API"
+      },
+      {
+        "path": "common.common.key191",
+        "value": "Integrations"
+      },
+      {
+        "path": "common.common.key192",
+        "value": "Support"
+      },
+      {
+        "path": "common.common.key193",
+        "value": "Documentation"
+      },
+      {
+        "path": "common.common.key194",
+        "value": "Help Center"
+      },
+      {
+        "path": "common.common.key195",
+        "value": "Contact"
+      },
+      {
+        "path": "common.common.key197",
+        "value": "Company"
+      },
+      {
+        "path": "common.common.key198",
+        "value": "About"
+      },
+      {
+        "path": "common.common.key199",
+        "value": "Blog"
+      },
+      {
+        "path": "common.common.key200",
+        "value": "Careers"
+      },
+      {
+        "path": "common.common.key201",
+        "value": "Privacy"
+      },
+      {
+        "path": "common.common.key202",
+        "value": "🎯 Test FIFA Design System"
+      },
+      {
+        "path": "common.common.key203",
+        "value": "🎨 Couleurs FIFA"
+      },
+      {
+        "path": "common.common.key204",
+        "value": "🔘 Boutons FIFA"
+      },
+      {
+        "path": "common.common.key205",
+        "value": "🃏 Cartes FIFA"
+      },
+      {
+        "path": "common.common.key206",
+        "value": "Carte Élevée"
+      },
+      {
+        "path": "common.common.key207",
+        "value": "Carte Bordée"
+      },
+      {
+        "path": "common.common.key208",
+        "value": "🧭 Navigation FIFA"
+      },
+      {
+        "path": "common.common.key209",
+        "value": "✨ Animations FIFA"
+      },
+      {
+        "path": "common.common.key210",
+        "value": "📊 Statut de l'Application"
+      },
+      {
+        "path": "common.common.key211",
+        "value": "Loading dashboard data..."
+      },
+      {
+        "path": "common.common.key212",
+        "value": "Sync Type"
+      },
+      {
+        "path": "common.common.key213",
+        "value": "All Data"
+      },
+      {
+        "path": "common.common.key215",
+        "value": "Clubs Only"
+      },
+      {
+        "path": "common.common.key216",
+        "value": "Batch Size"
+      },
+      {
+        "path": "common.common.key217",
+        "value": "Filters (JSON)"
+      },
+      {
+        "path": "common.common.key219",
+        "value": "Synced"
+      },
+      {
+        "path": "common.common.key220",
+        "value": "Sync Rate"
+      },
+      {
+        "path": "common.common.key221",
+        "value": "Total Clubs"
+      },
+      {
+        "path": "common.common.key222",
+        "value": "Synced"
+      },
+      {
+        "path": "common.common.key223",
+        "value": "Sync Rate"
+      },
+      {
+        "path": "common.common.key224",
+        "value": "Total Associations"
+      },
+      {
+        "path": "common.common.key225",
+        "value": "Synced"
+      },
+      {
+        "path": "common.common.key226",
+        "value": "Sync Rate"
+      },
+      {
+        "path": "common.common.key227",
+        "value": "FIT"
+      },
+      {
+        "path": "common.common.key228",
+        "value": "Football Intelligence"
+      },
+      {
+        "path": "common.common.key230",
+        "value": "Settings"
+      },
+      {
+        "path": "common.common.key231",
+        "value": "Logout"
+      },
+      {
+        "path": "common.common.key232",
+        "value": "vs last month"
+      },
+      {
+        "path": "common.common.key233",
+        "value": "Recent Activity"
+      },
+      {
+        "path": "common.common.key235",
+        "value": "✕"
+      },
+      {
+        "path": "common.common.key236",
+        "value": "Ajouter un événement"
+      },
+      {
+        "path": "common.common.key237",
+        "value": "Type d'événement"
+      },
+      {
+        "path": "common.common.key238",
+        "value": "Sélectionner"
+      },
+      {
+        "path": "common.common.key239",
+        "value": "But"
+      },
+      {
+        "path": "common.common.key240",
+        "value": "Carton jaune"
+      },
+      {
+        "path": "common.common.key241",
+        "value": "Carton rouge"
+      },
+      {
+        "path": "common.common.key242",
+        "value": "Remplacement"
+      },
+      {
+        "path": "common.common.key243",
+        "value": "Blessure"
+      },
+      {
+        "path": "common.common.key245",
+        "value": "Sélectionner"
+      },
+      {
+        "path": "common.common.key247",
+        "value": "Sélectionner"
+      },
+      {
+        "path": "common.common.key248",
+        "value": "Minute"
+      },
+      {
+        "path": "common.common.key249",
+        "value": "Description (optionnel)"
+      },
+      {
+        "path": "common.common.key250",
+        "value": "Annuler"
+      },
+      {
+        "path": "common.common.key251",
+        "value": "Ajouter"
+      },
+      {
+        "path": "common.common.key252",
+        "value": "Chargement des joueurs éligibles..."
+      },
+      {
+        "path": "common.common.key253",
+        "value": "Erreur"
+      },
+      {
+        "path": "common.common.key254",
+        "value": "Licence fédération requise"
+      },
+      {
+        "path": "common.common.key255",
+        "value": "Éligibles"
+      },
+      {
+        "path": "common.common.key256",
+        "value": "Non éligibles"
+      },
+      {
+        "path": "common.common.key257",
+        "value": "Total"
+      },
+      {
+        "path": "common.common.key258",
+        "value": "FIT"
+      },
+      {
+        "path": "common.common.key259",
+        "value": "Admin Login"
+      },
+      {
+        "path": "common.common.key260",
+        "value": "👥"
+      },
+      {
+        "path": "common.common.key262",
+        "value": "🏢"
+      },
+      {
+        "path": "common.common.key263",
+        "value": "Active Clubs"
+      },
+      {
+        "path": "common.common.key264",
+        "value": "🏆"
+      },
+      {
+        "path": "common.common.key265",
+        "value": "Competitions"
+      },
+      {
+        "path": "common.common.key266",
+        "value": "📋"
+      },
+      {
+        "path": "common.common.key267",
+        "value": "Pending Licenses"
+      },
+      {
+        "path": "common.common.key268",
+        "value": "Quick Actions"
+      },
+      {
+        "path": "common.common.key269",
+        "value": "📋"
+      },
+      {
+        "path": "common.common.key270",
+        "value": "Licensing"
+      },
+      {
+        "path": "common.common.key271",
+        "value": "Manage player licenses"
+      },
+      {
+        "path": "common.common.key272",
+        "value": "🏥"
+      },
+      {
+        "path": "common.common.key273",
+        "value": "Medical"
+      },
+      {
+        "path": "common.common.key274",
+        "value": "Health records & clearances"
+      },
+      {
+        "path": "common.common.key275",
+        "value": "🏆"
+      },
+      {
+        "path": "common.common.key276",
+        "value": "Competitions"
+      },
+      {
+        "path": "common.common.key277",
+        "value": "Tournaments & standings"
+      },
+      {
+        "path": "common.common.key278",
+        "value": "Recent Activities"
+      },
+      {
+        "path": "common.common.key279",
+        "value": "Top Clubs"
+      },
+      {
+        "path": "common.common.key280",
+        "value": "Team Size"
+      },
+      {
+        "path": "common.common.key281",
+        "value": "Substitutes"
+      },
+      {
+        "path": "common.common.key282",
+        "value": "Ball Size"
+      },
+      {
+        "path": "common.common.key283",
+        "value": "Field Dimensions"
+      },
+      {
+        "path": "common.common.key284",
+        "value": "🔴 DEBUG VUE.JS"
+      },
+      {
+        "path": "common.common.key285",
+        "value": "Si vous voyez ce message rouge, Vue.js fonctionne !"
+      },
+      {
+        "path": "common.common.key287",
+        "value": "First Name *"
+      },
+      {
+        "path": "common.common.key288",
+        "value": "Last Name *"
+      },
+      {
+        "path": "common.common.key289",
+        "value": "Email *"
+      },
+      {
+        "path": "common.common.key290",
+        "value": "Phone"
+      },
+      {
+        "path": "common.common.key291",
+        "value": "Date of Birth *"
+      },
+      {
+        "path": "common.common.key293",
+        "value": "Position"
+      },
+      {
+        "path": "common.common.key294",
+        "value": "Select Position"
+      },
+      {
+        "path": "common.common.key295",
+        "value": "Goalkeeper"
+      },
+      {
+        "path": "common.common.key296",
+        "value": "Defender"
+      },
+      {
+        "path": "common.common.key297",
+        "value": "Midfielder"
+      },
+      {
+        "path": "common.common.key298",
+        "value": "Forward"
+      },
+      {
+        "path": "common.common.key299",
+        "value": "Club"
+      },
+      {
+        "path": "common.common.key300",
+        "value": "Select Club"
+      },
+      {
+        "path": "common.common.key301",
+        "value": "Notes"
+      },
+      {
+        "path": "common.common.key302",
+        "value": "Create New Match"
+      },
+      {
+        "path": "common.common.key303",
+        "value": "Competition *"
+      },
+      {
+        "path": "common.common.key304",
+        "value": "Select Competition"
+      },
+      {
+        "path": "common.common.key305",
+        "value": "Match Date *"
+      },
+      {
+        "path": "common.common.key306",
+        "value": "Kickoff Time *"
+      },
+      {
+        "path": "common.common.key307",
+        "value": "Venue"
+      },
+      {
+        "path": "common.common.key308",
+        "value": "Home Team *"
+      },
+      {
+        "path": "common.common.key309",
+        "value": "Select Home Team"
+      },
+      {
+        "path": "common.common.key310",
+        "value": "Away Team *"
+      },
+      {
+        "path": "common.common.key311",
+        "value": "Select Away Team"
+      },
+      {
+        "path": "common.common.key312",
+        "value": "Notes"
+      },
+      {
+        "path": "common.common.key313",
+        "value": "🏆 Competitions"
+      },
+      {
+        "path": "common.common.key315",
+        "value": "🟢 BASIC TEST VUE.JS"
+      },
+      {
+        "path": "common.common.key317",
+        "value": "📊 Analytics & Reports"
+      },
+      {
+        "path": "common.common.key318",
+        "value": "Statistical analysis and reporting"
+      },
+      {
+        "path": "common.common.key319",
+        "value": "Gestion des Transferts"
+      },
+      {
+        "path": "common.common.key320",
+        "value": "Gérez les transferts de joueurs avec intégration FIFA"
+      },
+      {
+        "path": "common.common.key324",
+        "value": "En attente"
+      },
+      {
+        "path": "common.common.key325",
+        "value": "Soumis"
+      },
+      {
+        "path": "common.common.key326",
+        "value": "Approuvé"
+      },
+      {
+        "path": "common.common.key327",
+        "value": "Rejeté"
+      },
+      {
+        "path": "common.common.key328",
+        "value": "Type"
+      },
+      {
+        "path": "common.common.key329",
+        "value": "Tous les types"
+      },
+      {
+        "path": "common.common.key330",
+        "value": "Définitif"
+      },
+      {
+        "path": "common.common.key331",
+        "value": "Prêt"
+      },
+      {
+        "path": "common.common.key332",
+        "value": "Agent libre"
+      },
+      {
+        "path": "common.common.key333",
+        "value": "Club"
+      },
+      {
+        "path": "common.common.key334",
+        "value": "Tous les clubs"
+      },
+      {
+        "path": "common.common.key336",
+        "value": "Tous les joueurs"
+      },
+      {
+        "path": "common.common.key338",
+        "value": "Origine → Destination"
+      },
+      {
+        "path": "common.common.key339",
+        "value": "Type"
+      },
+      {
+        "path": "common.common.key341",
+        "value": "ITC"
+      },
+      {
+        "path": "common.common.key342",
+        "value": "Montant"
+      },
+      {
+        "path": "common.common.key343",
+        "value": "Actions"
+      },
+      {
+        "path": "common.common.key344",
+        "value": "→"
+      },
+      {
+        "path": "common.common.key345",
+        "value": "Non requis"
+      },
+      {
+        "path": "common.common.key346",
+        "value": "Nouveau Transfert"
+      },
+      {
+        "path": "common.common.key348",
+        "value": "Sélectionner un joueur"
+      },
+      {
+        "path": "common.common.key349",
+        "value": "Type de transfert *"
+      },
+      {
+        "path": "common.common.key350",
+        "value": "Sélectionner le type"
+      },
+      {
+        "path": "common.common.key351",
+        "value": "Définitif"
+      },
+      {
+        "path": "common.common.key352",
+        "value": "Prêt"
+      },
+      {
+        "path": "common.common.key353",
+        "value": "Agent libre"
+      },
+      {
+        "path": "common.common.key354",
+        "value": "Club d'origine *"
+      },
+      {
+        "path": "common.common.key355",
+        "value": "Sélectionner le club d'origine"
+      },
+      {
+        "path": "common.common.key356",
+        "value": "Club de destination *"
+      },
+      {
+        "path": "common.common.key357",
+        "value": "Sélectionner le club de destination"
+      },
+      {
+        "path": "common.common.key358",
+        "value": "Date de transfert *"
+      },
+      {
+        "path": "common.common.key359",
+        "value": "Date de début de contrat *"
+      },
+      {
+        "path": "common.common.key360",
+        "value": "Date de fin de contrat"
+      },
+      {
+        "path": "common.common.key361",
+        "value": "Devise"
+      },
+      {
+        "path": "common.common.key362",
+        "value": "EUR (Euro)"
+      },
+      {
+        "path": "common.common.key363",
+        "value": "USD (Dollar US)"
+      },
+      {
+        "path": "common.common.key364",
+        "value": "GBP (Livre Sterling)"
+      },
+      {
+        "path": "common.common.key365",
+        "value": "Frais de transfert"
+      },
+      {
+        "path": "common.common.key366",
+        "value": "Conditions spéciales"
+      },
+      {
+        "path": "common.common.key367",
+        "value": "Notes"
+      },
+      {
+        "path": "common.common.key368",
+        "value": "Transfert international détecté"
+      },
+      {
+        "path": "common.common.key369",
+        "value": "Ce transfert nécessitera un ITC (International Transfer Certificate) de la part de FIFA."
+      },
+      {
+        "path": "common.common.key370",
+        "value": "Création..."
+      },
+      {
+        "path": "common.common.key371",
+        "value": "Créer le transfert"
+      },
+      {
+        "path": "common.common.key372",
+        "value": "Passeport du Jour"
+      },
+      {
+        "path": "common.common.key374",
+        "value": "Transferts Approuvés"
+      },
+      {
+        "path": "common.common.key375",
+        "value": "ITC En Attente"
+      },
+      {
+        "path": "common.common.key376",
+        "value": "Alertes"
+      },
+      {
+        "path": "common.common.key377",
+        "value": "Sélectionner un club"
+      },
+      {
+        "path": "common.common.key379",
+        "value": "Position"
+      },
+      {
+        "path": "common.common.key380",
+        "value": "Statut Licence"
+      },
+      {
+        "path": "common.common.key381",
+        "value": "ITC"
+      },
+      {
+        "path": "common.common.key382",
+        "value": "Suspensions"
+      },
+      {
+        "path": "common.common.key383",
+        "value": "Éligible"
+      },
+      {
+        "path": "common.common.key384",
+        "value": "Non requis"
+      },
+      {
+        "path": "common.common.key385",
+        "value": "Sélectionner une fédération"
+      },
+      {
+        "path": "common.common.key386",
+        "value": "Transferts Récents"
+      },
+      {
+        "path": "common.common.key387",
+        "value": "Alertes Réglementaires"
+      },
+      {
+        "path": "common.common.key388",
+        "value": "Sélectionner un joueur"
+      },
+      {
+        "path": "common.common.key389",
+        "value": "Informations"
+      },
+      {
+        "path": "common.common.key390",
+        "value": "Nom:"
+      },
+      {
+        "path": "common.common.key391",
+        "value": "Position:"
+      },
+      {
+        "path": "common.common.key393",
+        "value": "Club actuel:"
+      },
+      {
+        "path": "common.common.key394",
+        "value": "Statut licence:"
+      },
+      {
+        "path": "common.common.key395",
+        "value": "Historique des Transferts"
+      },
+      {
+        "path": "common.common.key397",
+        "value": "Ligne"
+      },
+      {
+        "path": "common.common.key398",
+        "value": "Barres"
+      },
+      {
+        "path": "common.common.key399",
+        "value": "Radar"
+      },
+      {
+        "path": "common.common.key400",
+        "value": "Donut"
+      },
+      {
+        "path": "common.common.key401",
+        "value": "7 jours"
+      },
+      {
+        "path": "common.common.key402",
+        "value": "30 jours"
+      },
+      {
+        "path": "common.common.key403",
+        "value": "90 jours"
+      },
+      {
+        "path": "common.common.key404",
+        "value": "1 an"
+      },
+      {
+        "path": "common.common.key405",
+        "value": "IA"
+      },
+      {
+        "path": "common.common.key406",
+        "value": "Confiance"
+      },
+      {
+        "path": "common.common.key407",
+        "value": "Analyse détaillée"
+      },
+      {
+        "path": "common.common.key408",
+        "value": "Actions recommandées"
+      },
+      {
+        "path": "common.common.key409",
+        "value": "Résultats attendus"
+      },
+      {
+        "path": "common.common.key410",
+        "value": "Métriques de succès"
+      },
+      {
+        "path": "common.common.key411",
+        "value": "Progrès"
+      },
+      {
+        "path": "common.common.key412",
+        "value": "Assigné à:"
+      },
+      {
+        "path": "common.common.key413",
+        "value": "Implémenter la recommandation"
+      },
+      {
+        "path": "common.common.key414",
+        "value": "Date de début *"
+      },
+      {
+        "path": "common.common.key415",
+        "value": "Date de fin prévue *"
+      },
+      {
+        "path": "common.common.key416",
+        "value": "Assigner à"
+      },
+      {
+        "path": "common.common.key417",
+        "value": "Sélectionner un utilisateur"
+      },
+      {
+        "path": "common.common.key418",
+        "value": "Notes d'implémentation"
+      },
+      {
+        "path": "common.common.key419",
+        "value": "Examen de la demande de licence"
+      },
+      {
+        "path": "common.common.key420",
+        "value": "Documents :"
+      },
+      {
+        "path": "common.common.key421",
+        "value": "Approuver"
+      },
+      {
+        "path": "common.common.key422",
+        "value": "Rejeter"
+      },
+      {
+        "path": "common.common.key423",
+        "value": "Demander plus d'infos"
+      },
+      {
+        "path": "common.common.key424",
+        "value": "Saison :"
+      },
+      {
+        "path": "common.common.key425",
+        "value": "Documents :"
+      },
+      {
+        "path": "common.common.key426",
+        "value": "Soumettre la demande"
+      },
+      {
+        "path": "common.common.key427",
+        "value": "Fermer"
+      },
+      {
+        "path": "common.common.key428",
+        "value": "Demandes de licence en attente"
+      },
+      {
+        "path": "common.common.key430",
+        "value": "Saison"
+      },
+      {
+        "path": "common.common.key432",
+        "value": "Action"
+      },
+      {
+        "path": "common.common.key433",
+        "value": "Gestion des joueurs du club"
+      },
+      {
+        "path": "common.common.key434",
+        "value": "Nom"
+      },
+      {
+        "path": "common.common.key435",
+        "value": "Date de naissance"
+      },
+      {
+        "path": "common.common.key436",
+        "value": "Statut licence (saison en cours)"
+      },
+      {
+        "path": "common.common.key437",
+        "value": "Action"
+      },
+      {
+        "path": "common.common.key438",
+        "value": "Submit Roster"
+      },
+      {
+        "path": "common.common.key439",
+        "value": "Match Information"
+      },
+      {
+        "path": "common.common.key440",
+        "value": "Matchday"
+      },
+      {
+        "path": "common.common.key441",
+        "value": "Date"
+      },
+      {
+        "path": "common.common.key443",
+        "value": "Select Your Team"
+      },
+      {
+        "path": "common.common.key444",
+        "value": "Choose which team you're submitting the roster for"
+      },
+      {
+        "path": "common.common.key445",
+        "value": "Home Team"
+      },
+      {
+        "path": "common.common.key446",
+        "value": "Away Team"
+      },
+      {
+        "path": "common.common.key449",
+        "value": "Jersey #"
+      },
+      {
+        "path": "common.common.key450",
+        "value": "Starter"
+      },
+      {
+        "path": "common.common.key451",
+        "value": "Please fix the following issues:"
+      },
+      {
+        "path": "common.common.key452",
+        "value": "Dismiss"
+      },
+      {
+        "path": "common.common.key453",
+        "value": "Dismiss"
+      },
+      {
+        "path": "common.common.key455",
+        "value": "VS"
+      },
+      {
+        "path": "common.common.key456",
+        "value": "Date & Time"
+      },
+      {
+        "path": "common.common.key457",
+        "value": "Stadium"
+      },
+      {
+        "path": "common.common.key458",
+        "value": "Capacity"
+      },
+      {
+        "path": "common.common.key459",
+        "value": "Weather"
+      },
+      {
+        "path": "common.common.key460",
+        "value": "Pitch Condition"
+      },
+      {
+        "path": "common.common.key461",
+        "value": "Referee"
+      },
+      {
+        "path": "common.common.key462",
+        "value": "Assistant Referee 1"
+      },
+      {
+        "path": "common.common.key463",
+        "value": "Assistant Referee 2"
+      },
+      {
+        "path": "common.common.key464",
+        "value": "Fourth Official"
+      },
+      {
+        "path": "common.common.key465",
+        "value": "VAR Referee"
+      },
+      {
+        "path": "common.common.key466",
+        "value": "Match Scheduled"
+      },
+      {
+        "path": "common.common.key467",
+        "value": "Match has been scheduled and confirmed"
+      },
+      {
+        "path": "common.common.key468",
+        "value": "Match In Progress"
+      },
+      {
+        "path": "common.common.key469",
+        "value": "Match is currently being played"
+      },
+      {
+        "path": "common.common.key470",
+        "value": "Match Completed"
+      },
+      {
+        "path": "common.common.key471",
+        "value": "Match has finished and results recorded"
+      },
+      {
+        "path": "common.common.key472",
+        "value": "Génération..."
+      },
+      {
+        "path": "common.common.key473",
+        "value": "Suppression..."
+      },
+      {
+        "path": "common.common.key474",
+        "value": "Vider le Calendrier"
+      },
+      {
+        "path": "common.common.key475",
+        "value": "vs"
+      },
+      {
+        "path": "common.common.key476",
+        "value": "Génération Automatique du Calendrier"
+      },
+      {
+        "path": "common.common.key477",
+        "value": "Date de début"
+      },
+      {
+        "path": "common.common.key479",
+        "value": "Loading League Championship..."
+      },
+      {
+        "path": "common.common.key480",
+        "value": "⚠️"
+      },
+      {
+        "path": "common.common.key481",
+        "value": "Error Loading League Championship"
+      },
+      {
+        "path": "common.common.key482",
+        "value": "Total Teams"
+      },
+      {
+        "path": "common.common.key483",
+        "value": "Total Matches"
+      },
+      {
+        "path": "common.common.key484",
+        "value": "Competition Details"
+      },
+      {
+        "path": "common.common.key485",
+        "value": "Name:"
+      },
+      {
+        "path": "common.common.key486",
+        "value": "Short Name:"
+      },
+      {
+        "path": "common.common.key487",
+        "value": "Type:"
+      },
+      {
+        "path": "common.common.key488",
+        "value": "Season:"
+      },
+      {
+        "path": "common.common.key489",
+        "value": "Status:"
+      },
+      {
+        "path": "common.common.key490",
+        "value": "Description:"
+      },
+      {
+        "path": "common.common.key491",
+        "value": "vs"
+      },
+      {
+        "path": "common.common.key492",
+        "value": "League table and team statistics"
+      },
+      {
+        "path": "common.common.key493",
+        "value": "League Table"
+      },
+      {
+        "path": "common.common.key495",
+        "value": "Pos"
+      },
+      {
+        "path": "common.common.key497",
+        "value": "P"
+      },
+      {
+        "path": "common.common.key498",
+        "value": "W"
+      },
+      {
+        "path": "common.common.key499",
+        "value": "D"
+      },
+      {
+        "path": "common.common.key500",
+        "value": "L"
+      },
+      {
+        "path": "common.common.key501",
+        "value": "GF"
+      },
+      {
+        "path": "common.common.key502",
+        "value": "GA"
+      },
+      {
+        "path": "common.common.key503",
+        "value": "GD"
+      },
+      {
+        "path": "common.common.key504",
+        "value": "Pts"
+      },
+      {
+        "path": "common.common.key505",
+        "value": "Form"
+      },
+      {
+        "path": "common.common.key506",
+        "value": "Top Scorers"
+      },
+      {
+        "path": "common.common.key507",
+        "value": "Leading goal scorers in the competition"
+      },
+      {
+        "path": "common.common.key508",
+        "value": "Most Wins"
+      },
+      {
+        "path": "common.common.key509",
+        "value": "Best Defense"
+      },
+      {
+        "path": "common.common.key511",
+        "value": "Competition Information"
+      },
+      {
+        "path": "common.common.key513",
+        "value": "Teams"
+      },
+      {
+        "path": "common.common.key514",
+        "value": "Total Matches"
+      },
+      {
+        "path": "common.common.key515",
+        "value": "Completed Matches"
+      },
+      {
+        "path": "common.common.key516",
+        "value": "Schedule Not Generated"
+      },
+      {
+        "path": "common.common.key517",
+        "value": "No schedule has been generated for this competition yet. Click \"Generate Schedule\" to create the fixture list."
+      },
+      {
+        "path": "common.common.key518",
+        "value": "Match Schedule"
+      },
+      {
+        "path": "common.common.key520",
+        "value": "Filter by Matchday:"
+      },
+      {
+        "path": "common.common.key521",
+        "value": "All Matchdays"
+      },
+      {
+        "path": "common.common.key522",
+        "value": "vs"
+      },
+      {
+        "path": "common.common.key523",
+        "value": "Generate Schedule"
+      },
+      {
+        "path": "common.common.key524",
+        "value": "Start Date"
+      },
+      {
+        "path": "common.common.key525",
+        "value": "Days Between Matches"
+      },
+      {
+        "path": "common.common.key526",
+        "value": "Journée"
+      },
+      {
+        "path": "common.common.key527",
+        "value": "Équipe à domicile"
+      },
+      {
+        "path": "common.common.key528",
+        "value": "Sélectionner une équipe"
+      },
+      {
+        "path": "common.common.key529",
+        "value": "Équipe à l'extérieur"
+      },
+      {
+        "path": "common.common.key530",
+        "value": "Sélectionner une équipe"
+      },
+      {
+        "path": "common.common.key531",
+        "value": "Date et heure"
+      },
+      {
+        "path": "common.common.key532",
+        "value": "Terrain"
+      },
+      {
+        "path": "common.common.key533",
+        "value": "Sélectionner un terrain"
+      },
+      {
+        "path": "common.common.key534",
+        "value": "Enregistrement..."
+      }
+    ],
+    "emptyValues": [],
+    "untranslatedValues": [
+      {
+        "path": "common.common.status",
+        "value": "Statut"
+      },
+      {
+        "path": "common.common.key126",
+        "value": "Compétition :"
+      },
+      {
+        "path": "common.common.key128",
+        "value": "Statut :"
+      },
+      {
+        "path": "common.common.key129",
+        "value": "Domicile :"
+      },
+      {
+        "path": "common.common.key130",
+        "value": "Extérieur :"
+      },
+      {
+        "path": "common.common.key142",
+        "value": "Chargement..."
+      },
+      {
+        "path": "common.common.key146",
+        "value": "Statut"
+      },
+      {
+        "path": "common.common.key196",
+        "value": "Statut"
+      },
+      {
+        "path": "common.common.key210",
+        "value": "📊 Statut de l'Application"
+      },
+      {
+        "path": "common.common.key234",
+        "value": "Chargement..."
+      },
+      {
+        "path": "common.common.key252",
+        "value": "Chargement des joueurs éligibles..."
+      },
+      {
+        "path": "common.common.key380",
+        "value": "Statut Licence"
+      },
+      {
+        "path": "common.common.key394",
+        "value": "Statut licence:"
+      },
+      {
+        "path": "common.common.key436",
+        "value": "Statut licence (saison en cours)"
+      },
+      {
+        "path": "common.common.key442",
+        "value": "Statut"
+      },
+      {
+        "path": "common.common.key496",
+        "value": "Équipe"
+      },
+      {
+        "path": "common.common.key512",
+        "value": "Statut"
+      },
+      {
+        "path": "common.common.key527",
+        "value": "Équipe à domicile"
+      },
+      {
+        "path": "common.common.key529",
+        "value": "Équipe à l'extérieur"
+      }
+    ]
+  }
+}

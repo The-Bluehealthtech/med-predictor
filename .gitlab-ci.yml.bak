@@ -1,0 +1,42 @@
+stages:
+  - setup
+  - audit
+
+variables:
+  PHP_VERSION: "8.2"
+  COMPOSER_CACHE_DIR: "$CI_PROJECT_DIR/.composer-cache"
+
+setup:
+  stage: setup
+  image: php:${PHP_VERSION}-fpm
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq git unzip sqlite3 libsqlite3-dev libzip-dev
+    - docker-php-ext-install zip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - composer config cache-dir $COMPOSER_CACHE_DIR
+  script:
+    - composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-zip
+    - cp .env.example .env
+    - php artisan key:generate
+    - touch database/database.sqlite
+    - echo "DB_CONNECTION=sqlite" >> .env
+    - echo "DB_DATABASE=database/database.sqlite" >> .env
+    - php artisan migrate --force
+  artifacts:
+    paths:
+      - vendor/
+      - .env
+      - database/database.sqlite
+    expire_in: 1 hour
+
+database-audit:
+  stage: audit
+  image: php:${PHP_VERSION}-fpm
+  dependencies:
+    - setup
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq sqlite3 jq
+    - composer config cache-dir $COMPOSER_CACHE_DIR
+  script:
+    - composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-zip
+    - php artisan project:db:audit

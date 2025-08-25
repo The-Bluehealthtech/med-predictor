@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Vue.js Minimal</title>
+</head>
+<body>
+    <h1>Test Vue.js</h1>
+    
+    <div id="app">
+        <p>Message: <span id="message">Chargement...</span></p>
+        <button onclick="testVue()">Tester Vue.js</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Test 1: Vérifier si le navigateur charge le script
+        console.log('Script chargé');
+        
+        // Test 2: Vérifier si Vue est disponible
+        function testVue() {
+            console.log('Bouton cliqué');
+            
+            if (typeof Vue === 'undefined') {
+                document.getElementById('result').innerHTML = '❌ Vue.js n\'est pas chargé';
+                console.error('Vue.js non disponible');
+                return;
+            }
+            
+            console.log('✅ Vue.js est disponible:', Vue);
+            document.getElementById('result').innerHTML = '✅ Vue.js est disponible';
+            
+            // Test 3: Essayer de créer une app Vue
+            try {
+                const { createApp } = Vue;
+                console.log('createApp disponible:', createApp);
+                
+                const app = createApp({
+                    data() {
+                        return { message: 'Vue.js fonctionne!' }
+                    },
+                    mounted() {
+                        console.log('Vue.js monté avec succès!');
+                        document.getElementById('message').textContent = this.message;
+                    }
+                });
+                
+                app.mount('#app');
+                document.getElementById('result').innerHTML = '✅ Vue.js monté avec succès!';
+                
+            } catch (error) {
+                console.error('Erreur lors du montage Vue:', error);
+                document.getElementById('result').innerHTML = '❌ Erreur Vue: ' + error.message;
+            }
+        }
+        
+        // Test 4: Charger Vue.js dynamiquement
+        function loadVue() {
+            console.log('Chargement de Vue.js...');
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/vue@3/dist/vue.global.js';
+            script.onload = function() {
+                console.log('✅ Vue.js chargé avec succès');
+                document.getElementById('result').innerHTML = '✅ Vue.js chargé, cliquez sur le bouton pour tester';
+            };
+            script.onerror = function() {
+                console.error('❌ Erreur lors du chargement de Vue.js');
+                document.getElementById('result').innerHTML = '❌ Erreur lors du chargement de Vue.js';
+            };
+            document.head.appendChild(script);
+        }
+        
+        // Charger Vue.js au chargement de la page
+        window.onload = loadVue;
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

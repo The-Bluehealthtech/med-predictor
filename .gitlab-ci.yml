@@ -51,7 +51,7 @@ database-audit:
     - apt-get update -qq && apt-get install -y -qq sqlite3 jq
     - composer config cache-dir $COMPOSER_CACHE_DIR
   script:
-    - composer install --prefer-dist --no-progress --no-interaction
+    - composer install --prefer-dist --no-progress --no-interaction --ignore-platform-zip
     - php artisan project:db:audit
     - |
       # Extraire les résultats de l'audit

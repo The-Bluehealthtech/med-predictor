@@ -38,6 +38,9 @@ setup:
       - database/database.sqlite
     expire_in: 1 hour
 
+# Dans le job setup, ajoutez
+- apt-get install -y -qq libzip-dev
+- docker-php-ext-install zip
 # Job d'audit principal
 database-audit:
   stage: audit

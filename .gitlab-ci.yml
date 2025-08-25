@@ -21,6 +21,7 @@ setup:
   image: php:${PHP_VERSION}-fpm
   before_script:
     - apt-get update -qq && apt-get install -y -qq git unzip sqlite3 libsqlite3-dev
+- docker-php-ext-install zip
     - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
     - composer config cache-dir $COMPOSER_CACHE_DIR
   script:

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport Général Projet - Med-Predictor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 15px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 40px; 
+            text-align: center;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.2em; opacity: 0.9; }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin: 10px;
+        }
+        .status-excellent { background: #28a745; color: white; }
+        .status-good { background: #17a2b8; color: white; }
+        .status-warning { background: #ffc107; color: #212529; }
+        .status-danger { background: #dc3545; color: white; }
+        
+        .content { padding: 40px; }
+        .section { 
+            margin: 30px 0; 
+            padding: 25px; 
+            border-left: 5px solid #667eea; 
+            background: #f8f9fa; 
+            border-radius: 10px;
+        }
+        .section h2 { 
+            color: #667eea; 
+            margin-bottom: 20px; 
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+        .section h2::before { 
+            content: "🔹"; 
+            margin-right: 15px; 
+            font-size: 1.2em;
+        }
+        
+        .metrics-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 20px; 
+            margin: 20px 0;
+        }
+        .metric-card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 10px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .metric-card:hover { 
+            transform: translateY(-5px); 
+            border-color: #667eea;
+        }
+        .metric-value { 
+            font-size: 2.5em; 
+            font-weight: bold; 
+            color: #667eea; 
+            margin-bottom: 10px;
+        }
+        .metric-label { 
+            color: #666; 
+            font-size: 1.1em; 
+            font-weight: 500;
+        }
+        
+        .cleanup-list { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .cleanup-item { 
+            padding: 12px; 
+            margin: 8px 0; 
+            background: #f8f9fa; 
+            border-radius: 8px; 
+            border-left: 4px solid #ffc107;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cleanup-item:hover { background: #e9ecef; }
+        .cleanup-size { 
+            background: #667eea; 
+            color: white; 
+            padding: 4px 8px; 
+            border-radius: 12px; 
+            font-size: 0.8em;
+        }
+        
+        .action-buttons { 
+            text-align: center; 
+            margin: 30px 0;
+        }
+        .btn { 
+            display: inline-block; 
+            padding: 15px 30px; 
+            margin: 10px; 
+            border-radius: 25px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+        .btn-primary { 
+            background: #667eea; 
+            color: white; 
+        }
+        .btn-primary:hover { 
+            background: #5a6fd8; 
+            transform: translateY(-2px);
+        }
+        .btn-danger { 
+            background: #dc3545; 
+            color: white; 
+        }
+        .btn-danger:hover { 
+            background: #c82333; 
+            transform: translateY(-2px);
+        }
+        .btn-warning { 
+            background: #ffc107; 
+            color: #212529; 
+        }
+        .btn-warning:hover { 
+            background: #e0a800; 
+            transform: translateY(-2px);
+        }
+        
+        .progress-bar { 
+            width: 100%; 
+            height: 20px; 
+            background: #e9ecef; 
+            border-radius: 10px; 
+            overflow: hidden; 
+            margin: 15px 0;
+        }
+        .progress-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #28a745, #20c997); 
+            transition: width 0.3s ease;
+        }
+        
+        .code-block { 
+            background: #2d3748; 
+            color: #e2e8f0; 
+            padding: 20px; 
+            border-radius: 10px; 
+            font-family: 'Courier New', monospace; 
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .alert { 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin: 15px 0; 
+            border-left: 4px solid;
+        }
+        .alert-info { 
+            background: #d1ecf1; 
+            color: #0c5460; 
+            border-color: #17a2b8;
+        }
+        .alert-warning { 
+            background: #fff3cd; 
+            color: #856404; 
+            border-color: #ffc107;
+        }
+        .alert-danger { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border-color: #dc3545;
+        }
+        
+        .footer { 
+            background: #343a40; 
+            color: white; 
+            text-align: center; 
+            padding: 20px; 
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 2em; }
+            .content { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Rapport Général Projet</h1>
+            <p>Med-Predictor - Analyse Complète et Plan de Nettoyage</p>
+            <div class="status-badge status-excellent">Statut: EXCELLENT</div>
+            <div class="status-badge status-warning">Nettoyage Requis</div>
+        </div>
+        
+        <div class="content">
+            <!-- Résumé Exécutif -->
+            <div class="section">
+                <h2>📊 Résumé Exécutif</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">85.3%</div>
+                        <div class="metric-label">Score de Propreté DB</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">100</div>
+                        <div class="metric-label">Tables Total</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">87</div>
+                        <div class="metric-label">Modèles Eloquent</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-card">
+                            <div class="metric-value">879</div>
+                            <div class="metric-label">Routes Total</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <strong>💡 Résumé :</strong> Votre projet est globalement en excellent état avec un score de propreté de 85.3%. 
+                    Cependant, 901.84 KB peuvent être libérés en supprimant les éléments orphelins identifiés.
+                </div>
+            </div>
+            
+            <!-- Éléments à Nettoyer -->
+            <div class="section">
+                <h2>🧹 Éléments à Nettoyer</h2>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">92</div>
+                        <div class="metric-label">Contrôleurs Non Utilisés</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">296</div>
+                        <div class="metric-label">Routes Orphelines</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">421</div>
+                        <div class="metric-label">Colonnes Orphelines</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">901.84 KB</div>
+                        <div class="metric-label">Espace à Libérer</div>
+                    </div>
+                </div>
+                
+                <div class="cleanup-list">
+                    <h3>🎮 Contrôleurs Non Utilisés (92)</h3>
+                    <div class="cleanup-item">
+                        <span>AccountRequestController</span>
+                        <span class="cleanup-size">13.75 KB</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>AutoKeyController</span>
+                        <span class="cleanup-size">3.12 KB</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>DentalRecordController</span>
+                        <span class="cleanup-size">7.67 KB</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>FHIRController</span>
+                        <span class="cleanup-size">3.92 KB</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>ICD11Controller</span>
+                        <span class="cleanup-size">2.9 KB</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>... et 87 autres</span>
+                        <span class="cleanup-size">~860 KB</span>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <strong>⚠️ Attention :</strong> Ces contrôleurs ne sont pas utilisés dans les routes. 
+                    Vérifiez qu'ils ne contiennent pas de logique métier importante avant suppression.
+                </div>
+            </div>
+            
+            <!-- Routes Orphelines -->
+            <div class="section">
+                <h2>🛣️ Routes Orphelines (296)</h2>
+                <p>Routes avec des closures (fonctions anonymes) qui ne pointent vers aucun contrôleur :</p>
+                
+                <div class="cleanup-list">
+                    <div class="cleanup-item">
+                        <span>api/players</span>
+                        <span class="cleanup-size">Closure</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>api/players/{player}</span>
+                        <span class="cleanup-size">Closure</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>api/players/{player}/health-records</span>
+                        <span class="cleanup-size">Closure</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>api/test-pdf</span>
+                        <span class="cleanup-size">Closure</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>... et 292 autres</span>
+                        <span class="cleanup-size">Closures</span>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <strong>💡 Note :</strong> Ces routes utilisent des closures au lieu de contrôleurs. 
+                    Elles peuvent être conservées si elles contiennent une logique simple, ou refactorisées vers des contrôleurs.
+                </div>
+            </div>
+            
+            <!-- Colonnes Orphelines -->
+            <div class="section">
+                <h2>🗄️ Colonnes Orphelines (421)</h2>
+                <p>Colonnes de base de données qui ne sont pas référencées dans le code :</p>
+                
+                <div class="cleanup-list">
+                    <div class="cleanup-item">
+                        <span>migrations.migration</span>
+                        <span class="cleanup-size">varchar</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>migrations.batch</span>
+                        <span class="cleanup-size">INTEGER</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>cache.expiration</span>
+                        <span class="cleanup-size">INTEGER</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>cache_locks.owner</span>
+                        <span class="cleanup-size">varchar</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>... et 417 autres</span>
+                        <span class="cleanup-size">Mixed</span>
+                    </div>
+                </div>
+                
+                <div class="alert alert-danger">
+                    <strong>🚨 Important :</strong> Ne supprimez pas les colonnes de migrations, cache, ou autres tables système Laravel. 
+                    Seules les colonnes de tables métier peuvent être supprimées après vérification.
+                </div>
+            </div>
+            
+            <!-- Actions Recommandées -->
+            <div class="section">
+                <h2>🚀 Actions Recommandées</h2>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-warning" onclick="showDryRun()">🔍 Mode DRY-RUN</button>
+                    <button class="btn btn-danger" onclick="showCleanup()">🧹 Nettoyage Réel</button>
+                    <button class="btn btn-primary" onclick="showDeploy()">🚀 Déploiement Staging</button>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">1</div>
+                        <div class="metric-label">Vérifier Contrôleurs</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">2</div>
+                        <div class="metric-label">Analyser Routes</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">3</div>
+                        <div class="metric-label">Nettoyer Code</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">4</div>
+                        <div class="metric-label">Tester & Déployer</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Commandes de Reproduction -->
+            <div class="section">
+                <h2>📋 Commandes de Reproduction</h2>
+                
+                <h3>🔍 Mode DRY-RUN (Recommandé en premier)</h3>
+                <div class="code-block">
+# Exécuter la séquence complète en mode DRY-RUN
+./scripts/project-sequence.sh --dry-run --skip-backup
+
+# Ou seulement le nettoyage
+php artisan project:routes:clean --dry-run
+
+# Audit de base de données
+php artisan project:db:audit
+
+# Audit du projet
+php artisan project:audit --format=json
+                </div>
+                
+                <h3>🧹 Nettoyage Réel (Après validation)</h3>
+                <div class="code-block">
+# Nettoyage complet avec force
+php artisan project:routes:clean --force
+
+# Ou séquence complète
+./scripts/project-sequence.sh --force
+
+# Créer une sauvegarde avant
+php artisan project:backup --type=full --compress
+                </div>
+                
+                <h3>🚀 Déploiement Staging</h3>
+                <div class="code-block">
+# Déploiement en staging
+./deploy-ci-cd.sh staging
+
+# Vérification du pipeline
+./scripts/verify-ci-cd.sh
+
+# Tests après nettoyage
+./scripts/run-ci-tests.sh
+                </div>
+            </div>
+            
+            <!-- Métriques de Qualité -->
+            <div class="section">
+                <h2>📈 Métriques de Qualité</h2>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">37</div>
+                        <div class="metric-label">Tests Disponibles</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">951</div>
+                        <div class="metric-label">Fichiers PHP Vérifiés</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">0</div>
+                        <div class="metric-label">Erreurs de Syntaxe</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">1785</div>
+                        <div class="metric-label">Erreurs dans Logs</div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 85.3%"></div>
+                </div>
+                <p style="text-align: center; margin-top: 10px;">
+                    <strong>Score de Qualité Global : 85.3%</strong>
+                </p>
+            </div>
+            
+            <!-- Fichiers de Rapport -->
+            <div class="section">
+                <h2>📁 Fichiers de Rapport</h2>
+                
+                <div class="cleanup-list">
+                    <div class="cleanup-item">
+                        <span>Rapport de Séquence</span>
+                        <span class="cleanup-size">storage/logs/sequence-report-*.md</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>Rapport de Nettoyage</span>
+                        <span class="cleanup-size">storage/logs/cleanup-report-*.txt</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>Audit Base de Données</span>
+                        <span class="cleanup-size">storage/logs/db-audit-*.log</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>Audit Projet</span>
+                        <span class="cleanup-size">storage/logs/project-audit-*.json</span>
+                    </div>
+                    <div class="cleanup-item">
+                        <span>Sauvegardes</span>
+                        <span class="cleanup-size">storage/backups/backup-*.zip</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Med-Predictor</strong> - Rapport Général Généré le <span id="current-date"></span></p>
+            <p>Pipeline CI/CD : ✅ EXCELLENT | Statut : 🟢 PRÊT POUR NETTOYAGE</p>
+        </div>
+    </div>
+    
+    <script>
+        // Afficher la date actuelle
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('fr-FR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        // Fonctions pour les boutons d'action
+        function showDryRun() {
+            alert('🔍 Mode DRY-RUN\n\nExécutez : ./scripts/project-sequence.sh --dry-run --skip-backup\n\nAucune modification ne sera effectuée.');
+        }
+        
+        function showCleanup() {
+            alert('🧹 Nettoyage Réel\n\n⚠️ ATTENTION : Ceci supprimera définitivement les éléments orphelins !\n\nExécutez : ./scripts/project-sequence.sh --force\n\nAssurez-vous d\'avoir une sauvegarde !');
+        }
+        
+        function showDeploy() {
+            alert('🚀 Déploiement Staging\n\nExécutez : ./deploy-ci-cd.sh staging\n\nVérifiez que l\'application fonctionne après nettoyage.');
+        }
+        
+        // Animation des métriques
+        function animateMetrics() {
+            const metrics = document.querySelectorAll('.metric-value');
+            metrics.forEach(metric => {
+                const finalValue = metric.textContent;
+                if (finalValue.includes('%') || finalValue.includes('KB')) return;
+                
+                let current = 0;
+                const target = parseInt(finalValue);
+                const increment = target / 50;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    metric.textContent = Math.floor(current);
+                }, 50);
+            });
+        }
+        
+        // Lancer l'animation au chargement
+        window.addEventListener('load', animateMetrics);
+    </script>
+</body>
+</html>

@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\V3\AiIntelligenceController;
-use App\Http\Controllers\Api\V3\PerformanceAnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,68 +19,12 @@ Route::prefix('v3')->name('v3.')->middleware(['v3.api'])->group(function () {
     | Intelligence Artificielle et Machine Learning
     |--------------------------------------------------------------------------
     */
-    Route::prefix('ai')->name('ai.')->group(function () {
-        
-        // Prédictions IA
-        Route::get('/performance/{playerId}', [AiIntelligenceController::class, 'predictPerformance'])
-            ->name('performance')
-            ->where('playerId', '[0-9]+');
-            
-        Route::get('/injury-risk/{playerId}', [AiIntelligenceController::class, 'predictInjuryRisk'])
-            ->name('injury-risk')
-            ->where('playerId', '[0-9]+');
-            
-        Route::get('/market-value/{playerId}', [AiIntelligenceController::class, 'predictMarketValue'])
-            ->name('market-value')
-            ->where('playerId', '[0-9]+');
-            
-        Route::get('/recommendations/{playerId}', [AiIntelligenceController::class, 'generateCoachRecommendations'])
-            ->name('recommendations')
-            ->where('playerId', '[0-9]+');
-            
-        Route::get('/anomalies/{playerId}', [AiIntelligenceController::class, 'detectAnomalies'])
-            ->name('anomalies')
-            ->where('playerId', '[0-9]+');
-            
-        // Analyse complète
-        Route::get('/analysis/{playerId}', [AiIntelligenceController::class, 'comprehensiveAnalysis'])
-            ->name('analysis')
-            ->where('playerId', '[0-9]+');
-            
-        // Gestion et monitoring
-        Route::get('/status', [AiIntelligenceController::class, 'status'])
-            ->name('status');
-            
-        Route::post('/cache/clear', [AiIntelligenceController::class, 'clearCache'])
-            ->name('cache.clear');
-    });
 
     /*
     |--------------------------------------------------------------------------
     | Analytics de Performance Avancées
     |--------------------------------------------------------------------------
     */
-    Route::prefix('performance')->name('performance.')->group(function () {
-        
-        // Analyse des tendances
-        Route::get('/trends/{playerId}', [PerformanceAnalyticsController::class, 'analyzeTrends'])
-            ->name('trends')
-            ->where('playerId', '[0-9]+');
-            
-        // Comparaison de joueurs
-        Route::post('/compare', [PerformanceAnalyticsController::class, 'comparePlayers'])
-            ->name('compare');
-            
-        // Métriques de performance
-        Route::get('/metrics/{playerId}', [PerformanceAnalyticsController::class, 'getPlayerMetrics'])
-            ->name('metrics')
-            ->where('playerId', '[0-9]+');
-            
-        // Résumé des performances
-        Route::get('/summary/{playerId}', [PerformanceAnalyticsController::class, 'getPlayerSummary'])
-            ->name('summary')
-            ->where('playerId', '[0-9]+');
-    });
 
     /*
     |--------------------------------------------------------------------------
@@ -200,27 +142,6 @@ Route::prefix('v3')->name('v3.')->middleware(['v3.api'])->group(function () {
     Route::prefix('medical')->name('medical.')->group(function () {
         
         // IA Médicale
-        Route::prefix('ai')->name('ai.')->group(function () {
-            Route::get('/injury-prediction/{playerId}', function ($playerId) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Prédiction de blessure IA',
-                    'player_id' => $playerId,
-                    'status' => 'not_implemented_yet',
-                    'version' => '3.0.0'
-                ]);
-            })->name('injury-prediction');
-            
-            Route::get('/recovery-optimization/{playerId}', function ($playerId) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Optimisation de récupération IA',
-                    'player_id' => $playerId,
-                    'status' => 'not_implemented_yet',
-                    'version' => '3.0.0'
-                ]);
-            })->name('recovery-optimization');
-        });
 
         // Wearables et capteurs
         Route::prefix('wearables')->name('wearables.')->group(function () {

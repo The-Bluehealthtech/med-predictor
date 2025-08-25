@@ -1,5 +1,5 @@
 {
-  "verification_timestamp": "2025-08-25T17:31:57Z",
+  "verification_timestamp": "2025-08-25T21:10:48Z",
   "project": "med-predictor",
   "results": {
     "prerequisites": {
@@ -30,8 +30,8 @@
         "message": "Fichier présent"
       },
       "syntax": {
-        "status": "warning",
-        "message": "yamllint non installé"
+        "status": "success",
+        "message": "Syntaxe valide"
       }
     },
     "jenkins": {

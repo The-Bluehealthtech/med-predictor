@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class RefereeMiddleware
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // Check if user has referee or committee role
+        $refereeRoles = ['referee', 'assistant_referee', 'fourth_official', 'var_referee', 'match_commissioner'];
+        
+        if (!in_array($user->role, $refereeRoles)) {
+            abort(403, 'Access denied. Referee or committee role required.');
+        }
+
+        // Additional checks for specific match access
+        if ($request->route('gameMatch')) {
+            $match = $request->route('gameMatch');
+            
+            // Check if referee is assigned to this match
+            $isAssigned = $match->officials()
+                ->where('user_id', $user->id)
+                ->exists();
+
+            if (!$isAssigned && !$user->isSystemAdmin()) {
+                abort(403, 'You are not assigned to this match.');
+            }
+        }
+
+        return $next($request);
+    }
+}

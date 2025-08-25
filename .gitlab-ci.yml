@@ -37,3 +37,4 @@ database-audit:
   script:
    
     - php artisan project:db:audit
+# Pipeline GitLab CI/CD - Lun 25 aoû 2025 15:41:06 CET

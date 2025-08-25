@@ -1,0 +1,9 @@
+# Variables obligatoires
+WEBHOOK_URL=https://your-webhook-url.com/audit
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
+
+# Variables optionnelles
+TEAMS_WEBHOOK_URL=https://your-org.webhook.office.com/webhookb2/...
+EMAIL_NOTIFICATIONS=true
+AUDIT_SCHEDULE=dailygit status
+

@@ -1,0 +1,338 @@
+# Configuration des Notifications et Alertes CI/CD
+# Version: 1.0 - Système de Notifications Complet
+
+# Configuration Slack
+slack:
+  enabled: true
+  webhook_url: "${SLACK_WEBHOOK_URL}"
+  channel: "#ci-cd-alerts"
+  username: "CI/CD Bot"
+  icon_emoji: ":robot_face:"
+  
+  # Notifications par événement
+  events:
+    pipeline_success:
+      enabled: true
+      message: "🎉 Pipeline GitLab CI/CD réussi pour la branche {branch}"
+      color: "good"
+      
+    pipeline_failure:
+      enabled: true
+      message: "❌ Pipeline GitLab CI/CD échoué pour la branche {branch}"
+      color: "danger"
+      
+    deployment_success:
+      enabled: true
+      message: "🚀 Déploiement {environment} réussi"
+      color: "good"
+      
+    deployment_failure:
+      enabled: true
+      message: "💥 Déploiement {environment} échoué"
+      color: "danger"
+      
+    test_failure:
+      enabled: true
+      message: "🧪 Tests échoués dans {branch}"
+      color: "warning"
+      
+    security_alert:
+      enabled: true
+      message: "🔒 Alerte de sécurité détectée"
+      color: "danger"
+      
+    performance_degradation:
+      enabled: true
+      message: "⚡ Dégradation des performances détectée"
+      color: "warning"
+
+# Configuration Teams
+teams:
+  enabled: true
+  webhook_url: "${TEAMS_WEBHOOK_URL}"
+  channel: "CI/CD Alerts"
+  
+  # Notifications par événement
+  events:
+    pipeline_success:
+      enabled: true
+      title: "Pipeline Réussi"
+      text: "🎉 Pipeline GitLab CI/CD réussi pour la branche {branch}"
+      theme_color: "00FF00"
+      
+    pipeline_failure:
+      enabled: true
+      title: "Pipeline Échoué"
+      text: "❌ Pipeline GitLab CI/CD échoué pour la branche {branch}"
+      theme_color: "FF0000"
+      
+    deployment_success:
+      enabled: true
+      title: "Déploiement Réussi"
+      text: "🚀 Déploiement {environment} réussi"
+      theme_color: "00FF00"
+      
+    deployment_failure:
+      enabled: true
+      title: "Déploiement Échoué"
+      text: "💥 Déploiement {environment} échoué"
+      theme_color: "FF0000"
+
+# Configuration Email
+email:
+  enabled: false
+  smtp_host: "${SMTP_HOST}"
+  smtp_port: "${SMTP_PORT}"
+  smtp_username: "${SMTP_USERNAME}"
+  smtp_password: "${SMTP_PASSWORD}"
+  smtp_encryption: "tls"
+  
+  from_address: "ci-cd@med-predictor.com"
+  from_name: "CI/CD System"
+  
+  # Destinataires par événement
+  recipients:
+    pipeline_failure:
+      - "dev-team@med-predictor.com"
+      - "tech-lead@med-predictor.com"
+      
+    deployment_failure:
+      - "devops@med-predictor.com"
+      - "tech-lead@med-predictor.com"
+      
+    security_alert:
+      - "security@med-predictor.com"
+      - "tech-lead@med-predictor.com"
+
+# Configuration Webhook
+webhook:
+  enabled: true
+  url: "${WEBHOOK_URL}"
+  timeout: 30
+  retry_attempts: 3
+  
+  # Headers personnalisés
+  headers:
+    User-Agent: "CI/CD-Notifier/1.0"
+    X-Project: "med-predictor"
+    X-Environment: "${DEPLOY_ENVIRONMENT}"
+  
+  # Format des données
+  data_format: "json"
+  
+  # Événements supportés
+  events:
+    - pipeline_success
+    - pipeline_failure
+    - deployment_success
+    - deployment_failure
+    - test_failure
+    - security_alert
+    - performance_degradation
+
+# Configuration des Alertes
+alerts:
+  # Seuils de qualité
+  quality_thresholds:
+    cleanliness_score: 70
+    orphan_tables_percent: 30
+    unused_models: 15
+    test_coverage: 80
+    code_quality: 80
+  
+  # Seuils de performance
+  performance_thresholds:
+    response_time: 2.0
+    memory_usage: 512
+    cpu_usage: 80
+    disk_usage: 85
+  
+  # Seuils de sécurité
+  security_thresholds:
+    critical_vulnerabilities: 0
+    high_vulnerabilities: 2
+    medium_vulnerabilities: 5
+  
+  # Actions automatiques
+  auto_actions:
+    rollback_on_failure: true
+    notify_on_threshold: true
+    block_deployment_on_critical: true
+
+# Configuration des Rapports
+reports:
+  # Génération automatique
+  auto_generate: true
+  
+  # Formats supportés
+  formats:
+    - html
+    - json
+    - pdf
+    - xml
+  
+  # Rétention
+  retention_days: 30
+  
+  # Stockage
+  storage:
+    local: true
+    s3: false
+    gitlab_artifacts: true
+  
+  # Contenu des rapports
+  content:
+    test_results: true
+    coverage_reports: true
+    performance_metrics: true
+    security_scan: true
+    audit_results: true
+    deployment_logs: true
+
+# Configuration des Métriques
+metrics:
+  # Collecte automatique
+  auto_collect: true
+  
+  # Métriques système
+  system_metrics:
+    cpu_usage: true
+    memory_usage: true
+    disk_usage: true
+    network_io: true
+  
+  # Métriques applicatives
+  application_metrics:
+    response_time: true
+    error_rate: true
+    throughput: true
+    availability: true
+  
+  # Métriques de qualité
+  quality_metrics:
+    test_coverage: true
+    code_quality: true
+    security_score: true
+    performance_score: true
+  
+  # Export des métriques
+  export:
+    prometheus: false
+    influxdb: false
+    elasticsearch: false
+    custom_endpoint: "${METRICS_ENDPOINT}"
+
+# Configuration des Tests
+testing:
+  # Tests automatisés
+  automated:
+    enabled: true
+    parallel: true
+    timeout: 300
+    retry_attempts: 2
+  
+  # Types de tests
+  types:
+    unit: true
+    integration: true
+    functional: true
+    performance: true
+    security: true
+  
+  # Couverture de code
+  coverage:
+    minimum: 80
+    fail_on_low: true
+    generate_reports: true
+  
+  # Tests de charge
+  load_testing:
+    enabled: false
+    users: 100
+    duration: 300
+    ramp_up: 60
+
+# Configuration du Monitoring
+monitoring:
+  # Surveillance continue
+  continuous: true
+  
+  # Vérifications de santé
+  health_checks:
+    enabled: true
+    interval: 60
+    timeout: 30
+    
+    # Endpoints à vérifier
+    endpoints:
+      - "/health"
+      - "/api/status"
+      - "/database/status"
+  
+  # Alertes de disponibilité
+  availability:
+    check_interval: 300
+    alert_threshold: 3
+    escalation_time: 900
+  
+  # Surveillance des logs
+  log_monitoring:
+    enabled: true
+    error_threshold: 10
+    warning_threshold: 50
+    
+    # Patterns d'erreur critiques
+    critical_patterns:
+      - "Fatal error"
+      - "Out of memory"
+      - "Database connection failed"
+      - "Critical security violation"
+
+# Configuration des Déploiements
+deployment:
+  # Stratégie de déploiement
+  strategy: "blue-green"
+  
+  # Rollback automatique
+  auto_rollback:
+    enabled: true
+    trigger_on_failure: true
+    max_attempts: 3
+  
+  # Vérification post-déploiement
+  verification:
+    enabled: true
+    health_check_delay: 30
+    verification_timeout: 300
+    
+    # Tests de vérification
+    tests:
+      - connectivity
+      - functionality
+      - performance
+      - security
+  
+  # Notifications de déploiement
+  notifications:
+    pre_deployment: true
+    post_deployment: true
+    on_rollback: true
+    on_failure: true
+
+# Configuration des Environnements
+environments:
+  development:
+    url: "http://localhost:8000"
+    notifications: false
+    auto_deploy: true
+    
+  staging:
+    url: "https://staging.med-predictor.com"
+    notifications: true
+    auto_deploy: true
+    
+  production:
+    url: "https://med-predictor.com"
+    notifications: true
+    auto_deploy: false
+    manual_approval: true

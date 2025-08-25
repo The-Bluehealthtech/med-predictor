@@ -1,0 +1,13 @@
+stages:
+  - test
+
+test:
+  stage: test
+  image: php:8.2-fpm
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq git unzip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  script:
+    - echo "Pipeline de test avec Composer"
+    - php --version
+    - composer --version

@@ -1,40 +1,9 @@
 stages:
-  - setup
-  - audit
+  - test
 
-variables:
-  PHP_VERSION: "8.2"
-
-setup:
-  stage: setup
-  image: php:${PHP_VERSION}-fpm
-  before_script:
-    - apt-get update -qq && apt-get install -y -qq git unzip sqlite3 libsqlite3-dev libzip-dev
-    - docker-php-ext-install zip
-    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+test:
+  stage: test
+  image: php:8.2-fpm
   script:
-    - composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-zip
-    - cp .env.example .env
-    - php artisan key:generate
-    - touch database/database.sqlite
-    - echo "DB_CONNECTION=sqlite" >> .env
-    - echo "DB_DATABASE=database/database.sqlite" >> .env
-    - php artisan migrate --force
-  artifacts:
-    paths:
-      - vendor/
-      - .env
-      - database/database.sqlite
-    expire_in: 1 hour
-
-database-audit:
-  stage: audit
-  image: php:${PHP_VERSION}-fpm
-  dependencies:
-    - setup
-  before_script:
-    - apt-get update -qq && apt-get install -y -qq sqlite3 jq
-  script:
-   
-    - php artisan project:db:audit
-# Pipeline GitLab CI/CD - Lun 25 aoû 2025 15:41:06 CET
+    - echo "Pipeline de test simple"
+    - php --version

@@ -23,7 +23,7 @@ setup:
     - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
     - composer config cache-dir $COMPOSER_CACHE_DIR
   script:
-    - composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-zip
+    - composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-zip --ignore-platform-req=ext-zip
     - cp .env.example .env
     - php artisan key:generate
     - touch database/database.sqlite
@@ -46,7 +46,7 @@ database-audit:
     - apt-get update -qq && apt-get install -y -qq sqlite3 jq
     - composer config cache-dir $COMPOSER_CACHE_DIR
   script:
-    - composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-zip
+    - composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-zip --ignore-platform-req=ext-zip
     - php artisan project:db:audit
     - |
       LATEST_REPORT=$(ls -t storage/logs/db-audit-*.log | head -1)

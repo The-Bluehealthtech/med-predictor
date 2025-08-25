@@ -96,7 +96,18 @@ generate-report:
   stage: report
   image: alpine:latest
   dependencies:
-    - database-audit
+  database-audit
+  stage: audit
+  image: php:${PHP_VERSION}-fpm
+  dependencies:
+    - setup
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq sqlite3 jq
+    - composer config cache-dir $COMPOSER_CACHE_DIR
+  script:
+    - composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-zip
+    - php artisan project:db:audit
+
   before_script:
     - apk add --no-cache jq
   script:

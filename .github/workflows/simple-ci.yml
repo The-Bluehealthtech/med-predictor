@@ -43,6 +43,7 @@ jobs:
         run: |
           php artisan key:generate
           php artisan config:cache
+          echo "APP_ENV=testing" >> .env
           
       - name: "🧪 Exécution des Tests"
         run: |

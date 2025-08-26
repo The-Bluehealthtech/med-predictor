@@ -1,0 +1,143 @@
+name: 🚀 CI Simple avec Notifications Email
+
+on:
+  push:
+    branches: [ develop-v3, main ]
+  pull_request:
+    branches: [ develop-v3, main ]
+  workflow_dispatch:
+
+env:
+  NOTIFICATION_EMAIL: "im0668@gmail.com"
+
+jobs:
+  # Tests et Validation
+  test:
+    runs-on: ubuntu-latest
+    name: "🧪 Tests et Validation"
+    
+    steps:
+      - name: "📥 Checkout du code"
+        uses: actions/checkout@v4
+        
+      - name: "🐘 Configuration PHP 8.1"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
+          coverage: xdebug
+          
+      - name: "📦 Installation Composer"
+        uses: "ramsey/composer-install@v2"
+        with:
+          composer-options: "--prefer-dist --optimize-autoloader"
+          dependency-versions: "locked"
+          
+      - name: "🔧 Configuration Laravel"
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan config:cache
+          
+      - name: "🧪 Exécution des Tests"
+        run: |
+          echo "🧪 Exécution des tests PHP..."
+          php artisan test --stop-on-failure
+          echo "✅ Tests terminés"
+          
+      - name: "🔍 Audit du Projet"
+        run: |
+          echo "🔍 Audit du projet..."
+          php artisan project:audit --format=json --output=audit-report.json || echo "Audit optionnel"
+          php artisan project:db:audit --output=db-audit-report.json || echo "Audit DB optionnel"
+          echo "✅ Audit terminé"
+          
+      - name: "📦 Upload Rapports"
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-reports
+          path: |
+            audit-report.json
+            db-audit-report.json
+          retention-days: 30
+
+  # Notifications de Succès
+  notify-success:
+    runs-on: ubuntu-latest
+    name: "📧 Notification de Succès"
+    needs: test
+    if: success()
+    
+    steps:
+      - name: "📥 Checkout du code"
+        uses: actions/checkout@v4
+        
+      - name: "🐘 Configuration PHP 8.1"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
+          
+      - name: "📦 Installation Composer"
+        uses: "ramsey/composer-install@v2"
+        with:
+          composer-options: "--prefer-dist"
+          
+      - name: "📧 Envoi Notification de Succès"
+        env:
+          SMTP_HOST: ${{ secrets.SMTPHOST }}
+          SMTP_PORT: ${{ secrets.SMTPPORT }}
+          SMTP_USERNAME: ${{ secrets.SMTPUSERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTPPASSWORD }}
+          GITHUB_WORKFLOW: ${{ github.workflow }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          echo "📧 Envoi de notification de succès..."
+          export CI_PIPELINE_STATUS="success"
+          bash scripts/github-notifications.sh
+          echo "✅ Notification de succès envoyée"
+
+  # Notifications d'Échec
+  notify-failure:
+    runs-on: ubuntu-latest
+    name: "📧 Notification d'Échec"
+    needs: test
+    if: failure()
+    
+    steps:
+      - name: "📥 Checkout du code"
+        uses: actions/checkout@v4
+        
+      - name: "🐘 Configuration PHP 8.1"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
+          
+      - name: "📦 Installation Composer"
+        uses: "ramsey/composer-install@v2"
+        with:
+          composer-options: "--prefer-dist"
+          
+      - name: "📧 Envoi Notification d'Échec"
+        env:
+          SMTP_HOST: ${{ secrets.SMTPHOST }}
+          SMTP_PORT: ${{ secrets.SMTPPORT }}
+          SMTP_USERNAME: ${{ secrets.SMTPUSERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTPPASSWORD }}
+          GITHUB_WORKFLOW: ${{ github.workflow }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          echo "📧 Envoi de notification d'échec..."
+          export CI_PIPELINE_STATUS="failed"
+          bash scripts/github-notifications.sh
+          echo "✅ Notification d'échec envoyée"

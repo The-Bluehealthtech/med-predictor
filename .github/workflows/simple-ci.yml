@@ -28,10 +28,14 @@ jobs:
           coverage: xdebug
           
       - name: "📦 Installation Composer (sans scripts ni autoloader)"
-        uses: "ramsey/composer-install@v2"
-        with:
-          composer-options: "--prefer-dist --no-scripts --no-autoloader"
-          dependency-versions: "locked"
+        run: |
+          # Sauvegarder composer.json original
+          cp composer.json composer.json.backup
+          # Supprimer temporairement les scripts
+          sed -i '/"scripts":/,/}/d' composer.json
+          # Installer sans scripts
+          composer install --prefer-dist --no-scripts --no-autoloader --no-dev
+          echo "✅ Composer install terminé sans scripts ni autoloader"
           
       - name: "🔧 Préparation de l'environnement"
         run: |
@@ -45,10 +49,13 @@ jobs:
           
       - name: "🔧 Configuration Laravel"
         run: |
+          composer install --no-scripts --no-autoloader --dev
           composer dump-autoload --optimize
           php artisan key:generate
           php artisan package:discover --ansi
           php artisan config:cache
+          # Restaurer composer.json original
+          mv composer.json.backup composer.json
           
       - name: "🧪 Exécution des Tests"
         run: |

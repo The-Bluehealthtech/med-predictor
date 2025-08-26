@@ -23,3 +23,6 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 *.dmg
+
+# Configuration des notifications CI/CD
+notifications-config.env

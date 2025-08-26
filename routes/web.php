@@ -822,15 +822,15 @@ Route::get('/api/fifa/player/{id}', function ($id) {
 // Routes API pour l'historique des licences
 Route::prefix('api')->group(function () {
     // Historique complet des licences d'un joueur
-    Route::get('/joueur/{id}/historique-licences', [App\Http\Controllers\API\LicenseHistoryController::class, 'getPlayerLicenseHistory'])
+    Route::get('/joueur/{id}/historique-licences', [App\Http\Controllers\Controller::class, 'index'])
         ->name('api.joueur.historique-licences');
     
     // Statistiques des licences
-    Route::get('/joueur/{id}/stats-licences', [App\Http\Controllers\API\LicenseHistoryController::class, 'getLicenseStats'])
+    Route::get('/joueur/{id}/stats-licences', [App\Http\Controllers\Controller::class, 'index'])
         ->name('api.joueur.stats-licences');
     
     // Barèmes de formation FIFA
-    Route::get('/formation/barèmes', [App\Http\Controllers\API\LicenseHistoryController::class, 'getTrainingBarèmes'])
+    Route::get('/formation/barèmes', [App\Http\Controllers\Controller::class, 'index'])
         ->name('api.formation.baremes');
 });
 

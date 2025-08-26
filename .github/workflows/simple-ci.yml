@@ -20,10 +20,10 @@ jobs:
       - name: "📥 Checkout du code"
         uses: actions/checkout@v4
         
-      - name: "🐘 Configuration PHP 8.1"
+      - name: "🐘 Configuration PHP 8.2"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
           coverage: xdebug
           
@@ -53,7 +53,7 @@ jobs:
           echo "✅ Audit terminé"
           
       - name: "📦 Upload Rapports"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-reports
@@ -73,10 +73,10 @@ jobs:
       - name: "📥 Checkout du code"
         uses: actions/checkout@v4
         
-      - name: "🐘 Configuration PHP 8.1"
+      - name: "🐘 Configuration PHP 8.2"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
           
       - name: "📦 Installation Composer"
@@ -113,10 +113,10 @@ jobs:
       - name: "📥 Checkout du code"
         uses: actions/checkout@v4
         
-      - name: "🐘 Configuration PHP 8.1"
+      - name: "🐘 Configuration PHP 8.2"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
           
       - name: "📦 Installation Composer"

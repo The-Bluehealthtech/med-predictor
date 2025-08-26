@@ -10,7 +10,7 @@ on:
 env:
   NOTIFICATION_EMAIL: "im0668@gmail.com"
   NOTIFICATION_SCRIPT: "scripts/github-notifications.sh"
-  PHP_VERSION: "8.2"
+  PHP_VERSION: "8.1"
   COMPOSER_CACHE_DIR: ".composer-cache"
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
       - name: "🐘 Configuration PHP ${{ env.PHP_VERSION }}"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ env.PHP_VERSION }}
+          php-version: "8.1"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
           coverage: xdebug
           
@@ -84,7 +84,7 @@ jobs:
       - name: "🐘 Configuration PHP ${{ env.PHP_VERSION }}"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ env.PHP_VERSION }}
+          php-version: "8.1"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
           
       - name: "📦 Installation Composer (Production)"
@@ -124,7 +124,7 @@ jobs:
       - name: "🐘 Configuration PHP"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ env.PHP_VERSION }}
+          php-version: "8.1"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
           
       - name: "📦 Installation Composer"
@@ -134,10 +134,10 @@ jobs:
           
       - name: "📧 Envoi Notification de Succès"
         env:
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_HOST: ${{ secrets.SMTPHOST }}
+          SMTP_PORT: ${{ secrets.SMTPPORT }}
+          SMTP_USERNAME: ${{ secrets.SMTPUSERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTPPASSWORD }}
           GITHUB_WORKFLOW: ${{ github.workflow }}
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -164,7 +164,7 @@ jobs:
       - name: "🐘 Configuration PHP"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ env.PHP_VERSION }}
+          php-version: "8.1"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
           
       - name: "📦 Installation Composer"

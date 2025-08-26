@@ -27,10 +27,10 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
           coverage: xdebug
           
-      - name: "📦 Installation Composer"
+      - name: "📦 Installation Composer (sans scripts)"
         uses: "ramsey/composer-install@v2"
         with:
-          composer-options: "--prefer-dist --optimize-autoloader"
+          composer-options: "--prefer-dist --optimize-autoloader --no-scripts"
           dependency-versions: "locked"
           
       - name: "🔧 Préparation de l'environnement"
@@ -46,6 +46,7 @@ jobs:
       - name: "🔧 Configuration Laravel"
         run: |
           php artisan key:generate
+          php artisan package:discover --ansi
           php artisan config:cache
           
       - name: "🧪 Exécution des Tests"

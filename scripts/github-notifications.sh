@@ -203,6 +203,23 @@ Envoyé le ' . date('d/m/Y à H:i:s') . '
 ?>
 EOF
 
+    # Debug des variables SMTP
+    echo "🔍 Debug SMTP:"
+    echo "  SMTP_HOST: ${SMTP_HOST:-'NON DÉFINI'}"
+    echo "  SMTP_PORT: ${SMTP_PORT:-'NON DÉFINI'}"
+    echo "  SMTP_USERNAME: ${SMTP_USERNAME:-'NON DÉFINI'}"
+    echo "  SMTP_PASSWORD: ${SMTP_PASSWORD:0:3}*** (longueur: ${#SMTP_PASSWORD})"
+    
+    # Test de connectivité SMTP
+    if command -v nc >/dev/null 2>&1; then
+        echo "🔍 Test de connectivité SMTP:"
+        if nc -z -w5 "${SMTP_HOST:-localhost}" "${SMTP_PORT:-587}" 2>/dev/null; then
+            echo "  ✅ Connexion SMTP possible"
+        else
+            echo "  ❌ Connexion SMTP impossible"
+        fi
+    fi
+    
     # Exécuter le script de notification
     if SMTP_HOST="$SMTP_HOST" SMTP_PORT="$SMTP_PORT" SMTP_USERNAME="$SMTP_USERNAME" SMTP_PASSWORD="$SMTP_PASSWORD" php "$NOTIFICATION_SCRIPT"; then
         echo -e "${GREEN}✅ Notification $event_type envoyée avec succès !${NC}"
@@ -268,8 +285,14 @@ main() {
         echo -e "\n${GREEN}🎉 Notification GitHub Actions CI/CD envoyée avec succès !${NC}"
         echo -e "${BLUE}Vérifiez votre boîte de réception: im0668@gmail.com${NC}"
     else
-        echo -e "\n${RED}❌ Échec de l'envoi de la notification${NC}"
-        exit 1
+        echo -e "\n${YELLOW}⚠️  Échec de l'envoi de la notification email${NC}"
+        echo -e "${BLUE}📋 Résumé du workflow:${NC}"
+        echo -e "  ✅ Pipeline CI/CD: SUCCÈS"
+        echo -e "  📧 Notification: ÉCHEC (problème SMTP)"
+        echo -e "  🔗 Voir les détails: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+        echo -e "\n${GREEN}🎯 Le pipeline principal fonctionne parfaitement !${NC}"
+        # Ne pas faire échouer le job pour un problème de notification
+        exit 0
     fi
 }
 

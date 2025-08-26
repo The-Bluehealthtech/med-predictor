@@ -48,9 +48,16 @@ jobs:
       - name: "🔍 Audit du Projet"
         run: |
           echo "🔍 Audit du projet..."
-          php artisan project:audit --format=json --output=audit-report.json || echo "Audit optionnel"
-          php artisan project:db:audit --output=db-audit-report.json || echo "Audit DB optionnel"
+          php artisan project:audit --format=json --output=audit-report.json || echo "Audit optionnel - fichier non créé"
+          php artisan project:db:audit --output=db-audit-report.json || echo "Audit DB optionnel - fichier non créé"
           echo "✅ Audit terminé"
+          
+      - name: "📋 Vérification des Fichiers"
+        run: |
+          echo "📋 Vérification des fichiers générés..."
+          ls -la *.json 2>/dev/null || echo "Aucun fichier JSON trouvé"
+          echo "📁 Contenu du répertoire :"
+          ls -la
           
       - name: "📦 Upload Rapports"
         uses: actions/upload-artifact@v4
@@ -60,7 +67,19 @@ jobs:
           path: |
             audit-report.json
             db-audit-report.json
+            composer.lock
+            composer.json
           retention-days: 30
+          
+      - name: "🐛 Debug - Informations Système"
+        if: always()
+        run: |
+          echo "🐛 Debug - Informations système :"
+          echo "PHP Version: $(php -v | head -1)"
+          echo "Composer Version: $(composer --version)"
+          echo "Laravel Version: $(php artisan --version)"
+          echo "Répertoire de travail: $(pwd)"
+          echo "Contenu: $(ls -la)"
 
   # Notifications de Succès
   notify-success:

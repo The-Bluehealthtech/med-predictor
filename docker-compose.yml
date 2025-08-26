@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  # Laravel Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: composer
+    container_name: med-predictor-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - ./docker/php.ini:/usr/local/etc/php/php.ini
+    networks:
+      - med-predictor-network
+    depends_on:
+      - mysql
+      - redis
+
+  # Nginx Web Server
+  nginx:
+    image: nginx:alpine
+    container_name: med-predictor-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx-app.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www/html
+      - ./public:/var/www/html/public
+    networks:
+      - med-predictor-network
+    depends_on:
+      - app
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: med-predictor-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: med_predictor
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_USER: med_user
+      MYSQL_PASSWORD: med_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - med-predictor-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: med-predictor-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - med-predictor-network
+
+  # PHP-FPM for Development
+  php-fpm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: composer
+    container_name: med-predictor-php-fpm
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - ./docker/php.ini:/usr/local/etc/php/php.ini
+    networks:
+      - med-predictor-network
+    depends_on:
+      - mysql
+      - redis
+
+  # MailHog for Email Testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: med-predictor-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - med-predictor-network
+
+  # Adminer for Database Management
+  adminer:
+    image: adminer:latest
+    container_name: med-predictor-adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+    networks:
+      - med-predictor-network
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  med-predictor-network:
+    driver: bridge

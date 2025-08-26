@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('match_events', function (Blueprint $table) {
-            // Drop the existing foreign key constraint
-            $table->dropForeign(['match_id']);
-            
-            // Add the correct foreign key constraint
-            $table->foreign('match_id')->references('id')->on('matches')->onDelete('cascade');
-        });
+        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+            Schema::table('match_events', function (Blueprint $table) {
+                // Drop the existing foreign key constraint
+                $table->dropForeign(['match_id']);
+                
+                // Add the correct foreign key constraint
+                $table->foreign('match_id')->references('id')->on('matches')->onDelete('cascade');
+            });
+        }
     }
 
     /**
@@ -25,12 +27,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('match_events', function (Blueprint $table) {
-            // Drop the correct foreign key constraint
-            $table->dropForeign(['match_id']);
-            
-            // Restore the original foreign key constraint
-            $table->foreign('match_id')->references('id')->on('game_matches')->onDelete('cascade');
-        });
+        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+            Schema::table('match_events', function (Blueprint $table) {
+                // Drop the correct foreign key constraint
+                $table->dropForeign(['match_id']);
+                
+                // Restore the original foreign key constraint
+                $table->foreign('match_id')->references('id')->on('game_matches')->onDelete('cascade');
+            });
+        }
     }
 };

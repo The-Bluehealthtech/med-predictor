@@ -34,11 +34,17 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
-                
-            Route::middleware('web')
-                ->group(base_path('routes/auth.php'));
+            if (app()->environment('testing')) {
+                // Load a lightweight route file during tests to avoid heavy memory usage from web.php
+                Route::middleware('web')
+                    ->group(base_path('routes/testing.php'));
+            } else {
+                Route::middleware('web')
+                    ->group(base_path('routes/web.php'));
+
+                Route::middleware('web')
+                    ->group(base_path('routes/auth.php'));
+            }
         });
 
         // Explicit route model binding for MatchModel

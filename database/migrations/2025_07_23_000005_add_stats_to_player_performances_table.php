@@ -8,14 +8,30 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('player_performances', function (Blueprint $table) {
-            $table->integer('appearances')->nullable()->after('season');
-            $table->integer('goals')->nullable()->after('appearances');
-            $table->integer('assists')->nullable()->after('goals');
-            $table->integer('minutes_played')->nullable()->after('assists');
-            $table->integer('yellow_cards')->nullable()->after('minutes_played');
-            $table->integer('red_cards')->nullable()->after('yellow_cards');
-            $table->integer('clean_sheets')->nullable()->after('red_cards');
-            $table->integer('season_rating')->nullable()->after('clean_sheets');
+            if (!Schema::hasColumn('player_performances', 'appearances')) {
+                $table->integer('appearances')->nullable()->after('season');
+            }
+            if (!Schema::hasColumn('player_performances', 'goals')) {
+                $table->integer('goals')->nullable()->after('appearances');
+            }
+            if (!Schema::hasColumn('player_performances', 'assists')) {
+                $table->integer('assists')->nullable()->after('goals');
+            }
+            if (!Schema::hasColumn('player_performances', 'minutes_played')) {
+                $table->integer('minutes_played')->nullable()->after('assists');
+            }
+            if (!Schema::hasColumn('player_performances', 'yellow_cards')) {
+                $table->integer('yellow_cards')->nullable()->after('minutes_played');
+            }
+            if (!Schema::hasColumn('player_performances', 'red_cards')) {
+                $table->integer('red_cards')->nullable()->after('yellow_cards');
+            }
+            if (!Schema::hasColumn('player_performances', 'clean_sheets')) {
+                $table->integer('clean_sheets')->nullable()->after('red_cards');
+            }
+            if (!Schema::hasColumn('player_performances', 'season_rating')) {
+                $table->integer('season_rating')->nullable()->after('clean_sheets');
+            }
         });
     }
 

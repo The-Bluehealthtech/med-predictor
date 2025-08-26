@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('licenses', function (Blueprint $table) {
-            // Drop old columns
-            $table->dropColumn(['name', 'type']);
+        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+            Schema::table('licenses', function (Blueprint $table) {
+                // Drop old columns
+                $table->dropColumn(['name', 'type']);
             
             // Add new columns for the complete license process
             $table->string('license_type')->after('id'); // player, staff, medical
@@ -36,8 +37,11 @@ return new class extends Migration
             $table->text('rejection_reason')->nullable()->after('approved_at');
             
             // Update status column to use enum
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending')->change();
-        });
+            if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+                $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending')->change();
+            }
+            });
+        }
     }
 
     /**
@@ -45,35 +49,37 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('licenses', function (Blueprint $table) {
-            // Drop new columns
-            $table->dropForeign(['club_id', 'association_id', 'requested_by', 'approved_by']);
-            $table->dropColumn([
-                'license_type',
-                'applicant_name',
-                'date_of_birth',
-                'nationality',
-                'position',
-                'email',
-                'phone',
-                'club_id',
-                'association_id',
-                'license_reason',
-                'validity_period',
-                'documents',
-                'requested_by',
-                'requested_at',
-                'approved_by',
-                'approved_at',
-                'rejection_reason'
-            ]);
-            
-            // Restore old columns
-            $table->string('name');
-            $table->string('type');
-            
-            // Restore old status column
-            $table->string('status')->change();
-        });
+        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+            Schema::table('licenses', function (Blueprint $table) {
+                // Drop new columns
+                $table->dropForeign(['club_id', 'association_id', 'requested_by', 'approved_by']);
+                $table->dropColumn([
+                    'license_type',
+                    'applicant_name',
+                    'date_of_birth',
+                    'nationality',
+                    'position',
+                    'email',
+                    'phone',
+                    'club_id',
+                    'association_id',
+                    'license_reason',
+                    'validity_period',
+                    'documents',
+                    'requested_by',
+                    'requested_at',
+                    'approved_by',
+                    'approved_at',
+                    'rejection_reason'
+                ]);
+                
+                // Restore old columns
+                $table->string('name');
+                $table->string('type');
+                
+                // Restore old status column
+                $table->string('status')->change();
+            });
+        }
     }
 };

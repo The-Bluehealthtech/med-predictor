@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (!Schema::hasTable('teams')) {
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -41,6 +42,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamps();
         });
+        }
     }
 
     /**

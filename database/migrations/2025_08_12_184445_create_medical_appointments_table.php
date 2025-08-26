@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('medical_appointments', function (Blueprint $table) {
+        if (!Schema::hasTable('medical_appointments')) {
+            Schema::create('medical_appointments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('player_id')->constrained('players')->onDelete('cascade');
             $table->string('title');
@@ -26,7 +27,8 @@ return new class extends Migration
             $table->boolean('is_urgent')->default(false);
             $table->text('notes')->nullable();
             $table->timestamps();
-        });
+            });
+        }
     }
 
     /**

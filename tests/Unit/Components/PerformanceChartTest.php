@@ -27,11 +27,11 @@ class PerformanceChartTest extends TestCase
         ];
 
         // Act
-        $response = $this->get('/test-performance-chart', [
-            'chartData' => $chartData,
+        $response = $this->get('/test-performance-chart?' . http_build_query([
+            'chartData' => json_encode($chartData),
             'chartType' => 'line',
             'title' => 'Performance Trends'
-        ]);
+        ]));
 
         // Assert
         $response->assertStatus(200);
@@ -47,9 +47,9 @@ class PerformanceChartTest extends TestCase
 
         foreach ($chartTypes as $type) {
             // Act
-            $response = $this->get('/test-performance-chart', [
+            $response = $this->get('/test-performance-chart?' . http_build_query([
                 'chartType' => $type
-            ]);
+            ]));
 
             // Assert
             $response->assertStatus(200);
@@ -255,9 +255,9 @@ class PerformanceChartTest extends TestCase
         $loadingState = true;
 
         // Act
-        $response = $this->get('/test-performance-chart', [
+        $response = $this->get('/test-performance-chart?' . http_build_query([
             'loading' => $loadingState
-        ]);
+        ]));
 
         // Assert
         $response->assertStatus(200);

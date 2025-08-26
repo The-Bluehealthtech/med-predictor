@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('player_performances', function (Blueprint $table) {
+        if (!Schema::hasTable('player_performances')) {
+            Schema::create('player_performances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('player_id')->constrained()->onDelete('cascade');
             $table->foreignId('match_id')->nullable()->constrained('matches')->onDelete('set null');
@@ -95,7 +96,8 @@ return new class extends Migration
             $table->index(['team_id', 'performance_date']);
             $table->index(['data_source', 'performance_date']);
             $table->index(['overall_performance_score', 'performance_date']);
-        });
+            });
+        }
     }
 
     /**

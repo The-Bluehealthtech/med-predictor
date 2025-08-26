@@ -11,10 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['doctor', 'secretary', 'admin', 'athlete'])->default('athlete')->after('email');
-            $table->string('fifa_connect_id')->nullable()->after('role');
-        });
+        if (Schema::hasTable('users')) {
+            Schema::table('users', function (Blueprint $table) {
+                if (!Schema::hasColumn('users', 'role')) {
+                    $table->enum('role', ['doctor', 'secretary', 'admin', 'athlete'])->default('athlete')->after('email');
+                }
+                if (!Schema::hasColumn('users', 'fifa_connect_id')) {
+                    $table->string('fifa_connect_id')->nullable()->after('role');
+                }
+            });
+        }
     }
 
     /**
@@ -22,8 +28,15 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['role', 'fifa_connect_id']);
-        });
+        if (Schema::hasTable('users')) {
+            Schema::table('users', function (Blueprint $table) {
+                if (Schema::hasColumn('users', 'role')) {
+                    $table->dropColumn('role');
+                }
+                if (Schema::hasColumn('users', 'fifa_connect_id')) {
+                    $table->dropColumn('fifa_connect_id');
+                }
+            });
+        }
     }
 }; 

@@ -138,7 +138,9 @@ return new class extends Migration
             $table->string('medical_record_category')->nullable()->comment('Primary medical category');
             
             // Enhanced Status Enum
-            $table->enum('status', ['active', 'archived', 'pending', 'hl7_report', 'review_required', 'approved', 'rejected'])->default('active')->change();
+            if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+                $table->enum('status', ['active', 'archived', 'pending', 'hl7_report', 'review_required', 'approved', 'rejected'])->default('active')->change();
+            }
         });
     }
 
@@ -166,7 +168,9 @@ return new class extends Migration
             ]);
             
             // Revert status enum
-            $table->enum('status', ['active', 'archived', 'pending', 'hl7_report'])->default('active')->change();
+            if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+                $table->enum('status', ['active', 'archived', 'pending', 'hl7_report'])->default('active')->change();
+            }
         });
     }
 }; 

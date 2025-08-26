@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('health_records', function (Blueprint $table) {
-            // Add 'hl7_report' to the status enum
-            $table->enum('status', ['active', 'archived', 'pending', 'hl7_report'])->default('active')->change();
-        });
+        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+            Schema::table('health_records', function (Blueprint $table) {
+                // Add 'hl7_report' to the status enum
+                $table->enum('status', ['active', 'archived', 'pending', 'hl7_report'])->default('active')->change();
+            });
+        }
     }
 
     /**
@@ -22,9 +24,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('health_records', function (Blueprint $table) {
-            // Remove 'hl7_report' from the status enum
-            $table->enum('status', ['active', 'archived', 'pending'])->default('active')->change();
-        });
+        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+            Schema::table('health_records', function (Blueprint $table) {
+                // Remove 'hl7_report' from the status enum
+                $table->enum('status', ['active', 'archived', 'pending'])->default('active')->change();
+            });
+        }
     }
 };

@@ -27,6 +27,12 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
           coverage: xdebug
           
+      - name: "📦 Préparation de l'environnement"
+        run: |
+          cp .env.example .env
+          php -r 'file_exists("database") || mkdir("database", 0777, true);'
+          php -r 'file_exists("database/database.sqlite") || touch("database/database.sqlite");'
+      
       - name: "📦 Installation Composer"
         uses: "ramsey/composer-install@v2"
         with:
@@ -35,7 +41,6 @@ jobs:
           
       - name: "🔧 Configuration Laravel"
         run: |
-          cp .env.example .env
           php artisan key:generate
           php artisan config:cache
           

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->time('end_time');
             $table->enum('priority', ['low', 'medium', 'high']);
             $table->enum('type', ['technical', 'physical', 'tactical', 'recovery', 'mental']);
-            $table->string('location')->default('Centre d\'entraînement');
+            $table->string('location')->default('Centre d entrainement');
             $table->string('coach')->nullable();
             $table->boolean('is_mandatory')->default(true);
             $table->timestamps();

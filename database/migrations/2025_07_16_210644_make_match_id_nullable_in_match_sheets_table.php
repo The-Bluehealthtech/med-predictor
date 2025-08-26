@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('match_sheets', function (Blueprint $table) {
-            $table->foreignId('match_id')->nullable()->change();
-        });
+        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+            Schema::table('match_sheets', function (Blueprint $table) {
+                $table->foreignId('match_id')->nullable()->change();
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('match_sheets', function (Blueprint $table) {
-            $table->foreignId('match_id')->nullable(false)->change();
-        });
+        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+            Schema::table('match_sheets', function (Blueprint $table) {
+                $table->foreignId('match_id')->nullable(false)->change();
+            });
+        }
     }
 };

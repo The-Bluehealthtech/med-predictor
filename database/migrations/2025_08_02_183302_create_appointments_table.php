@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('appointments', function (Blueprint $table) {
+        if (!Schema::hasTable('appointments')) {
+            Schema::create('appointments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('athlete_id')->constrained('athletes')->onDelete('cascade');
             $table->foreignId('doctor_id')->nullable()->constrained('users')->onDelete('set null');
@@ -49,7 +50,8 @@ return new class extends Migration
             $table->index(['athlete_id', 'appointment_date']);
             $table->index(['doctor_id', 'appointment_date']);
             $table->index(['created_by', 'appointment_date']);
-        });
+            });
+        }
     }
 
     /**

@@ -1,0 +1,38 @@
+name: 🚀 CI Simple - Version GitLab Style
+
+on:
+  push:
+    branches: [ develop-v3, main ]
+  pull_request:
+    branches: [ develop-v3, main ]
+  workflow_dispatch:
+
+jobs:
+  # Test Simple - Style GitLab
+  test:
+    runs-on: ubuntu-latest
+    name: "🧪 Test Simple"
+    
+    steps:
+      - name: "📥 Checkout du code"
+        uses: actions/checkout@v4
+        
+      - name: "🐘 Configuration PHP 8.2"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, zip
+          
+      - name: "📦 Installation Composer"
+        uses: "ramsey/composer-install@v2"
+        with:
+          composer-options: "--prefer-dist --no-dev"
+          
+      - name: "🧪 Test Simple"
+        run: |
+          echo "Hello World from GitHub Actions!"
+          echo "Pipeline fonctionne comme GitLab !"
+          echo "✅ GitHub Actions résolu !"
+          echo "PHP Version: $(php -v | head -1)"
+          echo "Composer Version: $(composer --version)"
+          echo "✅ Test terminé avec succès !"

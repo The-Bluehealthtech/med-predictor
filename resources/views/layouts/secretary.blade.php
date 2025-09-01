@@ -13,6 +13,9 @@
     <!-- Vue.js -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <!-- FullCalendar -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     
@@ -35,14 +38,16 @@
                 <div class="flex items-center space-x-4">
                     <div class="text-sm text-gray-700">
                         <i class="fas fa-user-circle mr-1"></i>
-                        {{ auth()->user()->name }}
+                        {{ auth()->user()->name ?? 'Utilisateur Test' }}
                     </div>
+                    @if(auth()->check())
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="text-gray-500 hover:text-gray-700">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </form>
+                    @endif
                 </div>
             </div>
         </div>

@@ -3,7 +3,7 @@
 @section('title', 'Modules - FIT Platform')
 
 @section('content')
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen">
     <!-- Header -->
     <div class="bg-white shadow-sm border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -29,7 +29,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <!-- Welcome Section -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
             <div class="p-6">

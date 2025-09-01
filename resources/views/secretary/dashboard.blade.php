@@ -139,20 +139,20 @@
                                     </div>
                                 </div>
                                 <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ $appointment->athlete->name }}</div>
-                                    <div class="text-sm text-gray-500">{{ $appointment->athlete->fifa_connect_id }}</div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $appointment->player->name ?? 'Joueur inconnu' }}</div>
+                                    <div class="text-sm text-gray-500">{{ $appointment->player->fifa_connect_id ?? 'N/A' }}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {{ $appointment->appointment_date->format('d/m/Y H:i') }}
+                            {{ $appointment->visit_date ? $appointment->visit_date->format('d/m/Y H:i') : 'Date non définie' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
-                                {{ $appointment->type === 'consultation' ? 'bg-blue-100 text-blue-800' : 
-                                   ($appointment->type === 'examination' ? 'bg-green-100 text-green-800' : 
-                                   ($appointment->type === 'emergency' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')) }}">
-                                {{ $appointment->type_label }}
+                                {{ $appointment->visit_type === 'consultation' ? 'bg-blue-100 text-blue-800' : 
+                                   ($appointment->visit_type === 'examination' ? 'bg-green-100 text-green-800' : 
+                                   ($appointment->visit_type === 'emergency' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')) }}">
+                                {{ ucfirst($appointment->visit_type ?? 'Non défini') }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -160,7 +160,7 @@
                                 {{ $appointment->status === 'confirmed' ? 'bg-green-100 text-green-800' : 
                                    ($appointment->status === 'scheduled' ? 'bg-yellow-100 text-yellow-800' : 
                                    ($appointment->status === 'cancelled' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')) }}">
-                                {{ $appointment->status_label }}
+                                {{ ucfirst($appointment->status ?? 'Non défini') }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -214,25 +214,25 @@
                                     </div>
                                 </div>
                                 <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ $document->title }}</div>
-                                    <div class="text-sm text-gray-500">{{ $document->formatted_size }}</div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $document->file_name ?? 'Document sans nom' }}</div>
+                                    <div class="text-sm text-gray-500">{{ $document->file_size ?? 'Taille inconnue' }}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $document->athlete->name }}</div>
-                            <div class="text-sm text-gray-500">{{ $document->athlete->fifa_connect_id }}</div>
+                            <div class="text-sm text-gray-900">{{ $document->player->name ?? 'N/A' }}</div>
+                            <div class="text-sm text-gray-500">{{ $document->player->fifa_connect_id ?? 'N/A' }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                {{ $document->document_type_label }}
+                                {{ ucfirst($document->medical_record_type ?? 'Type inconnu') }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
                                 {{ $document->status === 'analyzed' ? 'bg-green-100 text-green-800' : 
                                    ($document->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
-                                {{ $document->status_label }}
+                                {{ ucfirst($document->status ?? 'Non défini') }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">

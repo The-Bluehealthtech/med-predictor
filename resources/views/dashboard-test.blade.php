@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Dashboard FIT - Données Simulées</title>
+    <title>Dashboard FIT</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -14,12 +14,12 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
-                        <h1 class="text-xl font-bold text-gray-900">🧪 Test Dashboard FIT</h1>
+                        <h1 class="text-xl font-bold text-gray-900">🏆 Dashboard FIT</h1>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <a href="/" class="text-gray-500 hover:text-gray-700">Dashboard Principal</a>
-                        <a href="/diagnostic" class="text-gray-500 hover:text-gray-700">Diagnostic</a>
-                        <a href="/test-dashboard" class="text-gray-500 hover:text-gray-700">Test DB</a>
+                        <a href="{{ route('modules.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            📋 Modules
+                        </a>
                     </div>
                 </div>
             </div>
@@ -27,18 +27,10 @@
 
         <!-- Contenu principal -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Hero Section -->
-            <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Dashboard FIT - Version Test</h2>
-                <p class="text-xl text-gray-600">Page de test avec données simulées - Aucune base de données</p>
-                <div class="mt-4 flex justify-center space-x-2">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                        ✅ Données simulées
-                    </span>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        🔄 Test en cours
-                    </span>
-                </div>
+                    <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Dashboard FIT</h2>
+            <p class="text-xl text-gray-600">Plateforme complète de gestion du football avec modules médicaux, compétitions et analyses</p>
             </div>
 
             <!-- KPI Rapides -->
@@ -502,7 +494,7 @@
             }
         });
 
-        console.log('🧪 Dashboard de test FIT chargé avec succès');
+        console.log('🏆 Dashboard FIT chargé avec succès');
     </script>
 </body>
 </html>

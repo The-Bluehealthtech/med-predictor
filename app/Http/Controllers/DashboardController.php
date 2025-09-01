@@ -20,7 +20,7 @@ class DashboardController extends Controller
             case 'club_admin':
                 return redirect()->route('club-management.dashboard');
             case 'player':
-                return redirect()->route('fifa-ultimate'); // Dashboard FIFA Ultimate Working
+                return redirect()->route('dashboard.test'); // Dashboard le plus récent avec 20+ cards
             case 'admin':
                 return redirect()->route('admin.dashboard');
             default:

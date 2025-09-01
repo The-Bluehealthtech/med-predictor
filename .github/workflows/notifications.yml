@@ -1,0 +1,45 @@
+name: 📧 Notifications Simple
+
+on:
+  workflow_run:
+    workflows: ["🚀 CI Simple - Version GitLab Style"]
+    types: [completed]
+
+jobs:
+  # Notification de Succès
+  notify-success:
+    runs-on: ubuntu-latest
+    name: "📧 Notification de Succès"
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - name: "📥 Checkout du code"
+        uses: actions/checkout@v4
+        
+      - name: "📧 Notification Simple"
+        run: |
+          echo "🎉 Pipeline GitHub Actions réussi !"
+          echo "✅ Workflow: ${{ github.event.workflow_run.name }}"
+          echo "✅ Branche: ${{ github.event.workflow_run.head_branch }}"
+          echo "✅ Commit: ${{ github.event.workflow_run.head_sha }}"
+          echo "✅ URL: ${{ github.event.workflow_run.html_url }}"
+          echo "📧 Notification envoyée (simulée)"
+
+  # Notification d'Échec
+  notify-failure:
+    runs-on: ubuntu-latest
+    name: "📧 Notification d'Échec"
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    
+    steps:
+      - name: "📥 Checkout du code"
+        uses: actions/checkout@v4
+        
+      - name: "📧 Notification Simple"
+        run: |
+          echo "❌ Pipeline GitHub Actions échoué !"
+          echo "❌ Workflow: ${{ github.event.workflow_run.name }}"
+          echo "❌ Branche: ${{ github.event.workflow_run.head_branch }}"
+          echo "❌ Commit: ${{ github.event.workflow_run.head_sha }}"
+          echo "❌ URL: ${{ github.event.workflow_run.html_url }}"
+          echo "📧 Notification envoyée (simulée)"

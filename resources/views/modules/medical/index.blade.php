@@ -55,17 +55,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                     <div class="bg-green-50 rounded-lg p-4">
                         <h3 class="font-medium text-green-900">Medical Clearances</h3>
-                        <p class="text-2xl font-bold text-green-600">1,156</p>
+                        <p class="text-2xl font-bold text-green-600">{{ $stats['activeClearances'] ?? 0 }}</p>
                         <p class="text-sm text-green-700">Valid clearances</p>
                     </div>
                     <div class="bg-yellow-50 rounded-lg p-4">
                         <h3 class="font-medium text-yellow-900">Pending Assessments</h3>
-                        <p class="text-2xl font-bold text-yellow-600">34</p>
+                        <p class="text-2xl font-bold text-yellow-600">{{ $stats['pendingAssessments'] ?? 0 }}</p>
                         <p class="text-sm text-yellow-700">Awaiting medical review</p>
                     </div>
                     <div class="bg-red-50 rounded-lg p-4">
                         <h3 class="font-medium text-red-900">Medical Suspensions</h3>
-                        <p class="text-2xl font-bold text-red-600">12</p>
+                        <p class="text-2xl font-bold text-red-600">{{ $stats['medicalSuspensions'] ?? 0 }}</p>
                         <p class="text-sm text-red-700">Temporarily suspended</p>
                     </div>
                 </div>

@@ -67,11 +67,12 @@ class ClubObserver
         });
         
         // Clear competition caches
-        $club->competitions()->chunk(25, function ($competitions) {
-            foreach ($competitions as $competition) {
-                $this->cacheService->clearCompetitionCache($competition);
-            }
-        });
+        // TODO: Implémenter la relation competitions() dans le modèle Club
+        // $club->competitions()->chunk(25, function ($competitions) {
+        //     foreach ($competitions as $competition) {
+        //         $this->cacheService->clearCompetitionCache($competition);
+        //     }
+        // });
         
         // Clear FIFA Connect caches
         if ($club->fifa_connect_id) {

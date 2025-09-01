@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Team extends Model
 {
@@ -14,6 +15,7 @@ class Team extends Model
         'name',
         'level',
         'federation_id',
+        'club_id',
         'fifa_team_id',
     ];
 
@@ -21,6 +23,14 @@ class Team extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Get the club that owns this team.
+     */
+    public function club(): BelongsTo
+    {
+        return $this->belongsTo(Club::class);
+    }
 
     /**
      * Get the athletes for this team.

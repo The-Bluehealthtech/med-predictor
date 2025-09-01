@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier ' . $player->full_name . ' - Med Predictor')
+@section('title', 'Modifier ' . $player->first_name . ' ' . $player->last_name . ' - Med Predictor')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">⚽ Modifier {{ $player->full_name }}</h1>
+            <h1 class="text-3xl font-bold text-gray-900">⚽ Modifier {{ $player->first_name }} {{ $player->last_name }}</h1>
             <p class="text-gray-600 mt-2">Modifier les informations du joueur</p>
         </div>
 
@@ -15,7 +15,7 @@
                 <h2 class="text-xl font-semibold text-gray-800">Informations du Joueur</h2>
             </div>
             
-            <form action="{{ route('players.update', $player) }}" method="POST" class="p-6">
+            <form action="{{ route('players.update', $player) }}" method="POST" enctype="multipart/form-data" class="p-6">
                 @csrf
                 @method('PUT')
                 
@@ -60,9 +60,31 @@
                         <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">
                             Nationalité *
                         </label>
-                        <input type="text" name="nationality" id="nationality" 
-                               value="{{ old('nationality', $player->nationality) }}" required
-                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <select name="nationality" id="nationality" required
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Sélectionner une nationalité</option>
+                            <option value="Tunisie" {{ old('nationality', $player->nationality) == 'Tunisie' ? 'selected' : '' }}>Tunisie</option>
+                            <option value="Algérie" {{ old('nationality', $player->nationality) == 'Algérie' ? 'selected' : '' }}>Algérie</option>
+                            <option value="Maroc" {{ old('nationality', $player->last_name) == 'Maroc' ? 'selected' : '' }}>Maroc</option>
+                            <option value="Égypte" {{ old('nationality', $player->nationality) == 'Égypte' ? 'selected' : '' }}>Égypte</option>
+                            <option value="France" {{ old('nationality', $player->nationality) == 'France' ? 'selected' : '' }}>France</option>
+                            <option value="Allemagne" {{ old('nationality', $player->nationality) == 'Allemagne' ? 'selected' : '' }}>Allemagne</option>
+                            <option value="Espagne" {{ old('nationality', $player->nationality) == 'Espagne' ? 'selected' : '' }}>Espagne</option>
+                            <option value="Italie" {{ old('nationality', $player->nationality) == 'Italie' ? 'selected' : '' }}>Italie</option>
+                            <option value="Portugal" {{ old('nationality', $player->nationality) == 'Portugal' ? 'selected' : '' }}>Portugal</option>
+                            <option value="Pays-Bas" {{ old('nationality', $player->nationality) == 'Pays-Bas' ? 'selected' : '' }}>Pays-Bas</option>
+                            <option value="Belgique" {{ old('nationality', $player->nationality) == 'Belgique' ? 'selected' : '' }}>Belgique</option>
+                            <option value="Suisse" {{ old('nationality', $player->nationality) == 'Suisse' ? 'selected' : '' }}>Suisse</option>
+                            <option value="Royaume-Uni" {{ old('nationality', $player->nationality) == 'Royaume-Uni' ? 'selected' : '' }}>Royaume-Uni</option>
+                            <option value="États-Unis" {{ old('nationality', $player->nationality) == 'États-Unis' ? 'selected' : '' }}>États-Unis</option>
+                            <option value="Canada" {{ old('nationality', $player->nationality) == 'Canada' ? 'selected' : '' }}>Canada</option>
+                            <option value="Brésil" {{ old('nationality', $player->nationality) == 'Brésil' ? 'selected' : '' }}>Brésil</option>
+                            <option value="Argentine" {{ old('nationality', $player->nationality) == 'Argentine' ? 'selected' : '' }}>Argentine</option>
+                            <option value="Japon" {{ old('nationality', $player->nationality) == 'Japon' ? 'selected' : '' }}>Japon</option>
+                            <option value="Chine" {{ old('nationality', $player->nationality) == 'Chine' ? 'selected' : '' }}>Chine</option>
+                            <option value="Australie" {{ old('nationality', $player->nationality) == 'Australie' ? 'selected' : '' }}>Australie</option>
+                            <option value="Afrique du Sud" {{ old('nationality', $player->nationality) == 'Afrique du Sud' ? 'selected' : '' }}>Afrique du Sud</option>
+                        </select>
                         @error('nationality')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -138,7 +160,105 @@
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
 
+                <!-- Section Photo du Joueur -->
+                <div class="mt-8 border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">📸 Photo du Joueur</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="player_picture" class="block text-sm font-medium text-gray-700 mb-2">
+                                Photo du joueur
+                            </label>
+                            <input type="file" name="player_picture" id="player_picture" 
+                                   accept="image/*" 
+                                   class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                   onchange="previewImage(this)">
+                            <p class="mt-1 text-sm text-gray-500">Formats acceptés: JPG, PNG, GIF. Taille max: 5MB</p>
+                            @error('player_picture')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Photo actuelle / Aperçu
+                            </label>
+                            <div id="imagePreviewContainer" class="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 overflow-hidden">
+                                @if($player->player_picture)
+                                    <img src="{{ asset('storage/' . $player->player_picture) }}" 
+                                         alt="Photo actuelle" 
+                                         class="w-full h-full object-cover">
+                                @else
+                                    <span class="text-gray-400 text-4xl">?</span>
+                                @endif
+                            </div>
+                            <button type="button" id="removeImageBtn" onclick="removeImage()" 
+                                    class="mt-2 text-sm text-red-600 hover:text-red-800 {{ $player->player_picture ? '' : 'hidden' }}">
+                                🗑️ Supprimer la photo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end space-x-4">
+                    <a href="{{ route('players.index') }}" 
+                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
+                        Annuler
+                    </a>
+                    <button type="submit" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
+                        Mettre à jour
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function previewImage(input) {
+    const container = document.getElementById('imagePreviewContainer');
+    const removeBtn = document.getElementById('removeImageBtn');
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Validation du type de fichier
+        if (!file.type.startsWith('image/')) {
+            alert('❌ Veuillez sélectionner un fichier image valide (JPG, PNG, GIF)');
+            input.value = '';
+            return;
+        }
+        
+        // Validation de la taille (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('❌ La taille du fichier ne doit pas dépasser 5MB');
+            input.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            container.innerHTML = `<img src="${e.target.result}" alt="Aperçu" class="w-full h-full object-cover">`;
+            removeBtn.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeImage() {
+    const input = document.getElementById('player_picture');
+    const container = document.getElementById('imagePreviewContainer');
+    const removeBtn = document.getElementById('removeImageBtn');
+    
+    input.value = '';
+    container.innerHTML = '<span class="text-gray-400 text-4xl">?</span>';
+    removeBtn.classList.add('hidden');
+}
+</script>
+@endsection 
                     <div>
                         <label for="preferred_foot" class="block text-sm font-medium text-gray-700 mb-2">
                             Pied préféré

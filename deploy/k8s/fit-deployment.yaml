@@ -1,0 +1,244 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fit-app
+  namespace: fit-production
+  labels:
+    app: fit-app
+    version: v1.0.0
+    environment: production
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: fit-app
+  template:
+    metadata:
+      labels:
+        app: fit-app
+        version: v1.0.0
+        environment: production
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9000"
+        prometheus.io/path: "/metrics"
+    spec:
+      imagePullSecrets:
+      - name: fit-registry-secret
+      containers:
+      - name: fit-app
+        image: your-registry/fit-app:v1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9000
+          name: http
+          protocol: TCP
+        env:
+        - name: APP_ENV
+          value: "production"
+        - name: APP_DEBUG
+          value: "false"
+        - name: APP_URL
+          value: "https://fit.yourdomain.com"
+        - name: LOG_LEVEL
+          value: "info"
+        - name: CACHE_DRIVER
+          value: "redis"
+        - name: SESSION_DRIVER
+          value: "redis"
+        - name: QUEUE_CONNECTION
+          value: "redis"
+        envFrom:
+        - secretRef:
+            name: fit-app-secrets
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 9000
+            httpHeaders:
+            - name: User-Agent
+              value: kube-probe/1.0
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 9000
+            httpHeaders:
+            - name: User-Agent
+              value: kube-probe/1.0
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 9000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
+        volumeMounts:
+        - name: storage
+          mountPath: /var/www/html/storage
+          subPath: app
+        - name: cache
+          mountPath: /var/www/html/bootstrap/cache
+        - name: logs
+          mountPath: /var/www/html/storage/logs
+        - name: config
+          mountPath: /var/www/html/config
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: fit-storage-pvc
+      - name: cache
+        emptyDir:
+          medium: Memory
+          sizeLimit: "256Mi"
+      - name: logs
+        emptyDir:
+          medium: Memory
+          sizeLimit: "100Mi"
+      - name: config
+        configMap:
+          name: fit-app-config
+      securityContext:
+        fsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fit-service
+  namespace: fit-production
+  labels:
+    app: fit-app
+    environment: production
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 9000
+    protocol: TCP
+    name: http
+  selector:
+    app: fit-app
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fit-ingress
+  namespace: fit-production
+  labels:
+    app: fit-app
+    environment: production
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  tls:
+  - hosts:
+    - fit.yourdomain.com
+    secretName: fit-tls
+  rules:
+  - host: fit.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: fit-service
+            port:
+              number: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fit-app-config
+  namespace: fit-production
+  labels:
+    app: fit-app
+    environment: production
+data:
+  app.php: |
+    <?php
+    return [
+        'name' => env('APP_NAME', 'FIT'),
+        'env' => env('APP_ENV', 'production'),
+        'debug' => env('APP_DEBUG', false),
+        'url' => env('APP_URL', 'https://fit.yourdomain.com'),
+        'timezone' => 'UTC',
+        'locale' => 'en',
+        'fallback_locale' => 'en',
+        'faker_locale' => 'en_US',
+        'key' => env('APP_KEY'),
+        'cipher' => 'AES-256-CBC',
+        'providers' => [
+            // Providers configuration
+        ],
+    ];
+  database.php: |
+    <?php
+    return [
+        'default' => env('DB_CONNECTION', 'mysql'),
+        'connections' => [
+            'mysql' => [
+                'driver' => 'mysql',
+                'host' => env('DB_HOST', 'fit-mysql'),
+                'port' => env('DB_PORT', '3306'),
+                'database' => env('DB_DATABASE', 'fit_production'),
+                'username' => env('DB_USERNAME', 'fit_user'),
+                'password' => env('DB_PASSWORD'),
+                'charset' => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
+                'prefix' => '',
+                'strict' => true,
+                'engine' => 'InnoDB',
+                'options' => extension_loaded('pdo_mysql') ? array_filter([
+                    PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                ]) : [],
+            ],
+        ],
+    ];

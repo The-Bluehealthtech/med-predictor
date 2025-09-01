@@ -11,20 +11,18 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div class="flex items-center">
-                            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                                <span class="text-white font-bold text-lg">FIT</span>
-                            </div>
-                            <div class="ml-3">
+                            <img src="{{ asset('images/fit-logo.png') }}" alt="FIT Logo" class="w-10 h-10 mr-3">
+                            <div>
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Modules FIT
                                 </h1>
-                                <p class="text-sm text-gray-600">Plateforme Football Intelligence & Tracking</p>
+                                <p class="text-sm text-gray-600">Football Intelligence & Tracking</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('admin.dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au Dashboard Admin</a>
+                    <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au Dashboard Général</a>
                 </div>
             </div>
         </div>

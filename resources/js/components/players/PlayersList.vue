@@ -113,6 +113,17 @@
                             <p class="fifa-players__player-number">
                                 #{{ player.number }}
                             </p>
+                            
+                            <!-- Club Logo -->
+                            <div class="fifa-players__club-info" v-if="player.club">
+                                <img
+                                    :src="`/storage/${player.club.logo_path}`"
+                                    :alt="player.club.name"
+                                    class="fifa-players__club-logo"
+                                    @error="handleLogoError"
+                                />
+                                <span class="fifa-players__club-name">{{ player.club.name }}</span>
+                            </div>
                         </div>
 
                         <div class="fifa-players__card-actions">
@@ -443,7 +454,7 @@ export default {
         ];
 
         const filteredPlayers = computed(() => {
-            let filtered = mockPlayers;
+            let filtered = players.value;
 
             if (searchQuery.value) {
                 filtered = filtered.filter((player) =>
@@ -493,6 +504,11 @@ export default {
             console.log("View player:", player);
         };
 
+        const handleLogoError = (event) => {
+            // Fallback vers une image par défaut si le logo ne charge pas
+            event.target.src = '/images/defaults/club-logo.png';
+        };
+
         const createPlayer = async () => {
             creating.value = true;
 
@@ -537,8 +553,17 @@ export default {
             }
         };
 
-        onMounted(() => {
-            players.value = mockPlayers;
+        onMounted(async () => {
+            try {
+                // Charger les vraies données depuis l'API
+                const response = await fetch('/api/players?include=club');
+                const data = await response.json();
+                players.value = data.data || [];
+            } catch (error) {
+                console.error('Erreur lors du chargement des joueurs:', error);
+                // Fallback vers les données mockées
+                players.value = mockPlayers;
+            }
         });
 
         return {
@@ -556,6 +581,7 @@ export default {
             selectPlayer,
             editPlayer,
             viewPlayer,
+            handleLogoError,
             createPlayer,
         };
     },
@@ -835,6 +861,32 @@ export default {
 .fifa-players__last-update {
     font-size: var(--fifa-text-xs);
     color: var(--fifa-gray-500);
+}
+
+/* Club Info Styles */
+.fifa-players__club-info {
+    display: flex;
+    align-items: center;
+    gap: var(--fifa-spacing-xs);
+    margin-top: var(--fifa-spacing-sm);
+    padding: var(--fifa-spacing-xs);
+    background: var(--fifa-gray-50);
+    border-radius: var(--fifa-radius-sm);
+}
+
+.fifa-players__club-logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    border-radius: var(--fifa-radius-sm);
+    background: var(--fifa-white);
+    border: 1px solid var(--fifa-gray-200);
+}
+
+.fifa-players__club-name {
+    font-size: var(--fifa-text-xs);
+    color: var(--fifa-gray-600);
+    font-weight: var(--fifa-font-weight-medium);
 }
 
 /* Pagination */

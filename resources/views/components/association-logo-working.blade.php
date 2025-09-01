@@ -23,7 +23,18 @@
     $logoUrl = null;
     $logoAlt = $alt ?? 'Logo de l\'association';
     
-    if ($association && $association->country) {
+    // Priorité 1: Logo uploadé dans la base de données
+    if ($association && $association->association_logo_url) {
+        $logoUrl = asset('storage/' . $association->association_logo_url) . '?v=' . time();
+        $logoAlt = ($association->name ?? $association->country) . ' Association Logo';
+    }
+    // Priorité 2: Logo uploadé via logo_path
+    elseif ($association && $association->logo_path) {
+        $logoUrl = asset('storage/' . $association->logo_path) . '?v=' . time();
+        $logoAlt = ($association->name ?? $association->country) . ' Association Logo';
+    }
+    // Priorité 3: Logo statique basé sur le pays
+    elseif ($association && $association->country) {
         // Mappage simple des pays vers les codes
         $countryMapping = [
             'france' => 'FR',

@@ -64,14 +64,133 @@ Route::get('/test', function () {
     return response()->json(['status' => 'ok', 'message' => 'Server is working']);
 })->name('test');
 
-// Test route FIFA Connect
-Route::get('/test-fifa/{playerId}', function ($playerId) {
-    $player = \App\Models\Player::with(['club', 'association', 'healthRecords', 'pcmas'])->find($playerId);
-    if (!$player) {
-        abort(404, 'Joueur non trouvé');
-    }
-    return view('test-fifa-simple', compact('player'));
-})->name('test.fifa');
+    // Test route FIFA Connect
+    Route::get('/test-fifa/{playerId}', function ($playerId) {
+        $player = \App\Models\Player::with(['club', 'association', 'healthRecords', 'pcmas'])->find($playerId);
+        if (!$player) {
+            abort(404, 'Joueur non trouvé');
+        }
+        return view('test-fifa-simple', compact('player'));
+    })->name('test.fifa');
+
+
+
+
+
+
+
+    // Test route to see what's captured
+    Route::get('/test-route-capture', function () {
+        return response()->json([
+            'current_route' => request()->route()->getName(),
+            'current_uri' => request()->getRequestUri(),
+            'method' => request()->getMethod(),
+            'all_routes' => \Route::getRoutes()->map(function($route) {
+                return [
+                    'uri' => $route->uri(),
+                    'name' => $route->getName(),
+                    'methods' => $route->methods()
+                ];
+            })->filter(function($route) {
+                return str_contains($route['uri'], 'health-records');
+            })->values()
+        ]);
+    })->name('test.route.capture');
+
+
+
+    // Test route to debug route capture
+    Route::get('/test-health-debug-route', function () {
+        $request = request();
+        $route = $request->route();
+        
+        return response()->json([
+            'uri' => $request->getRequestUri(),
+            'route_name' => $route ? $route->getName() : 'No route',
+            'route_uri' => $route ? $route->uri() : 'No route',
+            'route_parameters' => $route ? $route->parameters() : [],
+            'route_middleware' => $route ? $route->middleware() : [],
+            'all_matching_routes' => collect(\Route::getRoutes())->filter(function($route) {
+                return str_contains($route->uri(), 'health-records');
+            })->map(function($route) {
+                return [
+                    'uri' => $route->uri(),
+                    'name' => $route->getName(),
+                    'methods' => $route->methods(),
+                    'middleware' => $route->middleware()
+                ];
+            })->values()
+        ]);
+    })->name('test.health.debug.route');
+
+    // Test route to see what's happening with health-records
+    Route::get('/test-health-what', function () {
+        $request = request();
+        $route = $request->route();
+        
+        // Test if we can access the controller directly
+        try {
+            $controller = new \App\Http\Controllers\HealthRecordController();
+            $result = $controller->create($request);
+            return response()->json([
+                'status' => 'controller_works',
+                'result_type' => get_class($result),
+                'view_name' => $result->getName(),
+                'current_route' => $route ? $route->getName() : 'No route',
+                'current_uri' => $request->getRequestUri()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'controller_error',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
+    })->name('test.health.what');
+
+    // Test route with exact same controller but different name
+    Route::get('/test-health-create', [App\Http\Controllers\HealthRecordController::class, 'create'])->name('test.health.create');
+
+    // Test route to see what captures health-records/create
+    Route::get('/test-health-capture', function () {
+        // Simulate the exact request to health-records/create
+        $request = \Illuminate\Http\Request::create('/health-records/create', 'GET');
+        $request->setRouteResolver(function () {
+            return new \Illuminate\Routing\Route(['GET'], '/health-records/create', function () {
+                return 'This should be the health-records.create route';
+            });
+        });
+        
+        // Get all routes that match this pattern
+        $routes = collect(\Route::getRoutes())->filter(function($route) {
+            return str_contains($route->uri(), 'health-records');
+        })->map(function($route) {
+            return [
+                'uri' => $route->uri(),
+                'name' => $route->getName(),
+                'methods' => $route->methods(),
+                'middleware' => $route->middleware(),
+                'pattern' => $route->getCompiled()->getRegexPattern()
+            ];
+        })->values();
+        
+        return response()->json([
+            'routes' => $routes,
+            'message' => 'Check which route pattern matches /health-records/create'
+        ]);
+    })->name('test.health.capture');
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Test route Hero Components
 Route::get('/test-hero/{playerId}', function ($playerId) {
@@ -1525,6 +1644,7 @@ Route::prefix('api')->group(function () {
 // Routes protégées
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/club-management/dashboard', [ClubManagementController::class, 'dashboard'])->name('club-management.dashboard');
     Route::get('/admin/players', [AdminController::class, 'playersList'])->name('admin.players.list');
     Route::get('/admin/search-players', [AdminController::class, 'searchPlayers'])->name('admin.search.players');
     Route::get('/admin/system-stats', [AdminController::class, 'systemStats'])->name('admin.system.stats');
@@ -2982,13 +3102,15 @@ Route::middleware(['auth'])->group(function () {
     // Health Records routes
     Route::get('/health-records', [App\Http\Controllers\HealthRecordController::class, 'index'])->name('health-records.index');
     Route::get('/health-records/create', [App\Http\Controllers\HealthRecordController::class, 'create'])->name('health-records.create');
-    Route::get('/health-records/{healthRecord}', [App\Http\Controllers\HealthRecordController::class, 'show'])->name('health-records.show');
     Route::post('/health-records', [App\Http\Controllers\HealthRecordController::class, 'store'])->name('health-records.store');
+    Route::post('/health-records/generate-hl7-cda', [App\Http\Controllers\HealthRecordController::class, 'generateHl7Cda'])->name('health-records.generate-hl7-cda');
+    
+    // Health Records routes with parameters (must come AFTER specific routes)
+    Route::get('/health-records/{healthRecord}', [App\Http\Controllers\HealthRecordController::class, 'show'])->name('health-records.show');
     Route::get('/health-records/{healthRecord}/edit', [App\Http\Controllers\HealthRecordController::class, 'edit'])->name('health-records.edit');
     Route::put('/health-records/{healthRecord}', [App\Http\Controllers\HealthRecordController::class, 'update'])->name('health-records.update');
     Route::delete('/health-records/{healthRecord}', [App\Http\Controllers\HealthRecordController::class, 'destroy'])->name('health-records.destroy');
     Route::post('/health-records/{healthRecord}/generate-prediction', [App\Http\Controllers\HealthRecordController::class, 'generatePrediction'])->name('health-records.generate-prediction');
-    Route::post('/health-records/generate-hl7-cda', [App\Http\Controllers\HealthRecordController::class, 'generateHl7Cda'])->name('health-records.generate-hl7-cda');
     
     // Performances routes
     Route::get('/performances', function () {

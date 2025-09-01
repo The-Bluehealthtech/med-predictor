@@ -14,6 +14,24 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="{{ asset('js/app.js') }}?v={{ time() }}"></script>
     <script>
+        // Gestionnaire d'erreur global pour capturer TOUTES les erreurs
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('🚨🚨🚨 ERREUR GLOBALE CAPTURÉE:', {
+                message: message,
+                source: source,
+                lineno: lineno,
+                colno: colno,
+                error: error
+            });
+            return true; // Empêcher le navigateur de traiter l'erreur
+        };
+
+        // Gestionnaire pour les promesses non gérées
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('🚨🚨🚨 PROMESSE NON GÉRÉE:', event.reason);
+            event.preventDefault(); // Empêcher le navigateur de traiter l'erreur
+        });
+
         // Force le rechargement du cache
         window.cacheBuster = '{{ time() }}';
         
@@ -2670,12 +2688,18 @@
                     <div class="fifa-hero-main">
                         <div class="fifa-player-photo-container">
                             <div class="fifa-player-photo">
-                                <!-- Photo du joueur avec fallbacks locaux robustes - DYNAMIQUE -->
-                                <img src="{{ $player->player_face_url ?: $player->player_picture ?: $player->profile_image ?: $player->photo_url ?: $player->photo_path ?: "/images/players/default_player.svg" }}" 
+                                                            <!-- Photo du joueur - MÊME LOGIQUE QUE LA PAGE DE TEST -->
+                            @if($player->player_picture)
+                                <img src="{{ asset('storage/' . $player->player_picture) }}" 
                                      alt="Photo de {{ $player->first_name }} {{ $player->last_name }}"
                                      id="hero-player-photo"
-                                     class="w-full h-full object-cover"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                     class="w-full h-full object-cover">
+                            @else
+                                <img src="/images/players/default_player.svg" 
+                                     alt="Photo de {{ $player->first_name }} {{ $player->last_name }}"
+                                     id="hero-player-photo"
+                                     class="w-full h-full object-cover">
+                            @endif
                                 
                                 <!-- Fallback avec initiales (MÉTHODE PORTAL JOUEURS) -->
                                 <div class="fifa-player-avatar" id="hero-player-avatar" style="display: none;">
@@ -2689,8 +2713,8 @@
                         </div>
                         
                         <div class="fifa-player-info">
-                            <h1 class="fifa-player-name text-lg font-semibold" id="hero-player-name">Nom du Joueur</h1>
-                            <div class="fifa-player-position" id="hero-position">LW</div>
+                            <h1 class="fifa-player-name text-lg font-semibold" id="hero-player-name">{{ $player->first_name }} {{ $player->last_name }}</h1>
+                            <div class="fifa-player-position" id="hero-position">{{ $player->position ?? 'N/A' }}</div>
                             <div class="fifa-player-age" id="hero-age">25 ans</div>
                             
                                         <!-- Boutons de navigation des joueurs -->
@@ -2709,15 +2733,15 @@
                             <div class="fifa-player-physical">
                                 <div class="fifa-physical-item">
                                     <span class="fifa-physical-icon">Taille</span>
-                                    <span class="fifa-physical-value" id="hero-height">170cm</span>
+                                    <span class="fifa-physical-value" id="hero-height">{{ $player->height ?? 'N/A' }}cm</span>
                                 </div>
                                 <div class="fifa-physical-item">
                                     <span class="fifa-physical-icon">Poids</span>
-                                    <span class="fifa-physical-value" id="hero-weight">72kg</span>
+                                    <span class="fifa-physical-value" id="hero-weight">{{ $player->weight ?? 'N/A' }}kg</span>
                                 </div>
                                 <div class="fifa-physical-item">
                                     <span class="fifa-physical-icon">Pied</span>
-                                    <span class="fifa-physical-value" id="hero-preferred-foot">Droit</span>
+                                    <span class="fifa-physical-value" id="hero-preferred-foot">{{ $player->preferred_foot ?? 'N/A' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -2727,25 +2751,25 @@
                     <div class="fifa-hero-stats">
                         <div class="fifa-stat-card primary">
                             <span class="fifa-stat-icon">OVR</span>
-                            <span class="fifa-stat-value" id="hero-overall-rating-main">84</span>
+                            <span class="fifa-stat-value" id="hero-overall-rating-main">{{ $player->overall_rating ?? 'N/A' }}</span>
                             <span class="fifa-stat-label">OVR</span>
                         </div>
                         
                         <div class="fifa-stat-card success">
                             <span class="fifa-stat-icon">POT</span>
-                            <span class="fifa-stat-value" id="hero-potential-rating">88</span>
+                            <span class="fifa-stat-value" id="hero-potential-rating">{{ $player->potential_rating ?? 'N/A' }}</span>
                             <span class="fifa-stat-label">POT</span>
                         </div>
                         
                         <div class="fifa-stat-card warning">
                             <span class="fifa-stat-icon">FIT</span>
-                            <span class="fifa-stat-value" id="hero-fitness-score">92%</span>
+                            <span class="fifa-stat-value" id="hero-fitness-score">{{ $player->fitness ?? 'N/A' }}%</span>
                             <span class="fifa-stat-label">FIT</span>
                         </div>
                         
                         <div class="fifa-stat-card info">
                             <span class="fifa-stat-icon">FORME</span>
-                            <span class="fifa-stat-value" id="hero-form-percentage">85%</span>
+                            <span class="fifa-stat-value" id="hero-form-percentage">{{ $player->form ?? 'N/A' }}%</span>
                             <span class="fifa-stat-label">FORME</span>
                         </div>
                     </div>
@@ -2753,12 +2777,28 @@
                     <!-- Section Club + Nationalité -->
                     <div class="fifa-hero-club-nationality">
                         <div class="fifa-club-section">
-                            <!-- Logo du club avec fallback local robuste -->
-                            <img src="{{ $player->club && $player->club->logo_url ? $player->club->logo_url : ($player->club && $player->club->logo_path ? $player->club->logo_path : ($player->club && $player->club->logo_image ? $player->club->logo_image : "/images/clubs/default_club.svg")) }}" 
-                                 alt="Logo de {{ $player->club ? $player->club->name : 'Club' }}"
-                                 id="hero-club-logo"
-                                 class="fifa-club-logo"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <!-- Logo du club - MÊME LOGIQUE QUE LA PAGE DE TEST -->
+                            @if($player->club && $player->club->logo_path)
+                                <img src="{{ asset('storage/' . $player->club->logo_path) }}" 
+                                     alt="Logo de {{ $player->club->name }}"
+                                     id="hero-club-logo"
+                                     class="fifa-club-logo">
+                            @elseif($player->club && $player->club->logo)
+                                <img src="{{ asset('storage/' . $player->club->logo) }}" 
+                                     alt="Logo de {{ $player->club->name }}"
+                                     id="hero-club-logo"
+                                     class="fifa-club-logo">
+                            @elseif($player->club && $player->club->logo_url)
+                                <img src="{{ $player->club->logo_url }}" 
+                                     alt="Logo de {{ $player->club->name }}"
+                                     id="hero-club-logo"
+                                     class="fifa-club-logo">
+                            @else
+                                <img src="/images/clubs/default_club.svg" 
+                                     alt="Logo de {{ $player->club ? $player->club->name : 'Club' }}"
+                                     id="hero-club-logo"
+                                     class="fifa-club-logo">
+                            @endif
                             
                             <!-- Fallback club icon (MÉTHODE PORTAL JOUEURS) -->
                             <div class="fifa-club-fallback" id="hero-club-fallback" style="display: none;">
@@ -2771,18 +2811,35 @@
                         
                         <!-- Logo de l'association avec fallback -->
                         <div class="fifa-association-section">
-                            <img src="{{ $player->association && $player->association->logo_url ? $player->association->logo_url : ($player->association && $player->association->logo_path ? $player->association->logo_path : "/images/associations/default_association.svg") }}" 
-                                 alt="Logo de {{ $player->association ? $player->association->name : "Association" }}"
-                                 id="hero-association-logo"
-                                 class="fifa-association-logo"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <!-- Logo de l'association - MÊME LOGIQUE QUE LA PAGE DE TEST -->
+                            @if($player->association && $player->association->association_logo_url)
+                                <img src="{{ asset('storage/' . $player->association->association_logo_url) }}" 
+                                     alt="Logo de {{ $player->association->name }}"
+                                     id="hero-association-logo"
+                                     class="fifa-association-logo">
+                            @elseif($player->association && $player->association->logo)
+                                <img src="{{ asset('storage/' . $player->association->logo) }}" 
+                                     alt="Logo de {{ $player->association->name }}"
+                                     id="hero-association-logo"
+                                     class="fifa-association-logo">
+                            @elseif($player->association && $player->association->logo_path)
+                                <img src="{{ asset('storage/' . $player->association->logo_path) }}" 
+                                     alt="Logo de {{ $player->association->name }}"
+                                     id="hero-association-logo"
+                                     class="fifa-association-logo">
+                            @else
+                                <img src="/images/associations/default_association.svg" 
+                                     alt="Logo de {{ $player->association ? $player->association->name : "Association" }}"
+                                     id="hero-association-logo"
+                                     class="fifa-association-logo">
+                            @endif
                             
                             <!-- Fallback association icon -->
                             <div class="fifa-association-fallback" id="hero-association-fallback" style="display: none;">
                                 <span class="fifa-association-initial">FA</span>
                             </div>
                             
-                            <div class="fifa-association-name" id="hero-association-name">{{ $player->association ? $player->association->name : ($player->nationality ?? "Association") }}</div>
+                            <div class="fifa-association-name" id="hero-association-name">{{ $player->association ? $player->association->name : "Association" }}</div>
                         </div>
                         
                         <div class="fifa-nationality-section">
@@ -2798,12 +2855,23 @@
                                 </div>
                             </div>
                             
-                            <!-- Drapeau de la nation avec fallback (MÉTHODE PORTAL JOUEURS) -->
-                            <img src="{{ $player->flag_image ?: "/images/flags/default_flag.svg" }}" 
-                                 alt="Drapeau de {{ $player->nationality }}"
-                                 id="hero-flag"
-                                 class="fifa-flag-nationality"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <!-- Drapeau de la nation - MÊME LOGIQUE QUE LA PAGE DE TEST -->
+                            @if($player->association && $player->association->nation_flag_url)
+                                <img src="{{ asset('storage/' . $player->association->nation_flag_url) }}" 
+                                     alt="Drapeau de {{ $player->nationality }}"
+                                     id="hero-flag"
+                                     class="fifa-flag-nationality">
+                            @elseif($player->association && $player->association->flag_url)
+                                <img src="{{ asset('storage/' . $player->association->flag_url) }}" 
+                                     alt="Drapeau de {{ $player->nationality }}"
+                                     id="hero-flag"
+                                     class="fifa-flag-nationality">
+                            @else
+                                <img src="/images/flags/default_flag.svg" 
+                                     alt="Drapeau de {{ $player->nationality }}"
+                                     id="hero-flag"
+                                     class="fifa-flag-nationality">
+                            @endif
                             
                             <!-- Fallback nation (MÉTHODE PORTAL JOUEURS) -->
                             <div class="fifa-flag-fallback" id="hero-flag-fallback" style="display: none;">
@@ -3068,6 +3136,8 @@
         let currentFIFATab = 'performances';
         let fifaData = null;
         let isLoadingLicenses = false; // Verrou pour éviter les appels multiples
+        let allPlayers = []; // Liste des joueurs
+        let currentPlayerIndex = 0; // Index du joueur actuel
         
         // Fonction pour changer d'onglet FIFA
         function showFIFATab(tabName) {
@@ -3260,6 +3330,14 @@
                 // Mettre à jour l'interface
                 updateFIFAInterface();
                 
+                // Mettre à jour la hero zone avec les vraies données FIFA
+                console.log('CIBLE: Mise à jour de la Hero Zone avec les données FIFA...');
+                updateFIFAHeroZone(fifaData);
+                
+                // Mettre à jour les images dynamiques (logos, drapeaux, photos)
+                console.log('CIBLE: Mise à jour des images dynamiques...');
+                updateHeroImages(fifaData);
+                
                 // Charger le contenu de l'onglet actuel
                 loadFIFATabContent(currentFIFATab);
                 
@@ -3375,14 +3453,14 @@
                 <div class="fifa-overview-grid">
                     <!-- Carte Statistiques Générales -->
                     <div class="fifa-overview-card">
-                        <h4>Statistiques Statistiques Générales</h4>
+                        <h4>Statistiques Générales</h4>
                         <div class="fifa-stat-item">
                             <span class="fifa-stat-label">Note Globale:</span>
                             <span class="fifa-stat-value highlight">${fifaData.overall_rating || 'N/A'}</span>
                         </div>
                         <div class="fifa-stat-item">
                             <span class="fifa-stat-label">Potentiel:</span>
-                            <span class="fifa-stat-value">${fifaData.potential || 'N/A'}</span>
+                            <span class="fifa-stat-value">${fifaData.potential_rating || 'N/A'}</span>
                         </div>
                         <div class="fifa-stat-item">
                             <span class="fifa-stat-label">Forme Actuelle:</span>
@@ -3390,67 +3468,80 @@
                         </div>
                         <div class="fifa-stat-item">
                             <span class="fifa-stat-label">Fitness:</span>
-                            <span class="fifa-stat-value">${fifaData.fitness_score || 'N/A'}%</span>
+                            <span class="fifa-stat-value">${fifaData.fitness || 'N/A'}%</span>
                         </div>
                         <div class="fifa-stat-item">
-                            <span class="fifa-stat-label">Morale:</span>
-                            <span class="fifa-stat-value">${fifaData.morale_percentage || 'N/A'}%</span>
+                            <span class="fifa-stat-label">Âge:</span>
+                            <span class="fifa-stat-value">${fifaData.age || 'N/A'} ans</span>
                         </div>
                     </div>
                     
-                    <!-- Carte Statistiques Offensives -->
+                    <!-- Carte Informations Joueur -->
                     <div class="fifa-overview-card">
-                        <h4>Football Statistiques Offensives</h4>
+                        <h4>Informations Joueur</h4>
                         <div class="fifa-stat-item">
-                            <span class="fifa-stat-label">Buts Marqués:</span>
-                            <span class="fifa-stat-value highlight">${fifaData.goals_scored || 'N/A'}</span>
+                            <span class="fifa-stat-label">Nom:</span>
+                            <span class="fifa-stat-value highlight">${fifaData.player?.name || 'N/A'}</span>
                         </div>
                         <div class="fifa-stat-item">
-                            <span class="fifa-stat-label">Passes Décisives:</span>
-                            <span class="fifa-stat-value highlight">${fifaData.assists || 'N/A'}</span>
+                            <span class="fifa-stat-label">Position:</span>
+                            <span class="fifa-stat-value">${fifaData.player?.position || 'N/A'}</span>
                         </div>
                         <div class="fifa-stat-item">
-                            <span class="fifa-stat-label">Tirs Cadrés:</span>
-                            <span class="fifa-stat-value">${fifaData.shots_on_target || 'N/A'}</span>
+                            <span class="fifa-stat-label">Nationalité:</span>
+                            <span class="fifa-stat-value">${fifaData.player?.nationality || 'N/A'}</span>
                         </div>
                         <div class="fifa-stat-item">
-                            <span class="fifa-stat-label">Précision Tirs:</span>
-                            <span class="fifa-stat-value">${fifaData.shot_accuracy || 'N/A'}%</span>
+                            <span class="fifa-stat-label">Club:</span>
+                            <span class="fifa-stat-value">${fifaData.player?.club?.name || 'N/A'}</span>
                         </div>
                         <div class="fifa-stat-item">
-                            <span class="fifa-stat-label">Dribbles Réussis:</span>
-                            <span class="fifa-stat-value">${fifaData.dribbles_won || 'N/A'}</span>
+                            <span class="fifa-stat-label">Association:</span>
+                            <span class="fifa-stat-value">${fifaData.player?.association?.name || 'N/A'}</span>
                         </div>
                     </div>
                     
-                    <!-- Carte Statistiques Défensives -->
+                    <!-- Carte Santé et PCMA -->
                     <div class="fifa-overview-card">
-                        <h4>🛡️ Statistiques Défensives</h4>
+                        <h4>Santé et PCMA</h4>
                         <div class="fifa-stat-item">
-                            <span class="fifa-stat-label">Tacles Réussis:</span>
-                            <span class="fifa-stat-value highlight">${fifaData.tackles_won || 'N/A'}</span>
+                            <span class="fifa-stat-label">Groupe Sanguin:</span>
+                            <span class="fifa-stat-value highlight">${fifaData.player?.health?.blood_type || 'N/A'}</span>
                         </div>
                         <div class="fifa-stat-item">
-                            <span class="fifa-stat-label">Interceptions:</span>
-                            <span class="fifa-stat-value">${fifaData.interceptions || 'N/A'}</span>
+                            <span class="fifa-stat-label">Allergies:</span>
+                            <span class="fifa-stat-value">${fifaData.player?.health?.allergies || 'N/A'}</span>
                         </div>
                         <div class="fifa-stat-item">
-                            <span class="fifa-stat-label">Duel Aérien:</span>
-                            <span class="fifa-stat-value">${fifaData.aerial_duels_won || 'N/A'}</span>
+                            <span class="fifa-stat-label">Statut PCMA:</span>
+                            <span class="fifa-stat-value">${fifaData.player?.pcma?.status || 'N/A'}</span>
                         </div>
                         <div class="fifa-stat-item">
-                            <span class="fifa-stat-label">Fautes Commises:</span>
-                            <span class="fifa-stat-value">${fifaData.fouls_committed || 'N/A'}</span>
-                        </div>
-                        <div class="fifa-stat-item">
-                            <span class="fifa-stat-label">Cartons Jaunes:</span>
-                            <span class="fifa-stat-value">${fifaData.yellow_cards || 'N/A'}</span>
+                            <span class="fifa-stat-label">Score PCMA:</span>
+                            <span class="fifa-stat-value">${fifaData.player?.pcma?.score || 'N/A'}</span>
                         </div>
                     </div>
                     
-                    <!-- Carte Statistiques Physiques -->
+                    <!-- Carte Tests Anti-Dopage -->
                     <div class="fifa-overview-card">
-                        <h4>Physique Statistiques Physiques</h4>
+                        <h4>Tests Anti-Dopage</h4>
+                        <div class="fifa-stat-item">
+                            <span class="fifa-stat-label">Tests Négatifs:</span>
+                            <span class="fifa-stat-value highlight">${fifaData.negative_tests || 'N/A'}</span>
+                        </div>
+                        <div class="fifa-stat-item">
+                            <span class="fifa-stat-label">Tests Positifs:</span>
+                            <span class="fifa-stat-value">${fifaData.positive_tests || 'N/A'}</span>
+                        </div>
+                        <div class="fifa-stat-item">
+                            <span class="fifa-stat-label">En Attente:</span>
+                            <span class="fifa-stat-value">${fifaData.pending_tests || 'N/A'}</span>
+                        </div>
+                        <div class="fifa-stat-item">
+                            <span class="fifa-stat-label">Valeur Marchande:</span>
+                            <span class="fifa-stat-value">${fifaData.market_value || 'N/A'}</span>
+                        </div>
+                    </div>
                         <div class="fifa-stat-item">
                             <span class="fifa-stat-label">Vitesse:</span>
                             <span class="fifa-stat-value">${fifaData.max_speed || 'N/A'} km/h</span>
@@ -6188,14 +6279,16 @@
         // Synchroniser la hero zone FIFA avec les données dynamiques
         async function syncFIFAHeroZone() {
             try {
+                console.log('🚨🚨🚨 syncFIFAHeroZone DÉMARRÉE !');
+                
                 // Récupérer l'ID du joueur depuis l'URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const playerId = urlParams.get('player_id');
                 
-                console.log('INFO: syncFIFAHeroZone appelée');
-                console.log('INFO: URL actuelle:', window.location.href);
-                console.log('INFO: Paramètres URL:', window.location.search);
-                console.log('INFO: player_id trouvé:', playerId);
+                console.log('🚨🚨🚨 INFO: syncFIFAHeroZone appelée');
+                console.log('🚨🚨🚨 INFO: URL actuelle:', window.location.href);
+                console.log('🚨🚨🚨 INFO: Paramètres URL:', window.location.search);
+                console.log('🚨🚨🚨 INFO: player_id trouvé:', playerId);
                 
                 let fifaData;
                 
@@ -6225,10 +6318,19 @@
                 console.log('CIBLE: Mise à jour de la Hero Zone avec:', fifaData);
                 updateFIFAHeroZone(fifaData);
                 
+                // FORCER le chargement des données FIFA complètes pour les images
+                console.log('CIBLE: Chargement forcé des données FIFA complètes...');
+                await loadFIFAData();
+                
                 console.log('SUCCES: Hero Zone FIFA synchronisée avec succès !');
                 
             } catch (error) {
-                console.error('ERREUR: Erreur synchronisation hero zone FIFA:', error);
+                console.error('🚨🚨🚨 ERREUR FATALE dans syncFIFAHeroZone:', error);
+                console.error('🚨🚨🚨 Stack trace:', error.stack);
+                console.error('🚨🚨🚨 Message:', error.message);
+                
+                // Empêcher la redirection en cas d'erreur
+                console.log('🚨🚨🚨 Erreur capturée, continuation...');
             }
         }
         
@@ -6262,14 +6364,15 @@
                     }
                 }
                 
-                // Si pas trouvé localement, essayer l'API
-                const response = await fetch(`/api/player-performance/${playerId}`);
+                // Si pas trouvé localement, utiliser directement l'API FIFA qui fonctionne
+                console.log('CIBLE: Utilisation de l\'API FIFA directe');
+                const response = await fetch(`/api/fifa/player/${playerId}`);
                 const data = await response.json();
                 
-                if (data.message && data.data) {
+                if (data.data) {
                     return data.data;
                 } else {
-                    throw new Error('Données non disponibles');
+                    throw new Error('Données FIFA non disponibles');
                 }
             } catch (error) {
                 console.error('ERREUR: Erreur chargement données joueur:', error);
@@ -6290,8 +6393,7 @@
         }
         
         // Navigation entre joueurs
-        let currentPlayerIndex = 0;
-        let allPlayers = [];
+        // Variables déjà déclarées plus haut - pas de redéclaration
         
         // Charger la liste des joueurs
         async function loadAllPlayers() {
@@ -6492,81 +6594,147 @@
             console.log('INFO: fifaData.player.player_picture:', fifaData.player?.player_picture);
             console.log('INFO: fifaData.player.player_face_url:', fifaData.player?.player_face_url);
             
-            if (fifaData.player && (fifaData.player.player_picture || fifaData.player.player_face_url)) {
-                const playerPhoto = document.getElementById('hero-player-photo');
-                console.log('INFO: Élément photo trouvé:', playerPhoto);
-                if (playerPhoto) {
-                    let photoUrl;
-                    if (fifaData.player.player_picture && fifaData.player.player_picture.startsWith('players/photos/')) {
-                        // Photo locale
-                        photoUrl = `/storage/${fifaData.player.player_picture}`;
-                        console.log('SUCCES: Photo locale utilisée:', photoUrl);
-                    } else if (fifaData.player.player_face_url) {
-                        // Photo externe (Dicebear, etc.)
-                        photoUrl = fifaData.player.player_face_url;
-                        console.log('SUCCES: Photo externe utilisée:', photoUrl);
-                    } else if (fifaData.player.player_picture) {
-                        // Autre format
-                        photoUrl = fifaData.player.player_picture;
-                        console.log('SUCCES: Photo directe utilisée:', photoUrl);
-                    }
-                    
-                    if (photoUrl) {
-                        playerPhoto.src = photoUrl;
-                        console.log('SUCCES: Photo du joueur mise à jour:', photoUrl);
-                    }
-                }
-            } else {
-                console.log('ERREUR: Pas de photo disponible - player_picture:', fifaData.player?.player_picture, 'player_face_url:', fifaData.player?.player_face_url);
-            }
+            // Photo du joueur - DÉSACTIVÉ, géré par updateHeroImages
+            // if (fifaData.player && (fifaData.player.player_picture || fifaData.player.player_face_url)) {
+            //     const playerPhoto = document.getElementById('hero-player-photo');
+            //     console.log('INFO: Élément photo trouvé:', playerPhoto);
+            //     if (playerPhoto) {
+            //         let photoUrl;
+            //         
+            //         // PRIORITÉ 1: Photo externe (Wikimedia, etc.)
+            //         if (fifaData.player.player_picture && fifaData.player.player_picture.startsWith('http')) {
+            //         //     photoUrl = fifaData.player.player_picture;
+            //         //     console.log('SUCCES: Photo externe Wikimedia utilisée:', photoUrl);
+            //         // }
+            //         // PRIORITÉ 2: Photo externe alternative
+            //         else if (fifaData.player.player_face_url && fifaData.player.player_face_url.startsWith('http')) {
+            //         //     photoUrl = fifaData.player.player_face_url;
+            //         //     console.log('SUCCES: Photo externe alternative utilisée:', photoUrl);
+            //         // }
+            //         // PRIORITÉ 3: Photo locale
+            //         else if (fifaData.player.player_picture && fifaData.player.player_picture.startsWith('players/photos/')) {
+            //         //     photoUrl = `/storage/${fifaData.player.player_picture}`;
+            //         //     console.log('SUCCES: Photo locale utilisée:', photoUrl);
+            //         // }
+            //         // PRIORITÉ 4: Autre format
+            //         else if (fifaData.player.player_picture) {
+            //         //     photoUrl = fifaData.player.player_picture;
+            //         //     console.log('SUCCES: Photo directe utilisée:', photoUrl);
+            //         // }
+            //         
+            //         if (photoUrl) {
+            //             playerPhoto.src = photoUrl;
+            //             console.log('SUCCES: Photo du joueur mise à jour:', photoUrl);
+            //             
+            //             // Gestion des erreurs de chargement
+            //             playerPhoto.onerror = function() {
+            //             //     console.error('ERREUR: Impossible de charger la photo:', photoUrl);
+            //             //     // Fallback vers une photo par défaut
+            //             //     this.src = '/images/default-player.webp';
+            //         // };
+            //             
+            //             // Gestion du succès de chargement
+            //             playerPhoto.onload = function() {
+            //             //     console.log('SUCCES: Photo chargée avec succès:', photoUrl);
+            //         // };
+            //         }
+            //     }
+            // } else {
+            //     console.log('ERREUR: Pas de photo disponible - player_picture:', fifaData.player?.player_picture, 'player_face_url:', fifaData.player?.player_face_url);
+            // }
             
-                            // Logo du club
-                if (fifaData.player && fifaData.player.club && fifaData.player.club.name) {
-                    const clubLogo = document.getElementById('hero-club-logo');
-                    if (clubLogo) {
-                        // Utiliser le logo du club depuis l'API si disponible
-                        if (fifaData.player.club.logo_url) {
-                            clubLogo.src = fifaData.player.club.logo_url;
-                            console.log('SUCCES: Logo du club depuis API:', fifaData.player.club.logo_url);
-                        } else {
-                            // Fallback vers le mapping local
-                            const clubLogos = {
-                                'Espérance de Tunis': '/clubs/EST.webp',
-                                'Club Africain': '/clubs/CA.webp',
-                                'Étoile du Sahel': '/clubs/ESS.webp',
-                                'US Monastir': '/clubs/USM.webp',
-                                'JS Kairouan': '/clubs/JSK.webp',
-                                'Stade Tunisien': '/clubs/ST.webp',
-                                'AS Gabès': '/clubs/ASG.webp',
-                                'CA Bizertin': '/clubs/CAB.webp',
-                                'CS Sfaxien': '/clubs/CSS.webp',
-                                'Olympique Béja': '/clubs/OL.webp'
-                            };
-                            
-                            const logoUrl = clubLogos[fifaData.player.club.name] || '/clubs/default.webp';
-                            clubLogo.src = logoUrl;
-                            console.log('SUCCES: Logo du club depuis mapping local:', logoUrl);
-                        }
-                    }
-                }
+            // Logo du club - DÉSACTIVÉ, géré par updateHeroImages
+            // if (fifaData.player && fifaData.player.club && fifaData.player.club.name) {
+            //     const clubLogo = document.getElementById('hero-club-logo');
+            //     if (clubLogo) {
+            //         // Utiliser le logo du club depuis l'API si disponible
+            //         if (fifaData.player.club.logo_url) {
+            //             clubLogo.src = fifaData.player.club.logo_url;
+            //             console.log('SUCCES: Logo du club depuis API:', fifaData.player.club.logo_url);
+            //         } else {
+            //             // Fallback vers le mapping local
+            //             const clubLogos = {
+            //                 'Real Madrid': '/clubs/EST.webp', // Logo par défaut
+            //                 'Manchester United': '/clubs/CA.webp', // Logo par défaut
+            //                 'Paris Saint-Germain': '/clubs/ESS.webp', // Logo par défaut
+            //                 'Manchester City': '/clubs/USM.webp', // Logo par défaut
+            //                 'Liverpool': '/clubs/JSK.webp', // Logo par défaut
+            //                 'Bayern Munich': '/clubs/ST.webp', // Logo par défaut
+            //                 'Barcelona': '/clubs/ASG.webp', // Logo par défaut
+            //                 'Tottenham Hotspur': '/clubs/CAB.webp', // Logo par défaut
+            //                 'Al Nassr': '/clubs/CSS.webp', // Logo par défaut
+            //                 'Inter Miami': '/clubs/OL.webp', // Logo par défaut
+            //                 'Paris FC': '/clubs/paris-fc.webp',
+            //                 'Espérance de Tunis': '/clubs/EST.webp',
+            //                 'Club Africain': '/clubs/CA.webp',
+            //                 'Étoile du Sahel': '/clubs/ESS.webp',
+            //                 'US Monastir': '/clubs/USM.webp',
+            //                 'JS Kairouan': '/clubs/JSK.webp',
+            //                 'Stade Tunisien': '/clubs/ST.webp',
+            //                 'AS Gabès': '/clubs/ASG.webp',
+            //                 'CA Bizertin': '/clubs/CAB.webp',
+            //                 'CS Sfaxien': '/clubs/CSS.webp',
+            //                 'Olympique Béja': '/clubs/OL.webp'
+            //             };
+            //             
+            //             const logoUrl = clubLogos[fifaData.player.club.name] || '/clubs/default.webp';
+            //             clubLogo.src = logoUrl;
+            //             console.log('SUCCES: Logo du club depuis mapping local:', logoUrl);
+            //         }
+            //     }
+            // }
             
-            // Drapeau de la nationalité
-            if (fifaData.player && fifaData.player.nationality) {
-                const flag = document.getElementById('hero-flag');
-                if (flag) {
-                    const countryCode = getCountryCode(fifaData.player.nationality);
-                    const flagUrl = `https://flagcdn.com/w40/${countryCode}.png`;
-                    flag.src = flagUrl;
-                    console.log('SUCCES: Drapeau mis à jour:', flagUrl);
-                }
-            }
+            // Logo de l'association - DÉSACTIVÉ, géré par updateHeroImages
+            // if (fifaData.player && fifaData.player.association && fifaData.player.association.name) {
+            //     const associationLogo = document.getElementById('hero-association-logo');
+            //     if (associationLogo) {
+            //         // Utiliser le logo de l'association depuis l'API si disponible
+            //         if (fifaData.player.association.logo) {
+            //         //     associationLogo.src = fifaData.player.association.logo;
+            //         //     console.log('SUCCES: Logo de l\'association depuis API:', fifaData.player.association.logo);
+            //         // } else {
+            //         //     // Fallback vers le mapping local
+            //         //     const associationLogos = {
+            //         //         'Fédération Française de Football': '/associations/fff.webp',
+            //         //         'Fédération Royale Marocaine de Football': '/associations/frmf.webp',
+            //         //         'Fédération Portugaise de Football': '/associations/fff.webp', // Logo par défaut
+            //         //         'Fédération Norvégienne de Football': '/associations/frmf.webp', // Logo par défaut
+            //         //         'Union Royale Belge des Sociétés de Football': '/associations/fff.webp', // Logo par défaut
+            //         //         'Fédération Égyptienne de Football': '/associations/frmf.webp', // Logo par défaut
+            //         //         'Confédération Brésilienne de Football': '/associations/fff.webp', // Logo par défaut
+            //         //         'The Football Association': '/associations/frmf.webp', // Logo par défaut
+            //         //         'Fédération Sénégalaise de Football': '/associations/fff.webp', // Logo par défaut
+            //         //         'Koninklijke Nederlandse Voetbalbond': '/associations/frmf.webp' // Logo par défaut
+            //         //     };
+            //         //     
+            //         //     const logoUrl = associationLogos[fifaData.player.association.name] || '/associations/default.webp';
+            //         //     associationLogo.src = logoUrl;
+            //         //     console.log('SUCCES: Logo de l\'association depuis mapping local:', logoUrl);
+            //         // }
+            //     }
+            // }
+            
+            // Drapeau de la nationalité - DÉSACTIVÉ, géré par updateHeroImages
+            // if (fifaData.player && fifaData.player.nationality) {
+            //     const flag = document.getElementById('hero-flag');
+            //     if (flag) {
+            //         const countryCode = getCountryCode(fifaData.player.nationality);
+            //         const flagUrl = `https://flagcdn.com/w40/${countryCode}.png`;
+            //         flag.src = flagUrl;
+            //         console.log('SUCCES: Drapeau mis à jour:', flagUrl);
+            //         }
+            // }
             
             console.log('SUCCES: Hero zone complètement mise à jour (données + images)');
         }
         
         // Mise à jour des images dynamiques selon le joueur
         function updateHeroImages(fifaData) {
-            console.log('INFO: Mise à jour des images dynamiques...');
+            console.log('🚨🚨🚨 updateHeroImages appelée avec:', fifaData);
+            console.log('🚨🚨🚨 Structure des données:', JSON.stringify(fifaData, null, 2));
+            console.log('🚨🚨🚨 fifaData.player:', fifaData.player);
+            console.log('🚨🚨🚨 fifaData.player.association:', fifaData.player?.association);
+            console.log('🚨🚨🚨 fifaData.player.club:', fifaData.player?.club);
             
             // Mise à jour de la photo du joueur
             updatePlayerPhoto(fifaData);
@@ -6574,26 +6742,83 @@
             // Mise à jour du logo du club
             updateClubLogo(fifaData);
             
+            // Mise à jour du logo de l'association
+            updateAssociationLogo(fifaData);
+            
             // Mise à jour du drapeau de la nation
             updateNationalityFlag(fifaData);
             
-            console.log('SUCCES: Images dynamiques mises à jour');
+            console.log('✅✅✅ Images dynamiques mises à jour');
         }
         
-        // NE PAS forcer la mise à jour de la photo du joueur - la préserver
+        // FONCTION SIMPLIFIÉE - Plus besoin de mise à jour dynamique des images
+        // Les images sont maintenant affichées directement en PHP Blade (comme la page de test)
         function updatePlayerPhoto(fifaData) {
-            console.log('🖼️ Photo du joueur préservée - pas de mise à jour forcée');
-            // Les images sont déjà correctes dans le HTML initial
-            // NE RIEN FAIRE - préserver les images existantes
-            return;
+            // Cette fonction n'est plus nécessaire car les images sont affichées en PHP
+            console.log('✅ Images affichées directement en PHP Blade');
         }
         
-        // NE PAS forcer la mise à jour du logo du club - le préserver
+        // FONCTION SIMPLIFIÉE - Plus besoin de mise à jour dynamique des logos
+        // Les logos sont maintenant affichés directement en PHP Blade (comme la page de test)
         function updateClubLogo(fifaData) {
-            console.log('🏆 Logo du club préservé - pas de mise à jour forcée');
-            // Les images sont déjà correctes dans le HTML initial
-            // NE RIEN FAIRE - préserver les images existantes
-            return;
+            // Cette fonction n'est plus nécessaire car les logos sont affichés en PHP
+            console.log('✅ Logos affichés directement en PHP Blade');
+        }
+        
+        // Mise à jour du logo de l'association
+        function updateAssociationLogo(fifaData) {
+            console.log('🚨🚨🚨 updateAssociationLogo appelée avec:', fifaData);
+            const associationLogo = document.getElementById('hero-association-logo');
+            const associationName = document.getElementById('hero-association-name');
+            
+            console.log('🚨🚨🚨 Éléments trouvés:', { associationLogo: !!associationLogo, associationName: !!associationName });
+            
+            if (associationLogo && fifaData.player && fifaData.player.association) {
+                console.log('🚨🚨🚨 Données association:', fifaData.player.association);
+                
+                // PRIORITÉ 1: Logo de l'association (EXACTEMENT les mêmes champs que /associations-view/show/1)
+                if (fifaData.player.association.association_logo_url) {
+                    const logoUrl = `/storage/${fifaData.player.association.association_logo_url}`;
+                    associationLogo.src = logoUrl;
+                    console.log('✅✅✅ Logo de l\'association mis à jour (association_logo_url):', logoUrl);
+                }
+                // PRIORITÉ 2: Logo alternatif (champ logo)
+                else if (fifaData.player.association.logo) {
+                    const logoUrl = `/storage/${fifaData.player.association.logo}`;
+                    associationLogo.src = logoUrl;
+                    console.log('✅✅✅ Logo de l\'association mis à jour (logo):', logoUrl);
+                }
+                // PRIORITÉ 3: Logo depuis logo_path (si disponible)
+                else if (fifaData.player.association.logo_path) {
+                    const logoUrl = `/storage/${fifaData.player.association.logo_path}`;
+                    associationLogo.src = logoUrl;
+                    console.log('✅✅✅ Logo de l\'association mis à jour (logo_path):', logoUrl);
+                }
+                // PRIORITÉ 3: Logo local (depuis la base) - DÉSACTIVÉ car contient des chemins incorrects
+                // else if (fifaData.player.association.logo_path) {
+                //     // Vérifier si le chemin commence déjà par /storage/
+                //     let logoUrl = fifaData.player.association.logo_path;
+                //     if (!logoUrl.startsWith('/storage/') && !logoUrl.startsWith('http')) {
+                //         logoUrl = `/storage/${logoUrl}`;
+                //     }
+                //     associationLogo.src = logoUrl;
+                //     console.log('✅✅✅ Logo local de l\'association mis à jour:', logoUrl);
+                // }
+                else {
+                    console.log('❌❌❌ Aucun logo trouvé dans les données association');
+                }
+            } else {
+                console.log('❌❌❌ Éléments ou données manquants:', { 
+                    associationLogo: !!associationLogo, 
+                    player: !!fifaData.player, 
+                    association: !!(fifaData.player && fifaData.player.association) 
+                });
+            }
+            
+            if (associationName && fifaData.player && fifaData.player.association) {
+                associationName.textContent = fifaData.player.association.name;
+                console.log('✅✅✅ Nom de l\'association mis à jour:', fifaData.player.association.name);
+            }
         }
         
         // Fonctions de navigation des joueurs
@@ -6734,6 +6959,7 @@
                                 name: playerData.name || (playerData.first_name && playerData.last_name ? playerData.first_name + ' ' + playerData.last_name : 'Nom inconnu'),
                                 position: playerData.position || 'Position inconnue',
                                 club: playerData.club || { name: 'Club inconnu' },
+                                association: playerData.association || { name: 'Association inconnue' },
                                 nationality: playerData.nationality || 'Nationalité inconnue',
                                 age: playerData.age || 'Âge inconnu',
                                 height: playerData.height || 'Taille inconnue',
@@ -6751,9 +6977,20 @@
                         
                         // Mettre à jour la hero zone avec les vraies données
                         updateFIFAHeroZone(structuredData);
+                        
+                        // Mettre à jour les images dynamiques
+                        updateHeroImages(data.data);
+                        
+                        // Forcer la mise à jour du logo de l'association après un délai
+                        setTimeout(() => {
+                            console.log('🔄 Mise à jour forcée du logo de l\'association...');
+                            console.log('🔄 Données reçues:', data.data);
+                            updateAssociationLogo(data.data);
+                        }, 100);
                     })
                     .catch(error => {
                         console.error('ERREUR: Erreur synchronisation:', error);
+                        console.error('ERREUR: Stack trace:', error.stack);
                     });
             }
         }
@@ -6765,20 +7002,31 @@
             const flagInitial = document.querySelector('.fifa-flag-initial');
             
             if (flag && fifaData.nationality) {
-                // Construire l'URL du drapeau
-                const countryCode = getCountryCode(fifaData.nationality);
-                const flagUrl = `https://flagcdn.com/w40/${countryCode}.png`;
+                // Utiliser le drapeau local de la base de données si disponible (EXACTEMENT les mêmes champs que /associations-view/show/1)
+                if (fifaData.player && fifaData.player.association && fifaData.player.association.nation_flag_url) {
+                    flag.src = `/storage/${fifaData.player.association.nation_flag_url}`;
+                    console.log('✅✅✅ Drapeau mis à jour (nation_flag_url):', fifaData.player.association.nation_flag_url);
+                } else if (fifaData.player && fifaData.player.association && fifaData.player.association.flag_url) {
+                    flag.src = `/storage/${fifaData.player.association.flag_url}`;
+                    console.log('✅✅✅ Drapeau mis à jour (flag_url):', fifaData.player.association.flag_url);
+                } else {
+                    // Fallback vers flagcdn.com
+                    const countryCode = getCountryCode(fifaData.nationality);
+                    const flagUrl = `https://flagcdn.com/w40/${countryCode}.png`;
+                    flag.src = flagUrl;
+                    console.log('SUCCES: Drapeau CDN utilisé:', flagUrl);
+                }
                 
-                flag.src = flagUrl;
                 flag.onerror = function() {
                     // Fallback vers le drapeau local si disponible
+                    const countryCode = getCountryCode(fifaData.nationality);
                     const localFlag = `/images/flags/${countryCode}.svg`;
                     this.src = localFlag;
                     this.onerror = function() {
                         // Afficher les initiales en fallback
                         this.style.display = 'none';
                         if (flagFallback && flagInitial) {
-                            flagInitial.textContent = fifaData.nationality?.substring(0, 2).toUpperCase() || 'TF';
+                            flagInitial.textContent = fifaData.nationality?.substring(0, 2).toUpperCase() || 'TN';
                             flagFallback.style.display = 'flex';
                         }
                     };
@@ -6805,6 +7053,7 @@
                 'Belgique': 'be',
                 'Croatie': 'hr',
                 'Maroc': 'ma',
+                'Tunisie': 'tn',
                 'The Football Association': 'ar', // Même logique que Portal Joueur
                 'Sénégal': 'sn',
                 'Nigeria': 'ng',
@@ -6815,7 +7064,7 @@
                 'Mali': 'ml'
             };
             
-            return countryMap[nationality] || 'ar'; // 'ar' par défaut comme Portal Joueur
+            return countryMap[nationality] || 'tn'; // 'tn' par défaut pour la Tunisie
         }
         
         // Mise à jour de la barre de progression saison
@@ -7002,25 +7251,41 @@
         
         // Gestion des événements de recherche et initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DEMARRAGE: FIFA Portal initialisé !');
-            
-            const searchInput = document.getElementById('fifa-player-search');
-            const resultsContainer = document.getElementById('fifa-search-results');
-            
-            // Charger la liste des joueurs
-            loadAllPlayers().then(() => {
-                // Initialiser l'index du joueur actuel
-                initializePlayerIndex();
+            try {
+                console.log('🚨🚨🚨 DOMContentLoaded DÉMARRÉ !');
+                console.log('🚨🚨🚨 DEMARRAGE: FIFA Portal initialisé !');
                 
-                // Charger les données FIFA
-                loadFIFAData();
+                const searchInput = document.getElementById('fifa-player-search');
+                const resultsContainer = document.getElementById('fifa-search-results');
                 
-                // Synchroniser la hero zone
-                syncFIFAHeroZone();
-                
-                // Initialiser les onglets
-                loadFIFATabContent('overview');
-            });
+                // Charger la liste des joueurs
+                loadAllPlayers().then(() => {
+                    try {
+                        // Initialiser l'index du joueur actuel
+                        initializePlayerIndex();
+                        
+                        // Synchroniser la hero zone (qui appellera loadFIFAData)
+                        syncFIFAHeroZone();
+                        
+                        // Initialiser les onglets
+                        loadFIFATabContent('overview');
+                    } catch (innerError) {
+                        console.error('🚨🚨🚨 ERREUR dans le .then():', innerError);
+                    }
+                }).catch(error => {
+                    console.error('🚨🚨🚨 ERREUR lors du chargement des joueurs:', error);
+                    try {
+                        // Continuer même en cas d'erreur
+                        syncFIFAHeroZone();
+                        loadFIFATabContent('overview');
+                    } catch (innerError) {
+                        console.error('🚨🚨🚨 ERREUR dans le .catch():', innerError);
+                    }
+                });
+            } catch (outerError) {
+                console.error('🚨🚨🚨 ERREUR FATALE dans DOMContentLoaded:', outerError);
+                console.error('🚨🚨🚨 Stack trace:', outerError.stack);
+            }
             
             // Recherche en temps réel avec debounce
             let searchTimeout;

@@ -24,6 +24,14 @@ class Season extends Model
     ];
 
     /**
+     * Relation avec les compétitions
+     */
+    public function competitions(): HasMany
+    {
+        return $this->hasMany(Competition::class);
+    }
+
+    /**
      * Relation avec les performances des joueurs
      */
     public function playerPerformances(): HasMany

@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Models\PlayerLicense;
+use App\Models\License;
 use App\Models\User;
 use App\Models\Player;
 use App\Models\Club;
 use App\Models\MatchModel;
 use App\Policies\PlayerLicensePolicy;
+use App\Policies\LicensePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\PlayerPolicy;
 use App\Policies\ClubPolicy;
@@ -24,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         PlayerLicense::class => PlayerLicensePolicy::class,
+        License::class => LicensePolicy::class,
         User::class => UserPolicy::class,
         Player::class => PlayerPolicy::class,
         Club::class => ClubPolicy::class,

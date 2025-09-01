@@ -2,10 +2,23 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de bord Administrateur - Med Predictor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 min-h-screen">
     <!-- Header -->
@@ -94,6 +107,7 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Joueur</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Position</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Stats FIFA</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Club</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Association</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
@@ -101,17 +115,26 @@
                     </thead>
                     <tbody class="divide-y divide-white/10">
                         @foreach($players as $player)
-                            <tr class="hover:bg-white/5 transition-colors duration-200">
+                            <tr class="hover:bg-white/5 transition-colors duration-200 fade-in">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
+                                        <div class="flex-shrink-0 h-12 w-12">
                                             @if($player->getPlayerPictureUrlAttribute())
-                                                <img class="h-10 w-10 rounded-full object-cover" 
+                                                <!-- Debug: {{ $player->getPlayerPictureUrlAttribute() }} -->
+                                                <img class="h-12 w-12 rounded-full object-cover border-2 border-white/20" 
                                                      src="{{ $player->getPlayerPictureUrlAttribute() }}" 
-                                                     alt="{{ $player->first_name }} {{ $player->last_name }}">
+                                                     alt="{{ $player->first_name }} {{ $player->last_name }}"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'; console.error('Erreur photo:', this.src);"
+                                                     onload="console.log('Photo chargée:', this.src);">
+                                                <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center" 
+                                                     style="display: none;">
+                                                    <span class="text-white font-bold text-lg">
+                                                        {{ substr($player->first_name ?? 'P', 0, 1) }}{{ substr($player->first_name ?? 'P', 0, 1) }}{{ substr($player->last_name ?? 'N', 0, 1) }}
+                                                    </span>
+                                                </div>
                                             @else
-                                                <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
-                                                    <span class="text-white font-semibold">
+                                                <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                                    <span class="text-white font-bold text-lg">
                                                         {{ substr($player->first_name ?? 'P', 0, 1) }}{{ substr($player->last_name ?? 'N', 0, 1) }}
                                                     </span>
                                                 </div>
@@ -122,7 +145,7 @@
                                                 {{ $player->first_name }} {{ $player->last_name }}
                                             </div>
                                             <div class="text-sm text-gray-300">
-                                                ID: {{ $player->id }}
+                                                ID: {{ $player->id }} • {{ $player->nationality ?? 'N/A' }}
                                             </div>
                                         </div>
                                     </div>
@@ -133,12 +156,41 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs text-gray-400">OVR:</span>
+                                            <span class="font-bold text-green-400">{{ $player->overall_rating ?? 'N/A' }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs text-gray-400">POT:</span>
+                                            <span class="font-bold text-blue-400">{{ $player->potential_rating ?? 'N/A' }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs text-gray-400">FIT:</span>
+                                            <span class="font-bold text-yellow-400">{{ $player->fitness ?? 'N/A' }}%</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                                     @if($player->club)
                                         <div class="flex items-center">
-                                            <span class="mr-2">🏟️</span>
-                                            <span>{{ $player->club->name }}</span>
+                                            <div class="flex-shrink-0 h-8 w-8 mr-3">
+                                                @if($player->club->logo_path)
+                                                    <img class="h-8 w-8 rounded object-cover" 
+                                                         src="{{ asset('storage/' . $player->club->logo_path) }}" 
+                                                         alt="Logo {{ $player->club->name }}"
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                @endif
+                                                <div class="h-8 w-8 rounded bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center" 
+                                                     style="display: {{ $player->club->logo_path ? 'none' : 'flex' }};">
+                                                    <span class="text-white font-bold text-xs">🏟️</span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-white">{{ $player->club->name }}</div>
+                                                <div class="text-xs text-gray-400">{{ $player->club->country ?? 'N/A' }}</div>
+                                            </div>
                                         </div>
-                                        <div class="text-xs text-gray-400">{{ $player->club->country ?? 'N/A' }}</div>
                                     @else
                                         <span class="text-gray-500">Aucun club</span>
                                     @endif
@@ -146,19 +198,39 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                                     @if($player->association)
                                         <div class="flex items-center">
-                                            <span class="mr-2">🏆</span>
-                                            <span>{{ $player->association->name }}</span>
+                                            <div class="flex-shrink-0 h-8 w-8 mr-3">
+                                                @if($player->association->association_logo_url)
+                                                    <img class="h-8 w-8 rounded object-cover" 
+                                                         src="{{ asset('storage/' . $player->association->association_logo_url) }}" 
+                                                         alt="Logo {{ $player->association->name }}"
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                @elseif($player->association->nation_flag_url)
+                                                    <img class="h-8 w-8 rounded object-cover" 
+                                                         src="{{ asset('storage/' . $player->association->nation_flag_url) }}" 
+                                                         alt="Drapeau {{ $player->association->country ?? 'N/A' }}"
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                @endif
+                                                <div class="h-8 w-8 rounded bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center" 
+                                                     style="display: {{ ($player->association->association_logo_url || $player->association->nation_flag_url) ? 'none' : 'flex' }};">
+                                                    <span class="text-white font-bold text-xs">🏆</span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-white">{{ $player->association->name }}</div>
+                                                <div class="text-xs text-gray-400">{{ $player->association->country ?? 'N/A' }}</div>
+                                            </div>
                                         </div>
-                                        <div class="text-xs text-gray-400">{{ $player->association->country ?? 'N/A' }}</div>
                                     @else
                                         <span class="text-gray-500">Aucune association</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="/fifa-portal?player_id={{ $player->id }}" 
-                                       class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200">
-                                        FIFA Portal
-                                    </a>
+                                    <div class="flex space-x-2">
+                                        <a href="/test-portail-joueur-simple?player_id={{ $player->id }}" 
+                                           class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200">
+                                            FIT Portal
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -179,18 +251,18 @@
             </div>
 
             <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-                <h3 class="text-lg font-semibold text-white mb-4">Système</h3>
+                <h3 class="text-lg font-semibold text-white mb-4">FIT</h3>
                 <div class="space-y-2 text-sm text-gray-300">
                     <div class="flex justify-between">
-                        <span>Version:</span>
+                        <span>Version FIT:</span>
                         <span class="text-white">1.0.0</span>
                     </div>
                     <div class="flex justify-between">
-                        <span>Base de données:</span>
+                        <span>Base de données FIT:</span>
                         <span class="text-white">SQLite</span>
                     </div>
                     <div class="flex justify-between">
-                        <span>Dernière mise à jour:</span>
+                        <span>Dernière mise à jour FIT:</span>
                         <span class="text-white">{{ now()->format('d/m/Y H:i') }}</span>
                     </div>
                 </div>
@@ -199,12 +271,49 @@
             <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                 <h3 class="text-lg font-semibold text-white mb-4">Aide</h3>
                 <div class="space-y-2 text-sm text-gray-300">
-                    <p>• Cliquez sur "FIFA Portal" pour accéder au portail FIFA du joueur</p>
+                    <p>• Cliquez sur "FIT Portal" pour accéder au portail FIT du joueur</p>
                     <p>• Utilisez la barre de navigation pour passer d'un joueur à l'autre</p>
                     <p>• Les données sont maintenant 100% dynamiques</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Script pour gérer les photos des joueurs -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Script de gestion des photos chargé');
+            
+            // Gérer toutes les photos des joueurs
+            const playerPhotos = document.querySelectorAll('img[alt*=" "]');
+            
+            playerPhotos.forEach(function(photo) {
+                console.log('📸 Gestion photo:', photo.src);
+                
+                // Gestion d'erreur personnalisée
+                photo.addEventListener('error', function() {
+                    console.error('❌ Erreur chargement photo:', this.src);
+                    this.style.display = 'none';
+                    
+                    // Afficher les initiales
+                    const fallback = this.nextElementSibling;
+                    if (fallback) {
+                        fallback.style.display = 'flex';
+                        console.log('✅ Fallback affiché pour:', this.alt);
+                    }
+                });
+                
+                // Gestion de succès
+                photo.addEventListener('load', function() {
+                    console.log('✅ Photo chargée avec succès:', this.src);
+                    // Cacher le fallback
+                    const fallback = this.nextElementSibling;
+                    if (fallback) {
+                        fallback.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

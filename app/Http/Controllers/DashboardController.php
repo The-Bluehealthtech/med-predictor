@@ -11,9 +11,21 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         
-        // Rediriger les administrateurs vers la page des modules
-        if (in_array($user->role, ['system_admin', 'association_admin'])) {
-            return redirect()->route('modules.index');
+        // Rediriger vers les dashboards complets selon le rôle
+        switch ($user->role) {
+            case 'system_admin':
+                return redirect()->route('analytics.dashboard');
+            case 'association_admin':
+                return redirect()->route('admin.dashboard');
+            case 'club_admin':
+                return redirect()->route('club-management.dashboard');
+            case 'player':
+                return redirect()->route('fifa-complete');
+            case 'admin':
+                return redirect()->route('admin.dashboard');
+            default:
+                // Pour les autres rôles, continuer avec le dashboard partiel
+                break;
         }
         
         // Get user's association and club (simplified)

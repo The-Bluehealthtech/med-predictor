@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fit-platform-mysql
+  labels:
+    app: fit-platform
+    tier: database
+spec:
+  selector:
+    app: fit-platform
+    tier: database
+  ports:
+  - port: 3306
+    targetPort: 3306
+    name: mysql
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fit-platform-redis
+  labels:
+    app: fit-platform
+    tier: cache
+spec:
+  selector:
+    app: fit-platform
+    tier: cache
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: redis
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fit-platform-secrets
+  labels:
+    app: fit-platform
+type: Opaque
+data:
+  db-username: bWVkX3VzZXI=  # med_user
+  db-password: bWVkX3Bhc3N3b3Jk  # med_password
+  redis-password: cmVkaXNfcGFzc3dvcmQ=  # redis_password
+  app-key: YmFzZTY0X2VuY29kZWRfYXBwX2tleQ==  # base64_encoded_app_key
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  labels:
+    app: fit-platform
+data:
+  default.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+        root /var/www/html/public;
+        index index.php index.html;
+
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location ~ \.php$ {
+            fastcgi_pass fit-platform-app-service:9000;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+            include fastcgi_params;
+        }
+
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+
+        location /ready {
+            access_log off;
+            return 200 "ready\n";
+            add_header Content-Type text/plain;
+        }
+    }
+

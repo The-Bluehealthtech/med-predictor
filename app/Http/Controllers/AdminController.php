@@ -13,7 +13,7 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        if (!Auth::check() || !in_array(Auth::user()->role, ['system_admin', 'association_admin'])) {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['super_admin', 'system_admin', 'association_admin'])) {
             return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
         }
 
@@ -27,7 +27,7 @@ class AdminController extends Controller
      */
     public function playersList()
     {
-        if (!Auth::check() || !in_array(Auth::user()->role, ['system_admin', 'association_admin'])) {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['super_admin', 'system_admin', 'association_admin'])) {
             return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
         }
 
@@ -74,7 +74,7 @@ class AdminController extends Controller
      */
     public function systemStats()
     {
-        if (!Auth::check() || !in_array(Auth::user()->role, ['system_admin', 'association_admin'])) {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['super_admin', 'system_admin', 'association_admin'])) {
             return response()->json(['error' => 'Accès non autorisé'], 403);
         }
 

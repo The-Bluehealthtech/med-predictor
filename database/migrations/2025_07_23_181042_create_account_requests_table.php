@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email');
             $table->string('phone')->nullable();
-            $table->string('organization_name');
-            $table->string('organization_type');
-            $table->string('football_type');
-            $table->string('country');
+            $table->string('organization_name')->nullable();
+            $table->string('organization_type')->nullable();
+            $table->string('football_type')->nullable();
+            $table->string('country')->nullable();
             $table->string('city')->nullable();
             $table->text('description')->nullable();
             $table->enum('status', ['pending', 'contacted', 'approved', 'rejected'])->default('pending');

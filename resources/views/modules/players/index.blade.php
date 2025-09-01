@@ -58,12 +58,12 @@
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <a href="{{ route('player-registration.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    ➕ Nouveau Joueur
-                </a>
-                <a href="{{ route('club.player-licenses.index') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    📋 Licences
-                </a>
+                                        <a href="{{ route('player-registration.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
+                            ➕ Nouveau Joueur
+                        </a>
+                                                        <a href="{{ route('modules.players.index') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
+                            📋 Gestion des Licences
+                        </a>
                 <a href="{{ route('player-passports.index') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     🛂 Passeports
                 </a>

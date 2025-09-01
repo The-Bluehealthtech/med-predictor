@@ -15,33 +15,16 @@ class Club extends Model
     protected $fillable = [
         'name',
         'short_name',
-        'country',
-        'city',
-        'stadium',
-        'founded_year',
-        'logo_url',
-        'website',
-        'email',
-        'phone',
-        'address',
-        'fifa_connect_id',
         'association_id',
-        'league',
-        'division',
+        'logo_path',
+        'address',
+        'phone',
+        'email',
+        'website',
+        'founded_year',
         'status',
-        'budget_eur',
-        'wage_budget_eur',
-        'transfer_budget_eur',
-        'reputation',
-        'facilities_level',
-        'youth_development',
-        'scouting_network',
-        'medical_team',
-        'coaching_staff',
-        'last_updated',
-        'fifa_sync_status',
-        'fifa_sync_date',
-        'fifa_last_error',
+        'created_at',
+        'updated_at',
     ];
 
     protected $casts = [
@@ -75,15 +58,10 @@ class Club extends Model
         return $this->hasMany(Team::class);
     }
 
-    public function lineups(): HasMany
-    {
-        return $this->hasMany(Lineup::class);
-    }
 
-    public function competitions(): BelongsToMany
-    {
-        return $this->belongsToMany(Competition::class, 'competition_club');
-    }
+
+
+
 
     public function playerLicenses(): HasMany
     {
@@ -93,6 +71,91 @@ class Club extends Model
     public function users(): HasMany
     {
         return $this->hasMany(\App\Models\User::class, 'entity_id')->where('entity_type', 'club');
+    }
+
+    // Accesseurs pour les champs manquants
+    public function getShortNameAttribute()
+    {
+        // Si un short_name est défini en base, l'utiliser
+        if ($this->attributes['short_name']) {
+            return $this->attributes['short_name'];
+        }
+        
+        // Sinon, extraire les initiales du nom du club
+        $words = explode(' ', $this->name);
+        $initials = '';
+        foreach ($words as $word) {
+            if (strlen($word) > 0) {
+                $initials .= strtoupper(substr($word, 0, 1));
+            }
+        }
+        return $initials;
+    }
+
+    // Accesseur pour corriger l'encodage UTF-8
+    public function getNameAttribute($value)
+    {
+        // Corriger l'encodage double UTF-8
+        if (mb_check_encoding($value, 'UTF-8') && preg_match('/Ã[©|¨]/', $value)) {
+            return utf8_decode($value);
+        }
+        return $value;
+    }
+
+    public function getCountryAttribute()
+    {
+        // Utiliser la relation CONFÉDÉRATION → ASSOCIATION → CLUB
+        if ($this->association && $this->association->country) {
+            return $this->association->country;
+        }
+        
+        return 'Pays non spécifié';
+    }
+
+    public function getCityAttribute()
+    {
+        // Extraire la ville de l'adresse si disponible
+        if ($this->address) {
+            $parts = explode(',', $this->address);
+            if (count($parts) >= 2) {
+                return trim($parts[1]); // Deuxième partie après la virgule
+            }
+        }
+        
+        // Utiliser la relation pour déterminer la ville par défaut
+        if ($this->association && $this->association->country) {
+            switch (strtolower($this->association->country)) {
+                case 'angleterre':
+                    return 'Manchester';
+                case 'france':
+                    return 'Paris';
+                case 'tunisie':
+                    return 'Tunis';
+                default:
+                    return 'Ville non spécifiée';
+            }
+        }
+        
+        return 'Ville non spécifiée';
+    }
+
+    // Nouvel accesseur pour la confédération via la relation
+    public function getConfederationAttribute()
+    {
+        // Utiliser une requête directe pour récupérer la confédération
+        if ($this->association_id) {
+            $confederation = \DB::table('confederations')
+                ->join('associations', 'confederations.id', '=', 'associations.confederation_id')
+                ->where('associations.id', $this->association_id)
+                ->select('confederations.*')
+                ->first();
+            
+            if ($confederation) {
+                return (object) $confederation;
+            }
+        }
+        
+        return null;
     }
 
     // Scopes

@@ -93,14 +93,14 @@
             </div>
         </div>
 
-        <!-- Organization Information -->
+        <!-- Organization Information (Optional) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label for="organization_name" class="block text-sm font-medium text-gray-700 mb-2">
                     @if(app()->getLocale() == 'en')
-                        Organization Name *
+                        Organization Name
                     @else
-                        Nom de l'Organisation *
+                        Nom de l'Organisation
                     @endif
                 </label>
                 <input 
@@ -109,7 +109,6 @@
                     x-model="form.organization_name"
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     :class="{ 'border-red-500': errors.organization_name }"
-                    required
                 >
                 <div x-show="errors.organization_name" x-text="errors.organization_name" class="text-red-500 text-sm mt-1"></div>
             </div>
@@ -117,9 +116,9 @@
             <div>
                 <label for="organization_type" class="block text-sm font-medium text-gray-700 mb-2">
                     @if(app()->getLocale() == 'en')
-                        Organization Type *
+                        Organization Type
                     @else
-                        Type d'Organisation *
+                        Type d'Organisation
                     @endif
                 </label>
                 <select 
@@ -127,7 +126,6 @@
                     x-model="form.organization_type"
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     :class="{ 'border-red-500': errors.organization_type }"
-                    required
                 >
                     <option value="">
                         @if(app()->getLocale() == 'en')
@@ -144,13 +142,13 @@
             </div>
         </div>
 
-        <!-- Football Type Selection -->
+        <!-- Football Type Selection (Optional) -->
         <div class="bg-gray-50 p-6 rounded-lg">
             <h4 class="text-lg font-semibold text-gray-900 mb-4">
                 @if(app()->getLocale() == 'en')
-                    Football Type *
+                    Football Type
                 @else
-                    Type de Football *
+                    Type de Football
                 @endif
             </h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -162,7 +160,6 @@
                             :value="value" 
                             x-model="form.football_type"
                             class="sr-only"
-                            required
                         >
                         <div class="flex items-center">
                             <div class="w-5 h-5 border-2 border-gray-300 rounded-full mr-3 flex items-center justify-center"
@@ -177,14 +174,14 @@
             <div x-show="errors.football_type" x-text="errors.football_type" class="text-red-500 text-sm mt-2"></div>
         </div>
 
-        <!-- Location Information -->
+        <!-- Location Information (Optional) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label for="association_id" class="block text-sm font-medium text-gray-700 mb-2">
                     @if(app()->getLocale() == 'en')
-                        FIFA Association *
+                        FIFA Association
                     @else
-                        Association FIFA *
+                        Association FIFA
                     @endif
                 </label>
                 <select 
@@ -192,7 +189,6 @@
                     x-model="form.association_id"
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     :class="{ 'border-red-500': errors.association_id }"
-                    required
                 >
                     <option value="">
                         @if(app()->getLocale() == 'en')
@@ -231,13 +227,13 @@
             </div>
         </div>
 
-        <!-- FIFA Connect Type Selection -->
+        <!-- FIFA Connect Type Selection (Optional) -->
         <div class="bg-blue-50 p-6 rounded-lg">
             <h4 class="text-lg font-semibold text-gray-900 mb-4">
                 @if(app()->getLocale() == 'en')
-                    FIFA Connect Type *
+                    FIFA Connect Type
                 @else
-                    Type FIFA Connect *
+                    Type FIFA Connect
                 @endif
             </h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -249,7 +245,6 @@
                             :value="value" 
                             x-model="form.fifa_connect_type"
                             class="sr-only"
-                            required
                         >
                         <div class="flex items-center">
                             <div class="w-5 h-5 border-2 border-gray-300 rounded-full mr-3 flex items-center justify-center"
@@ -319,22 +314,23 @@
             </div>
             <h3 class="text-xl font-semibold text-gray-900 mb-2">
                 @if(app()->getLocale() == 'en')
-                    Request Submitted!
+                    Request Submitted Successfully!
                 @else
-                    Demande Soumise !
+                    Demande Soumise avec Succès !
                 @endif
             </h3>
-            <p class="text-gray-600 mb-6" x-text="successMessage"></p>
-            <button 
-                @click="closeSuccess"
-                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
+            <p class="text-gray-600 mb-4" x-text="successMessage"></p>
+            <p class="text-sm text-gray-500 mb-6">
                 @if(app()->getLocale() == 'en')
-                    Close
+                    You will be redirected to the homepage in a few seconds...
                 @else
-                    Fermer
+                    Vous allez être redirigé vers la page d'accueil dans quelques secondes...
                 @endif
-            </button>
+            </p>
+            <div class="flex justify-center mb-4">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            </div>
+            <p class="text-xs text-gray-400">Redirection automatique...</p>
         </div>
     </div>
 </div>
@@ -420,7 +416,7 @@ function accountRequestForm() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify(this.form)
                 });
@@ -428,8 +424,11 @@ function accountRequestForm() {
                 const data = await response.json();
 
                 if (response.ok) {
+                    console.log('Success response:', data);
                     this.successMessage = data.message;
                     this.success = true;
+                    console.log('Setting success to true');
+                    
                     this.form = {
                         first_name: '',
                         last_name: '',
@@ -444,9 +443,11 @@ function accountRequestForm() {
                         description: ''
                     };
                     
-                    // Fermer automatiquement la modal après 3 secondes
+                    // Fermer le formulaire et rediriger vers l'accueil après 3 secondes
                     setTimeout(() => {
+                        console.log('Timeout executed, redirecting...');
                         this.closeSuccess();
+                        window.location.href = 'http://localhost:8080/';
                     }, 3000);
                 } else {
                     if (data.errors) {
@@ -465,7 +466,6 @@ function accountRequestForm() {
 
         closeSuccess() {
             this.success = false;
-            this.$dispatch('close-modal');
         }
     }
 }

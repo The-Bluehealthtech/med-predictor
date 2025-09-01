@@ -1,16 +1,35 @@
-# Utiliser l'image PHP 8.2 officielle avec Apache
-FROM php:8.2-apache
+# Dockerfile simple pour FIT - sans build Node.js
+FROM php:8.2-fpm-alpine
 
 # Installer les dépendances système
-RUN apt-get update && apt-get install -y \
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    mysql-client \
+    git \
+    curl \
     libpng-dev \
-    libonig-dev \
     libxml2-dev \
-    libzip-dev \
     zip \
     unzip \
-    git \
-    && docker-php-ext-install pdo_mysql mbstring gd zip
+    oniguruma-dev \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libzip-dev
+
+# Installer les extensions PHP
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip \
+    xml \
+    ctype
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -18,26 +37,23 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Copier les fichiers du projet
-COPY . /var/www/html
+# Copier les fichiers de dépendances
+COPY composer.* ./
 
 # Installer les dépendances PHP
-RUN composer install --optimize-autoloader --no-dev
+RUN composer install --no-dev --no-scripts --optimize-autoloader
 
-# Installer les dépendances Node.js si nécessaire
-RUN if [ -f "package.json" ]; then npm install && npm run build; fi
+# Copier le code source
+COPY . .
 
 # Configurer les permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Configurer Apache
-RUN a2enmod rewrite
+# Exposer le port
+EXPOSE 9000
 
-# Exposer le port 80
-EXPOSE 80
-
-# Démarrer Apache
-CMD ["apache2-foreground"]
+# Démarrer PHP-FPM
+CMD ["php-fpm"]
 

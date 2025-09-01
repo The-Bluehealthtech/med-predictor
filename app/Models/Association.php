@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Helpers\CountryCodeHelper;
 
@@ -15,6 +16,7 @@ class Association extends Model
         'name',
         'short_name',
         'country',
+        'confederation_id',
         'confederation',
         'fifa_ranking',
         'association_logo_url',
@@ -40,6 +42,14 @@ class Association extends Model
     public function players(): HasMany
     {
         return $this->hasMany(Player::class);
+    }
+
+    /**
+     * Relation avec la confédération
+     */
+    public function confederation(): BelongsTo
+    {
+        return $this->belongsTo(Confederation::class, 'confederation_id', 'id');
     }
 
     public function getFullNameAttribute(): string
@@ -161,5 +171,27 @@ class Association extends Model
             $display .= ' (' . $this->country . ')';
         }
         return $display;
+    }
+
+    // Accesseur pour corriger l'encodage UTF-8
+    public function getNameAttribute($value)
+    {
+        // Corriger l'encodage double UTF-8
+        if (mb_check_encoding($value, 'UTF-8') && preg_match('/Ã[©|¨]/', $value)) {
+            return utf8_decode($value);
+        }
+        return $value;
+    }
+
+    // Accesseur pour le nombre de clubs
+    public function getClubsCountAttribute()
+    {
+        return $this->clubs()->count();
+    }
+
+    // Accesseur pour le nombre de joueurs
+    public function getPlayersCountAttribute()
+    {
+        return $this->players()->count();
     }
 }

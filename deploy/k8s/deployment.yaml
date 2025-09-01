@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: med-predictor
+  labels:
+    app: med-predictor
+    version: v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: med-predictor
+  template:
+    metadata:
+      labels:
+        app: med-predictor
+        version: v1
+    spec:
+      containers:
+      - name: med-predictor
+        image: med-predictor:latest
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: APP_ENV
+          value: "production"
+        - name: APP_DEBUG
+          value: "false"
+        - name: DB_HOST
+          value: "med-predictor-mysql"
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_DATABASE
+          value: "med_predictor"
+        - name: DB_USERNAME
+          value: "med_user"
+        - name: REDIS_HOST
+          value: "med-predictor-redis"
+        - name: REDIS_PORT
+          value: "6379"
+        envFrom:
+        - secretRef:
+            name: med-predictor-secrets
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: storage
+          mountPath: /var/www/html/storage
+        - name: cache
+          mountPath: /var/www/html/bootstrap/cache
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: med-predictor-storage-pvc
+      - name: cache
+        emptyDir: {}
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: med-predictor-service
+  labels:
+    app: med-predictor
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: med-predictor
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: med-predictor-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - med-predictor.yourdomain.com
+    secretName: med-predictor-tls
+  rules:
+  - host: med-predictor.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: med-predictor-service
+            port:
+              number: 80
+
+
+
+
+
+
+
+
+

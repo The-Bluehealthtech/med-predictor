@@ -23,7 +23,7 @@ class CompetitionManagementController extends Controller
     {
         $this->fifaConnectService = $fifaConnectService;
         $this->middleware('auth');
-        $this->middleware('role:admin,association_admin,association_registrar,association_medical,system_admin');
+        $this->middleware('role:super_admin,admin,association_admin,association_registrar,association_medical,system_admin');
     }
 
     public function index()
@@ -31,8 +31,8 @@ class CompetitionManagementController extends Controller
         $user = Auth::user();
         $competitions = collect();
 
-        if (in_array($user->role, ['system_admin', 'admin'])) {
-            // System admin and admin see all competitions
+        if (in_array($user->role, ['super_admin', 'system_admin', 'admin'])) {
+            // Super admin, system admin and admin see all competitions
             $competitions = Competition::with(['association', 'season'])
                 ->orderBy('created_at', 'desc')
                 ->paginate(15);
@@ -63,8 +63,8 @@ class CompetitionManagementController extends Controller
         $user = Auth::user();
         $clubs = collect();
 
-        if (in_array($user->role, ['system_admin', 'admin'])) {
-            // System admin and admin see all clubs
+        if (in_array($user->role, ['super_admin', 'system_admin', 'admin'])) {
+            // Super admin, system admin and admin see all clubs
             $clubs = Club::orderBy('name')->get();
         } elseif (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
             $clubs = Club::where('association_id', $user->association_id)

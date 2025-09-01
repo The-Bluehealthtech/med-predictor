@@ -150,6 +150,7 @@ class CountryHelper
         'brazil' => 'BR',
         'brasil' => 'BR',
         'argentina' => 'AR',
+        'argentine' => 'AR',
         'chile' => 'CL',
         'peru' => 'PE',
         'colombia' => 'CO',

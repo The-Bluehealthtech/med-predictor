@@ -1,1 +1,0 @@
-<x-app-layout><div id="dtn-planning"></div></x-app-layout>

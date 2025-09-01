@@ -74,7 +74,7 @@
                     <!-- Photo du joueur (w-32 h-32) -->
                     <div class="w-32 h-32 bg-blue-100 rounded-lg p-2 flex items-center justify-center relative group">
                         @if($player->player_picture || $player->player_face_url)
-                            <img src="{{ $player->getPlayerPictureUrlAttribute() }}" 
+                            <img src="{{ $player->player_picture ?? $player->player_face_url }}" 
                                  alt="Photo de {{ $player->first_name }} {{ $player->last_name }}" 
                                  class="w-full h-full object-cover rounded-lg">
                         @else
@@ -148,30 +148,44 @@
                     </div>
                 </div>
 
-                                <!-- COLONNE CENTRE : Prénom/Nom + Rating + Position -->
+                                <!-- COLONNE CENTRE : Prénom/Nom + Rating + Position + FIFA Connect -->
                 <div class="flex flex-col items-center justify-center text-center">
                     <!-- Prénom et Nom en BLANC -->
                     <div class="text-xl font-bold text-white mb-2">
                         {{ $player->first_name ?? 'Prénom' }} {{ $player->last_name ?? 'Nom' }}
                     </div>
                     
-                                    <!-- Rating -->
-                <div class="grid grid-cols-3 gap-2 mb-2">
-                    <div class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-xs font-bold">
-                        OVR: {{ $player->rating ?? '84' }}
+                    <!-- FIFA Connect ID -->
+                    @if($player->fifa_connect_id)
+                    <div class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-lg text-sm font-bold mb-2">
+                        🏆 FIFA: {{ $player->fifa_connect_id }}
                     </div>
-                    <div class="bg-green-100 text-green-800 px-2 py-1 rounded-lg text-xs font-bold">
-                        POT: {{ $player->potential ?? '88' }}
+                    @endif
+                    
+                    <!-- Rating -->
+                    <div class="grid grid-cols-3 gap-2 mb-2">
+                        <div class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-xs font-bold">
+                            OVR: {{ $player->overall_rating ?? $player->rating ?? '84' }}
+                        </div>
+                        <div class="bg-green-100 text-green-800 px-2 py-1 rounded-lg text-xs font-bold">
+                            POT: {{ $player->potential_rating ?? $player->potential ?? '88' }}
+                        </div>
+                        <div class="bg-purple-100 text-purple-800 px-2 py-1 rounded-lg text-xs font-bold">
+                            FIT: {{ $player->fitness ?? '92' }}
+                        </div>
                     </div>
-                    <div class="bg-purple-100 text-purple-800 px-2 py-1 rounded-lg text-xs font-bold">
-                        FIT: {{ $player->fitness ?? '92' }}
-                    </div>
-                </div>
                     
                     <!-- Position -->
                     <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-bold">
                         {{ $player->position ?? 'LW' }}
                     </div>
+                    
+                    <!-- Nationalité -->
+                    @if($player->nationality)
+                    <div class="bg-red-100 text-red-800 px-3 py-1 rounded-lg text-xs font-bold mt-2">
+                        {{ $player->nationality }}
+                    </div>
+                    @endif
                 </div>
                 
                                 <!-- COLONNE DROITE : Logo club + Logo association + Drapeau pays (w-40 h-40 chacun) -->

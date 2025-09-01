@@ -1,0 +1,175 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fit-mysql
+  namespace: fit-production
+  labels:
+    app: fit-mysql
+    environment: production
+    platform: gcp
+spec:
+  serviceName: fit-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fit-mysql
+  template:
+    metadata:
+      labels:
+        app: fit-mysql
+        environment: production
+        platform: gcp
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+          name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fit-mysql-secret
+              key: root-password
+        - name: MYSQL_DATABASE
+          value: "fit_production"
+        - name: MYSQL_USER
+          value: "fit_user"
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fit-app-secrets
+              key: DB_PASSWORD
+        - name: MYSQL_ROOT_HOST
+          value: "%"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$MYSQL_ROOT_PASSWORD
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$MYSQL_ROOT_PASSWORD
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        - name: mysql-config
+          mountPath: /etc/mysql/conf.d
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+          runAsUser: 999
+          runAsGroup: 999
+      volumes:
+      - name: mysql-config
+        configMap:
+          name: mysql-config
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: "standard"
+      resources:
+        requests:
+          storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fit-mysql
+  namespace: fit-production
+  labels:
+    app: fit-mysql
+    environment: production
+    platform: gcp
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+    protocol: TCP
+    name: mysql
+  selector:
+    app: fit-mysql
+  clusterIP: None
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+  namespace: fit-production
+  labels:
+    app: fit-mysql
+    environment: production
+    platform: gcp
+data:
+  my.cnf: |
+    [mysqld]
+    # Performance optimizations
+    innodb_buffer_pool_size = 1G
+    innodb_log_file_size = 256M
+    innodb_flush_log_at_trx_commit = 2
+    innodb_flush_method = O_DIRECT
+    
+    # Connection settings
+    max_connections = 200
+    max_allowed_packet = 64M
+    
+    # Binary logging
+    log-bin = mysql-bin
+    binlog_format = ROW
+    expire_logs_days = 7
+    
+    # Character set
+    character-set-server = utf8mb4
+    collation-server = utf8mb4_unicode_ci
+    
+    # Security
+    skip-name-resolve
+    local-infile = 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

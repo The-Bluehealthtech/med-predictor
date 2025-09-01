@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\License;
+use App\Models\LicenseComplete as License;
 use App\Models\Club;
 use App\Models\Association;
 use App\Models\User;
+use App\Models\LicensePhoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +20,7 @@ class LicenseController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin,club_admin,club_manager,club_medical,association_admin,association_registrar,association_medical,system_admin');
+        $this->middleware('role:admin,club_admin,club_manager,club_medical,association_admin,association_registrar,association_medical,system_admin,super_admin');
     }
 
     public function index(Request $request)
@@ -63,9 +64,9 @@ class LicenseController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
         }
-        // For system admin and admin, show all licenses
-        elseif (in_array($user->role, ['system_admin', 'admin'])) {
-            $licenses = License::with(['club', 'association', 'requestedByUser', 'approvedByUser'])
+        // For system admin, admin and super_admin, show all licenses
+        elseif (in_array($user->role, ['system_admin', 'admin', 'super_admin'])) {
+            $licenses = License::with(['player', 'club', 'association', 'requestedByUser', 'approvedByUser'])
                 ->orderBy('created_at', 'desc')
                 ->paginate(15);
         }
@@ -84,12 +85,12 @@ class LicenseController extends Controller
             $clubs = Club::where('association_id', $user->association_id)
                 ->orderBy('name')
                 ->get();
-        } elseif (in_array($user->role, ['system_admin', 'admin'])) {
+        } elseif (in_array($user->role, ['system_admin', 'admin', 'super_admin'])) {
             $clubs = Club::orderBy('name')->get();
         }
 
-        // Get associations for system admin and admin
-        if (in_array($user->role, ['system_admin', 'admin'])) {
+        // Get associations for system admin, admin and super_admin
+        if (in_array($user->role, ['system_admin', 'admin', 'super_admin'])) {
             $associations = Association::orderBy('name')->get();
         }
 
@@ -264,12 +265,64 @@ class LicenseController extends Controller
             'phone' => 'required|string|max:20',
             'license_reason' => 'required|string|max:1000',
             'validity_period' => 'required|in:1_year,2_years,3_years,5_years',
+            'license_type' => 'required|in:amateur,semi_pro,professional,international',
+            'player_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:5120', // 5MB max
         ]);
 
-        $license->update($validated);
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('licenses.index')
-            ->with('success', 'Licence modifiée avec succès.');
+            // Gérer l'upload de photo si fournie
+            if ($request->hasFile('player_photo')) {
+                $photoPath = $request->file('player_photo')->store('player_photos', 'public');
+                
+                // Mettre à jour la photo du joueur si la licence est liée à un joueur
+                if ($license->player_id) {
+                    $license->player->update([
+                        'player_picture' => $photoPath,
+                        'updated_at' => now(),
+                    ]);
+                }
+                
+                // Créer un enregistrement de photo de licence
+                LicensePhoto::create([
+                    'player_id' => $license->player_id,
+                    'club_id' => $license->club_id,
+                    'photo_path' => $photoPath,
+                    'uploaded_by' => auth()->id(),
+                    'uploaded_at' => now(),
+                ]);
+            }
+
+            // Mettre à jour la licence
+            $license->update($validated);
+
+            // Si la licence était en attente de correction, la remettre en attente d'approbation
+            if (in_array($license->status, ['rejected', 'pending_correction'])) {
+                $license->update([
+                    'status' => 'pending',
+                    'rejection_reason' => null, // Effacer la raison de rejet
+                    'updated_at' => now(),
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('licenses.index')
+                ->with('success', 'Licence modifiée avec succès et remise en attente d\'approbation.');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            // Supprimer la photo si elle a été uploadée
+            if (isset($photoPath) && Storage::disk('public')->exists($photoPath)) {
+                Storage::disk('public')->delete($photoPath);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Erreur lors de la modification : ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function destroy(License $license)

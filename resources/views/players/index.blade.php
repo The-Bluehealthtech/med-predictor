@@ -1,11 +1,215 @@
 @extends('layouts.app')
 
-@section('title', 'Players - Med Predictor')
+@section('title', 'Gestion des Joueurs - Med Predictor')
 
 @section('content')
-<div class="py-8">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header Section -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                        <svg class="w-8 h-8 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        Gestion des Joueurs
+                    </h1>
+                    <p class="text-gray-600 mt-2 text-lg">Gérer les joueurs et l'intégration FIFA Connect</p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <a href="{{ route('players.create') }}" 
+                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Nouveau Joueur
+                    </a>
+                    <a href="{{ route('players.bulk-import-form') }}" 
+                       class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        Import en masse
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @if(session('success'))
+            <div class="bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-lg mb-6 flex items-center">
+                <svg class="w-5 h-5 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-50 border border-red-200 text-red-800 px-6 py-4 rounded-lg mb-6 flex items-center">
+                <svg class="w-5 h-5 mr-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <!-- Players List -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800">Liste des Joueurs</h2>
+            </div>
+            
+            @if($players->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joueur</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FIFA Connect ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Club</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($players as $player)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-12 w-12">
+                                                @if($player->player_picture)
+                                                    <img class="h-12 w-12 rounded-full object-cover border-2 border-gray-200" 
+                                                         src="{{ asset('storage/' . $player->player_picture) }}" 
+                                                         alt="{{ $player->first_name }} {{ $player->last_name }}">
+                                                @else
+                                                    <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                                        <span class="text-white font-bold text-lg">
+                                                            {{ substr($player->first_name, 0, 1) }}{{ substr($player->last_name, 0, 1) }}
+                                                        </span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ $player->first_name }} {{ $player->last_name }}
+                                                </div>
+                                                <div class="text-sm text-gray-500">
+                                                    {{ $player->nationality ?? 'N/A' }} • 
+                                                    @if($player->date_of_birth)
+                                                        {{ $player->date_of_birth->age ?? 'N/A' }} ans
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        @if($player->fifa_connect_id)
+                                            <code class="bg-gray-100 px-2 py-1 rounded text-xs font-mono">
+                                                {{ $player->fifa_connect_id }}
+                                            </code>
+                                        @else
+                                            <span class="text-gray-400 italic">Non défini</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            {{ $player->position ?? 'N/A' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        @if($player->club)
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-8 w-8 mr-3">
+                                                    @if($player->club->logo)
+                                                        <img class="h-8 w-8 rounded object-cover" 
+                                                             src="{{ asset('storage/' . $player->club->logo) }}" 
+                                                             alt="Logo {{ $player->club->name }}">
+                                                    @else
+                                                        <div class="h-8 w-8 rounded bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center">
+                                                            <span class="text-white font-bold text-xs">🏟️</span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div>
+                                                    <div class="font-medium">{{ $player->club->name }}</div>
+                                                    <div class="text-xs text-gray-500">{{ $player->club->city ?? 'N/A' }}</div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <span class="text-gray-500">Aucun club</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <a href="{{ route('players.show', $player) }}" 
+                                               class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded text-xs">
+                                                Voir
+                                            </a>
+                                            <a href="{{ route('players.edit', $player) }}" 
+                                               class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded text-xs">
+                                                Modifier
+                                            </a>
+                                            <a href="{{ route('players.health-records', $player) }}" 
+                                               class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-2 py-1 rounded text-xs">
+                                                Dossiers
+                                            </a>
+                                            <a href="{{ route('licenses.create', ['player_id' => $player->id]) }}" 
+                                               class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-2 py-1 rounded text-xs">
+                                                📋 Licence
+                                            </a>
+                                            <a href="{{ route('players.edit', $player) }}?upload_photo=1" 
+                                               class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded text-xs">
+                                                📸 Photo
+                                            </a>
+                                            <form action="{{ route('players.destroy', $player) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" 
+                                                        class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-2 py-1 rounded text-xs"
+                                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce joueur ?')">
+                                                    Supprimer
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="px-6 py-4 border-t border-gray-200">
+                    {{ $players->links() }}
+                </div>
+            @else
+                <div class="px-6 py-12 text-center">
+                    <div class="text-gray-400 mb-4">
+                        <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun joueur trouvé</h3>
+                    <p class="text-gray-500 mb-4">Commencez par créer votre premier joueur.</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-3">
+                        <a href="{{ route('players.create') }}" 
+                           class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                            ➕ Créer un joueur
+                        </a>
+                        <a href="{{ route('players.bulk-import-form') }}" 
+                           class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                            📥 Import en masse
+                        </a>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+@endsection 
         <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 gap-6">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 flex items-center">

@@ -24,6 +24,16 @@ class Player extends Model
         'position',
         'club_id',
         'association_id',
+        // Nouveaux champs pour la demande de licence
+        'address',
+        'contact_phone',
+        'contact_email',
+        'legal_guardian',
+        'school_professional_status',
+        'parental_consent',
+        'license_type',
+        'previous_clubs',
+        'previous_license_number',
         'height',
         'weight',
         'preferred_foot',
@@ -444,12 +454,20 @@ class Player extends Model
             if (filter_var($this->player_picture, FILTER_VALIDATE_URL)) {
                 return $this->player_picture;
             }
-            // Otherwise, it's a stored file
+            // Check if it's a local image in public/images/players/
+            if (str_starts_with($this->player_picture, 'images/players/')) {
+                return asset($this->player_picture);
+            }
+            // Otherwise, it's a stored file in storage
             return asset('storage/' . $this->player_picture);
         }
         
         // Then try FIFA face URL
         if ($this->player_face_url) {
+            // Check if it's a local image in public/images/players/
+            if (str_starts_with($this->player_face_url, 'images/players/')) {
+                return asset($this->player_face_url);
+            }
             return $this->player_face_url;
         }
         
@@ -627,5 +645,18 @@ class Player extends Model
         }
         
         return array_slice($tips, 0, 3); // Return max 3 tips
+    }
+
+    /**
+     * Génère un FIFA Connect ID unique
+     */
+    public static function generateFifaConnectId(): string
+    {
+        $prefix = 'FIFA';
+        $year = date('Y');
+        $country = 'TUN'; // Tunisie par défaut
+        $sequence = str_pad(static::count() + 1, 3, '0', STR_PAD_LEFT);
+        
+        return "{$prefix}{$year}{$country}{$sequence}";
     }
 }

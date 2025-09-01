@@ -20,6 +20,9 @@ class DatabaseSeeder extends Seeder
             // Seeders V3
             V3AiPredictionSeeder::class,
             V3PerformanceMetricSeeder::class,
+            
+            // Données de test pour les compétitions
+            CompetitionTestDataSeeder::class,
         ]);
     }
 }

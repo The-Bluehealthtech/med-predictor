@@ -1,0 +1,22 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad8" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1f2937;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Cercle de fond avec gradient -->
+  <circle cx="100" cy="100" r="90" fill="url(#grad8)" stroke="#ffffff" stroke-width="4"/>
+  
+  <!-- Initiales du joueur -->
+  <text x="100" y="120" font-family="Arial, sans-serif" font-size="48" font-weight="bold" 
+        text-anchor="middle" fill="white" stroke="#1f2937" stroke-width="2">
+    NJ
+  </text>
+  
+  <!-- Éléments décoratifs uniques -->
+  <circle cx="60" cy="60" r="8" fill="white" opacity="0.3"/>
+  <circle cx="140" cy="60" r="6" fill="white" opacity="0.2"/>
+  <circle cx="80" cy="140" r="4" fill="white" opacity="0.4"/>
+</svg>

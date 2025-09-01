@@ -1,1 +1,0 @@
-<x-app-layout><div id="dtn-expats"></div></x-app-layout>

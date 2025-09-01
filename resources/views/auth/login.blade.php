@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - Med Predictor</title>
+    <title>Connexion - FIT Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen flex items-center justify-center">
     <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20 w-full max-w-md">
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">Med Predictor</h1>
+            <div class="flex items-center justify-center mb-4">
+                <img src="{{ asset('images/fit-logo.png') }}" alt="FIT Logo" class="w-12 h-12 mr-3">
+                <div>
+                    <h1 class="text-3xl font-bold text-white">FIT</h1>
+                    <p class="text-sm text-blue-200 -mt-1">Football Intelligence & Tracking</p>
+                </div>
+            </div>
             <p class="text-blue-200">Connexion sécurisée</p>
         </div>
 
@@ -69,9 +75,15 @@
             </p>
         </div>
 
-        <div class="mt-6 text-center">
-            <a href="/joueur/7" class="text-blue-300 hover:text-blue-200 text-sm underline">
+        <div class="mt-6 text-center space-y-2">
+            <a href="/" class="text-blue-300 hover:text-blue-200 text-sm underline block">
+                ← Retour à l'accueil
+            </a>
+            <a href="/joueur/7" class="text-blue-300 hover:text-blue-200 text-sm underline mr-4">
                 Accès direct (démo)
+            </a>
+            <a href="{{ route('landing') }}" class="text-blue-300 hover:text-blue-200 text-sm underline">
+                ← Retour à l'accueil
             </a>
         </div>
     </div>

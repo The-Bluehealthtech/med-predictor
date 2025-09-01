@@ -285,156 +285,60 @@
                     </div>
                     <div class="p-6">
                         <!-- Current Team Information -->
-                        @if($player->currentTeam)
-                            <div class="mb-6">
-                                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Équipe Actuelle</h3>
-                                <div class="bg-gray-50 rounded-lg p-4">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-12 w-12 mr-3">
-                                                @if($player->currentTeam->team->club->logo_url)
-                                                    <img class="h-12 w-12 object-contain border border-gray-200 rounded-lg" src="{{ $player->currentTeam->team->club->logo_url }}" alt="{{ $player->currentTeam->team->club->name }} logo">
-                                                @else
-                                                    <div class="h-12 w-12 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
-                                                        <span class="text-sm text-gray-500 font-bold">{{ substr($player->currentTeam->team->club->name, 0, 2) }}</span>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <div>
-                                                <div class="text-lg font-semibold text-gray-900">{{ $player->currentTeam->team->club->name }}</div>
-                                                <div class="text-sm text-gray-600">{{ $player->currentTeam->team->name }}</div>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="text-sm text-gray-500">Numéro {{ $player->currentSquadNumber ?? 'N/A' }}</div>
-                                            <div class="text-sm font-medium text-gray-900">{{ ucfirst($player->currentRole ?? 'N/A') }}</div>
-                                            <div class="text-xs text-gray-500">{{ ucfirst($player->currentTeam->status ?? 'N/A') }}</div>
-                                        </div>
-                                    </div>
+                        <!-- Note: Team information not available in current Player model structure -->
+                        <div class="mb-6">
+                            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Équipe Actuelle</h3>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="text-center text-gray-500">
+                                    <p>Informations d'équipe non disponibles</p>
+                                    <p class="text-sm">Le modèle Player actuel ne contient pas ces données</p>
                                 </div>
                             </div>
-                        @endif
+                        </div>
 
                         <!-- Overall Statistics -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div class="bg-blue-50 rounded-lg p-4">
                                 <h4 class="text-sm font-medium text-blue-600 uppercase tracking-wider mb-2">Matchs</h4>
-                                <div class="text-2xl font-bold text-blue-900">{{ $player->total_matches_played }}</div>
-                                <div class="text-sm text-blue-600">{{ $player->total_minutes_played }} minutes</div>
-                                <div class="text-xs text-blue-500">{{ $player->minutes_per_match }} min/match</div>
+                                <div class="text-2xl font-bold text-blue-900">N/A</div>
+                                <div class="text-sm text-blue-600">Statistiques non disponibles</div>
+                                <div class="text-xs text-blue-500">Modèle Player actuel</div>
                             </div>
                             <div class="bg-green-50 rounded-lg p-4">
                                 <h4 class="text-sm font-medium text-green-600 uppercase tracking-wider mb-2">Buts & Passes</h4>
-                                <div class="text-2xl font-bold text-green-900">{{ $player->total_goals }}</div>
-                                <div class="text-sm text-green-600">{{ $player->total_assists }} passes décisives</div>
-                                <div class="text-xs text-green-500">{{ $player->goals_per_match }} buts/match</div>
+                                <div class="text-2xl font-bold text-green-900">N/A</div>
+                                <div class="text-sm text-green-600">Statistiques non disponibles</div>
+                                <div class="text-xs text-green-500">Modèle Player actuel</div>
                             </div>
                             <div class="bg-yellow-50 rounded-lg p-4">
                                 <h4 class="text-sm font-medium text-yellow-600 uppercase tracking-wider mb-2">Cartons</h4>
-                                <div class="text-2xl font-bold text-yellow-900">{{ $player->total_yellow_cards }}</div>
-                                <div class="text-sm text-yellow-600">{{ $player->total_red_cards }} rouges</div>
-                                @if($player->position === 'GK')
-                                    <div class="text-xs text-yellow-500">{{ $player->total_clean_sheets }} clean sheets</div>
-                                @endif
+                                <div class="text-2xl font-bold text-yellow-900">N/A</div>
+                                <div class="text-sm text-yellow-600">Statistiques non disponibles</div>
+                                <div class="text-xs text-yellow-500">Modèle Player actuel</div>
                             </div>
                         </div>
 
                         <!-- Season Statistics -->
-                        @if($player->currentSeasonStats->count() > 0)
-                            <div class="mb-6">
-                                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Statistiques par Saison</h3>
-                                <div class="overflow-x-auto">
-                                    <table class="min-w-full divide-y divide-gray-200">
-                                        <thead class="bg-gray-50">
-                                            <tr>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compétition</th>
-                                                <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Matchs</th>
-                                                <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Minutes</th>
-                                                <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Buts</th>
-                                                <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Passes</th>
-                                                <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Cartons</th>
-                                                @if($player->position === 'GK')
-                                                    <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Clean Sheets</th>
-                                                @endif
-                                            </tr>
-                                        </thead>
-                                        <tbody class="bg-white divide-y divide-gray-200">
-                                            @foreach($player->currentSeasonStats as $stat)
-                                                <tr>
-                                                    <td class="px-3 py-2 text-sm text-gray-900">{{ $stat->competition->name ?? 'N/A' }}</td>
-                                                    <td class="px-3 py-2 text-sm text-center text-gray-900">{{ $stat->matches_played }}</td>
-                                                    <td class="px-3 py-2 text-sm text-center text-gray-900">{{ $stat->minutes_played }}</td>
-                                                    <td class="px-3 py-2 text-sm text-center text-gray-900">{{ $stat->goals }}</td>
-                                                    <td class="px-3 py-2 text-sm text-center text-gray-900">{{ $stat->assists }}</td>
-                                                    <td class="px-3 py-2 text-sm text-center text-gray-900">
-                                                        <span class="inline-flex items-center">
-                                                            <span class="text-yellow-600">{{ $stat->yellow_cards }}</span>
-                                                            @if($stat->red_cards > 0)
-                                                                <span class="ml-1 text-red-600">/ {{ $stat->red_cards }}</span>
-                                                            @endif
-                                                        </span>
-                                                    </td>
-                                                    @if($player->position === 'GK')
-                                                        <td class="px-3 py-2 text-sm text-center text-gray-900">{{ $stat->clean_sheets }}</td>
-                                                    @endif
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                        <div class="mb-6">
+                            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Statistiques par Saison</h3>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="text-center text-gray-500">
+                                    <p>Statistiques de saison non disponibles</p>
+                                    <p class="text-sm">Le modèle Player actuel ne contient pas ces données</p>
                                 </div>
                             </div>
-                        @endif
+                        </div>
 
                         <!-- Recent Match Events -->
-                        @if($player->recentMatchEvents->count() > 0)
-                            <div>
-                                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Événements Récents</h3>
-                                <div class="space-y-3">
-                                    @foreach($player->recentMatchEvents as $event)
-                                        <div class="flex items-center justify-between bg-gray-50 rounded-lg p-3">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 mr-3">
-                                                    @if($event->type === 'goal')
-                                                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                                                            <span class="text-white text-xs font-bold">⚽</span>
-                                                        </div>
-                                                    @elseif($event->type === 'yellow_card')
-                                                        <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
-                                                            <span class="text-white text-xs font-bold">🟨</span>
-                                                        </div>
-                                                    @elseif($event->type === 'red_card')
-                                                        <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-                                                            <span class="text-white text-xs font-bold">🟥</span>
-                                                        </div>
-                                                    @elseif($event->type === 'substitution')
-                                                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                                                            <span class="text-white text-xs font-bold">🔄</span>
-                                                        </div>
-                                                    @else
-                                                        <div class="w-6 h-6 bg-gray-500 rounded-full flex items-center justify-center">
-                                                            <span class="text-white text-xs font-bold">•</span>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                <div>
-                                                    <div class="text-sm font-medium text-gray-900">
-                                                        {{ ucfirst($event->type ?? 'event') }} - {{ $event->minute }}' {{ $event->extra_time_minute ? '+' . $event->extra_time_minute : '' }}
-                                                    </div>
-                                                    <div class="text-xs text-gray-500">
-                                                        @if($event->match)
-                                                            {{ $event->match->homeTeam->club->name ?? 'N/A' }} vs {{ $event->match->awayTeam->club->name ?? 'N/A' }}
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="text-xs text-gray-500">
-                                                {{ $event->created_at ? $event->created_at->format('d/m/Y') : 'N/A' }}
-                                            </div>
-                                        </div>
-                                    @endforeach
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Événements Récents</h3>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="text-center text-gray-500">
+                                    <p>Événements de match non disponibles</p>
+                                    <p class="text-sm">Le modèle Player actuel ne contient pas ces données</p>
                                 </div>
                             </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
 
@@ -531,15 +435,15 @@
                         <div class="space-y-4">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600">Matchs joués</span>
-                                <span class="text-lg font-semibold text-gray-900">{{ $player->total_matches_played }}</span>
+                                <span class="text-lg font-semibold text-gray-900">N/A</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600">Buts marqués</span>
-                                <span class="text-lg font-semibold text-green-600">{{ $player->total_goals }}</span>
+                                <span class="text-lg font-semibold text-green-600">N/A</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600">Passes décisives</span>
-                                <span class="text-lg font-semibold text-blue-600">{{ $player->total_assists }}</span>
+                                <span class="text-lg font-semibold text-blue-600">N/A</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600">Cartons jaunes</span>
@@ -558,11 +462,11 @@
                             <div class="border-t pt-4">
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-gray-600">Ratio buts/match</span>
-                                    <span class="text-sm font-semibold text-gray-900">{{ $player->goals_per_match }}</span>
+                                    <span class="text-sm font-semibold text-gray-900">N/A</span>
                                 </div>
                                 <div class="flex justify-between items-center mt-2">
                                     <span class="text-sm text-gray-600">Minutes/match</span>
-                                    <span class="text-sm font-semibold text-gray-900">{{ $player->minutes_per_match }}</span>
+                                    <span class="text-sm font-semibold text-gray-900">N/A</span>
                                 </div>
                             </div>
                         </div>

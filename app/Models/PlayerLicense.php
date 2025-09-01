@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PlayerLicense extends Model
 {
@@ -13,148 +12,169 @@ class PlayerLicense extends Model
     protected $fillable = [
         'player_id',
         'club_id',
-        'fifa_connect_id',
-        'license_number',
-        'license_type', // professional, amateur, youth, international
-        'status', // pending, active, suspended, expired, revoked
-        'issue_date',
-        'expiry_date',
-        'renewal_date',
-        'issuing_authority',
-        'license_category', // A, B, C, D, E
-        'registration_number',
-        'transfer_status', // registered, pending_transfer, transferred
-        'contract_type', // permanent, loan, free_agent
-        'contract_start_date',
-        'contract_end_date',
-        'wage_agreement',
-        'bonus_structure',
-        'release_clause',
-        'medical_clearance',
-        'fitness_certificate',
-        'disciplinary_record',
-        'international_clearance',
-        'work_permit',
-        'visa_status',
-        'documentation_status',
-        'approval_status',
-        'approved_by',
-        'approved_at',
-        'rejection_reason',
+        'license_type',
+        'start_date',
+        'end_date',
+        'status',
+        'issued_at',
         'notes',
-        'requested_by',
-        'document_path',
-        'created_at',
-        'updated_at'
+        'license_number',
     ];
 
     protected $casts = [
-        'issue_date' => 'date',
-        'expiry_date' => 'date',
-        'renewal_date' => 'date',
-        'contract_start_date' => 'date',
-        'contract_end_date' => 'date',
-        'approved_at' => 'datetime',
-        'wage_agreement' => 'decimal:2',
-        'release_clause' => 'decimal:2',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'issued_at' => 'datetime',
     ];
 
-    // Relationships
-    public function player(): BelongsTo
+    /**
+     * Relation avec le joueur
+     */
+    public function player()
     {
         return $this->belongsTo(Player::class);
     }
 
-    public function club(): BelongsTo
+    /**
+     * Relation avec le club
+     */
+    public function club()
     {
         return $this->belongsTo(Club::class);
     }
 
-    public function approvedBy(): BelongsTo
+    /**
+     * Relation avec la photo de licence
+     */
+    public function photo()
     {
-        return $this->belongsTo(User::class, 'approved_by');
-    }
-
-    public function requestedByUser(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'requested_by');
-    }
-
-    public function approvedByUser(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'approved_by');
-    }
-
-    public function fraudAnalysis()
-    {
-        return $this->hasOne(\App\Models\PlayerFraudAnalysis::class, 'player_license_id');
+        return $this->hasOne(LicensePhoto::class, 'player_id', 'player_id')
+            ->where('club_id', $this->club_id);
     }
 
     /**
-     * Check if player has valid PCMA for license approval
+     * Accesseur pour le statut de la licence
      */
-    public function hasValidPCMA(): bool
+    public function getStatusTextAttribute()
     {
-        return $this->player->pcmas()
-            ->where('status', 'completed')
-            ->where('fifa_compliant', true)
-            ->where('completed_at', '>=', now()->subYear())
-            ->exists();
+        $statuses = [
+            'active' => 'Active',
+            'expired' => 'Expirée',
+            'suspended' => 'Suspendue',
+            'revoked' => 'Révoquée',
+        ];
+
+        return $statuses[$this->status] ?? $this->status;
     }
 
     /**
-     * Get the most recent valid PCMA for this player
+     * Accesseur pour le type de licence
      */
-    public function getValidPCMA()
+    public function getLicenseTypeTextAttribute()
     {
-        return $this->player->pcmas()
-            ->where('status', 'completed')
-            ->where('fifa_compliant', true)
-            ->where('completed_at', '>=', now()->subYear())
-            ->orderBy('completed_at', 'desc')
-            ->first();
+        $types = [
+            'amateur' => 'Amateur',
+            'semi_pro' => 'Semi-Professionnel',
+            'professional' => 'Professionnel',
+            'international' => 'International',
+        ];
+
+        return $types[$this->license_type] ?? $this->license_type;
     }
 
     /**
-     * Check if PCMA is required for this license type
+     * Accesseur pour vérifier si la licence est expirée
      */
-    public function requiresPCMA(): bool
+    public function getIsExpiredAttribute()
     {
-        return in_array($this->license_type, ['professional', 'amateur', 'youth']);
+        return $this->end_date->isPast();
     }
 
-    // Scopes
+    /**
+     * Accesseur pour vérifier si la licence est active
+     */
+    public function getIsActiveAttribute()
+    {
+        return $this->status === 'active' && !$this->is_expired;
+    }
+
+    /**
+     * Accesseur pour les jours restants
+     */
+    public function getDaysRemainingAttribute()
+    {
+        if ($this->is_expired) {
+            return 0;
+        }
+
+        return now()->diffInDays($this->end_date, false);
+    }
+
+    /**
+     * Scope pour les licences actives
+     */
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', 'active')
+            ->where('end_date', '>', now());
     }
 
-    public function scopePending($query)
-    {
-        return $query->where('status', 'pending');
-    }
-
+    /**
+     * Scope pour les licences expirées
+     */
     public function scopeExpired($query)
     {
-        return $query->where('status', 'expired');
+        return $query->where('end_date', '<', now());
     }
 
-    public function scopeByType($query, $type)
-    {
-        return $query->where('license_type', $type);
-    }
-
-    public function scopeByClub($query, $clubId)
+    /**
+     * Scope pour les licences d'un club spécifique
+     */
+    public function scopeForClub($query, $clubId)
     {
         return $query->where('club_id', $clubId);
     }
 
-    public function scopeExpiringSoon($query, $days = 30)
+    /**
+     * Scope pour les licences d'un joueur spécifique
+     */
+    public function scopeForPlayer($query, $playerId)
     {
-        return $query->where('expiry_date', '<=', now()->addDays($days))
-                    ->where('status', 'active');
+        return $query->where('player_id', $playerId);
+    }
+
+    /**
+     * Scope pour un type de licence spécifique
+     */
+    public function scopeOfType($query, $type)
+    {
+        return $query->where('license_type', $type);
+    }
+
+    /**
+     * Génère un numéro de licence unique
+     */
+    public static function generateLicenseNumber()
+    {
+        do {
+            $number = 'LIC-' . date('Y') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        } while (static::where('license_number', $number)->exists());
+
+        return $number;
+    }
+
+    /**
+     * Boot method pour générer automatiquement le numéro de licence
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($license) {
+            if (empty($license->license_number)) {
+                $license->license_number = static::generateLicenseNumber();
+            }
+        });
     }
 
     // Methods
@@ -219,14 +239,7 @@ class PlayerLicense extends Model
         };
     }
 
-    public function generateLicenseNumber(): string
-    {
-        $prefix = strtoupper(substr($this->club->country, 0, 3));
-        $year = date('Y');
-        $sequence = str_pad($this->id, 6, '0', STR_PAD_LEFT);
-        
-        return "{$prefix}-{$year}-{$sequence}";
-    }
+
 
     public function validateLicense(): array
     {

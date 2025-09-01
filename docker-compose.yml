@@ -1,12 +1,11 @@
 version: '3.8'
 
 services:
-  # Laravel Application
+  # Laravel Application (PHP-FPM)
   app:
     build:
       context: .
       dockerfile: Dockerfile
-      target: composer
     container_name: med-predictor-app
     restart: unless-stopped
     working_dir: /var/www/html
@@ -47,7 +46,7 @@ services:
       MYSQL_USER: med_user
       MYSQL_PASSWORD: med_password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d
@@ -61,29 +60,11 @@ services:
     container_name: med-predictor-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
       - redis_data:/data
     networks:
       - med-predictor-network
-
-  # PHP-FPM for Development
-  php-fpm:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: composer
-    container_name: med-predictor-php-fpm
-    restart: unless-stopped
-    working_dir: /var/www/html
-    volumes:
-      - .:/var/www/html
-      - ./docker/php.ini:/usr/local/etc/php/php.ini
-    networks:
-      - med-predictor-network
-    depends_on:
-      - mysql
-      - redis
 
   # MailHog for Email Testing
   mailhog:
@@ -91,8 +72,8 @@ services:
     container_name: med-predictor-mailhog
     restart: unless-stopped
     ports:
-      - "1025:1025"  # SMTP
-      - "8025:8025"  # Web UI
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
     networks:
       - med-predictor-network
 

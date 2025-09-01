@@ -7,7 +7,7 @@
     <div class="flex flex-col sm:flex-row items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center space-x-3 mb-2 sm:mb-0">
-            <img src="{{ asset('images/logos/fit.png') }}" alt="FIT Logo" style="height:60px;width:auto;margin-right:0.75rem;" class="inline-block align-middle">
+            <img src="{{ asset('images/fit-logo.png') }}" alt="FIT Logo" style="height:60px;width:auto;margin-right:0.75rem;" class="inline-block align-middle">
         </div>
         <!-- Menus principaux -->
         <div class="flex flex-wrap gap-2 sm:gap-6 items-center justify-center">

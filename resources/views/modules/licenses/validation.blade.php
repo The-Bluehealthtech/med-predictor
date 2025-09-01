@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demandes de Licences (Demande côté Club) - Plateforme FIT</title>
+    <title>Validation des Licences (Côté Association) - Plateforme FIT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -13,8 +13,8 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-8">
             <div>
-                <h1 class="text-4xl font-bold text-gray-800 mb-2">📋 Demandes de Licences (Demande côté Club)</h1>
-                <p class="text-lg text-gray-600">Gestion des demandes de licences FIFA Connect soumises par les clubs</p>
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">📋 Validation des Licences (Côté Association)</h1>
+                <p class="text-lg text-gray-600">Validation et gestion des demandes de licences FIFA Connect soumises par les clubs</p>
             </div>
             <div class="flex space-x-3">
                 <button @click="showBatchValidationModal = true" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
@@ -88,7 +88,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Licences valides</p>
-                        <p class="text-2xl font-bold text-gray-900">[[ licenseStats.valid ]]</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $licenseStats['valid'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -100,7 +100,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">En attente</p>
-                        <p class="text-2xl font-bold text-gray-900">[[ licenseStats.pending ]]</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $licenseStats['pending_validation'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -112,7 +112,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Expirées/Suspendues</p>
-                        <p class="text-2xl font-bold text-gray-900">[[ licenseStats.expired + licenseStats.suspended ]]</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ ($licenseStats['expired'] ?? 0) + ($licenseStats['suspended'] ?? 0) }}</p>
                     </div>
                 </div>
             </div>
@@ -124,11 +124,126 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">FIFA Connect</p>
-                        <p class="text-2xl font-bold text-gray-900">[[ licenseStats.fifaSynced ]]</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $licenseStats['with_licenses'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Liste des joueurs reçus de /players -->
+        @if(isset($players) && $players->count() > 0)
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">Joueurs reçus de la page /players</h3>
+                <p class="text-sm text-gray-600">Données synchronisées depuis la gestion des licences</p>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Joueur
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Club
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Association
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Statut Licence
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($players as $player)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        @if($player->player_picture)
+                                            <img class="h-10 w-10 rounded-full object-cover" 
+                                                 src="{{ asset('storage/' . $player->player_picture) }}" 
+                                                 alt="{{ $player->first_name }} {{ $player->last_name }}">
+                                        @else
+                                            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                                <span class="text-white font-bold text-sm">
+                                                    {{ substr($player->first_name, 0, 1) }}{{ substr($player->last_name, 0, 1) }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ $player->first_name }} {{ $player->last_name }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            {{ $player->nationality }} • {{ $player->date_of_birth ? $player->date_of_birth->diffInYears(now()) . ' ans' : 'N/A' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                @if($player->club)
+                                    <div class="font-medium">{{ $player->club->name }}</div>
+                                    <div class="text-xs text-gray-500">{{ $player->club->city ?? 'N/A' }}</div>
+                                @else
+                                    <span class="text-gray-500">Aucun club</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                @if($player->association)
+                                    <div class="font-medium">{{ $player->association->name }}</div>
+                                    <div class="text-xs text-gray-500">{{ $player->association->country ?? 'N/A' }}</div>
+                                @else
+                                    <span class="text-gray-500">Aucune association</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($player->licenses && $player->licenses->count() > 0)
+                                    @php
+                                        $latestLicense = $player->licenses->sortByDesc('created_at')->first();
+                                        $statusColor = match($latestLicense->status ?? 'unknown') {
+                                            'valid' => 'bg-green-100 text-green-800',
+                                            'pending' => 'bg-yellow-100 text-yellow-800',
+                                            'expired' => 'bg-red-100 text-red-800',
+                                            'suspended' => 'bg-orange-100 text-orange-800',
+                                            'revoked' => 'bg-gray-100 text-gray-800',
+                                            default => 'bg-gray-100 text-gray-800'
+                                        };
+                                    @endphp
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $statusColor }}">
+                                        {{ ucfirst($latestLicense->status ?? 'N/A') }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                        Aucune licence
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <a href="{{ route('modules.players.index') }}?player_id={{ $player->id }}" 
+                                       class="text-blue-600 hover:text-blue-900">
+                                        👁️ Voir
+                                    </a>
+                                    <a href="{{ route('player-registration.edit', $player->id) }}" 
+                                       class="text-indigo-600 hover:text-indigo-900">
+                                        ✏️ Modifier
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @endif
 
         <!-- Liste des licences -->
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">

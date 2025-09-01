@@ -1,1 +1,0 @@
-<x-app-layout><div id="dtn-reports"></div></x-app-layout>

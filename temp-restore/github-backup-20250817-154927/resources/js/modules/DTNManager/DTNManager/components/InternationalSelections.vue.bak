@@ -1,6 +1,0 @@
-<template>
-    <div class="p-4">International Selections management (DTN)</div>
-</template>
-<script>
-export default { name: "InternationalSelections" };
-</script>

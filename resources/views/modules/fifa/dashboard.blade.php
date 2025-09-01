@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="/modules" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
                 </div>
             </div>
         </div>
@@ -42,12 +42,12 @@
                     </p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            Système opérationnel
+                            <span class="w-2 h-2 {{ $connectivity['connected'] ? 'bg-green-500' : 'bg-red-500' }} rounded-full mr-2"></span>
+                            {{ $connectivity['connected'] ? 'Système opérationnel' : 'Système hors ligne' }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            FIFA Connecté
+                            <span class="w-2 h-2 {{ $connectivity['connected'] ? 'bg-blue-500' : 'bg-gray-500' }} rounded-full mr-2"></span>
+                            {{ $connectivity['connected'] ? 'FIFA Connecté' : 'FIFA Non connecté' }}
                         </div>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Connectivité</p>
-                        <p class="text-2xl font-bold text-gray-900">Connecter</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $connectivity['connected'] ? 'Connecté' : 'Déconnecté' }}</p>
                     </div>
                 </div>
             </div>
@@ -79,7 +79,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Synchronisation</p>
-                        <p class="text-2xl font-bold text-gray-900">Synchroniser</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $fifaStats['confederations']['synced'] }}/{{ $fifaStats['confederations']['total'] }}</p>
                     </div>
                 </div>
             </div>
@@ -93,7 +93,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Contrats</p>
-                        <p class="text-2xl font-bold text-gray-900">Gérer</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $fifaStats['players']['total'] }}</p>
                     </div>
                 </div>
             </div>
@@ -103,82 +103,72 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Connection Status -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Connection Status</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Statut de connexion FIFA</h3>
                 <div class="space-y-4">
-                    <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                    <div class="flex items-center justify-between p-4 {{ $connectivity['connected'] ? 'bg-green-50' : 'bg-red-50' }} rounded-lg">
                         <div class="flex items-center">
-                            <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                            <div class="w-3 h-3 {{ $connectivity['connected'] ? 'bg-green-500' : 'bg-red-500' }} rounded-full mr-3"></div>
                             <div>
-                                <p class="font-medium text-green-900">FIFA Connect API</p>
-                                <p class="text-sm text-green-700">Connected - Last sync: 5 min ago</p>
+                                <p class="font-medium {{ $connectivity['connected'] ? 'text-green-900' : 'text-red-900' }}">FIFA Connect API</p>
+                                <p class="text-sm {{ $connectivity['connected'] ? 'text-green-700' : 'text-red-700' }}">{{ $connectivity['message'] }}</p>
                             </div>
                         </div>
-                        <span class="text-green-600">Online</span>
+                        <span class="{{ $connectivity['connected'] ? 'text-green-600' : 'text-red-600' }}">{{ $connectivity['connected'] ? 'En ligne' : 'Hors ligne' }}</span>
                     </div>
-                    <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                    
+                    @foreach($confederations as $confederation)
+                    <div class="flex items-center justify-between p-4 {{ $confederation->fifa_sync_status === 'synced' ? 'bg-green-50' : ($confederation->fifa_sync_status === 'failed' ? 'bg-red-50' : 'bg-yellow-50') }} rounded-lg">
                         <div class="flex items-center">
-                            <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                            <div class="w-3 h-3 {{ $confederation->fifa_sync_status === 'synced' ? 'bg-green-500' : ($confederation->fifa_sync_status === 'failed' ? 'bg-red-500' : 'bg-yellow-500') }} rounded-full mr-3"></div>
                             <div>
-                                <p class="font-medium text-blue-900">Data Sync</p>
-                                <p class="text-sm text-blue-700">Synchronizing player data</p>
+                                <p class="font-medium {{ $confederation->fifa_sync_status === 'synced' ? 'text-green-900' : ($confederation->fifa_sync_status === 'failed' ? 'text-red-900' : 'text-yellow-900') }}">{{ $confederation->name }}</p>
+                                <p class="text-sm {{ $confederation->fifa_sync_status === 'synced' ? 'text-green-700' : ($confederation->fifa_sync_status === 'failed' ? 'text-red-700' : 'text-yellow-700') }}">
+                                    {{ $confederation->fifa_sync_status === 'synced' ? 'Synchronisé' : ($confederation->fifa_sync_status === 'failed' ? 'Échec' : 'En attente') }}
+                                    @if($confederation->fifa_sync_date)
+                                        - {{ $confederation->fifa_sync_date->diffForHumans() }}
+                                    @endif
+                                </p>
                             </div>
                         </div>
-                        <span class="text-blue-600">Active</span>
+                        <span class="{{ $confederation->fifa_sync_status === 'synced' ? 'text-green-600' : ($confederation->fifa_sync_status === 'failed' ? 'text-red-600' : 'text-yellow-600') }}">
+                            {{ ucfirst($confederation->fifa_sync_status) }}
+                        </span>
                     </div>
-                    <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
-                            <div>
-                                <p class="font-medium text-purple-900">Contract Sync</p>
-                                <p class="text-sm text-purple-700">Updating contract information</p>
-                            </div>
-                        </div>
-                        <span class="text-purple-600">Processing</span>
-                    </div>
-                    <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
-                            <div>
-                                <p class="font-medium text-yellow-900">License Sync</p>
-                                <p class="text-sm text-yellow-700">Syncing license data</p>
-                            </div>
-                        </div>
-                        <span class="text-yellow-600">Pending</span>
-                    </div>
+                    @endforeach
                 </div>
             </div>
 
             <!-- FIFA Analytics -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">FIFA Analytics</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Statistiques FIFA</h3>
                 <div class="space-y-4">
                     <div class="flex items-center justify-between p-4 bg-indigo-50 rounded-lg">
                         <div>
-                            <p class="font-medium text-indigo-900">Player Registrations</p>
-                            <p class="text-sm text-indigo-700">1,247 players registered</p>
+                            <p class="font-medium text-indigo-900">Confédérations</p>
+                            <p class="text-sm text-indigo-700">{{ $fifaStats['confederations']['total'] }} confédérations</p>
                         </div>
-                        <span class="text-indigo-600">✓ Complete</span>
+                        <span class="text-indigo-600">{{ $fifaStats['confederations']['synced'] }}/{{ $fifaStats['confederations']['total'] }}</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
                         <div>
-                            <p class="font-medium text-green-900">Contract Updates</p>
-                            <p class="text-sm text-green-700">89 contracts updated today</p>
+                            <p class="font-medium text-green-900">Associations</p>
+                            <p class="text-sm text-green-700">{{ $fifaStats['associations']['total'] }} associations</p>
                         </div>
-                        <span class="text-green-600">✓ Updated</span>
+                        <span class="text-green-600">{{ $fifaStats['associations']['synced'] }}/{{ $fifaStats['associations']['total'] }}</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                         <div>
-                            <p class="font-medium text-blue-900">License Validations</p>
-                            <p class="text-sm text-blue-700">156 licenses validated</p>
+                            <p class="font-medium text-blue-900">Clubs</p>
+                            <p class="text-sm text-blue-700">{{ $fifaStats['clubs']['total'] }} clubs</p>
                         </div>
-                        <span class="text-blue-600">✓ Validated</span>
+                        <span class="text-blue-600">{{ $fifaStats['clubs']['synced'] }}/{{ $fifaStats['clubs']['total'] }}</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
                         <div>
-                            <p class="font-medium text-purple-900">Data Transfer</p>
-                            <p class="text-sm text-purple-700">2.4GB transferred today</p>
+                            <p class="font-medium text-purple-900">Joueurs</p>
+                            <p class="text-sm text-purple-700">{{ $fifaStats['players']['total'] }} joueurs</p>
                         </div>
-                        <span class="text-purple-600">⏳ Transferring</span>
+                        <span class="text-purple-600">{{ $fifaStats['players']['synced'] }}/{{ $fifaStats['players']['total'] }}</span>
                     </div>
                 </div>
             </div>
@@ -186,23 +176,23 @@
 
         <!-- FIFA Statistics -->
         <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">FIFA Statistics</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Statistiques détaillées</h3>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-blue-600">1,247</div>
-                    <div class="text-sm text-gray-600">Players Registered</div>
+                    <div class="text-2xl font-bold text-blue-600">{{ $fifaStats['confederations']['total'] }}</div>
+                    <div class="text-sm text-gray-600">Confédérations</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-green-600">89</div>
-                    <div class="text-sm text-gray-600">Contracts Updated</div>
+                    <div class="text-2xl font-bold text-green-600">{{ $fifaStats['associations']['total'] }}</div>
+                    <div class="text-sm text-gray-600">Associations</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-purple-600">156</div>
-                    <div class="text-sm text-gray-600">Licenses Validated</div>
+                    <div class="text-2xl font-bold text-purple-600">{{ $fifaStats['clubs']['total'] }}</div>
+                    <div class="text-sm text-gray-600">Clubs</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-yellow-600">99.8%</div>
-                    <div class="text-sm text-gray-600">Sync Success Rate</div>
+                    <div class="text-2xl font-bold text-yellow-600">{{ $fifaStats['players']['total'] }}</div>
+                    <div class="text-sm text-gray-600">Joueurs</div>
                 </div>
             </div>
         </div>
@@ -211,20 +201,47 @@
         <div class="bg-white rounded-lg shadow-md p-6 mt-8">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <a href="{{ route('fifa.connectivity') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
+                <a href="/fifa/connectivity" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     🔗 Connectivité
                 </a>
-                <a href="{{ route('fifa.sync-dashboard') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
+                <a href="/fifa/sync-dashboard" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     🔄 Synchronisation
                 </a>
-                <a href="{{ route('fifa.contracts') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
+                <a href="/fifa/contracts" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     📋 Contrats
                 </a>
-                <a href="{{ route('fifa.analytics') }}" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
+                <a href="/fifa/analytics" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     📊 Analytics
                 </a>
             </div>
         </div>
+
+        @if($filteredConfederation)
+        <!-- Confederation Filter Info -->
+        <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtrage par confédération</h3>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    @if($filteredConfederation->confederation_logo_url)
+                        <img src="{{ asset('storage/' . $filteredConfederation->confederation_logo_url) }}" 
+                             alt="Logo {{ $filteredConfederation->name }}" 
+                             class="h-12 w-12 object-contain rounded-lg mr-4">
+                    @else
+                        <div class="h-12 w-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center mr-4">
+                            <span class="text-white font-bold text-lg">{{ $filteredConfederation->short_name }}</span>
+                        </div>
+                    @endif
+                    <div>
+                        <h4 class="text-lg font-medium text-gray-900">{{ $filteredConfederation->name }}</h4>
+                        <p class="text-sm text-gray-600">{{ $filteredConfederation->country }} - {{ $filteredConfederation->associations->count() }} associations</p>
+                    </div>
+                </div>
+                <a href="/fifa/dashboard" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                    Voir toutes les confédérations
+                </a>
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 @endsection 

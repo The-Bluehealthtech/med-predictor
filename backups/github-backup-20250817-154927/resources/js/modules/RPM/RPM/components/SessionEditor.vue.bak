@@ -1,6 +1,0 @@
-<template>
-    <div class="p-4">Session Editor (RPM)</div>
-</template>
-<script>
-export default { name: "SessionEditor" };
-</script>

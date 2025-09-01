@@ -228,9 +228,17 @@ function loadRequests(page = 1) {
     });
     
     fetch(`/admin/account-requests?${params}`)
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
         .then(data => {
             loading.classList.add('hidden');
+            console.log('Data received:', data);
             if (data.success) {
                 renderRequests(data.data);
                 renderPagination(data.data);
@@ -241,7 +249,7 @@ function loadRequests(page = 1) {
         .catch(error => {
             loading.classList.add('hidden');
             console.error('Error:', error);
-            showError('{{ app()->getLocale() === "fr" ? "Erreur lors du chargement des demandes" : "Error loading requests" }}');
+            showError('{{ app()->getLocale() === "fr" ? "Erreur lors du chargement des demandes: " : "Error loading requests: " }}' + error.message);
         });
 }
 

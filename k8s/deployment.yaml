@@ -1,0 +1,171 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fit-platform-app
+  labels:
+    app: fit-platform
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fit-platform
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: fit-platform
+        tier: backend
+    spec:
+      containers:
+      - name: app
+        image: fit-platform:latest
+        ports:
+        - containerPort: 9000
+          name: php-fpm
+        env:
+        - name: APP_ENV
+          value: "production"
+        - name: APP_DEBUG
+          value: "false"
+        - name: DB_CONNECTION
+          value: "mysql"
+        - name: DB_HOST
+          value: "fit-platform-mysql"
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_DATABASE
+          value: "med_predictor"
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: fit-platform-secrets
+              key: db-username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fit-platform-secrets
+              key: db-password
+        - name: REDIS_HOST
+          value: "fit-platform-redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fit-platform-secrets
+              key: redis-password
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 9000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 9000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: storage
+          mountPath: /var/www/html/storage
+        - name: cache
+          mountPath: /var/www/html/bootstrap/cache
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: fit-platform-storage
+      - name: cache
+        emptyDir: {}
+      imagePullSecrets:
+      - name: fit-platform-registry-secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fit-platform-nginx
+  labels:
+    app: fit-platform
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fit-platform
+      tier: nginx
+  template:
+    metadata:
+      labels:
+        app: fit-platform
+        tier: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d
+        - name: ssl-certs
+          mountPath: /etc/nginx/ssl
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+      - name: ssl-certs
+        secret:
+          secretName: fit-platform-ssl
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fit-platform-app-service
+  labels:
+    app: fit-platform
+spec:
+  selector:
+    app: fit-platform
+    tier: backend
+  ports:
+  - port: 9000
+    targetPort: 9000
+    name: php-fpm
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fit-platform-nginx-service
+  labels:
+    app: fit-platform
+spec:
+  selector:
+    app: fit-platform
+    tier: nginx
+  ports:
+  - port: 80
+    targetPort: 80
+    name: http
+  - port: 443
+    targetPort: 443
+    name: https
+  type: LoadBalancer

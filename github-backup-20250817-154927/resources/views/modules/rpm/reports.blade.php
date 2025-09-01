@@ -1,1 +1,0 @@
-<x-app-layout><div id="rpm-reports"></div></x-app-layout>

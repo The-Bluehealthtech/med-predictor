@@ -1,7 +1,30 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-// Routes PCMA sans authentification
+// Controllers will be used as needed
+
+// Routes de santé pour Kubernetes
+Route::get('/health', function () {
+    return response()->json(['status' => 'healthy', 'timestamp' => now()]);
+})->name('health');
+
+Route::get('/ready', function () {
+    try {
+        // Vérification de la base de données
+        \DB::connection()->getPdo();
+        
+        // Vérification simple du cache (sans Redis spécifique)
+        \Cache::has('health_check');
+        
+        return response()->json(['status' => 'ready', 'timestamp' => now()]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'not_ready', 'error' => $e->getMessage()], 503);
+    }
+})->name('ready');
+
+// Include account request routes
+require __DIR__.'/account-requests.php';
+
 Route::middleware(['web'])->group(function () {
     Route::get('/pcma/voice-fallback', function () {
         return view('pcma.voice-fallback');
@@ -41,6 +64,60 @@ Route::get('/test', function () {
     return response()->json(['status' => 'ok', 'message' => 'Server is working']);
 })->name('test');
 
+// Test route FIFA Connect
+Route::get('/test-fifa/{playerId}', function ($playerId) {
+    $player = \App\Models\Player::with(['club', 'association', 'healthRecords', 'pcmas'])->find($playerId);
+    if (!$player) {
+        abort(404, 'Joueur non trouvé');
+    }
+    return view('test-fifa-simple', compact('player'));
+})->name('test.fifa');
+
+// Test route Hero Components
+Route::get('/test-hero/{playerId}', function ($playerId) {
+    $player = \App\Models\Player::with(['club', 'association', 'healthRecords', 'pcmas'])->find($playerId);
+    if (!$player) {
+        abort(404, 'Joueur non trouvé');
+    }
+    return view('test-hero-components', compact('player'));
+})->name('test.hero');
+
+// Test route Portal Data
+Route::get('/test-portal-data/{playerId}', function ($playerId) {
+    $player = \App\Models\Player::with(['club', 'association', 'healthRecords', 'pcmas'])->find($playerId);
+    if (!$player) {
+        abort(404, 'Joueur non trouvé');
+    }
+    
+    // Simuler la méthode preparePortalData du contrôleur
+    $portalData = [
+        'personalInfo' => [
+            'name' => $player->first_name . ' ' . $player->last_name,
+            'position' => $player->position ?? 'Non défini',
+            'club' => $player->club?->name ?? 'Non défini',
+            'nationality' => $player->nationality ?? 'Non défini',
+            'age' => $player->date_of_birth ? (int) $player->date_of_birth->diffInYears(now()) : null,
+            'overall_rating' => $player->overall_rating ?? 0,
+            'potential_rating' => $player->potential_rating ?? 0
+        ],
+        'healthMetrics' => [
+            'ghs_overall_score' => $player->ghs_overall_score ?? 85,
+            'ghs_physical_score' => $player->ghs_physical_score ?? 88,
+            'ghs_mental_score' => $player->ghs_mental_score ?? 82,
+            'ghs_sleep_score' => $player->ghs_sleep_score ?? 90,
+            'injury_risk_score' => $player->injury_risk_score ?? 15,
+            'injury_risk_level' => $player->injury_risk_level ?? 'Faible'
+        ],
+        'performanceStats' => [
+            'total_matches' => 25,
+            'total_health_records' => $player->healthRecords ? $player->healthRecords->count() : 0,
+            'total_pcma' => $player->pcmas ? $player->pcmas->count() : 0
+        ]
+    ];
+    
+    return view('test-portal-data', compact('player', 'portalData'));
+})->name('test.portal.data');
+
 // Test route clubs
 Route::get('/test-clubs', function () {
     return '<h1>Test Clubs - Route dans la section test</h1>';
@@ -48,18 +125,420 @@ Route::get('/test-clubs', function () {
 
 // Test route avec vue clubs
 Route::get('/test-clubs-view', function () {
-    return view('modules.clubs.index');
+    $clubs = \App\Models\Club::with(['association', 'players'])->orderBy('name')->get();
+    $filtered = false;
+    $association = null;
+    
+    return view('modules.clubs.index', compact('clubs', 'filtered', 'association'));
 })->name('test-clubs-view');
 
 // Test route pour vue détaillée d'un club
-Route::get('/test-clubs-view/show', function () {
-    return view('modules.clubs.show');
+Route::get('/test-clubs-view/show', function (Request $request) {
+    $id = $request->get('id');
+    if (!$id) {
+        return response()->json(['error' => 'ID du club requis'], 400);
+    }
+    
+    try {
+        $club = \App\Models\Club::with(['association', 'players'])->findOrFail($id);
+        return view('modules.clubs.show', compact('club'));
+    } catch (\Exception $e) {
+        \Log::error("Erreur dans /test-clubs-view/show: " . $e->getMessage());
+        return response()->json(['error' => 'Club non trouvé'], 404);
+    }
 })->name('test-clubs-view.show');
+
+// Route principale pour voir les clubs
+Route::get('/clubs-view', function (Request $request) {
+    try {
+        $associationId = $request->get('association_id');
+        $confederationId = $request->get('confederation_id');
+        
+        // Initialiser les variables
+        $association = null;
+        $confederation = null;
+        $filtered = false;
+        
+        if ($associationId) {
+            // Filtrer par association
+            $association = \App\Models\Association::find($associationId);
+            $clubs = \App\Models\Club::where('association_id', $associationId)->with('association')->get();
+            $filtered = true;
+        } elseif ($confederationId) {
+            // Filtrer par confédération
+            $confederation = \App\Models\Confederation::find($confederationId);
+            $clubs = \App\Models\Club::whereHas('association', function($query) use ($confederationId) {
+                $query->where('confederation_id', $confederationId);
+            })->with('association')->get();
+            $filtered = true;
+        } else {
+            // Tous les clubs
+            $clubs = \App\Models\Club::with('association')->get();
+            $filtered = false;
+        }
+        
+        return view('modules.clubs.index', compact('clubs', 'filtered', 'association'));
+        
+    } catch (\Exception $e) {
+        \Log::error("Erreur dans /clubs-view: " . $e->getMessage());
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+})->name('clubs-view');
+
+// Route principale pour vue détaillée d'un club
+Route::get('/clubs-view/show', function (Request $request) {
+    $id = $request->get('id');
+    $club = \App\Models\Club::with(['association', 'players'])->findOrFail($id);
+    return view('modules.clubs.show', compact('club'));
+})->name('clubs-view.show');
+
+// Route principale pour éditer un club
+Route::get('/clubs-view/edit/{id}', function ($id) {
+    $club = \App\Models\Club::with(['association'])->findOrFail($id);
+    $associations = \App\Models\Association::orderBy('name')->get();
+    return view('modules.clubs.edit', compact('club', 'associations'));
+})->name('clubs-view.edit');
+
+// Route pour mettre à jour un club
+Route::put('/clubs-view/update/{id}', function (Request $request, $id) {
+    try {
+        $club = \App\Models\Club::findOrFail($id);
+        
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'short_name' => 'nullable|string|max:50',
+            'address' => 'nullable|string',
+            'phone' => 'nullable|string|max:50',
+            'email' => 'nullable|email|max:255',
+            'website' => 'nullable|url|max:255',
+            'founded_year' => 'nullable|integer|min:1800|max:2030',
+            'status' => 'required|in:active,inactive,pending'
+        ]);
+        
+        $club->update($validatedData);
+        
+        // Gestion du logo si fourni
+        if ($request->hasFile('logo')) {
+            try {
+                $logo = $request->file('logo');
+                
+                // Validation du fichier
+                if (!$logo->isValid()) {
+                    throw new \Exception('Fichier invalide: ' . $logo->getErrorMessage());
+                }
+                
+                // Vérification du type MIME
+                $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+                if (!in_array($logo->getMimeType(), $allowedMimes)) {
+                    throw new \Exception('Type de fichier non autorisé: ' . $logo->getMimeType());
+                }
+                
+                // Création du nom de fichier
+                $logoName = 'club_logos/club_' . $club->id . '_' . time() . '.' . $logo->getClientOriginalExtension();
+                
+                // Création du dossier club_logos s'il n'existe pas
+                $clubLogosPath = storage_path('app/public/club_logos');
+                if (!is_dir($clubLogosPath)) {
+                    mkdir($clubLogosPath, 0755, true);
+                }
+                
+                // Upload du fichier avec chemin complet
+                $logoName = 'club_' . $club->id . '_' . time() . '.' . $logo->getClientOriginalExtension();
+                $fullPath = $clubLogosPath . '/' . $logoName;
+                
+                // Copie du fichier uploadé
+                $uploaded = copy($logo->getRealPath(), $fullPath);
+                if (!$uploaded) {
+                    throw new \Exception('Échec de la copie du fichier vers: ' . $fullPath);
+                }
+                
+                // Mise à jour du chemin en base (sans le chemin complet)
+                $dbPath = 'club_logos/' . $logoName;
+                
+                // Mise à jour de la base de données
+                $club->update(['logo_path' => $dbPath]);
+                
+                \Log::info("Logo uploadé avec succès: {$dbPath} pour le club {$club->name}");
+                
+            } catch (\Exception $e) {
+                \Log::error("Erreur lors de l'upload du logo: " . $e->getMessage());
+                return back()->withInput()->with('error', 'Erreur lors de l\'upload du logo: ' . $e->getMessage());
+            }
+        }
+        
+        return redirect()->route('clubs-view.show', ['id' => $club->id])
+                        ->with('success', 'Club mis à jour avec succès !');
+                        
+    } catch (\Exception $e) {
+        return back()->withInput()->with('error', 'Erreur lors de la mise à jour : ' . $e->getMessage());
+    }
+})->name('clubs-view.update');
+
+// Route pour supprimer un club
+Route::delete('/clubs-view/delete/{id}', function ($id) {
+    try {
+        $club = \App\Models\Club::findOrFail($id);
+        
+        // Vérifier s'il y a des données associées
+        $playersCount = $club->players()->count();
+        $licensesCount = $club->playerLicenses()->count();
+        
+        if ($playersCount > 0 || $licensesCount > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "Impossible de supprimer ce club : {$playersCount} joueur(s) et {$licensesCount} licence(s) associé(s)"
+            ], 400);
+        }
+        
+        // Supprimer le club
+        $club->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Club supprimé avec succès'
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la suppression : ' . $e->getMessage()
+        ], 500);
+    }
+})->name('clubs-view.delete');
+
+// Route pour obtenir les options de fusion
+Route::get('/clubs-view/merge-options/{id}', function ($id) {
+    try {
+        $currentClub = \App\Models\Club::findOrFail($id);
+        
+        // Récupérer tous les autres clubs (sauf le courant)
+        $otherClubs = \App\Models\Club::where('id', '!=', $id)
+            ->withCount(['players', 'playerLicenses'])
+            ->get()
+            ->map(function ($club) {
+                return [
+                    'id' => $club->id,
+                    'name' => $club->name,
+                    'city' => $club->city,
+                    'country' => $club->country,
+                    'players_count' => $club->players_count,
+                    'licenses_count' => $club->player_licenses_count
+                ];
+            });
+        
+        return response()->json([
+            'success' => true,
+            'clubs' => $otherClubs
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors du chargement des options : ' . $e->getMessage()
+        ], 500);
+    }
+})->name('clubs-view.merge-options');
+
+// Route pour fusionner les clubs
+Route::post('/clubs-view/merge', function (Request $request) {
+    try {
+        $sourceClubId = $request->input('source_club_id');
+        $targetClubId = $request->input('target_club_id');
+        
+        if (!$sourceClubId || !$targetClubId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'IDs des clubs requis'
+            ], 400);
+        }
+        
+        $sourceClub = \App\Models\Club::findOrFail($sourceClubId);
+        $targetClub = \App\Models\Club::findOrFail($targetClubId);
+        
+        // Vérifier que les clubs sont différents
+        if ($sourceClubId === $targetClubId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Impossible de fusionner un club avec lui-même'
+            ], 400);
+        }
+        
+        // Transférer les joueurs du club source vers le club cible
+        $sourceClub->players()->update(['club_id' => $targetClubId]);
+        
+        // Transférer les licences du club source vers le club cible
+        $sourceClub->playerLicenses()->update(['club_id' => $targetClubId]);
+        
+        // Supprimer le club source
+        $sourceClub->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => "Club '{$sourceClub->name}' fusionné avec '{$targetClub->name}'"
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la fusion : ' . $e->getMessage()
+        ], 500);
+    }
+})->name('clubs-view.merge');
 
 // Test route pour vue des associations
 Route::get('/test-associations-view', function () {
     return view('modules.associations.index');
 })->name('test-associations-view');
+
+// Route principale pour vue des associations
+Route::get('/associations-view', function (Request $request) {
+    $confederationId = $request->get('confederation_id');
+    
+    if ($confederationId) {
+        // Filtrer par confédération
+        $associations = \App\Models\Association::where('confederation_id', $confederationId)
+            ->with(['confederation'])
+            ->orderBy('name')
+            ->get();
+        $confederation = \App\Models\Confederation::find($confederationId);
+    } else {
+        // Toutes les associations
+        $associations = \App\Models\Association::with(['confederation'])
+            ->orderBy('name')
+            ->get();
+        $confederation = null;
+    }
+    
+    return view('modules.associations.index', compact('associations', 'confederation'));
+})->name('associations-view');
+
+// Route principale pour vue détaillée d'une association
+Route::get('/associations-view/show/{id}', function ($id) {
+    $association = \App\Models\Association::with(['confederation', 'clubs', 'players'])
+        ->findOrFail($id);
+    return view('modules.associations.show', compact('association'));
+})->name('associations-view.show');
+
+// Route principale pour éditer une association
+Route::get('/associations-view/edit/{id}', function ($id) {
+    $association = \App\Models\Association::with(['confederation'])->findOrFail($id);
+    $confederations = \App\Models\Confederation::orderBy('name')->get();
+    return view('modules.associations.edit', compact('association', 'confederations'));
+})->name('associations-view.edit');
+
+// Route pour mettre à jour une association
+Route::put('/associations-view/update/{id}', function (Request $request, $id) {
+    try {
+        $association = \App\Models\Association::findOrFail($id);
+        
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'country' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'email' => 'nullable|email|max:255',
+            'website' => 'nullable|url|max:255',
+            'founded_year' => 'nullable|integer|min:1800|max:2030',
+            'status' => 'required|in:active,inactive,pending',
+            'confederation_id' => 'required|exists:confederations,id'
+        ]);
+        
+        $association->update($validatedData);
+        
+        // Gestion du logo de l'association si fourni
+        if ($request->hasFile('association_logo')) {
+            try {
+                $logo = $request->file('association_logo');
+                
+                // Validation du fichier
+                if (!$logo->isValid()) {
+                    throw new \Exception('Fichier invalide: ' . $logo->getErrorMessage());
+                }
+                
+                // Vérification du type MIME
+                $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+                if (!in_array($logo->getMimeType(), $allowedMimes)) {
+                    throw new \Exception('Type de fichier non autorisé: ' . $logo->getMimeType());
+                }
+                
+                // Création du dossier association_logos s'il n'existe pas
+                $logoPath = storage_path('app/public/association_logos');
+                if (!is_dir($logoPath)) {
+                    mkdir($logoPath, 0755, true);
+                }
+                
+                // Upload du fichier
+                $logoName = 'association_' . $association->id . '_' . time() . '.' . $logo->getClientOriginalExtension();
+                $fullPath = $logoPath . '/' . $logoName;
+                
+                // Copie du fichier uploadé
+                $uploaded = copy($logo->getRealPath(), $fullPath);
+                if (!$uploaded) {
+                    throw new \Exception('Échec de la copie du fichier vers: ' . $fullPath);
+                }
+                
+                // Mise à jour du chemin en base
+                $dbPath = 'association_logos/' . $logoName;
+                $association->update(['association_logo_url' => $dbPath]);
+                
+                \Log::info("Logo d'association uploadé avec succès: {$dbPath} pour l'association {$association->name}");
+                
+            } catch (\Exception $e) {
+                \Log::error("Erreur lors de l'upload du logo d'association: " . $e->getMessage());
+                return back()->withInput()->with('error', 'Erreur lors de l\'upload du logo: ' . $e->getMessage());
+            }
+        }
+        
+        // Gestion du drapeau du pays si fourni
+        if ($request->hasFile('nation_flag')) {
+            try {
+                $flag = $request->file('nation_flag');
+                
+                // Validation du fichier
+                if (!$flag->isValid()) {
+                    throw new \Exception('Fichier invalide: ' . $flag->getErrorMessage());
+                }
+                
+                // Vérification du type MIME
+                $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+                if (!in_array($flag->getMimeType(), $allowedMimes)) {
+                    throw new \Exception('Type de fichier non autorisé: ' . $flag->getMimeType());
+                }
+                
+                // Création du dossier nation_flags s'il n'existe pas
+                $flagPath = storage_path('app/public/nation_flags');
+                if (!is_dir($flagPath)) {
+                    mkdir($flagPath, 0755, true);
+                }
+                
+                // Upload du fichier
+                $flagName = 'nation_' . $association->id . '_' . time() . '.' . $flag->getClientOriginalExtension();
+                $fullPath = $flagPath . '/' . $flagName;
+                
+                // Copie du fichier uploadé
+                $uploaded = copy($flag->getRealPath(), $fullPath);
+                if (!$uploaded) {
+                    throw new \Exception('Échec de la copie du fichier vers: ' . $fullPath);
+                }
+                
+                // Mise à jour du chemin en base
+                $dbPath = 'nation_flags/' . $flagName;
+                $association->update(['nation_flag_url' => $dbPath]);
+                
+                \Log::info("Drapeau national uploadé avec succès: {$dbPath} pour l'association {$association->name}");
+                
+            } catch (\Exception $e) {
+                \Log::error("Erreur lors de l'upload du drapeau: " . $e->getMessage());
+                return back()->withInput()->with('error', 'Erreur lors de l\'upload du drapeau: ' . $e->getMessage());
+            }
+        }
+        
+        return redirect()->route('associations-view.show', ['id' => $association->id])
+                        ->with('success', 'Association mise à jour avec succès !');
+                        
+    } catch (\Exception $e) {
+        return back()->withInput()->with('error', 'Erreur lors de la mise à jour : ' . $e->getMessage());
+    }
+})->name('associations-view.update');
 
 // Test route pour vue détaillée d'une association
 Route::get('/test-associations-view/show', function () {
@@ -68,13 +547,21 @@ Route::get('/test-associations-view/show', function () {
 
 // Test route pour vue des confédérations
 Route::get('/test-confederations-view', function () {
-    return view('modules.confederations.index');
+    $confederations = \App\Models\Confederation::orderBy('name')->get();
+    return view('modules.confederations.index', compact('confederations'));
 })->name('test-confederations-view');
 
 // Test route pour vue détaillée d'une confédération
 Route::get('/test-confederations-view/show', function () {
     return view('modules.confederations.show');
 })->name('test-confederations-view.show');
+
+// Route principale pour vue détaillée d'une confédération
+Route::get('/confederations-view/show', function (Request $request) {
+    $id = $request->get('id');
+    $confederation = \App\Models\Confederation::findOrFail($id);
+    return view('modules.confederations.show', compact('confederation'));
+})->name('confederations-view.show');
 
 // Route pour la validation des licences
 Route::get('/licenses/validation', function () {
@@ -444,6 +931,84 @@ Route::get('/test-competition-main-route/{id}', function ($id) {
     return $controller->show($id);
 })->name('test-competition-main-route');
 
+// Account Request Form (public)
+Route::get('/account-request', function () {
+    return view('account-request.create');
+})->name('account-request.create');
+
+
+
+
+
+// Account Request Data Routes (public)
+Route::get('/account-request/football-types', function () {
+    return response()->json([
+        'success' => true,
+        'data' => [
+            '11-a-side' => 'Football 11 à 11',
+            'futsal' => 'Futsal',
+            'women' => 'Football Féminin',
+            'beach-soccer' => 'Beach Soccer',
+            'indoor' => 'Football en Salle',
+            'street' => 'Street Football'
+        ]
+    ]);
+});
+
+Route::get('/account-request/organization-types', function () {
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'club' => 'Club de Football',
+            'association' => 'Association Nationale',
+            'federation' => 'Fédération',
+            'league' => 'Ligue',
+            'academy' => 'Académie',
+            'school' => 'École de Football',
+            'other' => 'Autre'
+        ]
+    ]);
+});
+
+Route::get('/account-request/fifa-associations', function () {
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'UEFA' => [
+                ['id' => 'fra', 'full_name' => 'Fédération Française de Football'],
+                ['id' => 'ger', 'full_name' => 'Deutscher Fußball-Bund'],
+                ['id' => 'esp', 'full_name' => 'Real Federación Española de Fútbol'],
+                ['id' => 'ita', 'full_name' => 'Federazione Italiana Giuoco Calcio'],
+                ['id' => 'eng', 'full_name' => 'The Football Association']
+            ],
+            'CONMEBOL' => [
+                ['id' => 'bra', 'full_name' => 'Confederação Brasileira de Futebol'],
+                ['id' => 'arg', 'full_name' => 'Asociación del Fútbol Argentino'],
+                ['id' => 'col', 'full_name' => 'Federación Colombiana de Fútbol']
+            ],
+            'CAF' => [
+                ['id' => 'nga', 'full_name' => 'Nigeria Football Federation'],
+                ['id' => 'egy', 'full_name' => 'Egyptian Football Association'],
+                ['id' => 'mar', 'full_name' => 'Fédération Royale Marocaine de Football']
+            ]
+        ]
+    ]);
+});
+
+Route::get('/account-request/fifa-connect-types', function () {
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'player' => 'Joueur',
+            'coach' => 'Entraîneur',
+            'referee' => 'Arbitre',
+            'medical' => 'Staff Médical',
+            'administrative' => 'Staff Administratif',
+            'technical' => 'Staff Technique'
+        ]
+    ]);
+});
+
 // Test route modules (sans authentification)
 Route::get('/test-modules', function () {
     $footballType = request('footballType', '11aside');
@@ -576,8 +1141,10 @@ Route::get('/test-portal-simple', function () {
     return view('test-portal-simple');
 })->name('test.portal.simple');
 
-// Routes pour la gestion des logos des associations
+// Routes pour la gestion des associations
 Route::prefix('associations')->name('associations.')->group(function () {
+    Route::get('/{association}/edit', [App\Http\Controllers\AssociationController::class, 'edit'])->name('edit');
+    Route::put('/{association}', [App\Http\Controllers\AssociationController::class, 'update'])->name('update');
     Route::get('/{association}/logo/edit', [App\Http\Controllers\AssociationLogoController::class, 'editLogo'])->name('edit-logo');
     Route::post('/{association}/logo/update', [App\Http\Controllers\AssociationLogoController::class, 'updateLogo'])->name('update-logo');
     Route::post('/{association}/logo/reset', [App\Http\Controllers\AssociationLogoController::class, 'resetToNationalLogo'])->name('reset-national-logo');
@@ -666,6 +1233,127 @@ Route::get('/test-portail-simplifie', function () {
 })->name('test.portail.simplifie');
 
 // Test d'authentification
+
+// API FIFA pour le portail
+Route::get('/api/fifa/player/{playerId}', function ($playerId) {
+    $player = \App\Models\Player::with(['club', 'association', 'healthRecords', 'pcmas'])->find($playerId);
+    
+    if (!$player) {
+        return response()->json(['error' => 'Joueur non trouvé'], 404);
+    }
+    
+    // Debug des relations
+    \Log::info('Player relations debug:', [
+        'player_id' => $player->id,
+        'club' => $player->club ? $player->club->toArray() : 'NULL',
+        'association' => $player->association ? $player->association->toArray() : 'NULL'
+    ]);
+    
+    // Préparer les données FIFA Connect avec la structure attendue par le JavaScript
+    $fifaData = [
+        'player' => [
+            'id' => $player->id,
+            'fifa_connect_id' => $player->fifa_connect_id,
+            'first_name' => $player->first_name,
+            'last_name' => $player->last_name,
+            'name' => $player->first_name . ' ' . $player->last_name,
+            'position' => $player->position,
+            'nationality' => $player->nationality,
+            'overall_rating' => $player->overall_rating,
+            'potential_rating' => $player->potential_rating,
+            'fitness_score' => $player->fitness ?? 90,
+            'form_percentage' => $player->form ?? 85,
+            'age' => 25, // Âge par défaut
+            'height' => 170, // Taille par défaut
+            'weight' => 70, // Poids par défaut
+            'preferred_foot' => 'Droit', // Pied préféré par défaut
+            'player_picture' => $player->player_picture ?? null,
+            'player_face_url' => $player->player_face_url ?? null,
+            'club' => [
+                'name' => $player->club ? $player->club->name : 'N/A',
+                'logo' => $player->club ? $player->club->logo : null,
+                'logo_url' => $player->club ? $player->club->logo : null,
+            ],
+            'association' => [
+                'name' => $player->association ? $player->association->name : 'Fédération Française de Football',
+                'logo' => $player->association ? $player->association->logo : null,
+            ],
+            'health' => [
+                'blood_type' => $player->healthRecords->first()->blood_type ?? 'N/A',
+                'allergies' => $player->healthRecords->first()->allergies ?? 'N/A',
+            ],
+            'pcma' => [
+                'status' => $player->pcmas->first()->status ?? 'N/A',
+                'score' => $player->pcmas->first()->overall_score ?? 'N/A',
+            ]
+        ],
+        // Données supplémentaires pour les onglets
+        'overall_rating' => $player->overall_rating,
+        'potential_rating' => $player->potential_rating,
+        'fitness' => $player->fitness,
+        'form' => $player->form,
+        'nationality' => $player->nationality,
+        'age' => 25,
+        'market_value' => '150M',
+        'negative_tests' => 12,
+        'positive_tests' => 0,
+        'pending_tests' => 0
+    ];
+    
+    return response()->json(['data' => $fifaData]);
+})->name('api.fifa.player');
+
+// API des licences pour le portail FIFA
+Route::get('/api/joueur/{playerId}/historique-licences', function ($playerId) {
+    // Simuler des données de licences pour le moment
+    $licences = [
+        [
+            'id' => 1,
+            'type' => 'Licence Fédérale',
+            'numero' => 'LF-' . str_pad($playerId, 6, '0', STR_PAD_LEFT),
+            'date_emission' => '2024-01-15',
+            'date_expiration' => '2024-12-31',
+            'statut' => 'Valide',
+            'federation' => 'Fédération Française de Football'
+        ],
+        [
+            'id' => 2,
+            'type' => 'Licence UEFA',
+            'numero' => 'UEFA-' . str_pad($playerId, 6, '0', STR_PAD_LEFT),
+            'date_emission' => '2024-01-20',
+            'date_expiration' => '2024-12-31',
+            'statut' => 'Valide',
+            'federation' => 'UEFA'
+        ]
+    ];
+    
+    $primes_formation = [
+        [
+            'id' => 1,
+            'type' => 'Prime Formation Club',
+            'montant' => 50000,
+            'devise' => 'EUR',
+            'date_calcul' => '2024-01-15',
+            'statut' => 'Payée'
+        ],
+        [
+            'id' => 2,
+            'type' => 'Prime Formation Fédération',
+            'montant' => 25000,
+            'devise' => 'EUR',
+            'date_calcul' => '2024-01-20',
+            'statut' => 'En attente'
+        ]
+    ];
+    
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'licences' => $licences,
+            'primes_formation' => $primes_formation
+        ]
+    ]);
+})->name('api.joueur.licences');
 
 // Routes d'authentification
 Route::get('/login', function() {
@@ -817,7 +1505,7 @@ Route::get('/api/fifa/player/{id}', function ($id) {
             'message' => $e->getMessage()
         ], 500);
     }
-})->name('api.fifa.player');
+});
 
 // Routes API pour l'historique des licences
 Route::prefix('api')->group(function () {
@@ -850,13 +1538,13 @@ Route::middleware(['auth'])->group(function () {
         return view('modules.index', [
             'footballType' => $footballType,
             'modules' => [
-                [
-                    'name' => 'Medical',
-                    'description' => 'Gestion médicale des athlètes, vaccinations, et dossiers de santé',
-                    'icon' => '🏥',
-                    'route' => 'modules.medical.index',
-                    'color' => 'blue'
-                ],
+                            [
+                'name' => 'Medical',
+                'description' => 'Gestion médicale des athlètes, vaccinations, et dossiers de santé',
+                'icon' => '🏥',
+                'route' => 'modules.medical.index',
+                'color' => 'blue'
+            ],
                 [
                     'name' => 'PCMA',
                     'description' => 'Évaluation Capacité Physique Médicale (Physical Capacity Medical Assessment)',
@@ -984,6 +1672,13 @@ Route::middleware(['auth'])->group(function () {
                     'color' => 'purple'
                 ],
                 [
+                    'name' => 'Associations FIFA',
+                    'description' => 'Gestion des associations nationales et fédérations avec filtrage par confédération',
+                    'icon' => '🏛️',
+                    'route' => 'associations-view',
+                    'color' => 'indigo'
+                ],
+                [
                     'name' => 'Compétitions FIFA',
                     'description' => 'Gestion complète des compétitions avec intégration FIFA Connect',
                     'icon' => '🏆',
@@ -995,6 +1690,13 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->name('modules.index');
 });
+
+// Dataset Analytics route
+Route::get('/dataset-analytics', function () {
+    return view('modules.dataset.analytics', [
+        'footballType' => 'association'
+    ]);
+})->name('dataset.analytics');
 
 // Test du portail sans authentification (temporaire)
 Route::get('/test-portal-direct/{playerId}', function($playerId) {
@@ -2101,8 +2803,54 @@ Route::get('/api/proxy/allergies', function (Request $request) {
 
 // Global routes (no auth required)
 Route::get('/', function () {
-    return view('landing-simple');
+    return view('landing');
 })->name('landing');
+
+Route::get('/test-dashboard', function () {
+    return view('test-dashboard');
+})->name('test.dashboard');
+
+Route::get('/dashboard-temp', function () {
+    return view('welcome');
+})->name('dashboard.temp');
+
+Route::get('/dashboard-simulated', function () {
+    // Données simulées pour le tableau de bord
+    $data = [
+        'db_fallback' => true,
+        'simulated_data' => [
+            'players' => [
+                'total' => 25,
+                'active' => 22,
+                'avg_age' => 24.5
+            ],
+            'clubs' => [
+                'total' => 8,
+                'associations' => 3,
+                'confederations' => 2
+            ],
+            'performance' => [
+                'stats' => 156,
+                'avg_goals' => 12.3,
+                'avg_assists' => 8.7
+            ]
+        ]
+    ];
+    
+    return view('welcome', $data);
+})->name('dashboard.simulated');
+
+Route::get('/diagnostic', function () {
+    return view('diagnostic');
+})->name('diagnostic');
+
+Route::get('/syntax-debugger', function () {
+    return view('syntax-debugger');
+})->name('syntax.debugger');
+
+Route::get('/dashboard-test', function () {
+    return view('dashboard-test');
+})->name('dashboard.test');
 
 Route::get('/profile-selector', function () {
     $footballType = request('footballType', '11aside');
@@ -2208,28 +2956,18 @@ Route::middleware(['auth'])->group(function () {
         return view('modules.stakeholder-gallery.index');
     })->name('stakeholder-gallery.index');
     
-    // Players routes
-    Route::get('/players', function () {
-        $players = collect([]); // Empty collection for now
-        
-        // Try to get actual players if model exists
-        try {
-            if (class_exists('\App\Models\Player')) {
-                $players = \App\Models\Player::with(['licenses', 'club'])->orderBy('first_name')->get();
-            }
-        } catch (\Exception $e) {
-            // Player model might not exist or table is missing
-        }
-        
-        return view('modules.players.index', [
-            'players' => $players
-        ]);
-    })->name('players.index');
+    // Players routes - CRUD complet
+    Route::resource('players', App\Http\Controllers\PlayerController::class);
+    Route::get('/players/{player}/health-records', [App\Http\Controllers\PlayerController::class, 'healthRecords'])->name('players.health-records');
+    
+    // Routes d'import en masse
+    Route::get('/players/bulk-import/form', [App\Http\Controllers\PlayerController::class, 'bulkImportForm'])->name('players.bulk-import-form');
+    Route::post('/players/bulk-import', [App\Http\Controllers\PlayerController::class, 'bulkImport'])->name('players.bulk-import');
     
     // Player Registration routes
-    Route::get('/player-registration/create', function () {
-        return view('modules.player-registration.create');
-    })->name('player-registration.create');
+    Route::get('/player-registration', [App\Http\Controllers\PlayerRegistrationController::class, 'index'])->name('player-registration.index');
+    Route::get('/player-registration/create', [App\Http\Controllers\PlayerRegistrationController::class, 'create'])->name('player-registration.create');
+    Route::post('/player-registration', [App\Http\Controllers\PlayerRegistrationController::class, 'store'])->name('player-registration.store');
     
     // Club Player Licenses routes
     Route::get('/club/player-licenses', function () {
@@ -2968,53 +3706,7 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
             'success' => false,
             'message' => 'PDF generation requires form data. Please use the PCMA form to generate a PDF.'
         ], 400);
-    })->name('pcma.pdf');
-    
-    Route::get('/pcma/{pcma}/pdf', function ($pcma) {
-        try {
-            // Find the PCMA record
-            $pcmaRecord = \App\Models\PCMA::with(['athlete', 'assessor'])->find($pcma);
-            if (!$pcmaRecord) {
-                abort(404, 'PCMA not found');
-            }
-            
-            // Generate PDF content with proper data format
-            $pdfContent = view('pcma.pdf', [
-                'formData' => [
-                    'type' => $pcmaRecord->type ?? 'standard',
-                    'assessment_date' => $pcmaRecord->assessment_date ?? now()->format('Y-m-d'),
-                    'assessment_id' => $pcmaRecord->id,
-                    'blood_pressure' => $pcmaRecord->blood_pressure ?? 'Non mesuré',
-                    'heart_rate' => $pcmaRecord->heart_rate ?? 'Non mesuré',
-                    'temperature' => $pcmaRecord->temperature ?? 'Non mesuré',
-                    'oxygen_saturation' => $pcmaRecord->oxygen_saturation ?? 'Non mesuré',
-                    'cardiovascular_history' => $pcmaRecord->cardiovascular_history ?? 'Aucun',
-                    'surgical_history' => $pcmaRecord->surgical_history ?? 'Aucun',
-                    'current_medications' => $pcmaRecord->current_medications ?? 'Aucun',
-                    'allergies' => $pcmaRecord->allergies ?? 'Aucune',
-                ],
-                'fitnessResults' => null,
-                'athlete' => $pcmaRecord->athlete,
-                'generatedAt' => now(),
-                'isSigned' => $pcmaRecord->is_signed ?? false,
-                'signedBy' => $pcmaRecord->signed_by ?? null,
-                'licenseNumber' => $pcmaRecord->license_number ?? null,
-                'signedAt' => $pcmaRecord->signed_at ?? null,
-                'signatureImage' => $pcmaRecord->signature_image ? asset('storage/' . $pcmaRecord->signature_image) : null,
-                'signatureData' => $pcmaRecord->signature_data ?? null
-            ])->render();
-            
-            // For now, return a simple HTML response that can be printed as PDF
-            // In a real implementation, you would use a library like DomPDF or Snappy
-            return response($pdfContent)
-                ->header('Content-Type', 'text/html')
-                ->header('Content-Disposition', 'inline; filename="pcma-' . $pcmaRecord->id . '.html"');
-                
-        } catch (\Exception $e) {
-            \Log::error("Error generating PCMA PDF: " . $e->getMessage());
-            return redirect()->route('pcma.show', $pcma)->with('error', 'Erreur lors de la génération du PDF: ' . $e->getMessage());
-        }
-    })->name('pcma.view.pdf');
+    });
 
     Route::post('/pcma/{pcma}/complete', function ($pcma) {
         return redirect()->route('pcma.show', $pcma)->with('success', 'PCMA marked as completed');
@@ -3193,7 +3885,11 @@ Route::get('/test-pdf', function() {
     
     // Profile routes
     Route::get('/profile', function () {
-        return view('modules.profile.show');
+        $user = auth()->user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        return view('modules.profile.show', compact('user'));
     })->name('profile.show');
     
     // Notifications routes
@@ -3288,9 +3984,77 @@ Route::get('/test-pdf', function() {
     })->name('healthcare.records.destroy');
     
     // Admin Account Requests routes
-    Route::get('/admin/account-requests', function () {
-        return view('modules.admin.account-requests.index');
-    })->name('admin.account-requests.index');
+    Route::get('/admin/account-requests', function (\Illuminate\Http\Request $request) {
+        // When called via fetch() with filters/pagination, return JSON
+        if ($request->hasAny(['page', 'status', 'organization_type', 'football_type', 'search'])) {
+            $query = \App\Models\AccountRequest::query();
+
+            if ($status = $request->query('status')) {
+                $query->where('status', $status);
+            }
+            if ($org = $request->query('organization_type')) {
+                $query->where('organization_type', $org);
+            }
+            if ($ft = $request->query('football_type')) {
+                $query->where('football_type', $ft);
+            }
+            if ($search = $request->query('search')) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('organization_name', 'like', "%{$search}%");
+                });
+            }
+
+            $requests = $query->orderBy('created_at', 'desc')->paginate(10);
+            return response()->json(['success' => true, 'data' => $requests]);
+        }
+
+        // Otherwise, render the management UI
+        return view('admin.account-requests.index');
+    })->name('admin.account-requests.index')->middleware('auth');
+
+    Route::get('/admin/account-requests/{id}', function ($id) {
+        $requestModel = \App\Models\AccountRequest::findOrFail($id);
+        return response()->json(['success' => true, 'data' => $requestModel]);
+    })->middleware('auth');
+
+    Route::post('/admin/account-requests/{id}/approve', function ($id, \Illuminate\Http\Request $request) {
+        $requestModel = \App\Models\AccountRequest::findOrFail($id);
+        $requestModel->status = 'approved';
+        if ($request->filled('notes')) {
+            $requestModel->admin_notes = $request->input('notes');
+        }
+        $requestModel->save();
+
+        // Create the user account and notify requester
+        $requestModel->createUserAccount();
+        app(\App\Services\NotificationService::class)->sendAccountRequestApproved($requestModel, auth()->user());
+
+        return response()->json(['success' => true]);
+    })->middleware('auth');
+
+    Route::post('/admin/account-requests/{id}/reject', function ($id, \Illuminate\Http\Request $request) {
+        $requestModel = \App\Models\AccountRequest::findOrFail($id);
+        $reason = $request->input('reason');
+        $requestModel->status = 'rejected';
+        if ($reason) {
+            $requestModel->admin_notes = trim(($requestModel->admin_notes ? $requestModel->admin_notes."\n" : '') . 'Rejected: ' . $reason);
+        }
+        $requestModel->save();
+
+        app(\App\Services\NotificationService::class)->sendAccountRequestRejected($requestModel, auth()->user(), $reason);
+
+        return response()->json(['success' => true]);
+    })->middleware('auth');
+
+    Route::post('/admin/account-requests/{id}/contact', function ($id) {
+        $requestModel = \App\Models\AccountRequest::findOrFail($id);
+        $requestModel->status = 'contacted';
+        $requestModel->save();
+        return response()->json(['success' => true]);
+    })->middleware('auth');
     
     // Module routes
     
@@ -3328,6 +4092,12 @@ Route::get('/test-pdf', function() {
             'footballType' => 'association'
         ]);
     })->name('modules.medical.athlete');
+    
+    Route::get('/modules/medical', function () {
+        return view('modules.medical.index', [
+            'footballType' => 'association'
+        ]);
+    })->name('modules.medical.index');
     
     Route::get('/modules/healthcare', function () {
         $healthRecords = collect([]); // Empty collection for now
@@ -3376,7 +4146,11 @@ Route::get('/test-pdf', function() {
     })->name('modules.administration.index');
     
     Route::get('/modules/licenses', function () {
-        return view('modules.licenses.index', ['footballType' => 'association']);
+        $players = \App\Models\Player::with(['club', 'association'])->orderBy('last_name')->get();
+        return view('modules.licenses.index', [
+            'footballType' => 'association',
+            'players' => $players
+        ]);
     })->name('modules.licenses.index');
 
     // AI Testing routes
@@ -3565,7 +4339,7 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('player-portal.fifa-ultimate');
         });
         Route::get('/home', function () {
-            return redirect()->route('player-portal.fifa-ultimate');
+            return redirect()->route('admin.dashboard');
         })->name('dashboard');
         Route::get('/simple', function () {
             return view('player-portal.simple-dashboard');
@@ -4195,7 +4969,7 @@ Route::get('/portail-fifa-simple', function () {
 })->name('portail.fifa.simple');
 
 // Portail FIFA intégré sous la landing page
-Route::get('/fifa-portal', [App\Http\Controllers\FIFATestController::class, 'test'])->name('fifa.portal.integrated');
+Route::get('/fifa-portal', [App\Http\Controllers\FIFATestController::class, 'show'])->name('fifa.portal.integrated');
 
 // Test du système FIFA Connect
 Route::get('/test-fifa-performance', function () {
@@ -4239,4 +5013,185 @@ Route::get('/test-logo-ftf', function () {
 // Routes Google Assistant déplacées vers api.php (sans CSRF)
 
 // Interface web de fallback pour PCMA (complètement publique)
+
+// Test route pour health-records (sans authentification)
+Route::get('/test-health-records-create', function () {
+    $players = collect([
+        (object) ['id' => 1, 'name' => 'John Smith', 'first_name' => 'John', 'last_name' => 'Smith', 'date_of_birth' => '1995-03-15', 'position' => 'ST', 'nationality' => 'USA'],
+        (object) ['id' => 2, 'name' => 'Sarah Johnson', 'first_name' => 'Sarah', 'last_name' => 'Johnson', 'date_of_birth' => '1993-07-22', 'position' => 'MF', 'nationality' => 'Canada'],
+        (object) ['id' => 3, 'name' => 'Mike Wilson', 'first_name' => 'Mike', 'last_name' => 'Wilson', 'date_of_birth' => '1997-11-08', 'position' => 'DF', 'nationality' => 'UK']
+    ]);
+    
+    return view('health-records.create', compact('players'));
+})->name('test-health-records-create');
+
+// Test route pour appointments (sans authentification)
+Route::get('/test-appointments', function () {
+    return view('modules.appointments.index');
+})->name('test-appointments');
+
+// Test route pour vérifier l'affichage des logos
+Route::get('/test-logos', function () {
+    $players = \App\Models\Player::with(['club', 'association'])->limit(5)->get();
+    $clubs = \App\Models\Club::limit(5)->get();
+    $associations = \App\Models\Association::limit(5)->get();
+
+    return view('test-logos', compact('players', 'clubs', 'associations'));
+})->name('test.logos');
+
+// Test route simple pour diagnostiquer les logos
+Route::get('/test-logos-simple', function () {
+    return view('test-logos-simple');
+})->name('test.logos.simple');
+
+// Test route très simple pour diagnostiquer les images
+Route::get('/test-images-simple', function () {
+    return view('test-images-simple');
+})->name('test.images.simple');
+
+// Test route basique sans CSS
+Route::get('/test-basic', function () {
+    return view('test-basic');
+})->name('test.basic');
+
+// Routes pour le système d'upload de photos de licences (protégées par authentification)
+Route::middleware(['auth'])->prefix('license-photos')->name('license.')->group(function () {
+    Route::get('/upload-photo', [App\Http\Controllers\LicensePhotoController::class, 'showUploadForm'])->name('upload.photo.form');
+    Route::post('/upload-photo', [App\Http\Controllers\LicensePhotoController::class, 'uploadPhoto'])->name('upload.photo');
+    Route::get('/list', [App\Http\Controllers\LicensePhotoController::class, 'showLicenses'])->name('list');
+    Route::delete('/photo/{photo}', [App\Http\Controllers\LicensePhotoController::class, 'deletePhoto'])->name('photo.delete');
+});
+
+// API pour récupérer les joueurs d'un club
+Route::get('/api/clubs/{club}/players', [App\Http\Controllers\LicensePhotoController::class, 'getClubPlayers']);
+
+// Route de test pour le système de licences (sans authentification)
+Route::get('/test-licenses', function () {
+    return view('test-licenses');
+})->name('test.licenses');
+
+// Route de démonstration du système de licences existant
+Route::get('/licenses-demo', function () {
+    // Récupérer les statistiques des licences
+    $stats = [
+        'total' => \App\Models\License::count(),
+        'active' => \App\Models\License::where('status', 'active')->count(),
+        'pending' => \App\Models\License::where('status', 'pending')->count(),
+        'rejected' => \App\Models\License::where('status', 'rejected')->count(),
+        'amateur' => \App\Models\License::where('type', 'amateur')->count(),
+        'semi_pro' => \App\Models\License::where('type', 'semi_pro')->count(),
+        'professional' => \App\Models\License::where('type', 'professional')->count(),
+        'international' => \App\Models\License::where('type', 'international')->count(),
+    ];
+    
+    // Récupérer quelques exemples de licences
+    $sampleLicenses = \App\Models\License::orderBy('created_at', 'desc')->limit(10)->get();
+    
+    return view('licenses.demo', compact('stats', 'sampleLicenses'));
+})->name('licenses.demo');
+
+// Route de test des droits super admin
+Route::get('/test-super-admin', function () {
+    return view('test-super-admin');
+})->name('test.super.admin');
+
+// ========================================
+// 🏆 SYSTÈME DE DEMANDES DE LICENCE FIFA
+// ========================================
+
+Route::prefix('license-requests')->name('license-requests.')->middleware(['auth'])->group(function () {
+    // Routes principales
+    Route::get('/', [App\Http\Controllers\LicenseRequestController::class, 'index'])->name('index');
+    Route::get('/create', [App\Http\Controllers\LicenseRequestController::class, 'create'])->name('create');
+    Route::post('/', [App\Http\Controllers\LicenseRequestController::class, 'store'])->name('store');
+    Route::get('/{licenseRequest}', [App\Http\Controllers\LicenseRequestController::class, 'show'])->name('show');
+    Route::get('/{licenseRequest}/edit', [App\Http\Controllers\LicenseRequestController::class, 'edit'])->name('edit');
+    Route::put('/{licenseRequest}', [App\Http\Controllers\LicenseRequestController::class, 'update'])->name('update');
+    Route::delete('/{licenseRequest}', [App\Http\Controllers\LicenseRequestController::class, 'destroy'])->name('destroy');
+    
+    // Actions de workflow
+    Route::post('/{licenseRequest}/submit', [App\Http\Controllers\LicenseRequestController::class, 'submit'])->name('submit');
+    Route::post('/{licenseRequest}/approve-by-club', [App\Http\Controllers\LicenseRequestController::class, 'approveByClub'])->name('approve-by-club');
+    Route::post('/{licenseRequest}/approve-by-association', [App\Http\Controllers\LicenseRequestController::class, 'approveByAssociation'])->name('approve-by-association');
+    Route::post('/{licenseRequest}/reject', [App\Http\Controllers\LicenseRequestController::class, 'reject'])->name('reject');
+    Route::post('/{licenseRequest}/request-additional-info', [App\Http\Controllers\LicenseRequestController::class, 'requestAdditionalInfo'])->name('request-additional-info');
+    
+    // Actions en lot et export
+    Route::post('/bulk-actions', [App\Http\Controllers\LicenseRequestController::class, 'bulkActions'])->name('bulk-actions');
+    Route::get('/export', [App\Http\Controllers\LicenseRequestController::class, 'export'])->name('export');
+});
+
+// Test du nouveau portail joueur avec hero zone simple
+Route::get('/test-portail-joueur-simple', function (Request $request) {
+    $playerId = $request->get('player_id', 4); // Récupérer le player_id de l'URL, défaut: 4
+    $player = \App\Models\Player::with(['club', 'association'])->find($playerId);
+    if (!$player) {
+        $player = \App\Models\Player::with(['club', 'association'])->first();
+    }
+    
+    // Récupérer les vraies données de la base
+    $associations = \App\Models\Association::with(['confederation'])->orderBy('name')->get();
+    $clubs = \App\Models\Club::with(['association'])->orderBy('name')->get();
+    $confederations = \App\Models\Confederation::orderBy('name')->get();
+    
+    // Récupérer les données de santé et performances
+    $healthRecords = \DB::table('health_records')->where('player_id', $player->id)->orderBy('visit_date', 'desc')->get();
+    $playerStats = \DB::table('player_season_stats')->where('player_id', $player->id)->get();
+    $playerLicenses = \DB::table('player_licenses')->where('player_id', $player->id)->orderBy('start_date', 'desc')->get();
+    $performanceTrends = \DB::table('performance_trends')->where('player_id', $player->id)->orderBy('date', 'desc')->get();
+    $sdohFactors = \DB::table('sdoh_factors')->where('player_id', $player->id)->first();
+    $performancePredictions = \DB::table('performance_predictions')->where('player_id', $player->id)->get();
+    
+    // Récupérer les données de notifications
+    $injuryAlerts = \DB::table('injury_alerts')->where('player_id', $player->id)->first();
+    $playerMedications = \DB::table('player_medications')->where('player_id', $player->id)->where('status', 'active')->get();
+    $playerNotifications = \DB::table('player_notifications')->where('player_id', $player->id)->where('status', 'active')->orderBy('created_at', 'desc')->get();
+    
+    // Récupérer les données de santé et bien-être
+    $playerHealthWellbeing = \DB::table('player_health_wellbeing')->where('player_id', $player->id)->orderBy('assessment_date', 'desc')->first();
+    $playerNutrition = \DB::table('player_nutrition')->where('player_id', $player->id)->orderBy('date', 'desc')->first();
+    $playerRecovery = \DB::table('player_recovery')->where('player_id', $player->id)->orderBy('date', 'desc')->first();
+    
+    // Récupérer les données médicales
+    $playerPcma = \DB::table('player_pcma')->where('player_id', $player->id)->orderBy('assessment_date', 'desc')->first();
+    $playerMedicalAptitude = \DB::table('player_medical_aptitude')->where('player_id', $player->id)->orderBy('assessment_date', 'desc')->first();
+    $playerVitalSigns = \DB::table('player_vital_signs')->where('player_id', $player->id)->orderBy('measurement_date', 'desc')->first();
+    
+    // Récupérer les données de blessures et maladies
+    $playerInjuriesDiseases = \DB::table('player_injuries_diseases')->where('player_id', $player->id)->orderBy('incident_date', 'desc')->get();
+    
+    // Récupérer les données des devices et systèmes connectés
+    $sportsDevices = \DB::table('sports_devices')->where('player_id', $player->id)->get();
+    $behavioralData = \DB::table('behavioral_data')->where('player_id', $player->id)->orderBy('data_date', 'desc')->first();
+    $physioCenters = \DB::table('physio_centers')->where('player_id', $player->id)->get();
+    $mentalHealthApps = \DB::table('mental_health_app')->where('player_id', $player->id)->get();
+    $apiIntegrations = \DB::table('api_integrations')->where('player_id', $player->id)->get();
+    
+    // Récupérer les données anti-dopage
+    $dopingTests = \DB::table('doping_tests')->where('player_id', $player->id)->orderBy('test_date', 'desc')->get();
+    $bannedSubstances = \DB::table('banned_substances')->where('player_id', $player->id)->get();
+    $therapeuticUseExemptions = \DB::table('therapeutic_use_exemptions')->where('player_id', $player->id)->where('exemption_status', 'approved')->get();
+    $dopingAlerts = \DB::table('doping_alerts')->where('player_id', $player->id)->where('alert_status', 'active')->orderBy('alert_date', 'desc')->get();
+    
+    // Récupérer les données de conformité
+    $complianceStatus = \DB::table('compliance_status')->where('player_id', $player->id)->get();
+    $complianceResources = \DB::table('compliance_resources')->where('player_id', $player->id)->where('is_active', true)->orderBy('priority', 'asc')->get();
+    
+    // Récupérer les données des licences
+    $playerLicenses = \DB::table('player_licenses')->where('player_id', $player->id)->orderBy('start_date', 'desc')->get();
+    $licenseRequests = \DB::table('license_requests')->where('fifa_connect_id', 'LIKE', '%' . $player->id . '%')->orWhere('current_club_id', $player->club_id ?? 0)->get();
+    
+    return view('test-portail-joueur-simple', compact(
+        'player', 'associations', 'clubs', 'confederations',
+        'healthRecords', 'playerStats', 'playerLicenses', 
+        'performanceTrends', 'sdohFactors', 'performancePredictions',
+        'injuryAlerts', 'playerMedications', 'playerNotifications',
+        'playerHealthWellbeing', 'playerNutrition', 'playerRecovery',
+        'playerPcma', 'playerMedicalAptitude', 'playerVitalSigns',
+        'playerInjuriesDiseases', 'sportsDevices', 'behavioralData', 
+        'physioCenters', 'mentalHealthApps', 'apiIntegrations', 'dopingTests', 
+        'bannedSubstances', 'therapeuticUseExemptions', 'dopingAlerts', 'complianceStatus', 
+        'complianceResources', 'playerLicenses', 'licenseRequests'
+    ));
+})->name('test.portail.joueur.simple');
 

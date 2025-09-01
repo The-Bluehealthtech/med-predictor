@@ -93,7 +93,7 @@ class AccountRequest extends Model
      */
     public function getFootballTypeLabelAttribute(): string
     {
-        return self::FOOTBALL_TYPES[$this->football_type] ?? $this->football_type;
+        return self::FOOTBALL_TYPES[$this->football_type] ?? $this->football_type ?? 'Non défini';
     }
 
     /**
@@ -101,7 +101,7 @@ class AccountRequest extends Model
      */
     public function getOrganizationTypeLabelAttribute(): string
     {
-        return self::ORGANIZATION_TYPES[$this->organization_type] ?? $this->organization_type;
+        return self::ORGANIZATION_TYPES[$this->organization_type] ?? $this->organization_type ?? 'Non défini';
     }
 
     /**
@@ -109,7 +109,7 @@ class AccountRequest extends Model
      */
     public function getFifaConnectTypeLabelAttribute(): string
     {
-        return self::FIFA_CONNECT_TYPES[$this->fifa_connect_type] ?? $this->fifa_connect_type;
+        return self::FIFA_CONNECT_TYPES[$this->fifa_connect_type] ?? $this->fifa_connect_type ?? 'Non défini';
     }
 
     /**
@@ -268,25 +268,7 @@ class AccountRequest extends Model
         Log::info("Account request {$this->id} rejected by admin {$admin->id}. Reason: {$reason}");
     }
 
-    /**
-     * Generate username for the new user
-     */
-    public function generateUsername(): string
-    {
-        $base = strtolower($this->first_name . '.' . $this->last_name);
-        $base = preg_replace('/[^a-z0-9.]/', '', $base);
-        
-        // Check if username exists
-        $username = $base;
-        $counter = 1;
-        
-        while (User::where('username', $username)->exists()) {
-            $username = $base . $counter;
-            $counter++;
-        }
-        
-        return $username;
-    }
+
 
     /**
      * Generate a secure password
@@ -301,7 +283,6 @@ class AccountRequest extends Model
      */
     public function createUserAccount(): User
     {
-        $username = $this->generateUsername();
         $password = $this->generatePassword();
         
         // Generate FIFA Connect ID based on role and organization type
@@ -313,23 +294,22 @@ class AccountRequest extends Model
         $user = User::create([
             'name' => $this->full_name,
             'email' => $this->email,
-            'username' => $username,
             'password' => bcrypt($password),
             'phone' => $this->phone,
             'role' => $this->getDefaultRole(),
             'association_id' => $this->association_id,
             'club_id' => $this->club_id,
             'fifa_connect_id' => $fifaConnectId,
-            'permissions' => $permissions,
+            'permissions' => json_encode($permissions), // Convert array to JSON
             'status' => 'active',
             'email_verified_at' => now(), // Auto-verify since approved by admin
             'timezone' => 'UTC',
-            'language' => 'en',
+            'language' => 'fr', // Default to French as per user preference
         ]);
 
-        // Update the request with generated credentials
+        // Update the request with generated credentials (email as username for FIFA CONNECT compliance)
         $this->update([
-            'generated_username' => $username,
+            'generated_username' => $this->email, // FIFA CONNECT uses email as primary identifier
             'generated_password' => $password,
             'user_created_at' => now(),
         ]);

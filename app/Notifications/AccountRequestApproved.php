@@ -63,8 +63,13 @@ class AccountRequestApproved extends Notification implements ShouldQueue
                     ->line('• **Type d\'organisation :** ' . $this->accountRequest->organization_type_label)
                     ->line('• **Type de football :** ' . $this->accountRequest->football_type_label)
                     ->when($this->approvedBy, fn($msg) => $msg->line('• **Approuvé par :** ' . $this->approvedBy->name))
+                    ->line('')
+                    ->line('**Vos identifiants de connexion :**')
+                    ->line('• **Nom d\'utilisateur :** ' . $this->accountRequest->generated_username)
+                    ->line('• **Mot de passe :** ' . $this->accountRequest->generated_password)
+                    ->line('')
                     ->action('Accéder à la plateforme', url('/login'))
-                    ->line('Vous pouvez maintenant vous connecter à votre compte et commencer à utiliser la plateforme.')
+                    ->line('Vous pouvez maintenant vous connecter à votre compte avec ces identifiants et commencer à utiliser la plateforme.')
                     ->line('Si vous avez des questions, n\'hésitez pas à nous contacter.')
                     ->salutation('Cordialement,');
             }
@@ -80,8 +85,13 @@ class AccountRequestApproved extends Notification implements ShouldQueue
                 ->line('• **Organization Type:** ' . $this->accountRequest->organization_type_label)
                 ->line('• **Football Type:** ' . $this->accountRequest->football_type_label)
                 ->when($this->approvedBy, fn($msg) => $msg->line('• **Approved by:** ' . $this->approvedBy->name))
+                ->line('')
+                ->line('**Your Login Credentials:**')
+                ->line('• **Username:** ' . $this->accountRequest->generated_username)
+                ->line('• **Password:** ' . $this->accountRequest->generated_password)
+                ->line('')
                 ->action('Access Platform', url('/login'))
-                ->line('You can now log in to your account and start using the platform.')
+                ->line('You can now log in to your account with these credentials and start using the platform.')
                 ->line('If you have any questions, please don\'t hesitate to contact us.')
                 ->salutation('Best regards,');
 

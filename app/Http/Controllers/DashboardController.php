@@ -169,24 +169,14 @@ class DashboardController extends Controller
         // Audit logs (simplified)
         $auditLogs = collect([]);
 
-        return view('dashboard', compact(
-            'association', 
-            'club', 
-            'stats', 
-            'healthRecordsByStatus', 
-            'predictionsByType',
-            'medicalAlerts',
-            'topPlayersByRecords',
-            'topPredictions',
-            'monthlyStats',
-            'licenseStatsByClub',
-            'auditLogStats',
-            'auditLogsByEventType',
-            'auditLogsBySeverity',
-            'topClubsByPlayers',
-            'performanceData',
-            'topClubs',
-            'auditLogs'
-        ));
+        // Simplified dashboard data to avoid errors
+        $dashboardData = [
+            'user' => $user,
+            'stats' => $stats,
+            'role' => $user->role,
+            'fifa_connect_id' => $user->fifa_connect_id ?? null,
+        ];
+
+        return view('dashboard', $dashboardData);
     }
 } 

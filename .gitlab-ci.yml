@@ -1,23 +1,14 @@
-# Pipeline GitLab CI/CD Ultra-Simple pour Diagnostic
-# Version: 3.0 - Diagnostic de Base
+# Pipeline GitLab CI/CD Minimal
+# Version: 4.0 - Test de Base
 
 stages:
   - test
 
-# Variables globales
-variables:
-  PHP_VERSION: "8.2"
-
-# Test ultra-simple
-test_simple:
+test_minimal:
   stage: test
   image: alpine:latest
   script:
-    - echo "🔍 Test ultra-simple GitLab CI"
-    - echo "Pipeline ID: $CI_PIPELINE_ID"
-    - echo "Branch: $CI_COMMIT_BRANCH"
-    - echo "Project: $CI_PROJECT_NAME"
-    - echo "✅ Test réussi !"
+    - echo "Hello World from GitLab CI!"
+    - echo "Pipeline fonctionne !"
   rules:
-    - if: $CI_COMMIT_BRANCH == "develop-v3"
-    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH

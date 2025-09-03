@@ -543,3 +543,4 @@ print_success "Tests manuels automatisés terminés !"
 print_success "Passez maintenant aux tests manuels dans le navigateur."
 
 
+

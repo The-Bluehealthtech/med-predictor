@@ -81,3 +81,4 @@ echo "   - Vérifier la base: php artisan tinker"
 echo "   - Relancer le serveur: php artisan serve"
 
 
+

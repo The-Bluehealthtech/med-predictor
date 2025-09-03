@@ -8,8 +8,8 @@ echo "   - 40 JOUEURS : De toutes nationalités"
 echo ""
 
 # Vérifier que la table existe
-echo "🔍 Vérification de la table licenses_complete..."
-docker exec fit-mysql mysql -u fit_user -pfit_password -e "DESCRIBE fit_database.licenses_complete;" | head -5
+echo "🔍 Vérification de la table player_licenses..."
+docker exec fit-mysql mysql -u fit_user -pfit_password -e "DESCRIBE fit_database.player_licenses;" | head -5
 
 echo ""
 echo "🏗️ Création de la structure FIFA..."

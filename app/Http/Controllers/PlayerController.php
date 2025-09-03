@@ -19,18 +19,18 @@ class PlayerController extends Controller
     }
 
     /**
-     * Affiche la liste des joueurs
+     * Affiche la liste des joueurs avec standards FIFA Connect
      */
     public function index()
     {
         $user = Auth::user();
         $players = collect();
 
-        // Get players based on user role
+        // Get players based on user role with FIFA Connect hierarchy
         if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
             if ($user->club_id) {
                 $players = Player::where('club_id', $user->club_id)
-                    ->with(['club', 'association'])
+                    ->with(['club.association.confederation', 'association.confederation', 'fifaConnectId'])
                     ->orderBy('first_name')
                     ->paginate(15);
             }
@@ -38,7 +38,7 @@ class PlayerController extends Controller
             $players = Player::whereHas('club', function ($query) use ($user) {
                 $query->where('association_id', $user->association_id);
             })
-            ->with(['club', 'association'])
+            ->with(['club.association.confederation', 'association.confederation', 'fifaConnectId'])
             ->orderBy('first_name')
             ->paginate(15);
         } elseif (in_array($user->role, ['system_admin', 'admin', 'super_admin'])) {

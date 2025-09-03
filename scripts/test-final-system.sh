@@ -94,7 +94,7 @@ if docker exec fit-php php artisan tinker --execute="echo 'DB OK';" 2>/dev/null 
     echo -e "${GREEN}✅ Base de données accessible${NC}"
     
     # Vérifier les tables principales
-    tables=("players" "clubs" "associations" "licenses_complete")
+    tables=("players" "clubs" "associations" "player_licenses")
     for table in "${tables[@]}"; do
         if docker exec fit-php php artisan tinker --execute="echo '$table: ' . (Schema::hasTable('$table') ? 'OK' : 'MISSING');" 2>/dev/null | grep -q "OK"; then
             echo -e "${GREEN}✅ Table $table existe${NC}"

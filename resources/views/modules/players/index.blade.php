@@ -47,7 +47,7 @@
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            {{ $players->count() }} joueurs enregistrés
+                            {{ $players->total() }} joueurs enregistrés
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,7 @@
                     <h2 class="text-xl font-semibold text-gray-800">Liste des Joueurs</h2>
                     <div class="flex items-center space-x-4">
                         <div class="text-sm text-gray-600">
-                            Total: <span class="font-semibold">{{ $players->count() }}</span> joueurs
+                            Total: <span class="font-semibold">{{ $players->total() }}</span> joueurs
                         </div>
                         <a href="{{ route('player-registration.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
                             + Ajouter
@@ -227,7 +227,7 @@
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Statistiques</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">{{ $players->count() }}</div>
+                        <div class="text-2xl font-bold text-blue-600">{{ $players->total() }}</div>
                         <div class="text-sm text-gray-600">Total Joueurs</div>
                     </div>
                     <div class="text-center">
@@ -253,6 +253,20 @@
                             })->count() }}
                         </div>
                         <div class="text-sm text-gray-600">Rejetées</div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- Pagination -->
+        @if($players->hasPages())
+            <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-700">
+                        Affichage de {{ $players->firstItem() }} à {{ $players->lastItem() }} sur {{ $players->total() }} résultats
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        {{ $players->links() }}
                     </div>
                 </div>
             </div>

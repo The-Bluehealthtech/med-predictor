@@ -9,7 +9,7 @@ class GameMatch extends Model
 {
     use HasFactory;
 
-    protected $table = 'game_matches';
+    protected $table = 'matches';
 
     protected $guarded = [];
 
@@ -33,12 +33,12 @@ class GameMatch extends Model
 
     public function homeTeam()
     {
-        return $this->belongsTo(Team::class, 'home_team_id');
+        return $this->belongsTo(Club::class, 'home_team_id');
     }
 
     public function awayTeam()
     {
-        return $this->belongsTo(Team::class, 'away_team_id');
+        return $this->belongsTo(Club::class, 'away_team_id');
     }
 
     public function officials()
@@ -56,19 +56,5 @@ class GameMatch extends Model
         return $this->hasMany(\App\Models\MatchEvent::class, 'match_id');
     }
 
-    /**
-     * Get the status attribute (maps to match_status for API compatibility)
-     */
-    public function getStatusAttribute()
-    {
-        return $this->match_status;
-    }
-
-    /**
-     * Set the status attribute (maps to match_status for API compatibility)
-     */
-    public function setStatusAttribute($value)
-    {
-        $this->match_status = $value;
-    }
+    // Le champ status est directement mappé dans la table
 } 

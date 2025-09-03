@@ -634,12 +634,16 @@ Route::prefix('league-championship')->group(function () {
 
 // Simple test endpoints (temporary)
 Route::get('/competitions', function () {
-    $competitions = Competition::with('teams')->get();
-    return response()->json(['success' => true, 'data' => $competitions]);
+    try {
+        $competitions = Competition::all();
+        return response()->json(['success' => true, 'data' => $competitions]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+    }
 });
 
 Route::get('/competitions/{competition}', function (Competition $competition) {
-    $competition->load('teams');
+    $competition->load(['association', 'clubs']);
     return response()->json(['success' => true, 'data' => $competition]);
 });
 

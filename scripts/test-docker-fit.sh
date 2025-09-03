@@ -146,3 +146,6 @@ echo "   3. Déployer sur GCP avec: ./scripts/deploy-fit-gcp.sh"
 
 
 
+
+
+

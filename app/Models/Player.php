@@ -14,6 +14,42 @@ class Player extends Model
 {
     use HasFactory, Notifiable;
 
+    // Constantes FIFA Connect - Catégories d'âge
+    const AGE_CATEGORY_U12 = 'U12';
+    const AGE_CATEGORY_U13 = 'U13';
+    const AGE_CATEGORY_U14 = 'U14';
+    const AGE_CATEGORY_U15 = 'U15';
+    const AGE_CATEGORY_U16 = 'U16';
+    const AGE_CATEGORY_U17 = 'U17';
+    const AGE_CATEGORY_U18 = 'U18';
+    const AGE_CATEGORY_U19 = 'U19';
+    const AGE_CATEGORY_U20 = 'U20';
+    const AGE_CATEGORY_U21 = 'U21';
+    const AGE_CATEGORY_U23 = 'U23';
+    const AGE_CATEGORY_SENIOR = 'SENIOR';
+
+    // Constantes FIFA Connect - Types de licences
+    const LICENSE_TYPE_AMATEUR = 'amateur';
+    const LICENSE_TYPE_PROFESSIONAL = 'professional';
+    const LICENSE_TYPE_FUTSAL = 'futsal';
+    const LICENSE_TYPE_BEACH_SOCCER = 'beach_soccer';
+    const LICENSE_TYPE_YOUTH = 'youth';
+    const LICENSE_TYPE_INTERNATIONAL = 'international';
+
+    // Constantes FIFA Connect - Statuts de licence
+    const LICENSE_STATUS_ACTIVE = 'active';
+    const LICENSE_STATUS_PENDING = 'pending';
+    const LICENSE_STATUS_SUSPENDED = 'suspended';
+    const LICENSE_STATUS_EXPIRED = 'expired';
+    const LICENSE_STATUS_REVOKED = 'revoked';
+
+    // Constantes FIFA Connect - Positions
+    const POSITION_GOALKEEPER = 'GK';
+    const POSITION_DEFENDER = 'DEF';
+    const POSITION_MIDFIELDER = 'MID';
+    const POSITION_FORWARD = 'FWD';
+    const POSITION_WINGER = 'WING';
+
     protected $fillable = [
         'fifa_connect_id',
         'name',
@@ -658,5 +694,119 @@ class Player extends Model
         $sequence = str_pad(static::count() + 1, 3, '0', STR_PAD_LEFT);
         
         return "{$prefix}{$year}{$country}{$sequence}";
+    }
+
+    /**
+     * Obtenir la catégorie d'âge FIFA Connect du joueur
+     */
+    public function getFifaAgeCategory(): string
+    {
+        $age = $this->age ?? 0;
+        
+        return match(true) {
+            $age < 13 => self::AGE_CATEGORY_U12,
+            $age < 15 => self::AGE_CATEGORY_U13,
+            $age < 16 => self::AGE_CATEGORY_U14,
+            $age < 17 => self::AGE_CATEGORY_U15,
+            $age < 18 => self::AGE_CATEGORY_U16,
+            $age < 19 => self::AGE_CATEGORY_U17,
+            $age < 20 => self::AGE_CATEGORY_U18,
+            $age < 21 => self::AGE_CATEGORY_U19,
+            $age < 22 => self::AGE_CATEGORY_U20,
+            $age < 23 => self::AGE_CATEGORY_U21,
+            $age < 24 => self::AGE_CATEGORY_U23,
+            default => self::AGE_CATEGORY_SENIOR
+        };
+    }
+
+    /**
+     * Obtenir le libellé de la catégorie d'âge FIFA Connect
+     */
+    public function getFifaAgeCategoryLabel(): string
+    {
+        return match($this->getFifaAgeCategory()) {
+            self::AGE_CATEGORY_U12 => 'U-12',
+            self::AGE_CATEGORY_U13 => 'U-13',
+            self::AGE_CATEGORY_U14 => 'U-14',
+            self::AGE_CATEGORY_U15 => 'U-15',
+            self::AGE_CATEGORY_U16 => 'U-16',
+            self::AGE_CATEGORY_U17 => 'U-17',
+            self::AGE_CATEGORY_U18 => 'U-18',
+            self::AGE_CATEGORY_U19 => 'U-19',
+            self::AGE_CATEGORY_U20 => 'U-20',
+            self::AGE_CATEGORY_U21 => 'U-21 (Espoirs)',
+            self::AGE_CATEGORY_U23 => 'U-23',
+            self::AGE_CATEGORY_SENIOR => 'Senior',
+            default => 'Inconnu'
+        };
+    }
+
+    /**
+     * Vérifier si le joueur est éligible pour une licence FIFA Connect
+     */
+    public function isEligibleForFifaLicense(): bool
+    {
+        return $this->age >= 13;
+    }
+
+    /**
+     * Obtenir le type de licence FIFA Connect recommandé
+     */
+    public function getRecommendedFifaLicenseType(): string
+    {
+        if (!$this->isEligibleForFifaLicense()) {
+            return 'non_eligible';
+        }
+
+        $age = $this->age ?? 0;
+        
+        return match(true) {
+            $age < 18 => self::LICENSE_TYPE_YOUTH,
+            $age < 23 => self::LICENSE_TYPE_AMATEUR,
+            default => self::LICENSE_TYPE_AMATEUR
+        };
+    }
+
+    /**
+     * Vérifier si le joueur a une licence FIFA Connect valide
+     */
+    public function hasValidFifaLicense(): bool
+    {
+        return $this->playerLicenses()
+            ->where('status', self::LICENSE_STATUS_ACTIVE)
+            ->where('expiry_date', '>', now())
+            ->exists();
+    }
+
+    /**
+     * Obtenir la licence FIFA Connect active
+     */
+    public function getActiveFifaLicense()
+    {
+        return $this->playerLicenses()
+            ->where('status', self::LICENSE_STATUS_ACTIVE)
+            ->where('expiry_date', '>', now())
+            ->latest('issue_date')
+            ->first();
+    }
+
+    /**
+     * Obtenir le statut d'éligibilité FIFA Connect
+     */
+    public function getFifaEligibilityStatus(): string
+    {
+        if (!$this->isEligibleForFifaLicense()) {
+            return 'Non éligible (moins de 13 ans)';
+        }
+
+        if (!$this->hasValidFifaLicense()) {
+            return 'Licence expirée ou manquante';
+        }
+
+        if (!$this->hasValidPCMA()) {
+            return 'PCMA non valide';
+        }
+
+        return 'Éligible';
     }
 }

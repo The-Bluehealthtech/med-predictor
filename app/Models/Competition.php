@@ -73,12 +73,29 @@ class Competition extends Model
     const TYPE_FRIENDLY = 'friendly';
     const TYPE_INTERNATIONAL = 'international';
 
-    // Catégories FIFA
-    const CATEGORY_SENIOR = 'senior';
-    const CATEGORY_YOUTH = 'youth';
-    const CATEGORY_WOMEN = 'women';
-    const CATEGORY_FUTSAL = 'futsal';
-    const CATEGORY_BEACH = 'beach';
+    // Catégories d'âge FIFA (basées sur l'âge au 1er janvier de l'année de compétition)
+    const CATEGORY_U13 = 'u13';           // Moins de 13 ans
+    const CATEGORY_U15 = 'u15';           // Moins de 15 ans
+    const CATEGORY_U17 = 'u17';           // Moins de 17 ans (compétitions FIFA officielles)
+    const CATEGORY_U20 = 'u20';           // Moins de 20 ans (Coupe du Monde U-20)
+    const CATEGORY_U23 = 'u23';           // Moins de 23 ans (Jeux Olympiques)
+    const CATEGORY_SENIOR = 'senior';     // Pas de limite d'âge (Coupe du Monde, compétitions nationales)
+    
+    // Catégories par genre FIFA
+    const CATEGORY_MEN = 'men';           // Masculin
+    const CATEGORY_WOMEN = 'women';       // Féminin
+    
+    // Disciplines FIFA
+    const CATEGORY_FUTSAL = 'futsal';     // Futsal (généralement Seniors)
+    const CATEGORY_BEACH = 'beach';       // Beach Soccer (généralement Seniors)
+    
+    // Catégories locales (associations nationales)
+    const CATEGORY_U12 = 'u12';           // Moins de 12 ans (local)
+    const CATEGORY_U14 = 'u14';           // Moins de 14 ans (local)
+    const CATEGORY_U16 = 'u16';           // Moins de 16 ans (local)
+    const CATEGORY_U18 = 'u18';           // Moins de 18 ans (local)
+    const CATEGORY_U19 = 'u19';           // Moins de 19 ans (local)
+    const CATEGORY_U21 = 'u21';           // Espoirs (local)
 
     // Disciplines FIFA
     const DISCIPLINE_FOOTBALL = 'football';
@@ -260,16 +277,34 @@ class Competition extends Model
     }
 
     /**
-     * Obtenir la catégorie formatée pour l'affichage
+     * Obtenir la catégorie formatée pour l'affichage (selon les standards FIFA)
      */
     public function getCategoryLabelAttribute(): string
     {
         $labels = [
+            // Catégories d'âge FIFA officielles
+            self::CATEGORY_U13 => 'U-13',
+            self::CATEGORY_U15 => 'U-15',
+            self::CATEGORY_U17 => 'U-17',
+            self::CATEGORY_U20 => 'U-20',
+            self::CATEGORY_U23 => 'U-23',
             self::CATEGORY_SENIOR => 'Senior',
-            self::CATEGORY_YOUTH => 'Jeunesse',
+            
+            // Catégories par genre FIFA
+            self::CATEGORY_MEN => 'Masculin',
             self::CATEGORY_WOMEN => 'Féminin',
+            
+            // Disciplines FIFA
             self::CATEGORY_FUTSAL => 'Futsal',
-            self::CATEGORY_BEACH => 'Beach Soccer'
+            self::CATEGORY_BEACH => 'Beach Soccer',
+            
+            // Catégories locales (associations nationales)
+            self::CATEGORY_U12 => 'U-12',
+            self::CATEGORY_U14 => 'U-14',
+            self::CATEGORY_U16 => 'U-16',
+            self::CATEGORY_U18 => 'U-18',
+            self::CATEGORY_U19 => 'U-19',
+            self::CATEGORY_U21 => 'U-21 (Espoirs)'
         ];
 
         return $labels[$this->category] ?? $this->category;

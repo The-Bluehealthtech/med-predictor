@@ -191,3 +191,6 @@ log_info "Vérifiez le statut avec: kubectl get certificate -n $NAMESPACE"
 
 
 
+
+
+

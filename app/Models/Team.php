@@ -11,6 +11,33 @@ class Team extends Model
 {
     use HasFactory;
 
+    // Constantes FIFA Connect - Niveaux d'équipe
+    const LEVEL_PROFESSIONAL = 'professional';
+    const LEVEL_SEMI_PROFESSIONAL = 'semi_professional';
+    const LEVEL_AMATEUR = 'amateur';
+    const LEVEL_YOUTH = 'youth';
+    const LEVEL_ACADEMY = 'academy';
+
+    // Constantes FIFA Connect - Catégories d'âge d'équipe
+    const AGE_CATEGORY_U12 = 'U12';
+    const AGE_CATEGORY_U13 = 'U13';
+    const AGE_CATEGORY_U14 = 'U14';
+    const AGE_CATEGORY_U15 = 'U15';
+    const AGE_CATEGORY_U16 = 'U16';
+    const AGE_CATEGORY_U17 = 'U17';
+    const AGE_CATEGORY_U18 = 'U18';
+    const AGE_CATEGORY_U19 = 'U19';
+    const AGE_CATEGORY_U20 = 'U20';
+    const AGE_CATEGORY_U21 = 'U21';
+    const AGE_CATEGORY_U23 = 'U23';
+    const AGE_CATEGORY_SENIOR = 'SENIOR';
+
+    // Constantes FIFA Connect - Disciplines
+    const DISCIPLINE_FOOTBALL = 'football';
+    const DISCIPLINE_FUTSAL = 'futsal';
+    const DISCIPLINE_BEACH_SOCCER = 'beach_soccer';
+    const DISCIPLINE_WOMEN_FOOTBALL = 'women_football';
+
     protected $fillable = [
         'name',
         'level',

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Club;
 use App\Models\Player;
-use App\Models\LicenseComplete;
+use App\Models\PlayerLicense;
 use App\Models\LicensePhoto;
 use Illuminate\Support\Facades\DB;
 
@@ -91,26 +91,16 @@ class LicensePhotoController extends Controller
                 'uploaded_at' => now(),
             ]);
 
-            // Créer la licence FIFA complète du joueur
-            $playerLicense = LicenseComplete::create([
-                'fifa_connect_id' => LicenseComplete::generateFifaConnectId(),
-                'license_type' => 'player',
-                'applicant_name' => $player->first_name . ' ' . $player->last_name,
-                'date_of_birth' => $player->date_of_birth,
-                'nationality' => $player->nationality,
-                'position' => $player->position,
+            // Créer une licence joueur standard (PlayerLicense)
+            $playerLicense = PlayerLicense::create([
                 'player_id' => $request->player_id,
                 'club_id' => $request->club_id,
-                'association_id' => $player->club->association_id ?? null,
-                'license_reason' => 'Licence professionnelle FIFA avec photo',
-                'validity_period' => '2_years',
-                'status' => 'approved',
-                'fifa_license_number' => LicenseComplete::generateFifaLicenseNumber(),
-                'fifa_license_category' => $request->license_type,
-                'fifa_license_level' => 'intermediate',
-                'fifa_license_issued_date' => now(),
-                'fifa_license_expiry_date' => now()->addYears(2),
-                'fifa_license_status' => 'active',
+                'license_type' => $request->license_type,
+                'start_date' => now(),
+                'end_date' => now()->addYears(2),
+                'status' => 'active',
+                'issued_at' => now(),
+                'notes' => 'Licence créée suite à l\'upload de photo.',
             ]);
 
             // Mettre à jour le joueur avec la nouvelle photo
@@ -155,8 +145,8 @@ class LicensePhotoController extends Controller
      */
     public function showLicenses()
     {
-        // Récupérer les licences FIFA complètes
-        $licenses = LicenseComplete::with(['player', 'club', 'association'])
+        // Récupérer les licences joueurs
+        $licenses = PlayerLicense::with(['player', 'club.association'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 

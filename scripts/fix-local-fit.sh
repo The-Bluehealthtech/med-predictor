@@ -57,3 +57,6 @@ echo "📊 Vérifiez le statut avec: kubectl get pods -n med-predictor"
 
 
 
+
+
+

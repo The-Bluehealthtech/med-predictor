@@ -10,6 +10,8 @@ class License extends Model
 {
     use HasFactory;
 
+    protected $table = 'player_licenses';
+
     protected $fillable = [
         'license_type',
         'applicant_name',

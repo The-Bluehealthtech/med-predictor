@@ -25,11 +25,9 @@ Route::get('/ready', function () {
 // Include account request routes
 require __DIR__.'/account-requests.php';
 
-Route::middleware(['web'])->group(function () {
     Route::get('/pcma/voice-fallback', function () {
         return view('pcma.voice-fallback');
     })->name('pcma.voice-fallback');
-});
 
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\DashboardController;
@@ -64,14 +62,14 @@ Route::get('/test', function () {
     return response()->json(['status' => 'ok', 'message' => 'Server is working']);
 })->name('test');
 
-    // Test route FIFA Connect
-    Route::get('/test-fifa/{playerId}', function ($playerId) {
-        $player = \App\Models\Player::with(['club', 'association', 'healthRecords', 'pcmas'])->find($playerId);
-        if (!$player) {
-            abort(404, 'Joueur non trouvé');
-        }
-        return view('test-fifa-simple', compact('player'));
-    })->name('test.fifa');
+// Test route FIFA Connect
+Route::get('/test-fifa/{playerId}', function ($playerId) {
+    $player = \App\Models\Player::with(['club', 'association', 'healthRecords', 'pcmas'])->find($playerId);
+    if (!$player) {
+        abort(404, 'Joueur non trouvé');
+    }
+    return view('test-fifa-simple', compact('player'));
+})->name('test.fifa');
 
 
 
@@ -307,7 +305,7 @@ Route::get('/clubs-view', function (Request $request) {
 // Route principale pour vue détaillée d'un club
 Route::get('/clubs-view/show', function (Request $request) {
     $id = $request->get('id');
-    $club = \App\Models\Club::with(['association', 'players'])->findOrFail($id);
+    $club = \App\Models\Club::with(['association', 'players', 'teams'])->findOrFail($id);
     return view('modules.clubs.show', compact('club'));
 })->name('clubs-view.show');
 
@@ -678,14 +676,17 @@ Route::get('/test-confederations-view/show', function () {
 // Route principale pour vue détaillée d'une confédération
 Route::get('/confederations-view/show', function (Request $request) {
     $id = $request->get('id');
+    if ($id) {
     $confederation = \App\Models\Confederation::findOrFail($id);
     return view('modules.confederations.show', compact('confederation'));
+    } else {
+        // Si pas d'ID, afficher la liste des confédérations
+        $confederations = \App\Models\Confederation::orderBy('name')->get();
+        return view('modules.confederations.index', compact('confederations'));
+    }
 })->name('confederations-view.show');
 
-// Route pour la validation des licences
-Route::get('/licenses/validation', function () {
-    return view('modules.licenses.validation');
-})->name('licenses.validation');
+
 
 // Test route pour la validation des licences (sans authentification)
 Route::get('/test-licenses-validation', function () {
@@ -834,10 +835,20 @@ Route::get('/home', function () {
     return redirect()->route('dashboard.test');
 })->name('home');
 
-// Test route pour les compétitions (sans authentification)
-Route::get('/test-competitions', function () {
-    return view('modules.competitions.index');
-})->name('test-competitions');
+// Route principale pour les compétitions (sans authentification)
+
+
+// Routes publiques pour les compétitions
+Route::get('/competitions-club-engagements', [App\Http\Controllers\CompetitionController::class, 'clubEngagements'])->name('competitions-club-engagements');
+Route::get('/competitions-club-effectif', [App\Http\Controllers\CompetitionController::class, 'clubEffectif'])->name('competitions-club-effectif');
+
+// Routes FIFA Connect - Vérifications de conformité
+Route::prefix('fifa-connect')->name('fifa-connect.')->group(function () {
+    Route::get('/player/{playerId}/compliance', [App\Http\Controllers\FifaConnectController::class, 'checkPlayerCompliance'])->name('player.compliance');
+    Route::get('/club/{clubId}/compliance', [App\Http\Controllers\FifaConnectController::class, 'checkClubCompliance'])->name('club.compliance');
+    Route::get('/association/{associationId}/compliance', [App\Http\Controllers\FifaConnectController::class, 'checkAssociationCompliance'])->name('association.compliance');
+    Route::get('/global-stats', [App\Http\Controllers\FifaConnectController::class, 'getGlobalStats'])->name('global.stats');
+});
 
 // Test route pour les compétitions avec authentification simulée
 Route::get('/test-competitions-auth', function () {
@@ -1265,43 +1276,9 @@ Route::get('/account-request/fifa-connect-types', function () {
     ]);
 });
 
-// Test route modules (sans authentification)
-Route::get('/test-modules', function () {
-    $footballType = request('footballType', '11aside');
-    return view('modules.index', [
-        'footballType' => $footballType,
-        'modules' => [
-            [
-                'name' => 'Medical',
-                'description' => 'Gestion médicale des athlètes, vaccinations, et dossiers de santé',
-                'icon' => '🏥',
-                'route' => 'modules.medical.index',
-                'color' => 'blue'
-            ],
-            [
-                'name' => 'PCMA',
-                'description' => 'Évaluation Capacité Physique Médicale (Physical Capacity Medical Assessment)',
-                'icon' => '💪',
-                'route' => 'pcma.dashboard',
-                'color' => 'green'
-            ],
-            [
-                'name' => 'Clubs de Football',
-                'description' => 'Gestion complète des clubs : création, modification, suivi des équipes et joueurs',
-                'icon' => '🏟️',
-                'route' => 'test-clubs-view',
-                'color' => 'green'
-            ],
-            [
-                'name' => 'FIFA',
-                'description' => 'Connectivité FIFA, synchronisation et gestion des contrats',
-                'icon' => '⚽',
-                'route' => 'fifa.dashboard',
-                'color' => 'blue'
-            ],
-        ]
-    ]);
-});
+
+
+
 
 
 
@@ -1778,8 +1755,10 @@ Route::prefix('api')->group(function () {
         ->name('api.formation.baremes');
 });
 
+
+
 // Routes protégées
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:web'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/club-management/dashboard', [ClubManagementController::class, 'dashboard'])->name('club-management.dashboard');
     Route::get('/admin/players', [AdminController::class, 'playersList'])->name('admin.players.list');
@@ -1789,8 +1768,9 @@ Route::middleware(['auth'])->group(function () {
     // Nouvelle route pour lister les joueurs (accessible depuis /modules)
     Route::get('/players/list', [AdminController::class, 'playersList'])->name('players.list');
     
-    // Modules index route (protégé par authentification)
+    // Modules index route (protégé par authentification) - VERSION SIMPLIFIÉE
     Route::get('/modules', function () {
+        try {
         $footballType = request('footballType', '11aside');
         return view('modules.index', [
             'footballType' => $footballType,
@@ -1869,84 +1849,293 @@ Route::middleware(['auth'])->group(function () {
                     'name' => 'Competitions',
                     'description' => 'Gestion des compétitions et tournois',
                     'icon' => '🏆',
-                    'route' => 'competitions.index',
+                    'route' => 'modules.competitions.index',
                     'color' => 'yellow'
                 ],
                 [
-                    'name' => 'Validation des Licences',
-                    'description' => 'Gestion et validation des licences FIFA Connect (joueurs, entraîneurs, arbitres)',
-                    'icon' => '📋',
-                    'route' => 'test-licenses-validation',
-                    'color' => 'blue'
-                ],
-                [
-                    'name' => 'Administration',
-                    'description' => 'Gestion système, utilisateurs et configurations',
-                    'icon' => '⚙️',
-                    'route' => 'administration.index',
-                    'color' => 'indigo'
-                ],
-                [
-                    'name' => 'AI Testing',
-                    'description' => 'Test et comparaison des fournisseurs d\'IA pour l\'analyse médicale',
-                    'icon' => '🤖',
-                    'route' => 'ai-testing.index',
+                        'name' => 'Joueurs',
+                        'description' => 'Gestion des joueurs et profils individuels',
+                        'icon' => '👤',
+                        'route' => 'modules.players.index',
+                        'color' => 'green'
+                    ],
+                    [
+                        'name' => 'Équipes',
+                        'description' => 'Gestion des équipes et compositions',
+                        'icon' => '⚽',
+                        'route' => 'modules.teams.index',
                     'color' => 'purple'
                 ],
                 [
-                    'name' => 'Whisper Speech',
-                    'description' => 'Transcription audio avec OpenAI Whisper pour contexte médical',
-                    'icon' => '🎤',
-                    'route' => 'whisper.index',
-                    'color' => 'blue'
-                ],
-                [
-                    'name' => 'Google Gemini AI',
-                    'description' => 'Analyse médicale avancée avec Google Gemini AI',
-                    'icon' => '🤖',
-                    'route' => 'gemini.index',
-                    'color' => 'green'
-                ],
-                [
-                    'name' => 'Dataset Analytics',
-                    'description' => '📊 Évaluation de la valeur et qualité des données, métriques en temps réel',
-                    'icon' => '📈',
-                    'route' => 'dataset.analytics',
-                    'color' => 'purple'
-                ],
-                [
-                    'name' => 'Clubs de Football',
-                    'description' => 'Gestion complète des clubs : création, modification, suivi des équipes et joueurs',
+                        'name' => 'Arbitres',
+                        'description' => 'Gestion des arbitres et officiels',
+                        'icon' => '👨‍⚖️',
+                        'route' => 'modules.referees.index',
+                        'color' => 'orange'
+                    ],
+                    [
+                        'name' => 'Associations',
+                        'description' => 'Gestion des associations et fédérations',
+                        'icon' => '🏛️',
+                        'route' => 'modules.associations.index',
+                        'color' => 'indigo'
+                    ],
+                    [
+                        'name' => 'Clubs',
+                        'description' => 'Gestion des clubs et organisations',
                     'icon' => '🏟️',
-                    'route' => 'test-clubs-view',
-                    'color' => 'green'
+                        'route' => 'modules.clubs.index',
+                        'color' => 'red'
                 ],
                 [
-                    'name' => 'Confédérations FIFA',
-                    'description' => 'Gestion des confédérations continentales avec hiérarchie Club → Fédération → Confédération',
+                        'name' => 'Confédérations',
+                        'description' => 'Gestion des confédérations et organisations internationales',
                     'icon' => '🌍',
-                    'route' => 'test-confederations-view',
-                    'color' => 'purple'
-                ],
-                [
-                    'name' => 'Associations FIFA',
-                    'description' => 'Gestion des associations nationales et fédérations avec filtrage par confédération',
-                    'icon' => '🏛️',
-                    'route' => 'associations-view',
-                    'color' => 'indigo'
-                ],
-                [
-                    'name' => 'Compétitions FIFA',
-                    'description' => 'Gestion complète des compétitions avec intégration FIFA Connect',
-                    'icon' => '🏆',
-                    'route' => 'test-competitions',
+                        'route' => 'confederations-view.show',
+                        'color' => 'blue'
+                    ],
+                    [
+                        'name' => 'Validation Licences',
+                        'description' => 'Validation des licences côté Association',
+                        'icon' => '✅',
+                        'route' => 'licenses.validation',
+                        'color' => 'green'
+                    ],
+                    [
+                        'name' => 'Google Gemini AI',
+                        'description' => 'Analyse médicale avancée avec Google Gemini AI',
+                        'icon' => '🤖',
+                        'route' => 'gemini.index',
                     'color' => 'green'
-                ],
-
-            ]
-        ]);
+                    ]
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
     })->name('modules.index');
-});
+
+        }); // Fermeture du groupe Route::middleware(['auth'])
+
+        // Routes de test temporaires pour diagnostiquer les modules (sans authentification)
+        Route::get('/test-modules-debug', function () {
+            $modules = [
+                'pcma.dashboard' => 'PCMA Dashboard',
+                'analytics.dashboard' => 'Analytics Dashboard', 
+                'fifa.dashboard' => 'FIFA Dashboard',
+                'device-connections.index' => 'Device Connections',
+                'performance.index' => 'Performance',
+                'dtn.index' => 'DTN',
+                'rpm.index' => 'RPM',
+                'gemini.index' => 'Gemini',
+                'modules.medical.index' => 'Medical Module',
+                'modules.healthcare.index' => 'Healthcare Module',
+                'modules.players.index' => 'Players Module',
+                'modules.teams.index' => 'Teams Module',
+                'modules.referees.index' => 'Referees Module',
+                'modules.associations.index' => 'Associations Module',
+                'modules.clubs.index' => 'Clubs Module',
+                'modules.licenses.index' => 'Licenses Module',
+                'competitions.index' => 'Competitions'
+            ];
+            
+            $results = [];
+            foreach ($modules as $route => $name) {
+                try {
+                    $url = route($route);
+                    $results[] = "✅ $name: $url";
+                } catch (\Exception $e) {
+                    $results[] = "❌ $name: " . $e->getMessage();
+                }
+            }
+            
+            return '<h1>Test des Routes des Modules</h1><pre>' . implode("\n", $results) . '</pre>';
+        });
+
+        // Routes de test pour vérifier les vues (sans authentification)
+        Route::get('/test-view-pcma', function () {
+            try {
+                return view('pcma.dashboard');
+            } catch (\Exception $e) {
+                return "❌ Erreur PCMA: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-analytics', function () {
+            try {
+                return view('analytics.dashboard');
+            } catch (\Exception $e) {
+                return "❌ Erreur Analytics: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-fifa', function () {
+            try {
+                return view('modules.fifa.dashboard');
+            } catch (\Exception $e) {
+                return "❌ Erreur FIFA: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-device-connections', function () {
+            try {
+                return view('modules.device-connections.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Device Connections: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-performance', function () {
+            try {
+                return view('modules.performances.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Performance: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-dtn', function () {
+            try {
+                return view('modules.dtn.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur DTN: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-rpm', function () {
+            try {
+                return view('modules.rpm.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur RPM: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-gemini', function () {
+            try {
+                return view('modules.gemini.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Gemini: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-medical', function () {
+            try {
+                return view('modules.medical.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Medical: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-healthcare', function () {
+            try {
+                return view('modules.healthcare.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Healthcare: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-players', function () {
+            try {
+                return view('modules.players.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Players: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-teams', function () {
+            try {
+                return view('modules.teams.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Teams: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-referees', function () {
+            try {
+                return view('modules.referees.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Referees: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-associations', function () {
+            try {
+                return view('modules.associations.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Associations: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-clubs', function () {
+            try {
+                return view('modules.clubs.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Clubs: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-licenses', function () {
+            try {
+                return view('modules.licenses.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Licenses: " . $e->getMessage();
+            }
+        });
+
+        Route::get('/test-view-competitions', function () {
+            try {
+                return view('modules.competitions.index');
+            } catch (\Exception $e) {
+                return "❌ Erreur Competitions: " . $e->getMessage();
+            }
+        });
+
+        // Route de test temporaire pour /modules
+        Route::get('/test-modules-real', function () {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Not authenticated'], 401);
+            }
+            
+            try {
+                $footballType = request('footballType', '11aside');
+                return view('modules.index', [
+                    'footballType' => $footballType,
+                    'modules' => [
+                        [
+                            'name' => 'Medical',
+                            'description' => 'Gestion médicale des athlètes, vaccinations, et dossiers de santé',
+                            'icon' => '🏥',
+                            'route' => 'modules.medical.index',
+                            'color' => 'blue'
+                        ],
+                        [
+                            'name' => 'Compétitions',
+                            'description' => 'Gestion des compétitions, calendriers et résultats',
+                            'icon' => '🏆',
+                            'route' => 'competitions.index',
+                            'color' => 'yellow'
+                        ]
+                    ]
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
+        })->middleware('auth');
+
+
+
+
+
+
 
 // Dataset Analytics route
 Route::get('/dataset-analytics', function () {
@@ -3162,9 +3351,10 @@ Route::middleware(['auth'])->group(function () {
     })->name('administration.index');
     
     // Licenses routes
-    Route::resource('licenses', LicenseController::class)->except(['show']);
-    Route::get('/licenses/{license}', [LicenseController::class, 'show'])->name('licenses.show');
+    // Ensure validation route does not get captured by /licenses/{license}
     Route::get('/licenses/validation', [LicenseController::class, 'validation'])->name('licenses.validation');
+    Route::get('/licenses/create', [LicenseController::class, 'create'])->name('licenses.create');
+    Route::resource('licenses', LicenseController::class)->except(['show', 'create', 'edit', 'update', 'destroy']);
     Route::patch('/licenses/{license}/approve', [LicenseController::class, 'approve'])->name('licenses.approve');
     Route::patch('/licenses/{license}/reject', [LicenseController::class, 'reject'])->name('licenses.reject');
     
@@ -3269,9 +3459,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/club/{club}/logo/upload', [ClubManagementController::class, 'uploadLogo'])->name('club.logo.store');
     
     // Match Sheet routes
-    Route::get('/match-sheet', function () {
-        return view('modules.match-sheet.index');
-    })->name('match-sheet.index');
+    Route::get('/match-sheet', [App\Http\Controllers\MatchSheetController::class, 'index'])->name('match-sheet.index');
+    
+
     
     // Transfers routes
     Route::get('/transfers', function () {
@@ -3285,6 +3475,8 @@ Route::middleware(['auth'])->group(function () {
     
     // Competitions routes
     Route::get('/competitions', [CompetitionManagementController::class, 'index'])->name('competitions.index');
+    
+
     Route::get('/competitions/create', [CompetitionManagementController::class, 'create'])->name('competitions.create');
     Route::post('/competitions', [CompetitionManagementController::class, 'store'])->name('competitions.store');
     Route::get('/competitions/{competition}', [CompetitionManagementController::class, 'show'])->name('competitions.show');
@@ -4089,7 +4281,7 @@ Route::get('/test-pdf', function() {
     })->name('portal.devices');
     
     // Secretary Dashboard routes
-Route::get('/secretary/dashboard', function () {
+    Route::get('/secretary/dashboard', function () {
     // Données dynamiques pour le dashboard secretary - Utilisation des tables existantes
     $stats = [
         'total_appointments' => \App\Models\HealthRecord::count(), // Utilise health_records
@@ -4109,7 +4301,7 @@ Route::get('/secretary/dashboard', function () {
         ->get();
 
     return view('secretary.dashboard', compact('stats', 'recentAppointments', 'recentDocuments'));
-})->name('secretary.dashboard');
+    })->name('secretary.dashboard');
     
     
     // Secretary sub-routes
@@ -4399,24 +4591,183 @@ Route::get('/secretary/dashboard', function () {
         return view('modules.competitions.index', ['footballType' => 'association']);
     })->name('modules.competitions.index');
     
-    Route::get('/modules/players', function () {
-        return view('modules.players.index', ['footballType' => 'association']);
-    })->name('modules.players.index');
+    // Routes Compétitions - Module FIT (Nouvelles fonctionnalités)
+    Route::prefix('competitions')->name('competitions.')->group(function () {
+        // Côté Club
+        Route::prefix('club')->name('club.')->group(function () {
+            Route::get('/engagements', [App\Http\Controllers\CompetitionController::class, 'clubEngagements'])->name('engagements');
+            Route::get('/effectif', [App\Http\Controllers\CompetitionController::class, 'clubEffectif'])->name('effectif');
+            Route::get('/calendrier', [App\Http\Controllers\CompetitionController::class, 'clubCalendrier'])->name('calendrier');
+            Route::get('/feuilles-match', [App\Http\Controllers\CompetitionController::class, 'clubFeuillesMatch'])->name('feuilles-match');
+            Route::get('/discipline', [App\Http\Controllers\CompetitionController::class, 'clubDiscipline'])->name('discipline');
+            Route::get('/classement', [App\Http\Controllers\CompetitionController::class, 'classement'])->name('classement');
+            Route::get('/fixtures', [App\Http\Controllers\CompetitionController::class, 'clubFixtures'])->name('fixtures');
+            Route::get('/feuille-match/{id}', [App\Http\Controllers\CompetitionController::class, 'feuilleMatch'])->name('feuille-match');
+        });
+        
+        // Côté Association/Ligue
+        Route::prefix('association')->name('association.')->group(function () {
+            Route::get('/supervision', [App\Http\Controllers\CompetitionController::class, 'associationSupervision'])->name('supervision');
+            Route::get('/engagements-clubs', [App\Http\Controllers\CompetitionController::class, 'associationEngagementsClubs'])->name('engagements-clubs');
+            Route::get('/calendrier-global', [App\Http\Controllers\CompetitionController::class, 'associationCalendrierGlobal'])->name('calendrier-global');
+            Route::get('/resultats-classements', [App\Http\Controllers\CompetitionController::class, 'associationResultatsClassements'])->name('resultats-classements');
+            Route::get('/discipline-sanctions', [App\Http\Controllers\CompetitionController::class, 'associationDisciplineSanctions'])->name('discipline-sanctions');
+            Route::get('/rapports-statistiques', [App\Http\Controllers\CompetitionController::class, 'associationRapportsStatistiques'])->name('rapports-statistiques');
+            Route::get('/classement', [App\Http\Controllers\CompetitionController::class, 'classement'])->name('classement');
+            Route::get('/fixtures', [App\Http\Controllers\CompetitionController::class, 'associationFixtures'])->name('fixtures');
+            Route::get('/feuille-match/{id}', [App\Http\Controllers\CompetitionController::class, 'feuilleMatch'])->name('feuille-match');
+            Route::get('/designation-arbitres', [App\Http\Controllers\CompetitionController::class, 'designationArbitres'])->name('designation-arbitres');
+        });
+    });
+    
+    // Route de test temporaire pour les fixtures (sans authentification)
+    Route::get('/test-fixtures', [App\Http\Controllers\CompetitionController::class, 'associationFixtures'])->name('test.fixtures')->withoutMiddleware(['auth', 'auth:web']);
+    Route::get('/test-feuille-match/{id}', [App\Http\Controllers\CompetitionController::class, 'feuilleMatch'])->name('test.feuille-match')->withoutMiddleware(['auth', 'auth:web']);
+    
+    // Route de test pour vérifier la cohérence des arbitres
+    Route::get('/test-arbitres/{id}', function($id) {
+        $controller = new App\Http\Controllers\CompetitionController();
+        
+        // Utiliser la réflexion pour accéder aux méthodes privées
+        $reflection = new ReflectionClass($controller);
+        $method = $reflection->getMethod('getConsistentArbitresForMatch');
+        $method->setAccessible(true);
+        
+        $arbitres = $method->invoke($controller, $id);
+        
+        return response()->json([
+            'match_id' => $id,
+            'arbitres' => $arbitres,
+            'message' => 'Arbitres cohérents pour le match ' . $id
+        ]);
+    })->name('test.arbitres')->withoutMiddleware(['auth', 'auth:web']);
+
     
     Route::get('/modules/teams', function () {
-        return view('modules.teams.index', ['footballType' => 'association']);
+        $teams = \App\Models\Team::with(['club', 'club.association'])->orderBy('name')->get();
+        $clubs = \App\Models\Club::with('association')->orderBy('name')->get();
+        return view('modules.teams.index', compact('teams', 'clubs'));
     })->name('modules.teams.index');
+    
+    // Route pour afficher le formulaire de création d'une équipe
+    Route::get('/modules/teams/create', function () {
+        $clubs = \App\Models\Club::with('association')->orderBy('name')->get();
+        return view('modules.teams.create', compact('clubs'));
+    })->name('modules.teams.create');
+    
+    // Route pour stocker une nouvelle équipe
+    Route::post('/modules/teams', function (\Illuminate\Http\Request $request) {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'club_id' => 'required|exists:clubs,id',
+            'level' => 'required|in:professional,semi-professional,amateur,youth,academy',
+            'age_category' => 'required|string|max:50',
+            'discipline' => 'required|in:football,futsal,beach_soccer,women_football',
+            'status' => 'required|in:active,inactive,pending'
+        ]);
+        
+        \App\Models\Team::create($request->all());
+        
+        return redirect()->route('modules.teams.index')
+            ->with('success', 'Équipe créée avec succès.');
+    })->name('modules.teams.store');
+    
+    // Route pour la création en masse d'équipes
+    Route::post('/modules/teams/bulk-store', function (\Illuminate\Http\Request $request) {
+        $data = json_decode($request->input('data'), true);
+        
+        $request->validate([
+            'data' => 'required|string'
+        ]);
+        
+        if (!$data || !isset($data['club_id'], $data['level'], $data['discipline'], $data['status'], $data['team_names'])) {
+            return redirect()->route('modules.teams.index')
+                ->with('error', 'Données invalides pour la création en masse.');
+        }
+        
+        $created = 0;
+        $errors = [];
+        
+        foreach ($data['team_names'] as $teamName) {
+            $teamName = trim($teamName);
+            if (empty($teamName)) continue;
+            
+            try {
+                \App\Models\Team::create([
+                    'name' => $teamName,
+                    'club_id' => $data['club_id'],
+                    'level' => $data['level'],
+                    'discipline' => $data['discipline'],
+                    'status' => $data['status'],
+                    'age_category' => 'Senior' // Valeur par défaut
+                ]);
+                $created++;
+            } catch (\Exception $e) {
+                $errors[] = "Erreur pour '{$teamName}': " . $e->getMessage();
+            }
+        }
+        
+        $message = "{$created} équipe(s) créée(s) avec succès.";
+        if (!empty($errors)) {
+            $message .= " Erreurs: " . implode(', ', $errors);
+        }
+        
+        return redirect()->route('modules.teams.index')
+            ->with('success', $message);
+    })->name('modules.teams.bulk-store');
+    
+    // Route pour afficher les détails d'une équipe
+    Route::get('/modules/teams/{team}', function (\App\Models\Team $team) {
+        $team->load(['club', 'club.association']);
+        return view('modules.teams.show', compact('team'));
+    })->name('modules.teams.show');
+    
+    // Route pour afficher le formulaire d'édition d'une équipe
+    Route::get('/modules/teams/{team}/edit', function (\App\Models\Team $team) {
+        $team->load(['club', 'club.association']);
+        $clubs = \App\Models\Club::with('association')->orderBy('name')->get();
+        return view('modules.teams.edit', compact('team', 'clubs'));
+    })->name('modules.teams.edit');
+    
+    // Route pour mettre à jour une équipe
+    Route::put('/modules/teams/{team}', function (\Illuminate\Http\Request $request, \App\Models\Team $team) {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'club_id' => 'required|exists:clubs,id',
+            'level' => 'required|in:professional,semi-professional,amateur,youth,academy',
+            'age_category' => 'required|string|max:50',
+            'discipline' => 'required|in:football,futsal,beach_soccer,women_football',
+            'status' => 'required|in:active,inactive,pending'
+        ]);
+        
+        $team->update($request->all());
+        
+        return redirect()->route('modules.teams.index')
+            ->with('success', 'Équipe mise à jour avec succès.');
+    })->name('modules.teams.update');
+    
+    // Route pour supprimer une équipe
+    Route::delete('/modules/teams/{team}', function (\App\Models\Team $team) {
+        $team->delete();
+        
+        return redirect()->route('modules.teams.index')
+            ->with('success', 'Équipe supprimée avec succès.');
+    })->name('modules.teams.destroy');
     
     Route::get('/modules/referees', function () {
         return view('modules.referees.index', ['footballType' => 'association']);
     })->name('modules.referees.index');
     
     Route::get('/modules/associations', function () {
-        return view('modules.associations.index', ['footballType' => 'association']);
+        $associations = \App\Models\Association::with(['confederation'])->orderBy('name')->get();
+        return view('modules.associations.index', compact('associations'));
     })->name('modules.associations.index');
     
     Route::get('/modules/clubs', function () {
-        return view('modules.clubs.index', ['footballType' => 'association']);
+        $clubs = \App\Models\Club::orderBy('name')->get();
+        $filtered = false;
+        $association = null;
+        return view('modules.clubs.index', compact('clubs', 'filtered', 'association'));
     })->name('modules.clubs.index');
     
     Route::get('/modules/administration', function () {
@@ -5332,6 +5683,14 @@ Route::get('/test-basic', function () {
     return view('test-basic');
 })->name('test.basic');
 
+// Route publique pour les joueurs (sans authentification)
+Route::get('/modules/players', function () {
+    $players = \App\Models\Player::with(['club'])->orderBy('last_name')->orderBy('first_name')->paginate(20);
+    return view('modules.players.index', compact('players'));
+})->name('modules.players.index');
+
+
+
 // Routes pour le système d'upload de photos de licences (protégées par authentification)
 Route::middleware(['auth'])->prefix('license-photos')->name('license.')->group(function () {
     Route::get('/upload-photo', [App\Http\Controllers\LicensePhotoController::class, 'showUploadForm'])->name('upload.photo.form');
@@ -5472,4 +5831,6 @@ Route::get('/test-portail-joueur-simple', function (Request $request) {
         'complianceResources', 'playerLicenses', 'licenseRequests'
     ));
 })->name('test.portail.joueur.simple');
+
+
 

@@ -43,9 +43,9 @@
         @endif
 
         <!-- Club Details -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <!-- Informations principales -->
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-3 space-y-6">
                 <!-- Header du club -->
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <div class="flex items-start justify-between mb-4">
@@ -236,6 +236,87 @@
                     </div>
                 </div>
                 @endif
+                <!-- Section des équipes -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800">Équipes du club</h3>
+                        <a href="/modules/teams/create?club_id={{ $club->id }}" 
+                           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-plus mr-1"></i>
+                            Ajouter une équipe
+                        </a>
+                    </div>
+                    
+                    @if($club->teams && $club->teams->count() > 0)
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                            @foreach($club->teams as $team)
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-gray-50">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-semibold text-gray-900 text-lg">{{ $team->name }}</h4>
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                            @if($team->status === 'active') bg-green-100 text-green-800
+                                            @elseif($team->status === 'inactive') bg-red-100 text-red-800
+                                            @elseif($team->status === 'pending') bg-yellow-100 text-yellow-800
+                                            @else bg-gray-100 text-gray-800
+                                            @endif">
+                                            {{ ucfirst($team->status ?? 'N/A') }}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex items-center justify-between py-1">
+                                            <span class="text-gray-600 flex items-center">
+                                                <i class="fas fa-trophy w-4 h-4 mr-2 text-yellow-500"></i>
+                                                Niveau:
+                                            </span>
+                                            <span class="font-medium text-gray-900">{{ ucfirst($team->level ?? 'N/A') }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between py-1">
+                                            <span class="text-gray-600 flex items-center">
+                                                <i class="fas fa-calendar w-4 h-4 mr-2 text-blue-500"></i>
+                                                Catégorie:
+                                            </span>
+                                            <span class="font-medium text-gray-900">{{ $team->age_category ?? 'N/A' }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between py-1">
+                                            <span class="text-gray-600 flex items-center">
+                                                <i class="fas fa-futbol w-4 h-4 mr-2 text-green-500"></i>
+                                                Discipline:
+                                            </span>
+                                            <span class="font-medium text-gray-900">{{ ucfirst($team->discipline ?? 'N/A') }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4 flex space-x-2">
+                                        <a href="/modules/teams/{{ $team->id }}" 
+                                           class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-2 rounded text-sm text-center transition-colors">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            Voir
+                                        </a>
+                                        <a href="/modules/teams/{{ $team->id }}/edit" 
+                                           class="flex-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-3 py-2 rounded text-sm text-center transition-colors">
+                                            <i class="fas fa-edit mr-1"></i>
+                                            Modifier
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-12 text-gray-500">
+                            <div class="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-users text-3xl text-gray-400"></i>
+                            </div>
+                            <p class="text-lg font-medium mb-2">Aucune équipe trouvée</p>
+                            <p class="text-sm mb-6">Ce club n'a pas encore d'équipes enregistrées.</p>
+                            <a href="/modules/teams/create?club_id={{ $club->id }}" 
+                               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-plus mr-2"></i>
+                                Créer la première équipe
+                            </a>
+                        </div>
+                    @endif
+                </div>
             </div>
 
             <!-- Sidebar -->

@@ -3,35 +3,57 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CompetitionController;
 
+/*
+|--------------------------------------------------------------------------
+| Routes Compétitions - Module FIT
+|--------------------------------------------------------------------------
+|
+| Routes isolées pour le module Compétitions
+| Aucune modification des routes existantes
+|
+*/
+
+// Routes publiques pour les compétitions
 Route::prefix('competitions')->name('competitions.')->group(function () {
-    // Dashboard des compétitions
-    Route::get('/dashboard', [CompetitionController::class, 'dashboard'])->name('dashboard');
     
-    // CRUD des compétitions
+    // Dashboard principal des compétitions
     Route::get('/', [CompetitionController::class, 'index'])->name('index');
-    Route::get('/create', [CompetitionController::class, 'create'])->name('create');
-    Route::post('/', [CompetitionController::class, 'store'])->name('store');
-    Route::get('/{competition}', [CompetitionController::class, 'show'])->name('show');
-    Route::get('/{competition}/edit', [CompetitionController::class, 'edit'])->name('edit');
-    Route::put('/{competition}', [CompetitionController::class, 'update'])->name('update');
-    Route::delete('/{competition}', [CompetitionController::class, 'destroy'])->name('destroy');
     
-    // Gestion des phases
-    Route::get('/{competition}/phases', [CompetitionController::class, 'phases'])->name('phases');
-    Route::post('/{competition}/phases', [CompetitionController::class, 'storePhase'])->name('phases.store');
+    // Côté Club
+    Route::prefix('club')->name('club.')->group(function () {
+        Route::get('/engagements', [CompetitionController::class, 'clubEngagements'])->name('engagements');
+        Route::get('/effectif', [CompetitionController::class, 'clubEffectif'])->name('effectif');
+        Route::get('/calendrier', [CompetitionController::class, 'clubCalendrier'])->name('calendrier');
+        Route::get('/feuilles-match', [CompetitionController::class, 'clubFeuillesMatch'])->name('feuilles-match');
+        Route::get('/discipline', [CompetitionController::class, 'clubDiscipline'])->name('discipline');
+        
+        // API pour les actions
+        Route::post('/feuille-match/{match}', [CompetitionController::class, 'soumettreFeuilleMatch'])->name('soumettre-feuille');
+        Route::get('/effectif/verification', [CompetitionController::class, 'verifierEffectif'])->name('verifier-effectif');
+    });
     
-    // Gestion des groupes
-    Route::get('/{competition}/groups', [CompetitionController::class, 'groups'])->name('groups');
-    Route::post('/{competition}/groups', [CompetitionController::class, 'storeGroup'])->name('groups.store');
+    // Côté Association/Ligue
+    Route::prefix('association')->name('association.')->group(function () {
+        Route::get('/supervision', [CompetitionController::class, 'associationSupervision'])->name('supervision');
+        Route::get('/engagements-clubs', [CompetitionController::class, 'associationEngagementsClubs'])->name('engagements-clubs');
+        Route::get('/calendrier-global', [CompetitionController::class, 'associationCalendrierGlobal'])->name('calendrier-global');
+        Route::get('/resultats-classements', [CompetitionController::class, 'associationResultatsClassements'])->name('resultats-classements');
+        Route::get('/discipline-sanctions', [CompetitionController::class, 'associationDisciplineSanctions'])->name('discipline-sanctions');
+        Route::get('/rapports-statistiques', [CompetitionController::class, 'associationRapportsStatistiques'])->name('rapports-statistiques');
+        
+        // API pour les actions
+        Route::post('/valider-feuille/{feuille}', [CompetitionController::class, 'validerFeuilleMatch'])->name('valider-feuille');
+        Route::post('/reprogrammer-match/{match}', [CompetitionController::class, 'reprogrammerMatch'])->name('reprogrammer-match');
+        Route::post('/mettre-a-jour-resultat/{match}', [CompetitionController::class, 'mettreAJourResultat'])->name('mettre-a-jour-resultat');
+        Route::post('/ajouter-sanction', [CompetitionController::class, 'ajouterSanction'])->name('ajouter-sanction');
+        Route::get('/export-rapport/{type}', [CompetitionController::class, 'exportRapport'])->name('export-rapport');
+    });
     
-    // API pour les actions en masse
-    Route::post('/bulk-actions', [CompetitionController::class, 'bulkActions'])->name('bulk-actions');
-    
-    // Workflow FIFA Connect
-    Route::post('/{competition}/submit', [CompetitionController::class, 'submit'])->name('submit');
-    Route::post('/{competition}/validate', [CompetitionController::class, 'validate'])->name('validate');
-    Route::post('/{competition}/publish', [CompetitionController::class, 'publish'])->name('publish');
-    Route::post('/{competition}/reject', [CompetitionController::class, 'reject'])->name('reject');
+    // API générales
+    Route::prefix('api')->name('api.')->group(function () {
+        Route::get('/competitions', [CompetitionController::class, 'apiCompetitions'])->name('competitions');
+        Route::get('/matches/{competition}', [CompetitionController::class, 'apiMatches'])->name('matches');
+        Route::get('/classements/{competition}', [CompetitionController::class, 'apiClassements'])->name('classements');
+        Route::get('/effectif/{club}', [CompetitionController::class, 'apiEffectif'])->name('effectif');
+    });
 });
-
-

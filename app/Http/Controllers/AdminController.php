@@ -25,15 +25,41 @@ class AdminController extends Controller
     /**
      * Afficher la liste des joueurs pour la navigation
      */
-    public function playersList()
+    public function playersList(Request $request)
     {
         if (!Auth::check() || !in_array(Auth::user()->role, ['super_admin', 'system_admin', 'association_admin'])) {
             return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
         }
 
-        $players = Player::with(['club', 'association'])
-            ->orderBy('first_name')
-            ->paginate(20);
+        $query = Player::with(['club', 'association']);
+
+        // Recherche par nom, position, club ou nationalité
+        if ($request->filled('search')) {
+            $searchTerm = $request->get('search');
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('first_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('last_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('position', 'like', "%{$searchTerm}%")
+                  ->orWhere('nationality', 'like', "%{$searchTerm}%")
+                  ->orWhereHas('club', function($clubQuery) use ($searchTerm) {
+                      $clubQuery->where('name', 'like', "%{$searchTerm}%");
+                  });
+            });
+        }
+
+        // Filtre par position
+        if ($request->filled('position')) {
+            $query->where('position', $request->get('position'));
+        }
+
+        // Filtre par club
+        if ($request->filled('club')) {
+            $query->whereHas('club', function($clubQuery) use ($request) {
+                $clubQuery->where('name', $request->get('club'));
+            });
+        }
+
+        $players = $query->orderBy('first_name')->paginate(20);
 
         return view('admin.dashboard', compact('players'));
     }

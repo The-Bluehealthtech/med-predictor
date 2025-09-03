@@ -30,6 +30,10 @@
                     <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm">Admin</span>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <a href="{{ route('modules.index') }}" class="text-blue-300 hover:text-blue-200 text-sm underline">
+                        <i class="fas fa-arrow-left mr-1"></i>
+                        Retour aux modules
+                    </a>
                     <a href="{{ route('joueur.portal', 7) }}" class="text-blue-300 hover:text-blue-200 text-sm underline">
                         Voir portail joueur
                     </a>
@@ -52,7 +56,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-300">Total Joueurs</p>
-                        <p class="text-2xl font-bold text-white">{{ $players->count() }}</p>
+                        <p class="text-2xl font-bold text-white">{{ $players->total() }}</p>
                     </div>
                 </div>
             </div>
@@ -94,11 +98,64 @@
             </div>
         </div>
 
+        <!-- Barre de recherche -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 mb-6 border border-white/20">
+            <form method="GET" action="{{ route('players.list') }}" class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" 
+                               name="search"
+                               value="{{ request('search') }}"
+                               placeholder="Rechercher par nom, position, club..." 
+                               class="block w-full pl-10 pr-3 py-2 border border-white/20 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <select name="position" class="px-3 py-2 border border-white/20 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Toutes les positions</option>
+                        <option value="Gardien" {{ request('position') == 'Gardien' ? 'selected' : '' }}>Gardien</option>
+                        <option value="Défenseur" {{ request('position') == 'Défenseur' ? 'selected' : '' }}>Défenseur</option>
+                        <option value="Milieu" {{ request('position') == 'Milieu' ? 'selected' : '' }}>Milieu</option>
+                        <option value="Attaquant" {{ request('position') == 'Attaquant' ? 'selected' : '' }}>Attaquant</option>
+                    </select>
+                    <select name="club" class="px-3 py-2 border border-white/20 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tous les clubs</option>
+                        @php
+                            $clubs = \App\Models\Club::orderBy('name')->get();
+                        @endphp
+                        @foreach($clubs as $club)
+                            <option value="{{ $club->name }}" {{ request('club') == $club->name ? 'selected' : '' }}>
+                                {{ $club->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                        <i class="fas fa-search mr-1"></i>
+                        Rechercher
+                    </button>
+                    <a href="{{ route('players.list') }}" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                        <i class="fas fa-times mr-1"></i>
+                        Effacer
+                    </a>
+                </div>
+            </form>
+        </div>
+
         <!-- Liste des joueurs -->
         <div class="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 overflow-hidden">
             <div class="px-6 py-4 border-b border-white/20">
-                <h2 class="text-xl font-semibold text-white">Liste des Joueurs</h2>
-                <p class="text-gray-300 text-sm">Cliquez sur un joueur pour accéder à son portail</p>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-semibold text-white">Liste des Joueurs</h2>
+                        <p class="text-gray-300 text-sm">Cliquez sur un joueur pour accéder à son portail</p>
+                    </div>
+                    <div class="text-sm text-gray-300">
+                        <span id="resultsCount">{{ $players->total() }}</span> joueurs trouvés
+                    </div>
+                </div>
             </div>
             
             <div class="overflow-x-auto">
@@ -277,12 +334,26 @@
                 </div>
             </div>
         </div>
+
+        <!-- Pagination -->
+        @if($players->hasPages())
+            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 mt-8 border border-white/20">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-300">
+                        Affichage de {{ $players->firstItem() }} à {{ $players->lastItem() }} sur {{ $players->total() }} résultats
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        {{ $players->links() }}
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 
-    <!-- Script pour gérer les photos des joueurs -->
+    <!-- Script pour gérer les photos des joueurs et la recherche -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Script de gestion des photos chargé');
+            console.log('🚀 Script de gestion des photos et recherche chargé');
             
             // Gérer toutes les photos des joueurs
             const playerPhotos = document.querySelectorAll('img[alt*=" "]');
@@ -313,6 +384,8 @@
                     }
                 });
             });
+
+            // La recherche est maintenant gérée côté serveur via le formulaire
         });
     </script>
 </body>

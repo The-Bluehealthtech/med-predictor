@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classement des Compétitions - Démonstration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- En-tête -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Classements des Compétitions</h1>
+                        <p class="mt-2 text-gray-600">Suivez les performances de tous les clubs tunisiens</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="exportClassement()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-download mr-2"></i>
+                            Exporter
+                        </button>
+                        <button onclick="refreshClassement()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            Actualiser
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtres -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Compétition</label>
+                        <select id="competitionFilter" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Toutes les compétitions</option>
+                            <option value="1">Championnat Tunisien U19</option>
+                            <option value="2">Coupe de Tunisie</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Saison</label>
+                        <select id="seasonFilter" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="2024-2025">2024-2025</option>
+                            <option value="2023-2024">2023-2024</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tri par</label>
+                        <select id="sortFilter" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="points">Points</option>
+                            <option value="victoires">Victoires</option>
+                            <option value="difference">Différence de buts</option>
+                            <option value="buts_pour">Buts pour</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="applyFilters()" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <i class="fas fa-filter mr-2"></i>
+                            Appliquer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classement -->
+            <div class="bg-white rounded-lg shadow mb-6 competition-table" data-competition="1">
+                <!-- En-tête de la compétition -->
+                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900">Championnat Tunisien U19</h2>
+                            <p class="text-sm text-gray-600">2024-2025 - FTF - Fédération Tunisienne de Football</p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <div class="text-sm text-gray-500">Journée</div>
+                                <div class="text-lg font-semibold text-gray-900">20/30</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-500">Dernière mise à jour</div>
+                                <div class="text-sm text-gray-900" id="lastUpdate">{{ new Date().toLocaleString('fr-FR') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tableau de classement -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pos</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Club</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">MJ</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">V</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">N</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">D</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">BP</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">BC</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Diff</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Pts</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Forme</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Évolution</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="classementTable">
+                            <!-- Les données seront générées par JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Légende -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                    <div class="flex items-center justify-between text-sm text-gray-600">
+                        <div class="flex items-center space-x-6">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-yellow-100 rounded mr-2"></div>
+                                <span>Championnat d'Afrique (Top 3)</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-blue-100 rounded mr-2"></div>
+                                <span>Ligue des Champions (Top 4)</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-red-100 rounded mr-2"></div>
+                                <span>Relégation (Bottom 2)</span>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            * V = Victoire, N = Nul, D = Défaite
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques globales -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                            <i class="fas fa-trophy text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Leader</h3>
+                            <p class="text-sm text-gray-500" id="leaderClub">Espérance Sportive de Tunis</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600">
+                            <i class="fas fa-chart-line text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Meilleure Attaque</h3>
+                            <p class="text-sm text-gray-500" id="bestAttack">45 buts</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-red-100 text-red-600">
+                            <i class="fas fa-shield-alt text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Meilleure Défense</h3>
+                            <p class="text-sm text-gray-500" id="bestDefense">12 buts encaissés</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                            <i class="fas fa-percentage text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Taux de Victoire</h3>
+                            <p class="text-sm text-gray-500" id="winRate">85.0%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des clubs tunisiens
+        const clubs = [
+            { id: 1, name: 'Espérance Sportive de Tunis', short_name: 'EST' },
+            { id: 2, name: 'Club Africain', short_name: 'CA' },
+            { id: 3, name: 'Étoile Sportive du Sahel', short_name: 'ESS' },
+            { id: 4, name: 'Union Sportive Monastirienne', short_name: 'USM' },
+            { id: 5, name: 'Club Sportif Sfaxien', short_name: 'CSS' },
+            { id: 6, name: 'Stade Tunisien', short_name: 'ST' },
+            { id: 7, name: 'Club Athlétique Bizertin', short_name: 'CAB' },
+            { id: 8, name: 'Avenir Sportif de La Marsa', short_name: 'ASM' },
+            { id: 9, name: 'Club Olympique de Médenine', short_name: 'COM' },
+            { id: 10, name: 'Union Sportive de Ben Guerdane', short_name: 'USBG' },
+            { id: 11, name: 'Club Sportif de Hammam-Lif', short_name: 'CSHL' },
+            { id: 12, name: 'Club Olympique de Kairouan', short_name: 'COK' },
+            { id: 13, name: 'Union Sportive de Tataouine', short_name: 'UST' },
+            { id: 14, name: 'Club Sportif de Jendouba', short_name: 'CSJ' },
+            { id: 15, name: 'Union Sportive de Siliana', short_name: 'USS' },
+            { id: 16, name: 'Club Sportif de Kasserine', short_name: 'CSK' },
+            { id: 17, name: 'Union Sportive de Béja', short_name: 'USB' },
+            { id: 18, name: 'Club Sportif de Gafsa', short_name: 'CSG' },
+            { id: 19, name: 'Union Sportive de Tozeur', short_name: 'UST' },
+            { id: 20, name: 'Club Sportif de Kebili', short_name: 'CSK' }
+        ];
+
+        // Générer des données de classement
+        function generateClassementData() {
+            const classement = [];
+            
+            clubs.forEach(club => {
+                const matchsJoues = Math.floor(Math.random() * 11) + 15; // 15-25
+                const victoires = Math.floor(Math.random() * (matchsJoues - 5)) + 5;
+                const nuls = Math.floor(Math.random() * Math.min(8, matchsJoues - victoires)) + 2;
+                const defaites = matchsJoues - victoires - nuls;
+                
+                const butsPour = Math.floor(Math.random() * (victoires * 2)) + victoires + Math.floor(Math.random() * nuls);
+                const butsContre = Math.floor(Math.random() * (defaites * 2)) + defaites + Math.floor(Math.random() * nuls);
+                
+                const points = (victoires * 3) + nuls;
+                
+                const forme = [];
+                for (let i = 0; i < 5; i++) {
+                    const resultat = Math.floor(Math.random() * 3) + 1;
+                    forme.push(resultat === 1 ? 'V' : (resultat === 2 ? 'N' : 'D'));
+                }
+                
+                classement.push({
+                    club: club,
+                    position: 0,
+                    matchs_joues: matchsJoues,
+                    victoires: victoires,
+                    nuls: nuls,
+                    defaites: defaites,
+                    buts_pour: butsPour,
+                    buts_contre: butsContre,
+                    difference_buts: butsPour - butsContre,
+                    points: points,
+                    forme: forme,
+                    evolution: Math.floor(Math.random() * 6) - 2 // -2 à +3
+                });
+            });
+            
+            // Trier par points, puis par différence de buts
+            classement.sort((a, b) => {
+                if (a.points === b.points) {
+                    return b.difference_buts - a.difference_buts;
+                }
+                return b.points - a.points;
+            });
+            
+            // Assigner les positions
+            classement.forEach((equipe, index) => {
+                equipe.position = index + 1;
+            });
+            
+            return classement;
+        }
+
+        // Afficher le classement
+        function displayClassement(classement) {
+            const tbody = document.getElementById('classementTable');
+            tbody.innerHTML = '';
+            
+            classement.forEach(equipe => {
+                const row = document.createElement('tr');
+                row.className = `hover:bg-gray-50 ${equipe.position <= 3 ? 'bg-yellow-50' : (equipe.position >= classement.length - 1 ? 'bg-red-50' : '')}`;
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <div class="flex items-center">
+                            ${equipe.position === 1 ? '<i class="fas fa-trophy text-yellow-500 mr-2"></i>' : 
+                              equipe.position === 2 ? '<i class="fas fa-medal text-gray-400 mr-2"></i>' : 
+                              equipe.position === 3 ? '<i class="fas fa-award text-orange-500 mr-2"></i>' : ''}
+                            <span class="font-bold">${equipe.position}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <span class="text-blue-600 font-bold text-sm">${equipe.club.short_name.substring(0, 2)}</span>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">${equipe.club.name}</div>
+                                <div class="text-sm text-gray-500">${equipe.club.short_name}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">${equipe.matchs_joues}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">${equipe.victoires}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">${equipe.nuls}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">${equipe.defaites}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center font-medium">${equipe.buts_pour}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center font-medium">${equipe.buts_contre}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                        <span class="font-medium ${equipe.difference_buts > 0 ? 'text-green-600' : (equipe.difference_buts < 0 ? 'text-red-600' : 'text-gray-600')}">
+                            ${equipe.difference_buts > 0 ? '+' : ''}${equipe.difference_buts}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800">${equipe.points}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                        <div class="flex space-x-1 justify-center">
+                            ${equipe.forme.map(resultat => 
+                                `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${resultat === 'V' ? 'bg-green-100 text-green-800' : (resultat === 'N' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800')}">${resultat}</span>`
+                            ).join('')}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                        ${equipe.evolution > 0 ? 
+                            `<span class="inline-flex items-center text-green-600"><i class="fas fa-arrow-up mr-1"></i>+${equipe.evolution}</span>` :
+                            equipe.evolution < 0 ? 
+                            `<span class="inline-flex items-center text-red-600"><i class="fas fa-arrow-down mr-1"></i>${equipe.evolution}</span>` :
+                            `<span class="inline-flex items-center text-gray-600"><i class="fas fa-minus mr-1"></i>=</span>`
+                        }
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Mettre à jour les statistiques
+            updateStats(classement);
+        }
+
+        // Mettre à jour les statistiques
+        function updateStats(classement) {
+            const leader = classement[0];
+            const bestAttack = Math.max(...classement.map(e => e.buts_pour));
+            const bestDefense = Math.min(...classement.map(e => e.buts_contre));
+            const bestWinRate = Math.max(...classement.map(e => (e.victoires / e.matchs_joues) * 100));
+            
+            document.getElementById('leaderClub').textContent = leader.club.name;
+            document.getElementById('bestAttack').textContent = `${bestAttack} buts`;
+            document.getElementById('bestDefense').textContent = `${bestDefense} buts encaissés`;
+            document.getElementById('winRate').textContent = `${bestWinRate.toFixed(1)}%`;
+        }
+
+        // Fonction pour exporter le classement
+        function exportClassement() {
+            const tbody = document.getElementById('classementTable');
+            const rows = tbody.querySelectorAll('tr');
+            
+            let csvContent = 'Classement - Championnat Tunisien U19\n';
+            csvContent += 'Position,Club,MJ,V,N,D,BP,BC,Diff,Pts\n';
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 10) {
+                    const position = cells[0].textContent.trim();
+                    const club = cells[1].querySelector('.text-sm.font-medium').textContent.trim();
+                    const mj = cells[2].textContent.trim();
+                    const v = cells[3].textContent.trim();
+                    const n = cells[4].textContent.trim();
+                    const d = cells[5].textContent.trim();
+                    const bp = cells[6].textContent.trim();
+                    const bc = cells[7].textContent.trim();
+                    const diff = cells[8].textContent.trim();
+                    const pts = cells[9].textContent.trim();
+                    
+                    csvContent += `${position},${club},${mj},${v},${n},${d},${bp},${bc},${diff},${pts}\n`;
+                }
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `classement_championnat_tunisien_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('Classement exporté avec succès!', 'success');
+        }
+
+        // Fonction pour actualiser le classement
+        function refreshClassement() {
+            const button = event.target.closest('button');
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Actualisation...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                const newClassement = generateClassementData();
+                displayClassement(newClassement);
+                
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleString('fr-FR');
+                
+                showNotification('Classement actualisé!', 'success');
+            }, 1500);
+        }
+
+        // Fonction pour appliquer les filtres
+        function applyFilters() {
+            showNotification('Filtres appliqués!', 'success');
+        }
+
+        // Fonction pour afficher des notifications
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+            
+            notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-transform duration-300 translate-x-full`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${icon} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialiser le classement au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            const classement = generateClassementData();
+            displayClassement(classement);
+        });
+    </script>
+</body>
+</html>

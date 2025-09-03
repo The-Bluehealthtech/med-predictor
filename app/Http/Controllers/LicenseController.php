@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LicenseComplete as License;
+use App\Models\PlayerLicense as License;
 use App\Models\Club;
 use App\Models\Association;
 use App\Models\User;
@@ -398,7 +398,7 @@ class LicenseController extends Controller
         
         // For System Admin, show all licenses. For association users, filter by association
         if ($user->role === 'system_admin') {
-            $licenses = License::with(['club', 'association', 'requestedByUser', 'approvedByUser'])
+            $licenses = License::with(['player', 'club'])
                 ->orderBy('created_at', 'desc')
                 ->paginate(15);
             
@@ -415,7 +415,7 @@ class LicenseController extends Controller
             $licenses = License::whereHas('club', function ($query) use ($user) {
                 $query->where('association_id', $user->association_id);
             })
-            ->with(['club', 'association', 'requestedByUser', 'approvedByUser'])
+            ->with(['player', 'club'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
             
@@ -440,7 +440,7 @@ class LicenseController extends Controller
                 ->get();
         }
         
-        return view('licenses.validation', compact(
+        return view('modules.licenses.validation', compact(
             'licenses', 
             'pendingCount', 
             'approvedCount', 

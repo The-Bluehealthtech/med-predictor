@@ -11,6 +11,36 @@ class LicenseType extends Model
 {
     use HasFactory;
 
+    // Constantes FIFA Connect - Types de licences joueurs
+    const TYPE_AMATEUR = 'amateur';
+    const TYPE_PROFESSIONAL = 'professional';
+    const TYPE_FUTSAL = 'futsal';
+    const TYPE_BEACH_SOCCER = 'beach_soccer';
+    const TYPE_YOUTH = 'youth';
+    const TYPE_INTERNATIONAL = 'international';
+
+    // Constantes FIFA Connect - Types d'officiels techniques
+    const TYPE_COACH_FIFA = 'coach_fifa';
+    const TYPE_COACH_NATIONAL = 'coach_national';
+    const TYPE_MEDICAL_STAFF = 'medical_staff';
+    const TYPE_PHYSIO = 'physio';
+    const TYPE_DOCTOR = 'doctor';
+
+    // Constantes FIFA Connect - Types d'arbitres
+    const TYPE_REFEREE_FIFA = 'referee_fifa';
+    const TYPE_REFEREE_NATIONAL = 'referee_national';
+    const TYPE_ASSISTANT_REFEREE = 'assistant_referee';
+    const TYPE_FOURTH_OFFICIAL = 'fourth_official';
+    const TYPE_VAR_OFFICIAL = 'var_official';
+
+    // Constantes FIFA Connect - Types de dirigeants
+    const TYPE_CLUB_PRESIDENT = 'club_president';
+    const TYPE_CLUB_SECRETARY = 'club_secretary';
+    const TYPE_CLUB_TREASURER = 'club_treasurer';
+    const TYPE_ASSOCIATION_OFFICIAL = 'association_official';
+    const TYPE_MATCH_DELEGATE = 'match_delegate';
+    const TYPE_SECURITY_OFFICIAL = 'security_official';
+
     protected $fillable = [
         'name',
         'code',

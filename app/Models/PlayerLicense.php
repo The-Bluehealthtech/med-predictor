@@ -9,6 +9,42 @@ class PlayerLicense extends Model
 {
     use HasFactory;
 
+    // Constantes FIFA Connect - Types de licences
+    const LICENSE_TYPE_AMATEUR = 'amateur';
+    const LICENSE_TYPE_PROFESSIONAL = 'professional';
+    const LICENSE_TYPE_FUTSAL = 'futsal';
+    const LICENSE_TYPE_BEACH_SOCCER = 'beach_soccer';
+    const LICENSE_TYPE_YOUTH = 'youth';
+    const LICENSE_TYPE_INTERNATIONAL = 'international';
+
+    // Constantes FIFA Connect - Statuts de licence
+    const STATUS_ACTIVE = 'active';
+    const STATUS_EXPIRED = 'expired';
+    const STATUS_SUSPENDED = 'suspended';
+    const STATUS_REVOKED = 'revoked';
+
+    // Constantes FIFA Connect - Types d'officiels techniques
+    const LICENSE_TYPE_COACH_FIFA = 'coach_fifa';
+    const LICENSE_TYPE_COACH_NATIONAL = 'coach_national';
+    const LICENSE_TYPE_MEDICAL_STAFF = 'medical_staff';
+    const LICENSE_TYPE_PHYSIO = 'physio';
+    const LICENSE_TYPE_DOCTOR = 'doctor';
+
+    // Constantes FIFA Connect - Types d'arbitres
+    const LICENSE_TYPE_REFEREE_FIFA = 'referee_fifa';
+    const LICENSE_TYPE_REFEREE_NATIONAL = 'referee_national';
+    const LICENSE_TYPE_ASSISTANT_REFEREE = 'assistant_referee';
+    const LICENSE_TYPE_FOURTH_OFFICIAL = 'fourth_official';
+    const LICENSE_TYPE_VAR_OFFICIAL = 'var_official';
+
+    // Constantes FIFA Connect - Types de dirigeants
+    const LICENSE_TYPE_CLUB_PRESIDENT = 'club_president';
+    const LICENSE_TYPE_CLUB_SECRETARY = 'club_secretary';
+    const LICENSE_TYPE_CLUB_TREASURER = 'club_treasurer';
+    const LICENSE_TYPE_ASSOCIATION_OFFICIAL = 'association_official';
+    const LICENSE_TYPE_MATCH_DELEGATE = 'match_delegate';
+    const LICENSE_TYPE_SECURITY_OFFICIAL = 'security_official';
+
     protected $fillable = [
         'player_id',
         'club_id',

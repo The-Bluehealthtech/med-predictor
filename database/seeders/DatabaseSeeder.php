@@ -23,6 +23,9 @@ class DatabaseSeeder extends Seeder
             
             // Données de test pour les compétitions
             CompetitionTestDataSeeder::class,
+            
+            // FFF Ligue 1 Data
+            FFFLigue1Seeder::class,
         ]);
     }
 }

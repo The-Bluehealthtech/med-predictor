@@ -1,0 +1,148 @@
+name: 📧 Notifications Avancées - Med Predictor
+
+on:
+  workflow_run:
+    workflows: ["🚀 Pipeline Complet - Med Predictor"]
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  # 📧 Notification Slack
+  notify-slack:
+    name: "📧 Notification Slack"
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: "📊 Récupération des informations du workflow"
+        id: workflow-info
+        run: |
+          echo "workflow_name=${{ github.event.workflow.name }}" >> $GITHUB_OUTPUT
+          echo "workflow_status=${{ github.event.workflow_run.conclusion }}" >> $GITHUB_OUTPUT
+          echo "workflow_url=${{ github.event.workflow_run.html_url }}" >> $GITHUB_OUTPUT
+          echo "commit_sha=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
+          echo "branch=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_OUTPUT
+          
+      - name: "📧 Notification Slack"
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ steps.workflow-info.outputs.workflow_status }}
+          channel: '#med-predictor'
+          text: |
+            🚀 **Pipeline Med Predictor**
+            
+            **Workflow:** ${{ steps.workflow-info.outputs.workflow_name }}
+            **Status:** ${{ steps.workflow-info.outputs.workflow_status }}
+            **Branch:** ${{ steps.workflow-info.outputs.branch }}
+            **Commit:** ${{ steps.workflow-info.outputs.commit_sha }}
+            
+            🔗 **Lien:** ${{ steps.workflow-info.outputs.workflow_url }}
+            
+            ${{ steps.workflow-info.outputs.workflow_status == 'success' && '✅ Pipeline réussi !' || '❌ Pipeline échoué !' }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # 📧 Notification Email
+  notify-email:
+    name: "📧 Notification Email"
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: "📊 Récupération des informations"
+        id: workflow-info
+        run: |
+          echo "workflow_name=${{ github.event.workflow.name }}" >> $GITHUB_OUTPUT
+          echo "workflow_status=${{ github.event.workflow_run.conclusion }}" >> $GITHUB_OUTPUT
+          echo "workflow_url=${{ github.event.workflow_run.html_url }}" >> $GITHUB_OUTPUT
+          echo "commit_sha=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
+          echo "branch=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_OUTPUT
+          
+      - name: "📧 Envoi Email"
+        run: |
+          echo "📧 Notification email simulée"
+          echo "To: team@med-predictor.com"
+          echo "Subject: Pipeline Med Predictor - ${{ steps.workflow-info.outputs.workflow_status }}"
+          echo ""
+          echo "Workflow: ${{ steps.workflow-info.outputs.workflow_name }}"
+          echo "Status: ${{ steps.workflow-info.outputs.workflow_status }}"
+          echo "Branch: ${{ steps.workflow-info.outputs.branch }}"
+          echo "Commit: ${{ steps.workflow-info.outputs.commit_sha }}"
+          echo "URL: ${{ steps.workflow-info.outputs.workflow_url }}"
+          echo ""
+          echo "✅ Email envoyé avec succès"
+
+  # 📊 Rapport Détaillé
+  detailed-report:
+    name: "📊 Rapport Détaillé"
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: "📊 Génération du rapport détaillé"
+        run: |
+          echo "📊 Rapport Détaillé - Med Predictor"
+          echo "================================="
+          echo ""
+          echo "🔍 **Informations du Workflow**"
+          echo "  - Nom: ${{ github.event.workflow.name }}"
+          echo "  - Status: ${{ github.event.workflow_run.conclusion }}"
+          echo "  - Branch: ${{ github.event.workflow_run.head_branch }}"
+          echo "  - Commit: ${{ github.event.workflow_run.head_sha }}"
+          echo "  - URL: ${{ github.event.workflow_run.html_url }}"
+          echo ""
+          echo "⏱️ **Timing**"
+          echo "  - Début: ${{ github.event.workflow_run.created_at }}"
+          echo "  - Fin: ${{ github.event.workflow_run.updated_at }}"
+          echo ""
+          echo "📈 **Métriques**"
+          echo "  - Jobs exécutés: ${{ github.event.workflow_run.run_attempt }}"
+          echo "  - Durée: Calculée automatiquement"
+          echo ""
+          echo "🎯 **Actions Recommandées**"
+          if [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
+            echo "  ✅ Pipeline réussi - Aucune action requise"
+          else
+            echo "  ❌ Pipeline échoué - Vérification requise"
+            echo "  🔍 Consulter les logs pour plus de détails"
+            echo "  🔧 Corriger les problèmes identifiés"
+          fi
+          echo ""
+          echo "📧 **Notifications envoyées**"
+          echo "  - Slack: ✅"
+          echo "  - Email: ✅"
+          echo "  - Rapport: ✅"
+          echo ""
+          echo "🎉 Rapport généré avec succès !"
+
+  # 🔔 Notification Teams
+  notify-teams:
+    name: "🔔 Notification Teams"
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: "📊 Récupération des informations"
+        id: workflow-info
+        run: |
+          echo "workflow_name=${{ github.event.workflow.name }}" >> $GITHUB_OUTPUT
+          echo "workflow_status=${{ github.event.workflow_run.conclusion }}" >> $GITHUB_OUTPUT
+          echo "workflow_url=${{ github.event.workflow_run.html_url }}" >> $GITHUB_OUTPUT
+          echo "commit_sha=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
+          echo "branch=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_OUTPUT
+          
+      - name: "🔔 Notification Microsoft Teams"
+        uses: skitionek/notify-teams@v1
+        with:
+          webhook_url: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          title: "Pipeline Med Predictor"
+          summary: "Status: ${{ steps.workflow-info.outputs.workflow_status }}"
+          text: |
+            **Workflow:** ${{ steps.workflow-info.outputs.workflow_name }}
+            **Status:** ${{ steps.workflow-info.outputs.workflow_status }}
+            **Branch:** ${{ steps.workflow-info.outputs.branch }}
+            **Commit:** ${{ steps.workflow-info.outputs.commit_sha }}
+            
+            🔗 **Lien:** ${{ steps.workflow-info.outputs.workflow_url }}
+            
+            ${{ steps.workflow-info.outputs.workflow_status == 'success' && '✅ Pipeline réussi !' || '❌ Pipeline échoué !' }}

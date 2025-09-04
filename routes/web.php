@@ -1764,6 +1764,15 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/admin/players', [AdminController::class, 'playersList'])->name('admin.players.list');
     Route::get('/admin/search-players', [AdminController::class, 'searchPlayers'])->name('admin.search.players');
     Route::get('/admin/system-stats', [AdminController::class, 'systemStats'])->name('admin.system.stats');
+    Route::get('/admin/referee-assignments', [App\Http\Controllers\AdminRefereeAssignmentController::class, 'index'])->name('admin.referee-assignments');
+    
+    // Route de test temporaire pour les arbitres (sans authentification)
+    Route::get('/test-referees', function () {
+        return view('modules.referees.index', ['footballType' => 'association']);
+    })->name('test.referees')->withoutMiddleware(['auth', 'auth:web']);
+    
+    // Route de test temporaire pour la désignation des arbitres (sans authentification)
+    Route::get('/test-referee-assignments', [App\Http\Controllers\AdminRefereeAssignmentController::class, 'index'])->name('test.referee-assignments')->withoutMiddleware(['auth', 'auth:web']);
     
     // Nouvelle route pour lister les joueurs (accessible depuis /modules)
     Route::get('/players/list', [AdminController::class, 'playersList'])->name('players.list');
@@ -1907,6 +1916,13 @@ Route::middleware(['auth:web'])->group(function () {
                         'icon' => '🤖',
                         'route' => 'gemini.index',
                     'color' => 'green'
+                    ],
+                    [
+                        'name' => 'Users',
+                        'description' => 'Gestion des utilisateurs, permissions et demandes de comptes',
+                        'icon' => '👥',
+                        'route' => 'user-management.index',
+                        'color' => 'blue'
                     ]
                 ]
             ]);
@@ -3360,13 +3376,518 @@ Route::middleware(['auth'])->group(function () {
     
     // User Management routes
     Route::get('/user-management', function () {
-        return view('modules.user-management.index');
+        try {
+            $users = \App\Models\User::all();
+            $accountRequests = \App\Models\AccountRequest::where('status', 'pending')->get();
+            
+            // Permissions disponibles basées sur les vraies permissions de la base
+            $availablePermissions = [
+                'player_registration_access' => 'Accès enregistrement joueurs',
+                'competition_management_access' => 'Gestion des compétitions',
+                'healthcare_access' => 'Accès soins de santé',
+                'fifa_connect_access' => 'Accès FIFA Connect',
+                'club_management' => 'Gestion des clubs',
+                'team_management' => 'Gestion des équipes',
+                'user_read' => 'Lire les utilisateurs',
+                'user_write' => 'Créer/Modifier les utilisateurs',
+                'user_delete' => 'Supprimer les utilisateurs',
+                'referee_access' => 'Accès portail arbitre',
+                'admin_access' => 'Accès administration',
+                'report_generate' => 'Générer des rapports',
+                'data_export' => 'Exporter les données'
+            ];
+            
+            return view('modules.user-management.index', compact('users', 'accountRequests', 'availablePermissions'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
     })->name('user-management.index');
+    
+    // User Management Create route
+    Route::get('/user-management/create', function () {
+        try {
+            $roles = [
+                (object)['name' => 'system_admin', 'display_name' => 'Administrateur Système', 'description' => 'Accès complet au système', 'is_system_role' => true],
+                (object)['name' => 'association_admin', 'display_name' => 'Administrateur Association', 'description' => 'Gestion des compétitions et clubs', 'is_system_role' => true],
+                (object)['name' => 'club_admin', 'display_name' => 'Administrateur Club', 'description' => 'Gestion des équipes du club', 'is_system_role' => true],
+                (object)['name' => 'club_manager', 'display_name' => 'Manager Club', 'description' => 'Gestion des équipes', 'is_system_role' => true],
+                (object)['name' => 'club_medical', 'display_name' => 'Médecin Club', 'description' => 'Soins médicaux', 'is_system_role' => true],
+                (object)['name' => 'association_registrar', 'display_name' => 'Enregistreur Association', 'description' => 'Enregistrement des données', 'is_system_role' => true],
+                (object)['name' => 'association_medical', 'display_name' => 'Médecin Association', 'description' => 'Soins médicaux association', 'is_system_role' => true],
+                (object)['name' => 'referee', 'display_name' => 'Arbitre', 'description' => 'Portail arbitre', 'is_system_role' => true],
+                (object)['name' => 'player', 'display_name' => 'Joueur', 'description' => 'Accès joueur', 'is_system_role' => true],
+            ];
+            
+            $associations = \App\Models\Association::all();
+            $clubs = \App\Models\Club::all();
+            
+            return view('modules.user-management.create', compact('roles', 'associations', 'clubs'));
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    })->name('user-management.create');
+    
+    // User Management Store route
+    Route::post('/user-management', function (\Illuminate\Http\Request $request) {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+                'role' => 'required|string',
+                'status' => 'required|string',
+                'association_id' => 'nullable|exists:associations,id',
+                'club_id' => 'nullable|exists:clubs,id',
+            ]);
+            
+            $user = \App\Models\User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => $request->role,
+                'status' => $request->status,
+                'association_id' => $request->association_id,
+                'club_id' => $request->club_id,
+                'fifa_connect_id' => strtoupper(substr($request->role, 0, 3)) . '_' . time(),
+                'email_verified_at' => now(),
+            ]);
+            
+            return redirect()->route('user-management.index')->with('success', 'Utilisateur créé avec succès');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    })->name('user-management.store');
+    
+    // User Management Show route
+    Route::get('/user-management/{user}', function (\App\Models\User $user) {
+        return view('modules.user-management.show', compact('user'));
+    })->name('user-management.show');
+    
+    // User Management Edit route
+    Route::get('/user-management/{user}/edit', function (\App\Models\User $user) {
+        try {
+            $roles = [
+                (object)['name' => 'system_admin', 'display_name' => 'Administrateur Système', 'description' => 'Accès complet au système', 'is_system_role' => true],
+                (object)['name' => 'association_admin', 'display_name' => 'Administrateur Association', 'description' => 'Gestion des compétitions et clubs', 'is_system_role' => true],
+                (object)['name' => 'club_admin', 'display_name' => 'Administrateur Club', 'description' => 'Gestion des équipes du club', 'is_system_role' => true],
+                (object)['name' => 'club_manager', 'display_name' => 'Manager Club', 'description' => 'Gestion des équipes', 'is_system_role' => true],
+                (object)['name' => 'club_medical', 'display_name' => 'Médecin Club', 'description' => 'Soins médicaux', 'is_system_role' => true],
+                (object)['name' => 'association_registrar', 'display_name' => 'Enregistreur Association', 'description' => 'Enregistrement des données', 'is_system_role' => true],
+                (object)['name' => 'association_medical', 'display_name' => 'Médecin Association', 'description' => 'Soins médicaux association', 'is_system_role' => true],
+                (object)['name' => 'referee', 'display_name' => 'Arbitre', 'description' => 'Portail arbitre', 'is_system_role' => true],
+                (object)['name' => 'player', 'display_name' => 'Joueur', 'description' => 'Accès joueur', 'is_system_role' => true],
+            ];
+            
+            $associations = \App\Models\Association::all();
+            $clubs = \App\Models\Club::all();
+            
+            return view('modules.user-management.edit', compact('user', 'roles', 'associations', 'clubs'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    })->name('user-management.edit');
+    
+    // User Management Update route
+    Route::put('/user-management/{user}', function (\Illuminate\Http\Request $request, \App\Models\User $user) {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'role' => 'required|string',
+                'status' => 'required|string',
+                'association_id' => 'nullable|exists:associations,id',
+                'club_id' => 'nullable|exists:clubs,id',
+            ]);
+            
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'role' => $request->role,
+                'status' => $request->status,
+                'association_id' => $request->association_id,
+                'club_id' => $request->club_id,
+            ]);
+            
+            return redirect()->route('user-management.index')->with('success', 'Utilisateur mis à jour avec succès');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    })->name('user-management.update');
+    
+    // User Management Destroy route
+    Route::delete('/user-management/{user}', function (\App\Models\User $user) {
+        try {
+            $user->delete();
+            return redirect()->route('user-management.index')->with('success', 'Utilisateur supprimé avec succès');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    })->name('user-management.destroy');
+    
+    // Test route pour la création d'utilisateurs (sans authentification)
+    Route::get('/test-user-create', function () {
+        try {
+            $roles = [
+                (object)['name' => 'system_admin', 'display_name' => 'Administrateur Système', 'description' => 'Accès complet au système', 'is_system_role' => true],
+                (object)['name' => 'association_admin', 'display_name' => 'Administrateur Association', 'description' => 'Gestion des compétitions et clubs', 'is_system_role' => true],
+                (object)['name' => 'club_admin', 'display_name' => 'Administrateur Club', 'description' => 'Gestion des équipes du club', 'is_system_role' => true],
+                (object)['name' => 'club_manager', 'display_name' => 'Manager Club', 'description' => 'Gestion des équipes', 'is_system_role' => true],
+                (object)['name' => 'club_medical', 'display_name' => 'Médecin Club', 'description' => 'Soins médicaux', 'is_system_role' => true],
+                (object)['name' => 'association_registrar', 'display_name' => 'Enregistreur Association', 'description' => 'Enregistrement des données', 'is_system_role' => true],
+                (object)['name' => 'association_medical', 'display_name' => 'Médecin Association', 'description' => 'Soins médicaux association', 'is_system_role' => true],
+                (object)['name' => 'referee', 'display_name' => 'Arbitre', 'description' => 'Portail arbitre', 'is_system_role' => true],
+                (object)['name' => 'player', 'display_name' => 'Joueur', 'description' => 'Accès joueur', 'is_system_role' => true],
+            ];
+            
+            $associations = \App\Models\Association::all();
+            $clubs = \App\Models\Club::all();
+            
+            return view('modules.user-management.create', compact('roles', 'associations', 'clubs'));
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    })->name('test-user-create');
+    
+    // Test route pour la gestion des utilisateurs (sans authentification)
+    Route::get('/test-user-management', function () {
+        try {
+            $users = \App\Models\User::all();
+            $accountRequests = \App\Models\AccountRequest::where('status', 'pending')->get();
+            
+            // Permissions disponibles basées sur les vraies permissions de la base
+            $availablePermissions = [
+                'player_registration_access' => 'Accès enregistrement joueurs',
+                'competition_management_access' => 'Gestion des compétitions',
+                'healthcare_access' => 'Accès soins de santé',
+                'fifa_connect_access' => 'Accès FIFA Connect',
+                'club_management' => 'Gestion des clubs',
+                'team_management' => 'Gestion des équipes',
+                'user_read' => 'Lire les utilisateurs',
+                'user_write' => 'Créer/Modifier les utilisateurs',
+                'user_delete' => 'Supprimer les utilisateurs',
+                'referee_access' => 'Accès portail arbitre',
+                'admin_access' => 'Accès administration',
+                'report_generate' => 'Générer des rapports',
+                'data_export' => 'Exporter les données'
+            ];
+            
+            return view('modules.user-management.index', compact('users', 'accountRequests', 'availablePermissions'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    })->name('test-user-management');
+    
+    // Test route pour l'édition d'utilisateur (sans authentification)
+    Route::get('/test-user-edit/{user}', function (\App\Models\User $user) {
+        try {
+            $roles = [
+                (object)['name' => 'system_admin', 'display_name' => 'Administrateur Système', 'description' => 'Accès complet au système', 'is_system_role' => true],
+                (object)['name' => 'association_admin', 'display_name' => 'Administrateur Association', 'description' => 'Gestion des compétitions et clubs', 'is_system_role' => true],
+                (object)['name' => 'club_admin', 'display_name' => 'Administrateur Club', 'description' => 'Gestion des équipes du club', 'is_system_role' => true],
+                (object)['name' => 'club_manager', 'display_name' => 'Manager Club', 'description' => 'Gestion des équipes', 'is_system_role' => true],
+                (object)['name' => 'club_medical', 'display_name' => 'Médecin Club', 'description' => 'Soins médicaux', 'is_system_role' => true],
+                (object)['name' => 'association_registrar', 'display_name' => 'Enregistreur Association', 'description' => 'Enregistrement des données', 'is_system_role' => true],
+                (object)['name' => 'association_medical', 'display_name' => 'Médecin Association', 'description' => 'Soins médicaux association', 'is_system_role' => true],
+                (object)['name' => 'referee', 'display_name' => 'Arbitre', 'description' => 'Portail arbitre', 'is_system_role' => true],
+                (object)['name' => 'player', 'display_name' => 'Joueur', 'description' => 'Accès joueur', 'is_system_role' => true],
+            ];
+            
+            $associations = \App\Models\Association::all();
+            $clubs = \App\Models\Club::all();
+            
+            return view('modules.user-management.edit', compact('user', 'roles', 'associations', 'clubs'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    })->name('test-user-edit');
+    
+    // Test route pour l'édition d'utilisateur sans authentification (pour diagnostiquer l'erreur 500)
+    Route::get('/debug-user-edit/{user}', function (\App\Models\User $user) {
+        try {
+            // Vérifier que l'utilisateur existe
+            if (!$user) {
+                return response()->json(['error' => 'Utilisateur non trouvé'], 404);
+            }
+            
+            // Vérifier les modèles
+            $associations = \App\Models\Association::all();
+            $clubs = \App\Models\Club::all();
+            
+            // Créer les rôles
+            $roles = [
+                (object)['name' => 'system_admin', 'display_name' => 'Administrateur Système', 'description' => 'Accès complet au système', 'is_system_role' => true],
+                (object)['name' => 'association_admin', 'display_name' => 'Administrateur Association', 'description' => 'Gestion des compétitions et clubs', 'is_system_role' => true],
+                (object)['name' => 'club_admin', 'display_name' => 'Administrateur Club', 'description' => 'Gestion des équipes du club', 'is_system_role' => true],
+                (object)['name' => 'club_manager', 'display_name' => 'Manager Club', 'description' => 'Gestion des équipes', 'is_system_role' => true],
+                (object)['name' => 'club_medical', 'display_name' => 'Médecin Club', 'description' => 'Soins médicaux', 'is_system_role' => true],
+                (object)['name' => 'association_registrar', 'display_name' => 'Enregistreur Association', 'description' => 'Enregistrement des données', 'is_system_role' => true],
+                (object)['name' => 'association_medical', 'display_name' => 'Médecin Association', 'description' => 'Soins médicaux association', 'is_system_role' => true],
+                (object)['name' => 'referee', 'display_name' => 'Arbitre', 'description' => 'Portail arbitre', 'is_system_role' => true],
+                (object)['name' => 'player', 'display_name' => 'Joueur', 'description' => 'Accès joueur', 'is_system_role' => true],
+            ];
+            
+            // Retourner les données pour diagnostic
+            return response()->json([
+                'success' => true,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'club_id' => $user->club_id,
+                    'association_id' => $user->association_id
+                ],
+                'associations_count' => $associations->count(),
+                'clubs_count' => $clubs->count(),
+                'roles_count' => count($roles),
+                'view_exists' => view()->exists('modules.user-management.edit')
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    })->name('debug-user-edit');
     
     // Role Management routes
     Route::get('/role-management', function () {
-        return view('modules.role-management.index');
+        // Rôles prédéfinis avec leurs permissions
+        $predefinedRoles = [
+            'system_admin' => [
+                'name' => 'Administrateur Système',
+                'description' => 'Accès complet à tous les modules et fonctionnalités',
+                'permissions' => [
+                    'user_read', 'user_write', 'user_delete',
+                    'admin_access', 'referee_access',
+                    'player_registration_access', 'competition_management_access',
+                    'healthcare_access', 'fifa_connect_access',
+                    'club_management', 'team_management',
+                    'report_generate', 'data_export'
+                ]
+            ],
+            'association_admin' => [
+                'name' => 'Administrateur Association',
+                'description' => 'Gestion des compétitions, clubs et arbitres',
+                'permissions' => [
+                    'user_read', 'user_write',
+                    'competition_management_access', 'club_management',
+                    'team_management', 'referee_access',
+                    'report_generate', 'data_export'
+                ]
+            ],
+            'club_admin' => [
+                'name' => 'Administrateur Club',
+                'description' => 'Gestion des équipes et joueurs du club',
+                'permissions' => [
+                    'player_registration_access', 'team_management',
+                    'healthcare_access', 'fifa_connect_access',
+                    'report_generate'
+                ]
+            ],
+            'referee' => [
+                'name' => 'Arbitre',
+                'description' => 'Accès au portail arbitre et gestion des matchs',
+                'permissions' => [
+                    'referee_access', 'report_generate'
+                ]
+            ],
+            'healthcare_provider' => [
+                'name' => 'Fournisseur de Soins',
+                'description' => 'Accès aux dossiers médicaux et soins',
+                'permissions' => [
+                    'healthcare_access', 'player_registration_access',
+                    'report_generate'
+                ]
+            ],
+            'data_analyst' => [
+                'name' => 'Analyste de Données',
+                'description' => 'Accès aux rapports et analyses',
+                'permissions' => [
+                    'report_generate', 'data_export',
+                    'user_read'
+                ]
+            ],
+            'user' => [
+                'name' => 'Utilisateur Standard',
+                'description' => 'Accès de base au système',
+                'permissions' => []
+            ]
+        ];
+        
+        return view('modules.role-management.index', compact('predefinedRoles'));
     })->name('role-management.index');
+    
+    // API Routes pour la gestion des rôles
+    Route::get('/api/users', function () {
+        $users = \App\Models\User::select('id', 'name', 'email', 'role')->get();
+        return response()->json($users);
+    });
+    
+    Route::post('/api/users/apply-role', function (\Illuminate\Http\Request $request) {
+        try {
+            $request->validate([
+                'role' => 'required|string',
+                'permissions' => 'required|array',
+                'user_ids' => 'required|array'
+            ]);
+            
+            $updatedCount = 0;
+            $role = $request->role;
+            $permissions = $request->permissions;
+            $userIds = $request->user_ids;
+            
+            foreach ($userIds as $userId) {
+                $user = \App\Models\User::find($userId);
+                if ($user) {
+                    $user->role = $role;
+                    $user->permissions = $permissions;
+                    $user->save();
+                    $updatedCount++;
+                }
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Rôle appliqué avec succès',
+                'updated_count' => $updatedCount
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'application du rôle: ' . $e->getMessage()
+            ], 400);
+        }
+    });    
+    // Route de test pour le portail arbitre
+    Route::get('/referee-test', function () {
+        $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
+        if (!$user) {
+            return 'Utilisateur arbitre non trouvé';
+        }
+        
+        auth()->login($user);
+        session(['login_access_type' => 'referee']);
+        
+        try {
+            $assignedMatches = collect([]);
+            $recentMatches = collect([]);
+            $stats = [
+                'upcoming_matches' => 0,
+                'completed_matches' => 0,
+                'pending_reports' => 0,
+                'active_competitions' => 0
+            ];
+            
+            return view('referee.dashboard', compact('assignedMatches', 'recentMatches', 'stats'));
+        } catch (Exception $e) {
+            return 'Erreur: ' . $e->getMessage();
+        }
+    });
+    
+    // Route de test pour vérifier les permissions
+    Route::get('/test-permissions', function () {
+        $user = auth()->user();
+        if (!$user) {
+            return 'Non connecté';
+        }
+        
+        $permissions = $user->permissions ?? [];
+        if (is_string($permissions)) {
+            $permissions = json_decode($permissions, true) ?? [];
+        }
+        
+        return response()->json([
+            'user' => $user->name,
+            'role' => $user->role,
+            'permissions' => $permissions,
+            'permission_count' => count($permissions)
+        ]);
+    })->middleware('auth');
+    
+    // Route pour appliquer les rôles prédéfinis à tous les utilisateurs existants
+    Route::post('/api/apply-predefined-roles', function () {
+        try {
+            // Rôles prédéfinis avec leurs permissions
+            $predefinedRoles = [
+                'system_admin' => [
+                    'user_read', 'user_write', 'user_delete',
+                    'admin_access', 'referee_access',
+                    'player_registration_access', 'competition_management_access',
+                    'healthcare_access', 'fifa_connect_access',
+                    'club_management', 'team_management',
+                    'report_generate', 'data_export'
+                ],
+                'association_admin' => [
+                    'user_read', 'user_write',
+                    'competition_management_access', 'club_management',
+                    'team_management', 'referee_access',
+                    'report_generate', 'data_export'
+                ],
+                'club_admin' => [
+                    'player_registration_access', 'team_management',
+                    'healthcare_access', 'fifa_connect_access',
+                    'report_generate'
+                ],
+                'referee' => [
+                    'referee_access', 'report_generate'
+                ],
+                'healthcare_provider' => [
+                    'healthcare_access', 'player_registration_access',
+                    'report_generate'
+                ],
+                'data_analyst' => [
+                    'report_generate', 'data_export',
+                    'user_read'
+                ],
+                'user' => []
+            ];
+            
+            $updatedCount = 0;
+            $users = \App\Models\User::all();
+            
+            foreach ($users as $user) {
+                if (isset($predefinedRoles[$user->role])) {
+                    $user->permissions = $predefinedRoles[$user->role];
+                    $user->save();
+                    $updatedCount++;
+                }
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Rôles prédéfinis appliqués avec succès',
+                'updated_count' => $updatedCount,
+                'total_users' => $users->count()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'application des rôles: ' . $e->getMessage()
+            ], 400);
+        }
+    });
     
     // Audit Trail routes
     Route::get('/audit-trail', function () {
@@ -4314,21 +4835,20 @@ Route::get('/test-pdf', function() {
     })->name('documents.index');
     
     // Referee routes
-    Route::get('/referee/dashboard', function () {
-        return view('modules.referee.dashboard');
-    })->name('referee.dashboard');
+    Route::get('/referee/dashboard', [App\Http\Controllers\RefereeController::class, 'dashboard'])->name('referee.dashboard');
     
     Route::get('/referee/match-assignments', function () {
         return view('modules.referee.match-assignments');
     })->name('referee.match-assignments');
     
+    Route::get('/referee/match-sheet/{match}', [App\Http\Controllers\RefereeController::class, 'matchSheet'])->name('referee.match-sheet');
+    
     Route::get('/referee/competition-schedule', function () {
         return view('modules.referee.competition-schedule');
     })->name('referee.competition-schedule');
     
-    Route::get('/referee/create-match-report', function () {
-        return view('modules.referee.create-match-report');
-    })->name('referee.create-match-report');
+    Route::get('/referee/create-match-report', [App\Http\Controllers\RefereeController::class, 'createMatchReport'])->name('referee.create-match-report');
+    Route::get('/referee/create-match-report/{matchId}', [App\Http\Controllers\RefereeController::class, 'createDetailedMatchReport'])->name('referee.create-detailed-match-report');
     
     Route::get('/referee/performance-stats', function () {
         return view('modules.referee.performance-stats');
@@ -4587,9 +5107,28 @@ Route::get('/test-pdf', function() {
         ]);
     })->name('modules.healthcare.index');
     
-    Route::get('/modules/competitions', function () {
-        return view('modules.competitions.index', ['footballType' => 'association']);
-    })->name('modules.competitions.index');
+    Route::get('/modules/competitions', [App\Http\Controllers\CompetitionController::class, 'moduleDashboard'])->name('modules.competitions.index');
+    
+    // Route de test pour le module competitions (sans authentification)
+    Route::get('/test-module-competitions', [App\Http\Controllers\CompetitionController::class, 'moduleDashboard'])->name('test.module.competitions')->withoutMiddleware(['auth', 'auth:web']);
+    
+    // Route de test pour les engagements clubs (sans authentification)
+    Route::get('/test-engagements-clubs', [App\Http\Controllers\CompetitionController::class, 'associationEngagementsClubs'])->name('test.engagements.clubs')->withoutMiddleware(['auth', 'auth:web']);
+    
+    // Routes pour les actions des engagements clubs
+    Route::post('/test-export-engagements', [App\Http\Controllers\CompetitionController::class, 'exportEngagements'])->name('test.export.engagements')->withoutMiddleware(['auth', 'auth:web']);
+    Route::post('/test-validate-all-engagements', [App\Http\Controllers\CompetitionController::class, 'validateAllEngagements'])->name('test.validate.all.engagements')->withoutMiddleware(['auth', 'auth:web']);
+    Route::post('/test-validate-engagement/{clubId}', [App\Http\Controllers\CompetitionController::class, 'validateEngagement'])->name('test.validate.engagement')->withoutMiddleware(['auth', 'auth:web']);
+    Route::get('/test-club-details/{clubId}', [App\Http\Controllers\CompetitionController::class, 'clubDetails'])->name('test.club.details')->withoutMiddleware(['auth', 'auth:web']);
+    Route::post('/test-export-club-data/{clubId}', [App\Http\Controllers\CompetitionController::class, 'exportClubData'])->name('test.export.club.data')->withoutMiddleware(['auth', 'auth:web']);
+    Route::post('/test-suspend-engagement/{clubId}', [App\Http\Controllers\CompetitionController::class, 'suspendEngagement'])->name('test.suspend.engagement')->withoutMiddleware(['auth', 'auth:web']);
+    
+    // Routes de test pour les autres pages
+    Route::get('/test-calendrier-global', [App\Http\Controllers\CompetitionController::class, 'associationCalendrierGlobal'])->name('test.calendrier.global')->withoutMiddleware(['auth', 'auth:web']);
+    Route::get('/test-resultats-classements', [App\Http\Controllers\CompetitionController::class, 'associationResultatsClassements'])->name('test.resultats.classements')->withoutMiddleware(['auth', 'auth:web']);
+    Route::get('/test-discipline-sanctions', [App\Http\Controllers\CompetitionController::class, 'associationDisciplineSanctions'])->name('test.discipline.sanctions')->withoutMiddleware(['auth', 'auth:web']);
+    Route::get('/test-rapports-statistiques', [App\Http\Controllers\CompetitionController::class, 'associationRapportsStatistiques'])->name('test.rapports.statistiques')->withoutMiddleware(['auth', 'auth:web']);
+    Route::get('/test-designation-arbitres', [App\Http\Controllers\CompetitionController::class, 'designationArbitres'])->name('test.designation.arbitres')->withoutMiddleware(['auth', 'auth:web']);
     
     // Routes Compétitions - Module FIT (Nouvelles fonctionnalités)
     Route::prefix('competitions')->name('competitions.')->group(function () {
@@ -4758,17 +5297,18 @@ Route::get('/test-pdf', function() {
         return view('modules.referees.index', ['footballType' => 'association']);
     })->name('modules.referees.index');
     
+    // Route pour la gestion des arbitres (avec authentification)
+    Route::get('/referees', function () {
+        return view('modules.referees.index', ['footballType' => 'association']);
+    })->name('referees.index');
+    
     Route::get('/modules/associations', function () {
         $associations = \App\Models\Association::with(['confederation'])->orderBy('name')->get();
         return view('modules.associations.index', compact('associations'));
     })->name('modules.associations.index');
     
-    Route::get('/modules/clubs', function () {
-        $clubs = \App\Models\Club::orderBy('name')->get();
-        $filtered = false;
-        $association = null;
-        return view('modules.clubs.index', compact('clubs', 'filtered', 'association'));
-    })->name('modules.clubs.index');
+    Route::get('/modules/clubs', [App\Http\Controllers\ClubController::class, 'index'])->name('modules.clubs.index');
+    Route::get('/modules/clubs/{club}', [App\Http\Controllers\ClubController::class, 'show'])->name('modules.clubs.show');
     
     Route::get('/modules/administration', function () {
         return view('modules.administration.index', ['footballType' => 'association']);
@@ -5832,5 +6372,267 @@ Route::get('/test-portail-joueur-simple', function (Request $request) {
     ));
 })->name('test.portail.joueur.simple');
 
+// Route de test pour la feuille de match (sans auth)
+Route::get('/referee-match-sheet-test/{matchId}', function ($matchId) {
+    $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
+    if (!$user) {
+        return 'Utilisateur arbitre non trouvé';
+    }
+    
+    auth()->login($user);
+    session(['login_access_type' => 'referee']);
+    
+    try {
+        $match = App\Models\GameMatch::with(['homeTeam', 'awayTeam', 'competition', 'officials'])->find($matchId);
+        if (!$match) {
+            return 'Match non trouvé';
+        }
+        
+        // Vérifier si l'arbitre est assigné à ce match
+        $isAssigned = $match->officials()->where('user_id', $user->id)->exists();
+        if (!$isAssigned) {
+            return 'Vous n\'êtes pas assigné à ce match';
+        }
+        
+        // Pas d'événements pour le moment (table match_events n'existe pas)
+        $events = collect([]);
+        
+        return view('referee.match-sheet', compact('match', 'events'));
+        
+    } catch (Exception $e) {
+        return 'Erreur: ' . $e->getMessage() . ' - Fichier: ' . $e->getFile() . ':' . $e->getLine();
+    }
+});
 
+// Route de test pour la création de rapport de match (sans auth)
+Route::get('/referee-create-report-test', function () {
+    $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
+    if (!$user) {
+        return 'Utilisateur arbitre non trouvé';
+    }
+    
+    auth()->login($user);
+    session(['login_access_type' => 'referee']);
+    
+    try {
+        // Récupérer les matches assignés à l'arbitre
+        $assignedMatches = App\Models\GameMatch::whereHas('officials', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->with(['homeTeam.club', 'awayTeam.club', 'competition'])
+        ->where('status', '!=', 'completed')
+        ->orderBy('match_date')
+        ->get();
+        
+        // Récupérer les matches récents
+        $recentMatches = App\Models\GameMatch::whereHas('officials', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->with(['homeTeam.club', 'awayTeam.club', 'competition'])
+        ->where('status', 'completed')
+        ->orderBy('updated_at', 'desc')
+        ->limit(5)
+        ->get();
+        
+        return view('referee.create-match-report', compact('assignedMatches', 'recentMatches'));
+        
+    } catch (Exception $e) {
+        return 'Erreur: ' . $e->getMessage() . ' - Fichier: ' . $e->getFile() . ':' . $e->getLine();
+    }
+});
 
+// Route de test pour l'authentification complète du portail arbitre
+Route::get('/referee-login-test', function () {
+    $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
+    if (!$user) {
+        return 'Utilisateur arbitre non trouvé';
+    }
+    
+    auth()->login($user);
+    session(['login_access_type' => 'referee']);
+    
+    return redirect()->route('referee.dashboard');
+});
+
+// Route de test pour le système de recherche et pagination
+Route::get('/search-test', function () {
+    // Données de test pour le composant de recherche
+    $searchFields = [
+        [
+            'name' => 'name',
+            'label' => 'Nom du joueur',
+            'type' => 'text',
+            'placeholder' => 'Rechercher par nom...'
+        ],
+        [
+            'name' => 'position',
+            'label' => 'Position',
+            'type' => 'select',
+            'options' => [
+                'Goalkeeper' => 'Gardien',
+                'Defender' => 'Défenseur',
+                'Midfielder' => 'Milieu',
+                'Forward' => 'Attaquant'
+            ]
+        ],
+        [
+            'name' => 'club',
+            'label' => 'Club',
+            'type' => 'text',
+            'placeholder' => 'Rechercher par club...'
+        ],
+        [
+            'name' => 'nationality',
+            'label' => 'Nationalité',
+            'type' => 'text',
+            'placeholder' => 'Rechercher par nationalité...'
+        ],
+        [
+            'name' => 'birth_date',
+            'label' => 'Date de naissance',
+            'type' => 'date_range'
+        ],
+        [
+            'name' => 'status',
+            'label' => 'Statut',
+            'type' => 'select',
+            'options' => [
+                'active' => 'Actif',
+                'inactive' => 'Inactif',
+                'suspended' => 'Suspendu',
+                'injured' => 'Blessé'
+            ]
+        ]
+    ];
+
+    // Données de pagination simulées
+    $currentPage = request('page', 1);
+    $totalPages = 5;
+    $perPage = 20;
+    $totalItems = 100;
+
+    return view('test-search', compact('searchFields', 'currentPage', 'totalPages', 'perPage', 'totalItems'));
+});
+
+// Route de test pour les clubs avec recherche et pagination
+Route::get('/clubs-search-test', function () {
+    $controller = new App\Http\Controllers\ClubController();
+    return $controller->index(request());
+});
+
+// Route de test pour toutes les cartes des modules
+Route::get('/test-all-modules', function () {
+    $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
+    if (!$user) {
+        return 'Utilisateur non trouvé';
+    }
+    
+    auth()->login($user);
+    
+    // Liste de tous les modules à tester
+    $modules = [
+        // Modules principaux
+        ['name' => 'Dashboard Principal', 'url' => '/modules', 'description' => 'Page d\'accueil des modules'],
+        ['name' => 'Joueurs', 'url' => '/modules/players', 'description' => 'Gestion des joueurs'],
+        ['name' => 'Clubs', 'url' => '/modules/clubs', 'description' => 'Gestion des clubs'],
+        ['name' => 'Compétitions', 'url' => '/modules/competitions', 'description' => 'Gestion des compétitions'],
+        ['name' => 'Équipes', 'url' => '/modules/teams', 'description' => 'Gestion des équipes'],
+        ['name' => 'Arbitres', 'url' => '/modules/referees', 'description' => 'Gestion des arbitres'],
+        ['name' => 'Associations', 'url' => '/modules/associations', 'description' => 'Gestion des associations'],
+        ['name' => 'Confédérations', 'url' => '/modules/confederations', 'description' => 'Gestion des confédérations'],
+        ['name' => 'Classements', 'url' => '/modules/rankings', 'description' => 'Classements des équipes'],
+        ['name' => 'Calendrier', 'url' => '/modules/fixtures', 'description' => 'Calendrier des matches'],
+        
+        // Modules spécialisés
+        ['name' => 'Portail Arbitre', 'url' => '/referee/dashboard', 'description' => 'Dashboard des arbitres'],
+        ['name' => 'Portail Secrétaire', 'url' => '/modules/secretary/dashboard', 'description' => 'Dashboard des secrétaires'],
+        ['name' => 'Gestion des Rôles', 'url' => '/modules/role-management', 'description' => 'Gestion des rôles utilisateurs'],
+        ['name' => 'Gestion des Utilisateurs', 'url' => '/modules/user-management', 'description' => 'Gestion des utilisateurs'],
+        
+        // Modules DTN
+        ['name' => 'DTN Dashboard', 'url' => '/modules/dtn/dashboard', 'description' => 'Dashboard DTN'],
+        ['name' => 'DTN Sélections', 'url' => '/modules/dtn/selections', 'description' => 'Gestion des sélections DTN'],
+        ['name' => 'DTN Équipes', 'url' => '/modules/dtn/teams', 'description' => 'Gestion des équipes DTN'],
+        ['name' => 'DTN Planning', 'url' => '/modules/dtn/planning', 'description' => 'Planning DTN'],
+        ['name' => 'DTN Rapports', 'url' => '/modules/dtn/reports', 'description' => 'Rapports DTN'],
+        
+        // Modules RPM
+        ['name' => 'RPM Dashboard', 'url' => '/modules/rpm/dashboard', 'description' => 'Dashboard RPM'],
+        ['name' => 'RPM Matches', 'url' => '/modules/rpm/matches', 'description' => 'Gestion des matches RPM'],
+        ['name' => 'RPM Sessions', 'url' => '/modules/rpm/sessions', 'description' => 'Sessions RPM'],
+        ['name' => 'RPM Rapports', 'url' => '/modules/rpm/reports', 'description' => 'Rapports RPM'],
+        
+        // Modules Santé
+        ['name' => 'Santé Dashboard', 'url' => '/modules/healthcare/dashboard', 'description' => 'Dashboard santé'],
+        ['name' => 'Santé Prédictions', 'url' => '/modules/healthcare/predictions', 'description' => 'Prédictions santé'],
+        ['name' => 'Médical', 'url' => '/modules/medical', 'description' => 'Module médical'],
+        
+        // Modules FIFA
+        ['name' => 'FIFA Dashboard', 'url' => '/modules/fifa/dashboard', 'description' => 'Dashboard FIFA'],
+        
+        // Modules Licences
+        ['name' => 'Licences', 'url' => '/modules/licenses', 'description' => 'Gestion des licences'],
+        ['name' => 'Validation Licences', 'url' => '/modules/licenses/validation', 'description' => 'Validation des licences'],
+        
+        // Modules Performances
+        ['name' => 'Performances', 'url' => '/modules/performances', 'description' => 'Gestion des performances'],
+        
+        // Modules Appointments
+        ['name' => 'Rendez-vous', 'url' => '/modules/appointments', 'description' => 'Gestion des rendez-vous'],
+        
+        // Modules Device Connections
+        ['name' => 'Connexions Appareils', 'url' => '/modules/device-connections', 'description' => 'Gestion des connexions d\'appareils'],
+    ];
+    
+    return view('test-all-modules', compact('modules'));
+});
+
+// Route de test pour le portail arbitre - VERSION FINALE QUI FONCTIONNE
+Route::get('/referee-dashboard-test', function () {
+    $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
+    if (!$user) {
+        return 'Utilisateur arbitre non trouvé';
+    }
+    
+    auth()->login($user);
+    session(['login_access_type' => 'referee']);
+    
+    try {
+        // Utiliser les vraies données de la base
+        $assignedMatches = App\Models\GameMatch::whereHas('officials', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->with(['homeTeam', 'awayTeam', 'competition', 'officials'])
+        ->where('status', '!=', 'completed')
+        ->orderBy('match_date')
+        ->get();
+
+        $recentMatches = App\Models\GameMatch::whereHas('officials', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->with(['homeTeam', 'awayTeam', 'competition', 'officials'])
+        ->where('status', 'completed')
+        ->orderBy('updated_at', 'desc')
+        ->limit(5)
+        ->get();
+
+        $stats = [
+            'upcoming_matches' => $assignedMatches->count(),
+            'completed_matches' => $recentMatches->count(),
+            'pending_reports' => 0, // Table match_events n'existe pas encore
+            'active_competitions' => App\Models\Competition::whereHas('matches.officials', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->where('status', 'active')->count(),
+        ];
+
+        return view('referee.dashboard', compact('assignedMatches', 'recentMatches', 'stats'));
+        
+    } catch (Exception $e) {
+        return 'Erreur: ' . $e->getMessage() . ' - Fichier: ' . $e->getFile() . ':' . $e->getLine();
+    }
+});
+
+// Route de test pour toutes les cartes des modules
+Route::get('/test-modules-cards', function () {
+    return view('test-modules-cards');
+});

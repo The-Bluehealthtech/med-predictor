@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('match_officials', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('match_id')->constrained('game_matches')->onDelete('cascade');
+            $table->foreignId('match_id')->constrained('matches')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->enum('role', ['main_referee', 'assistant_referee_1', 'assistant_referee_2', 'fourth_official']);
             $table->timestamps();

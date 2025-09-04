@@ -1,0 +1,432 @@
+<template>
+  <div class="bg-white rounded-lg shadow-md">
+    <!-- Header avec filtres -->
+    <div class="p-6 border-b border-gray-200">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">{{ $t('auto.key319') }}</h2>
+          <p class="text-gray-600">{{ $t('auto.key320') }}</p>
+        </div>
+        <div class="flex gap-2">
+          <button
+            @click="showCreateModal = true"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Nouveau Transfert
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtres -->
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('auto.key321') }}</label>
+          <select v-model="filters.status" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option value="">{{ $t('auto.key322') }}</option>
+            <option value="draft">{{ $t('auto.key323') }}</option>
+            <option value="pending">{{ $t('auto.key324') }}</option>
+            <option value="submitted">{{ $t('auto.key325') }}</option>
+            <option value="approved">{{ $t('auto.key326') }}</option>
+            <option value="rejected">{{ $t('auto.key327') }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('auto.key328') }}</label>
+          <select v-model="filters.type" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option value="">{{ $t('auto.key329') }}</option>
+            <option value="permanent">{{ $t('auto.key330') }}</option>
+            <option value="loan">{{ $t('auto.key331') }}</option>
+            <option value="free_agent">{{ $t('auto.key332') }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('auto.key333') }}</label>
+          <select v-model="filters.club_id" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option value="">{{ $t('auto.key334') }}</option>
+            <option v-for="club in clubs" :key="club.id" :value="club.id">{{ club.name }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('auto.key335') }}</label>
+          <select v-model="filters.player_id" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option value="">{{ $t('auto.key336') }}</option>
+            <option v-for="player in players" :key="player.id" :value="player.id">{{ player.name }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liste des transferts -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('auto.key337') }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('auto.key338') }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('auto.key339') }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('auto.key340') }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('auto.key341') }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('auto.key342') }}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $t('auto.key343') }}</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr v-for="transfer in transfers" :key="transfer.id" class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <img v-if="transfer.player.photo_url" :src="transfer.player.photo_url" class="h-10 w-10 rounded-full" />
+                  <div v-else class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                    <span class="text-gray-600 font-medium">{{ transfer.player.name.charAt(0) }}</span>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">{{ transfer.player.name }}</div>
+                  <div class="text-sm text-gray-500">{{ transfer.player.position }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">
+                <div>{{ transfer.club_origin.name }}</div>
+                <div class="text-gray-500">{{ $t('auto.key344') }}</div>
+                <div>{{ transfer.club_destination.name }}</div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                    :class="getTransferTypeClass(transfer.transfer_type)">
+                {{ getTransferTypeLabel(transfer.transfer_type) }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                    :class="getStatusClass(transfer.transfer_status)">
+                {{ getStatusLabel(transfer.transfer_status) }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span v-if="transfer.is_international" class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                    :class="getItcStatusClass(transfer.itc_status)">
+                {{ getItcStatusLabel(transfer.itc_status) }}
+              </span>
+              <span v-else class="text-gray-400 text-xs">{{ $t('auto.key345') }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              {{ transfer.transfer_fee ? formatCurrency(transfer.transfer_fee, transfer.currency) : 'Gratuit' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex space-x-2">
+                <button
+                  @click="viewTransfer(transfer)"
+                  class="text-blue-600 hover:text-blue-900"
+                >
+                  Voir
+                </button>
+                <button
+                  v-if="transfer.transfer_status === 'draft'"
+                  @click="editTransfer(transfer)"
+                  class="text-indigo-600 hover:text-indigo-900"
+                >
+                  Modifier
+                </button>
+                <button
+                  v-if="transfer.can_be_submitted"
+                  @click="submitToFifa(transfer)"
+                  class="text-green-600 hover:text-green-900"
+                >
+                  Soumettre
+                </button>
+                <button
+                  v-if="transfer.is_itc_overdue"
+                  @click="checkItcStatus(transfer)"
+                  class="text-red-600 hover:text-red-900"
+                >
+                  Vérifier ITC
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="px-6 py-4 border-t border-gray-200">
+      <div class="flex items-center justify-between">
+        <div class="text-sm text-gray-700">
+          Affichage de {{ pagination.from }} à {{ pagination.to }} sur {{ pagination.total }} résultats
+        </div>
+        <div class="flex space-x-2">
+          <button
+            v-if="pagination.prev_page_url"
+            @click="loadPage(pagination.current_page - 1)"
+            class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+          >
+            Précédent
+          </button>
+          <button
+            v-if="pagination.next_page_url"
+            @click="loadPage(pagination.current_page + 1)"
+            class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+          >
+            Suivant
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de création -->
+    <TransferCreateModal
+      v-if="showCreateModal"
+      @close="showCreateModal = false"
+      @created="onTransferCreated"
+    />
+  </div>
+</template>
+
+<script>
+import { ref, reactive, onMounted, watch } from 'vue'
+import TransferCreateModal from './TransferCreateModal.vue'
+
+export default {
+  name: 'TransferList',
+  components: {
+    TransferCreateModal
+  },
+  setup() {
+    const transfers = ref([])
+    const clubs = ref([])
+    const players = ref([])
+    const pagination = ref({})
+    const showCreateModal = ref(false)
+    const loading = ref(false)
+
+    const filters = reactive({
+      status: '',
+      type: '',
+      club_id: '',
+      player_id: ''
+    })
+
+    const loadTransfers = async (page = 1) => {
+      loading.value = true
+      try {
+        const params = new URLSearchParams({
+          page,
+          ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value))
+        })
+
+        const response = await fetch(`/api/transfers?${params}`)
+        const data = await response.json()
+
+        if (data.success) {
+          transfers.value = data.data.data
+          pagination.value = data.data
+        }
+      } catch (error) {
+        console.error('Error loading transfers:', error)
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const loadClubs = async () => {
+      try {
+        const response = await fetch('/api/clubs')
+        const data = await response.json()
+        if (data.success) {
+          clubs.value = data.data
+        }
+      } catch (error) {
+        console.error('Error loading clubs:', error)
+      }
+    }
+
+    const loadPlayers = async () => {
+      try {
+        const response = await fetch('/api/players')
+        const data = await response.json()
+        if (data.success) {
+          players.value = data.data
+        }
+      } catch (error) {
+        console.error('Error loading players:', error)
+      }
+    }
+
+    const submitToFifa = async (transfer) => {
+      try {
+        const response = await fetch(`/api/transfers/${transfer.id}/submit-fifa`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+        })
+
+        const data = await response.json()
+        if (data.success) {
+          alert('Transfert soumis à FIFA avec succès')
+          loadTransfers()
+        } else {
+          alert('Erreur: ' + data.message)
+        }
+      } catch (error) {
+        console.error('Error submitting to FIFA:', error)
+        alert('Erreur lors de la soumission à FIFA')
+      }
+    }
+
+    const checkItcStatus = async (transfer) => {
+      try {
+        const response = await fetch(`/api/transfers/${transfer.id}/check-itc`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+        })
+
+        const data = await response.json()
+        if (data.success) {
+          alert(`Statut ITC: ${data.status}`)
+          loadTransfers()
+        } else {
+          alert('Erreur: ' + data.message)
+        }
+      } catch (error) {
+        console.error('Error checking ITC status:', error)
+        alert('Erreur lors de la vérification du statut ITC')
+      }
+    }
+
+    const viewTransfer = (transfer) => {
+      window.location.href = `/transfers/${transfer.id}`
+    }
+
+    const editTransfer = (transfer) => {
+      window.location.href = `/transfers/${transfer.id}/edit`
+    }
+
+    const loadPage = (page) => {
+      loadTransfers(page)
+    }
+
+    const onTransferCreated = () => {
+      showCreateModal.value = false
+      loadTransfers()
+    }
+
+    // Utilitaires
+    const getTransferTypeLabel = (type) => {
+      const labels = {
+        permanent: 'Définitif',
+        loan: 'Prêt',
+        free_agent: 'Agent libre'
+      }
+      return labels[type] || type
+    }
+
+    const getTransferTypeClass = (type) => {
+      const classes = {
+        permanent: 'bg-blue-100 text-blue-800',
+        loan: 'bg-yellow-100 text-yellow-800',
+        free_agent: 'bg-green-100 text-green-800'
+      }
+      return classes[type] || 'bg-gray-100 text-gray-800'
+    }
+
+    const getStatusLabel = (status) => {
+      const labels = {
+        draft: 'Brouillon',
+        pending: 'En attente',
+        submitted: 'Soumis',
+        approved: 'Approuvé',
+        rejected: 'Rejeté'
+      }
+      return labels[status] || status
+    }
+
+    const getStatusClass = (status) => {
+      const classes = {
+        draft: 'bg-gray-100 text-gray-800',
+        pending: 'bg-yellow-100 text-yellow-800',
+        submitted: 'bg-blue-100 text-blue-800',
+        approved: 'bg-green-100 text-green-800',
+        rejected: 'bg-red-100 text-red-800'
+      }
+      return classes[status] || 'bg-gray-100 text-gray-800'
+    }
+
+    const getItcStatusLabel = (status) => {
+      const labels = {
+        not_requested: 'Non demandé',
+        requested: 'Demandé',
+        pending: 'En attente',
+        approved: 'Approuvé',
+        rejected: 'Rejeté',
+        expired: 'Expiré'
+      }
+      return labels[status] || status
+    }
+
+    const getItcStatusClass = (status) => {
+      const classes = {
+        not_requested: 'bg-gray-100 text-gray-800',
+        requested: 'bg-blue-100 text-blue-800',
+        pending: 'bg-yellow-100 text-yellow-800',
+        approved: 'bg-green-100 text-green-800',
+        rejected: 'bg-red-100 text-red-800',
+        expired: 'bg-red-100 text-red-800'
+      }
+      return classes[status] || 'bg-gray-100 text-gray-800'
+    }
+
+    const formatCurrency = (amount, currency) => {
+      return new Intl.NumberFormat('fr-FR', {
+        style: 'currency',
+        currency: currency || 'EUR'
+      }).format(amount)
+    }
+
+    // Watchers
+    watch(filters, () => {
+      loadTransfers()
+    }, { deep: true })
+
+    // Lifecycle
+    onMounted(() => {
+      loadTransfers()
+      loadClubs()
+      loadPlayers()
+    })
+
+    return {
+      transfers,
+      clubs,
+      players,
+      pagination,
+      showCreateModal,
+      loading,
+      filters,
+      submitToFifa,
+      checkItcStatus,
+      viewTransfer,
+      editTransfer,
+      loadPage,
+      onTransferCreated,
+      getTransferTypeLabel,
+      getTransferTypeClass,
+      getStatusLabel,
+      getStatusClass,
+      getItcStatusLabel,
+      getItcStatusClass,
+      formatCurrency
+    }
+  }
+}
+</script> 

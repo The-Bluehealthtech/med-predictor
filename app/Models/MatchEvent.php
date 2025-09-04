@@ -45,7 +45,7 @@ class MatchEvent extends Model
     // Relationships
     public function match(): BelongsTo
     {
-        return $this->belongsTo(MatchModel::class, 'match_id');
+        return $this->belongsTo(GameMatch::class, 'match_id');
     }
 
     public function player(): BelongsTo

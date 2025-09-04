@@ -10,8 +10,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold text-white mb-2">
-                        <i class="fas fa-calendar-alt mr-3"></i>
-                        Fixtures des Compétitions
+                        📅 Fixtures des Compétitions
                     </h1>
                     <p class="text-blue-200">
                         Calendrier et matchs de toutes les compétitions
@@ -19,12 +18,10 @@
                 </div>
                 <div class="flex space-x-3">
                     <a href="{{ route('competitions.association.supervision') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Retour
+                        ← Retour
                     </a>
                     <button onclick="exportFixtures()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        <i class="fas fa-download mr-2"></i>
-                        Exporter
+                        📥 Exporter
                     </button>
                 </div>
             </div>
@@ -58,8 +55,7 @@
                         @endfor
                     </select>
                     <button onclick="clearFilters()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        <i class="fas fa-times mr-2"></i>
-                        Effacer
+                        ❌ Effacer
                     </button>
                 </div>
             </div>
@@ -72,12 +68,10 @@
                     <div class="p-6 border-b border-white/20 bg-gradient-to-r from-blue-600/20 to-purple-600/20">
                         <div class="flex items-center justify-between">
                             <h3 class="text-xl font-semibold text-white">
-                                <i class="fas fa-calendar-alt mr-2 text-blue-400"></i>
-                                Journée {{ $journee['journee'] }} - Championnat Tunisien
+                                📅 Journée {{ $journee['journee'] }} - Championnat Tunisien
                             </h3>
                             <div class="text-sm text-gray-300">
-                                <i class="fas fa-clock mr-1"></i>
-                                {{ $journee['date']->format('d/m/Y') }}
+                                🕐 {{ $journee['date']->format('d/m/Y') }}
                             </div>
                         </div>
                     </div>
@@ -106,11 +100,11 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center space-x-2">
                                                 <div class="text-sm font-medium text-white">
-                                                    {{ $match['domicile']->name ?? 'Équipe Domicile' }}
+                                                    {{ $match['domicile'] }}
                                                 </div>
                                                 <div class="text-blue-300">vs</div>
                                                 <div class="text-sm font-medium text-white">
-                                                    {{ $match['exterieur']->name ?? 'Équipe Extérieur' }}
+                                                    {{ $match['exterieur'] }}
                                                 </div>
                                             </div>
                                         </td>
@@ -134,21 +128,21 @@
                                             {{ $match['arbitre_principal'] }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex space-x-2">
+                                                                                        <div class="flex space-x-2">
                                                 <button onclick="event.stopPropagation(); viewMatchDetails({{ $match['id'] }})" 
-                                                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors" 
+                                                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors"
                                                         title="Voir détails">
-                                                    <i class="fas fa-eye mr-1"></i>Détails
+                                                    👁️ Détails
                                                 </button>
                                                 <button onclick="event.stopPropagation(); viewMatchSheet({{ $match['id'] }})" 
-                                                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors" 
+                                                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors"
                                                         title="Feuille de match">
-                                                    <i class="fas fa-clipboard-list mr-1"></i>Feuille
+                                                    📋 Feuille
                                                 </button>
                                                 <button onclick="event.stopPropagation(); editMatch({{ $match['id'] }})" 
-                                                        class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-xs transition-colors" 
+                                                        class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-xs transition-colors"
                                                         title="Modifier le match">
-                                                    <i class="fas fa-edit mr-1"></i>Modifier
+                                                    ✏️ Modifier
                                                 </button>
                                             </div>
                                         </td>

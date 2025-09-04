@@ -22,6 +22,7 @@
             </div>
         </div>
 
+
         <!-- Quick Stats -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -114,9 +115,9 @@
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h3 class="font-semibold text-gray-900">{{ $match->homeTeam->name ?? 'TBD' }} vs {{ $match->awayTeam->name ?? 'TBD' }}</h3>
-                                                <p class="text-sm text-gray-600">{{ $match->competition->name ?? 'Unknown Competition' }} • {{ $match->competition->seasonRelation->name ?? 'Unknown Season' }} • Matchday {{ $match->matchday ?? 'TBD' }}</p>
-                                                <p class="text-sm text-gray-500">{{ $match->kickoff_time ? $match->kickoff_time->format('D, M j, Y H:i') : 'TBD' }} • {{ $match->venue ?? 'TBD' }}</p>
+                                                <h3 class="font-semibold text-gray-900">{{ $match->homeTeam->club->name ?? $match->homeTeam->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? $match->awayTeam->name ?? 'TBD' }}</h3>
+                                                <p class="text-sm text-gray-600">{{ $match->competition->name ?? 'Unknown Competition' }} • {{ $match->competition->season ?? 'Unknown Season' }} • Matchday {{ $match->round ?? 'TBD' }}</p>
+                                                <p class="text-sm text-gray-500">{{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('D, M j, Y') : 'TBD' }}{{ $match->match_time ? ' ' . \Carbon\Carbon::parse($match->match_time)->format('H:i') : '' }} • {{ $match->venue ?? 'TBD' }}</p>
                                             </div>
                                         </div>
                                     </div>

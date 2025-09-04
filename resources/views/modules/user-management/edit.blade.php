@@ -81,9 +81,9 @@
                             <select name="role" id="role" required
                                     class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm @error('role') border-red-300 @enderror">
                                 <option value="">Select a role</option>
-                                @foreach($roles as $role => $display)
-                                <option value="{{ $role }}" {{ old('role', $user->role) == $role ? 'selected' : '' }}>
-                                    {{ $display }}
+                                @foreach($roles as $role)
+                                <option value="{{ $role->name }}" {{ old('role', $user->role) == $role->name ? 'selected' : '' }}>
+                                    {{ $role->display_name }}
                                 </option>
                                 @endforeach
                             </select>
@@ -167,11 +167,18 @@
                                 <div class="mt-2 text-sm text-gray-700">
                                     @if($user->permissions)
                                         <div class="flex flex-wrap gap-2">
-                                            @foreach($user->permissions as $permission)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                    {{ str_replace('_', ' ', $permission) }}
-                                                </span>
-                                            @endforeach
+                                            @php
+                                                $permissions = is_array($user->permissions) ? $user->permissions : json_decode($user->permissions, true) ?? [];
+                                            @endphp
+                                            @if(is_array($permissions) && count($permissions) > 0)
+                                                @foreach($permissions as $permission)
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        {{ str_replace('_', ' ', $permission) }}
+                                                    </span>
+                                                @endforeach
+                                            @else
+                                                <p>No specific permissions assigned</p>
+                                            @endif
                                         </div>
                                     @else
                                         <p>No specific permissions assigned</p>

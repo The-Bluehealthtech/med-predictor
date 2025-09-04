@@ -1,0 +1,1 @@
+<x-app-layout><div id="rpm-sessions"></div></x-app-layout>

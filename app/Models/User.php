@@ -348,6 +348,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relation avec les assignations d'arbitrage
+     */
+    public function matchOfficials(): HasMany
+    {
+        return $this->hasMany(MatchOfficial::class, 'user_id');
+    }
+
+    /**
      * Check if the user has a specific role.
      */
     public function hasRole($role): bool
@@ -384,8 +392,7 @@ class User extends Authenticatable
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'email' => $this->email,
-            'role' => $this->role,
+             'role' => $this->role,
             'status' => $this->status,
             'club_id' => $this->club_id,
             'association_id' => $this->association_id,

@@ -43,7 +43,7 @@
                                             <div class="flex items-center justify-between">
                                                 <div>
                                                     <h3 class="font-semibold text-gray-900">
-                                                        {{ $match->homeTeam->name ?? 'TBD' }} vs {{ $match->awayTeam->name ?? 'TBD' }}
+                                                        {{ $match->homeTeam->club->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? 'TBD' }}
                                                     </h3>
                                                     <p class="text-sm text-gray-600">
                                                         Matchday {{ $match->matchday ?? 'N/A' }} • {{ $match->kickoff_time ? $match->kickoff_time->format('D, M j, Y g:i A') : 'TBD' }}
@@ -58,7 +58,8 @@
                                                     </span>
                                                     <div class="mt-2">
                                                         <a href="{{ route('referee.match-sheet', $match->id) }}" 
-                                                           class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+ouioui
+output_add_rewrite_varouiok                                                           class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
                                                             View Match Sheet
                                                         </a>
                                                     </div>

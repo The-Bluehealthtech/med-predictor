@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  # Service principal pour l'audit
+  audit-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.ci
+    container_name: db-audit-runner
+    environment:
+      - PHP_VERSION=8.2
+      - COMPOSER_CACHE_DIR=/var/www/.composer-cache
+      - AUDIT_REPORT_DIR=/var/www/audit-reports
+    volumes:
+      - ./:/var/www
+      - composer-cache:/var/www/.composer-cache
+      - audit-reports:/var/www/audit-reports
+    working_dir: /var/www
+    command: >
+      sh -c "
+        echo '🔍 Début de l\'audit CI/CD...' &&
+        composer install --prefer-dist --no-progress --no-interaction &&
+        cp .env.example .env &&
+        php artisan key:generate &&
+        touch database/database.sqlite &&
+        echo 'DB_CONNECTION=sqlite' >> .env &&
+        echo 'DB_DATABASE=database/database.sqlite' >> .env &&
+        php artisan migrate --force &&
+        php artisan project:db:audit &&
+        echo '✅ Audit terminé avec succès !'
+      "
+
+  # Service de base de données SQLite pour les tests
+  sqlite-db:
+    image: alpine:latest
+    container_name: sqlite-test-db
+    volumes:
+      - ./database:/database
+    command: >
+      sh -c "
+        apk add --no-cache sqlite &&
+        touch /database/database.sqlite &&
+        echo 'Base SQLite créée pour les tests CI/CD'
+      "
+
+  # Service de génération de rapports
+  report-generator:
+    image: alpine:latest
+    container_name: report-generator
+    volumes:
+      - ./storage/logs:/logs
+      - ./audit-reports:/reports
+    command: >
+      sh -c "
+        apk add --no-cache jq &&
+        echo '📊 Génération des rapports...' &&
+        LATEST_REPORT=\$(ls -t /logs/db-audit-*.log | head -1) &&
+        if [ -n \"\$LATEST_REPORT\" ]; then
+          echo 'Rapport trouvé: \$LATEST_REPORT' &&
+          cp \"\$LATEST_REPORT\" /reports/latest-audit.json &&
+          echo 'Rapport copié dans /reports/' &&
+          jq '.audit_summary' \"\$LATEST_REPORT\" > /reports/summary.json &&
+          echo 'Résumé extrait avec succès'
+        else
+          echo '❌ Aucun rapport trouvé'
+          exit 1
+        fi
+      "
+    depends_on:
+      - audit-runner
+
+  # Service de notification (exemple avec webhook)
+  notification-service:
+    image: curlimages/curl:latest
+    container_name: notification-service
+    volumes:
+      - ./audit-reports:/reports
+    environment:
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:8080/webhook}
+    command: >
+      sh -c "
+        echo '🔔 Service de notification démarré' &&
+        if [ -f /reports/summary.json ]; then
+          echo 'Résumé trouvé, envoi de la notification...' &&
+          curl -X POST -H 'Content-Type: application/json' \
+               -d @/reports/summary.json \
+               \$WEBHOOK_URL
+        else
+          echo 'Aucun résumé à envoyer'
+        fi
+      "
+    depends_on:
+      - report-generator
+
+  # Service de monitoring des métriques
+  metrics-monitor:
+    image: alpine:latest
+    container_name: metrics-monitor
+    volumes:
+      - ./audit-reports:/reports
+    command: >
+      sh -c "
+        apk add --no-cache jq &&
+        echo '📈 Monitoring des métriques...' &&
+        if [ -f /reports/latest-audit.json ]; then
+          SCORE=\$(jq -r '.audit_summary.cleanliness_score' /reports/latest-audit.json | sed 's/%//') &&
+          TABLES=\$(jq -r '.audit_summary.total_tables' /reports/latest-audit.json) &&
+          ORPHAN=\$(jq -r '.orphan_tables | length' /reports/latest-audit.json) &&
+          echo \"Score: \$SCORE% | Tables: \$TABLES | Orphelines: \$ORPHAN\" &&
+          if [ \"\$SCORE\" -lt 80 ]; then
+            echo '⚠️  Score bas détecté !' &&
+            exit 1
+          else
+            echo '✅ Score acceptable'
+          fi
+        else
+          echo '❌ Aucun rapport à analyser'
+          exit 1
+        fi
+      "
+    depends_on:
+      - report-generator
+
+  # Service de nettoyage automatique
+  cleanup-service:
+    image: alpine:latest
+    container_name: cleanup-service
+    volumes:
+      - ./storage/logs:/logs
+      - ./audit-reports:/reports
+    command: >
+      sh -c "
+        echo '🧹 Service de nettoyage démarré' &&
+        echo 'Suppression des anciens rapports (plus de 7 jours)...' &&
+        find /logs -name 'db-audit-*.log' -mtime +7 -delete &&
+        find /reports -name '*.json' -mtime +7 -delete &&
+        echo 'Nettoyage terminé'
+      "
+
+volumes:
+  composer-cache:
+    driver: local
+  audit-reports:
+    driver: local
+
+networks:
+  default:
+    name: db-audit-network

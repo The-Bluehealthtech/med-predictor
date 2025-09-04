@@ -30,16 +30,40 @@ class PermissionMiddleware
 
         $user = auth()->user();
         
-        // Vérifier si l'utilisateur a la permission en utilisant les Gates Laravel
-        if (!Gate::allows($permission)) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => 'Forbidden. Insufficient permissions.',
-                    'error' => 'INSUFFICIENT_PERMISSIONS'
-                ], 403);
+        // Vérifier d'abord les permissions individuelles de l'utilisateur
+        $userPermissions = $user->permissions ?? [];
+        if (is_string($userPermissions)) {
+            $userPermissions = json_decode($userPermissions, true) ?? [];
+        }
+        
+        // Si l'utilisateur a des permissions individuelles, les vérifier
+        if (!empty($userPermissions)) {
+            if (!in_array($permission, $userPermissions)) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => 'Forbidden. Insufficient permissions.',
+                        'error' => 'INSUFFICIENT_PERMISSIONS',
+                        'required_permission' => $permission,
+                        'user_permissions' => $userPermissions
+                    ], 403);
+                }
+                
+                abort(403, 'Forbidden. Insufficient permissions.');
             }
-            
-            abort(403, 'Forbidden. Insufficient permissions.');
+        } else {
+            // Fallback sur les Gates Laravel (basés sur les rôles)
+            if (!Gate::allows($permission)) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => 'Forbidden. Insufficient permissions.',
+                        'error' => 'INSUFFICIENT_PERMISSIONS',
+                        'required_permission' => $permission,
+                        'user_role' => $user->role
+                    ], 403);
+                }
+                
+                abort(403, 'Forbidden. Insufficient permissions.');
+            }
         }
 
         return $next($request);

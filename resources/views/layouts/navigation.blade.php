@@ -198,7 +198,16 @@
                 <!-- User Profile -->
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-blue-100 text-gray-700 hover:text-blue-700 transition-colors">
-                        <span>{{ $user->name ?? 'User' }}</span>
+                        <!-- Indicateur de connexion -->
+                        <div class="flex items-center space-x-2">
+                            <div class="flex items-center space-x-1">
+                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Session active"></div>
+                                <span class="text-xs text-green-600 font-medium">Connecté</span>
+                            </div>
+                            <span class="text-gray-400">|</span>
+                            <span class="font-semibold">{{ $user->name ?? 'User' }}</span>
+                            <span class="text-xs text-gray-500">({{ ucfirst($user->role ?? 'user') }})</span>
+                        </div>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>

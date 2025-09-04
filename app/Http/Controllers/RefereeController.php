@@ -22,34 +22,41 @@ class RefereeController extends Controller
     /**
      * Referee dashboard
      */
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         try {
             $user = auth()->user();
             
-            $assignedMatches = GameMatch::whereHas('officials', function ($query) use ($user) {
+
+            // Construction de la requête pour les matches assignés
+            $assignedQuery = GameMatch::whereHas('officials', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->with(['homeTeam', 'awayTeam', 'competition.seasonRelation', 'officials'])
-            ->where('match_status', '!=', 'completed')
-            ->orderBy('kickoff_time')
-            ->get();
+            ->with(['homeTeam.club', 'awayTeam.club', 'competition', 'officials'])
+            ->where('status', '!=', 'completed');
 
+            // Tri par défaut
+            $sortBy = $request->get('sort_by', 'match_date');
+            $sortOrder = $request->get('sort_order', 'asc');
+            $assignedQuery->orderBy($sortBy, $sortOrder);
+
+            // Pagination pour les matches assignés
+            $assignedMatches = $assignedQuery->paginate(20)->appends($request->query());
+
+            // Matches récents (sans pagination, limité à 5)
             $recentMatches = GameMatch::whereHas('officials', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->with(['homeTeam', 'awayTeam', 'competition.seasonRelation', 'officials'])
-            ->where('match_status', 'completed')
-            ->orderBy('completed_at', 'desc')
+            ->with(['homeTeam.club', 'awayTeam.club', 'competition', 'officials'])
+            ->where('status', 'completed')
+            ->orderBy('updated_at', 'desc')
             ->limit(5)
             ->get();
 
             $stats = [
-                'upcoming_matches' => $assignedMatches->count(),
+                'upcoming_matches' => $assignedMatches->total(),
                 'completed_matches' => $recentMatches->count(),
-                'pending_reports' => MatchEvent::whereHas('match.officials', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })->where('status', 'pending')->count(),
+                'pending_reports' => 0, // Table match_events n'existe pas encore
                 'active_competitions' => Competition::whereHas('matches.officials', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 })->where('status', 'active')->count(),
@@ -105,26 +112,6 @@ class RefereeController extends Controller
         return view('referee.match-sheet', compact('match', 'events'));
     }
 
-    /**
-     * Show match report form
-     */
-    public function createMatchReport()
-    {
-        $user = auth()->user();
-        
-        $recentMatches = GameMatch::whereHas('officials', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
-        ->with(['homeTeam', 'awayTeam', 'competition'])
-        ->where('match_status', 'completed')
-        ->whereDoesntHave('events', function ($query) {
-            $query->where('event_type', 'match_report');
-        })
-        ->orderBy('completed_at', 'desc')
-        ->get();
-
-        return view('referee.create-match-report', compact('recentMatches'));
-    }
 
     /**
      * Show performance statistics
@@ -405,6 +392,89 @@ class RefereeController extends Controller
                 'success' => false,
                 'message' => 'Failed to confirm event: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Show create match report page
+     */
+    public function createMatchReport(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            
+            
+            // Construction de la requête pour les matches assignés
+            $assignedQuery = GameMatch::whereHas('officials', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with(['homeTeam.club', 'awayTeam.club', 'competition'])
+            ->where('status', '!=', 'completed');
+
+            // Tri par défaut
+            $sortBy = $request->get('sort_by', 'match_date');
+            $sortOrder = $request->get('sort_order', 'asc');
+            $assignedQuery->orderBy($sortBy, $sortOrder);
+
+            // Pagination pour les matches assignés
+            $assignedMatches = $assignedQuery->paginate(20)->appends($request->query());
+            
+            // Récupérer les matches récents (sans pagination, limité à 5)
+            $recentMatches = GameMatch::whereHas('officials', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with(['homeTeam.club', 'awayTeam.club', 'competition'])
+            ->where('status', 'completed')
+            ->orderBy('updated_at', 'desc')
+            ->limit(5)
+            ->get();
+            
+            return view('referee.create-match-report', compact('assignedMatches', 'recentMatches'));
+            
+        } catch (\Exception $e) {
+            Log::error('Create match report error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to load create match report page');
+        }
+    }
+
+    /**
+     * Show detailed match report form for a specific match
+     */
+    public function createDetailedMatchReport($matchId)
+    {
+        try {
+            $user = auth()->user();
+            
+            // Récupérer le match avec toutes les relations nécessaires
+            $match = GameMatch::with([
+                'homeTeam.club', 
+                'awayTeam.club', 
+                'competition',
+                'officials.user'
+            ])->find($matchId);
+            
+            if (!$match) {
+                return redirect()->route('referee.create-match-report')->with('error', 'Match non trouvé');
+            }
+            
+            // Vérifier si l'arbitre est assigné à ce match
+            $isAssigned = $match->officials()->where('user_id', $user->id)->exists();
+            if (!$isAssigned) {
+                return redirect()->route('referee.create-match-report')->with('error', 'Vous n\'êtes pas assigné à ce match');
+            }
+            
+            // Récupérer les joueurs des équipes
+            $homeTeamPlayers = $match->homeTeam->players ?? collect([]);
+            $awayTeamPlayers = $match->awayTeam->players ?? collect([]);
+            
+            // Récupérer les officiels du match
+            $officials = $match->officials()->with('user')->get();
+            
+            return view('referee.create-report-form', compact('match', 'homeTeamPlayers', 'awayTeamPlayers', 'officials'));
+            
+        } catch (\Exception $e) {
+            Log::error('Create detailed match report error: ' . $e->getMessage());
+            return redirect()->route('referee.create-match-report')->with('error', 'Erreur lors du chargement du formulaire de rapport');
         }
     }
 }

@@ -40,7 +40,14 @@
                         class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
                     <option value="">Sélectionner...</option>
                     <option value="player">Joueur</option>
-                    <option value="admin">Administrateur</option>
+                    <option value="referee">Arbitre</option>
+                    <option value="club_admin">Administrateur Club</option>
+                    <option value="club_manager">Manager Club</option>
+                    <option value="club_medical">Médecin Club</option>
+                    <option value="association_admin">Administrateur Association</option>
+                    <option value="association_registrar">Enregistreur Association</option>
+                    <option value="association_medical">Médecin Association</option>
+                    <option value="system_admin">Administrateur Système</option>
                 </select>
             </div>
 
@@ -70,8 +77,11 @@
 
         <div class="mt-8 text-center">
             <p class="text-blue-200 text-sm">
-                <strong>Joueurs :</strong> Utilisez votre email et mot de passe<br>
-                <strong>Admin :</strong> Accès complet au système
+                <strong>Joueurs :</strong> Accès au portail joueur<br>
+                <strong>Arbitres :</strong> Accès au portail arbitre<br>
+                <strong>Clubs :</strong> Gestion des équipes et joueurs<br>
+                <strong>Associations :</strong> Gestion des compétitions<br>
+                <strong>Système :</strong> Accès complet au système
             </p>
         </div>
 
@@ -79,12 +89,14 @@
             <a href="/" class="text-blue-300 hover:text-blue-200 text-sm underline block">
                 ← Retour à l'accueil
             </a>
-            <a href="/joueur/7" class="text-blue-300 hover:text-blue-200 text-sm underline mr-4">
-                Accès direct (démo)
-            </a>
-            <a href="{{ route('landing') }}" class="text-blue-300 hover:text-blue-200 text-sm underline">
-                ← Retour à l'accueil
-            </a>
+            <div class="flex justify-center space-x-4">
+                <a href="/joueur/7" class="text-blue-300 hover:text-blue-200 text-sm underline">
+                    Accès joueur (démo)
+                </a>
+                <a href="/referee-dashboard-working" class="text-blue-300 hover:text-blue-200 text-sm underline">
+                    Portail arbitre
+                </a>
+            </div>
         </div>
     </div>
 
@@ -101,6 +113,10 @@
                 form.style.transform = 'translateY(0)';
             }, 100);
         });
+    </script>
+</body>
+</html>
+
     </script>
 </body>
 </html>

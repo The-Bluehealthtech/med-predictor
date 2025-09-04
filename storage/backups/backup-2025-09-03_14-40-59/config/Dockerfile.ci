@@ -1,0 +1,75 @@
+# Dockerfile optimisé pour l'environnement CI/CD
+FROM php:8.2-fpm-alpine
+
+# Variables d'environnement
+ENV PHP_VERSION=8.2
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_CACHE_DIR=/var/www/.composer-cache
+
+# Installation des dépendances système
+RUN apk add --no-cache \
+    git \
+    unzip \
+    sqlite \
+    sqlite-dev \
+    libzip-dev \
+    oniguruma-dev \
+    libxml2-dev \
+    curl \
+    jq \
+    && docker-php-ext-install \
+    pdo_sqlite \
+    mbstring \
+    xml \
+    zip \
+    intl
+
+# Installation de Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Création de l'utilisateur www-data
+RUN addgroup -g 1000 www-data && \
+    adduser -u 1000 -G www-data -s /bin/sh -D www-data
+
+# Création des répertoires nécessaires
+RUN mkdir -p /var/www \
+    /var/www/.composer-cache \
+    /var/www/audit-reports \
+    /var/www/storage/logs \
+    /var/www/database
+
+# Définition du répertoire de travail
+WORKDIR /var/www
+
+# Copie des fichiers de configuration
+COPY composer.json composer.lock ./
+COPY .env.example ./
+
+# Installation des dépendances Composer
+RUN composer install --prefer-dist --no-progress --no-interaction --no-dev --optimize-autoloader
+
+# Copie du code source
+COPY . .
+
+# Configuration des permissions
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www/storage \
+    && chmod -R 755 /var/www/bootstrap/cache
+
+# Configuration PHP pour CI/CD
+RUN echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini \
+    && echo "max_execution_time = 300" >> /usr/local/etc/php/conf.d/docker-php-maxexecution.ini \
+    && echo "date.timezone = UTC" >> /usr/local/etc/php/conf.d/docker-php-timezone.ini
+
+# Script d'entrée pour CI/CD
+COPY docker-entrypoint-ci.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint-ci.sh
+
+# Utilisateur par défaut
+USER www-data
+
+# Point d'entrée
+ENTRYPOINT ["docker-entrypoint-ci.sh"]
+
+# Commande par défaut
+CMD ["php", "artisan", "project:db:audit"]

@@ -1,0 +1,224 @@
+<template>
+    <div
+        class="fifa-card"
+        :class="[
+            `fifa-card--${variant}`,
+            { 'fifa-card--hoverable': hoverable },
+            { 'fifa-card--loading': loading },
+        ]"
+        @click="handleClick"
+    >
+        <!-- Loading State -->
+        <div v-if="loading" class="fifa-card__loading">
+            <div class="fifa-card__loading-spinner"></div>
+            <span class="fifa-card__loading-text">{{ $t('auto.key234') }}</span>
+        </div>
+
+        <!-- Header -->
+        <div v-if="$slots.header || title" class="fifa-card-header">
+            <div class="fifa-card-header__content">
+                <h3 v-if="title" class="fifa-card-title">{{ title }}</h3>
+                <slot name="header"></slot>
+            </div>
+            <div v-if="$slots.headerActions" class="fifa-card-header__actions">
+                <slot name="headerActions"></slot>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="fifa-card-body">
+            <slot></slot>
+        </div>
+
+        <!-- Footer -->
+        <div v-if="$slots.footer" class="fifa-card-footer">
+            <slot name="footer"></slot>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    name: "FifaCard",
+    props: {
+        title: {
+            type: String,
+            default: "",
+        },
+        variant: {
+            type: String,
+            default: "default",
+            validator: (value) =>
+                [
+                    "default",
+                    "primary",
+                    "success",
+                    "warning",
+                    "error",
+                    "info",
+                ].includes(value),
+        },
+        hoverable: {
+            type: Boolean,
+            default: false,
+        },
+        loading: {
+            type: Boolean,
+            default: false,
+        },
+        clickable: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    emits: ["click"],
+    setup(props, { emit }) {
+        const handleClick = (event) => {
+            if (props.clickable && !props.loading) {
+                emit("click", event);
+            }
+        };
+
+        return {
+            handleClick,
+        };
+    },
+};
+</script>
+
+<style scoped>
+.fifa-card {
+    background: var(--fifa-white);
+    border-radius: var(--fifa-radius-lg);
+    border: 1px solid var(--fifa-gray-200);
+    box-shadow: var(--fifa-shadow-sm);
+    transition: all var(--fifa-transition-normal);
+    overflow: hidden;
+    position: relative;
+}
+
+.fifa-card--hoverable:hover {
+    box-shadow: var(--fifa-shadow-lg);
+    transform: translateY(-2px);
+}
+
+.fifa-card--clickable {
+    cursor: pointer;
+}
+
+.fifa-card--loading {
+    pointer-events: none;
+}
+
+/* Variants */
+.fifa-card--primary {
+    border-left: 4px solid var(--fifa-blue-primary);
+}
+
+.fifa-card--success {
+    border-left: 4px solid var(--fifa-success);
+}
+
+.fifa-card--warning {
+    border-left: 4px solid var(--fifa-warning);
+}
+
+.fifa-card--error {
+    border-left: 4px solid var(--fifa-error);
+}
+
+.fifa-card--info {
+    border-left: 4px solid var(--fifa-blue-secondary);
+}
+
+/* Loading State */
+.fifa-card__loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.fifa-card__loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--fifa-gray-200);
+    border-top: 3px solid var(--fifa-blue-primary);
+    border-radius: 50%;
+    animation: fifa-spin 1s linear infinite;
+    margin-bottom: var(--fifa-spacing-sm);
+}
+
+.fifa-card__loading-text {
+    font-size: var(--fifa-text-sm);
+    color: var(--fifa-gray-600);
+}
+
+@keyframes fifa-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Header */
+.fifa-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--fifa-spacing-lg);
+    border-bottom: 1px solid var(--fifa-gray-200);
+    background: var(--fifa-gray-50);
+}
+
+.fifa-card-header__content {
+    flex: 1;
+}
+
+.fifa-card-header__actions {
+    display: flex;
+    gap: var(--fifa-spacing-sm);
+}
+
+.fifa-card-title {
+    font-size: var(--fifa-text-lg);
+    font-weight: var(--fifa-font-weight-semibold);
+    color: var(--fifa-gray-900);
+    margin: 0;
+}
+
+/* Body */
+.fifa-card-body {
+    padding: var(--fifa-spacing-lg);
+}
+
+/* Footer */
+.fifa-card-footer {
+    padding: var(--fifa-spacing-lg);
+    border-top: 1px solid var(--fifa-gray-200);
+    background: var(--fifa-gray-50);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .fifa-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--fifa-spacing-md);
+    }
+
+    .fifa-card-header__actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+</style>

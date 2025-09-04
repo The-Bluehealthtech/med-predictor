@@ -10,7 +10,7 @@
                     <div>
                         <h1 class="text-3xl font-bold">Match Sheet</h1>
                         <p class="text-orange-100 mt-2">
-                            {{ $match->homeTeam->name ?? 'TBD' }} vs {{ $match->awayTeam->name ?? 'TBD' }}
+                            {{ $match->homeTeam->club->name ?? $match->homeTeam->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? $match->awayTeam->name ?? 'TBD' }}
                         </p>
                         <p class="text-orange-100 text-sm">
                             {{ $match->competition->name ?? 'Competition' }} • {{ $match->kickoff_time ? $match->kickoff_time->format('D, M j, Y g:i A') : 'TBD' }}
@@ -38,11 +38,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <h3 class="font-medium text-gray-900">Home Team</h3>
-                                <p class="text-gray-600">{{ $match->homeTeam->name ?? 'TBD' }}</p>
+                                <p class="text-gray-600">{{ $match->homeTeam->club->name ?? $match->homeTeam->name ?? 'TBD' }}</p>
                             </div>
                             <div>
                                 <h3 class="font-medium text-gray-900">Away Team</h3>
-                                <p class="text-gray-600">{{ $match->awayTeam->name ?? 'TBD' }}</p>
+                                <p class="text-gray-600">{{ $match->awayTeam->club->name ?? $match->awayTeam->name ?? 'TBD' }}</p>
                             </div>
                             <div>
                                 <h3 class="font-medium text-gray-900">Competition</h3>

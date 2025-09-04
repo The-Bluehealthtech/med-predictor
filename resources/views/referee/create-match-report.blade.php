@@ -23,35 +23,71 @@
             </div>
         </div>
 
+
         <!-- Content -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-6">Select Match for Report</h2>
                 
-                @if($recentMatches->count() > 0)
-                    <div class="space-y-4">
-                        @foreach($recentMatches as $match)
-                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h3 class="font-semibold text-gray-900">
-                                            {{ $match->homeTeam->name ?? 'TBD' }} vs {{ $match->awayTeam->name ?? 'TBD' }}
-                                        </h3>
-                                        <p class="text-sm text-gray-600">
-                                            {{ $match->competition->name ?? 'Competition' }} • {{ $match->completed_at ? $match->completed_at->format('M j, Y') : 'N/A' }}
-                                        </p>
-                                        <p class="text-sm text-gray-500">
-                                            Final Score: {{ $match->home_score ?? 0 }} - {{ $match->away_score ?? 0 }}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                                            Create Report
-                                        </button>
+                <!-- Matches Assignés (à venir) -->
+                @if($assignedMatches->count() > 0)
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Matches Assignés (À Venir)</h3>
+                        <div class="space-y-4">
+                            @foreach($assignedMatches as $match)
+                                <div class="border border-blue-200 rounded-lg p-4 hover:bg-blue-50 transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900">
+                                                {{ $match->homeTeam->club->name ?? $match->homeTeam->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? $match->awayTeam->name ?? 'TBD' }}
+                                            </h4>
+                                            <p class="text-sm text-gray-600">
+                                                {{ $match->competition->name ?? 'Competition' }} • {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('M j, Y H:i') : 'N/A' }}
+                                            </p>
+                                            <p class="text-sm text-blue-600">
+                                                {{ $match->venue ?? 'TBD' }}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                {{ ucfirst($match->status ?? 'pending') }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Matches Terminés -->
+                @if($recentMatches->count() > 0)
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Matches Terminés - Créer un Rapport</h3>
+                        <div class="space-y-4">
+                            @foreach($recentMatches as $match)
+                                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900">
+                                                {{ $match->homeTeam->club->name ?? $match->homeTeam->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? $match->awayTeam->name ?? 'TBD' }}
+                                            </h4>
+                                            <p class="text-sm text-gray-600">
+                                                {{ $match->competition->name ?? 'Competition' }} • {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('M j, Y') : 'N/A' }}
+                                            </p>
+                                            <p class="text-sm text-gray-500">
+                                                Final Score: {{ $match->home_score ?? 0 }} - {{ $match->away_score ?? 0 }}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <a href="{{ route('referee.create-detailed-match-report', $match->id) }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                                Create Detailed Report
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 @else
                     <div class="text-center py-12">

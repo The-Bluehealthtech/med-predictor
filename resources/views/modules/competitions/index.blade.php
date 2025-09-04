@@ -11,6 +11,126 @@
             Module Compétitions
         </h1>
         <p class="text-gray-600">Gestion complète des compétitions avec intégration FIFA Connect</p>
+        
+        <!-- Statistiques en temps réel -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-trophy text-blue-600 text-2xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-blue-600">Compétitions Actives</p>
+                        <p class="text-2xl font-bold text-blue-900">{{ $competitions->count() }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-futbol text-green-600 text-2xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-green-600">Total Matchs</p>
+                        <p class="text-2xl font-bold text-green-900">{{ $totalMatches }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-clock text-yellow-600 text-2xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-yellow-600">À Venir</p>
+                        <p class="text-2xl font-bold text-yellow-900">{{ $upcomingMatches }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check-circle text-purple-600 text-2xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-purple-600">Terminés</p>
+                        <p class="text-2xl font-bold text-purple-900">{{ $completedMatches }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prochains Matchs et Résultats Récents -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Prochains Matchs -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                <i class="fas fa-clock text-yellow-500 mr-2"></i>
+                Prochains Matchs
+            </h2>
+            @if($nextMatches->count() > 0)
+                <div class="space-y-3">
+                    @foreach($nextMatches as $match)
+                        <div class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="font-medium text-gray-900">
+                                        {{ $match->homeTeam->club->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? 'TBD' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        {{ $match->competition->name ?? 'Compétition' }} • {{ $match->match_date ?? 'N/A' }}
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        {{ $match->match_time ?? 'N/A' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-gray-500 text-center py-4">Aucun match à venir</p>
+            @endif
+        </div>
+        
+        <!-- Résultats Récents -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                Résultats Récents
+            </h2>
+            @if($recentResults->count() > 0)
+                <div class="space-y-3">
+                    @foreach($recentResults as $match)
+                        <div class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="font-medium text-gray-900">
+                                        {{ $match->homeTeam->club->name ?? 'TBD' }} {{ $match->home_score ?? 0 }} - {{ $match->away_score ?? 0 }} {{ $match->awayTeam->club->name ?? 'TBD' }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        {{ $match->competition->name ?? 'Compétition' }} • {{ $match->match_date ?? 'N/A' }}
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Terminé
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-gray-500 text-center py-4">Aucun résultat récent</p>
+            @endif
+        </div>
     </div>
 
     <!-- Navigation par Rôle -->

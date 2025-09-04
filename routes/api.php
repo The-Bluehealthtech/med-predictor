@@ -707,7 +707,7 @@ Route::put('/matches/{gameMatch}/status', function (Request $request, \App\Model
 
 // Referee Routes
 Route::prefix('referee')->middleware(['auth:sanctum', 'referee'])->group(function () {
-    Route::get('/dashboard', [RefereeController::class, 'dashboard']);
+    Route::get('/dashboard-api', [RefereeController::class, 'dashboard']);
     Route::get('/matches/{gameMatch}/events', [RefereeController::class, 'getMatchEvents']);
     Route::post('/matches/{gameMatch}/events', [RefereeController::class, 'recordEvent']);
     Route::patch('/matches/{gameMatch}/status', [RefereeController::class, 'updateMatchStatus']);

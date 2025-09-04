@@ -1,0 +1,15 @@
+# Pipeline GitLab CI/CD Minimal - TOKEN MIS À JOUR ✅
+# Version: 4.0 - Test de Base
+
+stages:
+  - test
+
+test_minimal:
+  stage: test
+  image: alpine:latest
+  script:
+    - echo "Hello World from GitLab CI!"
+    - echo "Pipeline fonctionne avec le nouveau token !"
+    - echo "✅ Token GitLab résolu !"
+  rules:
+    - if: $CI_COMMIT_BRANCH

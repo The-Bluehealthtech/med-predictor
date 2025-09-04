@@ -1,35 +1,40 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Clubs de Football - Plateforme FIT</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">
-                🏟️ Clubs de Football
-                @if($filtered && $association)
-                    - {{ $association->name }}
-                @else
-                    - Tous les clubs
-                @endif
-            </h1>
-            <p class="text-lg text-gray-600">
-                @if($filtered && $association)
-                    Clubs affiliés à la {{ $association->name }} ({{ $association->country }})
-                @else
-                    Gestion et suivi de tous les clubs affiliés
-                @endif
-            </p>
+@extends('layouts.app')
+
+@section('title', 'Clubs de Football - Plateforme FIT')
+
+@section('content')
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">🏟️</span>
+                            </div>
+                            <div class="ml-3">
+                                <h1 class="text-2xl font-bold text-gray-900">
+                                    Clubs de Football
+                                </h1>
+                                <p class="text-sm text-gray-600">Gestion et suivi de tous les clubs affiliés</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         <!-- Filtre par association -->
-        @if($filtered && $association)
+        @if(isset($filtered) && $filtered && isset($association) && $association)
         <div class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">

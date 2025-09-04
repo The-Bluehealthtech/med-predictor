@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lionel Messi - FIFA Ultimate Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="fifa-app" class="min-h-screen p-8">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-4xl font-bold text-center mb-8 text-blue-400">Test FIFA Dashboard</h1>
+            
+            <!-- Navigation des onglets -->
+            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                <button 
+                    v-for="tab in navigationTabs" 
+                    :key="tab.id"
+                    @click="changeTab(tab.id)"
+                    :class="[
+                        'px-4 py-2 rounded-lg font-medium transition-all duration-200',
+                        activeTab === tab.id 
+                            ? 'bg-blue-600 text-white shadow-lg' 
+                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    ]"
+                >
+                    <i :class="tab.icon" class="mr-2"></i>
+                    {{ tab.name }}
+                    <span v-if="tab.count" class="ml-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">
+                        {{ tab.count }}
+                    </span>
+                </button>
+            </div>
+            
+            <!-- Contenu des onglets -->
+            <div class="bg-gray-800 rounded-lg p-6 min-h-96">
+                <!-- Onglet Performance -->
+                <div v-if="activeTab === 'performance'" class="space-y-4">
+                    <h2 class="text-2xl font-bold text-blue-400">Performance</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div v-for="stat in offensiveStats" :key="stat.name" 
+                             class="bg-gray-700 p-4 rounded-lg">
+                            <h3 class="font-semibold text-green-400">{{ stat.name }}</h3>
+                            <p class="text-2xl font-bold">{{ stat.display }}</p>
+                            <div class="w-full bg-gray-600 rounded-full h-2 mt-2">
+                                <div class="bg-green-500 h-2 rounded-full" :style="{width: stat.percentage + '%'}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Onglet Notifications -->
+                <div v-if="activeTab === 'notifications'" class="space-y-4">
+                    <h2 class="text-2xl font-bold text-blue-400">Notifications</h2>
+                    <div class="space-y-2">
+                        <div v-for="notification in getFilteredNotifications()" :key="notification.id"
+                             class="bg-gray-700 p-4 rounded-lg border-l-4 border-blue-500">
+                            <h3 class="font-semibold">{{ notification.title }}</h3>
+                            <p class="text-gray-300">{{ notification.message }}</p>
+                            <span class="text-sm text-gray-400">{{ notification.date }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Onglet Santé -->
+                <div v-if="activeTab === 'health'" class="space-y-4">
+                    <h2 class="text-2xl font-bold text-blue-400">Santé & Bien-être</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-green-400">Score Global</h3>
+                            <p class="text-3xl font-bold">{{ healthData.globalScore }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-blue-400">Physique</h3>
+                            <p class="text-3xl font-bold">{{ healthData.physicalScore }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-purple-400">Mental</h3>
+                            <p class="text-3xl font-bold">{{ healthData.mentalScore }}/100</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Onglet Devices -->
+                <div v-if="activeTab === 'devices'" class="space-y-4">
+                    <h2 class="text-2xl font-bold text-blue-400">Devices</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div v-for="device in deviceData.devices" :key="device.id"
+                             class="bg-gray-700 p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-semibold text-green-400">{{ device.name }}</h3>
+                                    <p class="text-gray-300">{{ device.type }}</p>
+                                </div>
+                                <i :class="device.icon" class="text-2xl text-blue-400"></i>
+                            </div>
+                            <div class="mt-2">
+                                <span :class="device.connected ? 'text-green-400' : 'text-red-400'">
+                                    {{ device.connected ? 'Connecté' : 'Déconnecté' }}
+                                </span>
+                                <span v-if="device.batteryLevel" class="ml-2 text-yellow-400">
+                                    Batterie: {{ device.batteryLevel }}%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Onglet Doping -->
+                <div v-if="activeTab === 'doping'" class="space-y-4">
+                    <h2 class="text-2xl font-bold text-blue-400">Dopage</h2>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <p class="text-lg">Dernier contrôle: {{ dopingData.lastControl }}</p>
+                        <p class="text-lg">Prochain contrôle: {{ dopingData.nextControl }}</p>
+                    </div>
+                </div>
+                
+                <!-- Onglet SDOH -->
+                <div v-if="activeTab === 'sdoh'" class="space-y-4">
+                    <h2 class="text-2xl font-bold text-blue-400">SDOH</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-green-400">Environnement</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.environment }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-blue-400">Soutien Social</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.socialSupport }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-purple-400">Accès Soins</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.healthcareAccess }}/100</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                            <h3 class="text-sm font-semibold text-yellow-400">Bien-être</h3>
+                            <p class="text-2xl font-bold">{{ sdohData.mentalWellbeing }}/100</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 Test FIFA Dashboard - Script chargé');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 DOM chargé, initialisation Vue.js...');
+            
+            try {
+                if (typeof Vue === 'undefined') {
+                    throw new Error('❌ Vue.js n\'est pas chargé');
+                }
+                
+                console.log('✅ Vue.js détecté, version:', Vue.version);
+                const { createApp } = Vue;
+                
+                console.log('🔧 Création de l\'application Vue...');
+                const app = createApp({
+                    data() {
+                        return {
+                            activeTab: 'performance',
+                            navigationTabs: [
+                                { id: 'performance', name: 'Performance', icon: 'fas fa-chart-line', count: null },
+                                { id: 'notifications', name: 'Notifications', icon: 'fas fa-bell', count: 12 },
+                                { id: 'health', name: 'Santé', icon: 'fas fa-heart', count: null },
+                                { id: 'devices', name: 'Devices', icon: 'fas fa-mobile-alt', count: 3 },
+                                { id: 'doping', name: 'Dopage', icon: 'fas fa-vial', count: null },
+                                { id: 'sdoh', name: 'SDOH', icon: 'fas fa-globe', count: 5 }
+                            ],
+                            offensiveStats: [
+                                { name: 'Buts marqués', display: '12', percentage: 85 },
+                                { name: 'Tirs cadrés', display: '42', percentage: 78 },
+                                { name: 'Passes décisives', display: '8', percentage: 90 },
+                                { name: 'Dribbles réussis', display: '89', percentage: 92 }
+                            ],
+                            healthData: {
+                                globalScore: 87,
+                                physicalScore: 89,
+                                mentalScore: 85
+                            },
+                            deviceData: {
+                                devices: [
+                                    { id: 1, name: 'Polar H10', type: 'Capteur cardiaque', icon: 'fas fa-heartbeat', connected: true, batteryLevel: 85 },
+                                    { id: 2, name: 'WHOOP 4.0', type: 'Tracker fitness', icon: 'fas fa-running', connected: true, batteryLevel: 62 },
+                                    { id: 3, name: 'GPS Catapult', type: 'Tracker GPS', icon: 'fas fa-satellite', connected: true, batteryLevel: 92 }
+                                ]
+                            },
+                            dopingData: {
+                                lastControl: '28/02/2025',
+                                nextControl: '15/04/2025'
+                            },
+                            sdohData: {
+                                environment: 85,
+                                socialSupport: 90,
+                                healthcareAccess: 75,
+                                mentalWellbeing: 88
+                            },
+                            notificationData: {
+                                all: [
+                                    { id: 1, title: 'Test Notification', message: 'Ceci est un test', date: 'Aujourd\'hui' }
+                                ]
+                            }
+                        }
+                    },
+                    mounted() {
+                        console.log('🎯 Vue.js monté avec succès !');
+                        console.log('📊 Onglets disponibles:', this.navigationTabs);
+                        console.log('🔍 Onglet actif:', this.activeTab);
+                    },
+                    methods: {
+                        changeTab(tabId) {
+                            console.log('🔄 Changement d\'onglet vers:', tabId);
+                            this.activeTab = tabId;
+                        },
+                        getFilteredNotifications() {
+                            return this.notificationData.all || [];
+                        }
+                    }
+                });
+                
+                console.log('🔧 Application Vue créée, montage en cours...');
+                app.mount('#fifa-app');
+                console.log('✅ Application Vue montée avec succès !');
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de l\'initialisation de Vue.js:', error);
+                document.body.innerHTML += `
+                    <div style="position: fixed; top: 20px; right: 20px; background: red; color: white; padding: 20px; border-radius: 8px; z-index: 9999;">
+                        <h3>❌ Erreur Vue.js</h3>
+                        <p>${error.message}</p>
+                        <p>Vérifiez la console pour plus de détails</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

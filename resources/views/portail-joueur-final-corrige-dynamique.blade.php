@@ -12,7 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-gray-900 text-white min-h-screen">
+<body class="bg-blue-50 text-gray-900 min-h-screen">
     <!-- Barre de navigation avec recherche (GARDER CETTE PARTIE) -->
     <div class="bg-gray-800 border-b border-gray-700 p-4">
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0">

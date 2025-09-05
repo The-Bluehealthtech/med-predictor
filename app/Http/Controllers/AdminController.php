@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Player;
 use Illuminate\Support\Facades\Auth;
-use App\Traits\Searchable;
 
 class AdminController extends Controller
 {
-    use Searchable;
     /**
      * Afficher le tableau de bord administrateur
      */
@@ -33,81 +31,37 @@ class AdminController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
         }
 
-        // Définition des champs de recherche
-        $searchFields = [
-            [
-                'name' => 'name',
-                'label' => 'Nom du joueur',
-                'type' => 'text',
-                'placeholder' => 'Rechercher par nom...',
-                'columns' => ['first_name', 'last_name'],
-                'mode' => 'contains'
-            ],
-            [
-                'name' => 'position',
-                'label' => 'Position',
-                'type' => 'select',
-                'column' => 'position',
-                'options' => [
-                    'Goalkeeper' => 'Gardien',
-                    'Defender' => 'Défenseur',
-                    'Midfielder' => 'Milieu',
-                    'Forward' => 'Attaquant'
-                ]
-            ],
-            [
-                'name' => 'club_id',
-                'label' => 'Club',
-                'type' => 'select',
-                'column' => 'club_id',
-                'options' => \App\Models\Club::pluck('name', 'id')->toArray()
-            ],
-            [
-                'name' => 'nationality',
-                'label' => 'Nationalité',
-                'type' => 'text',
-                'placeholder' => 'Rechercher par nationalité...',
-                'column' => 'nationality',
-                'mode' => 'contains'
-            ],
-            [
-                'name' => 'birth_date',
-                'label' => 'Date de naissance',
-                'type' => 'date_range',
-                'column' => 'birth_date'
-            ],
-            [
-                'name' => 'status',
-                'label' => 'Statut',
-                'type' => 'select',
-                'column' => 'status',
-                'options' => [
-                    'active' => 'Actif',
-                    'inactive' => 'Inactif',
-                    'suspended' => 'Suspendu',
-                    'injured' => 'Blessé'
-                ]
-            ]
-        ];
-
-        // Construction de la requête
         $query = Player::with(['club', 'association']);
 
-        // Application des filtres de recherche
-        $this->applySearchFilters($query, $request, $searchFields);
+        // Recherche par nom, position, club ou nationalité
+        if ($request->filled('search')) {
+            $searchTerm = $request->get('search');
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('first_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('last_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('position', 'like', "%{$searchTerm}%")
+                  ->orWhere('nationality', 'like', "%{$searchTerm}%")
+                  ->orWhereHas('club', function($clubQuery) use ($searchTerm) {
+                      $clubQuery->where('name', 'like', "%{$searchTerm}%");
+                  });
+            });
+        }
 
-        // Tri par défaut
-        $sortBy = $request->get('sort_by', 'first_name');
-        $sortOrder = $request->get('sort_order', 'asc');
-        $query->orderBy($sortBy, $sortOrder);
+        // Filtre par position
+        if ($request->filled('position')) {
+            $query->where('position', $request->get('position'));
+        }
 
-        // Pagination
-        $players = $this->applyPagination($query, $request, 20);
+        // Filtre par club
+        if ($request->filled('club')) {
+            $query->whereHas('club', function($clubQuery) use ($request) {
+                $clubQuery->where('name', $request->get('club'));
+            });
+        }
 
-        // Préparation des données pour le composant de recherche
-        $searchData = $this->prepareSearchData($players, $searchFields, $request);
+        $players = $query->orderBy('first_name')->paginate(20);
 
-        return view('modules.players.index', compact('players', 'searchFields') + $searchData);
+        return view('admin.dashboard', compact('players'));
     }
 
     /**

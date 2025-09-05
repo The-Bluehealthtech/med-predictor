@@ -161,7 +161,7 @@ class Competition extends Model
     {
         return $this->belongsToMany(Club::class, 'competition_club')
             ->withTimestamps()
-            ->withPivot(['registration_date', 'status', 'approved_by']);
+            ->withPivot(['registration_date', 'status', 'points', 'goals_for', 'goals_against', 'goal_difference', 'matches_played', 'wins', 'draws', 'losses']);
     }
 
     /**

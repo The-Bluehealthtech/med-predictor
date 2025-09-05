@@ -31,6 +31,7 @@ class User extends Authenticatable
         'association_id', // direct association relationship
         'team_id', // team relationship for team officials
         'player_id', // player relationship for player portal
+        'tenant_id', // multi-tenancy support
         'fifa_connect_id',
         'permissions',
         'preferences',
@@ -93,9 +94,105 @@ class User extends Authenticatable
         return $this->belongsTo(Player::class, 'player_id');
     }
 
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    // RBAC relationships
     public function roleModel(): BelongsTo
     {
         return $this->belongsTo(Role::class, 'role', 'name');
+    }
+
+    public function permissions(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions');
+    }
+
+    // RBAC methods
+    public function hasRole(string $roleName): bool
+    {
+        return $this->role === $roleName;
+    }
+
+    public function hasAnyRole(array $roles): bool
+    {
+        return in_array($this->role, $roles);
+    }
+
+    public function hasPermissionThroughRole(string $permission): bool
+    {
+        if (!$this->roleModel) {
+            return false;
+        }
+        
+        return $this->roleModel->hasPermission($permission);
+    }
+
+    public function hasPermissionDirectly(string $permission): bool
+    {
+        return $this->permissions()->where('slug', $permission)->exists();
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        // Check direct permissions first
+        if ($this->hasPermissionDirectly($permission)) {
+            return true;
+        }
+        
+        // Check role permissions
+        return $this->hasPermissionThroughRole($permission);
+    }
+
+    public function assignRole(string $roleName): bool
+    {
+        $role = Role::where('name', $roleName)->where('is_active', true)->first();
+        if (!$role) {
+            return false;
+        }
+        
+        $this->update(['role' => $roleName]);
+        return true;
+    }
+
+    public function assignPermission(string $permissionSlug): bool
+    {
+        $permission = Permission::where('slug', $permissionSlug)->first();
+        if (!$permission) {
+            return false;
+        }
+        
+        $this->permissions()->syncWithoutDetaching([$permission->id]);
+        return true;
+    }
+
+    public function removePermission(string $permissionSlug): bool
+    {
+        $permission = Permission::where('slug', $permissionSlug)->first();
+        if (!$permission) {
+            return false;
+        }
+        
+        $this->permissions()->detach($permission->id);
+        return true;
+    }
+
+    public function getAllPermissions(): array
+    {
+        $permissions = [];
+        
+        // Get permissions from role
+        if ($this->roleModel) {
+            $permissions = array_merge($permissions, $this->roleModel->getPermissionsList());
+        }
+        
+        // Get direct permissions
+        $directPermissions = $this->permissions()->pluck('slug')->toArray();
+        $permissions = array_merge($permissions, $directPermissions);
+        
+        return array_unique($permissions);
     }
 
     // Legacy relationships for backward compatibility
@@ -180,15 +277,6 @@ class User extends Authenticatable
         return in_array($this->role, ['system_admin', 'association_admin']);
     }
 
-    public function hasPermission(string $permission): bool
-    {
-        // System admin has access to everything
-        if ($this->isSystemAdmin()) {
-            return true;
-        }
-
-        return in_array($permission, $this->permissions ?? []);
-    }
 
     public function canAccessModule(string $module): bool
     {
@@ -355,21 +443,7 @@ class User extends Authenticatable
         return $this->hasMany(MatchOfficial::class, 'user_id');
     }
 
-    /**
-     * Check if the user has a specific role.
-     */
-    public function hasRole($role): bool
-    {
-        return $this->role === $role;
-    }
 
-    /**
-     * Check if the user has any of the given roles.
-     */
-    public function hasAnyRole(array $roles): bool
-    {
-        return in_array($this->role, $roles);
-    }
 
     // Audit Trail Methods
     public function getAuditIdentifier(): string

@@ -94,3 +94,6 @@ kubectl describe ingress fit-ingress -n fit-production
 
 
 
+
+
+

@@ -69,3 +69,4 @@ class UserContextHelper
         return Auth::check() && in_array(Auth::user()->role, ['super_admin', 'system_admin', 'association_admin']);
     }
 }
+

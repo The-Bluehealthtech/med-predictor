@@ -554,19 +554,131 @@ class CompetitionController extends Controller
      */
     public function associationResultatsClassements(): View
     {
-        // Version avec données de test
-        $classements = [
-            [
-                'competition' => 'Championnat Test',
-                'equipes' => [
-                    ['position' => 1, 'nom' => 'Équipe A', 'points' => 9, 'matchs' => 3, 'victoires' => 3, 'nuls' => 0, 'defaites' => 0, 'buts_pour' => 8, 'buts_contre' => 2, 'difference' => 6],
-                    ['position' => 2, 'nom' => 'Équipe B', 'points' => 6, 'matchs' => 3, 'victoires' => 2, 'nuls' => 0, 'defaites' => 1, 'buts_pour' => 5, 'buts_contre' => 3, 'difference' => 2],
-                    ['position' => 3, 'nom' => 'Équipe C', 'points' => 3, 'matchs' => 3, 'victoires' => 1, 'nuls' => 0, 'defaites' => 2, 'buts_pour' => 4, 'buts_contre' => 6, 'difference' => -2],
-                ]
-            ]
-        ];
+        try {
+            // Récupérer les vraies données de compétitions et leurs classements
+            $competitions = \App\Models\Competition::with(['clubs'])
+                ->whereIn('status', ['published', 'active'])
+                ->get();
 
-        return view('competitions.association.resultats-classements', compact('classements'));
+            $classements = collect();
+
+            foreach ($competitions as $competition) {
+                // Calculer les vraies statistiques basées sur les matchs réels
+                $clubsStats = collect();
+                
+                // Récupérer tous les clubs participants
+                $participatingClubs = $competition->clubs;
+                
+                foreach ($participatingClubs as $club) {
+                    // Récupérer tous les matchs de ce club dans cette compétition
+                    $matches = \App\Models\GameMatch::where('competition_id', $competition->id)
+                        ->where(function($query) use ($club) {
+                            // Chercher les équipes de ce club
+                            $teamIds = \App\Models\Team::where('club_id', $club->id)->pluck('id');
+                            $query->whereIn('home_team_id', $teamIds)
+                                  ->orWhereIn('away_team_id', $teamIds);
+                        })
+                        ->where('status', 'completed')
+                        ->whereNotNull('home_score')
+                        ->whereNotNull('away_score')
+                        ->get();
+
+                    $victoires = 0;
+                    $nuls = 0;
+                    $defaites = 0;
+                    $buts_pour = 0;
+                    $buts_contre = 0;
+
+                    foreach ($matches as $match) {
+                        // Déterminer si le club joue à domicile ou à l'extérieur
+                        $homeTeam = \App\Models\Team::find($match->home_team_id);
+                        $awayTeam = \App\Models\Team::find($match->away_team_id);
+                        
+                        $isHomeTeam = $homeTeam && $homeTeam->club_id == $club->id;
+                        $isAwayTeam = $awayTeam && $awayTeam->club_id == $club->id;
+                        
+                        if ($isHomeTeam) {
+                            // Club à domicile
+                            $buts_pour += $match->home_score;
+                            $buts_contre += $match->away_score;
+                            
+                            if ($match->home_score > $match->away_score) {
+                                $victoires++;
+                            } elseif ($match->home_score == $match->away_score) {
+                                $nuls++;
+                            } else {
+                                $defaites++;
+                            }
+                        } elseif ($isAwayTeam) {
+                            // Club à l'extérieur
+                            $buts_pour += $match->away_score;
+                            $buts_contre += $match->home_score;
+                            
+                            if ($match->away_score > $match->home_score) {
+                                $victoires++;
+                            } elseif ($match->away_score == $match->home_score) {
+                                $nuls++;
+                            } else {
+                                $defaites++;
+                            }
+                        }
+                    }
+
+                    $points = ($victoires * 3) + ($nuls * 1);
+                    $difference = $buts_pour - $buts_contre;
+
+                    $clubsStats->push([
+                        'club' => $club,
+                        'points' => $points,
+                        'matchs' => $matches->count(),
+                        'victoires' => $victoires,
+                        'nuls' => $nuls,
+                        'defaites' => $defaites,
+                        'buts_pour' => $buts_pour,
+                        'buts_contre' => $buts_contre,
+                        'difference' => $difference
+                    ]);
+                }
+
+                // Trier par points (décroissant) puis par différence de buts
+                $clubsStats = $clubsStats->sortByDesc(function($club) {
+                    return [$club['points'], $club['difference']];
+                })->values();
+
+                if ($clubsStats->isNotEmpty()) {
+                    $equipes = collect();
+                    foreach ($clubsStats as $index => $clubStats) {
+                        $equipes->push([
+                            'position' => $index + 1,
+                            'nom' => $clubStats['club']->short_name ?? $clubStats['club']->name,
+                            'points' => $clubStats['points'],
+                            'matchs' => $clubStats['matchs'],
+                            'victoires' => $clubStats['victoires'],
+                            'nuls' => $clubStats['nuls'],
+                            'defaites' => $clubStats['defaites'],
+                            'buts_pour' => $clubStats['buts_pour'],
+                            'buts_contre' => $clubStats['buts_contre'],
+                            'difference' => $clubStats['difference']
+                        ]);
+                    }
+
+                    $classements->push([
+                        'competition' => $competition->name,
+                        'equipes' => $equipes->toArray()
+                    ]);
+                }
+            }
+
+            // Si aucune donnée réelle, retourner une collection vide
+            // Pas de données de démonstration pour éviter les données incorrectes
+
+            return view('competitions.association.resultats-classements', compact('classements'));
+
+        } catch (\Exception $e) {
+            // En cas d'erreur, retourner une collection vide
+            $classements = collect();
+            return view('competitions.association.resultats-classements', compact('classements'));
+        }
     }
 
     /**
@@ -2860,5 +2972,5 @@ class CompetitionController extends Controller
         }
         
         return $classement;
-}
+    }
 }

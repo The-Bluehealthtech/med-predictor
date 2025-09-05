@@ -66,6 +66,8 @@
                                 @elseif($module['color'] === 'yellow') bg-yellow-100 text-yellow-600
                                 @elseif($module['color'] === 'red') bg-red-100 text-red-600
                                 @elseif($module['color'] === 'indigo') bg-indigo-100 text-indigo-600
+                                @elseif($module['color'] === 'pink') bg-pink-100 text-pink-600
+                                @elseif($module['color'] === 'teal') bg-teal-100 text-teal-600
                                 @else bg-gray-100 text-gray-600
                                 @endif">
                                 {{ $module['icon'] }}
@@ -82,6 +84,8 @@
                                       @elseif($module['color'] === 'yellow') bg-yellow-600 hover:bg-yellow-700
                                       @elseif($module['color'] === 'red') bg-red-600 hover:bg-red-700
                                       @elseif($module['color'] === 'indigo') bg-indigo-600 hover:bg-indigo-700
+                                      @elseif($module['color'] === 'pink') bg-pink-600 hover:bg-pink-700
+                                      @elseif($module['color'] === 'teal') bg-teal-600 hover:bg-teal-700
                                       @else bg-gray-600 hover:bg-gray-700
                                       @endif transition-colors duration-200">
                                 Accéder au module

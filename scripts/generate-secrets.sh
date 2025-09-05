@@ -52,3 +52,6 @@ echo "🔑 Appliquez avec: kubectl apply -f deploy/k8s/fit-secrets-generated.yam
 
 
 
+
+
+

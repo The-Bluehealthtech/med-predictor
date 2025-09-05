@@ -74,3 +74,4 @@ class Permission extends Model
         return static::where('action', $action)->get();
     }
 }
+

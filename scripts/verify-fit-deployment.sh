@@ -171,3 +171,6 @@ echo "📞 En cas de problème, consultez le guide de dépannage dans GCP_DEPLOY
 
 
 
+
+
+

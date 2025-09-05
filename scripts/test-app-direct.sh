@@ -61,3 +61,6 @@ echo "📊 L'application FIT est fonctionnelle malgré les problèmes de queue !
 
 
 
+
+
+

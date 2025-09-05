@@ -49,3 +49,6 @@ echo "📊 Status: kubectl get pods -n fit-production"
 
 
 
+
+
+

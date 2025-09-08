@@ -190,7 +190,7 @@ function viewMatchDetails(matchId) {
 function viewMatchSheet(matchId) {
     console.log('viewMatchSheet called with ID:', matchId);
     // Rediriger vers la vraie feuille de match
-    const url = `{{ route('competitions.association.feuille-match', '') }}/${matchId}`;
+    const url = `{{ route('test.feuille-match', 'PLACEHOLDER') }}`.replace('PLACEHOLDER', matchId);
     console.log('Redirecting to:', url);
     window.location.href = url;
 }

@@ -1,9 +1,8 @@
-<!DOCTYPE html>
+ !DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
+page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
@@ -241,7 +240,7 @@
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-xl font-semibold text-gray-800">Équipes du club</h3>
                         <a href="/modules/teams/create?club_id={{ $club->id }}" 
-                           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
+                           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                             <i class="fas fa-plus mr-1"></i>
                             Ajouter une équipe
                         </a>

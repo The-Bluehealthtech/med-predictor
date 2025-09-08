@@ -66,7 +66,9 @@ class GateServiceProvider extends ServiceProvider
         });
 
         Gate::define('access-player-dashboard', function ($user) {
-            return in_array($user->role, ['player', 'system_admin', 'association_admin', 'admin']);
+            // Les joueurs ont accès à leur propre dashboard
+            // Les admins ont accès à tous les dashboards
+            return in_array($user->role, ['player', 'system_admin', 'super_admin', 'admin', 'association_admin', 'club_admin']);
         });
 
         Gate::define('access-rankings', function ($user) {
@@ -90,7 +92,7 @@ class GateServiceProvider extends ServiceProvider
         });
 
         Gate::define('access-content-management', function ($user) {
-            return in_array($user->role, ['system_admin', 'association_admin', 'admin']);
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'referee']);
         });
 
         Gate::define('access-license-management', function ($user) {
@@ -155,6 +157,72 @@ class GateServiceProvider extends ServiceProvider
 
         Gate::define('manage_federations', function ($user) {
             return in_array($user->role, ['system_admin', 'association_admin', 'admin']);
+        });
+
+        // Additional gates for missing modules
+        Gate::define('access-medical', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'medical_staff', 'club_medical', 'referee']);
+        });
+
+        Gate::define('access-healthcare', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'medical_staff', 'club_medical', 'referee']);
+        });
+
+        Gate::define('access-pcma', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'medical_staff', 'club_medical', 'referee']);
+        });
+
+        Gate::define('access-confederations', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'referee']);
+        });
+
+        Gate::define('access-fifa-portal', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'referee']);
+        });
+
+        Gate::define('access-fifa-analytics', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'referee']);
+        });
+
+        Gate::define('access-digital-twin', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'club_admin', 'referee']);
+        });
+
+        Gate::define('access-performance-analytics', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'club_admin', 'referee']);
+        });
+
+        Gate::define('access-dtn', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'referee']);
+        });
+
+        Gate::define('access-rpm', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'referee']);
+        });
+
+        Gate::define('access-gemini', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'referee']);
+        });
+
+        Gate::define('access-devices-portal', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'club_admin', 'referee']);
+        });
+
+        Gate::define('access-content-management', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'referee']);
+        });
+
+        Gate::define('access-transfer-management', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'club_admin', 'referee']);
+        });
+
+        // Additional missing gates for complete module access
+        Gate::define('access-analytics-dashboard', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'club_admin', 'referee']);
+        });
+
+        Gate::define('access-administration', function ($user) {
+            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'referee']);
         });
     }
 } 

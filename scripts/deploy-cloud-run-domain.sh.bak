@@ -1,0 +1,481 @@
+#!/bin/bash
+
+# Script de Déploiement Cloud Run avec Domaine - Med-Predictor
+# Ce script déploie votre application sur Cloud Run et configure le domaine
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Configuration
+DOMAIN="${DOMAIN:-tbhc.uk}"
+PROJECT_ID="${GOOGLE_CLOUD_PROJECT_ID:-med-predictor-fit}"
+REGION="${GOOGLE_CLOUD_REGION:-europe-west1}"
+SERVICE_NAME="med-predictor"
+EMAIL="${SSL_EMAIL:-im0668@gmail.com}"
+
+echo -e "${BLUE}🚀 Déploiement Cloud Run avec Domaine - Med-Predictor${NC}"
+echo "=================================================="
+echo -e "${YELLOW}Domaine: ${DOMAIN}${NC}"
+echo -e "${YELLOW}Projet: ${PROJECT_ID}${NC}"
+echo -e "${YELLOW}Région: ${REGION}${NC}"
+
+# Vérifier les prérequis
+check_prerequisites() {
+    echo -e "\n${YELLOW}🔍 Vérification des prérequis...${NC}"
+    
+    # Vérifier gcloud
+    if ! command -v gcloud &> /dev/null; then
+        echo -e "${RED}❌ Google Cloud CLI non installé${NC}"
+        exit 1
+    fi
+    
+    # Vérifier l'authentification
+    if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" | grep -q .; then
+        echo -e "${RED}❌ Non authentifié avec Google Cloud${NC}"
+        exit 1
+    fi
+    
+    # Vérifier Docker
+    if ! command -v docker &> /dev/null; then
+        echo -e "${RED}❌ Docker non installé${NC}"
+        exit 1
+    fi
+    
+    echo -e "${GREEN}✅ Tous les prérequis sont satisfaits${NC}"
+}
+
+# Configurer le projet
+setup_project() {
+    echo -e "\n${YELLOW}🏗️  Configuration du projet...${NC}"
+    
+    # Définir le projet
+    gcloud config set project ${PROJECT_ID}
+    
+    # Activer les APIs nécessaires
+    echo "Activation des APIs..."
+    gcloud services enable run.googleapis.com
+    gcloud services enable cloudbuild.googleapis.com
+    gcloud services enable storage.googleapis.com
+    gcloud services enable secretmanager.googleapis.com
+    
+    echo -e "${GREEN}✅ Projet configuré${NC}"
+}
+
+# Créer le Dockerfile pour Cloud Run
+create_dockerfile() {
+    echo -e "\n${YELLOW}🐳 Création du Dockerfile pour Cloud Run...${NC}"
+    
+    cat > Dockerfile.cloudrun << 'EOF'
+# Dockerfile optimisé pour Cloud Run
+FROM php:8.1-fpm-alpine
+
+# Installer les dépendances système
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    curl \
+    zip \
+    unzip \
+    git \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libzip-dev \
+    icu-dev \
+    oniguruma-dev \
+    libxml2-dev \
+    mysql-client
+
+# Installer les extensions PHP
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        mysqli \
+        gd \
+        zip \
+        intl \
+        mbstring \
+        xml \
+        bcmath
+
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configurer le répertoire de travail
+WORKDIR /var/www/html
+
+# Copier les fichiers de l'application
+COPY . .
+
+# Installer les dépendances PHP
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Configurer les permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
+
+# Configuration Nginx
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Configuration PHP-FPM
+COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+
+# Exposer le port
+EXPOSE 8080
+
+# Démarrer avec supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+EOF
+    
+    echo -e "${GREEN}✅ Dockerfile créé${NC}"
+}
+
+# Créer la configuration Nginx
+create_nginx_config() {
+    echo -e "\n${YELLOW}🌐 Création de la configuration Nginx...${NC}"
+    
+    mkdir -p docker
+    
+    cat > docker/nginx.conf << 'EOF'
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    
+    # Logging
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+    
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json;
+    
+    server {
+        listen 8080;
+        server_name _;
+        root /var/www/html/public;
+        index index.php;
+        
+        # Security headers
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        
+        # Handle Laravel routes
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+        
+        # PHP-FPM
+        location ~ \.php$ {
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+            include fastcgi_params;
+        }
+        
+        # Static files
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+        
+        # Deny access to sensitive files
+        location ~ /\. {
+            deny all;
+        }
+    }
+}
+EOF
+    
+    echo -e "${GREEN}✅ Configuration Nginx créée${NC}"
+}
+
+# Créer la configuration Supervisor
+create_supervisor_config() {
+    echo -e "\n${YELLOW}👥 Création de la configuration Supervisor...${NC}"
+    
+    cat > docker/supervisord.conf << 'EOF'
+[supervisord]
+nodaemon=true
+user=root
+logfile=/var/log/supervisor/supervisord.log
+pidfile=/var/run/supervisord.pid
+
+[program:nginx]
+command=nginx -g "daemon off;"
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/supervisor/nginx.err.log
+stdout_logfile=/var/log/supervisor/nginx.out.log
+
+[program:php-fpm]
+command=php-fpm -F
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/supervisor/php-fpm.err.log
+stdout_logfile=/var/log/supervisor/php-fpm.out.log
+EOF
+    
+    echo -e "${GREEN}✅ Configuration Supervisor créée${NC}"
+}
+
+# Créer la configuration PHP-FPM
+create_php_fpm_config() {
+    echo -e "\n${YELLOW}🐘 Création de la configuration PHP-FPM...${NC}"
+    
+    cat > docker/php-fpm.conf << 'EOF'
+[www]
+user = www-data
+group = www-data
+listen = 127.0.0.1:9000
+pm = dynamic
+pm.max_children = 50
+pm.start_servers = 5
+pm.min_spare_servers = 5
+pm.max_spare_servers = 35
+pm.max_requests = 500
+EOF
+    
+    echo -e "${GREEN}✅ Configuration PHP-FPM créée${NC}"
+}
+
+# Construire et déployer l'image
+build_and_deploy() {
+    echo -e "\n${YELLOW}🔨 Construction et déploiement de l'image...${NC}"
+    
+    # Configurer Docker pour Google Container Registry
+    gcloud auth configure-docker
+    
+    # Construire l'image
+    echo "Construction de l'image Docker..."
+    docker build -f Dockerfile.cloudrun -t gcr.io/${PROJECT_ID}/${SERVICE_NAME}:latest .
+    
+    # Pousser l'image
+    echo "Poussée de l'image vers Google Container Registry..."
+    docker push gcr.io/${PROJECT_ID}/${SERVICE_NAME}:latest
+    
+    # Déployer sur Cloud Run
+    echo "Déploiement sur Cloud Run..."
+    gcloud run deploy ${SERVICE_NAME} \
+        --image gcr.io/${PROJECT_ID}/${SERVICE_NAME}:latest \
+        --platform managed \
+        --region ${REGION} \
+        --allow-unauthenticated \
+        --port 8080 \
+        --memory 1Gi \
+        --cpu 1 \
+        --max-instances 10 \
+        --set-env-vars "APP_ENV=production,APP_DEBUG=false" \
+        --set-env-vars "APP_URL=https://${DOMAIN}"
+    
+    echo -e "${GREEN}✅ Application déployée sur Cloud Run${NC}"
+}
+
+# Obtenir l'URL du service
+get_service_url() {
+    echo -e "\n${YELLOW}🔗 Récupération de l'URL du service...${NC}"
+    
+    SERVICE_URL=$(gcloud run services describe ${SERVICE_NAME} --region ${REGION} --format="value(status.url)")
+    echo -e "${GREEN}✅ URL du service: ${SERVICE_URL}${NC}"
+}
+
+# Configurer le domaine personnalisé
+setup_custom_domain() {
+    echo -e "\n${YELLOW}🌐 Configuration du domaine personnalisé...${NC}"
+    
+    # Mapper le domaine au service Cloud Run
+    gcloud run domain-mappings create \
+        --service ${SERVICE_NAME} \
+        --domain ${DOMAIN} \
+        --region ${REGION}
+    
+    echo -e "${GREEN}✅ Domaine mappé au service Cloud Run${NC}"
+}
+
+# Générer les instructions DNS
+generate_dns_instructions() {
+    echo -e "\n${YELLOW}📋 Génération des instructions DNS...${NC}"
+    
+    # Obtenir l'IP du load balancer
+    LB_IP=$(gcloud run domain-mappings describe ${DOMAIN} --region ${REGION} --format="value(status.resourceRecords[0].rrdata)" 2>/dev/null || echo "")
+    
+    cat > cloud-run-dns-instructions.txt << EOF
+# Instructions DNS pour Cloud Run - ${DOMAIN}
+
+## Enregistrements DNS à créer:
+
+### Option 1: Cloudflare (Recommandé)
+Type: CNAME
+Name: @
+Content: ghs.googlehosted.com
+Proxy: ✅ (Orange cloud)
+
+Type: CNAME  
+Name: www
+Content: ghs.googlehosted.com
+Proxy: ✅ (Orange cloud)
+
+### Option 2: Autres fournisseurs DNS
+Type: CNAME
+Name: @
+Content: ghs.googlehosted.com
+
+Type: CNAME  
+Name: www
+Content: ghs.googlehosted.com
+
+## Vérification DNS:
+nslookup ${DOMAIN}
+dig ${DOMAIN}
+
+## URLs disponibles après configuration:
+- https://${DOMAIN}
+- https://www.${DOMAIN}
+EOF
+    
+    echo -e "${GREEN}✅ Instructions DNS générées: cloud-run-dns-instructions.txt${NC}"
+}
+
+# Générer le rapport final
+generate_final_report() {
+    echo -e "\n${YELLOW}📊 Génération du rapport final...${NC}"
+    
+    SERVICE_URL=$(gcloud run services describe ${SERVICE_NAME} --region ${REGION} --format="value(status.url)")
+    
+    cat > cloud-run-deployment-report.html << EOF
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déploiement Cloud Run - Med-Predictor</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #4285f4 0%, #34a853 100%); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; text-align: center; }
+        .info-box { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 5px solid #4285f4; }
+        .success { border-left-color: #34a853; }
+        .warning { border-left-color: #ffc107; }
+        .code { background: #f1f3f4; padding: 10px; border-radius: 5px; font-family: monospace; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Déploiement Cloud Run Terminé</h1>
+            <p>Med-Predictor Project</p>
+            <p>Domaine: ${DOMAIN}</p>
+            <p>Généré: $(date)</p>
+        </div>
+        
+        <div class="info-box success">
+            <h3>✅ Déploiement Réussi</h3>
+            <p>Votre application a été déployée avec succès sur Google Cloud Run!</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>📋 Informations de Déploiement</h3>
+            <ul>
+                <li><strong>Service:</strong> ${SERVICE_NAME}</li>
+                <li><strong>Région:</strong> ${REGION}</li>
+                <li><strong>Projet:</strong> ${PROJECT_ID}</li>
+                <li><strong>Domaine:</strong> ${DOMAIN}</li>
+                <li><strong>URL du service:</strong> <a href="${SERVICE_URL}">${SERVICE_URL}</a></li>
+            </ul>
+        </div>
+        
+        <div class="info-box warning">
+            <h3>⚠️ Actions Requises</h3>
+            <ol>
+                <li>Configurez vos enregistrements DNS selon <code>cloud-run-dns-instructions.txt</code></li>
+                <li>Attendez la propagation DNS (5-30 minutes)</li>
+                <li>Testez votre domaine: <a href="https://${DOMAIN}">https://${DOMAIN}</a></li>
+            </ol>
+        </div>
+        
+        <div class="info-box">
+            <h3>🔗 URLs Disponibles</h3>
+            <ul>
+                <li><strong>Service Cloud Run:</strong> <a href="${SERVICE_URL}">${SERVICE_URL}</a></li>
+                <li><strong>Domaine principal:</strong> <a href="https://${DOMAIN}">https://${DOMAIN}</a></li>
+                <li><strong>WWW:</strong> <a href="https://www.${DOMAIN}">https://www.${DOMAIN}</a></li>
+            </ul>
+        </div>
+        
+        <div class="info-box">
+            <h3>🧪 Tests de Validation</h3>
+            <div class="code">
+                # Test du service Cloud Run
+                curl -I ${SERVICE_URL}
+                
+                # Test du domaine (après configuration DNS)
+                curl -I https://${DOMAIN}
+                
+                # Test de santé
+                curl ${SERVICE_URL}/health
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>📚 Documentation</h3>
+            <ul>
+                <li><a href="DOMAIN_SETUP_GUIDE.md">Guide de configuration</a></li>
+                <li><a href="GCS_INTEGRATION_GUIDE.md">Guide GCS</a></li>
+                <li><a href="cloud-run-dns-instructions.txt">Instructions DNS</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+EOF
+    
+    echo -e "${GREEN}✅ Rapport final généré: cloud-run-deployment-report.html${NC}"
+}
+
+# Fonction principale
+main() {
+    echo -e "${BLUE}Démarrage du déploiement Cloud Run...${NC}"
+    
+    check_prerequisites
+    setup_project
+    create_dockerfile
+    create_nginx_config
+    create_supervisor_config
+    create_php_fpm_config
+    build_and_deploy
+    get_service_url
+    setup_custom_domain
+    generate_dns_instructions
+    generate_final_report
+    
+    echo -e "\n${GREEN}🎉 Déploiement Cloud Run terminé avec succès!${NC}"
+    echo -e "${BLUE}Prochaines étapes:${NC}"
+    echo -e "${YELLOW}1. Configurez vos DNS selon cloud-run-dns-instructions.txt${NC}"
+    echo -e "${YELLOW}2. Attendez la propagation DNS (5-30 minutes)${NC}"
+    echo -e "${YELLOW}3. Testez votre domaine: https://${DOMAIN}${NC}"
+    echo ""
+    echo -e "${GREEN}🌐 Votre application sera accessible sur: https://${DOMAIN}${NC}"
+}
+
+# Exécuter la fonction principale
+main "$@"

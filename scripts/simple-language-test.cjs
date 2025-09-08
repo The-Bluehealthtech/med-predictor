@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+ const { exec } = require('child_process');
 
 console.log('🌐 Test simple du système de langue...\\n');
 

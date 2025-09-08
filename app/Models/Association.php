@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Helpers\CountryCodeHelper;
+use App\Models\Concerns\UsesEnhancedTenantScope;
 
 class Association extends Model
 {
-    use HasFactory;
+    use HasFactory, UsesEnhancedTenantScope;
 
     protected $fillable = [
         'name',

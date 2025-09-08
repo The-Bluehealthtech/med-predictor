@@ -1,55 +1,41 @@
-# Simple Dockerfile for Laravel Application
-FROM php:8.2-fpm-alpine
+# Image finale avec Apache et PHP
+FROM php:8.2-apache
 
-# Install system dependencies
-RUN apk add --no-cache \
-    nginx \
-    supervisor \
-    mysql-client \
+# Installer les extensions PHP nécessaires
+RUN apt-get update && apt-get install -y \
     git \
-    curl \
-    libpng-dev \
-    libxml2-dev \
-    zip \
     unzip \
-    oniguruma-dev \
-    freetype-dev \
-    libjpeg-turbo-dev \
-    libzip-dev
+    libzip-dev \
+    && docker-php-ext-install pdo pdo_mysql zip \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-    pdo \
-    pdo_mysql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    gd \
-    zip \
-    xml \
-    ctype
+# Installer Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Copier le code de l'application (en excluant les fichiers de configuration)
+COPY . /var/www/html/
 
-# Set working directory
+# Supprimer les fichiers de configuration qui ne doivent pas être dans l'image
+RUN rm -f /var/www/html/.env* /var/www/html/laravel.env
+
+# Installer les dépendances
 WORKDIR /var/www/html
+RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader --ignore-platform-reqs
 
-# Copy application files
-COPY . .
+# Configurer les permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
+    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Install dependencies
-RUN composer install --no-dev --no-scripts --optimize-autoloader
+# Configurer Apache pour Laravel
+RUN a2enmod rewrite
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+# Copier notre configuration d'hôte virtuel pour pointer vers le dossier /public
+COPY vhost.conf /etc/apache2/sites-available/000-default.conf
 
-# Expose port
-EXPOSE 9000
+# Exposer le port 80
+EXPOSE 80
 
-# Start PHP-FPM directly
-CMD ["php-fpm"]
+# Commande de démarrage
+CMD ["apache2-foreground"]

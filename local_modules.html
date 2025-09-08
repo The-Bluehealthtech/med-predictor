@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="WvAAFPpyu5zxJsgTieaQMAUExAJ11dejsIW4spux">
+
+    <title>Laravel</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    <!-- Scripts - Using built assets directly -->
+                <link rel="stylesheet" href="http://localhost:8000/build/assets/app-Cpxf-Upf.css">
+                            <link rel="stylesheet" href="http://localhost:8000/build/assets/app-CcmtuzGj.css">
+                    <link rel="stylesheet" href="http://localhost:8000/build/assets/app-Cpxf-Upf.css">
+                        <script type="module" src="http://localhost:8000/build/assets/app-DmwfGxzG.js"></script>
+    
+            
+    <!-- Alpine.js via CDN for Blade dropdowns -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Custom CSS for navigation spacing -->
+    <style>
+        
+        
+        /* Reset spacing since navigation is removed */
+        .nav-fixed-spacing {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+        
+        .main-content-wrapper {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+    </style>
+    
+    <!-- DICOM Viewer Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/cornerstone-core@2.3.0/dist/cornerstone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cornerstone-wado-image-loader@4.19.0/dist/cornerstoneWADOImageLoader.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dicom-parser@1.8.28/dist/dicomParser.min.js"></script>
+    
+    <!-- Additional styles -->
+        
+
+    
+    <!-- Alpine.js Fallback Script (DISABLED, now using CDN) -->
+    <!--
+    <script>
+        // Diagnostic script for Alpine.js
+        console.log('App layout loaded, checking Alpine.js...');
+        
+        // Fallback for Alpine.js dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing dropdown fallback...');
+            
+            // Wait a bit for Alpine.js to load, then check
+            setTimeout(function() {
+                if (typeof window.Alpine === 'undefined') {
+                    console.log('Alpine.js not found, initializing fallback...');
+                    initializeDropdownFallback();
+                } else {
+                    console.log('Alpine.js found, dropdowns should work normally');
+                }
+            }, 100);
+        });
+        
+        function initializeDropdownFallback() {
+            console.log('Setting up dropdown fallback...');
+            
+            // Handle all dropdown elements
+            document.querySelectorAll('[x-data*="open"]').forEach(function(element) {
+                console.log('Found dropdown element:', element);
+                let isOpen = false;
+                
+                // Find the trigger button
+                const trigger = element.querySelector('button');
+                if (trigger) {
+                    console.log('Found trigger for dropdown:', trigger);
+                    trigger.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        isOpen = !isOpen;
+                        console.log('Dropdown toggled, isOpen:', isOpen);
+                        
+                        // Find dropdown content
+                        const content = element.querySelector('[x-show*="open"], [x-show]');
+                        if (content) {
+                            if (isOpen) {
+                                content.style.display = 'block';
+                                content.style.opacity = '1';
+                                content.style.transform = 'scale(1)';
+                                content.style.transition = 'all 0.2s ease-out';
+                            } else {
+                                content.style.opacity = '0';
+                                content.style.transform = 'scale(0.95)';
+                                setTimeout(() => {
+                                    if (!isOpen) {
+                                        content.style.display = 'none';
+                                    }
+                                }, 200);
+                            }
+                        }
+                    });
+                }
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!element.contains(e.target) && isOpen) {
+                        isOpen = false;
+                        const content = element.querySelector('[x-show*="open"], [x-show]');
+                        if (content) {
+                            content.style.opacity = '0';
+                            content.style.transform = 'scale(0.95)';
+                            setTimeout(() => {
+                                content.style.display = 'none';
+                            }, 200);
+                        }
+                    }
+                });
+            });
+            
+            // Handle responsive navigation
+            const mobileMenuButton = document.querySelector('button');
+            const mobileMenu = document.querySelector('[x-show*="open"]');
+            
+            if (mobileMenuButton && mobileMenu) {
+                let mobileOpen = false;
+                
+                mobileMenuButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    mobileOpen = !mobileOpen;
+                    
+                    if (mobileOpen) {
+                        mobileMenu.style.display = 'block';
+                    } else {
+                        mobileMenu.style.display = 'none';
+                    }
+                });
+            }
+        }
+    </script>
+    -->
+    <!-- Simple JavaScript Dropdown Solution (DISABLED, now using CDN) -->
+    <!--
+    <script>
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing dropdown system...');
+            
+            // Initialize dropdowns after a short delay
+            setTimeout(function() {
+                setupDropdowns();
+                setupMobileMenu();
+            }, 100);
+        });
+        
+        function setupDropdowns() {
+            // Find all dropdown containers
+            const dropdowns = document.querySelectorAll('[x-data*="open"]');
+            console.log('📋 Found', dropdowns.length, 'dropdown elements');
+            
+            dropdowns.forEach((dropdown, index) => {
+                console.log('🔽 Setting up dropdown', index + 1);
+                
+                // Find trigger and content
+                const trigger = dropdown.querySelector('button');
+                const content = dropdown.querySelector('[x-show*="open"], [x-show]');
+                
+                if (trigger && content) {
+                    console.log('✅ Found trigger and content for dropdown', index + 1);
+                    
+                    // Remove Alpine.js attributes to prevent conflicts
+                    // trigger.removeAttribute('@click'); // This line is not needed for native JS
+                    content.removeAttribute('x-show');
+                    
+                    // Add our own click handler
+                    trigger.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const isVisible = content.style.display === 'block';
+                        
+                        if (isVisible) {
+                            // Hide dropdown
+                            content.style.display = 'none';
+                            content.style.opacity = '0';
+                            content.style.transform = 'scale(0.95)';
+                            console.log('👁️ Hiding dropdown', index + 1);
+                        } else {
+                            // Show dropdown
+                            content.style.display = 'block';
+                            content.style.opacity = '1';
+                            content.style.transform = 'scale(1)';
+                            content.style.transition = 'all 0.2s ease-out';
+                            console.log('👁️ Showing dropdown', index + 1);
+                        }
+                    });
+                    
+                    // Close when clicking outside
+                    document.addEventListener('click', function(e) {
+                        if (!dropdown.contains(e.target)) {
+                            content.style.display = 'none';
+                            content.style.opacity = '0';
+                            content.style.transform = 'scale(0.95)';
+                        }
+                    });
+                }
+            });
+        }
+        
+        function setupMobileMenu() {
+            const mobileButton = document.querySelector('button');
+            const mobileMenu = document.querySelector('[x-show*="open"]');
+            
+            if (mobileButton && mobileMenu) {
+                console.log('📱 Setting up mobile menu');
+                
+                // Remove Alpine.js attributes
+                // mobileButton.removeAttribute('@click'); // This line is not needed for native JS
+                mobileMenu.removeAttribute('x-show');
+                
+                mobileButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const isVisible = mobileMenu.style.display === 'block';
+                    
+                    if (isVisible) {
+                        mobileMenu.style.display = 'none';
+                        console.log('📱 Hiding mobile menu');
+                    } else {
+                        mobileMenu.style.display = 'block';
+                        console.log('📱 Showing mobile menu');
+                    }
+                });
+            }
+        }
+        
+        // Test function
+        function testDropdown() {
+            console.log('🧪 Testing dropdown functionality...');
+            console.log('📊 Alpine.js available:', typeof window.Alpine !== 'undefined');
+            console.log('📊 Dropdowns found:', document.querySelectorAll('[x-data*="open"]').length);
+            
+            // Test each dropdown
+            const dropdowns = document.querySelectorAll('[x-data*="open"]');
+            dropdowns.forEach((dropdown, index) => {
+                const trigger = dropdown.querySelector('button');
+                const content = dropdown.querySelector('[x-show*="open"], [x-show]');
+                console.log(`Dropdown ${index + 1}:`, {
+                    hasTrigger: !!trigger,
+                    hasContent: !!content,
+                    triggerText: trigger ? trigger.textContent.trim() : 'N/A'
+                });
+            });
+            
+            alert('Dropdown test completed! Check console for details.');
+        }
+        
+        // Debug function
+        function debugDropdowns() {
+            console.log('🔍 Debugging dropdowns...');
+            
+            // Check all elements with x-data
+            const allXData = document.querySelectorAll('[x-data]');
+            console.log('📋 All x-data elements:', allXData.length);
+            
+            allXData.forEach((el, index) => {
+                console.log(`Element ${index + 1}:`, {
+                    xData: el.getAttribute('x-data'),
+                    tagName: el.tagName,
+                    className: el.className,
+                    hasClick: !!el.querySelector('button'),
+                    hasShow: !!el.querySelector('[x-show]')
+                });
+            });
+            
+            // Check for Alpine.js
+            console.log('Alpine.js status:', {
+                available: typeof window.Alpine !== 'undefined',
+                version: window.Alpine ? window.Alpine.version : 'N/A'
+            });
+            
+            // Check for JavaScript errors
+            console.log('🔧 JavaScript errors in console?');
+            
+            alert('Debug completed! Check console for detailed information.');
+        }
+    </script>
+    -->
+</head>
+<body class="font-sans antialiased">
+
+    <div id="app"></div>
+    <div class="min-h-screen bg-gray-100 nav-fixed-spacing main-content-wrapper" style="padding-top: 8rem;">
+                
+                    
+            <!-- Connection Status & Notification Bell -->
+            <div class="fixed top-4 right-8 z-50 flex items-center space-x-4">
+                <!-- Connection Status Button -->
+                                
+                <div class="flex items-center space-x-2 bg-white rounded-lg shadow-sm border border-gray-200 px-3 py-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-gray-500 rounded-full " 
+                             title="Non connecté - Session: Valide | Tenant: Actif"></div>
+                        <span class="text-xs text-gray-600 font-medium">Non connecté</span>
+                    </div>
+                                    </div>
+                
+                <!-- Notification Bell -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="relative focus:outline-none hover:bg-blue-50 rounded-full p-2 transition-colors duration-200">
+                        <svg class="w-7 h-7 text-blue-700 hover:text-blue-800 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                                                    <!-- Show notification icon for non-authenticated users with pulse animation -->
+                            <span class="absolute top-0 right-0 inline-block w-3 h-3 bg-blue-500 rounded-full animate-pulse"></span>
+                                            </button>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50" style="display: none;">
+                        <div class="p-4 border-b font-semibold text-blue-700">
+                                                            Notifications
+                                                    </div>
+                        <ul class="max-h-80 overflow-y-auto">
+                                                            <li class="px-4 py-2 text-gray-400">
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-600 mb-2">Connectez-vous pour voir vos notifications</p>
+                                        <a href="http://localhost:8000/login" class="inline-flex items-center px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
+                                            Se connecter
+                                        </a>
+                                    </div>
+                                </li>
+                                                    </ul>
+                                            </div>
+                </div>
+            </div>
+        
+        <!-- Page Heading -->
+        
+        <!-- Page Content -->
+        <main>
+            <!-- Back to Dashboard Button -->
+                        
+            <div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center">
+                            <img src="http://localhost:8000/images/fit-logo.png" alt="FIT Logo" class="w-10 h-10 mr-3">
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">
+                                    Modules FIT
+                                </h1>
+                                <p class="text-sm text-gray-600">Football Intelligence & Tracking</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="http://localhost:8000/dashboard" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au Dashboard Général</a>
+                                    </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+            <div class="p-6">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Bienvenue sur la plateforme FIT</h2>
+                    <p class="text-lg text-gray-600 mb-6">
+                        Sélectionnez un module pour accéder aux fonctionnalités de gestion du football
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <div class="flex items-center text-sm text-gray-500">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            Système opérationnel
+                        </div>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                            28 modules disponibles
+                        </div>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                            8 catégories organisées
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modules organisés par catégories -->
+        
+                
+        <!-- Filtres par catégorie -->
+        <div class="mb-8">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtrer par catégorie</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="showAllCategories(event)" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Toutes les catégories
+                    </button>
+                                        <button onclick="filterByCategory('health', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="health">
+                        🏥 Santé &amp; Médecine
+                    </button>
+                                        <button onclick="filterByCategory('sport', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="sport">
+                        ⚽ Gestion du Football
+                    </button>
+                                        <button onclick="filterByCategory('institutional', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="institutional">
+                        🏢 Organisations
+                    </button>
+                                        <button onclick="filterByCategory('documents', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="documents">
+                        📋 Licences &amp; Documents
+                    </button>
+                                        <button onclick="filterByCategory('analytics', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="analytics">
+                        📊 Analytics &amp; Performance
+                    </button>
+                                        <button onclick="filterByCategory('technology', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="technology">
+                        🤖 IA &amp; Technologie
+                    </button>
+                                        <button onclick="filterByCategory('portals', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="portals">
+                        🌐 Portails &amp; Connectivité
+                    </button>
+                                        <button onclick="filterByCategory('administration', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="administration">
+                        ⚙️ Administration
+                    </button>
+                                    </div>
+            </div>
+        </div>
+
+        <!-- Modules par catégories -->
+                        <div class="mb-8 category-section" data-category="health">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 bg-red-50 text-red-800">
+                     🏥
+                                    </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900">🏥 Santé &amp; Médecine</h3>
+                    <p class="text-sm text-gray-600">Gestion médicale et suivi de santé des athlètes</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-red-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/medical'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-red-100 text-red-600
+                            ">
+                            🏥
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Medical
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion médicale des athlètes, vaccinations, et dossiers de santé</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-red-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/healthcare'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-red-100 text-red-600
+                            ">
+                            📋
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Healthcare
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Dossiers médicaux et suivi de santé</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-red-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/pcma'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-red-100 text-red-600
+                            ">
+                            🏥
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                PCMA
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Plateforme de Contrôle Médical des Athlètes</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                            </div>
+        </div>
+                                <div class="mb-8 category-section" data-category="sport">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 bg-green-50 text-green-800">
+                     ⚽
+                                    </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900">⚽ Gestion du Football</h3>
+                    <p class="text-sm text-gray-600">Joueurs, équipes, compétitions et arbitres</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-green-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/players'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-green-100 text-green-600
+                            ">
+                            👥
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Players
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion des joueurs et licences</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-green-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/teams'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-green-100 text-green-600
+                            ">
+                            ⚽
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Teams
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion des équipes</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-green-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/competitions'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-green-100 text-green-600
+                            ">
+                            🏆
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Competitions
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion des compétitions</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-green-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/referees'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-green-100 text-green-600
+                            ">
+                            👨‍⚖️
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Referees
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion des arbitres</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                            </div>
+        </div>
+                                <div class="mb-8 category-section" data-category="institutional">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 bg-blue-50 text-blue-800">
+                     🏢
+                                    </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900">🏢 Organisations</h3>
+                    <p class="text-sm text-gray-600">Clubs, associations et confédérations</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-blue-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/clubs'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-blue-100 text-blue-600
+                            ">
+                            🏟️
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Clubs
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion des clubs</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-blue-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/associations'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-blue-100 text-blue-600
+                            ">
+                            🏛️
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Associations
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion des associations</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-blue-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/confederations'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-blue-100 text-blue-600
+                            ">
+                            🌐
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Confederations
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion des confédérations continentales</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                            </div>
+        </div>
+                                <div class="mb-8 category-section" data-category="documents">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 bg-indigo-50 text-indigo-800">
+                     📋
+                                    </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900">📋 Licences &amp; Documents</h3>
+                    <p class="text-sm text-gray-600">Gestion des licences et documents officiels</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-indigo-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/licenses'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-indigo-100 text-indigo-600
+                            ">
+                            📄
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Licenses
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion des licences</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-indigo-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/licenses'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-green-100 text-green-600
+                            ">
+                            ✅
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Validation de Licence
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Validation et vérification des licences</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                            </div>
+        </div>
+                                <div class="mb-8 category-section" data-category="analytics">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 bg-purple-50 text-purple-800">
+                     📊
+                                    </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900">📊 Analytics &amp; Performance</h3>
+                    <p class="text-sm text-gray-600">Analyses de données et performance des athlètes</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-purple-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/analytics/dashboard'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-yellow-100 text-yellow-600
+                            ">
+                            📈
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Analytics Dashboard
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Tableau de bord analytique</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-purple-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/analytics/digital-twin'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-yellow-100 text-yellow-600
+                            ">
+                            👤
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Digital Twin
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Jumeau numérique des athlètes</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-purple-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/performances/analytics'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-yellow-100 text-yellow-600
+                            ">
+                            🏃
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Performance Analytics
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Analyses de performance</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                            </div>
+        </div>
+                                <div class="mb-8 category-section" data-category="technology">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 bg-purple-50 text-purple-800">
+                     🤖
+                                    </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900">🤖 IA &amp; Technologie</h3>
+                    <p class="text-sm text-gray-600">Intelligence artificielle et technologies avancées</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-purple-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/dtn'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-purple-100 text-purple-600
+                            ">
+                            🤖
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                DTN
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Module DTN (Digital Twin Network)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-purple-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/rpm'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-purple-100 text-purple-600
+                            ">
+                            ⚡
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                RPM
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Module RPM (Real-time Performance Monitoring)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-purple-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/gemini'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-purple-100 text-purple-600
+                            ">
+                            💎
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Gemini
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Module Gemini IA de Google</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-purple-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/portal/devices'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-blue-100 text-blue-600
+                            ">
+                            📱
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Devices Portal
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Portail des appareils connectés</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                            </div>
+        </div>
+                                <div class="mb-8 category-section" data-category="portals">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 bg-cyan-50 text-cyan-800">
+                     🌐
+                                    </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900">🌐 Portails &amp; Connectivité</h3>
+                    <p class="text-sm text-gray-600">Portails utilisateurs et connectivité FIFA</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-cyan-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/fifa/dashboard'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-purple-100 text-purple-600
+                            ">
+                            🌍
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                FIFA Connect
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Intégration FIFA et connectivité mondiale</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-cyan-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/fifa-portal'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-purple-100 text-purple-600
+                            ">
+                            🚪
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                FIFA Portal
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Portail FIFA intégré</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-cyan-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/fifa/analytics'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-purple-100 text-purple-600
+                            ">
+                            📊
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                FIFA Analytics
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Analyses et statistiques FIFA</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                            </div>
+        </div>
+                                <div class="mb-8 category-section" data-category="administration">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 bg-gray-50 text-gray-800">
+                     ⚙️
+                                    </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900">⚙️ Administration</h3>
+                    <p class="text-sm text-gray-600">Gestion administrative et financière</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/administration'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-gray-100 text-gray-600 ">
+                            ⚙️
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Administration
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion administrative</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/admin/content-management'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-pink-100 text-pink-600
+                            ">
+                            📝
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Content Management
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gérer les articles, pages, médias et contenu du site</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/admin/transfer-management'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-teal-100 text-teal-600
+                            ">
+                            🔄
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Gestion des Transferts
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gérer les transferts de joueurs connecté à FIFA TMS</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/administration'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-green-100 text-green-600
+                            ">
+                            💰
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                Finance Management
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion financière et comptabilité</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/administration'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-blue-100 text-blue-600
+                            ">
+                            👤
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                User Management
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Gestion des utilisateurs et permissions</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                                                                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 p-6 group cursor-pointer" 
+                     onclick="window.location.href='http://localhost:8000/modules/administration'">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 
+                             bg-gray-100 text-gray-600 ">
+                            ⚙️
+                                                    </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                System Settings
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">Configuration système et paramètres</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-800
+                            ">
+                             ✅ Actif
+                                                    </span>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                                            </div>
+        </div>
+                            </div>
+</div>
+
+<style>
+/* Ensure all category sections are visible by default */
+.category-section {
+    display: block !important;
+}
+</style>
+
+<script>
+// Ensure functions are globally accessible
+window.showAllCategories = function(event) {
+    console.log('showAllCategories called');
+    const sections = document.querySelectorAll('.category-section');
+    const buttons = document.querySelectorAll('.category-filter');
+    
+    console.log('Found sections:', sections.length);
+    console.log('Found buttons:', buttons.length);
+    
+    // Afficher toutes les sections
+    sections.forEach(section => {
+        section.style.display = 'block';
+    });
+    
+    // Mettre à jour les boutons
+    buttons.forEach(button => {
+        button.classList.remove('bg-blue-600', 'text-white');
+        button.classList.add('bg-gray-200', 'text-gray-700');
+    });
+    
+    // Activer le bouton "Toutes les catégories"
+    if (event && event.target) {
+        event.target.classList.remove('bg-gray-200', 'text-gray-700');
+        event.target.classList.add('bg-blue-600', 'text-white');
+    }
+};
+
+window.filterByCategory = function(category, event) {
+    console.log('filterByCategory called with:', category);
+    const sections = document.querySelectorAll('.category-section');
+    const buttons = document.querySelectorAll('.category-filter');
+    
+    console.log('Found sections:', sections.length);
+    console.log('Found buttons:', buttons.length);
+    
+    // Masquer toutes les sections
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Afficher la section sélectionnée
+    const sections = document.querySelectorAll('.category-section');
+    let targetSection = null;
+    sections.forEach(section => {
+        if (section.getAttribute('data-category') === category) {
+            targetSection = section;
+        }
+    });
+    console.log('Target section:', targetSection);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+    }
+    
+    // Mettre à jour les boutons
+    buttons.forEach(button => {
+        button.classList.remove('bg-blue-600', 'text-white');
+        button.classList.add('bg-gray-200', 'text-gray-700');
+    });
+    
+    // Activer le bouton sélectionné
+    if (event && event.target) {
+        event.target.classList.remove('bg-gray-200', 'text-gray-700');
+        event.target.classList.add('bg-blue-600', 'text-white');
+    }
+};
+
+// Also define them as global functions for compatibility
+function showAllCategories(event) {
+    return window.showAllCategories(event);
+}
+
+function filterByCategory(category, event) {
+    return window.filterByCategory(category, event);
+}
+
+console.log('Filter functions defined:', {
+    showAllCategories: typeof window.showAllCategories,
+    filterByCategory: typeof window.filterByCategory
+});
+
+// Ensure all sections are visible on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Page loaded, ensuring all sections are visible');
+    const sections = document.querySelectorAll('.category-section');
+    sections.forEach(section => {
+        section.style.display = 'block';
+    });
+    console.log('Made', sections.length, 'sections visible');
+});
+</script>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white mt-auto">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- FIT Platform -->
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <div class="text-2xl font-bold">
+                                <span class="text-white">F</span>
+                                <span class="bg-blue-600 text-white px-1 relative">
+                                    I
+                                    <svg class="absolute inset-0 w-full h-full" viewBox="0 0 20 20" fill="none">
+                                        <path d="M2 10 L6 6 L10 10 L14 6 L18 10" stroke="white" stroke-width="2" fill="none"/>
+                                    </svg>
+                                </span>
+                                <span class="text-white">T</span>
+                            </div>
+                            <div class="ml-3 text-sm text-blue-300 font-semibold uppercase tracking-wide">
+                                <div>FOOTBALL</div>
+                                <div>INTELLIGENCE</div>
+                                <div>& TRACKING</div>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm">
+                            Smarter Football Through Digital Intelligence
+                        </p>
+                    </div>
+
+                    <!-- FIFA Connect -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">FIFA Connect Compliant</h3>
+                        <p class="text-gray-400 text-sm mb-4">
+                            Adhering to FIFA's global standards for digital identity and licensing.
+                        </p>
+                        <a href="https://www.fifa.com/what-we-do/fifa-connect" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm">
+                            Learn more →
+                        </a>
+                    </div>
+
+                    <!-- Powered By -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Powered By</h3>
+                        <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                            <div class="text-center">
+                                <h4 class="font-semibold text-white mb-2">The Blue Healthtech Ltd</h4>
+                                <p class="text-gray-400 text-sm mb-3">
+                                    © The Blue Healthtech Ltd. All rights reserved.
+                                </p>
+                                <a href="https://tbhc.uk" target="_blank" rel="noopener noreferrer" 
+                                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors duration-200">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                    </svg>
+                                    Visit TBHC
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                    <p class="text-gray-400 text-sm">
+                        © 2024 The Blue Healthtech Ltd. All rights reserved. | FIT - Football Intelligence & Tracking
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Scripts Stack -->
+    </body>
+</html>

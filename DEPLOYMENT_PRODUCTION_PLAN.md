@@ -315,3 +315,6 @@ kubectl scale deployment/fit-app --replicas=3 -n fit-production
 
 
 
+
+
+

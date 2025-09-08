@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+use App\Models\Concerns\UsesEnhancedTenantScope;
+
 class Club extends Model
 {
-    use HasFactory;
+    use HasFactory, UsesEnhancedTenantScope;
 
     protected $fillable = [
         'name',

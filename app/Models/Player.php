@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Concerns\UsesEnhancedTenantScope;
 
 class Player extends Model
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, UsesEnhancedTenantScope;
 
     // Constantes FIFA Connect - Catégories d'âge
     const AGE_CATEGORY_U12 = 'U12';

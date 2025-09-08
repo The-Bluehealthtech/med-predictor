@@ -62,8 +62,8 @@ class LoginRequest extends FormRequest
         }
 
         // Set redirect URL based on user role and access type
-        if ($accessType === 'player' && $user->role === 'player') {
-            session(['intended_url' => route('player-dashboard.index')]);
+        if ($accessType === 'player' && $user->role === 'player' && $user->player_id) {
+            session(['intended_url' => route('test.simple.player', $user->player_id)]);
         }
 
         // Temporarily skip association validation for testing

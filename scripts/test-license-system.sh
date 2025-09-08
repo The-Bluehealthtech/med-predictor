@@ -1,4 +1,6 @@
-#!/bin/bash
+'ass
+
+http://localhost:8080/modulesle ficst:8080/associations-view/show/1#!/bin/bash
 
 # 🏆 Script de test du système de demandes de licence FIFA
 # Teste toutes les fonctionnalités du système complet

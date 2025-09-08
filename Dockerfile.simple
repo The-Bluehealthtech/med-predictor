@@ -41,7 +41,7 @@ WORKDIR /var/www/html
 COPY composer.* ./
 
 # Installer les dépendances PHP
-RUN composer install --no-dev --no-scripts --optimize-autoloader
+RUN mkdir -p app/Helpers && echo "<?php // Helper functions" > app/Helpers/temp.php && composer install --no-dev --no-scripts --optimize-autoloader
 
 # Copier le code source
 COPY . .

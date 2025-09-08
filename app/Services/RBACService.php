@@ -92,6 +92,11 @@ class RBACService
         'referee_create' => 'Create new referees',
         'referee_edit' => 'Edit referee information',
         'referee_delete' => 'Delete referees',
+        
+        // License Management
+        'access-license-management' => 'Access license management module',
+        'access-license-validation' => 'Access license validation module',
+        'license_validation' => 'Validate licenses',
     ];
 
     /**
@@ -432,6 +437,9 @@ class RBACService
         return self::DEFAULT_PERMISSIONS[$permission] ?? 'Unknown permission';
     }
 }
+
+
+
 
 
 

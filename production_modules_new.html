@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="MPuHOWOfB4AfkhS93B85yv22Ov3wObROs03OkhbK">
+
+    <title>FIT Platform</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    <!-- Scripts - Using built assets directly -->
+                <link rel="stylesheet" href="https://fit3.tbhc.uk/build/assets/app-Cpxf-Upf.css">
+                            <link rel="stylesheet" href="https://fit3.tbhc.uk/build/assets/app-CcmtuzGj.css">
+                    <link rel="stylesheet" href="https://fit3.tbhc.uk/build/assets/app-Cpxf-Upf.css">
+                        <script type="module" src="https://fit3.tbhc.uk/build/assets/app-DmwfGxzG.js"></script>
+    
+            
+    <!-- Alpine.js via CDN for Blade dropdowns -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Custom CSS for navigation spacing -->
+    <style>
+        
+        
+        /* Reset spacing since navigation is removed */
+        .nav-fixed-spacing {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+        
+        .main-content-wrapper {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+    </style>
+    
+    <!-- DICOM Viewer Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/cornerstone-core@2.3.0/dist/cornerstone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cornerstone-wado-image-loader@4.19.0/dist/cornerstoneWADOImageLoader.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dicom-parser@1.8.28/dist/dicomParser.min.js"></script>
+    
+    <!-- Additional styles -->
+        
+
+    
+    <!-- Alpine.js Fallback Script (DISABLED, now using CDN) -->
+    <!--
+    <script>
+        // Diagnostic script for Alpine.js
+        console.log('App layout loaded, checking Alpine.js...');
+        
+        // Fallback for Alpine.js dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing dropdown fallback...');
+            
+            // Wait a bit for Alpine.js to load, then check
+            setTimeout(function() {
+                if (typeof window.Alpine === 'undefined') {
+                    console.log('Alpine.js not found, initializing fallback...');
+                    initializeDropdownFallback();
+                } else {
+                    console.log('Alpine.js found, dropdowns should work normally');
+                }
+            }, 100);
+        });
+        
+        function initializeDropdownFallback() {
+            console.log('Setting up dropdown fallback...');
+            
+            // Handle all dropdown elements
+            document.querySelectorAll('[x-data*="open"]').forEach(function(element) {
+                console.log('Found dropdown element:', element);
+                let isOpen = false;
+                
+                // Find the trigger button
+                const trigger = element.querySelector('button');
+                if (trigger) {
+                    console.log('Found trigger for dropdown:', trigger);
+                    trigger.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        isOpen = !isOpen;
+                        console.log('Dropdown toggled, isOpen:', isOpen);
+                        
+                        // Find dropdown content
+                        const content = element.querySelector('[x-show*="open"], [x-show]');
+                        if (content) {
+                            if (isOpen) {
+                                content.style.display = 'block';
+                                content.style.opacity = '1';
+                                content.style.transform = 'scale(1)';
+                                content.style.transition = 'all 0.2s ease-out';
+                            } else {
+                                content.style.opacity = '0';
+                                content.style.transform = 'scale(0.95)';
+                                setTimeout(() => {
+                                    if (!isOpen) {
+                                        content.style.display = 'none';
+                                    }
+                                }, 200);
+                            }
+                        }
+                    });
+                }
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!element.contains(e.target) && isOpen) {
+                        isOpen = false;
+                        const content = element.querySelector('[x-show*="open"], [x-show]');
+                        if (content) {
+                            content.style.opacity = '0';
+                            content.style.transform = 'scale(0.95)';
+                            setTimeout(() => {
+                                content.style.display = 'none';
+                            }, 200);
+                        }
+                    }
+                });
+            });
+            
+            // Handle responsive navigation
+            const mobileMenuButton = document.querySelector('button');
+            const mobileMenu = document.querySelector('[x-show*="open"]');
+            
+            if (mobileMenuButton && mobileMenu) {
+                let mobileOpen = false;
+                
+                mobileMenuButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    mobileOpen = !mobileOpen;
+                    
+                    if (mobileOpen) {
+                        mobileMenu.style.display = 'block';
+                    } else {
+                        mobileMenu.style.display = 'none';
+                    }
+                });
+            }
+        }
+    </script>
+    -->
+    <!-- Simple JavaScript Dropdown Solution (DISABLED, now using CDN) -->
+    <!--
+    <script>
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing dropdown system...');
+            
+            // Initialize dropdowns after a short delay
+            setTimeout(function() {
+                setupDropdowns();
+                setupMobileMenu();
+            }, 100);
+        });
+        
+        function setupDropdowns() {
+            // Find all dropdown containers
+            const dropdowns = document.querySelectorAll('[x-data*="open"]');
+            console.log('📋 Found', dropdowns.length, 'dropdown elements');
+            
+            dropdowns.forEach((dropdown, index) => {
+                console.log('🔽 Setting up dropdown', index + 1);
+                
+                // Find trigger and content
+                const trigger = dropdown.querySelector('button');
+                const content = dropdown.querySelector('[x-show*="open"], [x-show]');
+                
+                if (trigger && content) {
+                    console.log('✅ Found trigger and content for dropdown', index + 1);
+                    
+                    // Remove Alpine.js attributes to prevent conflicts
+                    // trigger.removeAttribute('@click'); // This line is not needed for native JS
+                    content.removeAttribute('x-show');
+                    
+                    // Add our own click handler
+                    trigger.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const isVisible = content.style.display === 'block';
+                        
+                        if (isVisible) {
+                            // Hide dropdown
+                            content.style.display = 'none';
+                            content.style.opacity = '0';
+                            content.style.transform = 'scale(0.95)';
+                            console.log('👁️ Hiding dropdown', index + 1);
+                        } else {
+                            // Show dropdown
+                            content.style.display = 'block';
+                            content.style.opacity = '1';
+                            content.style.transform = 'scale(1)';
+                            content.style.transition = 'all 0.2s ease-out';
+                            console.log('👁️ Showing dropdown', index + 1);
+                        }
+                    });
+                    
+                    // Close when clicking outside
+                    document.addEventListener('click', function(e) {
+                        if (!dropdown.contains(e.target)) {
+                            content.style.display = 'none';
+                            content.style.opacity = '0';
+                            content.style.transform = 'scale(0.95)';
+                        }
+                    });
+                }
+            });
+        }
+        
+        function setupMobileMenu() {
+            const mobileButton = document.querySelector('button');
+            const mobileMenu = document.querySelector('[x-show*="open"]');
+            
+            if (mobileButton && mobileMenu) {
+                console.log('📱 Setting up mobile menu');
+                
+                // Remove Alpine.js attributes
+                // mobileButton.removeAttribute('@click'); // This line is not needed for native JS
+                mobileMenu.removeAttribute('x-show');
+                
+                mobileButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const isVisible = mobileMenu.style.display === 'block';
+                    
+                    if (isVisible) {
+                        mobileMenu.style.display = 'none';
+                        console.log('📱 Hiding mobile menu');
+                    } else {
+                        mobileMenu.style.display = 'block';
+                        console.log('📱 Showing mobile menu');
+                    }
+                });
+            }
+        }
+        
+        // Test function
+        function testDropdown() {
+            console.log('🧪 Testing dropdown functionality...');
+            console.log('📊 Alpine.js available:', typeof window.Alpine !== 'undefined');
+            console.log('📊 Dropdowns found:', document.querySelectorAll('[x-data*="open"]').length);
+            
+            // Test each dropdown
+            const dropdowns = document.querySelectorAll('[x-data*="open"]');
+            dropdowns.forEach((dropdown, index) => {
+                const trigger = dropdown.querySelector('button');
+                const content = dropdown.querySelector('[x-show*="open"], [x-show]');
+                console.log(`Dropdown ${index + 1}:`, {
+                    hasTrigger: !!trigger,
+                    hasContent: !!content,
+                    triggerText: trigger ? trigger.textContent.trim() : 'N/A'
+                });
+            });
+            
+            alert('Dropdown test completed! Check console for details.');
+        }
+        
+        // Debug function
+        function debugDropdowns() {
+            console.log('🔍 Debugging dropdowns...');
+            
+            // Check all elements with x-data
+            const allXData = document.querySelectorAll('[x-data]');
+            console.log('📋 All x-data elements:', allXData.length);
+            
+            allXData.forEach((el, index) => {
+                console.log(`Element ${index + 1}:`, {
+                    xData: el.getAttribute('x-data'),
+                    tagName: el.tagName,
+                    className: el.className,
+                    hasClick: !!el.querySelector('button'),
+                    hasShow: !!el.querySelector('[x-show]')
+                });
+            });
+            
+            // Check for Alpine.js
+            console.log('Alpine.js status:', {
+                available: typeof window.Alpine !== 'undefined',
+                version: window.Alpine ? window.Alpine.version : 'N/A'
+            });
+            
+            // Check for JavaScript errors
+            console.log('🔧 JavaScript errors in console?');
+            
+            alert('Debug completed! Check console for detailed information.');
+        }
+    </script>
+    -->
+</head>
+<body class="font-sans antialiased">
+
+    <div id="app"></div>
+    <div class="min-h-screen bg-gray-100 nav-fixed-spacing main-content-wrapper" style="padding-top: 8rem;">
+                
+                    
+            <!-- Connection Status & Notification Bell -->
+            <div class="fixed top-4 right-8 z-50 flex items-center space-x-4">
+                <!-- Connection Status Button -->
+                                
+                <div class="flex items-center space-x-2 bg-white rounded-lg shadow-sm border border-gray-200 px-3 py-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" 
+                             title="Connecté - Session: Valide | Tenant: Actif"></div>
+                        <span class="text-xs text-green-600 font-medium">Connecté</span>
+                    </div>
+                                            <span class="text-gray-400">|</span>
+                        <span class="text-sm font-semibold text-gray-700">System Administrator</span>
+                        <span class="text-xs text-gray-500">(System_admin)</span>
+                                    </div>
+                
+                <!-- Notification Bell -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="relative focus:outline-none hover:bg-blue-50 rounded-full p-2 transition-colors duration-200">
+                        <svg class="w-7 h-7 text-blue-700 hover:text-blue-800 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                                                                                                                            </button>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50" style="display: none;">
+                        <div class="p-4 border-b font-semibold text-blue-700">
+                                                            Notifications
+                                                    </div>
+                        <ul class="max-h-80 overflow-y-auto">
+                                                                                                <li class="px-4 py-2 text-gray-400">Aucune notification trouvée</li>
+                                                                                    </ul>
+                                                <div class="p-2 text-center">
+                            <a href="#" class="text-blue-600 hover:underline text-sm">Voir toutes les notifications</a>
+                        </div>
+                                            </div>
+                </div>
+            </div>
+        
+        <!-- Page Heading -->
+        
+        <!-- Page Content -->
+        <main>
+            <!-- Back to Dashboard Button -->
+                                            
+                                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+                        <div class="flex space-x-4">
+                            <a href="https://fit3.tbhc.uk/dashboard" 
+                               class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                </svg>
+                                Retour au tableau de bord
+                            </a>
+                            <a href="https://fit3.tbhc.uk/modules" 
+                               class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                                Retour aux Modules
+                            </a>
+                        </div>
+                    </div>
+                                        
+            <div class="min-h-screen bg-gray-50">
+    <!-- Page Header -->
+    <div class="bg-white shadow-sm border-b border-gray-200 mb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <img src="https://fit3.tbhc.uk/images/fit-logo.png" alt="FIT Logo" class="w-10 h-10 mr-3">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Modules FIT</h1>
+                        <p class="text-sm text-gray-600">Football Intelligence & Tracking</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="https://fit3.tbhc.uk/dashboard" class="text-gray-600 hover:text-gray-900 text-sm font-medium">
+                        ← Retour au Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+            <div class="p-6">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Bienvenue sur la plateforme FIT</h2>
+                    <p class="text-lg text-gray-600 mb-6">
+                        Accédez à tous les modules de gestion du football avec une interface moderne et intuitive
+                    </p>
+                    
+                    <!-- Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <div class="text-2xl font-bold text-blue-600">28</div>
+                            <div class="text-sm text-blue-800">Modules Disponibles</div>
+                        </div>
+                        <div class="bg-green-50 rounded-lg p-4">
+                            <div class="text-2xl font-bold text-green-600">8</div>
+                            <div class="text-sm text-green-800">Catégories</div>
+                        </div>
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <div class="text-2xl font-bold text-purple-600">100%</div>
+                            <div class="text-sm text-purple-800">Opérationnels</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtrer par catégorie</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterModules('all')" class="filter-btn bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition duration-200">
+                        Tous les modules
+                    </button>
+                    <button onclick="filterModules('health')" class="filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition duration-200">
+                        🏥 Santé
+                    </button>
+                    <button onclick="filterModules('sport')" class="filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition duration-200">
+                        ⚽ Sport
+                    </button>
+                    <button onclick="filterModules('institutional')" class="filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition duration-200">
+                        🏢 Organisations
+                    </button>
+                    <button onclick="filterModules('documents')" class="filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition duration-200">
+                        📋 Documents
+                    </button>
+                    <button onclick="filterModules('analytics')" class="filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition duration-200">
+                        📊 Analytics
+                    </button>
+                    <button onclick="filterModules('technology')" class="filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition duration-200">
+                        🤖 Technologie
+                    </button>
+                    <button onclick="filterModules('portals')" class="filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition duration-200">
+                        🌐 Portails
+                    </button>
+                    <button onclick="filterModules('administration')" class="filter-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition duration-200">
+                        ⚙️ Administration
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div id="categories">
+                                            
+                                                            <div class="category-section mb-8" data-category="health">
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                                <!-- Category Header -->
+                                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <span class="text-2xl mr-3">🏥</span>
+                                            <h3 class="text-xl font-semibold text-gray-900">🏥 Santé &amp; Médecine</h3>
+                                        </div>
+                                        <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
+                                            3 modules
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modules Grid -->
+                                <div class="p-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.medical.index', 'Medical')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            1
+                                                        </div>
+                                                        <span class="text-2xl mr-2">🏥</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Medical
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gestion médicale des athlètes, vaccinations, et dossiers de santé
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.medical.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.healthcare.index', 'Healthcare')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            2
+                                                        </div>
+                                                        <span class="text-2xl mr-2">📋</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Healthcare
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Dossiers médicaux et suivi de santé
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.healthcare.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('pcma.index', 'PCMA')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            3
+                                                        </div>
+                                                        <span class="text-2xl mr-2">🏥</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    PCMA
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Plateforme de Contrôle Médical des Athlètes
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">pcma.index</span>
+                                                </div>
+                                            </div>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                                                                                <div class="category-section mb-8" data-category="sport">
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                                <!-- Category Header -->
+                                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <span class="text-2xl mr-3">⚽</span>
+                                            <h3 class="text-xl font-semibold text-gray-900">⚽ Gestion du Football</h3>
+                                        </div>
+                                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                                            4 modules
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modules Grid -->
+                                <div class="p-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.players.index', 'Players')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            4
+                                                        </div>
+                                                        <span class="text-2xl mr-2">👥</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Players
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gestion des joueurs et licences
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.players.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.teams.index', 'Teams')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            5
+                                                        </div>
+                                                        <span class="text-2xl mr-2">⚽</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Teams
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gestion des équipes
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.teams.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.competitions.index', 'Competitions')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            6
+                                                        </div>
+                                                        <span class="text-2xl mr-2">🏆</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Competitions
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gestion des compétitions
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.competitions.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.referees.index', 'Referees')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            7
+                                                        </div>
+                                                        <span class="text-2xl mr-2">👨‍⚖️</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Referees
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gestion des arbitres
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.referees.index</span>
+                                                </div>
+                                            </div>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                                                                                <div class="category-section mb-8" data-category="institutional">
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                                <!-- Category Header -->
+                                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <span class="text-2xl mr-3">🏢</span>
+                                            <h3 class="text-xl font-semibold text-gray-900">🏢 Organisations</h3>
+                                        </div>
+                                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                                            3 modules
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modules Grid -->
+                                <div class="p-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.clubs.index', 'Clubs')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            8
+                                                        </div>
+                                                        <span class="text-2xl mr-2">🏟️</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Clubs
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gestion des clubs
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.clubs.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.associations.index', 'Associations')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            9
+                                                        </div>
+                                                        <span class="text-2xl mr-2">🏛️</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Associations
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gestion des associations
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.associations.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.confederations.index', 'Confederations')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            10
+                                                        </div>
+                                                        <span class="text-2xl mr-2">🌐</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Confederations
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gestion des confédérations continentales
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.confederations.index</span>
+                                                </div>
+                                            </div>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                                                                                <div class="category-section mb-8" data-category="documents">
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                                <!-- Category Header -->
+                                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <span class="text-2xl mr-3">📋</span>
+                                            <h3 class="text-xl font-semibold text-gray-900">📋 Licences &amp; Documents</h3>
+                                        </div>
+                                        <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">
+                                            2 modules
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modules Grid -->
+                                <div class="p-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.licenses.index', 'Licenses')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            11
+                                                        </div>
+                                                        <span class="text-2xl mr-2">📄</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-indigo-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Licenses
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gestion des licences
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.licenses.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('licenses.validation', 'Validation de Licence')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            12
+                                                        </div>
+                                                        <span class="text-2xl mr-2">✅</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-indigo-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Validation de Licence
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Validation des licences côté association
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">licenses.validation</span>
+                                                </div>
+                                            </div>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                                                                                <div class="category-section mb-8" data-category="analytics">
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                                <!-- Category Header -->
+                                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <span class="text-2xl mr-3">📊</span>
+                                            <h3 class="text-xl font-semibold text-gray-900">📊 Analytics &amp; Performance</h3>
+                                        </div>
+                                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                                            4 modules
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modules Grid -->
+                                <div class="p-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('analytics.dashboard', 'Analytics Dashboard')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            13
+                                                        </div>
+                                                        <span class="text-2xl mr-2">📈</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Analytics Dashboard
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Tableau de bord analytique
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">analytics.dashboard</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('fifa.analytics', 'FIFA Analytics')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            14
+                                                        </div>
+                                                        <span class="text-2xl mr-2">📊</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    FIFA Analytics
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Analyses et statistiques FIFA
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">fifa.analytics</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('analytics.digital-twin', 'Digital Twin')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            15
+                                                        </div>
+                                                        <span class="text-2xl mr-2">👤</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Digital Twin
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Jumeau numérique des athlètes
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">analytics.digital-twin</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('performances.analytics', 'Performance Analytics')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            16
+                                                        </div>
+                                                        <span class="text-2xl mr-2">🏃</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Performance Analytics
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Analyses de performance
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">performances.analytics</span>
+                                                </div>
+                                            </div>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                                                                                <div class="category-section mb-8" data-category="technology">
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                                <!-- Category Header -->
+                                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <span class="text-2xl mr-3">🤖</span>
+                                            <h3 class="text-xl font-semibold text-gray-900">🤖 IA &amp; Technologie</h3>
+                                        </div>
+                                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                                            3 modules
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modules Grid -->
+                                <div class="p-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('dtn.index', 'DTN')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            17
+                                                        </div>
+                                                        <span class="text-2xl mr-2">🤖</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    DTN
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Module DTN (Digital Twin Network)
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">dtn.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('rpm.index', 'RPM')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            18
+                                                        </div>
+                                                        <span class="text-2xl mr-2">⚡</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    RPM
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Module RPM (Real-time Performance Monitoring)
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">rpm.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('gemini.index', 'Gemini')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            19
+                                                        </div>
+                                                        <span class="text-2xl mr-2">💎</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Gemini
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Module Gemini IA de Google
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">gemini.index</span>
+                                                </div>
+                                            </div>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                                                                                <div class="category-section mb-8" data-category="portals">
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                                <!-- Category Header -->
+                                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <span class="text-2xl mr-3">🌐</span>
+                                            <h3 class="text-xl font-semibold text-gray-900">🌐 Portails &amp; Connectivité</h3>
+                                        </div>
+                                        <span class="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-sm font-medium">
+                                            5 modules
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modules Grid -->
+                                <div class="p-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('fifa.dashboard', 'FIFA Connect')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            20
+                                                        </div>
+                                                        <span class="text-2xl mr-2">🌍</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-cyan-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    FIFA Connect
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Intégration FIFA et connectivité mondiale
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">fifa.dashboard</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('players.list', 'Player Portal')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            21
+                                                        </div>
+                                                        <span class="text-2xl mr-2">👤</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-cyan-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Player Portal
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Portail des joueurs
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">players.list</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('referee-portal.index', 'Referee Portal')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            22
+                                                        </div>
+                                                        <span class="text-2xl mr-2">👨‍⚖️</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-cyan-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Referee Portal
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Portail des arbitres
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">referee-portal.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('team-portal.dashboard', 'Team Portal')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            23
+                                                        </div>
+                                                        <span class="text-2xl mr-2">⚽</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-cyan-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Team Portal
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Portail technique pour staffs d&#039;équipe
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">team-portal.dashboard</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('portal.devices', 'Devices Portal')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            24
+                                                        </div>
+                                                        <span class="text-2xl mr-2">📱</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-cyan-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Devices Portal
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Portail des appareils connectés
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">portal.devices</span>
+                                                </div>
+                                            </div>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                                                                                <div class="category-section mb-8" data-category="administration">
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                                <!-- Category Header -->
+                                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <span class="text-2xl mr-3">⚙️</span>
+                                            <h3 class="text-xl font-semibold text-gray-900">⚙️ Administration</h3>
+                                        </div>
+                                        <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
+                                            4 modules
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Modules Grid -->
+                                <div class="p-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.administration.index', 'Administration')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            25
+                                                        </div>
+                                                        <span class="text-2xl mr-2">⚙️</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-gray-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Administration
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gestion administrative
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.administration.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('modules.finance.dashboard', 'Comptabilité / Finances')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            26
+                                                        </div>
+                                                        <span class="text-2xl mr-2">💰</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Comptabilité / Finances
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gestion financière et comptable
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">modules.finance.dashboard</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('admin.content-management.index', 'Content Management')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            27
+                                                        </div>
+                                                        <span class="text-2xl mr-2">📝</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-gray-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Content Management
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gérer les articles, pages, médias et contenu du site
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">admin.content-management.index</span>
+                                                </div>
+                                            </div>
+                                                                                    <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
+                                                 onclick="handleModuleClick('admin.transfer-management.index', 'Gestion des Transferts')">
+                                                <div class="flex items-start justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            28
+                                                        </div>
+                                                        <span class="text-2xl mr-2">🔄</span>
+                                                    </div>
+                                                    <div class="w-3 h-3 rounded-full bg-teal-500"></div>
+                                                </div>
+                                                
+                                                <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    Gestion des Transferts
+                                                </h4>
+                                                
+                                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    Gérer les transferts de joueurs connecté à FIFA TMS
+                                                </p>
+                                                
+                                                <div class="flex items-center justify-between">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                         ✅ Actif
+                                                                                                            </span>
+                                                    <span class="text-xs text-gray-500 font-mono">admin.transfer-management.index</span>
+                                                </div>
+                                            </div>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                                                        </div>
+    </div>
+</div>
+
+<script>
+function filterModules(category) {
+    // Update active filter button
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white');
+        btn.classList.add('bg-gray-200', 'text-gray-700');
+    });
+    event.target.classList.remove('bg-gray-200', 'text-gray-700');
+    event.target.classList.add('bg-blue-600', 'text-white');
+    
+    // Show/hide categories
+    const categories = document.querySelectorAll('.category-section');
+    categories.forEach(cat => {
+        if (category === 'all' || cat.dataset.category === category) {
+            cat.style.display = 'block';
+        } else {
+            cat.style.display = 'none';
+        }
+    });
+}
+
+function handleModuleClick(route, moduleName) {
+    // Créer des URLs fonctionnelles basées sur les routes
+    const routeMap = {
+        'modules.medical.index': '/modules/medical',
+        'modules.healthcare.index': '/modules/healthcare',
+        'pcma.index': '/pcma',
+        'modules.players.index': '/modules/players',
+        'modules.teams.index': '/modules/teams',
+        'modules.competitions.index': '/modules/competitions',
+        'modules.referees.index': '/modules/referees',
+        'modules.clubs.index': '/modules/clubs',
+        'modules.associations.index': '/modules/associations',
+        'modules.confederations.index': '/modules/confederations',
+        'modules.licenses.index': '/modules/licenses',
+        'licenses.validation': '/licenses/validation',
+        'analytics.dashboard': '/analytics/dashboard',
+        'fifa.analytics': '/fifa/analytics',
+        'analytics.digital-twin': '/analytics/digital-twin',
+        'performances.analytics': '/performances/analytics',
+        'dtn.index': '/dtn',
+        'rpm.index': '/rpm',
+        'gemini.index': '/gemini',
+        'fifa.dashboard': '/fifa/dashboard',
+        'player-portal.index': '/player-portal',
+        'players.list': '/players/list',
+        'referee-portal.index': '/referee-portal',
+        'team-portal.dashboard': '/team-portal',
+        'portal.devices': '/portal/devices',
+        'modules.administration.index': '/modules/administration',
+        'modules.finance.dashboard': '/modules/finance',
+        'admin.content-management.index': '/admin/content-management',
+        'admin.transfer-management.index': '/admin/transfer-management'
+    };
+
+    const url = routeMap[route] || '/modules';
+    
+    // Ajouter un effet visuel de clic
+    const card = event.currentTarget;
+    card.style.transform = 'scale(0.98)';
+    card.style.transition = 'transform 0.1s ease';
+    
+    setTimeout(() => {
+        card.style.transform = '';
+        
+        // Afficher un message informatif
+        showModuleInfo(moduleName, url);
+        
+        // Rediriger après un court délai
+        setTimeout(() => {
+            window.location.href = url;
+        }, 1500);
+    }, 100);
+}
+
+function showModuleInfo(moduleName, url) {
+    // Créer une notification élégante
+    const notification = document.createElement('div');
+    notification.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    notification.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-md mx-4 text-center shadow-xl">
+            <div class="text-4xl mb-4">🚀</div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Accès au module</h3>
+            <p class="text-gray-600 mb-4">${moduleName}</p>
+            <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm font-mono mb-4">
+                ${url}
+            </div>
+            <p class="text-green-600 text-sm">Redirection en cours...</p>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Supprimer la notification après 1.5 secondes
+    setTimeout(() => {
+        document.body.removeChild(notification);
+    }, 1500);
+}
+</script>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white mt-auto">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- FIT Platform -->
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <div class="text-2xl font-bold">
+                                <span class="text-white">F</span>
+                                <span class="bg-blue-600 text-white px-1 relative">
+                                    I
+                                    <svg class="absolute inset-0 w-full h-full" viewBox="0 0 20 20" fill="none">
+                                        <path d="M2 10 L6 6 L10 10 L14 6 L18 10" stroke="white" stroke-width="2" fill="none"/>
+                                    </svg>
+                                </span>
+                                <span class="text-white">T</span>
+                            </div>
+                            <div class="ml-3 text-sm text-blue-300 font-semibold uppercase tracking-wide">
+                                <div>FOOTBALL</div>
+                                <div>INTELLIGENCE</div>
+                                <div>& TRACKING</div>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm">
+                            Football plus intelligent grâce à l&#039;intelligence numérique
+                        </p>
+                    </div>
+
+                    <!-- FIFA Connect -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">FIFA Connect Compliant</h3>
+                        <p class="text-gray-400 text-sm mb-4">
+                            Adhering to FIFA's global standards for digital identity and licensing.
+                        </p>
+                        <a href="https://www.fifa.com/what-we-do/fifa-connect" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm">
+                            Learn more →
+                        </a>
+                    </div>
+
+                    <!-- Powered By -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Powered By</h3>
+                        <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                            <div class="text-center">
+                                <h4 class="font-semibold text-white mb-2">The Blue Healthtech Ltd</h4>
+                                <p class="text-gray-400 text-sm mb-3">
+                                    © The Blue Healthtech Ltd. All rights reserved.
+                                </p>
+                                <a href="https://tbhc.uk" target="_blank" rel="noopener noreferrer" 
+                                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors duration-200">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                    </svg>
+                                    Visit TBHC
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                    <p class="text-gray-400 text-sm">
+                        © 2024 The Blue Healthtech Ltd. All rights reserved. | FIT - Football Intelligence & Tracking
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Scripts Stack -->
+    </body>
+</html>

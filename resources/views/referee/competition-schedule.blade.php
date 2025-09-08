@@ -43,10 +43,10 @@
                                             <div class="flex items-center justify-between">
                                                 <div>
                                                     <h3 class="font-semibold text-gray-900">
-                                                        {{ $match->homeTeam->club->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? 'TBD' }}
+                                                        {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}
                                                     </h3>
                                                     <p class="text-sm text-gray-600">
-                                                        Matchday {{ $match->matchday ?? 'N/A' }} • {{ $match->kickoff_time ? $match->kickoff_time->format('D, M j, Y g:i A') : 'TBD' }}
+                                                        Matchday {{ $match->matchday ?? 'N/A' }} • {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('D, M j, Y') : 'TBD' }}
                                                     </p>
                                                     <p class="text-sm text-gray-500">{{ $match->venue ?? 'TBD' }}</p>
                                                 </div>

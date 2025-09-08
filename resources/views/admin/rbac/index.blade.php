@@ -166,12 +166,12 @@
                                         <div class="flex-shrink-0 h-10 w-10">
                                             <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
                                                 <span class="text-purple-600 font-semibold">
-                                                    {{ substr($role->display_name, 0, 2) }}
+                                                    {{ substr($role->display_name ?? $role->name, 0, 2) }}
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">{{ $role->display_name }}</div>
+                                            <div class="text-sm font-medium text-gray-900">{{ $role->display_name ?? $role->name }}</div>
                                             <div class="text-sm text-gray-500">{{ $role->name }}</div>
                                         </div>
                                     </div>
@@ -182,7 +182,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $role->users->count() }}
+                                    {{ $role->users->count() ?? 0 }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ count($role->permissions ?? []) }}
@@ -222,4 +222,3 @@
     </div>
 </div>
 @endsection
-

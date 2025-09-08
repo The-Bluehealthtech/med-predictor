@@ -97,7 +97,7 @@
                                                 <div class="text-sm text-gray-500">
                                                     {{ $player->nationality ?? 'N/A' }} • 
                                                     @if($player->date_of_birth)
-                                                        {{ $player->date_of_birth->age ?? 'N/A' }} ans
+                                                        {{ \Carbon\Carbon::parse($player->date_of_birth)->age ?? 'N/A' }} ans
                                                     @else
                                                         N/A
                                                     @endif
@@ -164,6 +164,12 @@
                                                class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded text-xs">
                                                 📸 Photo
                                             </a>
+                                            @if(in_array(Auth::user()->role, ['system_admin', 'super_admin', 'admin']))
+                                                <a href="{{ route('player-portal.show', $player->id) }}" 
+                                                   class="text-purple-600 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-2 py-1 rounded text-xs font-semibold">
+                                                    🚀 FIT Portal
+                                                </a>
+                                            @endif
                                             <form action="{{ route('players.destroy', $player) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -209,7 +215,6 @@
         </div>
     </div>
 </div>
-@endsection 
         <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 gap-6">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 flex items-center">
@@ -604,7 +609,11 @@
                                                     <button onclick="syncPlayer('{{ $player->fifa_connect_id }}')" 
                                                             class="text-orange-600 hover:text-orange-900">Sync FIFA</button>
                                                 @endif
-                                                <a href="{{ route('player-licenses.request.request', $player) }}" class="text-green-600 hover:text-green-900 font-semibold">Request License</a>
+                                                <a href="{{ route('player-licenses.index') }}" class="text-green-600 hover:text-green-900 font-semibold">Request License</a>
+                                                @if(in_array(Auth::user()->role, ['system_admin', 'super_admin', 'admin']))
+                                                    <a href="{{ route('player-portal.show', $player->id) }}" 
+                                                       class="text-purple-600 hover:text-purple-900 font-semibold">🚀 FIT Portal</a>
+                                                @endif
                                                 <form action="{{ route('players.destroy', $player) }}" method="POST" class="inline">
                                                     @csrf
                                                     @method('DELETE')

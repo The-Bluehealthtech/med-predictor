@@ -50,7 +50,7 @@
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Gestion des Utilisateurs</h3>
                     <p class="text-gray-600 mb-4">Gérer les comptes utilisateurs, rôles et permissions</p>
-                    <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                    <a href="{{ route('public-user-management') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
                         Accéder →
                     </a>
                 </div>
@@ -66,7 +66,7 @@
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Statistiques Système</h3>
                     <p class="text-gray-600 mb-4">Consulter les statistiques et métriques du système</p>
-                    <a href="{{ route('admin.system.stats') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 transition-colors">
+                    <a href="{{ route('admin-system-stats-test') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 transition-colors">
                         Accéder →
                     </a>
                 </div>
@@ -98,7 +98,7 @@
                             </div>
                             <h3 class="text-lg font-medium text-gray-900 mb-2">Gestion RBAC</h3>
                             <p class="text-gray-600 mb-4">Gérer les rôles, permissions et contrôle d'accès</p>
-                            <a href="{{ route('admin.rbac.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors">
+                            <a href="/admin/rbac" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors">
                                 Accéder →
                             </a>
                         </div>

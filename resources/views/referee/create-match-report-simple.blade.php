@@ -41,7 +41,7 @@
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <h3 class="font-semibold text-gray-900">
-                                                {{ $match->homeTeam->club->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? 'TBD' }}
+                                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}
                                             </h3>
                                             <p class="text-sm text-gray-600">
                                                 {{ $match->competition->name ?? 'Competition' }} • {{ $match->match_date ?? 'N/A' }}
@@ -137,7 +137,7 @@
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <h3 class="font-semibold text-gray-900">
-                                                {{ $match->homeTeam->club->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? 'TBD' }}
+                                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}
                                             </h3>
                                             <p class="text-sm text-gray-600">
                                                 {{ $match->competition->name ?? 'Competition' }} • {{ $match->match_date ?? 'N/A' }}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ Auth::user()->player->first_name ?? 'Joueur' }} {{ Auth::user()->player->last_name ?? '' }} - Fiche Joueur 360°</title>
+    <title>{{ $player->first_name ?? 'Joueur' }} {{ $player->last_name ?? '' }} - Fiche Joueur 360°</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        @if(Auth::user() && Auth::user()->player)
+        @if($player)
         <!-- Hero Zone - FIFA Ultimate Team Card -->
         <div class="player-card rounded-3xl p-8 mb-8 text-white relative overflow-hidden">
             <div class="absolute inset-0 opacity-10">
@@ -69,14 +69,14 @@
                             <!-- Rating FIFA en overlay -->
                             <div class="absolute -top-4 -right-4 bg-gradient-to-r from-yellow-400 to-orange-500 w-20 h-20 flex items-center justify-center rounded-2xl shadow-lg">
                                 <div class="text-center">
-                                    <div class="text-2xl font-black text-black">{{ Auth::user()->player->overall_rating ?? 75 }}</div>
+                                    <div class="text-2xl font-black text-black">{{ $player->overall_rating ?? 75 }}</div>
                                     <div class="text-xs font-bold text-black">OVR</div>
                                 </div>
                             </div>
 
                             <!-- Position en overlay -->
                             <div class="absolute -bottom-4 -left-4 bg-white/90 text-gray-800 px-4 py-2 rounded-xl font-bold shadow-lg">
-                                {{ Auth::user()->player->position ?? 'CAM' }}
+                                {{ $player->position ?? 'CAM' }}
                             </div>
                         </div>
                     </div>
@@ -88,22 +88,22 @@
                         <!-- Nom et club -->
                         <div>
                             <h1 class="text-4xl lg:text-5xl font-black mb-2 leading-none">
-                                {{ strtoupper(Auth::user()->player->last_name ?? 'PLAYER') }}
+                                {{ strtoupper($player->last_name ?? 'PLAYER') }}
                             </h1>
                             <h2 class="text-2xl lg:text-3xl font-bold text-white/90 mb-4">
-                                {{ Auth::user()->player->first_name ?? 'First' }}
+                                {{ $player->first_name ?? 'First' }}
                             </h2>
                             
                             <!-- Club et nationalité -->
                             <div class="flex items-center space-x-4 mb-6">
-                                @if(Auth::user()->player->club ?? false)
+                                @if($player->club ?? false)
                                     <div class="flex items-center space-x-2">
                                                                             <img src="/images/chelsea_logo.png" 
                                          alt="Logo Chelsea FC" 
                                          class="w-10 h-10 object-contain rounded shadow-md"
                                          onerror="this.src='/images/default_club.svg'"
                                          loading="lazy">
-                                        <span class="font-semibold">{{ Auth::user()->player->club->name ?? 'Free Agent' }}</span>
+                                        <span class="font-semibold">{{ $player->club->name ?? 'Free Agent' }}</span>
                                     </div>
                                 @endif
                                 
@@ -113,7 +113,7 @@
                                          class="w-8 h-6 rounded shadow-sm object-cover"
                                          onerror="this.src='/images/default_flag.svg'"
                                          loading="lazy">
-                                    <span class="font-semibold">{{ Auth::user()->player->nationality ?? 'International' }}</span>
+                                    <span class="font-semibold">{{ $player->nationality ?? 'International' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -121,15 +121,15 @@
                         <!-- Statistiques FIFA -->
                         <div class="grid grid-cols-3 gap-4">
                             <div class="text-center">
-                                <div class="text-3xl font-bold">{{ Auth::user()->player->age ?? 25 }}</div>
+                                <div class="text-3xl font-bold">{{ $player->age ?? 25 }}</div>
                                 <div class="text-sm opacity-75">ÂGE</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-3xl font-bold">{{ Auth::user()->player->height ?? 180 }}</div>
+                                <div class="text-3xl font-bold">{{ $player->height ?? 180 }}</div>
                                 <div class="text-sm opacity-75">TAILLE</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-3xl font-bold">{{ Auth::user()->player->weak_foot ?? 3 }}<span class="text-lg">★</span></div>
+                                <div class="text-3xl font-bold">{{ $player->weak_foot ?? 3 }}<span class="text-lg">★</span></div>
                                 <div class="text-sm opacity-75">PIED FAIBLE</div>
                             </div>
                         </div>
@@ -143,28 +143,28 @@
                         <div class="bg-white/20 rounded-2xl p-6 backdrop-blur-sm">
                             <div class="text-sm font-bold opacity-75 mb-2">SCORE DE SANTÉ FIT</div>
                             <div class="text-6xl font-black mb-2 text-green-400">
-                                {{ Auth::user()->player->ghs_overall_score ?? 85 }}
+                                {{ $player->ghs_overall_score ?? 85 }}
                             </div>
                             <div class="text-sm opacity-75 mb-4">/ 100</div>
                             <div class="grid grid-cols-2 gap-2 text-xs">
-                                <div>💚 Santé: {{ Auth::user()->player->ghs_physical_score ?? 85 }}</div>
-                                <div>🧠 Mental: {{ Auth::user()->player->ghs_mental_score ?? 78 }}</div>
-                                <div>😴 Sommeil: {{ Auth::user()->player->ghs_sleep_score ?? 81 }}</div>
-                                <div>🤝 Social: {{ Auth::user()->player->ghs_civic_score ?? 92 }}</div>
+                                <div>💚 Santé: {{ $player->ghs_physical_score ?? 85 }}</div>
+                                <div>🧠 Mental: {{ $player->ghs_mental_score ?? 78 }}</div>
+                                <div>😴 Sommeil: {{ $player->ghs_sleep_score ?? 81 }}</div>
+                                <div>🤝 Social: {{ $player->ghs_civic_score ?? 92 }}</div>
                             </div>
                         </div>
 
                         <!-- Risque de blessure -->
                         <div class="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
                             <div class="text-xs font-bold opacity-75 mb-1">RISQUE BLESSURE</div>
-                            <div class="text-2xl font-black text-green-400">{{ Auth::user()->player->injury_risk_score ?? 15 }}%</div>
-                            <div class="text-xs font-semibold text-green-400">{{ Auth::user()->player->injury_risk_level ?? 'FAIBLE' }}</div>
+                            <div class="text-2xl font-black text-green-400">{{ $player->injury_risk_score ?? 15 }}%</div>
+                            <div class="text-xs font-semibold text-green-400">{{ $player->injury_risk_level ?? 'FAIBLE' }}</div>
                         </div>
 
                         <!-- Valeur marchande -->
                         <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-4 text-black">
                             <div class="text-xs font-bold mb-1">VALEUR ESTIMÉE</div>
-                            <div class="text-lg font-black">€{{ number_format((Auth::user()->player->value_eur ?? 1500000) / 1000000, 1) }}M</div>
+                            <div class="text-lg font-black">€{{ number_format(($player->value_eur ?? 1500000) / 1000000, 1) }}M</div>
                         </div>
                     </div>
                 </div>
@@ -253,7 +253,7 @@
                                 <span class="font-bold text-blue-600">2024</span>
                             </div>
                             <div class="flex-1">
-                                <div class="font-semibold">{{ Auth::user()->player->club->name ?? 'Club Actuel' }}</div>
+                                <div class="font-semibold">{{ $player->club->name ?? 'Club Actuel' }}</div>
                                 <div class="text-sm text-gray-600">Saison 2023-24</div>
                             </div>
                             <div class="grid grid-cols-3 gap-4 text-center">
@@ -307,19 +307,19 @@
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">FIFA Connect ID</span>
-                        <span class="font-medium font-mono text-sm">{{ Auth::user()->player->fifa_connect_id ?? 'Non attribué' }}</span>
+                        <span class="font-medium font-mono text-sm">{{ $player->fifa_connect_id ?? 'Non attribué' }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Date de naissance</span>
-                        <span class="font-medium">{{ Auth::user()->player->date_of_birth ? Auth::user()->player->date_of_birth->format('d/m/Y') : 'Non définie' }}</span>
+                        <span class="font-medium">{{ $player->date_of_birth ? $player->date_of_birth->format('d/m/Y') : 'Non définie' }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Pied préféré</span>
-                        <span class="font-medium">{{ Auth::user()->player->preferred_foot ?? 'Non défini' }}</span>
+                        <span class="font-medium">{{ $player->preferred_foot ?? 'Non défini' }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Valeur marchande</span>
-                        <span class="font-medium">€{{ number_format(Auth::user()->player->value_eur ?? 0) }}</span>
+                        <span class="font-medium">€{{ number_format($player->value_eur ?? 0) }}</span>
                     </div>
                 </div>
             </div>
@@ -327,9 +327,9 @@
             <!-- Club actuel -->
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <h2 class="text-2xl font-bold gradient-text mb-6">Club Actuel</h2>
-                @if(Auth::user()->player->club ?? false)
+                @if($player->club ?? false)
                 <div class="flex items-center space-x-4 mb-4">
-                    @if(Auth::user()->player->club ?? false)
+                    @if($player->club ?? false)
                         <img src="/images/chelsea_logo.png" 
                              alt="Logo Chelsea FC" 
                              class="w-16 h-16 object-contain"
@@ -337,18 +337,18 @@
                              loading="lazy">
                     @endif
                     <div>
-                        <div class="font-medium text-lg">{{ Auth::user()->player->club->name ?? 'Nom du club' }}</div>
-                        <div class="text-gray-600">{{ Auth::user()->player->club->association->name ?? 'Fédération' }}</div>
+                        <div class="font-medium text-lg">{{ $player->club->name ?? 'Nom du club' }}</div>
+                        <div class="text-gray-600">{{ $player->club->association->name ?? 'Fédération' }}</div>
                     </div>
                 </div>
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Contrat jusqu'au</span>
-                        <span class="font-medium">{{ Auth::user()->player->contract_valid_until ? Auth::user()->player->contract_valid_until->format('d/m/Y') : 'Non défini' }}</span>
+                        <span class="font-medium">{{ $player->contract_valid_until ? $player->contract_valid_until->format('d/m/Y') : 'Non défini' }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Salaire</span>
-                        <span class="font-medium">€{{ number_format(Auth::user()->player->wage_eur ?? 0) }}</span>
+                        <span class="font-medium">€{{ number_format($player->wage_eur ?? 0) }}</span>
                     </div>
                 </div>
                 @else
@@ -365,19 +365,19 @@
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Dossiers médicaux</span>
-                        <span class="font-bold text-blue-600">{{ Auth::user()->player->healthRecords->count() ?? 0 }}</span>
+                        <span class="font-bold text-blue-600">{{ $player->healthRecords->count() ?? 0 }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Évaluations PCMA</span>
-                        <span class="font-bold text-green-600">{{ Auth::user()->player->pcmas->count() ?? 0 }}</span>
+                        <span class="font-bold text-green-600">{{ $player->pcmas->count() ?? 0 }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Prédictions médicales</span>
-                        <span class="font-bold text-purple-600">{{ Auth::user()->player->medicalPredictions->count() ?? 0 }}</span>
+                        <span class="font-bold text-purple-600">{{ $player->medicalPredictions->count() ?? 0 }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Risque de blessure</span>
-                        <span class="font-bold text-green-600">{{ Auth::user()->player->injury_risk_score ?? 15 }}% (FAIBLE)</span>
+                        <span class="font-bold text-green-600">{{ $player->injury_risk_score ?? 15 }}% (FAIBLE)</span>
                     </div>
                 </div>
             </div>
@@ -388,10 +388,10 @@
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Évaluations de performance</span>
-                        <span class="font-bold text-orange-600">{{ Auth::user()->player->performances->count() ?? 0 }}</span>
+                        <span class="font-bold text-orange-600">{{ $player->performances->count() ?? 0 }}</span>
                     </div>
-                    @if(Auth::user()->player->performances->count() > 0)
-                        @php $latestPerf = Auth::user()->player->performances->first() @endphp
+                    @if($player->performances->count() > 0)
+                        @php $latestPerf = $player->performances->first() @endphp
                         <div class="grid grid-cols-2 gap-4">
                             <div class="text-center">
                                 <div class="text-xl font-bold text-blue-600">{{ $latestPerf->endurance_score ?? 'N/A' }}</div>
@@ -566,7 +566,7 @@
                     labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
                     datasets: [{
                         label: 'Score FIT Global',
-                        data: [82, 85, 83, 87, 89, {{ Auth::user()->player->ghs_overall_score ?? 85 }}],
+                        data: [82, 85, 83, 87, 89, {{ $player->ghs_overall_score ?? 85 }}],
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
                         tension: 0.4,
@@ -590,7 +590,7 @@
                 data: {
                     labels: ['Santé Physique', 'Santé Mentale', 'Sommeil', 'Social'],
                     datasets: [{
-                        data: [{{ Auth::user()->player->ghs_physical_score ?? 85 }}, {{ Auth::user()->player->ghs_mental_score ?? 78 }}, {{ Auth::user()->player->ghs_sleep_score ?? 81 }}, {{ Auth::user()->player->ghs_civic_score ?? 92 }}],
+                        data: [{{ $player->ghs_physical_score ?? 85 }}, {{ $player->ghs_mental_score ?? 78 }}, {{ $player->ghs_sleep_score ?? 81 }}, {{ $player->ghs_civic_score ?? 92 }}],
                         backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b']
                     }]
                 },
@@ -611,7 +611,7 @@
                     labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
                     datasets: [{
                         label: 'Valeur (millions €)',
-                        data: [1.2, 1.35, 1.28, 1.45, 1.5, {{ (Auth::user()->player->value_eur ?? 1500000) / 1000000 }}],
+                        data: [1.2, 1.35, 1.28, 1.45, 1.5, {{ ($player->value_eur ?? 1500000) / 1000000 }}],
                         borderColor: '#f59e0b',
                         backgroundColor: 'rgba(245, 158, 11, 0.1)',
                         tension: 0.4,
@@ -639,7 +639,7 @@
                         backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6']
                     }, {
                         label: 'Risque Blessure (%)',
-                        data: [{{ Auth::user()->player->injury_risk_score ?? 15 }}, 25, 35],
+                        data: [{{ $player->injury_risk_score ?? 15 }}, 25, 35],
                         backgroundColor: ['#f59e0b', '#ef4444', '#dc2626']
                     }]
                 },

@@ -1,5 +1,5 @@
 {
-  "verification_timestamp": "2025-08-26T06:55:43Z",
+  "verification_timestamp": "2025-09-05T20:14:03Z",
   "project": "med-predictor",
   "results": {
     "prerequisites": {
@@ -51,14 +51,19 @@
       },
       "workflow_count": {
         "status": "success",
-        "count": 3
+        "count": 8
       },
       "workflows": {
         "status": "success",
         "files": [
+          "simple-ci-old.yml",
+          "complete-pipeline.yml",
+          "advanced-ci.yml",
           "db-audit.yml",
           "deploy-fit.yml",
-          "ci-cd.yml"
+          "simple-ci.yml",
+          "notifications.yml",
+          "notifications-enhanced.yml"
         ]
       }
     },
@@ -111,7 +116,7 @@
       },
       "test_count": {
         "status": "success",
-        "count": 37
+        "count": 38
       },
       "test_script": {
         "status": "success",

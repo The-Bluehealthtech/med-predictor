@@ -1,0 +1,219 @@
+# Google Cloud Storage Configuration for Kubernetes
+# This creates persistent volumes and storage classes for GCS
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gcs-service-account
+  namespace: med-predictor
+type: Opaque
+data:
+  # Base64 encoded service account key JSON
+  # Replace with: echo -n "$(cat service-account-key.json)" | base64
+  service-account-key: ""
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gcs-storage
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-standard
+  replication-type: regional-pd
+  zones: us-central1-a,us-central1-b,us-central1-c
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gcs-storage-pvc
+  namespace: med-predictor
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gcs-storage
+  resources:
+    requests:
+      storage: 100Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gcs-config
+  namespace: med-predictor
+data:
+  GOOGLE_CLOUD_PROJECT_ID: "med-predictor-project"
+  GOOGLE_CLOUD_REGION: "us-central1"
+  GOOGLE_CLOUD_STORAGE_BUCKET: "med-predictor-storage"
+  GOOGLE_CLOUD_STORAGE_PATH_PREFIX: "uploads/"
+  FILESYSTEM_DISK: "gcs"
+  DEFAULT_STORAGE_DISK: "gcs"
+  GCS_BACKUP_ENABLED: "true"
+  GCS_BACKUP_BUCKET: "med-predictor-backups"
+  GCS_BACKUP_RETENTION_DAYS: "30"
+  GCS_SIGNED_URL_EXPIRATION: "3600"
+  GCS_PUBLIC_ACCESS: "true"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gcs-storage-init
+  namespace: med-predictor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gcs-storage-init
+  template:
+    metadata:
+      labels:
+        app: gcs-storage-init
+    spec:
+      containers:
+      - name: gcs-init
+        image: google/cloud-sdk:alpine
+        command: ["/bin/sh"]
+        args:
+          - -c
+          - |
+            echo "Initializing GCS storage..."
+            
+            # Install required tools
+            apk add --no-cache curl php php-json php-mbstring php-curl
+            
+            # Download and install Composer
+            curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+            
+            # Wait for Laravel application to be ready
+            echo "Waiting for Laravel application..."
+            until curl -f http://med-predictor-service:80/health 2>/dev/null; do
+              echo "Waiting for application..."
+              sleep 10
+            done
+            
+            echo "Laravel application is ready!"
+            
+            # Initialize GCS storage
+            echo "Setting up GCS storage..."
+            
+            # Create storage directories
+            mkdir -p /var/www/html/storage/app/public/uploads
+            mkdir -p /var/www/html/storage/app/private/uploads
+            
+            # Set permissions
+            chown -R www-data:www-data /var/www/html/storage
+            chmod -R 755 /var/www/html/storage
+            
+            echo "GCS storage initialization complete!"
+            
+            # Keep container running
+            tail -f /dev/null
+        env:
+        - name: GOOGLE_CLOUD_PROJECT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: gcs-config
+              key: GOOGLE_CLOUD_PROJECT_ID
+        - name: GOOGLE_CLOUD_STORAGE_BUCKET
+          valueFrom:
+            configMapKeyRef:
+              name: gcs-config
+              key: GOOGLE_CLOUD_STORAGE_BUCKET
+        volumeMounts:
+        - name: gcs-storage
+          mountPath: /var/www/html/storage
+        - name: service-account-key
+          mountPath: /etc/gcs
+          readOnly: true
+      volumes:
+      - name: gcs-storage
+        persistentVolumeClaim:
+          claimName: gcs-storage-pvc
+      - name: service-account-key
+        secret:
+          secretName: gcs-service-account
+      restartPolicy: Always
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: gcs-backup-cleanup
+  namespace: med-predictor
+spec:
+  schedule: "0 2 * * *"  # Run daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: gcs-cleanup
+            image: google/cloud-sdk:alpine
+            command: ["/bin/sh"]
+            args:
+              - -c
+              - |
+                echo "Starting GCS backup cleanup..."
+                
+                # Set up authentication
+                export GOOGLE_APPLICATION_CREDENTIALS=/etc/gcs/service-account-key.json
+                
+                # Get project and bucket from environment
+                PROJECT_ID=${GOOGLE_CLOUD_PROJECT_ID:-med-predictor-project}
+                BACKUP_BUCKET=${GCS_BACKUP_BUCKET:-med-predictor-backups}
+                RETENTION_DAYS=${GCS_BACKUP_RETENTION_DAYS:-30}
+                
+                echo "Project: $PROJECT_ID"
+                echo "Backup Bucket: $BACKUP_BUCKET"
+                echo "Retention Days: $RETENTION_DAYS"
+                
+                # Calculate cutoff date
+                CUTOFF_DATE=$(date -d "$RETENTION_DAYS days ago" +%Y-%m-%d)
+                echo "Cleaning up backups older than: $CUTOFF_DATE"
+                
+                # List and delete old backup directories
+                gsutil ls gs://$BACKUP_BUCKET/backups/ | while read backup_dir; do
+                  # Extract date from directory name
+                  dir_name=$(basename "$backup_dir")
+                  if [[ $dir_name =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})_([0-9]{2}-[0-9]{2}-[0-9]{2})$ ]]; then
+                    backup_date=${BASH_REMATCH[1]}
+                    if [[ "$backup_date" < "$CUTOFF_DATE" ]]; then
+                      echo "Deleting old backup: $backup_dir"
+                      gsutil -m rm -r "$backup_dir"
+                    fi
+                  fi
+                done
+                
+                echo "GCS backup cleanup completed!"
+            env:
+            - name: GOOGLE_CLOUD_PROJECT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: gcs-config
+                  key: GOOGLE_CLOUD_PROJECT_ID
+            - name: GCS_BACKUP_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gcs-config
+                  key: GCS_BACKUP_BUCKET
+            - name: GCS_BACKUP_RETENTION_DAYS
+              valueFrom:
+                configMapKeyRef:
+                  name: gcs-config
+                  key: GCS_BACKUP_RETENTION_DAYS
+            volumeMounts:
+            - name: service-account-key
+              mountPath: /etc/gcs
+              readOnly: true
+          volumes:
+          - name: service-account-key
+            secret:
+              secretName: gcs-service-account
+          restartPolicy: OnFailure
+

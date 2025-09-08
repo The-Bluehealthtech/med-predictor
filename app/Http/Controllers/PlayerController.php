@@ -15,7 +15,7 @@ class PlayerController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin,club_admin,club_manager,club_medical,association_admin,association_registrar,association_medical,system_admin,super_admin');
+        $this->middleware('role:admin,club_admin,club_manager,club_medical,association_admin,association_registrar,association_medical,system_admin,super_admin,referee');
     }
 
     /**
@@ -45,9 +45,14 @@ class PlayerController extends Controller
             $players = Player::with(['club', 'association'])
                 ->orderBy('first_name')
                 ->paginate(15);
+        } elseif ($user->role === 'referee') {
+            // Referees can see all players (for match assignments)
+            $players = Player::with(['club', 'association'])
+                ->orderBy('first_name')
+                ->paginate(15);
         }
 
-        return view('players.index', compact('players'));
+        return view('players-list-public', compact('players'));
     }
 
     /**

@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Joueurs - Plateforme FIT</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @php
+        use Illuminate\Support\Facades\Auth;
+    @endphp
     <style>
         .fifa-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -155,9 +158,16 @@
                            class="flex-1 bg-white/20 hover:bg-white/30 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors text-center">
                             👁️ Voir
                         </a>
+                        @if(in_array(Auth::user()->role, ['system_admin', 'super_admin', 'admin', 'association_admin']))
+                        <a href="{{ route('simple-player-portal', $player->id) }}" 
+                           class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-all text-center">
+                            🚀 FIT Portal
+                        </a>
+                        @else
                         <button class="flex-1 bg-white/20 hover:bg-white/30 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors">
                             ✏️ Modifier
                         </button>
+                        @endif
                     </div>
                 </div>
             </div>

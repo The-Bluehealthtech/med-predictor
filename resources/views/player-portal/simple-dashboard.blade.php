@@ -14,7 +14,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900">⚽ Portail Joueur</h1>
-                    @if(Auth::user() && Auth::user()->player)
+                    @if(isset($player))
+                        <p class="text-gray-600 mt-2">Bienvenue, {{ $player->first_name }} {{ $player->last_name }}</p>
+                    @elseif(Auth::user() && Auth::user()->player)
                         <p class="text-gray-600 mt-2">Bienvenue, {{ Auth::user()->player->first_name }} {{ Auth::user()->player->last_name }}</p>
                     @else
                         <p class="text-gray-600 mt-2">Bienvenue, {{ Auth::user()->name ?? 'Utilisateur' }}</p>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rapport d'Arbitre - {{ $match->homeTeam->club->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? 'TBD' }}</title>
+    <title>Rapport d'Arbitre - {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -18,7 +18,7 @@
                         <div>
                             <h1 class="text-3xl font-bold">Rapport d'Arbitre</h1>
                             <p class="text-orange-100 mt-2">
-                                {{ $match->homeTeam->club->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? 'TBD' }}
+                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}
                             </p>
                             <p class="text-orange-100 text-sm">
                                 {{ $match->competition->name ?? 'Competition' }} • {{ $match->match_date ?? 'N/A' }}
@@ -71,11 +71,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Équipe Domicile</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ $match->homeTeam->club->name ?? 'TBD' }}</p>
+                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? 'TBD' }}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Équipe Extérieur</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ $match->awayTeam->club->name ?? 'TBD' }}</p>
+                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? 'TBD' }}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Compétition</label>
@@ -198,7 +198,7 @@
                         
                         <!-- Home Team -->
                         <div class="mb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $match->homeTeam->club->name ?? 'Équipe Domicile' }}</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'Équipe Domicile' }}</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($homeTeamPlayers as $player)
                                 <div class="border border-gray-200 rounded-lg p-3">
@@ -229,7 +229,7 @@
 
                         <!-- Away Team -->
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $match->awayTeam->club->name ?? 'Équipe Extérieur' }}</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'Équipe Extérieur' }}</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($awayTeamPlayers as $player)
                                 <div class="border border-gray-200 rounded-lg p-3">
@@ -525,7 +525,7 @@
                             minute: parseInt(minute),
                             player: player,
                             type: 'goal',
-                            description: `But - ${team === 'home' ? '{{ $match->homeTeam->club->name }}' : '{{ $match->awayTeam->club->name }}'}`
+                            description: `But - ${team === 'home' ? '{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? "Home" }}' : '{{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? "Away" }}'}`
                         });
                         this.sortTimeline();
                     }
@@ -538,7 +538,7 @@
                             minute: parseInt(minute),
                             player: player,
                             type: type === 'yellow' ? 'yellow_card' : 'red_card',
-                            description: `Carton ${type === 'yellow' ? 'jaune' : 'rouge'} - ${team === 'home' ? '{{ $match->homeTeam->club->name }}' : '{{ $match->awayTeam->club->name }}'}`
+                            description: `Carton ${type === 'yellow' ? 'jaune' : 'rouge'} - ${team === 'home' ? '{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? "Home" }}' : '{{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? "Away" }}'}`
                         });
                         this.sortTimeline();
                     }
@@ -620,7 +620,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rapport d'Arbitre - {{ $match->homeTeam->club->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? 'TBD' }}</title>
+    <title>Rapport d'Arbitre - {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -635,7 +635,7 @@
                         <div>
                             <h1 class="text-3xl font-bold">Rapport d'Arbitre</h1>
                             <p class="text-orange-100 mt-2">
-                                {{ $match->homeTeam->club->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? 'TBD' }}
+                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}
                             </p>
                             <p class="text-orange-100 text-sm">
                                 {{ $match->competition->name ?? 'Competition' }} • {{ $match->match_date ?? 'N/A' }}
@@ -688,11 +688,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Équipe Domicile</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ $match->homeTeam->club->name ?? 'TBD' }}</p>
+                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? 'TBD' }}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Équipe Extérieur</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ $match->awayTeam->club->name ?? 'TBD' }}</p>
+                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? 'TBD' }}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Compétition</label>
@@ -815,7 +815,7 @@
                         
                         <!-- Home Team -->
                         <div class="mb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $match->homeTeam->club->name ?? 'Équipe Domicile' }}</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->homeTeam)->club)->name ?? 'Équipe Domicile' }}</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($homeTeamPlayers as $player)
                                 <div class="border border-gray-200 rounded-lg p-3">
@@ -846,7 +846,7 @@
 
                         <!-- Away Team -->
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $match->awayTeam->club->name ?? 'Équipe Extérieur' }}</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->awayTeam)->club)->name ?? 'Équipe Extérieur' }}</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($awayTeamPlayers as $player)
                                 <div class="border border-gray-200 rounded-lg p-3">
@@ -1142,7 +1142,7 @@
                             minute: parseInt(minute),
                             player: player,
                             type: 'goal',
-                            description: `But - ${team === 'home' ? '{{ $match->homeTeam->club->name }}' : '{{ $match->awayTeam->club->name }}'}`
+                            description: `But - ${team === 'home' ? '{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? "Home" }}' : '{{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? "Away" }}'}`
                         });
                         this.sortTimeline();
                     }
@@ -1155,7 +1155,7 @@
                             minute: parseInt(minute),
                             player: player,
                             type: type === 'yellow' ? 'yellow_card' : 'red_card',
-                            description: `Carton ${type === 'yellow' ? 'jaune' : 'rouge'} - ${team === 'home' ? '{{ $match->homeTeam->club->name }}' : '{{ $match->awayTeam->club->name }}'}`
+                            description: `Carton ${type === 'yellow' ? 'jaune' : 'rouge'} - ${team === 'home' ? '{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? "Home" }}' : '{{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? "Away" }}'}`
                         });
                         this.sortTimeline();
                     }

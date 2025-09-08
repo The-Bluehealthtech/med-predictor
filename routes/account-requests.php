@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountRequestController;
 
 // Account Request Routes (completely public, no middleware)
+Route::get('/account-request', [AccountRequestController::class, 'create'])->name('account.request');
 Route::post('/account-request', [AccountRequestController::class, 'store'])->name('account-request.store');
 
 // Account Request Data Routes (public)

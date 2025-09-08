@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 // Controllers will be used as needed
 
 // Routes pour l'internationalisation
-Route::get('/language/{locale}', [App\Http\Controllers\LanguageController::class, 'switchLanguage'])->name('language.switch');
-Route::get('/api/language/current', [App\Http\Controllers\LanguageController::class, 'getCurrentLanguage'])->name('language.current');
+// Route::get('/language/{locale}', [App\Http\Controllers\LanguageController::class, 'switchLanguage'])->name('language.switch');
+// Route::get('/api/language/current', [App\Http\Controllers\LanguageController::class, 'getCurrentLanguage'])->name('language.current');
 
 // Routes de santé pour Kubernetes
 Route::get('/health', function () {

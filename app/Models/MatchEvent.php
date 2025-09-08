@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\UsesEnhancedTenantScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MatchEvent extends Model
 {
+    use UsesEnhancedTenantScope;
     use HasFactory;
 
     protected $fillable = [

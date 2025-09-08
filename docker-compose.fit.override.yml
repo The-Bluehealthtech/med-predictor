@@ -1,0 +1,12 @@
+services:
+  fit-php:
+    environment:
+      DB_HOST: fit-mysql
+      DB_PORT: "3306"
+      DB_DATABASE: med_predictor
+      DB_USERNAME: med_user
+      DB_PASSWORD: med_password
+volumes:
+  fit_mysql_data:
+    external: true
+    name: med-predictor_mysql_data

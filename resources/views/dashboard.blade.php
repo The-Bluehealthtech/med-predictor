@@ -138,7 +138,7 @@
                                 <div class="text-xs text-blue-200">Total Players</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-2xl font-bold">{{ $licenseStatsByClub->sum('total') ?? 0 }}</div>
+                                <div class="text-2xl font-bold">{{ ($licenseStatsByClub ?? collect())->sum('total') }}</div>
                                 <div class="text-xs text-blue-200">Total Licenses</div>
                             </div>
                         </div>
@@ -148,15 +148,16 @@
                             <div class="text-sm font-semibold mb-2">License Status</div>
                             <div class="space-y-2">
                                 @php
-                                    $totalLicenses = $licenseStatsByClub->sum('total') ?: 1;
-                                    $pendingPercent = round(($licenseStatsByClub->sum('pending') / $totalLicenses) * 100);
-                                    $activePercent = round(($licenseStatsByClub->sum('active') / $totalLicenses) * 100);
-                                    $rejectedPercent = round(($licenseStatsByClub->sum('revoked') / $totalLicenses) * 100);
+                                    $stats = $licenseStatsByClub ?? collect();
+                                    $totalLicenses = max($stats->sum('total'), 1);
+                                    $pendingPercent = round(($stats->sum('pending') / $totalLicenses) * 100);
+                                    $activePercent = round(($stats->sum('active') / $totalLicenses) * 100);
+                                    $rejectedPercent = round(($stats->sum('revoked') / $totalLicenses) * 100);
                                 @endphp
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
                                         <span class="text-blue-800 font-semibold">Pending</span>
-                                        <span class="font-bold text-blue-800">{{ $licenseStatsByClub->sum('pending') ?? 0 }}</span>
+                                        <span class="font-bold text-blue-800">{{ ($licenseStatsByClub ?? collect())->sum('pending') }}</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">
                                         <div class="bg-yellow-400 h-1 rounded-full" style="width: {{ $pendingPercent }}%"></div>
@@ -165,7 +166,7 @@
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
                                         <span class="text-blue-800 font-semibold">Active</span>
-                                        <span class="font-bold text-blue-800">{{ $licenseStatsByClub->sum('active') ?? 0 }}</span>
+                                        <span class="font-bold text-blue-800">{{ ($licenseStatsByClub ?? collect())->sum('active') }}</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">
                                         <div class="bg-green-400 h-1 rounded-full" style="width: {{ $activePercent }}%"></div>
@@ -174,7 +175,7 @@
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
                                         <span class="text-blue-800 font-semibold">Rejected</span>
-                                        <span class="font-bold text-blue-800">{{ $licenseStatsByClub->sum('revoked') ?? 0 }}</span>
+                                        <span class="font-bold text-blue-800">{{ ($licenseStatsByClub ?? collect())->sum('revoked') }}</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">
                                         <div class="bg-red-400 h-1 rounded-full" style="width: {{ $rejectedPercent }}%"></div>
@@ -858,11 +859,12 @@
                     <!-- Summary Stats -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                         @php
-                            $totalPending = $licenseStatsByClub ? $licenseStatsByClub->sum('pending') : 0;
-                            $totalActive = $licenseStatsByClub ? $licenseStatsByClub->sum('active') : 0;
-                            $totalRejected = $licenseStatsByClub ? $licenseStatsByClub->sum('revoked') : 0;
-                            $totalExplanation = $licenseStatsByClub ? $licenseStatsByClub->sum('justification_requested') : 0;
-                            $grandTotal = $licenseStatsByClub ? $licenseStatsByClub->sum('total') : 0;
+                            $stats = $licenseStatsByClub ?? collect();
+                            $totalPending = $stats->sum('pending');
+                            $totalActive = $stats->sum('active');
+                            $totalRejected = $stats->sum('revoked');
+                            $totalExplanation = $stats->sum('justification_requested');
+                            $grandTotal = $stats->sum('total');
                         @endphp
                         
                         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">

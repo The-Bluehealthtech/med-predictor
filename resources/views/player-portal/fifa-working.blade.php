@@ -135,6 +135,22 @@
                 <div class="absolute w-48 h-48 bg-white/3 rounded-full -bottom-24 -left-24"></div>
             </div>
             
+            <!-- Bouton Logout -->
+            <div class="absolute top-4 right-4 z-20">
+                @auth
+                    <form method="POST" action="{{ route('logout') }}" class="inline-block">
+                        @csrf
+                        <button type="submit" 
+                                class="bg-red-600/80 backdrop-blur-sm hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            <span>Déconnexion</span>
+                        </button>
+                    </form>
+                @endauth
+            </div>
+
             <div class="relative z-10">
                 <div class="flex flex-col lg:flex-row items-center justify-between space-y-6 lg:space-y-0">
                     <!-- Section gauche: Photo et infos joueur -->
@@ -154,13 +170,13 @@
                             </div>
                             <!-- Badge position -->
                             <div class="fifa-position-badge absolute -bottom-2 -right-2 px-3 py-1 text-white font-bold text-sm">
-                                RW
+                                {{ $player->position ?? 'FW' }}
                             </div>
                         </div>
                         
                         <!-- Informations du joueur -->
                         <div class="text-center lg:text-left">
-                            <h1 class="text-3xl lg:text-4xl font-bold mb-1">Lionel Messi</h1>
+                            <h1 class="text-3xl lg:text-4xl font-bold mb-1">{{ $player->first_name }} {{ $player->last_name }}</h1>
                             <div class="text-lg text-yellow-400 font-semibold mb-3">⭐ FIFA Ultimate Legend</div>
                             
                             <div class="flex items-center justify-center lg:justify-start space-x-4 mb-4">

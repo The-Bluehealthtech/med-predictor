@@ -1,0 +1,99 @@
+# Dockerfile optimisé pour Cloud Run avec Nginx + PHP-FPM
+FROM php:8.2-fpm-alpine
+
+# Installer les dépendances système
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    mysql-client \
+    git \
+    curl \
+    libpng-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    oniguruma-dev \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libzip-dev
+
+# Installer les extensions PHP
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip \
+    xml \
+    ctype
+
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Définir le répertoire de travail
+WORKDIR /var/www/html
+
+# Copier les fichiers de dépendances
+COPY composer.* ./
+
+# Installer les dépendances PHP
+RUN mkdir -p app/Helpers && echo "<?php // Helper functions" > app/Helpers/temp.php && composer install --no-dev --no-scripts --optimize-autoloader
+
+# Copier le code source
+COPY . .
+
+# Configurer les permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
+
+# Configuration Nginx pour Cloud Run
+RUN echo 'server { \
+    listen 8080; \
+    server_name _; \
+    root /var/www/html/public; \
+    index index.php; \
+    \
+    location / { \
+        try_files $uri $uri/ /index.php?$query_string; \
+    } \
+    \
+    location ~ \.php$ { \
+        fastcgi_pass 127.0.0.1:9000; \
+        fastcgi_index index.php; \
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; \
+        include fastcgi_params; \
+    } \
+}' > /etc/nginx/http.d/default.conf
+
+# Configuration Supervisor pour démarrer Nginx et PHP-FPM
+RUN mkdir -p /etc/supervisor/conf.d /var/log/supervisor /var/run
+RUN echo '[supervisord] \
+nodaemon=true \
+user=root \
+logfile=/var/log/supervisor/supervisord.log \
+pidfile=/var/run/supervisord.pid \
+\
+[program:nginx] \
+command=nginx -g "daemon off;" \
+stdout_logfile=/dev/stdout \
+stdout_logfile_maxbytes=0 \
+stderr_logfile=/dev/stderr \
+stderr_logfile_maxbytes=0 \
+\
+[program:php-fpm] \
+command=php-fpm -F \
+stdout_logfile=/dev/stdout \
+stdout_logfile_maxbytes=0 \
+stderr_logfile=/dev/stderr \
+stderr_logfile_maxbytes=0' > /etc/supervisor/conf.d/supervisord.conf
+
+# Exposer le port 8080 (requis par Cloud Run)
+EXPOSE 8080
+
+# Démarrer avec supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

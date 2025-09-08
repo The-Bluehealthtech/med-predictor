@@ -168,3 +168,6 @@ echo "   - Événements: kubectl get events -n med-predictor --sort-by='.lastTim
 
 
 
+
+
+

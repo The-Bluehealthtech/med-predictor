@@ -6,9 +6,9 @@
 set -e  # Arrêter en cas d'erreur
 
 # Configuration
-PROJECT_ID="YOUR_PROJECT_ID"  # À modifier avec votre ID de projet GCP
+PROJECT_ID="med-predictor-fit"  # Projet GCP avec facturation activée
 DOMAIN="fit3.tbhc.uk"
-ZONE="europe-west1-a"
+ZONE="us-central1-a"
 CLUSTER_NAME="fit-cluster"
 NAMESPACE="fit-production"
 IMAGE_TAG="v1.0.0"
@@ -60,14 +60,14 @@ if ! gcloud container clusters describe $CLUSTER_NAME --zone=$ZONE &> /dev/null;
     log_info "Création du cluster GKE..."
     gcloud container clusters create $CLUSTER_NAME \
         --zone=$ZONE \
-        --num-nodes=3 \
-        --machine-type=e2-standard-2 \
+        --num-nodes=1 \
+        --machine-type=e2-small \
+        --disk-size=50GB \
+        --disk-type=pd-standard \
         --enable-autoscaling \
         --min-nodes=1 \
-        --max-nodes=10 \
+        --max-nodes=3 \
         --enable-network-policy \
-        --enable-ip-alias \
-        --enable-stackdriver-kubernetes \
         --enable-ip-alias \
         --enable-autorepair \
         --enable-autoupgrade
@@ -89,7 +89,7 @@ fi
 
 # Build et push de l'image Docker
 log_info "Build de l'image Docker..."
-docker build -f Dockerfile.optimized -t gcr.io/$PROJECT_ID/fit-app:$IMAGE_TAG .
+docker build -f Dockerfile.simple -t gcr.io/$PROJECT_ID/fit-app:$IMAGE_TAG .
 docker tag gcr.io/$PROJECT_ID/fit-app:$IMAGE_TAG gcr.io/$PROJECT_ID/fit-app:latest
 
 log_info "Push de l'image vers Google Container Registry..."
@@ -175,6 +175,9 @@ echo "🚪 Ingress: kubectl get ingress -n $NAMESPACE"
 echo ""
 log_info "Le certificat SSL sera généré automatiquement par Let's Encrypt dans les prochaines minutes."
 log_info "Vérifiez le statut avec: kubectl get certificate -n $NAMESPACE"
+
+
+
 
 
 

@@ -15,7 +15,7 @@
             <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.admin') }}</button>
                 <div x-show="open" @click.away="open = false" class="absolute z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
-                    <a href="{{ route('user-management.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.user_management') }}</a>
+                    <a href="{{ route('public-user-management') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.user_management') }}</a>
                     @if($user && in_array($user->role, ['system_admin', 'association_admin', 'association_registrar']))
                         <a href="{{ route('admin.account-requests.index') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-blue-700">{{ __('navigation.account_requests') }}</a>
                     @endif
@@ -198,11 +198,39 @@
                 <!-- User Profile -->
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-blue-100 text-gray-700 hover:text-blue-700 transition-colors">
-                        <!-- Indicateur de connexion -->
+                        <!-- Indicateur de connexion dynamique -->
                         <div class="flex items-center space-x-2">
                             <div class="flex items-center space-x-1">
-                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Session active"></div>
-                                <span class="text-xs text-green-600 font-medium">Connecté</span>
+                                @php
+                                    // Vérification de l'état de la session et du tenant
+                                    $isSessionValid = false;
+                                    $isTenantActive = true; // Par défaut, on assume que le tenant est actif
+                                    
+                                    // Vérification plus approfondie de la session
+                                    try {
+                                        $user = Auth::user();
+                                        if ($user && $user->exists) {
+                                            $isSessionValid = Auth::check() && session()->has('login_web_' . sha1('App\Models\User'));
+                                            
+                                            // Vérification du tenant si applicable
+                                            if (method_exists($user, 'getCurrentTenant') && $user->getCurrentTenant()) {
+                                                $tenant = $user->getCurrentTenant();
+                                                $isTenantActive = $tenant && $tenant->is_active;
+                                            }
+                                        }
+                                    } catch (Exception $e) {
+                                        $isSessionValid = false;
+                                        $isTenantActive = false;
+                                    }
+                                    
+                                    $connectionStatus = $isSessionValid && $isTenantActive ? 'connected' : 'disconnected';
+                                    $statusColor = $connectionStatus === 'connected' ? 'green' : 'red';
+                                    $statusText = $connectionStatus === 'connected' ? 'Connecté' : 'Déconnecté';
+                                @endphp
+                                
+                                <div class="w-2 h-2 bg-{{ $statusColor }}-500 rounded-full {{ $connectionStatus === 'connected' ? 'animate-pulse' : '' }}" 
+                                     title="{{ $statusText }} - Session: {{ $isSessionValid ? 'Valide' : 'Invalide' }} | Tenant: {{ $isTenantActive ? 'Actif' : 'Inactif' }}"></div>
+                                <span class="text-xs text-{{ $statusColor }}-600 font-medium">{{ $statusText }}</span>
                             </div>
                             <span class="text-gray-400">|</span>
                             <span class="font-semibold">{{ $user->name ?? 'User' }}</span>

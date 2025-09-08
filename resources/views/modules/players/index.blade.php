@@ -199,6 +199,12 @@
                                             <a href="#" class="text-yellow-600 hover:text-yellow-900" title="Modifier">
                                                 ✏️
                                             </a>
+                                            @if(in_array(Auth::user()->role, ['system_admin', 'super_admin', 'admin', 'association_admin']))
+                                                <a href="{{ route('simple-player-portal', $player->id) }}" 
+                                                   class="text-purple-600 hover:text-purple-900 font-semibold" title="FIT Portal">
+                                                    🚀
+                                                </a>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

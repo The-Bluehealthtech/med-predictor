@@ -174,6 +174,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\DatabaseServiceProvider::class,
+        App\Providers\GcsServiceProvider::class,
+        App\Providers\GateServiceProvider::class,
 
     ],
 
@@ -232,5 +234,17 @@ return [
         'Vite' => Illuminate\Support\Facades\Vite::class,
 
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Google Analytics Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This value is the Google Analytics tracking ID for the application.
+    | Set this in your ".env" file as GOOGLE_ANALYTICS_ID.
+    |
+    */
+
+    'google_analytics_id' => env('GOOGLE_ANALYTICS_ID', null),
 
 ];

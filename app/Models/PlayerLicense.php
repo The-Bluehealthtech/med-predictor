@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\UsesEnhancedTenantScope;
 
 class PlayerLicense extends Model
 {
+    use UsesEnhancedTenantScope;
     use HasFactory;
 
     // Constantes FIFA Connect - Types de licences

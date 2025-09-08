@@ -12,12 +12,78 @@
     
     <!-- Lien de retour à la liste -->
     <div class="bg-gray-800 border-b border-gray-700">
-        <div class="max-w-7xl mx-auto px-6 py-4">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="/players/list" 
                class="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200">
                 <i class="fas fa-arrow-left"></i>
                 <span>Retour à la Liste</span>
             </a>
+            
+            <!-- Connection Status Button -->
+            @php
+                // Vérification globale de l'état de connexion
+                $isAuthenticated = Auth::check();
+                $isSessionValid = true; // Si Auth::check() est true, la session Laravel est valide
+                $isTenantActive = true;
+                $user = null;
+                
+                if ($isAuthenticated) {
+                    try {
+                        $user = Auth::user();
+                        if ($user && $user->exists) {
+                            // Vérification du tenant si applicable
+                            if (method_exists($user, 'getCurrentTenant') && $user->getCurrentTenant()) {
+                                $tenant = $user->getCurrentTenant();
+                                $isTenantActive = $tenant && $tenant->is_active;
+                            }
+                            
+                            // Vérifier si la session n'a pas expiré (optionnel)
+                            $sessionLifetime = config('session.lifetime') * 60;
+                            $lastActivity = session('last_activity', time());
+                            if (time() - $lastActivity > $sessionLifetime) {
+                                $isSessionValid = false;
+                            }
+                        } else {
+                            $isSessionValid = false;
+                        }
+                    } catch (Exception $e) {
+                        $isSessionValid = false;
+                        $isTenantActive = false;
+                    }
+                }
+                
+                // Déterminer l'état final avec logique simplifiée
+                if (!$isAuthenticated) {
+                    $connectionStatus = 'not_connected';
+                    $statusColor = 'gray';
+                    $statusText = 'Non connecté';
+                } elseif ($isAuthenticated && $isSessionValid && $isTenantActive) {
+                    $connectionStatus = 'connected';
+                    $statusColor = 'green';
+                    $statusText = 'Connecté';
+                } elseif ($isAuthenticated && (!$isSessionValid || !$isTenantActive)) {
+                    $connectionStatus = 'disconnected';
+                    $statusColor = 'red';
+                    $statusText = 'Session expirée';
+                } else {
+                    $connectionStatus = 'not_connected';
+                    $statusColor = 'gray';
+                    $statusText = 'Non connecté';
+                }
+            @endphp
+            
+            <div class="flex items-center space-x-2 bg-gray-700 rounded-lg px-3 py-2">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-{{ $statusColor }}-500 rounded-full {{ $connectionStatus === 'connected' ? 'animate-pulse' : '' }}" 
+                         title="{{ $statusText }} - Session: {{ $isSessionValid ? 'Valide' : 'Invalide' }} | Tenant: {{ $isTenantActive ? 'Actif' : 'Inactif' }}"></div>
+                    <span class="text-xs text-{{ $statusColor }}-400 font-medium">{{ $statusText }}</span>
+                </div>
+                @if($isAuthenticated && $user)
+                    <span class="text-gray-500">|</span>
+                    <span class="text-sm font-semibold text-gray-200">{{ $user->name ?? 'User' }}</span>
+                    <span class="text-xs text-gray-400">({{ ucfirst($user->role ?? 'user') }})</span>
+                @endif
+            </div>
         </div>
     </div>
     
@@ -79,7 +145,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 
                 <!-- Carte 1: Club et Association avec LOGOS -->
-                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 border-2 border-white/40 shadow-lg">
                     <div class="flex items-center space-x-3 mb-3">
                         <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-shield-alt text-white text-lg"></i>

@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: fit3-tls-cert
+  namespace: fit-production
+spec:
+  secretName: fit-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - fit3.tbhc.uk
+
+

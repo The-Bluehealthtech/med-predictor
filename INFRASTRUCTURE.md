@@ -270,3 +270,4 @@ kubectl logs -f deployment/[name]
 
 
 
+

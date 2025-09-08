@@ -127,10 +127,10 @@
                     <a href="{{ route('admin.rbac.roles') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                         👥 Gérer les Rôles
                     </a>
-                    <a href="{{ route('admin.rbac.permissions') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
+                    <a href="{{ route('public-module-permissions') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                         🔑 Gérer les Permissions
                     </a>
-                    <a href="{{ route('admin.rbac.users') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
+                    <a href="{{ route('public-user-management') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                         👤 Gérer les Utilisateurs
                     </a>
                     <form action="{{ route('admin.rbac.initialize-permissions') }}" method="POST" class="inline">
@@ -222,4 +222,5 @@
     </div>
 </div>
 @endsection
+
 

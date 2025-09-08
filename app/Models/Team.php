@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\UsesEnhancedTenantScope;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Team extends Model
 {
+    use UsesEnhancedTenantScope;
     use HasFactory;
 
     // Constantes FIFA Connect - Niveaux d'équipe

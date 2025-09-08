@@ -9,7 +9,7 @@ metadata:
     environment: production
     platform: gcp
 spec:
-  replicas: 3
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -31,121 +31,30 @@ spec:
         prometheus.io/path: "/metrics"
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
-      imagePullSecrets:
-      - name: gcr-secret
       containers:
       - name: fit-app
-        image: gcr.io/YOUR_PROJECT_ID/fit-app:v1.0.0
+        image: izharmahjoub/laravel-fit-app:v1.0.12
         imagePullPolicy: Always
         ports:
-        - containerPort: 9000
+        - containerPort: 80
           name: http
           protocol: TCP
-        env:
-        - name: APP_ENV
-          value: "production"
-        - name: APP_DEBUG
-          value: "false"
-        - name: APP_URL
-          value: "https://fit3.tbhc.uk"
-        - name: LOG_LEVEL
-          value: "info"
-        - name: CACHE_DRIVER
-          value: "redis"
-        - name: SESSION_DRIVER
-          value: "redis"
-        - name: QUEUE_CONNECTION
-          value: "redis"
-        - name: DB_HOST
-          value: "fit-mysql"
-        - name: DB_PORT
-          value: "3306"
-        - name: DB_DATABASE
-          value: "fit_production"
-        - name: REDIS_HOST
-          value: "fit-redis"
-        - name: REDIS_PORT
-          value: "6379"
         envFrom:
+        - secretRef:
+            name: laravel-env
         - secretRef:
             name: fit-app-secrets
         resources:
           requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
             memory: "512Mi"
             cpu: "500m"
-          limits:
-            memory: "1Gi"
-            cpu: "1000m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 9000
-            httpHeaders:
-            - name: User-Agent
-              value: kube-probe/1.0
-          initialDelaySeconds: 60
-          periodSeconds: 30
-          timeoutSeconds: 10
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 9000
-            httpHeaders:
-            - name: User-Agent
-              value: kube-probe/1.0
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        startupProbe:
-          httpGet:
-            path: /health
-            port: 9000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 30
-        volumeMounts:
-        - name: storage
-          mountPath: /var/www/html/storage
-          subPath: app
-        - name: cache
-          mountPath: /var/www/html/bootstrap/cache
-        - name: logs
-          mountPath: /var/www/html/storage/logs
-        - name: config
-          mountPath: /var/www/html/config
-          readOnly: true
         securityContext:
-          allowPrivilegeEscalation: false
+          allowPrivilegeEscalation: true
           readOnlyRootFilesystem: false
-          runAsNonRoot: true
-          runAsUser: 1000
-          runAsGroup: 1000
-          capabilities:
-            drop:
-            - ALL
-      volumes:
-      - name: storage
-        persistentVolumeClaim:
-          claimName: fit-storage-pvc
-      - name: cache
-        emptyDir:
-          medium: Memory
-          sizeLimit: "256Mi"
-      - name: logs
-        emptyDir:
-          medium: Memory
-          sizeLimit: "100Mi"
-      - name: config
-        configMap:
-          name: fit-app-config
-      securityContext:
-        fsGroup: 1000
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
+          runAsNonRoot: false
       nodeSelector:
         cloud.google.com/gke-nodepool: "default-pool"
       tolerations:
@@ -171,7 +80,7 @@ spec:
   type: ClusterIP
   ports:
   - port: 80
-    targetPort: 9000
+    targetPort: 80
     protocol: TCP
     name: http
   selector:
@@ -221,6 +130,9 @@ spec:
             name: fit-service
             port:
               number: 80
+
+
+
 
 
 

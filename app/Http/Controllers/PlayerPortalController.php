@@ -16,31 +16,32 @@ class PlayerPortalController extends Controller
 {
     /**
      * Afficher le portail principal (sans ID de joueur)
+     * Redirige vers la liste des joueurs pour les admins
      */
-    public function show(): View
+    public function show(): View|RedirectResponse
     {
         try {
-            // Récupérer un joueur par défaut (le premier disponible)
-            $player = Player::with(['club', 'association', 'healthRecords', 'pcmas', 'matchPerformances'])->first();
+            $user = Auth::user();
             
-            if (!$player) {
-                abort(404, 'Aucun joueur trouvé');
+            // Si l'utilisateur est un admin, rediriger vers la liste des joueurs
+            if (in_array($user->role, ['system_admin', 'super_admin', 'admin', 'association_admin'])) {
+                return redirect()->route('players.index')
+                    ->with('info', 'Sélectionnez un joueur pour accéder à son portail FIT');
             }
             
-            // Préparer les données pour le portail
-            $portalData = $this->preparePortalData($player);
+            // Si l'utilisateur est un joueur, rediriger vers son portail personnel
+            if ($user->role === 'player' && $user->player_id) {
+                return redirect()->route('player-portal.show', $user->player_id);
+            }
             
-            // Récupérer tous les joueurs pour la navigation admin
-            $allPlayers = Player::with(['club'])->get();
-            
-            return view('portail-joueur-final-corrige-dynamique', compact('player', 'portalData', 'allPlayers'));
+            // Sinon, rediriger vers la liste des joueurs
+            return redirect()->route('players.index')
+                ->with('info', 'Sélectionnez un joueur pour accéder à son portail FIT');
             
         } catch (\Exception $e) {
             \Log::error('PlayerPortalController show error: ' . $e->getMessage());
-            return view('errors.generic', [
-                'error' => 'Erreur lors du chargement du portail',
-                'message' => $e->getMessage()
-            ]);
+            return redirect()->route('players.index')
+                ->with('error', 'Erreur lors du chargement du portail');
         }
     }
 
@@ -138,30 +139,46 @@ class PlayerPortalController extends Controller
     public function showPlayer(string $playerId): View|RedirectResponse
     {
         try {
-            // TEMPORAIREMENT : Permettre l'accès sans authentification pour tester
-            // TODO: Réactiver l'authentification une fois que tout fonctionne
-            /*
-            // Vérifier que l'utilisateur est connecté OU qu'il a une session admin
-            if (!Auth::check() && !session('user_role')) {
-                // Rediriger vers la page de connexion principale
-                return redirect()->route('login')
-                               ->with('error', 'Vous devez vous connecter pour accéder au portail');
-            }
-            */
+            $user = Auth::user();
             
-            // TEMPORAIREMENT : Logique simplifiée sans authentification
-            $player = Player::findOrFail($playerId);
+            // Vérifier que l'utilisateur est connecté
+            if (!Auth::check()) {
+                return redirect()->route('login')
+                    ->with('error', 'Vous devez vous connecter pour accéder au portail');
+            }
+            
+            // For system admins, bypass tenant scope to access any player
+            $player = Player::withoutGlobalScopes()->findOrFail($playerId);
+            
+            // Vérifier les permissions d'accès
+            $hasAccess = false;
+            
+            // Les admins peuvent accéder à tous les portails
+            if (in_array($user->role, ['system_admin', 'super_admin', 'admin', 'association_admin'])) {
+                $hasAccess = true;
+            }
+            
+            // Les joueurs peuvent seulement accéder à leur propre portail
+            if ($user->role === 'player' && $user->player_id == $playerId) {
+                $hasAccess = true;
+            }
+            
+            // Les club admins peuvent accéder aux portails des joueurs de leur club
+            if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical']) && 
+                $user->club_id && $player->club_id == $user->club_id) {
+                $hasAccess = true;
+            }
+            
+            if (!$hasAccess) {
+                return redirect()->route('players.index')
+                    ->with('error', 'Vous n\'avez pas l\'autorisation d\'accéder à ce portail');
+            }
             
             // Charger les données du joueur
-            $player->load(['club', 'association', 'healthRecords', 'pcmas', 'matchPerformances']);
+            $player->load(['club', 'association', 'healthRecords', 'pcmas']);
             
-            // Préparer les données pour le portail
-            $portalData = $this->preparePortalData($player);
-            
-            // Récupérer tous les joueurs pour la navigation admin
-            $allPlayers = Player::with(['club'])->get();
-            
-            return view('portail-joueur-final-corrige-dynamique', compact('player', 'portalData', 'allPlayers'));
+                    // Return the FIFA working view with hero zone and tabs that displays real player data
+                    return view('player-portal.fifa-working', compact('player'));
             
         } catch (\Exception $e) {
             \Log::error('PlayerPortalController showPlayer error: ' . $e->getMessage());
@@ -228,7 +245,7 @@ class PlayerPortalController extends Controller
     private function preparePortalData(Player $player): array
     {
         // Calculer l'âge
-        $age = $player->date_of_birth ? $player->date_of_birth->diffInYears(now()) : null;
+        $age = $player->date_of_birth ? \Carbon\Carbon::parse($player->date_of_birth)->diffInYears(now()) : null;
         
         return [
             'personalInfo' => [

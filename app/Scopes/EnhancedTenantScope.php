@@ -69,17 +69,17 @@ class EnhancedTenantScope implements Scope
     protected function applyLegacyFilter(Builder $builder, Model $model, $user): void
     {
         // Association users can only see their association's data
-        if ($user->association_id) {
+        if ($user->association_id && Schema::hasColumn($model->getTable(), 'association_id')) {
             $builder->where($model->getTable() . '.association_id', $user->association_id);
         }
         
         // Club users can only see their club's data
-        elseif ($user->club_id) {
+        elseif ($user->club_id && Schema::hasColumn($model->getTable(), 'club_id')) {
             $builder->where($model->getTable() . '.club_id', $user->club_id);
         }
         
         // Federation users can only see their federation's data
-        elseif ($user->federation_id) {
+        elseif ($user->federation_id && Schema::hasColumn($model->getTable(), 'federation_id')) {
             $builder->where($model->getTable() . '.federation_id', $user->federation_id);
         }
     }
@@ -163,6 +163,9 @@ class EnhancedTenantScope implements Scope
         return false;
     }
 }
+
+
+
 
 
 

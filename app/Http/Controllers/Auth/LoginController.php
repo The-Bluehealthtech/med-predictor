@@ -23,25 +23,23 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             
-            // Gestion spéciale pour les joueurs - créer un contexte utilisateur séparé
+            // Gestion spéciale pour les joueurs - redirection directe vers leur FIT Portal
             $user = Auth::user();
             if ($user->role === 'player' && $user->player_id) {
-                // Stocker l'utilisateur joueur dans un contexte séparé
-                $request->session()->put('player_context', [
-                    'user_id' => $user->id,
-                    'player_id' => $user->player_id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => $user->role
-                ]);
-                
-                // Déconnecter le joueur de la session principale pour préserver l'admin
-                Auth::logout();
-                
+                // Redirection directe vers le portail joueur simple
                 return redirect('/test-portail-joueur-simple?player_id=' . $user->player_id);
             }
             
-            return redirect()->intended('dashboard');
+            // Redirection par rôle
+            $route = match ($user->role) {
+                'referee' => 'referee.dashboard',
+                'player' => 'player-dashboard', // Fallback pour les joueurs sans player_id
+                'club_admin', 'club_manager', 'club_medical' => 'dashboard',
+                'association_admin', 'association_registrar', 'association_medical' => 'dashboard',
+                'system_admin', 'super_admin', 'admin' => 'dashboard',
+                default => 'dashboard',
+            };
+            return redirect()->intended(route($route));
         }
 
         return back()->withErrors([
@@ -60,6 +58,6 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect('/')->with('success', 'Vous avez été déconnecté avec succès.');
     }
 }

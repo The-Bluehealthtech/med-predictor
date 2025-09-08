@@ -49,13 +49,13 @@
                                             </div>
                                             <div>
                                                 <h3 class="font-semibold text-gray-900">
-                                                    {{ $match->homeTeam->name ?? 'TBD' }} vs {{ $match->awayTeam->name ?? 'TBD' }}
+                                                    {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? 'TBD' }}
                                                 </h3>
                                                 <p class="text-sm text-gray-600">
                                                     {{ $match->competition->name ?? 'Competition' }} • Matchday {{ $match->matchday ?? 'N/A' }}
                                                 </p>
                                                 <p class="text-sm text-gray-500">
-                                                    {{ $match->kickoff_time ? $match->kickoff_time->format('D, M j, Y g:i A') : 'TBD' }} • {{ $match->venue ?? 'TBD' }}
+                                                    {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('D, M j, Y') : 'TBD' }} • {{ $match->venue ?? 'TBD' }}
                                                 </p>
                                             </div>
                                         </div>

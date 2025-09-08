@@ -23,6 +23,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Forcer HTTPS en production
+        if (config('app.env') === 'production') {
+            $this->app['request']->server->set('HTTPS', true);
+        }
+        
         // Register model observers for automatic cache clearing
         Player::observe(PlayerObserver::class);
         Club::observe(ClubObserver::class);

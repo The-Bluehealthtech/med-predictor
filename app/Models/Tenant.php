@@ -215,7 +215,7 @@ class Tenant extends Model
 
     public function getAncestors(): \Illuminate\Database\Eloquent\Collection
     {
-        $ancestors = collect();
+        $ancestors = new \Illuminate\Database\Eloquent\Collection();
         $current = $this->parentTenant;
         
         while ($current) {
@@ -310,6 +310,9 @@ class Tenant extends Model
         });
     }
 }
+
+
+
 
 
 

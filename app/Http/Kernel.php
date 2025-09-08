@@ -38,10 +38,15 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\SetLocale::class,
+            // Enforce tenant context for all web routes and views
+            'tenant.enforce',
         ],
 
         'api' => [
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            // Enforce tenant context for all API routes
+            'tenant.enforce',
         ],
     ];
 
@@ -64,6 +69,8 @@ class Kernel extends HttpKernel
         'referee.access' => \App\Http\Middleware\RefereeAccessMiddleware::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'rbac' => \App\Http\Middleware\RBACMiddleware::class,
+        'tenant.enforce' => \App\Http\Middleware\TenantEnforcer::class,
+        'validate.session' => \App\Http\Middleware\ValidateSession::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,

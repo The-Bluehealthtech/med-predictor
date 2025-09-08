@@ -115,7 +115,7 @@
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h3 class="font-semibold text-gray-900">{{ $match->homeTeam->club->name ?? $match->homeTeam->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? $match->awayTeam->name ?? 'TBD' }}</h3>
+                                                <h3 class="font-semibold text-gray-900">{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? 'TBD' }}</h3>
                                                 <p class="text-sm text-gray-600">{{ $match->competition->name ?? 'Unknown Competition' }} • {{ $match->competition->season ?? 'Unknown Season' }} • Matchday {{ $match->round ?? 'TBD' }}</p>
                                                 <p class="text-sm text-gray-500">{{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('D, M j, Y') : 'TBD' }}{{ $match->match_time ? ' ' . \Carbon\Carbon::parse($match->match_time)->format('H:i') : '' }} • {{ $match->venue ?? 'TBD' }}</p>
                                             </div>

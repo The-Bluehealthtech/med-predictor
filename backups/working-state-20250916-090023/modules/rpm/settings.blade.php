@@ -1,0 +1,1 @@
+<x-app-layout><div id="rpm-settings"></div></x-app-layout>

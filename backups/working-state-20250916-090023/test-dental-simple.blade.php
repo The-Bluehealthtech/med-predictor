@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Diagramme Dentaire Simple</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .dental-chart-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        
+        .chart-section {
+            flex: 1;
+        }
+        
+        .info-section {
+            flex: 0 0 300px;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .svg-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .tooth-info {
+            margin-bottom: 20px;
+        }
+        
+        .tooth-info h3 {
+            color: #374151;
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+        
+        .tooth-details {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        
+        .no-selection {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="header">
+                <h1>🦷 Test Diagramme Dentaire Simple</h1>
+                <p>Test de l'intégration du diagramme dentaire interactif</p>
+            </div>
+            
+            <div class="content">
+                <div class="dental-chart-container">
+                    <div class="chart-section">
+                        <div class="svg-container">
+                            <object 
+                                data="/images/dental-chart-interactive.svg" 
+                                type="image/svg+xml"
+                                width="100%"
+                                height="600"
+                                @load="initializeDentalChart">
+                            </object>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <button @click="clearSelection" class="btn">🗑️ Effacer la sélection</button>
+                            <button @click="selectRandomTooth" class="btn">🎲 Sélectionner aléatoire</button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <div v-if="selectedTooth" class="tooth-info">
+                            <h3>Dent sélectionnée : {{ selectedTooth }}</h3>
+                            <div class="tooth-details">
+                                <p><strong>Type :</strong> {{ getToothType(selectedTooth) }}</p>
+                                <p><strong>Quadrant :</strong> {{ getQuadrant(selectedTooth) }}</p>
+                                <p><strong>Position :</strong> {{ getPosition(selectedTooth) }}</p>
+                            </div>
+                        </div>
+                        
+                        <div v-else class="no-selection">
+                            <h3>👆 Cliquez sur une dent</h3>
+                            <p>Sélectionnez une dent dans le diagramme pour voir ses informations.</p>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <h4>Historique des sélections :</h4>
+                            <div v-if="toothHistory.length > 0">
+                                <div 
+                                    v-for="(tooth, index) in toothHistory.slice(-5)" 
+                                    :key="index"
+                                    style="background: white; padding: 10px; margin: 5px 0; border-radius: 6px; border-left: 3px solid #3b82f6; font-size: 0.9em;"
+                                >
+                                    Dent {{ tooth }} - {{ getToothType(tooth) }}
+                                </div>
+                            </div>
+                            <div v-else style="color: #6b7280; font-style: italic;">
+                                Aucune sélection encore
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue;
+        
+        createApp({
+            setup() {
+                const selectedTooth = ref(null);
+                const toothHistory = ref([]);
+                
+                const initializeDentalChart = () => {
+                    console.log('🦷 Initialisation du diagramme dentaire...');
+                    
+                    // Écouter les événements de sélection de dents
+                    document.addEventListener('toothSelected', (event) => {
+                        selectedTooth.value = event.detail.toothId;
+                        toothHistory.value.push(event.detail.toothId);
+                        console.log('🦷 Dent sélectionnée:', event.detail.toothId);
+                    });
+                };
+                
+                const clearSelection = () => {
+                    selectedTooth.value = null;
+                    const selectedToothElement = document.querySelector('.tooth.selected');
+                    if (selectedToothElement) {
+                        selectedToothElement.classList.remove('selected');
+                    }
+                };
+                
+                const selectRandomTooth = () => {
+                    const teeth = ['11', '12', '13', '14', '15', '16', '17', '18',
+                                 '21', '22', '23', '24', '25', '26', '27', '28',
+                                 '31', '32', '33', '34', '35', '36', '37', '38',
+                                 '41', '42', '43', '44', '45', '46', '47', '48'];
+                    const randomTooth = teeth[Math.floor(Math.random() * teeth.length)];
+                    
+                    // Désélectionner la dent précédente
+                    const previousSelected = document.querySelector('.tooth.selected');
+                    if (previousSelected) {
+                        previousSelected.classList.remove('selected');
+        }
+
+                    // Sélectionner la nouvelle dent
+                    const tooth = document.querySelector(`[data-tooth-id="${randomTooth}"]`);
+                    if (tooth) {
+                        tooth.classList.add('selected');
+                        selectedTooth.value = randomTooth;
+                        toothHistory.value.push(randomTooth);
+                    }
+                };
+                
+                const getToothType = (toothId) => {
+                    const toothTypes = {
+                        '11': 'Incisive centrale droite',
+                        '12': 'Incisive latérale droite',
+                        '13': 'Canine droite',
+                        '14': 'Première prémolaire droite',
+                        '15': 'Deuxième prémolaire droite',
+                        '16': 'Première molaire droite',
+                        '17': 'Deuxième molaire droite',
+                        '18': 'Troisième molaire droite',
+                        '21': 'Incisive centrale gauche',
+                        '22': 'Incisive latérale gauche',
+                        '23': 'Canine gauche',
+                        '24': 'Première prémolaire gauche',
+                        '25': 'Deuxième prémolaire gauche',
+                        '26': 'Première molaire gauche',
+                        '27': 'Deuxième molaire gauche',
+                        '28': 'Troisième molaire gauche',
+                        '31': 'Incisive centrale droite inférieure',
+                        '32': 'Incisive latérale droite inférieure',
+                        '33': 'Canine droite inférieure',
+                        '34': 'Première prémolaire droite inférieure',
+                        '35': 'Deuxième prémolaire droite inférieure',
+                        '36': 'Première molaire droite inférieure',
+                        '37': 'Deuxième molaire droite inférieure',
+                        '38': 'Troisième molaire droite inférieure',
+                        '41': 'Incisive centrale gauche inférieure',
+                        '42': 'Incisive latérale gauche inférieure',
+                        '43': 'Canine gauche inférieure',
+                        '44': 'Première prémolaire gauche inférieure',
+                        '45': 'Deuxième prémolaire gauche inférieure',
+                        '46': 'Première molaire gauche inférieure',
+                        '47': 'Deuxième molaire gauche inférieure',
+                        '48': 'Troisième molaire gauche inférieure'
+                    };
+                    return toothTypes[toothId] || 'Inconnue';
+                };
+                
+                const getQuadrant = (toothId) => {
+                    const firstDigit = parseInt(toothId.charAt(0));
+                    const quadrants = {
+                        1: 'Quadrant 1 (Supérieur Droit)',
+                        2: 'Quadrant 2 (Supérieur Gauche)',
+                        3: 'Quadrant 3 (Inférieur Gauche)',
+                        4: 'Quadrant 4 (Inférieur Droit)'
+                    };
+                    return quadrants[firstDigit] || 'Inconnu';
+                };
+                
+                const getPosition = (toothId) => {
+                    const secondDigit = parseInt(toothId.charAt(1));
+                    const positions = {
+                        1: 'Centrale',
+                        2: 'Latérale',
+                        3: 'Canine',
+                        4: 'Première prémolaire',
+                        5: 'Deuxième prémolaire',
+                        6: 'Première molaire',
+                        7: 'Deuxième molaire',
+                        8: 'Troisième molaire'
+                    };
+                    return positions[secondDigit] || 'Inconnue';
+                };
+
+                return {
+                    selectedTooth,
+                    toothHistory,
+                    initializeDentalChart,
+                    clearSelection,
+                    selectRandomTooth,
+                    getToothType,
+                    getQuadrant,
+                    getPosition
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html> 

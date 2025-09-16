@@ -208,14 +208,18 @@
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Types de Transferts</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     @foreach($transferTypes as $type => $config)
-                        <div class="p-6 rounded-lg border-2 border-gray-200 hover:border-{{ $config['color'] }}-300 hover:bg-{{ $config['color'] }}-50 transition-all">
+                        <div class="p-6 rounded-lg border-2 border-gray-200 hover:border-{{ $config['color'] }}-300 hover:bg-{{ $config['color'] }}-50 transition-all cursor-pointer group" 
+                             onclick="handleTransferTypeClick('{{ $type }}', '{{ $config['name'] }}')">
                             <div class="flex items-center mb-3">
                                 <span class="text-3xl mr-4">{{ $config['icon'] }}</span>
                                 <div>
-                                    <h4 class="text-lg font-medium text-gray-900">{{ $config['name'] }}</h4>
+                                    <h4 class="text-lg font-medium text-gray-900 group-hover:text-{{ $config['color'] }}-700">{{ $config['name'] }}</h4>
                                 </div>
                             </div>
                             <p class="text-sm text-gray-600">{{ $config['description'] }}</p>
+                            <div class="mt-3 text-xs text-{{ $config['color'] }}-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                Cliquer pour gérer →
+                            </div>
                         </div>
                     @endforeach
                 </div>
@@ -244,6 +248,188 @@
         </div>
     </div>
 </div>
+
+<script>
+function handleTransferTypeClick(type, name) {
+    console.log('Transfer type clicked:', type, name);
+    
+    // Get transfer statistics for this type
+    const stats = getTransferStats(type);
+    
+    // Show notification
+    showNotification(`Ouverture de la gestion des ${name}`, 'info');
+    
+    // Show detailed modal with data
+    setTimeout(() => {
+        showTransferTypeModal(type, name, stats);
+    }, 300);
+}
+
+function getTransferStats(type) {
+    // Simulate different stats for each transfer type
+    const statsData = {
+        'domestic': {
+            total: 45,
+            pending: 8,
+            approved: 32,
+            rejected: 5,
+            description: 'Transferts entre clubs du même pays'
+        },
+        'international': {
+            total: 67,
+            pending: 12,
+            approved: 48,
+            rejected: 7,
+            description: 'Transferts entre clubs de pays différents'
+        },
+        'loan': {
+            total: 23,
+            pending: 3,
+            approved: 18,
+            rejected: 2,
+            description: 'Prêts temporaires de joueurs'
+        },
+        'free_transfer': {
+            total: 21,
+            pending: 0,
+            approved: 21,
+            rejected: 0,
+            description: 'Transferts sans frais de transfert'
+        }
+    };
+    
+    return statsData[type] || { total: 0, pending: 0, approved: 0, rejected: 0, description: 'Type inconnu' };
+}
+
+function showTransferTypeModal(type, name, stats) {
+    // Create modal overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+    overlay.onclick = () => closeModal(overlay);
+    
+    // Create modal content
+    const modal = document.createElement('div');
+    modal.className = 'bg-white rounded-lg shadow-xl max-w-md w-full max-h-96 overflow-y-auto';
+    modal.onclick = (e) => e.stopPropagation();
+    
+    modal.innerHTML = `
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">${name}</h3>
+                <button onclick="closeModal(this.closest('.fixed'))" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-sm text-gray-600">${stats.description}</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-blue-50 p-3 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600">${stats.total}</div>
+                    <div class="text-sm text-blue-800">Total</div>
+                </div>
+                <div class="bg-yellow-50 p-3 rounded-lg">
+                    <div class="text-2xl font-bold text-yellow-600">${stats.pending}</div>
+                    <div class="text-sm text-yellow-800">En attente</div>
+                </div>
+                <div class="bg-green-50 p-3 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600">${stats.approved}</div>
+                    <div class="text-sm text-green-800">Approuvés</div>
+                </div>
+                <div class="bg-red-50 p-3 rounded-lg">
+                    <div class="text-2xl font-bold text-red-600">${stats.rejected}</div>
+                    <div class="text-sm text-red-800">Rejetés</div>
+                </div>
+            </div>
+            
+            <div class="flex space-x-3">
+                <button onclick="closeModal(this.closest('.fixed'))" class="flex-1 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                    Fermer
+                </button>
+                <button onclick="manageTransfers('${type}')" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    Gérer
+                </button>
+            </div>
+        </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    // Animate in
+    setTimeout(() => {
+        modal.style.transform = 'scale(1)';
+        modal.style.opacity = '1';
+    }, 10);
+}
+
+function closeModal(overlay) {
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        document.body.removeChild(overlay);
+    }, 300);
+}
+
+function manageTransfers(type) {
+    showNotification(`Redirection vers la gestion des transferts ${type}`, 'success');
+    closeModal(document.querySelector('.fixed'));
+    
+    // Redirect to the appropriate transfer management page
+    setTimeout(() => {
+        const routes = {
+            'domestic': '/admin/transfer-management/domestic',
+            'international': '/admin/transfer-management/international', 
+            'loan': '/admin/transfer-management/loan',
+            'free_transfer': '/admin/transfer-management/free-transfer'
+        };
+        
+        const route = routes[type] || '/admin/transfer-management';
+        
+        // Redirect to the actual page
+        window.location.href = route;
+    }, 500);
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 transform translate-x-full`;
+    
+    // Set colors based on type
+    const colors = {
+        'info': 'bg-blue-500 text-white',
+        'success': 'bg-green-500 text-white',
+        'warning': 'bg-yellow-500 text-white',
+        'error': 'bg-red-500 text-white'
+    };
+    
+    notification.className += ` ${colors[type] || colors.info}`;
+    notification.textContent = message;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+</script>
+
 @endsection
 
 

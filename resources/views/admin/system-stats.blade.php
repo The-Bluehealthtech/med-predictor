@@ -138,7 +138,7 @@
                         </div>
                         <div class="sm:col-span-1">
                             <dt class="text-sm font-medium text-gray-500">Total Rôles</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $userStats['users_by_role']->count() }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $userStats['total_roles'] ?? 0 }}</dd>
                         </div>
                     </dl>
                     <!-- Users by Role Chart -->
@@ -426,10 +426,30 @@
                     <div class="relative">
                         <div class="flex items-center justify-between text-sm">
                             <span class="text-gray-500">Santé Base de Données</span>
-                            <span class="text-green-600 font-medium">Excellent</span>
+                            @php
+                                $dbHealth = 100;
+                                $dbStatus = 'Excellent';
+                                $dbColor = 'green';
+                                
+                                // Calculate database health based on connection and performance
+                                if ($databaseStats['connection_status'] !== 'Connected') {
+                                    $dbHealth = 0;
+                                    $dbStatus = 'Disconnected';
+                                    $dbColor = 'red';
+                                } elseif ($databaseStats['slow_queries'] > 10) {
+                                    $dbHealth = 70;
+                                    $dbStatus = 'Slow';
+                                    $dbColor = 'yellow';
+                                } elseif ($databaseStats['slow_queries'] > 5) {
+                                    $dbHealth = 85;
+                                    $dbStatus = 'Good';
+                                    $dbColor = 'yellow';
+                                }
+                            @endphp
+                            <span class="text-{{ $dbColor }}-600 font-medium">{{ $dbStatus }}</span>
                         </div>
                         <div class="mt-2 bg-gray-200 rounded-full h-2">
-                            <div class="bg-green-500 h-2 rounded-full" style="width: 95%"></div>
+                            <div class="bg-{{ $dbColor }}-500 h-2 rounded-full" style="width: {{ $dbHealth }}%"></div>
                         </div>
                     </div>
 
@@ -448,10 +468,16 @@
                     <div class="relative">
                         <div class="flex items-center justify-between text-sm">
                             <span class="text-gray-500">Utilisation Mémoire</span>
-                            <span class="text-green-600 font-medium">{{ $systemStats['memory_usage'] }} MB</span>
+                            @php
+                                $memoryUsage = $systemStats['memory_usage'];
+                                $memoryLimit = (int)str_replace(['M', 'G'], ['', '000'], $systemStats['memory_limit']);
+                                $memoryPercent = min(100, round(($memoryUsage / $memoryLimit) * 100, 1));
+                                $memoryColor = $memoryPercent > 80 ? 'red' : ($memoryPercent > 60 ? 'yellow' : 'green');
+                            @endphp
+                            <span class="text-{{ $memoryColor }}-600 font-medium">{{ $memoryUsage }} MB</span>
                         </div>
                         <div class="mt-2 bg-gray-200 rounded-full h-2">
-                            <div class="bg-green-500 h-2 rounded-full" style="width: 45%"></div>
+                            <div class="bg-{{ $memoryColor }}-500 h-2 rounded-full" style="width: {{ $memoryPercent }}%"></div>
                         </div>
                     </div>
                 </div>

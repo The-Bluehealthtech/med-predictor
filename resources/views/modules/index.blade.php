@@ -380,7 +380,7 @@ function handleModuleClick(route, moduleName, event) {
         'team-portal.dashboard': '/team-portal',
         'portal.devices': '/portal/devices',
         'modules.administration.index': '/modules/administration',
-        'modules.finance.dashboard': '/modules/finance',
+        'modules.finance.dashboard': '/modules/finance/',
         'admin.content-management.index': '/admin/content-management',
         'admin.transfer-management.index': '/admin/transfer-management'
     };

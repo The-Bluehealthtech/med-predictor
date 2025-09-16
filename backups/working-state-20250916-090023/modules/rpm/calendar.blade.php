@@ -1,0 +1,1 @@
+<x-app-layout><div id="rpm-calendar"></div></x-app-layout>

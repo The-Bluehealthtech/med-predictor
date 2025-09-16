@@ -1,0 +1,1 @@
+<x-app-layout><div id="dtn-selections"></div></x-app-layout>

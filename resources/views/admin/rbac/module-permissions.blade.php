@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gestion des Permissions par Module - RBAC')
+@section('title', 'Gestion des Permissions par Module')
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
@@ -11,10 +11,10 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div class="flex items-center">
-                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-2xl mr-3 bg-blue-100 text-blue-600">
-                                🔐
+                            <div class="w-10 h-10 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">🔐</span>
                             </div>
-                            <div>
+                            <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Gestion des Permissions par Module
                                 </h1>
@@ -33,123 +33,74 @@
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         @if(session('success'))
-            <div class="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
-                    </div>
-                </div>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                {{ session('error') }}
             </div>
         @endif
 
         <!-- Instructions -->
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-blue-800">Instructions</h3>
-                    <div class="mt-2 text-sm text-blue-700">
-                        <p>Utilisez les cases à cocher ci-dessous pour configurer les permissions d'accès aux modules pour chaque rôle. Les modifications seront appliquées immédiatement.</p>
-                    </div>
-                </div>
-            </div>
+            <h3 class="text-lg font-medium text-blue-900 mb-2">Instructions</h3>
+            <p class="text-blue-800">
+                Utilisez les cases à cocher ci-dessous pour configurer les permissions d'accès aux modules pour chaque rôle. 
+                Les modifications seront appliquées immédiatement.
+            </p>
         </div>
 
-        <!-- Module Permissions Matrix -->
-        <form action="{{ route('admin.rbac.update-module-permissions') }}" method="POST" id="permissions-form">
-            @csrf
-            <div class="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
-                <!-- Table Header -->
-                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-lg font-medium text-gray-900">Matrice des Permissions par Module</h2>
-                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Sauvegarder les Permissions
-                        </button>
-                    </div>
+        <!-- Permissions Matrix -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Matrice des Permissions par Module</h3>
+                    <button onclick="savePermissions()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        💾 Sauvegarder les Permissions
+                    </button>
                 </div>
 
-                <!-- Table Content -->
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
-                        <!-- Table Header -->
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
-                                    Module
-                                </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Permission
-                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Module</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Permission</th>
                                 @foreach($roles as $roleKey => $roleName)
-                                <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ $roleName }}
-                                </th>
+                                <th class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $roleName }}</th>
                                 @endforeach
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($modules as $moduleKey => $module)
-                                @foreach($module['permissions'] as $permissionIndex => $permission)
-                                <tr class="hover:bg-gray-50 {{ $permissionIndex === 0 ? 'border-t-2 border-gray-300' : '' }}">
-                                    @if($permissionIndex === 0)
-                                    <!-- Module Info (only on first permission row) -->
-                                    <td class="px-6 py-4 whitespace-nowrap" rowspan="{{ count($module['permissions']) }}">
+                                @foreach($module['permissions'] as $permission)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        @if($loop->first)
                                         <div class="flex items-center">
-                                            <div class="flex-shrink-0">
-                                                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 shadow-sm">
-                                                    {{ $module['icon'] }}
-                                                </div>
-                                            </div>
-                                            <div class="ml-3">
-                                                <div class="text-sm font-semibold text-gray-900">{{ $module['name'] }}</div>
-                                                <div class="text-xs text-gray-600 mt-1">{{ $module['description'] }}</div>
+                                            <span class="text-2xl mr-3">{{ $module['icon'] }}</span>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">{{ $module['name'] }}</div>
+                                                <div class="text-xs text-gray-500">{{ $module['description'] }}</div>
                                             </div>
                                         </div>
+                                        @endif
                                     </td>
-                                    @endif
-                                    
-                                    <!-- Permission Label -->
-                                    <td class="px-4 py-3 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                @if($permission === 'view') bg-green-100 text-green-800
-                                                @elseif($permission === 'create') bg-blue-100 text-blue-800
-                                                @elseif($permission === 'edit') bg-yellow-100 text-yellow-800
-                                                @elseif($permission === 'delete') bg-red-100 text-red-800
-                                                @elseif($permission === 'export') bg-purple-100 text-purple-800
-                                                @elseif($permission === 'manage') bg-indigo-100 text-indigo-800
-                                                @else bg-gray-100 text-gray-800
-                                                @endif">
-                                                {{ ucfirst($permission) }}
-                                            </span>
-                                        </div>
+                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ ucfirst(str_replace('-', ' ', $permission)) }}
                                     </td>
-                                    
-                                    <!-- Role Permissions -->
                                     @foreach($roles as $roleKey => $roleName)
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        <div class="flex items-center justify-center">
-                                            <input 
-                                                type="checkbox" 
-                                                name="permissions[{{ $roleKey }}][{{ $permission }}]" 
-                                                value="1"
-                                                {{ $currentPermissions[$roleKey][$permission] ? 'checked' : '' }}
-                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                            >
-                                        </div>
+                                    <td class="px-2 py-4 whitespace-nowrap text-center">
+                                        <input type="checkbox" 
+                                               class="permission-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                                               data-module="{{ $moduleKey }}"
+                                               data-permission="{{ $permission }}"
+                                               data-role="{{ $roleKey }}"
+                                               {{ (isset($currentPermissions[$roleKey][$permission]) && $currentPermissions[$roleKey][$permission] === true) ? 'checked' : '' }}
+                                               onchange="updatePermission('{{ $moduleKey }}', '{{ $permission }}', '{{ $roleKey }}', this.checked)">
                                     </td>
                                     @endforeach
                                 </tr>
@@ -159,135 +110,162 @@
                     </table>
                 </div>
             </div>
-        </form>
+        </div>
 
         <!-- Legend -->
-        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Roles Legend -->
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <div class="bg-white shadow rounded-lg p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Légende des Rôles</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div class="space-y-2">
                     @foreach($roles as $roleKey => $roleName)
                     <div class="flex items-center">
-                        <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+                        <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
                         <span class="text-sm text-gray-700">{{ $roleName }}</span>
                     </div>
                     @endforeach
                 </div>
             </div>
-            
+
             <!-- Permissions Legend -->
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <div class="bg-white shadow rounded-lg p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Légende des Permissions</h3>
                 <div class="space-y-2">
                     <div class="flex items-center">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-3">View</span>
-                        <span class="text-sm text-gray-700">Consulter et visualiser</span>
+                        <span class="text-sm font-medium text-gray-700 mr-2">View</span>
+                        <span class="text-xs text-gray-500">Consulter et visualiser</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-3">Create</span>
-                        <span class="text-sm text-gray-700">Créer de nouveaux éléments</span>
+                        <span class="text-sm font-medium text-gray-700 mr-2">Create</span>
+                        <span class="text-xs text-gray-500">Créer de nouveaux éléments</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 mr-3">Edit</span>
-                        <span class="text-sm text-gray-700">Modifier les éléments existants</span>
+                        <span class="text-sm font-medium text-gray-700 mr-2">Edit</span>
+                        <span class="text-xs text-gray-500">Modifier les éléments existants</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mr-3">Delete</span>
-                        <span class="text-sm text-gray-700">Supprimer des éléments</span>
+                        <span class="text-sm font-medium text-gray-700 mr-2">Delete</span>
+                        <span class="text-xs text-gray-500">Supprimer des éléments</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mr-3">Export</span>
-                        <span class="text-sm text-gray-700">Exporter des données</span>
+                        <span class="text-sm font-medium text-gray-700 mr-2">Export</span>
+                        <span class="text-xs text-gray-500">Exporter des données</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 mr-3">Manage</span>
-                        <span class="text-sm text-gray-700">Gestion complète du module</span>
+                        <span class="text-sm font-medium text-gray-700 mr-2">Manage</span>
+                        <span class="text-xs text-gray-500">Gestion complète du module</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="flex items-center">
-                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <span class="text-green-600">✓</span>
-                    </div>
-                    <div class="ml-3">
-                        <h4 class="text-sm font-medium text-gray-900">Tout Activer</h4>
-                        <p class="text-sm text-gray-500">Donner accès à tous les modules</p>
-                        <button type="button" onclick="selectAll()" class="mt-2 text-xs text-green-600 hover:text-green-700 font-medium">Activer tout</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="flex items-center">
-                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                        <span class="text-red-600">✗</span>
-                    </div>
-                    <div class="ml-3">
-                        <h4 class="text-sm font-medium text-gray-900">Tout Désactiver</h4>
-                        <p class="text-sm text-gray-500">Retirer l'accès à tous les modules</p>
-                        <button type="button" onclick="deselectAll()" class="mt-2 text-xs text-red-600 hover:text-red-700 font-medium">Désactiver tout</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div class="flex items-center">
-                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span class="text-blue-600">🔄</span>
-                    </div>
-                    <div class="ml-3">
-                        <h4 class="text-sm font-medium text-gray-900">Réinitialiser</h4>
-                        <p class="text-sm text-gray-500">Restaurer les permissions par défaut</p>
-                        <button type="button" onclick="resetToDefault()" class="mt-2 text-xs text-blue-600 hover:text-blue-700 font-medium">Réinitialiser</button>
-                    </div>
-                </div>
+        <!-- Bulk Actions -->
+        <div class="mt-8 bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Actions en Masse</h3>
+            <div class="flex space-x-4">
+                <button onclick="activateAll()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                    ✓ Tout Activer
+                </button>
+                <button onclick="deactivateAll()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
+                    ✗ Tout Désactiver
+                </button>
+                <button onclick="resetPermissions()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors">
+                    🔄 Réinitialiser
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-function selectAll() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+function updatePermission(module, permission, role, isChecked) {
+    // Update the permission in the currentPermissions object
+    if (!window.currentPermissions) {
+        window.currentPermissions = @json($currentPermissions);
+    }
+    
+    if (!window.currentPermissions[role]) {
+        window.currentPermissions[role] = {};
+    }
+    
+    window.currentPermissions[role][permission] = isChecked;
+    
+    console.log('Permission updated:', { module, permission, role, isChecked });
+}
+
+function savePermissions() {
+    if (!window.currentPermissions) {
+        alert('Aucune modification à sauvegarder');
+        return;
+    }
+    
+    // Send AJAX request to save permissions
+    fetch('/public-module-permissions/save', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            permissions: window.currentPermissions
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess('Permissions sauvegardées avec succès!');
+        } else {
+            alert('Erreur lors de la sauvegarde: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Erreur lors de la sauvegarde des permissions');
+    });
+}
+
+function activateAll() {
+    const checkboxes = document.querySelectorAll('.permission-checkbox');
     checkboxes.forEach(checkbox => {
         checkbox.checked = true;
+        const module = checkbox.dataset.module;
+        const permission = checkbox.dataset.permission;
+        const role = checkbox.dataset.role;
+        updatePermission(module, permission, role, true);
     });
+    showSuccess('Toutes les permissions ont été activées');
 }
 
-function deselectAll() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+function deactivateAll() {
+    const checkboxes = document.querySelectorAll('.permission-checkbox');
     checkboxes.forEach(checkbox => {
         checkbox.checked = false;
+        const module = checkbox.dataset.module;
+        const permission = checkbox.dataset.permission;
+        const role = checkbox.dataset.role;
+        updatePermission(module, permission, role, false);
     });
+    showSuccess('Toutes les permissions ont été désactivées');
 }
 
-function resetToDefault() {
-    // Réinitialiser aux permissions par défaut
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-        // Logique de réinitialisation basée sur les permissions par défaut
-        // Pour l'instant, on désélectionne tout
-        checkbox.checked = false;
-    });
+function resetPermissions() {
+    if (confirm('Êtes-vous sûr de vouloir réinitialiser toutes les permissions?')) {
+        // Reset to default permissions
+        location.reload();
+    }
 }
 
-// Auto-save functionality
-let autoSaveTimeout;
-document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-        clearTimeout(autoSaveTimeout);
-        autoSaveTimeout = setTimeout(() => {
-            // Optionnel: auto-save après 2 secondes d'inactivité
-            // document.getElementById('permissions-form').submit();
-        }, 2000);
-    });
-});
+function showSuccess(message) {
+    // Create a temporary success notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        document.body.removeChild(notification);
+    }, 3000);
+}
 </script>
 @endsection
-

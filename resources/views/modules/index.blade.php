@@ -3,6 +3,50 @@
 @section('title', 'Modules - FIT Platform')
 
 @section('content')
+<script>
+// Filter functions - defined early to ensure availability
+function showAllCategories(event) {
+    const sections = document.querySelectorAll('.category-section');
+    sections.forEach(section => {
+        section.style.display = 'block';
+    });
+    
+    const buttons = document.querySelectorAll('button[onclick*="filterByCategory"], button[onclick*="showAllCategories"]');
+    buttons.forEach(button => {
+        button.classList.remove('bg-blue-600', 'text-white');
+        button.classList.add('bg-gray-200', 'text-gray-700');
+    });
+    
+    if (event && event.target) {
+        event.target.classList.remove('bg-gray-200', 'text-gray-700');
+        event.target.classList.add('bg-blue-600', 'text-white');
+    }
+}
+
+function filterByCategory(category, event) {
+    const sections = document.querySelectorAll('.category-section');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    const targetSections = document.querySelectorAll(`.category-section[data-category="${category}"]`);
+    targetSections.forEach(section => {
+        section.style.display = 'block';
+    });
+    
+    const buttons = document.querySelectorAll('button[onclick*="filterByCategory"], button[onclick*="showAllCategories"]');
+    buttons.forEach(button => {
+        button.classList.remove('bg-blue-600', 'text-white');
+        button.classList.add('bg-gray-200', 'text-gray-700');
+    });
+    
+    if (event && event.target) {
+        event.target.classList.remove('bg-gray-200', 'text-gray-700');
+        event.target.classList.add('bg-blue-600', 'text-white');
+    }
+}
+</script>
+
 <div class="min-h-screen bg-gray-50">
     <!-- Header -->
     <div class="bg-white shadow-sm border-b border-gray-200">
@@ -134,7 +178,7 @@
                     'text_color' => 'text-cyan-800'
                 ],
                 'administration' => [
-                    'name' => '⚙️ Administration',
+                    'name' => '⚙️ Administration Management',
                     'description' => 'Gestion administrative et financière',
                     'color' => 'gray',
                     'bg_color' => 'bg-gray-50',
@@ -429,84 +473,6 @@ function showModuleInfo(moduleName, url) {
     }, 1500);
 }
 
-// Ensure functions are globally accessible
-window.showAllCategories = function(event) {
-    console.log('showAllCategories called');
-    const allSections = document.querySelectorAll('.category-section');
-    const allButtons = document.querySelectorAll('.category-filter');
-    
-    console.log('Found sections:', allSections.length);
-    console.log('Found buttons:', allButtons.length);
-    
-    // Afficher toutes les sections
-    allSections.forEach(section => {
-        section.style.display = 'block';
-    });
-    
-    // Mettre à jour les boutons
-    allButtons.forEach(button => {
-        button.classList.remove('bg-blue-600', 'text-white');
-        button.classList.add('bg-gray-200', 'text-gray-700');
-    });
-    
-    // Activer le bouton "Toutes les catégories"
-    if (event && event.target) {
-        event.target.classList.remove('bg-gray-200', 'text-gray-700');
-        event.target.classList.add('bg-blue-600', 'text-white');
-    }
-};
-
-window.filterByCategory = function(category, event) {
-    console.log('filterByCategory called with:', category);
-    const filterSections = document.querySelectorAll('.category-section');
-    const filterButtons = document.querySelectorAll('.category-filter');
-    
-    console.log('Found sections:', filterSections.length);
-    console.log('Found buttons:', filterButtons.length);
-    
-    // Masquer toutes les sections
-    filterSections.forEach(section => {
-        section.style.display = 'none';
-    });
-    
-    // Afficher la section sélectionnée
-    let targetSection = null;
-    filterSections.forEach(section => {
-        if (section.getAttribute('data-category') === category) {
-            targetSection = section;
-        }
-    });
-    console.log('Target section:', targetSection);
-    if (targetSection) {
-        targetSection.style.display = 'block';
-    }
-    
-    // Mettre à jour les boutons
-    filterButtons.forEach(button => {
-        button.classList.remove('bg-blue-600', 'text-white');
-        button.classList.add('bg-gray-200', 'text-gray-700');
-    });
-    
-    // Activer le bouton sélectionné
-    if (event && event.target) {
-        event.target.classList.remove('bg-gray-200', 'text-gray-700');
-        event.target.classList.add('bg-blue-600', 'text-white');
-    }
-};
-
-// Also define them as global functions for compatibility
-function showAllCategories(event) {
-    return window.showAllCategories(event);
-}
-
-function filterByCategory(category, event) {
-    return window.filterByCategory(category, event);
-}
-
-console.log('Filter functions defined:', {
-    showAllCategories: typeof window.showAllCategories,
-    filterByCategory: typeof window.filterByCategory
-});
 
 // Ensure all sections are visible on page load
 document.addEventListener('DOMContentLoaded', function() {

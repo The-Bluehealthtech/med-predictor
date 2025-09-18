@@ -1,0 +1,25 @@
+# Configuration FIT CLI
+[api]
+base_url = "http://localhost:8000"
+api_prefix = "/api"
+timeout = 30
+
+[auth]
+token_endpoint = "/oauth/token"
+client_id = "fit-cli"
+client_secret = "fit-cli-secret"
+scope = "read write"
+
+[fhir]
+base_url = "http://localhost:8000/api/clinical"
+version = "R4"
+
+[cli]
+default_role = "patient"
+output_format = "table"
+verbose = false
+color = true
+
+[logging]
+level = "INFO"
+file = "fit-cli.log"

@@ -237,7 +237,7 @@
                                         <option value="">Sélectionner un joueur</option>
                                         @foreach($players ?? [] as $player)
                                             <option value="{{ $player->id }}" 
-                                                {{ old('player_id') == $player->id || ($selectedPlayer && !isset($isDemo) && $selectedPlayer->id == $player->id) ? 'selected' : '' }}>
+                                                {{ old('player_id') == $player->id || ($selectedPlayer && $selectedPlayer->id == $player->id) || (($defaultValues['player_id'] ?? null) == $player->id) ? 'selected' : '' }}>
                                                 {{ $player->full_name ?? $player->name }} ({{ $player->club->name ?? 'N/A' }})
                                             </option>
                                         @endforeach
@@ -297,35 +297,30 @@
                                             </div>
                                         </div>
                                     </div>
-                                @else
-                                    <div id="player-info" class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4" style="display: none;">
-                                        <h4 class="text-sm font-semibold text-blue-900 mb-2">👤 Informations du Patient Sélectionné</h4>
+                                @elseif(!empty($defaultValues['patient_name']) || !empty($defaultValues['patient_birth_date']) || !empty($defaultValues['visit_type']))
+                                    <div class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                        <h4 class="text-sm font-semibold text-blue-900 mb-2">👤 Informations du Patient (pré-remplies)</h4>
                                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                                             <div>
                                                 <span class="font-medium text-blue-800">Nom complet:</span>
-                                                <span id="player-full-name" class="text-blue-900"></span>
+                                                <span class="text-blue-900">{{ $defaultValues['patient_name'] ?? 'N/A' }}</span>
                                             </div>
                                             <div>
                                                 <span class="font-medium text-blue-800">Date de naissance:</span>
-                                                <span id="player-birthdate" class="text-blue-900"></span>
+                                                <span class="text-blue-900">
+                                                    @if(!empty($defaultValues['patient_birth_date']))
+                                                        {{ \Carbon\Carbon::parse($defaultValues['patient_birth_date'])->format('d/m/Y') }}
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </span>
                                             </div>
                                             <div>
-                                                <span class="font-medium text-blue-800">Club:</span>
-                                                <span id="player-club" class="text-blue-900"></span>
-                                            </div>
-                                            <div>
-                                                <span class="font-medium text-blue-800">Position:</span>
-                                                <span id="player-position" class="text-blue-900"></span>
-                                            </div>
-                                            <div>
-                                                <span class="font-medium text-blue-800">Âge:</span>
-                                                <span id="player-age" class="text-blue-900"></span>
-                                            </div>
-                                            <div>
-                                                <span class="font-medium text-blue-800">Nationalité:</span>
-                                                <span id="player-nationality" class="text-blue-900"></span>
+                                                <span class="font-medium text-blue-800">Type de visite:</span>
+                                                <span class="text-blue-900">{{ $defaultValues['visit_type'] ?? 'N/A' }}</span>
                                             </div>
                                         </div>
+                                        <p class="text-xs text-blue-700 mt-2">Conseil: sélectionnez le joueur exact dans la liste si disponible pour lier le dossier.</p>
                                     </div>
                                 @endif
 
@@ -339,7 +334,7 @@
                                             type="date" 
                                             id="visit_date" 
                                             name="visit_date" 
-                                            value="{{ old('visit_date', date('Y-m-d')) }}"
+                                            value="{{ old('visit_date', $defaultValues['visit_date'] ?? date('Y-m-d')) }}"
                                             required
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         >
@@ -353,7 +348,7 @@
                                             type="text" 
                                             id="doctor_name" 
                                             name="doctor_name" 
-                                            value="{{ old('doctor_name') }}"
+                                            value="{{ old('doctor_name', auth()->user()->name ?? '') }}"
                                             required
                                             placeholder="Nom du médecin"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -371,13 +366,14 @@
                                             required
                                         >
                                             <option value="">Sélectionner le type de visite</option>
-                                            <option value="consultation" {{ old('visit_type') == 'consultation' ? 'selected' : '' }}>Consultation</option>
-                                            <option value="emergency" {{ old('visit_type') == 'emergency' ? 'selected' : '' }}>Urgence</option>
-                                            <option value="follow_up" {{ old('visit_type') == 'follow_up' ? 'selected' : '' }}>Suivi</option>
-                                            <option value="pre_season" {{ old('visit_type') == 'pre_season' ? 'selected' : '' }}>Pré-saison</option>
-                                            <option value="pcma" {{ old('visit_type') == 'pcma' ? 'selected' : '' }}>PCMA (Évaluation Capacité Physique)</option>
-                                            <option value="post_match" {{ old('visit_type') == 'post_match' ? 'selected' : '' }}>Post-match</option>
-                                            <option value="rehabilitation" {{ old('visit_type') == 'rehabilitation' ? 'selected' : '' }}>Rééducation</option>
+                                            <option value="consultation" {{ (old('visit_type') == 'consultation' || (isset($defaultValues['visit_type']) && $defaultValues['visit_type'] == 'consultation')) ? 'selected' : '' }}>Consultation</option>
+                                            <option value="emergency" {{ (old('visit_type') == 'emergency' || (isset($defaultValues['visit_type']) && $defaultValues['visit_type'] == 'emergency')) ? 'selected' : '' }}>Urgence</option>
+                                            <option value="follow_up" {{ (old('visit_type') == 'follow_up' || (isset($defaultValues['visit_type']) && $defaultValues['visit_type'] == 'follow_up')) ? 'selected' : '' }}>Suivi</option>
+                                            <option value="examination" {{ (old('visit_type') == 'examination' || (isset($defaultValues['visit_type']) && $defaultValues['visit_type'] == 'examination')) ? 'selected' : '' }}>Examen</option>
+                                            <option value="pre_season" {{ (old('visit_type') == 'pre_season' || (isset($defaultValues['visit_type']) && $defaultValues['visit_type'] == 'pre_season')) ? 'selected' : '' }}>Pré-saison</option>
+                                            <option value="pcma" {{ (old('visit_type') == 'pcma' || (isset($defaultValues['visit_type']) && $defaultValues['visit_type'] == 'pcma')) ? 'selected' : '' }}>PCMA (Évaluation Capacité Physique)</option>
+                                            <option value="post_match" {{ (old('visit_type') == 'post_match' || (isset($defaultValues['visit_type']) && $defaultValues['visit_type'] == 'post_match')) ? 'selected' : '' }}>Post-match</option>
+                                            <option value="rehabilitation" {{ (old('visit_type') == 'rehabilitation' || (isset($defaultValues['visit_type']) && $defaultValues['visit_type'] == 'rehabilitation')) ? 'selected' : '' }}>Rééducation</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1540,6 +1536,15 @@
                             <input type="hidden" name="imaging_data" id="imaging_data" value="{{ old('imaging_data') }}">
                             <input type="hidden" name="dental_data" id="dental_data" value="{{ old('dental_data') }}">
                             <input type="hidden" name="selected_dental_tooth" id="selected_dental_tooth" value="{{ old('selected_dental_tooth') }}">
+                            
+                            <!-- Patient information fields -->
+                            @if($selectedPlayer)
+                                <input type="hidden" name="patient_name" value="{{ $selectedPlayer->full_name ?? $selectedPlayer->name }}">
+                                <input type="hidden" name="patient_birth_date" value="{{ $selectedPlayer->date_of_birth }}">
+                                <input type="hidden" name="patient_club" value="{{ $selectedPlayer->club ? $selectedPlayer->club->name : '' }}">
+                                <input type="hidden" name="patient_position" value="{{ $selectedPlayer->position ?? '' }}">
+                                <input type="hidden" name="patient_nationality" value="{{ $selectedPlayer->nationality ?? '' }}">
+                            @endif
                         </div>
                     </div>
 

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Filter Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-8">
+    <h1 class="text-2xl font-bold mb-4">Filter Test</h1>
+    
+    <!-- Test Buttons -->
+    <div class="mb-4">
+        <button onclick="showAllCategories(event)" class="px-4 py-2 bg-blue-600 text-white rounded mr-2">Show All</button>
+        <button onclick="filterByCategory('health', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded mr-2">Health</button>
+        <button onclick="filterByCategory('sport', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded">Sport</button>
+    </div>
+    
+    <!-- Test Sections -->
+    <div class="category-section bg-red-100 p-4 mb-2" data-category="health">
+        <h3>Health Section</h3>
+        <p>This should show when health is selected</p>
+    </div>
+    
+    <div class="category-section bg-green-100 p-4 mb-2" data-category="sport">
+        <h3>Sport Section</h3>
+        <p>This should show when sport is selected</p>
+    </div>
+    
+    <div class="category-section bg-blue-100 p-4 mb-2" data-category="other">
+        <h3>Other Section</h3>
+        <p>This should show when "Show All" is clicked</p>
+    </div>
+
+    <script>
+        // Copy the exact functions from the modules page
+        function showAllCategories(event) {
+            const sections = document.querySelectorAll('.category-section');
+            sections.forEach(section => {
+                section.style.display = 'block';
+            });
+            
+            const buttons = document.querySelectorAll('button[onclick*="filterByCategory"], button[onclick*="showAllCategories"]');
+            buttons.forEach(button => {
+                button.classList.remove('bg-blue-600', 'text-white');
+                button.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            
+            if (event && event.target) {
+                event.target.classList.remove('bg-gray-200', 'text-gray-700');
+                event.target.classList.add('bg-blue-600', 'text-white');
+            }
+        }
+
+        function filterByCategory(category, event) {
+            const sections = document.querySelectorAll('.category-section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            const targetSection = document.querySelector(`.category-section[data-category="${category}"]`);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            
+            const buttons = document.querySelectorAll('button[onclick*="filterByCategory"], button[onclick*="showAllCategories"]');
+            buttons.forEach(button => {
+                button.classList.remove('bg-blue-600', 'text-white');
+                button.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            
+            if (event && event.target) {
+                event.target.classList.remove('bg-gray-200', 'text-gray-700');
+                event.target.classList.add('bg-blue-600', 'text-white');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -139,20 +139,21 @@
                                     </div>
                                 </div>
                                 <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ $appointment->player->name ?? 'Joueur inconnu' }}</div>
-                                    <div class="text-sm text-gray-500">{{ $appointment->player->fifa_connect_id ?? 'N/A' }}</div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $appointment->athlete->name ?? 'Joueur inconnu' }}</div>
+                                    <div class="text-sm text-gray-500">{{ $appointment->athlete->fifa_id ?? 'N/A' }}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {{ $appointment->visit_date ? $appointment->visit_date->format('d/m/Y H:i') : 'Date non définie' }}
+                            {{ $appointment->appointment_date ? $appointment->appointment_date->format('d/m/Y H:i') : 'Date non définie' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
-                                {{ $appointment->visit_type === 'consultation' ? 'bg-blue-100 text-blue-800' : 
-                                   ($appointment->visit_type === 'examination' ? 'bg-green-100 text-green-800' : 
-                                   ($appointment->visit_type === 'emergency' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')) }}">
-                                {{ ucfirst($appointment->visit_type ?? 'Non défini') }}
+                                {{ $appointment->type === 'consultation' ? 'bg-blue-100 text-blue-800' : 
+                                   ($appointment->type === 'examination' ? 'bg-green-100 text-green-800' : 
+                                   ($appointment->type === 'emergency' ? 'bg-red-100 text-red-800' : 
+                                   ($appointment->type === 'follow_up' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'))) }}">
+                                {{ ucfirst($appointment->type ?? 'Non défini') }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -175,7 +176,7 @@
                     @empty
                     <tr>
                         <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                            Aucun rendez-vous récent
+                            Aucun rendez-vous à venir
                         </td>
                     </tr>
                     @endforelse

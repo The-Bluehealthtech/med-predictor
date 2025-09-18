@@ -367,6 +367,12 @@ class Player extends Model
 
     public function getFullNameAttribute(): string
     {
+        // Si le champ 'name' existe et n'est pas vide, l'utiliser
+        if (!empty($this->name)) {
+            return $this->name;
+        }
+        
+        // Sinon, construire le nom à partir de first_name et last_name
         return trim($this->first_name . ' ' . $this->last_name);
     }
 

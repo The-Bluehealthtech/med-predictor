@@ -879,6 +879,285 @@ Route::get('/pcma/doctor-signoff-demo', function () {
     return view('pcma.doctor-signoff-demo', ['athlete' => null]);
 })->name('pcma.doctor-signoff-demo');
 
+// ========================================
+// ROUTES API POUR CLI FIT - MODULES MÉDICAUX
+// ========================================
+
+// Medical Module API Routes
+Route::prefix('modules/medical')->group(function () {
+    // Créer une visite médicale
+    Route::post('/', function (Request $request) {
+        try {
+            $data = $request->validate([
+                'player_id' => 'required|integer|exists:players,id',
+                'visit_type' => 'required|string',
+                'status' => 'required|string',
+                'start_time' => 'required|date'
+            ]);
+            
+            // Créer un health record pour la visite
+            $healthRecord = \App\Models\HealthRecord::create([
+                'user_id' => 1, // Utilisateur par défaut
+                'player_id' => $data['player_id'],
+                'record_date' => $data['start_time'],
+                'visit_type' => $data['visit_type'],
+                'status' => 'active', // Utiliser une valeur valide de l'enum
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Visite médicale créée avec succès',
+                'data' => $healthRecord
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+    
+    // Terminer une visite médicale
+    Route::put('/{player_id}/current', function (Request $request, $player_id) {
+        try {
+            $data = $request->validate([
+                'status' => 'required|string',
+                'end_time' => 'required|date'
+            ]);
+            
+            // Trouver la visite en cours pour ce joueur
+            $healthRecord = \App\Models\HealthRecord::where('player_id', $player_id)
+                ->where('status', 'active')
+                ->latest()
+                ->first();
+            
+            if (!$healthRecord) {
+                return response()->json(['error' => 'Aucune visite en cours trouvée'], 404);
+            }
+            
+            $healthRecord->update([
+                'status' => 'archived', // Utiliser une valeur valide de l'enum
+                'updated_at' => $data['end_time']
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Visite médicale terminée',
+                'data' => $healthRecord
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+    
+    // Lister toutes les visites médicales
+    Route::get('/', function () {
+        try {
+            $visits = \App\Models\HealthRecord::with('player')
+                ->orderBy('record_date', 'desc')
+                ->limit(50)
+                ->get();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $visits
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+    
+    // Signaler une blessure
+    Route::post('/injuries', function (Request $request) {
+        try {
+            $data = $request->validate([
+                'player_id' => 'required|integer|exists:players,id',
+                'injury_type' => 'required|string',
+                'severity' => 'required|string',
+                'injury_date' => 'required|date'
+            ]);
+            
+            // Créer un health record pour la blessure
+            $healthRecord = \App\Models\HealthRecord::create([
+                'user_id' => 1, // Utilisateur par défaut
+                'player_id' => $data['player_id'],
+                'record_date' => $data['injury_date'],
+                'visit_type' => 'consultation', // Utiliser une valeur valide de l'enum visit_type
+                'diagnosis' => $data['injury_type'] . ' - Grade ' . $data['severity'],
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Blessure signalée avec succès',
+                'data' => $healthRecord
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+});
+
+// Healthcare Module API Routes
+Route::prefix('modules/healthcare')->group(function () {
+    // Créer un diagnostic
+    Route::post('/', function (Request $request) {
+        try {
+            $data = $request->validate([
+                'player_id' => 'required|integer|exists:players,id',
+                'condition' => 'required|string',
+                'status' => 'required|string',
+                'diagnosis_date' => 'required|date'
+            ]);
+            
+            // Créer un health record pour le diagnostic
+            $healthRecord = \App\Models\HealthRecord::create([
+                'user_id' => 1, // Utilisateur par défaut
+                'player_id' => $data['player_id'],
+                'record_date' => $data['diagnosis_date'],
+                'visit_type' => 'consultation', // Utiliser une valeur valide de l'enum visit_type
+                'diagnosis' => $data['condition'],
+                'status' => 'active', // Utiliser une valeur valide de l'enum status
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Diagnostic ajouté avec succès',
+                'data' => $healthRecord
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+    
+    // Lister les diagnostics d'un joueur
+    Route::get('/{player_id}', function ($player_id) {
+        try {
+            $diagnoses = \App\Models\HealthRecord::where('player_id', $player_id)
+                ->whereNotNull('diagnosis') // Chercher les enregistrements avec un diagnostic
+                ->orderBy('record_date', 'desc')
+                ->get();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $diagnoses
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+    
+    // Créer un plan de soins
+    Route::post('/careplans', function (Request $request) {
+        try {
+            $data = $request->validate([
+                'player_id' => 'required|integer|exists:players,id',
+                'treatment' => 'required|string',
+                'status' => 'required|string',
+                'created_date' => 'required|date'
+            ]);
+            
+            // Créer un health record pour le plan de soins
+            $healthRecord = \App\Models\HealthRecord::create([
+                'user_id' => 1, // Utilisateur par défaut
+                'player_id' => $data['player_id'],
+                'record_date' => $data['created_date'],
+                'visit_type' => 'consultation', // Utiliser une valeur valide de l'enum visit_type
+                'treatment_plan' => $data['treatment'], // Utiliser le bon nom de colonne
+                'status' => 'active', // Utiliser une valeur valide de l'enum status
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Plan de soins créé avec succès',
+                'data' => $healthRecord
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+});
+
+// Secretary API Routes
+Route::prefix('secretary')->group(function () {
+    // Créer un rendez-vous
+    Route::post('/appointments', function (Request $request) {
+        try {
+            $data = $request->validate([
+                'player_id' => 'nullable|integer|exists:players,id',
+                'date' => 'required|date',
+                'reason' => 'required|string',
+                'status' => 'required|string'
+            ]);
+            
+            // Créer un health record pour le rendez-vous
+            $healthRecord = \App\Models\HealthRecord::create([
+                'user_id' => 1, // Utilisateur par défaut
+                'player_id' => $data['player_id'] ?? 1, // Default player if not specified
+                'record_date' => $data['date'],
+                'visit_type' => 'consultation', // Utiliser une valeur valide de l'enum visit_type
+                'chief_complaint' => $data['reason'], // Utiliser le bon nom de colonne
+                'status' => 'pending', // Utiliser une valeur valide de l'enum status
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Rendez-vous créé avec succès',
+                'data' => $healthRecord
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+    
+    // Lister les rendez-vous
+    Route::get('/appointments', function () {
+        try {
+            $appointments = \App\Models\HealthRecord::with('player')
+                ->where('status', 'pending') // Chercher les rendez-vous en attente
+                ->orderBy('record_date', 'desc')
+                ->limit(50)
+                ->get();
+            
+            return response()->json([
+                'success' => true,
+                'appointments' => $appointments
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+    
+    // Annuler un rendez-vous
+    Route::delete('/appointments/{date}', function ($date) {
+        try {
+            $healthRecord = \App\Models\HealthRecord::where('record_date', $date)
+                ->where('status', 'pending')
+                ->first();
+            
+            if (!$healthRecord) {
+                return response()->json(['error' => 'Rendez-vous non trouvé'], 404);
+            }
+            
+            $healthRecord->update(['status' => 'archived']);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Rendez-vous annulé avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+});
+
 // Routes pour le module dentaire
 Route::prefix('dental')->group(function () {
     Route::get('/annotations', [App\Http\Controllers\DentalController::class, 'index']);

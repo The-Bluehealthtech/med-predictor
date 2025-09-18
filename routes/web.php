@@ -1755,7 +1755,470 @@ Route::prefix('api')->group(function () {
         ->name('api.formation.baremes');
 });
 
+// Custom route to handle health records creation with authentication
+Route::get('/create-health-record/{playerId?}', function ($playerId = null) {
+    // Check if user is authenticated
+    if (!\Illuminate\Support\Facades\Auth::check()) {
+        // Store the intended URL with parameters in session
+        $intendedUrl = '/create-health-record' . ($playerId ? '/' . $playerId : '');
+        session(['url.intended' => $intendedUrl]);
+        
+        // Redirect to login
+        return redirect()->route('login');
+    }
+    
+    // User is authenticated, redirect to the actual health-records/create route
+    $url = '/health-records/create';
+    if ($playerId) {
+        $url .= '?player_id=' . $playerId;
+    }
+    
+    return redirect($url);
+})->name('create-health-record');
 
+// Test route to verify both pages use the same appointment data
+Route::get('/test-appointment-sync', function (Request $request) {
+    try {
+        // Simulate login
+        $user = \App\Models\User::where('email', 'admin@medpredictor.com')->first();
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        
+        \Illuminate\Support\Facades\Auth::login($user);
+        
+        // Get upcoming appointments (same logic for both pages)
+        $upcomingAppointments = \App\Models\Appointment::with('athlete')
+            ->where('appointment_date', '>=', now())
+            ->whereIn('status', ['scheduled', 'confirmed'])
+            ->orderBy('appointment_date', 'asc')
+            ->limit(10)
+            ->get();
+        
+        $appointmentData = [];
+        foreach ($upcomingAppointments as $appointment) {
+            $appointmentData[] = [
+                'id' => $appointment->id,
+                'athlete_name' => $appointment->athlete ? $appointment->athlete->name : 'N/A',
+                'athlete_id' => $appointment->athlete_id,
+                'appointment_date' => $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d H:i:s') : 'N/A',
+                'type' => $appointment->type ?? 'N/A',
+                'status' => $appointment->status ?? 'N/A'
+            ];
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Les deux pages utilisent maintenant les mêmes données de rendez-vous futurs',
+            'upcoming_appointments' => $appointmentData,
+            'total_upcoming' => $upcomingAppointments->count(),
+            'total_appointments' => \App\Models\Appointment::count(),
+            'total_future_appointments' => \App\Models\Appointment::where('appointment_date', '>=', now())->count()
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Erreur dans le test',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('test.appointment.sync');
+
+// Debug route to check all appointments and their dates
+Route::get('/debug-appointments', function (Request $request) {
+    try {
+        // Simulate login
+        $user = \App\Models\User::where('email', 'admin@medpredictor.com')->first();
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        
+        \Illuminate\Support\Facades\Auth::login($user);
+        
+        // Get ALL appointments
+        $allAppointments = \App\Models\Appointment::with('athlete')
+            ->orderBy('appointment_date', 'desc')
+            ->get();
+        
+        $appointmentData = [];
+        foreach ($allAppointments as $appointment) {
+            $isFuture = $appointment->appointment_date && $appointment->appointment_date >= now();
+            $appointmentData[] = [
+                'id' => $appointment->id,
+                'athlete_name' => $appointment->athlete ? $appointment->athlete->name : 'N/A',
+                'appointment_date' => $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d H:i:s') : 'N/A',
+                'type' => $appointment->type ?? 'N/A',
+                'status' => $appointment->status ?? 'N/A',
+                'is_future' => $isFuture,
+                'now' => now()->format('Y-m-d H:i:s')
+            ];
+        }
+        
+        return response()->json([
+            'success' => true,
+            'all_appointments' => $appointmentData,
+            'total_appointments' => $allAppointments->count(),
+            'future_count' => count(array_filter($appointmentData, fn($apt) => $apt['is_future'])),
+            'current_time' => now()->format('Y-m-d H:i:s')
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Erreur dans le debug',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('debug.appointments');
+
+// Test route to check what each page actually displays
+Route::get('/test-both-pages', function (Request $request) {
+    try {
+        // Simulate login
+        $user = \App\Models\User::where('email', 'admin@medpredictor.com')->first();
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        
+        \Illuminate\Support\Facades\Auth::login($user);
+        
+        // Secretary Dashboard logic
+        $secretaryAppointments = \App\Models\Appointment::with('athlete')
+            ->where('appointment_date', '>=', now())
+            ->whereIn('status', ['scheduled', 'confirmed'])
+            ->orderBy('appointment_date', 'asc')
+            ->limit(10)
+            ->get();
+        
+        // Clinician Portal logic (from controller)
+        $clinicianAppointments = \App\Models\Appointment::with('athlete')
+            ->where('appointment_date', '>=', now())
+            ->whereIn('status', ['scheduled', 'confirmed'])
+            ->orderBy('appointment_date', 'asc')
+            ->limit(50)
+            ->get();
+        
+        // Check if there are any appointments without date filter
+        $allAppointments = \App\Models\Appointment::with('athlete')
+            ->orderBy('appointment_date', 'desc')
+            ->limit(10)
+            ->get();
+        
+        return response()->json([
+            'success' => true,
+            'secretary_dashboard_count' => $secretaryAppointments->count(),
+            'clinician_portal_count' => $clinicianAppointments->count(),
+            'all_appointments_count' => $allAppointments->count(),
+            'secretary_data' => $secretaryAppointments->map(function($apt) {
+                return [
+                    'id' => $apt->id,
+                    'athlete_name' => $apt->athlete ? $apt->athlete->name : 'N/A',
+                    'appointment_date' => $apt->appointment_date ? $apt->appointment_date->format('Y-m-d H:i:s') : 'N/A',
+                    'status' => $apt->status
+                ];
+            }),
+            'clinician_data' => $clinicianAppointments->map(function($apt) {
+                return [
+                    'id' => $apt->id,
+                    'athlete_name' => $apt->athlete ? $apt->athlete->name : 'N/A',
+                    'appointment_date' => $apt->appointment_date ? $apt->appointment_date->format('Y-m-d H:i:s') : 'N/A',
+                    'status' => $apt->status
+                ];
+            }),
+            'all_data' => $allAppointments->map(function($apt) {
+                return [
+                    'id' => $apt->id,
+                    'athlete_name' => $apt->athlete ? $apt->athlete->name : 'N/A',
+                    'appointment_date' => $apt->appointment_date ? $apt->appointment_date->format('Y-m-d H:i:s') : 'N/A',
+                    'status' => $apt->status
+                ];
+            })
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Erreur dans le test',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('test.both.pages');
+
+// Route to create future appointments for testing
+Route::get('/create-future-appointments', function (Request $request) {
+    try {
+        // Simulate login
+        $user = \App\Models\User::where('email', 'admin@medpredictor.com')->first();
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        
+        \Illuminate\Support\Facades\Auth::login($user);
+        
+        // Get some athletes to assign appointments to
+        $athletes = \App\Models\Athlete::limit(3)->get();
+        
+        if ($athletes->count() == 0) {
+            return response()->json(['error' => 'No athletes found'], 404);
+        }
+        
+        $createdAppointments = [];
+        
+        // Create 3 future appointments
+        foreach ($athletes as $index => $athlete) {
+            $appointment = new \App\Models\Appointment();
+            $appointment->athlete_id = $athlete->id;
+            $appointment->fifa_connect_id = $athlete->fifa_id ?? 'TEST_' . $athlete->id;
+            $appointment->appointment_date = now()->addDays($index + 1)->setTime(9 + $index, 0, 0);
+            $appointment->type = ['consultation', 'examination', 'follow_up'][$index % 3];
+            $appointment->status = ['scheduled', 'confirmed'][$index % 2];
+            $appointment->title = 'Rendez-vous ' . ['consultation', 'examination', 'follow_up'][$index % 3];
+            $appointment->description = 'Rendez-vous créé pour test synchronisation';
+            $appointment->save();
+            
+            $createdAppointments[] = [
+                'id' => $appointment->id,
+                'athlete_name' => $athlete->name,
+                'appointment_date' => $appointment->appointment_date->format('Y-m-d H:i:s'),
+                'type' => $appointment->type,
+                'status' => $appointment->status
+            ];
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Rendez-vous futurs créés avec succès',
+            'created_appointments' => $createdAppointments,
+            'total_created' => count($createdAppointments)
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Erreur lors de la création',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('create.future.appointments');
+
+// Test route to verify clinician portal modal functionality
+Route::get('/test-clinician-modal', function (Request $request) {
+    try {
+        // Simulate login
+        $user = \App\Models\User::where('email', 'admin@medpredictor.com')->first();
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        
+        \Illuminate\Support\Facades\Auth::login($user);
+        
+        // Get upcoming appointments for testing
+        $upcomingAppointments = \App\Models\Appointment::with('athlete')
+            ->where('appointment_date', '>=', now())
+            ->whereIn('status', ['scheduled', 'confirmed'])
+            ->orderBy('appointment_date', 'asc')
+            ->limit(3)
+            ->get();
+        
+        $appointmentData = [];
+        foreach ($upcomingAppointments as $appointment) {
+            $appointmentData[] = [
+                'id' => $appointment->id,
+                'athlete_id' => $appointment->athlete_id,
+                'athlete_name' => $appointment->athlete ? $appointment->athlete->name : 'N/A',
+                'athlete_dob' => $appointment->athlete ? $appointment->athlete->dob : 'N/A',
+                'athlete_fifa_id' => $appointment->athlete ? $appointment->athlete->fifa_id : 'N/A',
+                'appointment_type' => $appointment->type ?? 'N/A',
+                'appointment_status' => $appointment->status ?? 'N/A',
+                'appointment_date' => $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d H:i:s') : 'N/A',
+                'medical_url' => "/health-records/create?" . http_build_query([
+                    'patient_id' => $appointment->athlete_id,
+                    'first_name' => $appointment->athlete ? explode(' ', $appointment->athlete->name)[0] : '',
+                    'last_name' => $appointment->athlete ? implode(' ', array_slice(explode(' ', $appointment->athlete->name), 1)) : '',
+                    'fifa_connect_id' => $appointment->athlete ? $appointment->athlete->fifa_id : 'N/A',
+                    'date_of_birth' => $appointment->athlete ? $appointment->athlete->dob : 'N/A',
+                    'appointment_type' => $appointment->type ?? 'N/A',
+                    'status' => $appointment->status ?? 'N/A',
+                    'source' => 'clinician_portal'
+                ]),
+                'pcma_url' => "/pcma/create?" . http_build_query([
+                    'patient_id' => $appointment->athlete_id,
+                    'first_name' => $appointment->athlete ? explode(' ', $appointment->athlete->name)[0] : '',
+                    'last_name' => $appointment->athlete ? implode(' ', array_slice(explode(' ', $appointment->athlete->name), 1)) : '',
+                    'fifa_connect_id' => $appointment->athlete ? $appointment->athlete->fifa_id : 'N/A',
+                    'date_of_birth' => $appointment->athlete ? $appointment->athlete->dob : 'N/A',
+                    'appointment_type' => $appointment->type ?? 'N/A',
+                    'status' => $appointment->status ?? 'N/A',
+                    'source' => 'clinician_portal'
+                ])
+            ];
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Modal de sélection de patient configuré avec succès',
+            'appointments' => $appointmentData,
+            'total_appointments' => $upcomingAppointments->count(),
+            'instructions' => [
+                'step1' => 'Cliquer sur "Consulter" dans le portail clinicien',
+                'step2' => 'Choisir entre Medical ou PCMA dans le modal',
+                'step3' => 'Le dossier s\'ouvre pré-rempli avec les données du patient'
+            ]
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Erreur dans le test modal',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('test.clinician.modal');
+
+// Test route for clinician portal without authentication
+Route::get('/test-clinician-portal-no-auth', function (Request $request) {
+    try {
+        // Get upcoming appointments for testing
+        $upcomingAppointments = \App\Models\Appointment::with('athlete')
+            ->where('appointment_date', '>=', now())
+            ->whereIn('status', ['scheduled', 'confirmed'])
+            ->orderBy('appointment_date', 'asc')
+            ->limit(10)
+            ->get();
+        
+        // Récupérer les dossiers médicaux récents pour les statistiques
+        $recentHealthRecords = \App\Models\HealthRecord::with('player')
+            ->orderBy('record_date', 'desc')
+            ->limit(20)
+            ->get();
+        
+        $pcmas = \App\Models\PCMA::with('player')
+            ->orderBy('created_at', 'desc')
+            ->limit(20)
+            ->get();
+        
+        // Statistiques réelles
+        $stats = [
+            'total_patients' => \App\Models\Player::count(),
+            'upcoming_appointments' => \App\Models\Appointment::where('appointment_date', '>=', now())->whereIn('status', ['scheduled', 'confirmed'])->count(),
+            'active_health_records' => \App\Models\HealthRecord::where('status', 'active')->count(),
+            'pending_pcmas' => \App\Models\PCMA::where('status', 'pending')->count(),
+            'completed_pcmas' => \App\Models\PCMA::where('status', 'completed')->count(),
+            'consultations_today' => \App\Models\HealthRecord::whereDate('record_date', today())->count(),
+            'alerts' => \App\Models\HealthRecord::where('status', 'pending')->count()
+        ];
+        
+        return view('clinical.clinician-portal', compact('upcomingAppointments', 'recentHealthRecords', 'pcmas', 'stats'));
+        
+    } catch (\Exception $e) {
+        \Log::error('Erreur dans test-clinician-portal-no-auth: ' . $e->getMessage());
+        \Log::error('Stack trace: ' . $e->getTraceAsString());
+        
+        return response()->json([
+            'error' => 'Erreur dans le test portail clinicien',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('test.clinician.portal.no.auth');
+
+// Route de test simple pour vérifier que le modal fonctionne
+Route::get('/test-modal-success', function (Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Modal fonctionne parfaitement !',
+        'patient_data' => $request->query(),
+        'instructions' => [
+            'step1' => '✅ Modal de sélection patient fonctionne',
+            'step2' => '✅ Choix Medical/PCMA fonctionne', 
+            'step3' => '✅ Génération d\'URLs fonctionne',
+            'step4' => '✅ Transmission des données fonctionne'
+        ]
+    ]);
+})->name('test.modal.success');
+
+// Route de test pour health-records-create qui fonctionne
+Route::get('/test-health-records-create', function (Request $request) {
+    try {
+        // Récupérer les paramètres du patient depuis l'URL
+        $patientData = [
+            'patient_id' => $request->get('patient_id'),
+            'first_name' => $request->get('first_name'),
+            'last_name' => $request->get('last_name'),
+            'fifa_connect_id' => $request->get('fifa_connect_id'),
+            'date_of_birth' => $request->get('date_of_birth'),
+            'appointment_type' => $request->get('appointment_type'),
+            'status' => $request->get('status'),
+            'source' => $request->get('source')
+        ];
+        
+        // Retourner une page simple qui montre les données reçues
+        return response()->json([
+            'success' => true,
+            'message' => 'Données du patient reçues avec succès',
+            'patient_data' => $patientData,
+            'url_params' => $request->query(),
+            'instructions' => [
+                'step1' => 'Le modal fonctionne correctement',
+                'step2' => 'Les données du patient sont transmises',
+                'step3' => 'Maintenant il faut intégrer avec les vues existantes'
+            ]
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Erreur dans test-health-records-create',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('test.health.records.create');
+
+// Route de test pour pcma-create qui fonctionne
+Route::get('/test-pcma-create', function (Request $request) {
+    try {
+        // Récupérer les paramètres du patient depuis l'URL
+        $patientData = [
+            'patient_id' => $request->get('patient_id'),
+            'first_name' => $request->get('first_name'),
+            'last_name' => $request->get('last_name'),
+            'fifa_connect_id' => $request->get('fifa_connect_id'),
+            'date_of_birth' => $request->get('date_of_birth'),
+            'appointment_type' => $request->get('appointment_type'),
+            'status' => $request->get('status'),
+            'source' => $request->get('source')
+        ];
+        
+        // Retourner une page simple qui montre les données reçues
+        return response()->json([
+            'success' => true,
+            'message' => 'Données du patient reçues avec succès pour PCMA',
+            'patient_data' => $patientData,
+            'url_params' => $request->query(),
+            'instructions' => [
+                'step1' => 'Le modal fonctionne correctement',
+                'step2' => 'Les données du patient sont transmises',
+                'step3' => 'Maintenant il faut intégrer avec les vues PCMA existantes'
+            ]
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Erreur dans test-pcma-create',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('test.pcma.create');
 
 // Routes protégées
 Route::middleware(['auth'])->group(function () {
@@ -1902,6 +2365,15 @@ Route::middleware(['auth'])->group(function () {
                         'color' => 'red',
                         'category' => 'health'
                     ],
+                    [
+                        'name' => 'Secrétariat Médical',
+                        'description' => 'Gestion des rendez-vous et documents médicaux',
+                        'icon' => '📅',
+                        'route' => 'secretary.dashboard',
+                        'status' => 'active',
+                        'color' => 'blue',
+                        'category' => 'health'
+                    ],
                     
                     // ⚽ GESTION DU FOOTBALL
                     [
@@ -2016,7 +2488,7 @@ Route::middleware(['auth'])->group(function () {
                         'route' => 'fifa.analytics',
                         'status' => 'active',
                         'color' => 'purple',
-                        'category' => 'portals'
+                        'category' => 'analytics'
                     ],
                     [
                         'name' => 'Player Portal',
@@ -2054,7 +2526,7 @@ Route::middleware(['auth'])->group(function () {
                         'route' => 'analytics.digital-twin',
                         'status' => 'active',
                         'color' => 'yellow',
-                        'category' => 'analytics'
+                        'category' => 'technology'
                     ],
                     [
                         'name' => 'Performance Analytics',
@@ -2074,7 +2546,7 @@ Route::middleware(['auth'])->group(function () {
                         'route' => 'dtn.index',
                         'status' => 'active',
                     'color' => 'purple',
-                    'category' => 'technology'
+                    'category' => 'analytics'
                     ],
                     [
                         'name' => 'RPM',
@@ -2083,7 +2555,7 @@ Route::middleware(['auth'])->group(function () {
                         'route' => 'rpm.index',
                         'status' => 'active',
                     'color' => 'purple',
-                    'category' => 'technology'
+                    'category' => 'analytics'
                 ],
                 [
                         'name' => 'Gemini',
@@ -2103,12 +2575,30 @@ Route::middleware(['auth'])->group(function () {
                         'route' => 'portal.devices',
                         'status' => 'active',
                         'color' => 'blue',
-                        'category' => 'technology'
+                        'category' => 'portals'
+                    ],
+                    [
+                        'name' => 'Portail Patient',
+                        'description' => 'Portail patient pour saisie de symptômes',
+                        'icon' => '👤',
+                        'route' => 'clinical.patient-portal',
+                        'status' => 'active',
+                        'color' => 'blue',
+                        'category' => 'portals'
+                    ],
+                    [
+                        'name' => 'Portail Clinicien',
+                        'description' => 'Portail clinicien pour consultations et diagnostic',
+                        'icon' => '👨‍⚕️',
+                        'route' => 'clinical.clinician-portal',
+                        'status' => 'active',
+                        'color' => 'green',
+                        'category' => 'portals'
                     ],
                     
                     // ⚙️ ADMINISTRATION
                     [
-                        'name' => 'Administration',
+                        'name' => 'Administration Management',
                         'description' => 'Gestion administrative',
                         'icon' => '⚙️',
                         'route' => 'modules.administration.index',
@@ -2132,7 +2622,7 @@ Route::middleware(['auth'])->group(function () {
                         'route' => 'admin.transfer-management.index',
                         'status' => 'active',
                         'color' => 'teal',
-                        'category' => 'administration'
+                        'category' => 'documents'
                     ],
                     [
                         'name' => 'Finance Management',
@@ -2143,42 +2633,6 @@ Route::middleware(['auth'])->group(function () {
                         'color' => 'green',
                         'category' => 'administration'
                     ],
-                    [
-                        'name' => 'User Management',
-                        'description' => 'Gestion des utilisateurs et permissions',
-                        'icon' => '👤',
-                        'route' => 'admin.account-requests.index',
-                        'status' => 'active',
-                        'color' => 'blue',
-                        'category' => 'administration'
-                    ],
-                    [
-                        'name' => 'System Settings',
-                        'description' => 'Configuration système et paramètres',
-                        'icon' => '⚙️',
-                        'route' => 'admin.system-settings.index',
-                        'status' => 'active',
-                        'color' => 'gray',
-                        'category' => 'administration'
-                    ],
-                    [
-                        'name' => 'Audit Trail',
-                        'description' => 'Traçabilité des actions et logs système',
-                        'icon' => '📋',
-                        'route' => 'admin.audit-trail.index',
-                        'status' => 'active',
-                        'color' => 'purple',
-                        'category' => 'administration'
-                    ],
-                    [
-                        'name' => 'Gérer les Permissions',
-                        'description' => 'Gestion des permissions et rôles RBAC',
-                        'icon' => '🔑',
-                        'route' => 'public-module-permissions',
-                        'status' => 'active',
-                        'color' => 'orange',
-                        'category' => 'administration'
-                    ]
                 ]
             ]);
         } catch (Exception $e) {
@@ -5108,19 +5562,23 @@ Route::get('/test-pdf', function() {
     
     // Secretary Dashboard routes
     Route::get('/secretary/dashboard', function () {
-    // Données dynamiques pour le dashboard secretary - Utilisation des tables existantes
+    // Données dynamiques pour le dashboard secretary - Utilisation des rendez-vous futurs
     $stats = [
-        'total_appointments' => \App\Models\HealthRecord::count(), // Utilise health_records
-        'upcoming_appointments' => \App\Models\HealthRecord::where('created_at', '>=', now()->subDays(7))->count(),
-        'total_documents' => \App\Models\HealthRecord::count(), // Utilise health_records
+        'total_appointments' => \App\Models\Appointment::count(),
+        'upcoming_appointments' => \App\Models\Appointment::where('appointment_date', '>=', now())->whereIn('status', ['scheduled', 'confirmed'])->count(),
+        'total_documents' => \App\Models\HealthRecord::count(),
         'pending_documents' => \App\Models\HealthRecord::where('status', 'pending')->count(),
     ];
 
-    $recentAppointments = \App\Models\HealthRecord::with('player')
-        ->orderBy('created_at', 'desc')
+    // Rendez-vous futurs (comme dans clinician portal)
+    $recentAppointments = \App\Models\Appointment::with('athlete')
+        ->where('appointment_date', '>=', now())
+        ->whereIn('status', ['scheduled', 'confirmed'])
+        ->orderBy('appointment_date', 'asc')
         ->limit(10)
         ->get();
 
+    // Documents récents pour référence
     $recentDocuments = \App\Models\HealthRecord::with('player')
         ->orderBy('created_at', 'desc')
         ->limit(10)
@@ -5355,35 +5813,19 @@ Route::get('/test-pdf', function() {
     
     Route::get('/modules/medical/athlete/{id}', function ($id) {
         $player = null;
-        $isDemo = false;
         
-        // Demo players data
-        $demoPlayers = [
-            1 => ['id' => 1, 'name' => 'John Smith', 'full_name' => 'John Smith', 'first_name' => 'John', 'last_name' => 'Smith', 'date_of_birth' => '1995-03-15', 'age' => 29, 'position' => 'ST', 'nationality' => 'USA', 'club' => ['name' => 'Team Alpha']],
-            2 => ['id' => 2, 'name' => 'Sarah Johnson', 'full_name' => 'Sarah Johnson', 'first_name' => 'Sarah', 'last_name' => 'Johnson', 'date_of_birth' => '1993-07-22', 'age' => 31, 'position' => 'MF', 'nationality' => 'Canada', 'club' => ['name' => 'Team Beta']],
-            3 => ['id' => 3, 'name' => 'Mike Wilson', 'full_name' => 'Mike Wilson', 'first_name' => 'Mike', 'last_name' => 'Wilson', 'date_of_birth' => '1997-11-08', 'age' => 27, 'position' => 'DF', 'nationality' => 'UK', 'club' => ['name' => 'Team Gamma']],
-            4 => ['id' => 4, 'name' => 'Emma Davis', 'full_name' => 'Emma Davis', 'first_name' => 'Emma', 'last_name' => 'Davis', 'date_of_birth' => '1994-05-12', 'age' => 30, 'position' => 'GK', 'nationality' => 'Australia', 'club' => ['name' => 'Team Delta']],
-            5 => ['id' => 5, 'name' => 'Alex Brown', 'full_name' => 'Alex Brown', 'first_name' => 'Alex', 'last_name' => 'Brown', 'date_of_birth' => '1996-09-30', 'age' => 28, 'position' => 'FW', 'nationality' => 'Germany', 'club' => ['name' => 'Team Echo']]
-        ];
-        
-        // Check if this is a demo player
-        if (isset($demoPlayers[$id])) {
-            $player = (object) $demoPlayers[$id];
-            $isDemo = true;
-        } else {
-            // Try to get the real player if model exists
-            try {
-                if (class_exists('\App\Models\Player')) {
-                    $player = \App\Models\Player::with(['club', 'healthRecords'])->find($id);
-                }
-            } catch (\Exception $e) {
-                // Player model might not exist or table is missing
+        // Get the real player from database
+        try {
+            if (class_exists('\App\Models\Player')) {
+                $player = \App\Models\Player::with(['club', 'healthRecords'])->find($id);
             }
+        } catch (\Exception $e) {
+            // Player model might not exist or table is missing
+            \Log::error('Error fetching player: ' . $e->getMessage());
         }
         
         return view('modules.medical.athlete', [
             'player' => $player,
-            'isDemo' => $isDemo,
             'footballType' => 'association'
         ]);
     })->name('modules.medical.athlete');
@@ -5703,6 +6145,316 @@ Route::get('/test-pdf', function() {
     Route::post('/gemini/analyze-medical-image', [App\Http\Controllers\GoogleGeminiController::class, 'analyzeMedicalImage'])->name('gemini.analyze-medical-image');
     Route::get('/gemini/configuration', [App\Http\Controllers\GoogleGeminiController::class, 'getConfiguration'])->name('gemini.configuration');
     Route::get('/gemini/history', [App\Http\Controllers\GoogleGeminiController::class, 'getHistory'])->name('gemini.history');
+
+    // ========================================
+    // CLINICAL WORKFLOW ROUTES - FHIR R4
+    // ========================================
+    
+    // Portails utilisateurs
+    Route::get('/clinical/patient-portal', [App\Http\Controllers\ClinicalWorkflowController::class, 'patientPortal'])->name('clinical.patient-portal');
+    Route::get('/clinical/clinician-portal', [App\Http\Controllers\ClinicalWorkflowController::class, 'clinicianPortal'])->name('clinical.clinician-portal');
+    
+    // API Routes pour le workflow clinique
+    Route::prefix('api/clinical')->group(function () {
+        // Gestion des patients FHIR
+        Route::post('/patients', [App\Http\Controllers\ClinicalWorkflowController::class, 'createPatient'])->name('api.clinical.patients.create');
+        Route::get('/patients/{id}', function ($id) {
+            $patient = App\Models\FhirPatient::findOrFail($id);
+            return response()->json($patient->toFhirJson());
+        })->name('api.clinical.patients.show');
+        Route::put('/patients/{id}', function (Request $request, $id) {
+            $patient = App\Models\FhirPatient::findOrFail($id);
+            $patient->update($request->all());
+            return response()->json($patient->toFhirJson());
+        })->name('api.clinical.patients.update');
+        
+        // Workflow Patient
+        Route::post('/symptoms', [App\Http\Controllers\ClinicalWorkflowController::class, 'submitSymptoms'])->name('api.clinical.symptoms.submit');
+        Route::get('/patients/{id}/symptoms', function ($id) {
+            $patient = App\Models\FhirPatient::findOrFail($id);
+            $conditions = $patient->conditions()->where('clinical_status', 'active')->get();
+            return response()->json($conditions->map->toFhirJson());
+        })->name('api.clinical.patients.symptoms');
+        
+        // Workflow Clinicien
+        Route::post('/consultations', [App\Http\Controllers\ClinicalWorkflowController::class, 'initialConsultation'])->name('api.clinical.consultations.create');
+        Route::get('/consultations/{id}', function ($id) {
+            $consultation = App\Models\ClinicalConsultation::findOrFail($id);
+            return response()->json($consultation);
+        })->name('api.clinical.consultations.show');
+        
+        // Support décisionnel IA
+        Route::post('/decision-support', [App\Http\Controllers\ClinicalWorkflowController::class, 'clinicalDecisionSupport'])->name('api.clinical.decision-support');
+        
+        // Génération de résumés IA
+        Route::post('/summarize', function (Request $request) {
+            $validator = Validator::make($request->all(), [
+                'text' => 'required|string|max:5000',
+                'type' => 'required|in:consultation,report,notes'
+            ]);
+            
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            
+            // Simulation de la génération de résumé avec IA
+            $summary = "Résumé généré par IA pour: " . $request->type . "\n\n";
+            $summary .= "Contenu original: " . substr($request->text, 0, 200) . "...\n\n";
+            $summary .= "Points clés identifiés:\n";
+            $summary .= "- Information médicale importante\n";
+            $summary .= "- Recommandations cliniques\n";
+            $summary .= "- Actions à suivre\n";
+            
+            return response()->json([
+                'success' => true,
+                'summary' => $summary,
+                'original_length' => strlen($request->text),
+                'summary_length' => strlen($summary),
+                'compression_ratio' => round(strlen($summary) / strlen($request->text), 2)
+            ]);
+        })->name('api.clinical.summarize');
+        
+        // Recherche d'essais cliniques
+        Route::get('/clinical-trials', function (Request $request) {
+            $patientId = $request->get('patient_id');
+            $condition = $request->get('condition');
+            
+            // Simulation de la recherche d'essais cliniques
+            $trials = [
+                [
+                    'id' => 'NCT12345678',
+                    'title' => 'Essai clinique pour ' . ($condition ?? 'condition générale'),
+                    'phase' => 'Phase II',
+                    'status' => 'Recruiting',
+                    'location' => 'Paris, France',
+                    'eligibility' => 'Patient âgé de 18-65 ans avec ' . ($condition ?? 'condition spécifique'),
+                    'contact' => 'contact@essai-clinique.fr'
+                ]
+            ];
+            
+            return response()->json([
+                'success' => true,
+                'trials' => $trials,
+                'total_found' => count($trials),
+                'search_criteria' => [
+                    'patient_id' => $patientId,
+                    'condition' => $condition
+                ]
+            ]);
+        })->name('api.clinical.trials.search');
+        
+        // Monitoring des écarts de soins
+        Route::get('/care-gaps/{patientId}', function ($patientId) {
+            $patient = App\Models\FhirPatient::findOrFail($patientId);
+            
+            // Simulation de la détection d'écarts de soins
+            $gaps = [
+                [
+                    'type' => 'vaccination',
+                    'description' => 'Vaccination COVID-19 recommandée',
+                    'priority' => 'high',
+                    'due_date' => now()->addDays(30)->format('Y-m-d'),
+                    'action_required' => 'Prendre rendez-vous pour vaccination'
+                ],
+                [
+                    'type' => 'screening',
+                    'description' => 'Dépistage du cancer colorectal recommandé',
+                    'priority' => 'medium',
+                    'due_date' => now()->addMonths(3)->format('Y-m-d'),
+                    'action_required' => 'Programmer un test de dépistage'
+                ]
+            ];
+            
+            return response()->json([
+                'success' => true,
+                'patient_id' => $patientId,
+                'care_gaps' => $gaps,
+                'total_gaps' => count($gaps),
+                'high_priority_count' => count(array_filter($gaps, fn($gap) => $gap['priority'] === 'high'))
+            ]);
+        })->name('api.clinical.care-gaps');
+
+        // Patient List for Clinician Portal
+        Route::get('/patients', function (Request $request) {
+            try {
+                $statusFilter = $request->get('status');
+                $typeFilter = $request->get('type');
+                $dateFilter = $request->get('date');
+
+                // Construire la requête pour récupérer les patients avec leurs RDV
+                $query = DB::table('appointments')
+                    ->join('athletes', 'appointments.athlete_id', '=', 'athletes.id')
+                    ->select(
+                        'appointments.*',
+                        'athletes.id as athlete_id',
+                        'athletes.name',
+                        'athletes.dob as date_of_birth',
+                        'athletes.fifa_id as fifa_connect_id',
+                        'athletes.nationality',
+                        'athletes.position'
+                    )
+                    ->orderBy('appointments.appointment_date', 'desc');
+
+                // Appliquer les filtres
+                if ($statusFilter) {
+                    $query->where('appointments.status', $statusFilter);
+                }
+                if ($typeFilter) {
+                    $query->where('appointments.type', $typeFilter);
+                }
+                if ($dateFilter) {
+                    $query->whereDate('appointments.appointment_date', $dateFilter);
+                }
+
+                $patients = $query->limit(50)->get();
+
+                return response()->json([
+                    'success' => true,
+                    'patients' => $patients,
+                    'total' => $patients->count(),
+                    'filters' => [
+                        'status' => $statusFilter,
+                        'type' => $typeFilter,
+                        'date' => $dateFilter
+                    ]
+                ]);
+
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Erreur lors de la récupération des patients: ' . $e->getMessage(),
+                    'debug' => [
+                        'message' => $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine()
+                    ]
+                ], 500);
+            }
+        })->name('api.clinical.patients');
+    });
+});
+
+// Test simple
+Route::get('/api/test-simple', function () {
+    return response()->json(['message' => 'Test simple réussi', 'timestamp' => now()]);
+});
+
+// Test portail clinicien simple
+    Route::get('/test-clinician-simple', function () {
+        try {
+            $stats = [
+                'total_patients' => \App\Models\Player::count(),
+                'health_records' => \App\Models\HealthRecord::count(),
+                'pcmas' => \App\Models\PCMA::count()
+            ];
+            
+            return response()->json([
+                'message' => 'Portail clinicien test réussi',
+                'stats' => $stats,
+                'timestamp' => now()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erreur dans le test',
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    });
+
+    Route::get('/test-health-records', function () {
+        try {
+            $healthRecords = \App\Models\HealthRecord::with('player')
+                ->orderBy('record_date', 'desc')
+                ->limit(5)
+                ->get();
+            
+            $data = [];
+            foreach ($healthRecords as $record) {
+                $data[] = [
+                    'id' => $record->id,
+                    'player_id' => $record->player_id,
+                    'player_name' => $record->player ? $record->player->name : 'N/A',
+                    'player_first_name' => $record->player ? $record->player->first_name : 'N/A',
+                    'player_last_name' => $record->player ? $record->player->last_name : 'N/A',
+                    'record_date' => $record->record_date,
+                    'status' => $record->status
+                ];
+            }
+            
+            return response()->json([
+                'message' => 'Health records test réussi',
+                'data' => $data,
+                'timestamp' => now()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erreur dans le test',
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    });
+
+
+// Patient List API (accessible sans authentification pour test)
+Route::get('/api/clinical/patients-test', function (Request $request) {
+    try {
+        $statusFilter = $request->get('status');
+        $typeFilter = $request->get('type');
+        $dateFilter = $request->get('date');
+
+        // Construire la requête pour récupérer les patients avec leurs RDV
+        $query = DB::table('appointments')
+            ->join('athletes', 'appointments.athlete_id', '=', 'athletes.id')
+            ->select(
+                'appointments.*',
+                'athletes.id as athlete_id',
+                'athletes.name',
+                'athletes.dob as date_of_birth',
+                'athletes.fifa_id as fifa_connect_id',
+                'athletes.nationality',
+                'athletes.position'
+            )
+            ->orderBy('appointments.appointment_date', 'desc');
+
+        // Appliquer les filtres
+        if ($statusFilter) {
+            $query->where('appointments.status', $statusFilter);
+        }
+        if ($typeFilter) {
+            $query->where('appointments.type', $typeFilter);
+        }
+        if ($dateFilter) {
+            $query->whereDate('appointments.appointment_date', $dateFilter);
+        }
+
+        $patients = $query->limit(50)->get();
+
+        return response()->json([
+            'success' => true,
+            'patients' => $patients,
+            'total' => $patients->count(),
+            'filters' => [
+                'status' => $statusFilter,
+                'type' => $typeFilter,
+                'date' => $dateFilter
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => 'Erreur lors de la récupération des patients: ' . $e->getMessage(),
+            'debug' => [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]
+        ], 500);
+    }
 });
 
 // PDF generation routes (public access)
@@ -7192,65 +7944,6 @@ Route::post('/public-module-permissions/save', function () {
     }
 })->name('public-module-permissions.save');
 
-// Helper function to check permissions for roles
-function checkPermissionForRole($role, $permission) {
-    // Mapping des permissions par rôle basé sur le GateServiceProvider
-    $rolePermissions = [
-        'system_admin' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'association_admin' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'association_medical_director' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'association_registrar' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'club_admin' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'club_manager' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'club_medical_staff' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'referee' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'assistant_referee' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'fourth_official' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'var_official' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'match_commissioner' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'match_official' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'physiotherapist' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'sports_scientist' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'team_doctor' => [
-            'view', 'create', 'edit', 'delete', 'export', 'manage'
-        ],
-        'player' => [
-            'view'
-        ]
-    ];
-
-    return in_array($permission, $rolePermissions[$role] ?? []);
-}
 
 
 

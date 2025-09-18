@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  fit-cli:
+    build: .
+    container_name: fit-cli
+    environment:
+      - FIT_API_URL=http://localhost:8000
+      - FIT_FHIR_URL=http://localhost:8000/api/clinical
+      - FIT_AUTH_URL=http://localhost:8000/oauth/token
+      - FIT_CLI_VERBOSE=false
+      - FIT_CLI_COLOR=true
+    volumes:
+      - ./config:/home/fit-cli/.fit
+      - ./logs:/app/logs
+    networks:
+      - fit-network
+    depends_on:
+      - fit-api
+    command: ["--help"]
+
+  fit-api:
+    image: med-predictor-app:latest
+    container_name: fit-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=med_predictor
+      - DB_USERNAME=root
+      - DB_PASSWORD=root_password
+    networks:
+      - fit-network
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: fit-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=med_predictor
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - fit-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: fit-redis
+    ports:
+      - "6380:6379"
+    networks:
+      - fit-network
+
+networks:
+  fit-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

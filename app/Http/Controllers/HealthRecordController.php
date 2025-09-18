@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Schema;
 
 class HealthRecordController extends Controller
 {
@@ -29,25 +30,42 @@ class HealthRecordController extends Controller
         $selectedPlayer = null;
         $isDemo = false;
         
-        // Demo players data
-        $demoPlayers = [
-            1 => ['id' => 1, 'name' => 'John Smith', 'full_name' => 'John Smith', 'first_name' => 'John', 'last_name' => 'Smith', 'date_of_birth' => '1995-03-15', 'age' => 29, 'position' => 'ST', 'nationality' => 'USA', 'club' => ['name' => 'Team Alpha']],
-            2 => ['id' => 2, 'name' => 'Sarah Johnson', 'full_name' => 'Sarah Johnson', 'first_name' => 'Sarah', 'last_name' => 'Johnson', 'date_of_birth' => '1993-07-22', 'age' => 31, 'position' => 'MF', 'nationality' => 'Canada', 'club' => ['name' => 'Team Beta']],
-            3 => ['id' => 3, 'name' => 'Mike Wilson', 'full_name' => 'Mike Wilson', 'first_name' => 'Mike', 'last_name' => 'Wilson', 'date_of_birth' => '1997-11-08', 'age' => 27, 'position' => 'DF', 'nationality' => 'UK', 'club' => ['name' => 'Team Gamma']],
-            4 => ['id' => 4, 'name' => 'Emma Davis', 'full_name' => 'Emma Davis', 'first_name' => 'Emma', 'last_name' => 'Davis', 'date_of_birth' => '1994-05-12', 'age' => 30, 'position' => 'GK', 'nationality' => 'Australia', 'club' => ['name' => 'Team Delta']],
-            5 => ['id' => 5, 'name' => 'Alex Brown', 'full_name' => 'Alex Brown', 'first_name' => 'Alex', 'last_name' => 'Brown', 'date_of_birth' => '1996-09-30', 'age' => 28, 'position' => 'FW', 'nationality' => 'Germany', 'club' => ['name' => 'Team Echo']]
-        ];
-        
-        // Si un player_id est fourni, vérifier s'il s'agit d'un joueur démo
+        // Si un player_id est fourni, récupérer le joueur de la base de données
         if ($request->has('player_id')) {
             $playerId = $request->player_id;
-            
-            if (isset($demoPlayers[$playerId])) {
-                $selectedPlayer = (object) $demoPlayers[$playerId];
-                $isDemo = true;
-            } else {
-                $selectedPlayer = Player::find($playerId);
+            $selectedPlayer = Player::with(['club'])->find($playerId);
+        }
+        
+        // Fallback: if no player found but a FIFA Connect ID is provided, try to resolve by multiple possible columns
+        if (!$selectedPlayer && $request->filled('fifa_connect_id')) {
+            $fifaId = $request->get('fifa_connect_id');
+            $query = Player::with(['club']);
+            $hasAny = false;
+            if (Schema::hasColumn('players', 'fifa_connect_id')) { $query->orWhere('fifa_connect_id', $fifaId); $hasAny = true; }
+            if (Schema::hasColumn('players', 'fifa_id')) { $query->orWhere('fifa_id', $fifaId); $hasAny = true; }
+            if (Schema::hasColumn('players', 'fifa_connect_code')) { $query->orWhere('fifa_connect_code', $fifaId); $hasAny = true; }
+            if ($hasAny) {
+                $selectedPlayer = $query->first();
             }
+        }
+
+        // Fallback: try resolving by name when provided
+        if (!$selectedPlayer && ($request->filled('first_name') || $request->filled('last_name'))) {
+            $first = trim((string) $request->get('first_name'));
+            $last = trim((string) $request->get('last_name'));
+            $full = trim($first.' '.$last);
+            $selectedPlayer = Player::with(['club'])
+                ->when($first && $last, function ($q) use ($first, $last) {
+                    $q->where(function ($qq) use ($first, $last) {
+                        $qq->where('first_name', $first)->where('last_name', $last);
+                    });
+                })
+                ->when(!$first || !$last, function ($q) use ($full) {
+                    if ($full) {
+                        $q->orWhere('name', $full);
+                    }
+                })
+                ->first();
         }
         
         // Si un visit_id est fourni, récupérer les données de la visite
@@ -55,7 +73,37 @@ class HealthRecordController extends Controller
             $visit = \App\Models\Visit::with(['athlete', 'doctor'])->find($request->visit_id);
         }
         
-        return view('health-records.create', compact('players', 'visit', 'selectedPlayer', 'isDemo'));
+        // Si un appointment_id est fourni, récupérer les données du rendez-vous
+        $appointment = null;
+        if ($request->has('appointment_id')) {
+            $appointment = \App\Models\Appointment::with(['athlete'])->find($request->appointment_id);
+        }
+        
+        // If no appointment is provided but an appointment_type comes from the query (e.g., clinician portal), use it as defaults
+        if (!$appointment && $request->filled('appointment_type')) {
+            $appointment = (object) [
+                'type' => $request->get('appointment_type'),
+                // Use today's date for visit_date default when not coming from an Appointment
+                'appointment_date' => now(),
+            ];
+        }
+        
+        // Pré-remplir les valeurs par défaut avec les données du patient sélectionné et du rendez-vous
+        $defaultValues = [
+            'player_id' => $selectedPlayer ? $selectedPlayer->id : old('player_id'),
+            'visit_date' => $appointment ? $appointment->appointment_date->format('Y-m-d') : old('visit_date', date('Y-m-d')),
+            'doctor_name' => old('doctor_name', auth()->user()->name ?? ''),
+            // Prefer explicit appointment_type from query when no appointment is loaded
+            'visit_type' => $appointment ? $appointment->type : old('visit_type', $request->get('appointment_type')),
+            // If no selected player, build a name from query params as a non-blocking display default
+            'patient_name' => $selectedPlayer ? ($selectedPlayer->full_name ?? $selectedPlayer->name) : old('patient_name', trim(($request->get('first_name') ?? '').' '.($request->get('last_name') ?? '')) ?: null),
+            'patient_birth_date' => $selectedPlayer ? $selectedPlayer->date_of_birth : old('patient_birth_date', $request->get('date_of_birth')),
+            'patient_club' => $selectedPlayer && $selectedPlayer->club ? $selectedPlayer->club->name : old('patient_club'),
+            'patient_position' => $selectedPlayer ? $selectedPlayer->position : old('patient_position'),
+            'patient_nationality' => $selectedPlayer ? $selectedPlayer->nationality : old('patient_nationality'),
+        ];
+        
+        return view('health-records.create', compact('players', 'visit', 'selectedPlayer', 'isDemo', 'defaultValues', 'appointment'));
     }
 
     public function store(Request $request): RedirectResponse

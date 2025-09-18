@@ -34,7 +34,7 @@
                     </li>
                 </ol>
             </nav>
-            <h1 class="mt-4 text-3xl font-bold text-gray-900">⚙️ Administration</h1>
+            <h1 class="mt-4 text-3xl font-bold text-gray-900">⚙️ Administration Management</h1>
             <p class="mt-2 text-gray-600">Gestion administrative du système FIT</p>
         </div>
 

@@ -26,3 +26,11 @@ Thumbs.db
 
 # Configuration des notifications CI/CD
 notifications-config.env
+
+# Backups and sessions
+storage/backups/**
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+backups/*.bundle
+backups/*.tar.gz
+.env.bak

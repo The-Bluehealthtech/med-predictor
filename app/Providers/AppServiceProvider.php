@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 use App\Models\Player;
 use App\Models\Club;
 use App\Observers\PlayerObserver;
@@ -23,9 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Forcer HTTPS en production
-        if (config('app.env') === 'production') {
-            $this->app['request']->server->set('HTTPS', true);
+        // Force HTTP locally to avoid HTTPS redirects during local Docker usage
+        if (in_array(config('app.env'), ['local', 'docker', 'development'], true)) {
+            URL::forceScheme('http');
+            $this->app['request']->server->set('HTTPS', false);
         }
         
         // Register model observers for automatic cache clearing

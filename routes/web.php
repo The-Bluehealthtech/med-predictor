@@ -3,6 +3,11 @@
 use Illuminate\Support\Facades\Route;
 // Controllers will be used as needed
 
+// Force HTTP landing for /home to avoid HTTPS redirects locally
+Route::get('/home', function () {
+    return redirect('http://localhost/dashboard-test');
+})->name('home');
+
 // Routes de santé pour Kubernetes
 Route::get('/health', function () {
     return response()->json(['status' => 'healthy', 'timestamp' => now()]);

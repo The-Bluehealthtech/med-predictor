@@ -28,6 +28,18 @@ class AssociationSeeder extends Seeder
                 'fifa_version' => 'FIFA 24',
                 'last_updated' => now(),
             ],
+                [
+                    'name' => 'Fédération Tunisienne de Football',
+                    'short_name' => 'FTF',
+                    'country' => 'Tunisia',
+                    'confederation' => 'CAF',
+                    'fifa_ranking' => null,
+                    'association_logo_url' => null,
+                    'nation_flag_url' => null,
+                    'fifa_version' => 'FIFA 24',
+                    'last_updated' => now(),
+                ],
+
             [
                 'name' => 'Fédération Française de Football',
                 'short_name' => 'FFF',

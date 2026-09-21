@@ -25,7 +25,7 @@ class FFFLigue1Seeder extends Seeder
         $this->command->info('Creating Tunisian League data...');
 
         // Use existing Tunisian Association
-        $ftf = Association::find(1); // Fédération Tunisienne de Football
+        $ftf = Association::where('short_name', 'FTF')->first();
         
         if (!$ftf) {
             $this->command->error('Tunisian Association (FTF) not found!');
@@ -37,9 +37,14 @@ class FFFLigue1Seeder extends Seeder
             ['name' => '2023-2024'],
             [
                 'name' => '2023-2024',
+                'short_name' => '2023-2024',
                 'start_date' => '2023-08-12',
                 'end_date' => '2024-05-19',
-                'is_active' => false,
+                'registration_start_date' => '2023-06-01',
+                'registration_end_date' => '2023-08-01',
+                'status' => 'completed',
+                'is_current' => false,
+                'created_by' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]
@@ -127,7 +132,7 @@ class FFFLigue1Seeder extends Seeder
                 [
                     'name' => 'Équipe Première',
                     'club_id' => $club->id,
-                    'level' => 'club',
+                    'type' => 'first_team',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]

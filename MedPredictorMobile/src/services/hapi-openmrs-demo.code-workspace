@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "../../../../hapi-openmrs-demo"
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}

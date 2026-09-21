@@ -34,3 +34,7 @@ storage/framework/sessions/*
 backups/*.bundle
 backups/*.tar.gz
 .env.bak
+MedPredictorMobile/node_modules/
+MedPredictorMobile/ios/Pods/
+MedPredictorMobile/vendor/bundle/
+MedPredictorMobile/ios/build/

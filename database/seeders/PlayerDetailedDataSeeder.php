@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Joueur;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class PlayerDetailedDataSeeder extends Seeder
@@ -43,35 +44,24 @@ class PlayerDetailedDataSeeder extends Seeder
         // Statistiques adaptées au poste
         $stats = $this->getPositionBasedStats($position);
         
+        $positionCode = $this->toPositionCode($position);
+        $rating = rand(60, 95) / 10;
+
         DB::table('player_detailed_stats')->insert([
             'player_id' => $joueur->id,
             'match_id' => null,
             'season_id' => 1,
-            'position_played' => $position,
-            'minutes_played' => rand(2700, 3240), // 30-36 matchs
-            'goals_scored' => $stats['goals'],
-            'assists_provided' => $stats['assists'],
-            'shots_total' => $stats['shots'],
+            'stats_date' => now()->toDateString(),
             'shots_on_target' => round($stats['shots'] * 0.6),
+            'total_shots' => $stats['shots'],
             'shooting_accuracy' => rand(55, 85),
-            'passes_total' => $stats['passes'],
-            'passes_completed' => round($stats['passes'] * (rand(75, 90) / 100)),
-            'pass_accuracy' => rand(75, 90),
             'key_passes' => $stats['key_passes'],
-            'crosses_attempted' => $stats['crosses'],
-            'crosses_completed' => round($stats['crosses'] * (rand(20, 40) / 100)),
-            'dribbles_attempted' => $stats['dribbles'],
-            'dribbles_completed' => round($stats['dribbles'] * (rand(60, 80) / 100)),
-            'tackles_won' => $stats['tackles'],
-            'interceptions' => $stats['interceptions'],
-            'clearances' => $stats['clearances'],
-            'blocks' => rand(5, 25),
-            'aerial_duels_won' => rand(10, 50),
-            'aerial_duels_lost' => rand(5, 30),
-            'fouls_committed' => rand(10, 40),
-            'fouls_suffered' => rand(15, 50),
-            'yellow_cards' => rand(2, 8),
-            'red_cards' => rand(0, 2),
+            'successful_crosses' => round($stats['crosses'] * (rand(20, 40) / 100)),
+            'successful_dribbles' => round($stats['dribbles'] * (rand(60, 80) / 100)),
+            'big_chances_created' => rand(0, 8),
+            'big_chances_missed' => rand(0, 5),
+            'offsides' => rand(0, 6),
+            'fouls_drawn' => rand(15, 50),
             'distance_covered_km' => $stats['distance'],
             'max_speed_kmh' => $stats['max_speed'],
             'avg_speed_kmh' => $stats['avg_speed'],
@@ -80,11 +70,50 @@ class PlayerDetailedDataSeeder extends Seeder
             'deceleration_count' => $stats['decelerations'],
             'direction_changes' => $stats['direction_changes'],
             'jump_count' => $stats['jumps'],
-            'match_rating' => rand(60, 95) / 10,
+            'high_intensity_distance' => round($stats['distance'] * 0.25, 2),
+            'sprint_distance' => round($stats['distance'] * 0.1, 2),
+            'long_passes' => rand(5, 40),
+            'successful_tackles' => $stats['tackles'],
+            'interceptions' => $stats['interceptions'],
+            'clearances' => $stats['clearances'],
+            'fouls_committed' => rand(10, 40),
+            'yellow_cards' => rand(2, 8),
+            'red_cards' => rand(0, 2),
+            'blocks' => rand(5, 25),
+            'aerial_duels_won' => rand(10, 50),
+            'ground_duels_won' => rand(10, 50),
+            'minutes_played' => rand(2700, 3240), // 30-36 matchs
+            'match_rating' => $rating,
+            'position_played' => $positionCode,
             'man_of_match' => rand(0, 1),
+            'performance_level' => $this->ratingToPerformanceLevel($rating),
+            'data_source' => 'match_analysis',
+            'data_confidence' => 100,
             'created_at' => now(),
             'updated_at' => now()
         ]);
+    }
+
+    private function toPositionCode($position)
+    {
+        $map = [
+            'Gardien' => 'GK',
+            'Défenseur Central' => 'CB',
+            'Latéral' => 'RB',
+            'Milieu Défensif' => 'DM',
+            'Milieu Offensif' => 'AM',
+            'Attaquant' => 'ST',
+        ];
+        return $map[$position] ?? 'CM';
+    }
+
+    private function ratingToPerformanceLevel($rating)
+    {
+        if ($rating >= 8.5) return 'excellent';
+        if ($rating >= 7.0) return 'good';
+        if ($rating >= 5.5) return 'average';
+        if ($rating >= 4.0) return 'poor';
+        return 'very_poor';
     }
     
     private function createConnectedDevices($joueur)
@@ -105,10 +134,14 @@ class PlayerDetailedDataSeeder extends Seeder
         }
         
         foreach ($selectedDevices as $device) {
+            $manufacturer = explode(' ', $device)[0];
             DB::table('player_connected_devices')->insert([
                 'player_id' => $joueur->id,
                 'device_name' => $device,
                 'device_type' => $this->getDeviceType($device),
+                'device_model' => $device,
+                'manufacturer' => $manufacturer,
+                'serial_number' => strtoupper(Str::random(10)) . '-' . $joueur->id . '-' . rand(1000, 9999),
                 'battery_level' => rand(20, 100),
                 'is_connected' => rand(0, 1),
                 'last_sync_at' => now()->subHours(rand(0, 24)),
@@ -128,7 +161,9 @@ class PlayerDetailedDataSeeder extends Seeder
             
             DB::table('player_real_time_health')->insert([
                 'player_id' => $joueur->id,
-                'device_id' => rand(1, 5),
+                'device_id' => null,
+                'measurement_time' => $date,
+                'data_source' => 'smartwatch',
                 'heart_rate' => rand(45, 85),
                 'blood_pressure_systolic' => rand(100, 140),
                 'blood_pressure_diastolic' => rand(60, 90),
@@ -144,8 +179,8 @@ class PlayerDetailedDataSeeder extends Seeder
                 'calories_burned' => rand(1800, 4000),
                 'active_minutes' => rand(100, 350),
                 'exercise_minutes' => rand(45, 200),
-                'standing_hours' => rand(7, 16),
-                'walking_distance_km' => rand(4, 15),
+                'stand_hours' => rand(7, 16),
+                'distance_walked_km' => rand(4, 15),
                 'created_at' => $date,
                 'updated_at' => $date
             ]);
@@ -157,33 +192,52 @@ class PlayerDetailedDataSeeder extends Seeder
         $nationality = $joueur->nationalite;
         $age = Carbon::parse($joueur->date_naissance)->age;
         
-        // Profils SDOH narratifs selon la nationalité et l'âge
+        // Profils SDOH narratifs selon la nationalité et l'âge (texte -> notes uniquement)
         $sdohProfile = $this->generateSDOHProfile($nationality, $age);
-        
+        $wellIntegrated = in_array($nationality, ['Tunisie', 'Maroc', 'Algérie']);
+
         DB::table('player_sdoh_data')->insert([
             'player_id' => $joueur->id,
+            'assessment_date' => now(),
+            'assessment_type' => 'initial',
             'assessed_by' => 1, // Admin
             'living_environment_score' => $joueur->score_environnement_vie,
+            'housing_quality' => $wellIntegrated ? 'good' : 'adequate',
+            'housing_stability' => 'stable',
+            'access_to_public_transport' => true,
+            'living_environment_notes' => $sdohProfile['housing'],
             'social_support_score' => $joueur->score_soutien_social,
+            'has_emotional_support' => true,
+            'has_practical_support' => $wellIntegrated,
+            'relationship_status' => 'single',
+            'social_support_notes' => $sdohProfile['family_support'],
             'healthcare_access_score' => $joueur->score_acces_soins,
+            'has_health_insurance' => (bool) $sdohProfile['insurance'],
+            'insurance_quality' => 'good',
+            'has_primary_care_physician' => true,
+            'healthcare_access_notes' => 'Suivi médical assuré par le staff du club',
             'financial_situation_score' => $joueur->score_situation_financiere,
+            'income_level' => 'middle',
+            'has_stable_income' => true,
+            'financial_situation_notes' => $sdohProfile['income'],
             'mental_wellbeing_score' => $joueur->score_bien_etre_mental,
+            'has_mental_health_history' => false,
+            'stress_level' => $wellIntegrated ? 'low' : 'moderate',
+            'anxiety_level' => 'low',
+            'depression_level' => 'very_low',
+            'mental_wellbeing_notes' => $sdohProfile['notes'],
+            'employment_status' => 'employed',
+            'smoking_status' => str_contains($sdohProfile['smoking'], 'Non') ? 'never' : 'occasional',
+            'alcohol_consumption' => str_contains($sdohProfile['alcohol'], 'Faible') ? 'light' : 'moderate',
+            'exercises_regularly' => true,
+            'has_healthy_diet' => true,
             'overall_sdoh_score' => $joueur->score_sdoh_global,
-            'housing_quality' => $sdohProfile['housing'],
-            'income_level' => $sdohProfile['income'],
-            'has_health_insurance' => $sdohProfile['insurance'],
-            'smoking_status' => $sdohProfile['smoking'],
-            'alcohol_consumption' => $sdohProfile['alcohol'],
-            'family_support_level' => $sdohProfile['family_support'],
-            'cultural_integration_score' => $sdohProfile['cultural_integration'],
-            'language_barriers' => $sdohProfile['language_barriers'],
-            'social_network_size' => $sdohProfile['social_network'],
-            'community_involvement' => $sdohProfile['community_involvement'],
-            'stress_factors' => json_encode($sdohProfile['stress_factors']),
-            'coping_mechanisms' => json_encode($sdohProfile['coping_mechanisms']),
-            'assessment_date' => now(),
+            'risk_category' => $wellIntegrated ? 'low' : 'moderate',
+            'assessment_method' => 'interview',
+            'assessment_reliability' => 90,
+            'requires_follow_up' => false,
             'next_assessment_date' => now()->addMonths(6),
-            'notes' => $sdohProfile['notes'],
+            'general_notes' => $sdohProfile['notes'],
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -191,18 +245,26 @@ class PlayerDetailedDataSeeder extends Seeder
     
     private function createMatchStats($joueur)
     {
-        // Statistiques de match pour la saison (simulation de 30 matchs)
-        for ($match = 1; $match <= 30; $match++) {
+        $matchIds = DB::table('matches')->pluck('id')->all();
+        $teamIds = DB::table('teams')->pluck('id')->all();
+        $competitionIds = DB::table('competitions')->pluck('id')->all();
+
+        if (empty($matchIds) || empty($teamIds)) {
+            return; // pas de matchs/équipes disponibles pour lier les stats
+        }
+
+        // Statistiques de match, une entrée par match réellement existant
+        foreach ($matchIds as $i => $matchId) {
             $position = $joueur->poste;
             $stats = $this->getPositionBasedStats($position);
-            
+
             DB::table('player_match_detailed_stats')->insert([
                 'player_id' => $joueur->id,
-                'match_id' => $match,
-                'team_id' => 1,
-                'competition_id' => 1,
+                'match_id' => $matchId,
+                'team_id' => $teamIds[array_rand($teamIds)],
+                'competition_id' => !empty($competitionIds) ? $competitionIds[array_rand($competitionIds)] : null,
                 'season_id' => 1,
-                'position_played' => $position,
+                'position_played' => $this->toPositionCode($position),
                 'minutes_played' => rand(60, 90),
                 'goals_scored' => rand(0, $stats['goals_per_match']),
                 'assists_provided' => rand(0, $stats['assists_per_match']),
@@ -211,7 +273,7 @@ class PlayerDetailedDataSeeder extends Seeder
                 'passes_total' => rand(10, $stats['passes_per_match']),
                 'passes_completed' => rand(8, round($stats['passes_per_match'] * 0.9)),
                 'key_passes' => rand(0, $stats['key_passes_per_match']),
-                'crosses_attempted' => rand(0, $stats['crosses_per_match']),
+                'crosses_total' => rand(0, $stats['crosses_per_match']),
                 'crosses_completed' => rand(0, round($stats['crosses_per_match'] * 0.3)),
                 'dribbles_attempted' => rand(0, $stats['dribbles_per_match']),
                 'dribbles_completed' => rand(0, round($stats['dribbles_per_match'] * 0.7)),
@@ -226,8 +288,8 @@ class PlayerDetailedDataSeeder extends Seeder
                 'max_speed_kmh' => rand($stats['max_speed'] - 2, $stats['max_speed'] + 2),
                 'match_rating' => rand(60, 95) / 10,
                 'man_of_match' => rand(0, 1),
-                'created_at' => now()->subDays(30 - $match),
-                'updated_at' => now()->subDays(30 - $match)
+                'created_at' => now()->subDays(count($matchIds) - $i),
+                'updated_at' => now()->subDays(count($matchIds) - $i)
             ]);
         }
     }
@@ -244,7 +306,7 @@ class PlayerDetailedDataSeeder extends Seeder
                 'goals_per_match' => 0, 'assists_per_match' => 0.1, 'shots_per_match' => 0,
                 'key_passes_per_match' => 0.1, 'crosses_per_match' => 0, 'dribbles_per_match' => 0,
                 'tackles_per_match' => 0.1, 'interceptions_per_match' => 0.1, 'clearances_per_match' => 0.5,
-                'aerial_duels_per_match' => 0.3, 'distance_per_match' => 10
+                'aerial_duels_per_match' => 0.3, 'distance_per_match' => 10, 'passes_per_match' => 20
             ],
             'Défenseur Central' => [
                 'goals' => rand(0, 3), 'assists' => rand(0, 4), 'shots' => rand(0, 5), 'passes' => rand(40, 60), 'key_passes' => rand(0, 5),
@@ -255,7 +317,7 @@ class PlayerDetailedDataSeeder extends Seeder
                 'goals_per_match' => 0.1, 'assists_per_match' => 0.1, 'shots_per_match' => 0.2,
                 'key_passes_per_match' => 0.2, 'crosses_per_match' => 0, 'dribbles_per_match' => 0.1,
                 'tackles_per_match' => 1.2, 'interceptions_per_match' => 0.8, 'clearances_per_match' => 2.0,
-                'aerial_duels_per_match' => 1.5, 'distance_per_match' => 10
+                'aerial_duels_per_match' => 1.5, 'distance_per_match' => 10, 'passes_per_match' => 55
             ],
             'Latéral' => [
                 'goals' => rand(0, 4), 'assists' => rand(2, 8), 'shots' => rand(0, 6), 'passes' => rand(25, 40), 'key_passes' => rand(3, 10),
@@ -266,7 +328,7 @@ class PlayerDetailedDataSeeder extends Seeder
                 'goals_per_match' => 0.1, 'assists_per_match' => 0.3, 'shots_per_match' => 0.2,
                 'key_passes_per_match' => 0.3, 'crosses_per_match' => 1.0, 'dribbles_per_match' => 0.5,
                 'tackles_per_match' => 0.7, 'interceptions_per_match' => 0.5, 'clearances_per_match' => 0.8,
-                'aerial_duels_per_match' => 0.8, 'distance_per_match' => 11
+                'aerial_duels_per_match' => 0.8, 'distance_per_match' => 11, 'passes_per_match' => 45
             ],
             'Milieu Défensif' => [
                 'goals' => rand(0, 5), 'assists' => rand(3, 10), 'shots' => rand(0, 8), 'passes' => rand(50, 70), 'key_passes' => rand(5, 15),
@@ -277,7 +339,7 @@ class PlayerDetailedDataSeeder extends Seeder
                 'goals_per_match' => 0.2, 'assists_per_match' => 0.3, 'shots_per_match' => 0.3,
                 'key_passes_per_match' => 0.5, 'crosses_per_match' => 0.7, 'dribbles_per_match' => 0.4,
                 'tackles_per_match' => 1.5, 'interceptions_per_match' => 1.0, 'clearances_per_match' => 1.2,
-                'aerial_duels_per_match' => 1.0, 'distance_per_match' => 11
+                'aerial_duels_per_match' => 1.0, 'distance_per_match' => 11, 'passes_per_match' => 65
             ],
             'Milieu Offensif' => [
                 'goals' => rand(2, 8), 'assists' => rand(5, 12), 'shots' => rand(5, 15), 'passes' => rand(30, 50), 'key_passes' => rand(8, 20),
@@ -288,7 +350,7 @@ class PlayerDetailedDataSeeder extends Seeder
                 'goals_per_match' => 0.3, 'assists_per_match' => 0.4, 'shots_per_match' => 0.5,
                 'key_passes_per_match' => 0.7, 'crosses_per_match' => 0.5, 'dribbles_per_match' => 0.7,
                 'tackles_per_match' => 0.5, 'interceptions_per_match' => 0.4, 'clearances_per_match' => 0.5,
-                'aerial_duels_per_match' => 0.6, 'distance_per_match' => 10
+                'aerial_duels_per_match' => 0.6, 'distance_per_match' => 10, 'passes_per_match' => 50
             ],
             'Attaquant' => [
                 'goals' => rand(5, 15), 'assists' => rand(3, 10), 'shots' => rand(10, 25), 'passes' => rand(15, 30), 'key_passes' => rand(5, 15),
@@ -299,7 +361,7 @@ class PlayerDetailedDataSeeder extends Seeder
                 'goals_per_match' => 0.5, 'assists_per_match' => 0.3, 'shots_per_match' => 0.8,
                 'key_passes_per_match' => 0.5, 'crosses_per_match' => 0.3, 'dribbles_per_match' => 0.8,
                 'tackles_per_match' => 0.3, 'interceptions_per_match' => 0.3, 'clearances_per_match' => 0.3,
-                'aerial_duels_per_match' => 0.8, 'distance_per_match' => 9
+                'aerial_duels_per_match' => 0.8, 'distance_per_match' => 9, 'passes_per_match' => 30
             ]
         ];
         

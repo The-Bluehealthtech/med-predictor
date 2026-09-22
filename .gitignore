@@ -38,3 +38,12 @@ MedPredictorMobile/node_modules/
 MedPredictorMobile/ios/Pods/
 MedPredictorMobile/vendor/bundle/
 MedPredictorMobile/ios/build/
+
+# Laravel Mix generated assets
+/public/css/app.css
+/public/css/fifa-design-system.css
+/public/js/app.js
+/public/js/app.js.LICENSE.txt
+/public/js/[0-9]*.js
+/public/js/[0-9]*.js.LICENSE.txt
+/public/mix-manifest.json

@@ -12,20 +12,19 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            AssociationSeeder::class,
+            ClubSeeder::class,
             AdminUserSeeder::class,
+            SeasonSeeder::class,
             PlayerUserSeeder::class,
             TunisianLeaguePlayersSeeder::class,
             PlayerDetailedDataSeeder::class,
-            
+            // FFF Ligue 1 Data
+            FFFLigue1Seeder::class,
+
             // Seeders V3
             V3AiPredictionSeeder::class,
             V3PerformanceMetricSeeder::class,
-            
-            // Données de test pour les compétitions
-            CompetitionTestDataSeeder::class,
-            
-            // FFF Ligue 1 Data
-            FFFLigue1Seeder::class,
         ]);
     }
 }

@@ -1922,27 +1922,27 @@
                     <div class="fifa-medical-stat">
                         <div class="fifa-stat-header">
                             <span>Test de Cooper</span>
-                            <span class="fifa-stat-value">{{ $player->cooper_test ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->cooper_test ?? 'Données non disponibles' }}</span>
                         </div>
                         <div class="fifa-stat-header">
                             <span>Test de Yo-Yo</span>
-                            <span class="fifa-stat-value">{{ $player->yoyo_test ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->yoyo_test ?? 'Données non disponibles' }}</span>
                         </div>
                         <div class="fifa-stat-header">
                             <span>Test de Wingate</span>
-                            <span class="fifa-stat-value">{{ $player->wingate_test ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->wingate_test ?? 'Données non disponibles' }}</span>
                         </div>
                         <div class="fifa-stat-header">
                             <span>Test de Squat Jump</span>
-                            <span class="fifa-stat-value">{{ $player->squat_jump ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->squat_jump ?? 'Données non disponibles' }}</span>
                         </div>
                         <div class="fifa-stat-header">
                             <span>Test de Sprint 30m</span>
-                            <span class="fifa-stat-value">{{ $player->sprint_30m ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->sprint_30m ?? 'Données non disponibles' }}</span>
                         </div>
                         <div class="fifa-stat-header">
                             <span>Test de Flexibilité</span>
-                            <span class="fifa-stat-value">{{ $player->flexibility_test ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->flexibility_test ?? 'Données non disponibles' }}</span>
                         </div>
                     </div>
                 </div>

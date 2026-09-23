@@ -409,20 +409,21 @@ class PlayerPortalDataSeeder extends Seeder
             'assessment_method' => 'coach_evaluation',
             'created_by' => $this->systemUserId,
 
-            'sprint_30m' =>
-                round(4.0 + (($id % 35) / 100), 2),
-            'cooper_test' =>
-                2800 + (($id * 17) % 500),
-            'yoyo_test' =>
-                1600 + (($id * 23) % 700),
-            'wingate_test' =>
-                650 + (($id * 7) % 180),
-            'squat_jump' => 34 + ($id % 12),
-            'flexibility_test' => 22 + ($id % 10),
-
             'notes' => $this->json([
                 'source' => 'synthetic_demo',
                 'clinical' => false,
+                'physical_tests' => [
+                    'sprint_30m' =>
+                        round(4.0 + (($id % 35) / 100), 2),
+                    'cooper_test' =>
+                        2800 + (($id * 17) % 500),
+                    'yoyo_test' =>
+                        1600 + (($id * 23) % 700),
+                    'wingate_test' =>
+                        650 + (($id * 7) % 180),
+                    'squat_jump' => 34 + ($id % 12),
+                    'flexibility_test' => 22 + ($id % 10),
+                ],
             ]),
         ]);
 

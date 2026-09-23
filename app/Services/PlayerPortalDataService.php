@@ -40,6 +40,11 @@ class PlayerPortalDataService
             ->orderByDesc('assessment_date')
             ->first();
 
+        $latestPerformance = DB::table('player_performances')
+            ->where('player_id', $playerId)
+            ->orderByDesc('performance_date')
+            ->first();
+
         $medicalRecords = DB::table('medical_records')
             ->where('player_id', $playerId)
             ->orderByDesc('record_date')
@@ -478,6 +483,24 @@ class PlayerPortalDataService
         }
 
         /*
+         * Tests physiques depuis player_performances.notes.
+         */
+        $playerPerformanceTests = null;
+
+        if ($latestPerformance) {
+            $performanceNotes = $this->json($latestPerformance->notes);
+            $physicalTests = data_get(
+                $performanceNotes,
+                'physical_tests',
+                []
+            );
+
+            if (is_array($physicalTests) && $physicalTests !== []) {
+                $playerPerformanceTests = (object) $physicalTests;
+            }
+        }
+
+        /*
          * Historique canonique des blessures.
          */
         $playerInjuriesDiseases = DB::table('injuries')
@@ -802,6 +825,7 @@ class PlayerPortalDataService
             'playerStats',
             'playerLicenses',
             'performanceTrends',
+            'playerPerformanceTests',
             'sdohFactors',
             'performancePredictions',
             'injuryAlerts',

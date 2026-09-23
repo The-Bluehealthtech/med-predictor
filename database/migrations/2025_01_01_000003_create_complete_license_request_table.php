@@ -231,8 +231,6 @@ return new class extends Migration
             // 🔗 CLÉS ÉTRANGÈRES
             // ========================================
             
-            $table->foreign('current_club_id')->references('id')->on('clubs')->onDelete('set null');
-            $table->foreign('national_association_id')->references('id')->on('associations')->onDelete('set null');
             $table->foreign('confederation_id')->references('id')->on('confederations')->onDelete('set null');
             $table->foreign('requested_by')->references('id')->on('users')->onDelete('set null');
             $table->foreign('club_approved_by')->references('id')->on('users')->onDelete('set null');

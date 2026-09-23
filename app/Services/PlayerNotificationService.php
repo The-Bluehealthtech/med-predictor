@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Player;
-use App\Models\Notification;
 use App\Models\HealthRecord;
 use App\Models\PCMA;
 use App\Models\MatchModel;
@@ -30,7 +29,7 @@ class PlayerNotificationService
             return $this->getDefaultNotifications();
         }
 
-        $notifications = Notification::where('notifiable_id', $this->userId)
+        $notifications = DB::table('notifications')->where('notifiable_id', $this->userId)
             ->where('notifiable_type', 'App\\Models\\User')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -47,7 +46,7 @@ class PlayerNotificationService
             return $this->getDefaultNotificationsByType($type);
         }
 
-        $notifications = Notification::where('notifiable_id', $this->userId)
+        $notifications = DB::table('notifications')->where('notifiable_id', $this->userId)
             ->where('notifiable_type', 'App\\Models\\User')
             ->where('type', 'like', '%' . $type . '%')
             ->orderBy('created_at', 'desc')
@@ -345,7 +344,7 @@ class PlayerNotificationService
             return 12; // Nombre par défaut
         }
 
-        return Notification::where('notifiable_id', $this->userId)
+        return DB::table('notifications')->where('notifiable_id', $this->userId)
             ->where('notifiable_type', 'App\\Models\\User')
             ->count();
     }

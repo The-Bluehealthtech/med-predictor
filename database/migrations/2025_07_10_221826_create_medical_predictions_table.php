@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('medical_predictions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('health_record_id')->constrained()->onDelete('cascade');
-            $table->foreignId('player_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('player_id')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('prediction_type'); // 'injury_risk', 'performance_prediction', 'health_condition'
             $table->string('predicted_condition');

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('team_players', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('team_id')->constrained()->onDelete('cascade');
-            $table->foreignId('player_id')->constrained()->onDelete('cascade');
+            $table->foreignId('team_id');
+            $table->foreignId('player_id');
             $table->enum('role', ['starter', 'substitute', 'reserve', 'loan'])->default('substitute');
             $table->integer('squad_number')->nullable();
             $table->date('joined_date');

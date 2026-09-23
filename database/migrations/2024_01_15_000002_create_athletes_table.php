@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->date('dob');
             $table->string('nationality', 3); // ISO 3166-1 alpha-3
-            $table->foreignId('team_id')->constrained()->onDelete('cascade');
+            $table->foreignId('team_id');
             $table->string('position')->nullable();
             $table->string('jersey_number')->nullable();
             $table->enum('gender', ['male', 'female', 'other'])->default('male');

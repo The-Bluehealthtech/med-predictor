@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('lineup_players', function (Blueprint $table) {
             $table->id();
             $table->foreignId('lineup_id')->constrained()->onDelete('cascade');
-            $table->foreignId('player_id')->constrained()->onDelete('cascade');
+            $table->foreignId('player_id');
             $table->boolean('is_substitute')->default(false);
             $table->integer('position_order')->default(0);
             $table->string('assigned_position')->nullable();

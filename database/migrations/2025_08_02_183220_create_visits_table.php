@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('athlete_id')->constrained('athletes')->onDelete('cascade');
             $table->foreignId('doctor_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('appointment_id')->nullable()->constrained('appointments')->onDelete('set null');
+            $table->foreignId('appointment_id')->nullable();
             $table->dateTime('visit_date');
             $table->enum('visit_type', [
                 'consultation',

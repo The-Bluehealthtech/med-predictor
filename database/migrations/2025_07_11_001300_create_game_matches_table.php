@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('game_matches', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('competition_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('home_team_id')->nullable()->constrained('teams')->onDelete('set null');
-            $table->foreignId('away_team_id')->nullable()->constrained('teams')->onDelete('set null');
+            $table->foreignId('competition_id')->nullable();
+            $table->foreignId('home_team_id')->nullable();
+            $table->foreignId('away_team_id')->nullable();
             $table->foreignId('home_club_id')->nullable()->constrained('clubs')->onDelete('set null');
             $table->foreignId('away_club_id')->nullable()->constrained('clubs')->onDelete('set null');
             $table->date('match_date')->nullable();

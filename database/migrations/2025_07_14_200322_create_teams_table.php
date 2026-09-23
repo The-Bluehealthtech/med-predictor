@@ -43,6 +43,13 @@ return new class extends Migration
             $table->timestamps();
         });
         }
+
+        Schema::table('athletes', function (Blueprint $table) {
+            $table->foreign('team_id')
+                ->references('id')
+                ->on('teams')
+                ->cascadeOnDelete();
+        });
     }
 
     /**
@@ -50,6 +57,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('athletes', function (Blueprint $table) {
+            $table->dropForeign(['team_id']);
+        });
+
         Schema::dropIfExists('teams');
     }
 };

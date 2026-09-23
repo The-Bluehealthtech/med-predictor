@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,11 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
-            Schema::table('health_records', function (Blueprint $table) {
-                // Add 'hl7_report' to the status enum
-                $table->enum('status', ['active', 'archived', 'pending', 'hl7_report'])->default('active')->change();
-            });
+        $driver = Schema::getConnection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            DB::statement(
+                'ALTER TABLE health_records
+                 DROP CONSTRAINT IF EXISTS health_records_status_check'
+            );
+
+            DB::statement(
+                "ALTER TABLE health_records
+                 ADD CONSTRAINT health_records_status_check
+                 CHECK (status IN ('active', 'archived', 'pending', 'hl7_report'))"
+            );
+        } elseif ($driver === 'mysql') {
+            DB::statement(
+                "ALTER TABLE health_records
+                 MODIFY status ENUM('active', 'archived', 'pending', 'hl7_report')
+                 NOT NULL DEFAULT 'active'"
+            );
         }
     }
 
@@ -24,11 +38,33 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (Schema::getConnection()->getDriverName() !== 'sqlite') {
-            Schema::table('health_records', function (Blueprint $table) {
-                // Remove 'hl7_report' from the status enum
-                $table->enum('status', ['active', 'archived', 'pending'])->default('active')->change();
-            });
+        $driver = Schema::getConnection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            DB::table('health_records')
+                ->where('status', 'hl7_report')
+                ->update(['status' => 'pending']);
+
+            DB::statement(
+                'ALTER TABLE health_records
+                 DROP CONSTRAINT IF EXISTS health_records_status_check'
+            );
+
+            DB::statement(
+                "ALTER TABLE health_records
+                 ADD CONSTRAINT health_records_status_check
+                 CHECK (status IN ('active', 'archived', 'pending'))"
+            );
+        } elseif ($driver === 'mysql') {
+            DB::table('health_records')
+                ->where('status', 'hl7_report')
+                ->update(['status' => 'pending']);
+
+            DB::statement(
+                "ALTER TABLE health_records
+                 MODIFY status ENUM('active', 'archived', 'pending')
+                 NOT NULL DEFAULT 'active'"
+            );
         }
     }
 };

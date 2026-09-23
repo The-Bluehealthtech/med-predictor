@@ -117,9 +117,6 @@ return new class extends Migration
             if (!Schema::hasIndex('competitions', 'competitions_status_start_date_index')) {
                 $table->index(['status', 'start_date']);
             }
-            if (!Schema::hasIndex('competitions', 'competitions_fifa_connect_id_index')) {
-                $table->index(['fifa_connect_id']);
-            }
         });
 
         // Teams table indexes
@@ -213,9 +210,6 @@ return new class extends Migration
         Schema::table('audit_trails', function (Blueprint $table) {
             if (!Schema::hasIndex('audit_trails', 'audit_trails_user_id_action_index')) {
                 $table->index(['user_id', 'action']);
-            }
-            if (!Schema::hasIndex('audit_trails', 'audit_trails_entity_type_entity_id_index')) {
-                $table->index(['entity_type', 'entity_id']);
             }
             if (!Schema::hasIndex('audit_trails', 'audit_trails_action_created_at_index')) {
                 $table->index(['action', 'created_at']);
@@ -332,7 +326,6 @@ return new class extends Migration
         // Audit trail table indexes
         Schema::table('audit_trails', function (Blueprint $table) {
             $table->dropIndex(['user_id', 'action']);
-            $table->dropIndex(['entity_type', 'entity_id']);
             $table->dropIndex(['action', 'created_at']);
             $table->dropIndex(['ip_address', 'created_at']);
         });

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('competition_id')->constrained()->onDelete('cascade');
             $table->foreignId('team_id')->constrained()->onDelete('cascade');
             $table->timestamp('joined_at')->nullable();
-            $table->foreignId('season_id')->nullable()->constrained('seasons')->onDelete('set null');
+            $table->foreignId('season_id')->nullable();
             $table->timestamps();
             
             $table->unique(['competition_id', 'team_id']);

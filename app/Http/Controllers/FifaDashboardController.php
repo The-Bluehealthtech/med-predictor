@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Player;
 use App\Models\PlayerPerformance;
 use App\Models\Match;
-use App\Models\Notification;
 use App\Models\HealthRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -257,19 +256,37 @@ class FifaDashboardController extends Controller
      */
     private function getNotificationsData($player)
     {
-        // Récupérer les vraies notifications
-        $notifications = Notification::where('notifiable_id', $player->id)
+        $userId = $player->user_id ?? Auth::id();
+
+        if (!$userId) {
+            return [
+                'notifications' => collect(),
+                'unreadCount' => 0,
+                'urgentCount' => 0,
+            ];
+        }
+
+        $notifications = DB::table('notifications')
+            ->where('notifiable_id', $userId)
+            ->where('notifiable_type', \App\Models\User::class)
             ->orderBy('created_at', 'desc')
             ->limit(20)
             ->get();
-        
+
+        $urgentCount = $notifications->filter(function ($notification) {
+            $data = json_decode($notification->data ?? '{}', true);
+
+            return is_array($data)
+                && ($data['priority'] ?? null) === 'urgent';
+        })->count();
+
         return [
             'notifications' => $notifications,
-            'unreadCount' => $notifications->where('read_at', null)->count(),
-            'urgentCount' => $notifications->where('data->priority', 'urgent')->count()
+            'unreadCount' => $notifications->whereNull('read_at')->count(),
+            'urgentCount' => $urgentCount,
         ];
     }
-    
+
     /**
      * Récupère les données SDOH réelles
      */

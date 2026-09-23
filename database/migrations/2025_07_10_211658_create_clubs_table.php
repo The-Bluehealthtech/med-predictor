@@ -41,11 +41,24 @@ return new class extends Migration
             $table->integer('coaching_staff')->nullable();
             $table->string('logo_path')->nullable();
             $table->timestamps();
-
             $table->index(['name', 'country']);
             $table->index(['fifa_connect_id']);
             $table->index(['league', 'division']);
             $table->index(['status']);
+        });
+
+            Schema::table('users', function (Blueprint $table) {
+              $table->foreign('club_id')
+                  ->references('id')
+                  ->on('clubs')
+                  ->nullOnDelete();
+        });
+
+        Schema::table('license_requests', function (Blueprint $table) {
+            $table->foreign('current_club_id')
+                ->references('id')
+                ->on('clubs')
+                ->nullOnDelete();
         });
     }
 
@@ -54,6 +67,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clubs');
+        Schema::table('users', function (Blueprint $table) {
+    $table->dropForeign(['club_id']);
+     });
+
+        Schema::table('license_requests', function (Blueprint $table) {
+            $table->dropForeign(['current_club_id']);
+        });
+
+       Schema::dropIfExists('clubs');
     }
 };

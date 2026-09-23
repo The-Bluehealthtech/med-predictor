@@ -13,19 +13,19 @@ return new class extends Migration
     {
         Schema::create('lineups', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('team_id')->constrained()->onDelete('cascade');
+            $table->foreignId('team_id');
             $table->foreignId('club_id')->constrained()->onDelete('cascade');
-            $table->foreignId('competition_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('competition_id')->nullable();
             $table->foreignId('match_id')->nullable()->constrained('game_matches')->onDelete('set null');
             $table->string('name');
             $table->string('formation', 10);
             $table->string('tactical_style')->nullable();
             $table->text('playing_philosophy')->nullable();
-            $table->foreignId('captain_id')->nullable()->constrained('players')->onDelete('set null');
-            $table->foreignId('vice_captain_id')->nullable()->constrained('players')->onDelete('set null');
-            $table->foreignId('penalty_taker_id')->nullable()->constrained('players')->onDelete('set null');
-            $table->foreignId('free_kick_taker_id')->nullable()->constrained('players')->onDelete('set null');
-            $table->foreignId('corner_taker_id')->nullable()->constrained('players')->onDelete('set null');
+            $table->foreignId('captain_id')->nullable();
+            $table->foreignId('vice_captain_id')->nullable();
+            $table->foreignId('penalty_taker_id')->nullable();
+            $table->foreignId('free_kick_taker_id')->nullable();
+            $table->foreignId('corner_taker_id')->nullable();
             $table->enum('match_type', ['league', 'cup', 'friendly', 'international']);
             $table->string('opponent')->nullable();
             $table->enum('venue', ['home', 'away', 'neutral']);

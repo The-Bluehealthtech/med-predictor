@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('dental_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
+            $table->foreignId('patient_id');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Médecin qui a créé l'enregistrement
             $table->json('dental_data'); // Stockage des annotations dentaires au format JSON
             $table->text('notes')->nullable(); // Notes générales sur l'examen dentaire

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('health_records', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('player_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('player_id')->nullable();
             $table->integer('blood_pressure_systolic')->nullable();
             $table->integer('blood_pressure_diastolic')->nullable();
             $table->integer('heart_rate')->nullable();

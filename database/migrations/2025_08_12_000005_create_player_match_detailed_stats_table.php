@@ -133,9 +133,7 @@ return new class extends Migration
             $table->index(['match_id', 'team_id']);
             $table->index(['season_id', 'player_id']);
             $table->index(['competition_id', 'match_id']);
-            $table->index(['match_rating', 'match_date']);
             $table->index(['goals_scored', 'assists_provided']);
-            $table->index(['distance_covered_km', 'match_date']);
             $table->unique(['player_id', 'match_id']); // Un joueur ne peut avoir qu'une seule entrée par match
         });
     }

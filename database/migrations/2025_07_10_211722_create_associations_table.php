@@ -18,6 +18,13 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->timestamps();
         });
+
+        Schema::table('license_requests', function (Blueprint $table) {
+            $table->foreign('national_association_id')
+                ->references('id')
+                ->on('associations')
+                ->nullOnDelete();
+        });
     }
 
     /**
@@ -25,6 +32,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('license_requests', function (Blueprint $table) {
+            $table->dropForeign(['national_association_id']);
+        });
+
         Schema::dropIfExists('associations');
     }
 };

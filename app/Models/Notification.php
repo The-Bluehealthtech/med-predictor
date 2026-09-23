@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
 {
+    protected $table = 'legacy_notifications';
+
     use UsesEnhancedTenantScope;
     use HasFactory;
 

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('role')->nullable();
             $table->string('entity_type')->nullable();
             $table->unsignedBigInteger('entity_id')->nullable();
-            $table->foreignId('club_id')->nullable()->constrained('clubs')->onDelete('set null');
+            $table->foreignId('club_id')->nullable();
             $table->string('fifa_connect_id')->nullable();
             $table->json('permissions')->nullable();
             $table->string('status')->nullable();

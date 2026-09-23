@@ -501,6 +501,68 @@ class PlayerPortalDataService
         }
 
         /*
+         * Analyses biologiques depuis les champs JSON canoniques
+         * de health_records.
+         */
+        $playerLaboratoryResults = null;
+
+        if ($latestHealth) {
+            $hematology = $this->json(
+                $latestHealth->hematology_results
+            );
+            $minerals = $this->json(
+                $latestHealth->mineral_results
+            );
+            $vitamins = $this->json(
+                $latestHealth->vitamin_results
+            );
+            $inflammatory = $this->json(
+                $latestHealth->inflammatory_markers
+            );
+            $biochemistry = $this->json(
+                $latestHealth->biochemistry_results
+            );
+
+            $playerLaboratoryResults = (object) [
+                'hemoglobin' =>
+                    data_get($hematology, 'hemoglobin.value'),
+                'hemoglobin_unit' =>
+                    data_get($hematology, 'hemoglobin.unit'),
+
+                'hematocrit' =>
+                    data_get($hematology, 'hematocrit.value'),
+                'hematocrit_unit' =>
+                    data_get($hematology, 'hematocrit.unit'),
+
+                'serum_iron' =>
+                    data_get($minerals, 'serum_iron.value'),
+                'serum_iron_unit' =>
+                    data_get($minerals, 'serum_iron.unit'),
+
+                'vitamin_d' =>
+                    data_get($vitamins, 'vitamin_d.value'),
+                'vitamin_d_unit' =>
+                    data_get($vitamins, 'vitamin_d.unit'),
+
+                'crp' =>
+                    data_get($inflammatory, 'crp.value'),
+                'crp_unit' =>
+                    data_get($inflammatory, 'crp.unit'),
+
+                'total_cholesterol' =>
+                    data_get(
+                        $biochemistry,
+                        'total_cholesterol.value'
+                    ),
+                'total_cholesterol_unit' =>
+                    data_get(
+                        $biochemistry,
+                        'total_cholesterol.unit'
+                    ),
+            ];
+        }
+
+        /*
          * Historique canonique des blessures.
          */
         $playerInjuriesDiseases = DB::table('injuries')
@@ -826,6 +888,7 @@ class PlayerPortalDataService
             'playerLicenses',
             'performanceTrends',
             'playerPerformanceTests',
+            'playerLaboratoryResults',
             'sdohFactors',
             'performancePredictions',
             'injuryAlerts',

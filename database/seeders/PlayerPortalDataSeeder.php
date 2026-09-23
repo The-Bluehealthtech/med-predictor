@@ -118,12 +118,40 @@ class PlayerPortalDataSeeder extends Seeder
             'body_fat_percentage' => 10 + ($id % 7),
             'hydration_percentage' => 67 + ($id % 10),
             'muscle_mass_percentage' => 42 + ($id % 8),
-            'hemoglobin' => 14 + (($id % 8) / 10),
-            'hematocrit' => 41 + ($id % 7),
-            'serum_iron' => 85 + ($id % 30),
-            'vitamin_d' => 32 + ($id % 12),
-            'crp' => 0.5 + (($id % 10) / 10),
-            'total_cholesterol' => 150 + ($id % 30),
+            'hematology_results' => $this->json([
+                'hemoglobin' => [
+                    'value' => 14 + (($id % 8) / 10),
+                    'unit' => 'g/dL',
+                ],
+                'hematocrit' => [
+                    'value' => 41 + ($id % 7),
+                    'unit' => '%',
+                ],
+            ]),
+            'mineral_results' => $this->json([
+                'serum_iron' => [
+                    'value' => 85 + ($id % 30),
+                    'unit' => 'µg/dL',
+                ],
+            ]),
+            'vitamin_results' => $this->json([
+                'vitamin_d' => [
+                    'value' => 32 + ($id % 12),
+                    'unit' => 'ng/mL',
+                ],
+            ]),
+            'inflammatory_markers' => $this->json([
+                'crp' => [
+                    'value' => 0.5 + (($id % 10) / 10),
+                    'unit' => 'mg/L',
+                ],
+            ]),
+            'biochemistry_results' => $this->json([
+                'total_cholesterol' => [
+                    'value' => 150 + ($id % 30),
+                    'unit' => 'mg/dL',
+                ],
+            ]),
             'notes' =>
                 'synthetic_demo: not clinical data',
             'metadata' => $this->json([

@@ -1953,27 +1953,27 @@
                     <div class="fifa-medical-stat">
                         <div class="fifa-stat-header">
                             <span>Hémoglobine</span>
-                            <span class="fifa-stat-value">{{ $player->hemoglobin ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->hemoglobin !== null ? $playerLaboratoryResults->hemoglobin . ' ' . $playerLaboratoryResults->hemoglobin_unit : 'Données non disponibles' }}</span>
                         </div>
                         <div class="fifa-stat-header">
                             <span>Hématocrite</span>
-                            <span class="fifa-stat-value">{{ $player->hematocrit ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->hematocrit !== null ? $playerLaboratoryResults->hematocrit . ' ' . $playerLaboratoryResults->hematocrit_unit : 'Données non disponibles' }}</span>
                         </div>
                         <div class="fifa-stat-header">
                             <span>Fer Sérique</span>
-                            <span class="fifa-stat-value">{{ $player->serum_iron ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->serum_iron !== null ? $playerLaboratoryResults->serum_iron . ' ' . $playerLaboratoryResults->serum_iron_unit : 'Données non disponibles' }}</span>
                         </div>
                         <div class="fifa-stat-header">
                             <span>Vitamine D</span>
-                            <span class="fifa-stat-value">{{ $player->vitamin_d ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->vitamin_d !== null ? $playerLaboratoryResults->vitamin_d . ' ' . $playerLaboratoryResults->vitamin_d_unit : 'Données non disponibles' }}</span>
                         </div>
                         <div class="fifa-stat-header">
                             <span>CRP</span>
-                            <span class="fifa-stat-value">{{ $player->crp ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->crp !== null ? $playerLaboratoryResults->crp . ' ' . $playerLaboratoryResults->crp_unit : 'Données non disponibles' }}</span>
                         </div>
                         <div class="fifa-stat-header">
                             <span>Cholestérol Total</span>
-                            <span class="fifa-stat-value">{{ $player->total_cholesterol ?? 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->total_cholesterol !== null ? $playerLaboratoryResults->total_cholesterol . ' ' . $playerLaboratoryResults->total_cholesterol_unit : 'Données non disponibles' }}</span>
                         </div>
                     </div>
                 </div>

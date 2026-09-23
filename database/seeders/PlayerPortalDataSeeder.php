@@ -191,19 +191,18 @@ class PlayerPortalDataSeeder extends Seeder
             'result_json' => $this->json([
                 'synthetic_demo' => true,
                 'overall_score' => 78 + ($id % 15),
+                'pcma_score' => 78 + ($id % 15),
+                'cardiovascular_fitness' => 76 + ($id % 18),
+                'respiratory_fitness' => 77 + ($id % 17),
+                'musculoskeletal_fitness' => 74 + ($id % 20),
+                'neurological_fitness' => 80 + ($id % 15),
+                'next_assessment_date' => '2027-09-01',
             ]),
             'status' => 'cleared',
             'assessor_id' => $this->systemUserId,
             'fifa_compliant' => false,
             'form_version' => 'synthetic-demo-1.0',
             'is_signed' => false,
-            'pcma_score' => 78 + ($id % 15),
-            'pcma_status' => 'cleared',
-            'cardiovascular_fitness' => 76 + ($id % 18),
-            'musculoskeletal_fitness' => 74 + ($id % 20),
-            'neurological_fitness' => 80 + ($id % 15),
-            'respiratory_fitness' => 77 + ($id % 17),
-            'next_assessment_date' => '2027-09-01',
         ]);
 
         /*

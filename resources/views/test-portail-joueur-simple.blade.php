@@ -1135,13 +1135,14 @@
                                     </h5>
                                     <div class="text-sm text-blue-700">
                                         <div class="mb-1">Tendance: <span class="font-semibold">
-                                            @if($prediction->trend_direction == 'ascending') 📈 Ascendante
+                                            @if($prediction->trend_direction == 'increasing') 📈 Ascendante
                                             @elseif($prediction->trend_direction == 'stable') 🟢 Stable
-                                            @elseif($prediction->trend_direction == 'descending') 📉 Descendante
+                                            @elseif($prediction->trend_direction == 'decreasing') 📉 Descendante
                                             @endif
                                         </span></div>
                                         <div class="mb-1">Prédiction 3 mois: <span class="font-semibold">+{{ $prediction->predicted_score_3months - $prediction->current_score }}%</span></div>
                                         <div>Objectif atteint: <span class="font-semibold">{{ $prediction->current_score }}%</span></div>
+                                    <div>Confiance: <span class="font-semibold">{{ $prediction->confidence_percent }}%</span></div>
                                     </div>
                                 </div>
                             </div>

@@ -130,12 +130,20 @@ class PlayerPortalDataService
                 $delta = (float) $trend->final_value
                     - (float) $trend->initial_value;
 
+                $confidence = (float) ($trend->confidence_level ?? 0);
+                $confidencePercent = $confidence <= 1
+                    ? $confidence * 100
+                    : $confidence;
+
                 return (object) [
-                    'prediction_type' => $trend->trend_period,
+                    'prediction_type' => 'performance',
+                    'prediction_period' => $trend->trend_period,
                     'current_score' => round($current, 1),
                     'predicted_score_3months' =>
                         round($this->clamp($current + $delta, 0, 100), 1),
                     'trend_direction' => $trend->trend_direction,
+                    'confidence_percent' =>
+                        round($this->clamp($confidencePercent, 0, 100), 1),
                 ];
             });
 
@@ -144,15 +152,34 @@ class PlayerPortalDataService
          */
         $injuryAlerts = null;
 
-        if ($player->injury_risk_score !== null || $latestHealth) {
+        $injuryRiskRatio = $player->injury_risk_score !== null
+            ? (float) $player->injury_risk_score
+            : null;
+
+        $injuryMechanism = $latestHealth->injury_mechanism ?? null;
+        $injuryLocation = $latestHealth->injury_location ?? null;
+
+        $hasInjuryRiskSignal = $injuryRiskRatio !== null && (
+            $injuryRiskRatio > 0
+            || !empty($player->injury_risk_reason)
+            || !empty($injuryMechanism)
+            || !empty($injuryLocation)
+        );
+
+        if ($hasInjuryRiskSignal) {
+            $injuryRiskPercent = $injuryRiskRatio <= 1
+                ? $injuryRiskRatio * 100
+                : $injuryRiskRatio;
+
             $injuryAlerts = (object) [
-                'risk_level' => (float) ($player->injury_risk_score ?? 0),
+                'risk_level' =>
+                    round($this->clamp($injuryRiskPercent, 0, 100), 1),
                 'injury_type' =>
-                    $latestHealth->injury_mechanism
+                    $injuryMechanism
                     ?? $player->injury_risk_reason
                     ?? 'Risque général',
                 'body_part' =>
-                    $latestHealth->injury_location
+                    $injuryLocation
                     ?? 'Non spécifié',
             ];
         }

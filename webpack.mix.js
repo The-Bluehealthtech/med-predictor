@@ -1,7 +1,16 @@
 const mix = require('laravel-mix');
+const tailwindcss = require('tailwindcss');
+const autoprefixer = require('autoprefixer');
 
 mix.js('resources/js/app.js', 'public/js')
-   .vue({ version: 3 })
-   .css('resources/css/app.css', 'public/css');
+    .vue({ version: 3 });
 
-mix.copy('resources/css/fifa-design-system.css', 'public/css/fifa-design-system.css');
+mix.postCss('resources/css/app.css', 'public/css', [
+    tailwindcss('./tailwind.config.js'),
+    autoprefixer,
+]);
+
+mix.copy(
+    'resources/css/fifa-design-system.css',
+    'public/css/fifa-design-system.css'
+);

@@ -11,30 +11,16 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <!-- Scripts - Using built assets directly -->
-    @php
-        $manifest = file_exists(public_path('build/manifest.json')) ? json_decode(file_get_contents(public_path('build/manifest.json')), true) : [];
-        $cssFile = $manifest['resources/css/app.css']['file'] ?? null;
-        $jsFile = $manifest['resources/js/app.js']['file'] ?? null;
-        $extraCss = $manifest['resources/js/app.js']['css'] ?? [];
-    @endphp
-    @if($cssFile)
-        <link rel="stylesheet" href="{{ asset('build/' . ltrim($cssFile, '/')) }}">
-    @endif
-    @if(!empty($extraCss))
-        @foreach($extraCss as $css)
-            <link rel="stylesheet" href="{{ asset('build/' . ltrim($css, '/')) }}">
-        @endforeach
-    @endif
-    @if($jsFile)
-        <script type="module" src="{{ asset('build/' . ltrim($jsFile, '/')) }}"></script>
-    @endif
+    <!-- Compiled assets - Laravel Mix -->
+    <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
+    <link rel="stylesheet" href="{{ mix('/css/fifa-design-system.css') }}">
+    <script src="{{ mix('/js/app.js') }}" defer></script>
 
     @php $isModulesPage = request()->is('modules') || request()->is('modules/*'); @endphp
-    @if($isModulesPage && empty($cssFile) && empty($extraCss))
+    @if($isModulesPage)
         <script src="https://cdn.tailwindcss.com"></script>
     @endif
-    
+
     <!-- Alpine.js via CDN for Blade dropdowns -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     

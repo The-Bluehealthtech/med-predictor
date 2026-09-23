@@ -5,7 +5,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 // Laravel Echo configuration for real-time updates
 // Only initialize if Pusher environment variables are available
-if (import.meta.env.VITE_PUSHER_APP_KEY && import.meta.env.VITE_PUSHER_APP_CLUSTER) {
+if (process.env.MIX_PUSHER_APP_KEY && process.env.MIX_PUSHER_APP_CLUSTER) {
     // Use dynamic imports to avoid issues with missing modules
     Promise.all([
         import('laravel-echo'),
@@ -17,8 +17,8 @@ if (import.meta.env.VITE_PUSHER_APP_KEY && import.meta.env.VITE_PUSHER_APP_CLUST
         window.Pusher = Pusher;
         window.Echo = new Echo({
             broadcaster: 'pusher',
-            key: import.meta.env.VITE_PUSHER_APP_KEY,
-            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+            key: process.env.MIX_PUSHER_APP_KEY,
+            cluster: process.env.MIX_PUSHER_APP_CLUSTER,
             forceTLS: true
         });
     }).catch(error => {

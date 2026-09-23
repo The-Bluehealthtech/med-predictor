@@ -18,21 +18,21 @@ export const moduleConfig = {
     icon: '🏆',
     color: 'blue',
     version: '1.0.0',
-    
+
     // API Configuration
     api: {
       fifa: {
-        baseUrl: import.meta.env.VITE_FIFA_API_URL || 'https://api.fifa.com/v1',
+        baseUrl: process.env.MIX_FIFA_API_URL || 'https://api.fifa.com/v1',
         timeout: 30000,
         retries: 3
       },
       clubBridge: {
-        baseUrl: import.meta.env.VITE_CLUB_BRIDGE_URL || '/api/club',
+        baseUrl: process.env.MIX_CLUB_BRIDGE_URL || '/api/club',
         timeout: 15000,
         retries: 2
       },
       fhir: {
-        baseUrl: import.meta.env.VITE_FHIR_URL || '/api/fhir',
+        baseUrl: process.env.MIX_FHIR_URL || '/api/fhir',
         timeout: 20000,
         retries: 2
       }
@@ -87,16 +87,16 @@ export const moduleConfig = {
     icon: '⚽',
     color: 'green',
     version: '1.0.0',
-    
+
     // API Configuration
     api: {
       rpm: {
-        baseUrl: import.meta.env.VITE_RPM_API_URL || '/api/rpm',
+        baseUrl: process.env.MIX_RPM_API_URL || '/api/rpm',
         timeout: 15000,
         retries: 2
       },
       performance: {
-        baseUrl: import.meta.env.VITE_PERFORMANCE_API_URL || '/api/performance',
+        baseUrl: process.env.MIX_PERFORMANCE_API_URL || '/api/performance',
         timeout: 20000,
         retries: 2
       }
@@ -309,7 +309,7 @@ export const getConfigSection = (section) => {
 export const isFeatureEnabled = (moduleName, featureName) => {
   const module = getModuleConfig(moduleName)
   if (!module || !module.features) return false
-  
+
   return module.features[featureName] === true
 }
 
@@ -382,7 +382,7 @@ export const getEnvironmentConfig = () => {
       apiTimeout: 5000,
       cacheEnabled: false
     }
-  }[import.meta.env.NODE_ENV] || {}
+  }[process.env.NODE_ENV] || {}
 }
 
-export default moduleConfig 
+export default moduleConfig

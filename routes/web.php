@@ -7394,76 +7394,39 @@ Route::prefix('license-requests')->name('license-requests.')->middleware(['auth'
 
 // Test du nouveau portail joueur avec hero zone simple
 Route::get('/test-portail-joueur-simple', function (Request $request) {
-    $playerId = $request->get('player_id', 4); // Récupérer le player_id de l'URL, défaut: 4
-    $player = \App\Models\Player::with(['club', 'association'])->find($playerId);
-    if (!$player) {
-        $player = \App\Models\Player::with(['club', 'association'])->first();
-    }
-    
-    // Récupérer les vraies données de la base
-    $associations = \App\Models\Association::with(['confederation'])->orderBy('name')->get();
-    $clubs = \App\Models\Club::with(['association'])->orderBy('name')->get();
-    $confederations = \App\Models\Confederation::orderBy('name')->get();
-    
-    // Récupérer les données de santé et performances
-    $healthRecords = \DB::table('health_records')->where('player_id', $player->id)->orderBy('visit_date', 'desc')->get();
-    $playerStats = \DB::table('player_season_stats')->where('player_id', $player->id)->get();
-    $playerLicenses = \DB::table('player_licenses')->where('player_id', $player->id)->orderBy('start_date', 'desc')->get();
-    $performanceTrends = \DB::table('performance_trends')->where('player_id', $player->id)->orderBy('date', 'desc')->get();
-    $sdohFactors = \DB::table('sdoh_factors')->where('player_id', $player->id)->first();
-    $performancePredictions = \DB::table('performance_predictions')->where('player_id', $player->id)->get();
-    
-    // Récupérer les données de notifications
-    $injuryAlerts = \DB::table('injury_alerts')->where('player_id', $player->id)->first();
-    $playerMedications = \DB::table('player_medications')->where('player_id', $player->id)->where('status', 'active')->get();
-    $playerNotifications = \DB::table('player_notifications')->where('player_id', $player->id)->where('status', 'active')->orderBy('created_at', 'desc')->get();
-    
-    // Récupérer les données de santé et bien-être
-    $playerHealthWellbeing = \DB::table('player_health_wellbeing')->where('player_id', $player->id)->orderBy('assessment_date', 'desc')->first();
-    $playerNutrition = \DB::table('player_nutrition')->where('player_id', $player->id)->orderBy('date', 'desc')->first();
-    $playerRecovery = \DB::table('player_recovery')->where('player_id', $player->id)->orderBy('date', 'desc')->first();
-    
-    // Récupérer les données médicales
-    $playerPcma = \DB::table('player_pcma')->where('player_id', $player->id)->orderBy('assessment_date', 'desc')->first();
-    $playerMedicalAptitude = \DB::table('player_medical_aptitude')->where('player_id', $player->id)->orderBy('assessment_date', 'desc')->first();
-    $playerVitalSigns = \DB::table('player_vital_signs')->where('player_id', $player->id)->orderBy('measurement_date', 'desc')->first();
-    
-    // Récupérer les données de blessures et maladies
-    $playerInjuriesDiseases = \DB::table('player_injuries_diseases')->where('player_id', $player->id)->orderBy('incident_date', 'desc')->get();
-    
-    // Récupérer les données des devices et systèmes connectés
-    $sportsDevices = \DB::table('sports_devices')->where('player_id', $player->id)->get();
-    $behavioralData = \DB::table('behavioral_data')->where('player_id', $player->id)->orderBy('data_date', 'desc')->first();
-    $physioCenters = \DB::table('physio_centers')->where('player_id', $player->id)->get();
-    $mentalHealthApps = \DB::table('mental_health_app')->where('player_id', $player->id)->get();
-    $apiIntegrations = \DB::table('api_integrations')->where('player_id', $player->id)->get();
-    
-    // Récupérer les données anti-dopage
-    $dopingTests = \DB::table('doping_tests')->where('player_id', $player->id)->orderBy('test_date', 'desc')->get();
-    $bannedSubstances = \DB::table('banned_substances')->where('player_id', $player->id)->get();
-    $therapeuticUseExemptions = \DB::table('therapeutic_use_exemptions')->where('player_id', $player->id)->where('exemption_status', 'approved')->get();
-    $dopingAlerts = \DB::table('doping_alerts')->where('player_id', $player->id)->where('alert_status', 'active')->orderBy('alert_date', 'desc')->get();
-    
-    // Récupérer les données de conformité
-    $complianceStatus = \DB::table('compliance_status')->where('player_id', $player->id)->get();
-    $complianceResources = \DB::table('compliance_resources')->where('player_id', $player->id)->where('is_active', true)->orderBy('priority', 'asc')->get();
-    
-    // Récupérer les données des licences
-    $playerLicenses = \DB::table('player_licenses')->where('player_id', $player->id)->orderBy('start_date', 'desc')->get();
-    $licenseRequests = \DB::table('license_requests')->where('fifa_connect_id', 'LIKE', '%' . $player->id . '%')->orWhere('current_club_id', $player->club_id ?? 0)->get();
-    
-    return view('test-portail-joueur-simple', compact(
-        'player', 'associations', 'clubs', 'confederations',
-        'healthRecords', 'playerStats', 'playerLicenses', 
-        'performanceTrends', 'sdohFactors', 'performancePredictions',
-        'injuryAlerts', 'playerMedications', 'playerNotifications',
-        'playerHealthWellbeing', 'playerNutrition', 'playerRecovery',
-        'playerPcma', 'playerMedicalAptitude', 'playerVitalSigns',
-        'playerInjuriesDiseases', 'sportsDevices', 'behavioralData', 
-        'physioCenters', 'mentalHealthApps', 'apiIntegrations', 'dopingTests', 
-        'bannedSubstances', 'therapeuticUseExemptions', 'dopingAlerts', 'complianceStatus', 
-        'complianceResources', 'playerLicenses', 'licenseRequests'
-    ));
+    $playerId = (int) $request->get('player_id', 4);
+
+    $player = \App\Models\Player::with(['club', 'association'])
+        ->find($playerId);
+
+    abort_if(!$player, 404, 'Joueur introuvable.');
+
+    $associations = \App\Models\Association::with(['confederation'])
+        ->orderBy('name')
+        ->get();
+
+    $clubs = \App\Models\Club::with(['association'])
+        ->orderBy('name')
+        ->get();
+
+    $confederations = \App\Models\Confederation::orderBy('name')
+        ->get();
+
+    $portalData = app(\App\Services\PlayerPortalDataService::class)
+        ->forPlayer($player);
+
+    return view(
+        'test-portail-joueur-simple',
+        array_merge(
+            compact(
+                'player',
+                'associations',
+                'clubs',
+                'confederations'
+            ),
+            $portalData
+        )
+    );
 })->name('test.portail.joueur.simple');
 
 // Route de test pour la feuille de match (sans auth)

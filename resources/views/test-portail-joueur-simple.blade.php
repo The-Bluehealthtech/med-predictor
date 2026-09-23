@@ -202,7 +202,7 @@
                                         </div>
                                         <div>
                                             <span class="text-purple-200 text-xs">🌍 Confédération:</span>
-                                            <span class="text-white font-medium text-sm">{{ $player->association->confederation->name }}</span>
+                                            <span class="text-white font-medium text-sm">{{ is_object($player->association->confederation) ? $player->association->confederation->name : ($player->association->confederation ?? 'N/A') }}</span>
                                         </div>
                                     </div>
                                 @endif

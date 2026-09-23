@@ -299,9 +299,17 @@ class PlayerPortalDataService
         $playerMedicalAptitude = null;
 
         if ($latestHealth || $latestPcma) {
+            $healthRisk = (float) ($latestHealth->risk_score ?? 0);
+
+            // health_records.risk_score peut être stocké comme ratio
+            // (0.09 = 9 %) ou, pour d'anciennes données, en pourcentage.
+            $healthRiskPercent = $healthRisk <= 1
+                ? $healthRisk * 100
+                : $healthRisk;
+
             $healthScore =
                 $player->fitness_score
-                ?? (100 - (float) ($latestHealth->risk_score ?? 0));
+                ?? (100 - $healthRiskPercent);
 
             $playerMedicalAptitude = (object) [
                 'overall_health_score' =>

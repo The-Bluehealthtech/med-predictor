@@ -421,6 +421,12 @@ class PlayerPortalDataService
 
                 'blood_glucose' =>
                     data_get($realtimeMetadata, 'vitals.blood_glucose'),
+
+                'blood_glucose_unit' =>
+                    data_get(
+                        $realtimeMetadata,
+                        'vitals.blood_glucose_unit'
+                    ),
             ];
         }
 

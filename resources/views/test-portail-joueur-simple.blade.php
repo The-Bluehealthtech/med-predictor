@@ -1720,7 +1720,13 @@
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Glycémie</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->blood_glucose }} mmol/L</span>
+                                <span class="fifa-stat-value">
+                                    @if($playerVitalSigns->blood_glucose !== null)
+                                        {{ $playerVitalSigns->blood_glucose }} {{ $playerVitalSigns->blood_glucose_unit }}
+                                    @else
+                                        Données non disponibles
+                                    @endif
+                                </span>
                             </div>
                         @else
                             <div class="fifa-stat-header">

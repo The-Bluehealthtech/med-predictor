@@ -112,7 +112,6 @@ class PlayerPortalDataSeeder extends Seeder
             'blood_pressure_diastolic' => 70 + ($id % 9),
             'temperature' => 36.4 + (($id % 4) / 10),
             'oxygen_saturation' => 97 + ($id % 3),
-            'blood_glucose' => 82 + ($id % 12),
             'bmi' => $bmi,
             'body_weight' => $weight,
             'body_height' => $height,
@@ -276,6 +275,13 @@ class PlayerPortalDataSeeder extends Seeder
 
             'data_accuracy' => 96,
             'data_quality' => 'good',
+            'metadata' => $this->json([
+                'synthetic_demo' => true,
+                'vitals' => [
+                    'blood_glucose' => 82 + ($id % 12),
+                    'blood_glucose_unit' => 'mg/dL',
+                ],
+            ]),
             'notes' => 'synthetic_demo wearable snapshot',
         ]);
 

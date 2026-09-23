@@ -563,6 +563,44 @@ class PlayerPortalDataService
         }
 
         /*
+         * Indicateurs factuels affichés dans la section Tendances.
+         * Aucun changement temporel n'est inventé sans mesure disponible.
+         */
+        $latestPerformanceTrend = $performanceTrends->first();
+
+        $trendIndicators = (object) [
+            'sleep_quality_score' =>
+                $latestRealtime?->sleep_quality_score !== null
+                    ? round((float) $latestRealtime->sleep_quality_score, 1)
+                    : null,
+
+            'sleep_duration_hours' =>
+                $latestRealtime?->sleep_duration_hours,
+
+            'performance_change' =>
+                $latestPerformanceTrend?->change_percentage !== null
+                    ? round(
+                        (float) $latestPerformanceTrend->change_percentage,
+                        1
+                    )
+                    : null,
+
+            'performance_direction' =>
+                $latestPerformanceTrend?->trend_direction,
+
+            'mental_wellbeing_score' =>
+                $latestSdoh?->mental_wellbeing_score !== null
+                    ? round((float) $latestSdoh->mental_wellbeing_score, 1)
+                    : null,
+
+            'stress_level' =>
+                $latestSdoh?->stress_level,
+
+            'healthy_diet' =>
+                $latestSdoh?->has_healthy_diet,
+        ];
+
+        /*
          * Historique canonique des blessures.
          */
         $playerInjuriesDiseases = DB::table('injuries')
@@ -889,6 +927,7 @@ class PlayerPortalDataService
             'performanceTrends',
             'playerPerformanceTests',
             'playerLaboratoryResults',
+            'trendIndicators',
             'sdohFactors',
             'performancePredictions',
             'injuryAlerts',

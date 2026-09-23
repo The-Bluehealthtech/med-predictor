@@ -1001,20 +1001,72 @@
                     <!-- Indicateurs de tendances -->
                     <div class="space-y-3">
                         <div class="p-3 border-l-4 border-green-500 bg-green-50 rounded-lg">
-                            <div class="font-medium text-green-800">📈 Amélioration Notable</div>
-                            <div class="text-sm text-green-700">Qualité du sommeil en hausse constante (+12%)</div>
+                            <div class="font-medium text-green-800">😴 Sommeil</div>
+                            <div class="text-sm text-green-700">
+                                @if($trendIndicators->sleep_quality_score !== null)
+                                    Qualité : {{ $trendIndicators->sleep_quality_score }}/100
+                                    @if($trendIndicators->sleep_duration_hours !== null)
+                                        · {{ $trendIndicators->sleep_duration_hours }} h
+                                    @endif
+                                @else
+                                    Données non disponibles
+                                @endif
+                            </div>
                         </div>
+
                         <div class="p-3 border-l-4 border-blue-500 bg-blue-50 rounded-lg">
-                            <div class="font-medium text-blue-800">💪 Progression Physique</div>
-                            <div class="text-sm text-blue-700">VO2 Max et endurance en amélioration</div>
+                            <div class="font-medium text-blue-800">💪 Préparation Physique</div>
+                            <div class="text-sm text-blue-700">
+                                @if($trendIndicators->performance_change !== null)
+                                    Tendance :
+                                    @if($trendIndicators->performance_direction === 'increasing')
+                                        +{{ abs($trendIndicators->performance_change) }}%
+                                    @elseif($trendIndicators->performance_direction === 'decreasing')
+                                        -{{ abs($trendIndicators->performance_change) }}%
+                                    @else
+                                        {{ $trendIndicators->performance_change }}%
+                                    @endif
+                                    sur la période
+                                @else
+                                    Données de tendance non disponibles
+                                @endif
+                            </div>
                         </div>
+
                         <div class="p-3 border-l-4 border-yellow-500 bg-yellow-50 rounded-lg">
-                            <div class="font-medium text-yellow-800">⚠️ Attention Nutrition</div>
-                            <div class="text-sm text-yellow-700">Apport calorique légèrement insuffisant</div>
+                            <div class="font-medium text-yellow-800">🥗 Nutrition</div>
+                            <div class="text-sm text-yellow-700">
+                                @if($trendIndicators->healthy_diet === true)
+                                    Alimentation équilibrée déclarée
+                                @elseif($trendIndicators->healthy_diet === false)
+                                    Alimentation déclarée à surveiller
+                                @else
+                                    Données nutritionnelles non disponibles
+                                @endif
+                            </div>
                         </div>
+
                         <div class="p-3 border-l-4 border-purple-500 bg-purple-50 rounded-lg">
                             <div class="font-medium text-purple-800">🧠 Bien-être Mental</div>
-                            <div class="text-sm text-purple-700">Niveau de stress maîtrisé, continuer méditation</div>
+                            <div class="text-sm text-purple-700">
+                                @if($trendIndicators->mental_wellbeing_score !== null)
+                                    Score : {{ $trendIndicators->mental_wellbeing_score }}/100
+                                    @if($trendIndicators->stress_level)
+                                        · Stress :
+                                        @if($trendIndicators->stress_level === 'low')
+                                            faible
+                                        @elseif($trendIndicators->stress_level === 'moderate')
+                                            modéré
+                                        @elseif($trendIndicators->stress_level === 'high')
+                                            élevé
+                                        @else
+                                            {{ $trendIndicators->stress_level }}
+                                        @endif
+                                    @endif
+                                @else
+                                    Données non disponibles
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>

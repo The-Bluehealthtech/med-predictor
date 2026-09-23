@@ -472,18 +472,20 @@ class PlayerPortalDataService
         }
 
         /*
-         * Blessures depuis health_records.
+         * Historique canonique des blessures.
          */
-        $playerInjuriesDiseases = $healthRecords
-            ->filter(fn ($record) => !empty($record->injury_date))
-            ->map(fn ($record) => (object) [
-                'incident_date' => $record->injury_date,
-                'severity' => $record->injury_severity,
-                'icd_11_code' => $record->icd_10_injury,
-                'icd_11_description' =>
-                    $record->snomed_ct_injury
-                    ?? $record->injury_mechanism
-                    ?? $record->injury_location,
+        $playerInjuriesDiseases = DB::table('injuries')
+            ->where('player_id', $player->id)
+            ->orderByDesc('date')
+            ->get()
+            ->map(fn ($injury) => (object) [
+                'incident_date' => $injury->date,
+                'type' => 'injury',
+                'injury_type' => $injury->type,
+                'body_zone' => $injury->body_zone,
+                'severity' => $injury->severity,
+                'status' => $injury->status,
+                'description' => $injury->description,
             ])
             ->values();
 

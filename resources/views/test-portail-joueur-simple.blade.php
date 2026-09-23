@@ -1834,7 +1834,7 @@
                 
                 <!-- Carte Blessures et Maladies -->
                 <div class="fifa-medical-card w-full">
-                    <h4>🩹 Blessures et Maladies - Codes ICD-11</h4>
+                    <h4>🩹 Historique des Blessures</h4>
                     <div class="fifa-medical-stat">
                         @if($playerInjuriesDiseases && $playerInjuriesDiseases->count() > 0)
                             <!-- Statistiques générales -->
@@ -1878,8 +1878,12 @@
                                             @endif">
                                             <div class="flex justify-between items-start">
                                                 <div class="flex-1">
-                                                    <div class="font-medium text-sm">{{ $incident->icd_11_description }}</div>
-                                                    <div class="text-xs text-gray-600">Code: {{ $incident->icd_11_code }}</div>
+                                                    <div class="font-medium text-sm">{{ $incident->description }}</div>
+                                                    <div class="text-xs text-gray-600">
+                                                        Type: {{ $incident->injury_type }}
+                                                        · Zone: {{ $incident->body_zone }}
+                                                        · Statut: {{ $incident->status }}
+                                                    </div>
                                                     <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($incident->incident_date)->format('d M Y') }}</div>
                                                 </div>
                                                 <div class="ml-2">

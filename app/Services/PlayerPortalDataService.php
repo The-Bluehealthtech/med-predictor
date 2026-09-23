@@ -432,38 +432,49 @@ class PlayerPortalDataService
         if ($latestPcma) {
             $pcmaResults = $this->json($latestPcma->result_json);
 
-            $status = $latestPcma->status;
+            $rawStatus =
+                $latestPcma->pcma_status
+                ?? $latestPcma->status;
 
-            if ($status === 'completed') {
-                $status = $latestPcma->fifa_compliant
-                    ? 'approved'
-                    : 'pending';
-            }
+            $status = match ($rawStatus) {
+                'approved' => 'cleared',
+                'rejected' => 'not_cleared',
+                default => $rawStatus ?: 'pending',
+            };
 
             $playerPcma = (object) [
                 'pcma_status' => $status,
 
                 'pcma_score' =>
-                    data_get($pcmaResults, 'pcma_score'),
+                    $latestPcma->pcma_score
+                    ?? data_get($pcmaResults, 'pcma_score')
+                    ?? data_get($pcmaResults, 'overall_score'),
 
                 'cardiovascular_fitness' =>
-                    data_get($pcmaResults, 'cardiovascular_fitness'),
+                    $latestPcma->cardiovascular_fitness
+                    ?? data_get($pcmaResults, 'cardiovascular_fitness'),
 
                 'respiratory_fitness' =>
-                    data_get($pcmaResults, 'respiratory_fitness'),
+                    $latestPcma->respiratory_fitness
+                    ?? data_get($pcmaResults, 'respiratory_fitness'),
 
                 'musculoskeletal_fitness' =>
-                    data_get($pcmaResults, 'musculoskeletal_fitness'),
+                    $latestPcma->musculoskeletal_fitness
+                    ?? data_get($pcmaResults, 'musculoskeletal_fitness'),
 
                 'neurological_fitness' =>
-                    data_get($pcmaResults, 'neurological_fitness'),
+                    $latestPcma->neurological_fitness
+                    ?? data_get($pcmaResults, 'neurological_fitness'),
 
                 'next_assessment_date' =>
-                    $latestPcma->assessment_date
-                        ? Carbon::parse($latestPcma->assessment_date)
-                            ->addYear()
-                            ->toDateString()
-                        : null,
+                    $latestPcma->next_assessment_date
+                    ?? (
+                        $latestPcma->assessment_date
+                            ? Carbon::parse($latestPcma->assessment_date)
+                                ->addYear()
+                                ->toDateString()
+                            : null
+                    ),
             ];
         }
 

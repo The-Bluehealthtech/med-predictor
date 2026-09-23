@@ -1759,10 +1759,23 @@
                             <div class="fifa-stat-header">
                                 <span>Statut PCMA</span>
                                 @php
-                                    $pcmaColor = $playerPcma->pcma_status == 'approved' ? '#51cf66' : 
-                                                ($playerPcma->pcma_status == 'pending' ? '#ffd700' : '#ff6b6b');
-                                    $pcmaText = $playerPcma->pcma_status == 'approved' ? '✅ APPROUVÉ' : 
-                                                ($playerPcma->pcma_status == 'pending' ? '⏳ EN ATTENTE' : '❌ REJETÉ');
+                                    $pcmaColor = match ($playerPcma->pcma_status) {
+                                        'cleared', 'approved' => '#51cf66',
+                                        'pending' => '#ffd700',
+                                        'completed' => '#4dabf7',
+                                        default => '#ff6b6b',
+                                    };
+
+                                    $pcmaText = match ($playerPcma->pcma_status) {
+                                        'cleared' => '✅ APTE',
+                                        'approved' => '✅ APPROUVÉ',
+                                        'pending' => '⏳ EN ATTENTE',
+                                        'completed' => 'ℹ️ TERMINÉ',
+                                        'not_cleared' => '❌ NON APTE',
+                                        'failed' => '❌ ÉCHEC',
+                                        'rejected' => '❌ REJETÉ',
+                                        default => 'ℹ️ STATUT INCONNU',
+                                    };
                                 @endphp
                                 <span class="fifa-stat-value positive" style="color: {{ $pcmaColor }};">{{ $pcmaText }}</span>
                             </div>

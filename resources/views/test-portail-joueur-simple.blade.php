@@ -2149,7 +2149,25 @@
                                             'sports' => '⚽'
                                         ];
                                         $icon = $icons[$api->api_type] ?? '🔌';
-                                        $dataTypes = json_decode($api->data_types, true);
+                                        $rawDataTypes = $api->data_types ?? [];
+
+                                        if (is_array($rawDataTypes)) {
+                                            $dataTypes = $rawDataTypes;
+                                        } elseif (is_string($rawDataTypes)) {
+                                            $decodedDataTypes = json_decode($rawDataTypes, true);
+
+                                            if (is_array($decodedDataTypes)) {
+                                                $dataTypes = $decodedDataTypes;
+                                            } elseif (is_string($decodedDataTypes) && $decodedDataTypes !== '') {
+                                                $dataTypes = [$decodedDataTypes];
+                                            } elseif (trim($rawDataTypes) !== '') {
+                                                $dataTypes = [$rawDataTypes];
+                                            } else {
+                                                $dataTypes = [];
+                                            }
+                                        } else {
+                                            $dataTypes = [];
+                                        }
                                     @endphp
                                     <div class="p-4 bg-{{ $color }}-50 rounded-lg border-l-4 border-{{ $color }}-500">
                                         <h5 class="font-semibold text-{{ $color }}-800 mb-2">{{ $icon }} {{ $api->api_name }}</h5>

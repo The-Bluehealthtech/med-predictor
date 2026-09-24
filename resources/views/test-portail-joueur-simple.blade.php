@@ -3121,49 +3121,87 @@
                                 type: 'bar',
                                 data: {
                                     labels: ['Matchs', 'Minutes', 'Buts', 'Passes', 'Jaunes', 'Rouges'],
-                                    datasets: [{
-                                        label: 'Statistiques de saison',
-                                        data: seasonStats ? [
-                                            Number(seasonStats.matches_played ?? 0),
-                                            Number(seasonStats.minutes_played ?? 0),
-                                            Number(seasonStats.goals ?? 0),
-                                            Number(seasonStats.assists ?? 0),
-                                            Number(seasonStats.yellow_cards ?? 0),
-                                            Number(seasonStats.red_cards ?? 0)
-                                        ] : []
-                                    }]
+                                    datasets: [
+                                        {
+                                            label: 'Statistiques de saison',
+                                            data: seasonStats ? [
+                                                Number(seasonStats.matches_played ?? 0),
+                                                null,
+                                                Number(seasonStats.goals ?? 0),
+                                                Number(seasonStats.assists ?? 0),
+                                                Number(seasonStats.yellow_cards ?? 0),
+                                                Number(seasonStats.red_cards ?? 0)
+                                            ] : [],
+                                            yAxisID: 'y'
+                                        },
+                                        {
+                                            label: 'Minutes jouées',
+                                            data: seasonStats ? [
+                                                null,
+                                                Number(seasonStats.minutes_played ?? 0),
+                                                null,
+                                                null,
+                                                null,
+                                                null
+                                            ] : [],
+                                            yAxisID: 'yMinutes'
+                                        }
+                                    ]
                                 },
                                 options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        labels: {
-                                            color: '#f3f4f6',
-                                            font: { size: 14, weight: '600' }
-                                        }
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        ticks: {
-                                            color: '#f3f4f6',
-                                            font: { size: 13, weight: '600' }
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            labels: {
+                                                color: '#f3f4f6',
+                                                font: { size: 14, weight: '600' }
+                                            }
                                         }
                                     },
-                                    y: {
-                                        beginAtZero: true,
-                                        ticks: {
-                                            precision: 0,
-                                            color: '#f3f4f6',
-                                            font: { size: 12 }
+                                    scales: {
+                                        x: {
+                                            ticks: {
+                                                color: '#f3f4f6',
+                                                font: { size: 13, weight: '600' }
+                                            }
                                         },
-                                        grid: {
-                                            color: 'rgba(255, 255, 255, 0.15)'
+                                        y: {
+                                            beginAtZero: true,
+                                            position: 'left',
+                                            ticks: {
+                                                precision: 0,
+                                                color: '#f3f4f6',
+                                                font: { size: 12 }
+                                            },
+                                            title: {
+                                                display: true,
+                                                text: 'Nombre',
+                                                color: '#f3f4f6'
+                                            },
+                                            grid: {
+                                                color: 'rgba(255, 255, 255, 0.15)'
+                                            }
+                                        },
+                                        yMinutes: {
+                                            beginAtZero: true,
+                                            position: 'right',
+                                            ticks: {
+                                                precision: 0,
+                                                color: '#f3f4f6',
+                                                font: { size: 12 }
+                                            },
+                                            title: {
+                                                display: true,
+                                                text: 'Minutes',
+                                                color: '#f3f4f6'
+                                            },
+                                            grid: {
+                                                drawOnChartArea: false
+                                            }
                                         }
                                     }
                                 }
-                            }
                             });
                         }
 

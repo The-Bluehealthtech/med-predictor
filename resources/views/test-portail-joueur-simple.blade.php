@@ -830,84 +830,51 @@
         </div>
 
         <div id="match-stats-sub-tab" class="fifa-sub-tab-content">
-            <h3>Statistiques de match</h3>
+            <h3>Statistiques de saison</h3>
             <div id="match-stats-content">
-                <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
+                @php
+                    $seasonStat = $playerStats->first();
+                @endphp
+
                 <div class="fifa-health-grid">
-                    <!-- Carte Performance en Match -->
                     <div class="fifa-health-card">
-                        <h4>⚽ Performance en Match</h4>
+                        <h4>⚽ Performance de Saison</h4>
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
                                 <span>Matchs joués</span>
-                                <span class="fifa-stat-value highlight">{{ $player->matches_played ?? 'Données non disponibles' }}</span>
+                                <span class="fifa-stat-value highlight">{{ $seasonStat?->matches_played ?? 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Buts marqués</span>
-                                <span class="fifa-stat-value">{{ $player->goals_scored ?? 'Données non disponibles' }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->goals ?? 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Passes décisives</span>
-                                <span class="fifa-stat-value">{{ $player->assists ?? 'Données non disponibles' }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->assists ?? 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Minutes jouées</span>
-                                <span class="fifa-stat-value">{{ $player->minutes_played ?? 'Données non disponibles' }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->minutes_played ?? 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Cartons jaunes</span>
-                                <span class="fifa-stat-value">{{ $player->yellow_cards ?? 'Données non disponibles' }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->yellow_cards ?? 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Cartons rouges</span>
-                                <span class="fifa-stat-value">{{ $player->red_cards ?? 'Données non disponibles' }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->red_cards ?? 'Données non disponibles' }}</span>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Carte Statistiques Défensives -->
+
                     <div class="fifa-health-card">
-                        <h4>🛡️ Statistiques Défensives</h4>
+                        <h4>📊 Statistiques avancées</h4>
                         <div class="fifa-health-stat">
-                            <div class="fifa-stat-header">
-                                <span>Tacles réussis</span>
-                                <span class="fifa-stat-value highlight">{{ $player->tackles_won ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Interceptions</span>
-                                <span class="fifa-stat-value">{{ $player->interceptions ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Dégagements</span>
-                                <span class="fifa-stat-value">{{ $player->clearances ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Duels gagnés</span>
-                                <span class="fifa-stat-value">{{ $player->duels_won ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Carte Statistiques Offensives -->
-                    <div class="fifa-health-card">
-                        <h4>⚽ Statistiques Offensives</h4>
-                        <div class="fifa-health-stat">
-                            <div class="fifa-stat-header">
-                                <span>Tirs cadrés</span>
-                                <span class="fifa-stat-value highlight">{{ $player->shots_on_target ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Précision des tirs</span>
-                                <span class="fifa-stat-value">{{ $player->shot_accuracy ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Passes réussies</span>
-                                <span class="fifa-stat-value">{{ $player->passes_completed ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Précision des passes</span>
-                                <span class="fifa-stat-value">{{ $player->pass_accuracy ?? 'Données non disponibles' }}</span>
-                            </div>
+                            <p>
+                                Les données détaillées telles que les tacles,
+                                interceptions, tirs cadrés et précisions de passes
+                                ne sont pas disponibles dans la source canonique actuelle.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -3145,136 +3112,101 @@
                              });
                          }
                          
-                         // Graphique Barres des Statistiques de Match
-                         const statsCtx = document.getElementById('statsChart');
-                         if (statsCtx) {
-                             new Chart(statsCtx, {
-                                 type: 'bar',
-                                 data: {
-                                     labels: ['Buts', 'Passes', 'Tirs Cadrés', 'Passes Réussies'],
-                                     datasets: [{
-                                         label: 'Performance',
-                                         data: [12, 8, 25, 89],
-                                         backgroundColor: [
-                                             'rgba(255, 215, 0, 0.8)',
-                                             'rgba(135, 206, 235, 0.8)',
-                                             'rgba(81, 207, 102, 0.8)',
-                                             'rgba(255, 107, 107, 0.8)'
-                                         ],
-                                         borderColor: [
-                                             '#ffd700',
-                                             '#87ceeb',
-                                             '#51cf66',
-                                             '#ff6b6b'
-                                         ],
-                                         borderWidth: 2
-                                     }]
-                                 },
-                                 options: {
-                                     responsive: true,
-                                     maintainAspectRatio: false,
-                                     scales: {
-                                         y: { 
-                                             beginAtZero: true, 
-                                             grid: { color: 'rgba(135, 206, 235, 0.3)' }, 
-                                             ticks: { color: '#87ceeb' } 
-                                         },
-                                         x: { 
-                                             grid: { color: 'rgba(135, 206, 235, 0.3)' }, 
-                                             ticks: { color: '#87ceeb' } 
-                                         }
-                                     },
-                                     plugins: {
-                                         legend: { 
-                                             labels: { 
-                                                 color: '#87ceeb',
-                                                 font: { size: 14, weight: 'bold' }
-                                             } 
-                                         }
-                                     }
-                                 }
-                             });
-                         }
-                         
-                         // Graphique des Tendances (ligne temporelle) - Données dynamiques
-                         const trendsCtx = document.getElementById('trendsChart');
-                         if (trendsCtx) {
-                             // Récupérer les données de tendances depuis la base
-                             const trendsData = @json($performanceTrends);
-                             
-                             if (trendsData && trendsData.length > 0) {
-                                 const labels = trendsData.map(record => {
-                                     const date = new Date(record.date);
-                                     return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
-                                 }).reverse();
-                                 
-                                 const performanceData = trendsData.map(record => record.performance_score).reverse();
-                                 const healthData = trendsData.map(record => record.health_score).reverse();
-                                 const wellbeingData = trendsData.map(record => record.wellbeing_score).reverse();
-                                 
-                                 new Chart(trendsCtx, {
-                                     type: 'line',
-                                     data: {
-                                         labels: labels,
-                                         datasets: [{
-                                             label: 'Performance',
-                                             data: performanceData,
-                                             borderColor: '#3b82f6',
-                                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                             tension: 0.4,
-                                             fill: true
-                                         }, {
-                                             label: 'Santé',
-                                             data: healthData,
-                                             borderColor: '#10b981',
-                                             backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                                             tension: 0.4,
-                                             fill: true
-                                         }, {
-                                             label: 'Bien-être',
-                                             data: wellbeingData,
-                                             borderColor: '#8b5cf6',
-                                             backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                                             tension: 0.4,
-                                             fill: true
-                                         }]
-                                     },
-                                     options: {
-                                         responsive: true,
-                                         maintainAspectRatio: false,
-                                         scales: {
-                                             y: { 
-                                                 beginAtZero: true, 
-                                                 max: 100,
-                                                 grid: { color: 'rgba(135, 206, 235, 0.3)' }, 
-                                                 ticks: { color: '#87ceeb' } 
-                                             },
-                                             x: { 
-                                                 grid: { color: 'rgba(135, 206, 235, 0.3)' }, 
-                                                 ticks: { color: '#87ceeb' } 
-                                             }
-                                         },
-                                         plugins: {
-                                             legend: { 
-                                                 labels: { 
-                                                     color: '#87ceeb',
-                                                     font: { size: 14, weight: 'bold' }
-                                             } 
-                                         }
-                                     }
-                                 }
-                             });
-                             } else {
-                                 // Graphique vide si pas de données
-                                 new Chart(trendsCtx, {
-                                     type: 'line',
-                                     data: { labels: [], datasets: [] },
-                                     options: { responsive: true, maintainAspectRatio: false }
-                                 });
-                             }
-                         }
-                         
-                         // Graphique Radar SDOH - Données dynamiques
+                         // Graphique des statistiques de saison
+                        const statsCtx = document.getElementById('statsChart');
+                        if (statsCtx) {
+                            const seasonStats = @json($playerStats->first());
+
+                            new Chart(statsCtx, {
+                                type: 'bar',
+                                data: {
+                                    labels: ['Matchs', 'Buts', 'Passes', 'Jaunes', 'Rouges'],
+                                    datasets: [{
+                                        label: 'Statistiques de saison',
+                                        data: seasonStats ? [
+                                            Number(seasonStats.matches_played ?? 0),
+                                            Number(seasonStats.goals ?? 0),
+                                            Number(seasonStats.assists ?? 0),
+                                            Number(seasonStats.yellow_cards ?? 0),
+                                            Number(seasonStats.red_cards ?? 0)
+                                        ] : []
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            ticks: { precision: 0 }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                        // Graphique des tendances de performance
+                        const trendsCtx = document.getElementById('trendsChart');
+                        if (trendsCtx) {
+                            const trendsData = @json($performanceTrends);
+                            const trendPoints = [];
+
+                            trendsData.forEach(record => {
+                                if (record.start_date && record.initial_value !== null) {
+                                    trendPoints.push({
+                                        date: record.start_date,
+                                        value: Number(record.initial_value)
+                                    });
+                                }
+
+                                if (record.end_date && record.final_value !== null) {
+                                    trendPoints.push({
+                                        date: record.end_date,
+                                        value: Number(record.final_value)
+                                    });
+                                }
+                            });
+
+                            trendPoints.sort(
+                                (a, b) => new Date(a.date) - new Date(b.date)
+                            );
+
+                            const labels = trendPoints.map(point =>
+                                new Date(point.date + 'T00:00:00')
+                                    .toLocaleDateString('fr-FR', {
+                                        day: '2-digit',
+                                        month: '2-digit'
+                                    })
+                            );
+
+                            const performanceData =
+                                trendPoints.map(point => point.value);
+
+                            new Chart(trendsCtx, {
+                                type: 'line',
+                                data: {
+                                    labels,
+                                    datasets: [{
+                                        label: 'Performance',
+                                        data: performanceData,
+                                        tension: 0.4,
+                                        fill: true
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            max: 100
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                        // Graphique Radar SDOH - Données dynamiques
                          const sdohCtx = document.getElementById('sdohRadarChart');
                          if (sdohCtx) {
                              // Récupérer les données SDOH depuis la base

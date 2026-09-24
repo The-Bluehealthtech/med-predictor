@@ -361,8 +361,8 @@ class PlayerPortalDataService
                     ?? $latestHealth->record_date
                     ?? null,
                 'treating_doctor' =>
-                    $latestHealth->aut_authorizing_physician
-                    ?? $latestHealth->doctor_name
+                    $latestHealth?->aut_authorizing_physician
+                    ?? $latestHealth?->doctor_name
                     ?? null,
             ];
         }

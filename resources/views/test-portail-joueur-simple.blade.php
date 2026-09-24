@@ -623,7 +623,7 @@
         
         <!-- Nouveaux onglets FIFA -->
         <button class="fifa-tab-button" onclick="showFIFATab('notifications')">
-            Notifications <span id="notifications-count">{{ $playerNotifications->count() }}</span>
+            Notifications <span id="notifications-count">{{ $playerNotifications?->count() ?? 0 }}</span>
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('health')">
             Santé & Bien-être

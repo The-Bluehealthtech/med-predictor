@@ -99,6 +99,7 @@ class RBACService
         'license_validation' => 'Validate licenses',
 
         // Performance Metrics
+        'record-performance-metrics' => 'Record performance metrics for canonical FIT scoring',
         'verify-performance-metrics' => 'Verify performance metrics for canonical FIT scoring',
     ];
 
@@ -212,6 +213,7 @@ class RBACService
 
         'sports_scientist' => [
             'healthcare_access',
+            'record-performance-metrics',
             'verify-performance-metrics',
         ],
     ];

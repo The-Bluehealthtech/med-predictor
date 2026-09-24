@@ -14,6 +14,7 @@ class DeployFit extends Command
         'database/migrations/2026_09_24_170000_add_tenant_id_to_fit_score_snapshots_table.php',
         'database/migrations/2026_09_24_171000_add_input_signature_to_fit_score_snapshots_table.php',
         'database/migrations/2026_09_24_180000_add_verify_performance_metrics_permission.php',
+        'database/migrations/2026_09_24_181000_add_record_performance_metrics_permission.php',
     ];
 
     protected $signature = 'fit:deploy

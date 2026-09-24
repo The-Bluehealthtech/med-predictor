@@ -2519,52 +2519,59 @@
                 
                 <!-- Carte Conformité & Réglementation -->
                 <div class="fifa-doping-card w-full">
-                    <h4>📋 Conformité & Réglementation FIFA/WADA</h4>
+                    <h4>📋 Statuts administratifs, médicaux & antidopage</h4>
                     <div class="fifa-doping-info">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
-                                <h5 class="font-semibold text-green-800 mb-2">✅ Statut de Conformité</h5>
-                                <div class="text-sm text-green-700">
+                            <div class="p-4 bg-gray-50 rounded-lg border-l-4 border-gray-400">
+                                <h5 class="font-semibold text-gray-800 mb-2">📋 Statuts disponibles</h5>
+                                <div class="text-sm text-gray-700">
                                     @if($complianceStatus && $complianceStatus->count() > 0)
                                         @foreach($complianceStatus as $compliance)
                                             @php
                                                 $statusColors = [
-                                                    'compliant' => 'text-green-600',
-                                                    'non_compliant' => 'text-red-600',
-                                                    'under_review' => 'text-yellow-600',
-                                                    'warning' => 'text-orange-600'
+                                                    'active' => 'text-green-600',
+                                                    'cleared' => 'text-green-600',
+                                                    'negative' => 'text-green-600',
+                                                    'expired' => 'text-red-600',
+                                                    'not_cleared' => 'text-red-600',
+                                                    'positive' => 'text-red-600',
+                                                    'failed' => 'text-red-600',
+                                                    'pending' => 'text-yellow-600',
+                                                    'inconclusive' => 'text-yellow-600',
                                                 ];
-                                                $statusColor = $statusColors[$compliance->status] ?? 'text-gray-600';
-                                                $statusIcons = [
-                                                    'compliant' => '✅',
-                                                    'non_compliant' => '❌',
-                                                    'under_review' => '🔄',
-                                                    'warning' => '⚠️'
-                                                ];
-                                                $statusIcon = $statusIcons[$compliance->status] ?? 'ℹ️';
+
+                                                $statusColor =
+                                                    $statusColors[$compliance->status]
+                                                    ?? 'text-gray-600';
                                             @endphp
-                                            <div class="mb-2">
+
+                                            <div class="mb-3">
                                                 <div class="font-medium {{ $statusColor }}">
-                                                    {{ $statusIcon }} {{ ucfirst(str_replace('_', ' ', $compliance->compliance_type)) }}
+                                                    {{ $compliance->label }}
                                                 </div>
-                                                <div class="text-xs text-gray-600">
-                                                    Score: {{ $compliance->compliance_score }}% | 
-                                                    @if($compliance->violations_count > 0)
-                                                        <span class="text-red-600">{{ $compliance->violations_count }} violation(s)</span>
-                                                    @else
-                                                        <span class="text-green-600">Aucune violation</span>
-                                                    @endif
-                                                    @if($compliance->warnings_count > 0)
-                                                        | <span class="text-yellow-600">{{ $compliance->warnings_count }} avertissement(s)</span>
-                                                    @endif
+
+                                                <div class="text-sm {{ $statusColor }}">
+                                                    {{ $compliance->summary }}
                                                 </div>
-                                                <div class="text-xs text-gray-500">
-                                                    Dernière évaluation: {{ \Carbon\Carbon::parse($compliance->last_assessment_date)->format('d M Y') }}
-                                                </div>
+
+                                                @if($compliance->detail)
+                                                    <div class="text-xs text-gray-600">
+                                                        {{ $compliance->detail }}
+                                                    </div>
+                                                @endif
+
+                                                @if($compliance->last_assessment_date)
+                                                    <div class="text-xs text-gray-500">
+                                                        Date :
+                                                        {{ \Carbon\Carbon::parse($compliance->last_assessment_date)->format('d M Y') }}
+                                                    </div>
+                                                @endif
                                             </div>
                                         @endforeach
                                     @else
-                                        <div class="text-gray-500">Aucun statut de conformité disponible</div>
+                                        <div class="text-gray-500">
+                                            Aucun statut disponible
+                                        </div>
                                     @endif
                                 </div>
                             </div>

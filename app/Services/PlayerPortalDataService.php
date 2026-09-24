@@ -812,55 +812,79 @@ class PlayerPortalDataService
             ->values();
 
         /*
-         * Conformité locale synthétisée à partir des données canoniques.
+         * Statuts factuels issus des données canoniques.
+         * Aucun score de conformité FIFA/WADA n'est inventé.
          */
         $complianceStatus = collect();
 
         if ($playerLicenses->isNotEmpty()) {
             $license = $playerLicenses->first();
+            $licenseStatus = $license->status ?? 'unknown';
 
             $complianceStatus->push((object) [
                 'compliance_type' => 'license',
-                'status' => $license->status ?? 'unknown',
-                'compliance_score' =>
-                    ($license->status ?? null) === 'active' ? 100 : 50,
+                'label' => 'Licence',
+                'status' => $licenseStatus,
+                'summary' => match ($licenseStatus) {
+                    'active' => 'Licence active',
+                    'expired' => 'Licence expirée',
+                    'pending' => 'Licence en attente',
+                    default => ucfirst(str_replace('_', ' ', $licenseStatus)),
+                },
+                'detail' => $license->expiry_date
+                    ? 'Expiration : ' . $license->expiry_date
+                    : null,
                 'last_assessment_date' =>
-                    $license->issue_date
-                    ?? $license->updated_at,
-                'violations_count' => 0,
-                'warnings_count' => 0,
+                    $license->issue_date ?? $license->updated_at,
             ]);
         }
 
         if ($latestPcma) {
+            $pcmaStatus = $latestPcma->status;
+
             $complianceStatus->push((object) [
                 'compliance_type' => 'pcma',
-                'status' => $latestPcma->status,
-                'compliance_score' =>
-                    $latestPcma->fifa_compliant ? 100 : 60,
+                'label' => 'PCMA',
+                'status' => $pcmaStatus,
+                'summary' => match ($pcmaStatus) {
+                    'cleared' => 'Aptitude médicale : APTE',
+                    'not_cleared' => 'Aptitude médicale : NON APTE',
+                    'pending' => 'Évaluation en attente',
+                    'failed' => 'Évaluation non aboutie',
+                    'completed' => 'Évaluation terminée',
+                    default => ucfirst(str_replace('_', ' ', $pcmaStatus)),
+                },
+                'detail' =>
+                    'Conformité FIFA attestée : '
+                    . ($latestPcma->fifa_compliant ? 'oui' : 'non')
+                    . ' · Document signé : '
+                    . ($latestPcma->is_signed ? 'oui' : 'non'),
                 'last_assessment_date' =>
                     $latestPcma->assessment_date,
-                'violations_count' => 0,
-                'warnings_count' =>
-                    $latestPcma->fifa_compliant ? 0 : 1,
             ]);
         }
 
         if ($dopingRaw->isNotEmpty()) {
-            $positive = $dopingRaw
-                ->filter(fn ($test) =>
-                    strtolower((string) $test->result) === 'positive'
-                )
-                ->count();
+            $latestDoping = $dopingRaw
+                ->sortByDesc('control_date')
+                ->first();
+
+            $result = strtolower((string) $latestDoping->result);
 
             $complianceStatus->push((object) [
                 'compliance_type' => 'anti_doping',
-                'status' => $positive === 0 ? 'compliant' : 'review_required',
-                'compliance_score' => $positive === 0 ? 100 : 0,
+                'label' => 'Contrôle antidopage',
+                'status' => $result,
+                'summary' => match ($result) {
+                    'negative' => 'Résultat négatif',
+                    'positive' => 'Résultat positif',
+                    'inconclusive' => 'Résultat inconclusif',
+                    'pending' => 'Résultat en attente',
+                    default => ucfirst($result ?: 'Résultat indisponible'),
+                },
+                'detail' => 'Résultat enregistré du dernier contrôle.',
                 'last_assessment_date' =>
-                    $dopingRaw->first()->control_date,
-                'violations_count' => $positive,
-                'warnings_count' => $dopingAlerts->count(),
+                    $latestDoping->control_date,
             ]);
         }
 

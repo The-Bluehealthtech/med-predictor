@@ -290,7 +290,8 @@ class Role extends Model
                 'display_name' => 'Sports Scientist',
                 'description' => 'Sports science and performance analysis',
                 'permissions' => [
-                    'healthcare_access'
+                    'healthcare_access',
+                    'verify-performance-metrics'
                 ],
                 'fifa_connect_id_prefix' => 'FIFA_SPORTS_SCI',
                 'is_system_role' => true

@@ -97,6 +97,9 @@ class RBACService
         'access-license-management' => 'Access license management module',
         'access-license-validation' => 'Access license validation module',
         'license_validation' => 'Validate licenses',
+
+        // Performance Metrics
+        'verify-performance-metrics' => 'Verify performance metrics for canonical FIT scoring',
     ];
 
     /**
@@ -205,6 +208,11 @@ class RBACService
             'association_view',
             'match_view',
             'referee_view',
+        ],
+
+        'sports_scientist' => [
+            'healthcare_access',
+            'verify-performance-metrics',
         ],
     ];
 

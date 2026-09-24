@@ -47,6 +47,14 @@ class FitScoreService
         ],
     ];
 
+    /**
+     * Canonical metric catalogue used by trusted recording interfaces.
+     */
+    public function recordingCatalog(): array
+    {
+        return self::CATALOG;
+    }
+
     public function isMetricEligibleForFit(
         PerformanceMetric $metric
     ): bool {

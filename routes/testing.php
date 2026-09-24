@@ -54,3 +54,23 @@ Route::post('/test-performance-chart-click', function () {
 });
 
 
+
+// Minimal dashboard target required by permission middleware tests.
+Route::get('/dashboard', function () {
+    return response()->json(['status' => 'ok']);
+})->name('dashboard');
+
+// Canonical FIT metric management route used by feature tests.
+Route::get(
+    '/performances/fit-metrics',
+    [\App\Http\Controllers\FitMetricManagementController::class, 'index']
+)->middleware([
+    'auth',
+    'auth.unified',
+    'permission.unified:record-performance-metrics',
+])->name('performances.fit-metrics');
+
+// Minimal modules target required by the application layout during tests.
+Route::get('/modules', function () {
+    return response()->json(['status' => 'ok']);
+})->name('modules.index');

@@ -5626,6 +5626,16 @@ Route::get('/test-pdf', function() {
         return view('modules.referee.settings');
     })->name('referee.settings');
     
+    // Canonical FIT performance metrics
+    Route::get(
+        '/performances/fit-metrics',
+        [\App\Http\Controllers\FitMetricManagementController::class, 'index']
+    )->middleware([
+        'auth',
+        'auth.unified',
+        'permission.unified:record-performance-metrics',
+    ])->name('performances.fit-metrics');
+
     // Performances Analytics routes
     Route::get('/performances/analytics', function () {
         return view('modules.performances.analytics');

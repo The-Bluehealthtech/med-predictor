@@ -157,7 +157,22 @@ class FitMetricManagementTest extends TestCase
             ->assertSee('Acceptée')
             ->assertSee('En attente')
             ->assertSee('Vérification autorisée :')
-            ->assertSee('oui');
+            ->assertSee('oui')
+            ->assertSee('id="fit-metric-recording-form"', false)
+            ->assertSee('Enregistrer une métrique FIT')
+            ->assertSee('Sélectionner un axe')
+            ->assertSee('Sélectionner d\'abord un axe', false)
+            ->assertSee('Niveau de confiance (0 à 1)')
+            ->assertSee(
+                json_encode(
+                    route(
+                        'api.fit.performance-metrics.store',
+                        ['player' => $playerId],
+                        false
+                    )
+                ),
+                false
+            );
     }
 
     public function test_player_without_record_permission_cannot_open_screen(): void

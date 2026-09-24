@@ -1565,7 +1565,7 @@ Route::post(
     'auth',
     'auth.unified',
     'permission.unified:record-performance-metrics',
-]);
+])->name('api.fit.performance-metrics.store');
 
 // Canonical FIT metric verification
 Route::post(
@@ -1576,4 +1576,4 @@ Route::post(
     'auth',
     'auth.unified',
     'permission.unified:verify-performance-metrics',
-]);
+])->name('api.fit.performance-metrics.verify');

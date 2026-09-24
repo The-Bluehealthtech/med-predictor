@@ -326,9 +326,53 @@
                                     </div>
                                 @endif
                             @else
-                                <div class="mt-2 text-xs text-gray-500">
-                                    Aucune tentative de calcul FIT enregistrée.
-                                </div>
+                                @php
+                                    $fitDiagnosticAxisLabels = [
+                                        'physical' => 'PHYSIQUE',
+                                        'technical' => 'TECHNIQUE',
+                                        'tactical' => 'TACTIQUE',
+                                        'mental' => 'MENTAL',
+                                        'social' => 'SOCIAL',
+                                    ];
+
+                                    $fitDiagnosticMissingLabels = [];
+
+                                    foreach (($fitDiagnosis['missing_axes'] ?? []) as $axis) {
+                                        if (isset($fitDiagnosticAxisLabels[$axis])) {
+                                            $fitDiagnosticMissingLabels[] = $fitDiagnosticAxisLabels[$axis];
+                                        }
+                                    }
+
+                                    $fitVerifiedMetricCount =
+                                        $fitDiagnosis['verified_metric_count'] ?? 0;
+
+                                    $fitAcceptedMetricCount =
+                                        $fitDiagnosis['accepted_metric_count'] ?? 0;
+                                @endphp
+
+                                @if($fitVerifiedMetricCount === 0)
+                                    <div class="mt-2 text-xs text-yellow-300">
+                                        Aucune métrique vérifiée sur les 30 derniers jours.
+                                    </div>
+                                @else
+                                    <div class="mt-2 text-xs text-blue-200">
+                                        {{ $fitVerifiedMetricCount }}
+                                        métrique(s) vérifiée(s),
+                                        {{ $fitAcceptedMetricCount }}
+                                        retenue(s) par FIT v1.
+                                    </div>
+
+                                    @if(count($fitDiagnosticMissingLabels) > 0)
+                                        <div class="mt-1 text-xs text-yellow-300">
+                                            Axes manquants :
+                                            {{ implode(', ', $fitDiagnosticMissingLabels) }}
+                                        </div>
+                                    @endif
+
+                                    <div class="mt-1 text-xs text-gray-500">
+                                        Aucun snapshot FIT enregistré pour ces données.
+                                    </div>
+                                @endif
                             @endif
                         @endif
                     </div>

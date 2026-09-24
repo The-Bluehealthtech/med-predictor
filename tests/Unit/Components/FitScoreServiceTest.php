@@ -324,6 +324,87 @@ class FitScoreServiceTest extends TestCase
         $this->assertEquals(81.0, $result['technical_score']);
     }
 
+    public function test_diagnosis_reports_verified_accepted_metrics_and_missing_axes(): void
+    {
+        $asOf = now()->startOfSecond();
+
+        // Vérifiée et exploitable.
+        $this->createMetric(
+            type: 'physical',
+            name: 'endurance',
+            value: 84,
+            unit: '%',
+            date: $asOf->copy()->subDay()
+        );
+
+        // Vérifiée, mais unité incompatible : comptée comme vérifiée,
+        // jamais retenue par le moteur FIT.
+        $this->createMetric(
+            type: 'technical',
+            name: 'passing',
+            value: 8,
+            unit: 'score',
+            date: $asOf->copy()->subDay()
+        );
+
+        // Vérifiée et exploitable.
+        $this->createMetric(
+            type: 'mental',
+            name: 'motivation',
+            value: 76,
+            unit: '%',
+            date: $asOf->copy()->subDay()
+        );
+
+        // Non vérifiée : totalement ignorée.
+        $this->createMetric(
+            type: 'tactical',
+            name: 'positioning',
+            value: 8,
+            unit: 'score',
+            verified: false,
+            date: $asOf->copy()->subDay()
+        );
+
+        // Vérifiée mais hors fenêtre de 30 jours.
+        $this->createMetric(
+            type: 'social',
+            name: 'team_cohesion',
+            value: 90,
+            unit: '%',
+            date: $asOf->copy()->subDays(31)
+        );
+
+        $diagnosis = $this->service->diagnose(
+            $this->player,
+            30,
+            $asOf
+        );
+
+        $this->assertSame(30, $diagnosis['window_days']);
+        $this->assertSame(3, $diagnosis['verified_metric_count']);
+        $this->assertSame(2, $diagnosis['accepted_metric_count']);
+
+        $this->assertSame(
+            ['technical', 'tactical', 'social'],
+            $diagnosis['missing_axes']
+        );
+
+        $this->assertEquals(
+            84.0,
+            $diagnosis['calculation']['physical_score']
+        );
+
+        $this->assertEquals(
+            76.0,
+            $diagnosis['calculation']['mental_score']
+        );
+
+        $this->assertNull(
+            $diagnosis['calculation']['technical_score']
+        );
+    }
+
     private function createMetric(
         string $type,
         string $name,

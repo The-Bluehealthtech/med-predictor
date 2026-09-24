@@ -103,6 +103,50 @@ class FitScoreService
         ];
     }
 
+    public function diagnose(
+        Player $player,
+        int $days = 30,
+        ?Carbon $asOf = null
+    ): array {
+        $asOf ??= now();
+
+        $verifiedMetricCount = PerformanceMetric::query()
+            ->where('player_id', $player->id)
+            ->verified()
+            ->whereBetween('measurement_date', [
+                $asOf->copy()->subDays($days),
+                $asOf,
+            ])
+            ->count();
+
+        $calculation = $this->calculate(
+            $player,
+            $days,
+            $asOf
+        );
+
+        $acceptedMetricCount = collect($calculation['axes'])
+            ->sum(
+                fn (array $axis): int => count($axis['metrics'])
+            );
+
+        $missingAxes = collect($calculation['axes'])
+            ->filter(
+                fn (array $axis): bool => $axis['score'] === null
+            )
+            ->keys()
+            ->values()
+            ->all();
+
+        return [
+            'window_days' => $days,
+            'verified_metric_count' => $verifiedMetricCount,
+            'accepted_metric_count' => $acceptedMetricCount,
+            'missing_axes' => $missingAxes,
+            'calculation' => $calculation,
+        ];
+    }
+
     private function calculateAxis(
         Collection $metrics,
         array $catalog

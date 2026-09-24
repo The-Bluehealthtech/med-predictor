@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Player;
 use App\Services\Fit\FitSnapshotService;
+use App\Services\Fit\FitScoreService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +12,8 @@ use Illuminate\Support\Facades\DB;
 class PlayerPortalDataService
 {
     public function __construct(
-        private readonly FitSnapshotService $fitSnapshotService
+        private readonly FitSnapshotService $fitSnapshotService,
+        private readonly FitScoreService $fitScoreService
     ) {
     }
 
@@ -57,6 +59,7 @@ class PlayerPortalDataService
         $latestFitAttempt = $fitSnapshotData['latest_attempt'];
         $fitMissingAxes = $fitSnapshotData['missing_axes'];
         $fitEvolution = $fitSnapshotData['evolution'];
+        $fitDiagnosis = $this->fitScoreService->diagnose($player, 30);
 
         $medicalRecords = DB::table('medical_records')
             ->where('player_id', $playerId)
@@ -983,6 +986,7 @@ class PlayerPortalDataService
             'latestFitAttempt',
             'fitMissingAxes',
             'fitEvolution',
+            'fitDiagnosis',
             'playerLicenses',
             'performanceTrends',
             'playerPerformanceTests',

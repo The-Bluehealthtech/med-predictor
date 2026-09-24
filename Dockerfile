@@ -50,4 +50,4 @@ COPY vhost.conf /etc/apache2/sites-available/000-default.conf
 
 # Render supplies PORT at runtime.
 # Apache configuration is rewritten before startup to listen on that port.
-CMD ["sh", "-c", "PORT=${PORT:-10000}; sed -i \"s/Listen 80/Listen ${PORT}/\" /etc/apache2/ports.conf; sed -i \"s/<VirtualHost \\*:80>/<VirtualHost *:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; exec apache2-foreground"]
+CMD ["sh", "bin/render-start.sh"]

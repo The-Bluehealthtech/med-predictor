@@ -172,7 +172,69 @@ class FitMetricManagementTest extends TestCase
                     )
                 ),
                 false
+            )
+            ->assertSee('fit-verify-button', false)
+            ->assertSee(
+                route(
+                    'api.fit.performance-metrics.verify',
+                    [
+                        'player' => $playerId,
+                        'metric' => 1,
+                    ],
+                    false
+                ),
+                false
             );
+    }
+
+    public function test_record_only_role_cannot_verify_metric(): void
+    {
+        $tenantId = $this->createTenant('record-only');
+
+        DB::table('roles')->insert([
+            'name' => 'fit_recorder',
+            'display_name' => 'FIT recorder',
+            'description' => null,
+            'permissions' => json_encode([
+                'record-performance-metrics',
+            ]),
+            'is_system_role' => false,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $user = $this->createUser(
+            $tenantId,
+            'fit_recorder',
+            null
+        );
+
+        $playerId = $this->createPlayer(
+            $tenantId,
+            'Record',
+            'Only'
+        );
+
+        $this->createMetric(
+            $playerId,
+            $user->id,
+            'endurance',
+            82,
+            '%'
+        );
+
+        $this->actingAs($user);
+
+        $this->get(
+            route('performances.fit-metrics', [
+                'player_id' => $playerId,
+            ])
+        )
+            ->assertOk()
+            ->assertSee('Vérification autorisée :')
+            ->assertSee('non')
+            ->assertDontSee('fit-verify-button', false);
     }
 
     public function test_player_without_record_permission_cannot_open_screen(): void

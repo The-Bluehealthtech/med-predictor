@@ -639,9 +639,31 @@
 
                                     <td class="px-4 py-3 text-sm">
                                         @if($metric->is_verified)
-                                            Vérifiée
+                                            <span>Vérifiée</span>
                                         @else
-                                            En attente
+                                            <span>En attente</span>
+
+                                            @if($canVerify && $metric->fit_eligible)
+                                                <button
+                                                    type="button"
+                                                    class="fit-verify-button ml-3 px-3 py-1 rounded-md bg-green-600 text-white text-xs disabled:opacity-50"
+                                                    data-verify-url="{{ route(
+                                                        'api.fit.performance-metrics.verify',
+                                                        [
+                                                            'player' => $selectedPlayer->id,
+                                                            'metric' => $metric->id,
+                                                        ],
+                                                        false
+                                                    ) }}"
+                                                >
+                                                    Vérifier
+                                                </button>
+
+                                                <span
+                                                    class="fit-verify-message ml-2 text-xs"
+                                                    aria-live="polite"
+                                                ></span>
+                                            @endif
                                         @endif
                                     </td>
                                 </tr>
@@ -663,6 +685,70 @@
                     </div>
                 @endif
             </div>
+
+            @if($canVerify)
+                <script>
+                    (() => {
+                        const csrfToken = @json(csrf_token());
+
+                        document.querySelectorAll(
+                            '.fit-verify-button'
+                        ).forEach((button) => {
+                            button.addEventListener(
+                                'click',
+                                async () => {
+                                    const message =
+                                        button.parentElement.querySelector(
+                                            '.fit-verify-message'
+                                        );
+
+                                    button.disabled = true;
+                                    message.textContent = '';
+
+                                    try {
+                                        const response = await fetch(
+                                            button.dataset.verifyUrl,
+                                            {
+                                                method: 'POST',
+                                                credentials: 'same-origin',
+                                                headers: {
+                                                    'Accept': 'application/json',
+                                                    'X-CSRF-TOKEN': csrfToken,
+                                                    'X-Requested-With':
+                                                        'XMLHttpRequest',
+                                                },
+                                            }
+                                        );
+
+                                        const body = await response.json()
+                                            .catch(() => ({}));
+
+                                        if (!response.ok) {
+                                            message.textContent =
+                                                body.message
+                                                ?? 'Vérification refusée.';
+                                            message.classList.add(
+                                                'text-red-600'
+                                            );
+                                            button.disabled = false;
+                                            return;
+                                        }
+
+                                        window.location.reload();
+                                    } catch (error) {
+                                        message.textContent =
+                                            'La requête n’a pas pu être envoyée.';
+                                        message.classList.add(
+                                            'text-red-600'
+                                        );
+                                        button.disabled = false;
+                                    }
+                                }
+                            );
+                        });
+                    })();
+                </script>
+            @endif
         @endif
     </div>
 </div>

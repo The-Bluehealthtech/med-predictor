@@ -343,21 +343,58 @@
                                         }
                                     }
 
+                                    $fitTotalMetricCount =
+                                        $fitDiagnosis['total_metric_count_all_time'] ?? 0;
+
+                                    $fitRecentMetricCount =
+                                        $fitDiagnosis['recent_metric_count'] ?? 0;
+
                                     $fitVerifiedMetricCount =
                                         $fitDiagnosis['verified_metric_count'] ?? 0;
+
+                                    $fitVerifiedMetricCountAllTime =
+                                        $fitDiagnosis['verified_metric_count_all_time'] ?? 0;
+
+                                    $fitLatestVerifiedMetricDate =
+                                        $fitDiagnosis['latest_verified_metric_date'] ?? null;
 
                                     $fitAcceptedMetricCount =
                                         $fitDiagnosis['accepted_metric_count'] ?? 0;
                                 @endphp
 
-                                @if($fitVerifiedMetricCount === 0)
+                                @if($fitTotalMetricCount === 0)
                                     <div class="mt-2 text-xs text-yellow-300">
-                                        Aucune métrique vérifiée sur les 30 derniers jours.
+                                        Aucune métrique de performance enregistrée pour ce joueur.
                                     </div>
+
+                                @elseif($fitVerifiedMetricCount === 0)
+                                    @if($fitRecentMetricCount > 0)
+                                        <div class="mt-2 text-xs text-yellow-300">
+                                            {{ $fitRecentMetricCount }}
+                                            métrique(s) récente(s), mais aucune n'est vérifiée.
+                                        </div>
+                                    @else
+                                        <div class="mt-2 text-xs text-yellow-300">
+                                            Aucune métrique de performance sur les 30 derniers jours.
+                                        </div>
+                                    @endif
+
+                                    @if($fitVerifiedMetricCountAllTime > 0 && $fitLatestVerifiedMetricDate)
+                                        <div class="mt-1 text-xs text-blue-200">
+                                            Des métriques vérifiées existent hors fenêtre.
+                                            Dernière vérification :
+                                            {{ \Carbon\Carbon::parse($fitLatestVerifiedMetricDate)->format('d/m/Y H:i') }}
+                                        </div>
+                                    @elseif($fitVerifiedMetricCountAllTime === 0)
+                                        <div class="mt-1 text-xs text-gray-500">
+                                            Aucune métrique vérifiée dans l'historique disponible.
+                                        </div>
+                                    @endif
+
                                 @else
                                     <div class="mt-2 text-xs text-blue-200">
                                         {{ $fitVerifiedMetricCount }}
-                                        métrique(s) vérifiée(s),
+                                        métrique(s) vérifiée(s) sur 30 jours,
                                         {{ $fitAcceptedMetricCount }}
                                         retenue(s) par FIT v1.
                                     </div>

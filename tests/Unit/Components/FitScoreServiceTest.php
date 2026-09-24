@@ -382,7 +382,11 @@ class FitScoreServiceTest extends TestCase
         );
 
         $this->assertSame(30, $diagnosis['window_days']);
+        $this->assertSame(5, $diagnosis['total_metric_count_all_time']);
+        $this->assertSame(4, $diagnosis['recent_metric_count']);
         $this->assertSame(3, $diagnosis['verified_metric_count']);
+        $this->assertSame(4, $diagnosis['verified_metric_count_all_time']);
+        $this->assertNotNull($diagnosis['latest_verified_metric_date']);
         $this->assertSame(2, $diagnosis['accepted_metric_count']);
 
         $this->assertSame(

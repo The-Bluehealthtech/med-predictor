@@ -110,14 +110,41 @@ class FitScoreService
     ): array {
         $asOf ??= now();
 
+        $windowStart = $asOf->copy()->subDays($days);
+
+        $totalMetricCountAllTime = PerformanceMetric::query()
+            ->where('player_id', $player->id)
+            ->where('measurement_date', '<=', $asOf)
+            ->count();
+
+        $recentMetricCount = PerformanceMetric::query()
+            ->where('player_id', $player->id)
+            ->whereBetween('measurement_date', [
+                $windowStart,
+                $asOf,
+            ])
+            ->count();
+
         $verifiedMetricCount = PerformanceMetric::query()
             ->where('player_id', $player->id)
             ->verified()
             ->whereBetween('measurement_date', [
-                $asOf->copy()->subDays($days),
+                $windowStart,
                 $asOf,
             ])
             ->count();
+
+        $verifiedMetricCountAllTime = PerformanceMetric::query()
+            ->where('player_id', $player->id)
+            ->verified()
+            ->where('measurement_date', '<=', $asOf)
+            ->count();
+
+        $latestVerifiedMetricDate = PerformanceMetric::query()
+            ->where('player_id', $player->id)
+            ->verified()
+            ->where('measurement_date', '<=', $asOf)
+            ->max('measurement_date');
 
         $calculation = $this->calculate(
             $player,
@@ -140,7 +167,11 @@ class FitScoreService
 
         return [
             'window_days' => $days,
+            'total_metric_count_all_time' => $totalMetricCountAllTime,
+            'recent_metric_count' => $recentMetricCount,
             'verified_metric_count' => $verifiedMetricCount,
+            'verified_metric_count_all_time' => $verifiedMetricCountAllTime,
+            'latest_verified_metric_date' => $latestVerifiedMetricDate,
             'accepted_metric_count' => $acceptedMetricCount,
             'missing_axes' => $missingAxes,
             'calculation' => $calculation,

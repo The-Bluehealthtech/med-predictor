@@ -623,16 +623,16 @@
         
         <!-- Nouveaux onglets FIFA -->
         <button class="fifa-tab-button" onclick="showFIFATab('notifications')">
-            Notifications <span id="notifications-count">12</span>
+            Notifications <span id="notifications-count">{{ $playerNotifications->count() }}</span>
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('health')">
             Santé & Bien-être
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('medical')">
-            Médical <span id="medical-count">4</span>
+            Médical
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('devices')">
-            Devices <span id="medical-count">3</span>
+            Devices
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('doping')">
             Dopage historique
@@ -1619,7 +1619,7 @@
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Médecin Traitant</span>
-                                <span class="fifa-stat-value">Dr. Martinez (Médecin FIFA)</span>
+                                <span class="fifa-stat-value">{{ $playerMedicalAptitude->treating_doctor ?? 'Données non disponibles' }}</span>
                             </div>
                         @else
                             <div class="fifa-stat-header">
@@ -1628,19 +1628,15 @@
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Statut Médical</span>
-                                <span class="fifa-stat-value positive">🟢 APTE AU JEU</span>
+                                <span class="fifa-stat-value">Données non disponibles</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Dernière Évaluation</span>
-                                <span class="fifa-stat-value">{{ now()->format('d M Y') }}</span>
+                                <span class="fifa-stat-value">Données non disponibles</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Médecin Traitant</span>
-                                <span class="fifa-stat-value">Dr. Martinez (Médecin FIFA)</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Prochaine Consultation</span>
-                                <span class="fifa-stat-value">{{ now()->addDays(7)->format('d M Y') }}</span>
+                                <span class="fifa-stat-value">Données non disponibles</span>
                             </div>
                         @endif
                     </div>
@@ -2595,36 +2591,6 @@
     <div id="licenses-tab" class="fifa-tab-content">
         <h2>🏆 Gestion des Licences & Validation FIFA</h2>
         <div id="licenses-content">
-            <!-- Filtres -->
-            <div class="fifa-license-filters">
-                <div class="filter-group">
-                    <label for="year-filter">Année:</label>
-                    <select id="year-filter" class="fifa-filter-select">
-                        <option value="toutes">Toutes</option>
-                        <option value="2024">2024</option>
-                        <option value="2023">2023</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="club-filter">Club:</label>
-                    <select id="club-filter" class="fifa-filter-select">
-                        <option value="tous">Tous</option>
-                        @if($player->club)
-                            <option value="{{ $player->club->id }}">{{ $player->club->name }}</option>
-                        @endif
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="type-filter">Type:</label>
-                    <select id="type-filter" class="fifa-filter-select">
-                        <option value="tous">Tous</option>
-                        <option value="Pro">Professionnel</option>
-                        <option value="Amateur">Amateur</option>
-                        <option value="Jeunes">Jeunes</option>
-                    </select>
-                </div>
-            </div>
-
             <!-- Tableau des licences -->
             <div class="fifa-license-table-container">
                 <table class="fifa-license-table">
@@ -2652,15 +2618,30 @@
                                 <tr>
                                     <td>
                                         @php
-                                            $startYear = \Carbon\Carbon::parse($license->start_date)->format('Y');
-                                            $endYear = \Carbon\Carbon::parse($license->end_date)->format('Y');
+                                            $startYear = $license->start_date
+                                        ? \Carbon\Carbon::parse($license->start_date)->format('Y')
+                                        : null;
+
+                                    $endYear = $license->end_date
+                                        ? \Carbon\Carbon::parse($license->end_date)->format('Y')
+                                        : null;
+
+                                    $seasonLabel = $license->season;
+
+                                    if (!$seasonLabel && $startYear && $endYear) {
+                                        $seasonLabel = $startYear === $endYear
+                                            ? $startYear
+                                            : $startYear . '-' . $endYear;
+                                    } elseif (!$seasonLabel) {
+                                        $seasonLabel = $startYear ?? $endYear;
+                                    }
                                         @endphp
-                                        Saison {{ $startYear }}-{{ $endYear }}
+                                        {{ $seasonLabel ? 'Saison ' . $seasonLabel : 'Données non disponibles' }}
                                     </td>
                                     <td>{{ $club->name ?? 'N/A' }}</td>
                                     <td>{{ $clubAssociation ? $clubAssociation->name : 'N/A' }}</td>
                                     <td>{{ ucfirst(str_replace('_', ' ', $license->license_type)) }}</td>
-                                    <td>FIFA</td>
+                                    <td>{{ $license->issuing_authority ?? 'Données non disponibles' }}</td>
                                     <td>
                                         <span class="fifa-status 
                                             @if($license->status == 'active') active
@@ -2713,11 +2694,7 @@
                             <div class="fifa-compensation-stat">
                                 <span>Prime estimée:</span>
                                 <span class="fifa-compensation-amount">
-                                    @if($playerLicenses && $playerLicenses->where('status', 'active')->count() > 0)
-                                        €{{ number_format($playerLicenses->where('status', 'active')->count() * 50000) }}
-                                    @else
-                                        €0
-                                    @endif
+                                    Données non disponibles
                                 </span>
                             </div>
                         </div>
@@ -3063,56 +3040,82 @@
                          console.log('📊 Initialisation des graphiques Chart.js...');
                          
                          // Graphique Radar des Ratings FIFA
-                         const ratingsCtx = document.getElementById('ratingsChart');
-                         if (ratingsCtx) {
-                             new Chart(ratingsCtx, {
-                                 type: 'radar',
-                                 data: {
-                                     labels: ['Attaque', 'Défense', 'Physique', 'Technique', 'Mental'],
-                                     datasets: [{
-                                         label: 'Ratings FIFA',
-                                         data: [85, 78, 82, 88, 80],
-                                         borderColor: '#ffd700',
-                                         backgroundColor: 'rgba(255, 215, 0, 0.2)',
-                                         pointBackgroundColor: '#ffd700',
-                                         pointBorderColor: '#fff',
-                                         pointBorderWidth: 2
-                                     }]
-                                 },
-                                 options: {
-                                     responsive: true,
-                                     maintainAspectRatio: false,
-                                     scales: {
-                                         r: {
-                                             beginAtZero: true,
-                                             max: 100,
-                                             ticks: { 
-                                                 stepSize: 20, 
-                                                 color: '#87ceeb',
-                                                 font: { size: 12 }
-                                             },
-                                             pointLabels: { 
-                                                 color: '#87ceeb',
-                                                 font: { size: 14, weight: 'bold' }
-                                             },
-                                             grid: { 
-                                                 color: 'rgba(135, 206, 235, 0.3)' 
-                                             }
-                                         }
-                                     },
-                                     plugins: {
-                                         legend: { 
-                                             labels: { 
-                                                 color: '#87ceeb',
-                                                 font: { size: 14, weight: 'bold' }
-                                             } 
-                                         }
-                                     }
-                                 }
-                             });
-                         }
-                         
-                         // Graphique des statistiques de saison
+                        const ratingsCtx = document.getElementById('ratingsChart');
+
+                        const ratingsData = @json($latestPerformance ? [
+                            'physical_score' => $latestPerformance->physical_score,
+                            'technical_score' => $latestPerformance->technical_score,
+                            'tactical_score' => $latestPerformance->tactical_score,
+                            'mental_score' => $latestPerformance->mental_score,
+                            'social_score' => $latestPerformance->social_score,
+                        ] : null);
+
+                        const ratingsValues = ratingsData ? [
+                            ratingsData.physical_score,
+                            ratingsData.technical_score,
+                            ratingsData.tactical_score,
+                            ratingsData.mental_score,
+                            ratingsData.social_score
+                        ] : [];
+
+                        const hasRatingsData = ratingsValues.some(
+                            value => value !== null
+                        );
+
+                        if (ratingsCtx && hasRatingsData) {
+                            new Chart(ratingsCtx, {
+                                type: 'radar',
+                                data: {
+                                    labels: ['Physique', 'Technique', 'Tactique', 'Mental', 'Social'],
+                                    datasets: [{
+                                        label: 'Performance FIT',
+                                        data: ratingsValues.map(
+                                            value => value === null ? null : Number(value)
+                                        ),
+                                        borderColor: '#ffd700',
+                                        backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                                        pointBackgroundColor: '#ffd700',
+                                        pointBorderColor: '#fff',
+                                        pointBorderWidth: 2
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        r: {
+                                            beginAtZero: true,
+                                            max: 100,
+                                            ticks: {
+                                                stepSize: 20,
+                                                color: '#87ceeb',
+                                                font: { size: 12 }
+                                            },
+                                            pointLabels: {
+                                                color: '#87ceeb',
+                                                font: { size: 14, weight: 'bold' }
+                                            },
+                                            grid: {
+                                                color: 'rgba(135, 206, 235, 0.3)'
+                                            }
+                                        }
+                                    },
+                                    plugins: {
+                                        legend: {
+                                            labels: {
+                                                color: '#87ceeb',
+                                                font: { size: 14, weight: 'bold' }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        } else if (ratingsCtx) {
+                            ratingsCtx.parentElement.innerHTML =
+                                '<div class="flex h-full items-center justify-center text-gray-400">Données non disponibles</div>';
+                        }
+
+                        // Graphique des statistiques de saison
                         const statsCtx = document.getElementById('statsChart');
                         if (statsCtx) {
                             const seasonStats = @json($playerStats->first());

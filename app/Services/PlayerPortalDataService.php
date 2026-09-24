@@ -360,6 +360,10 @@ class PlayerPortalDataService
                     ?? $latestHealth->visit_date
                     ?? $latestHealth->record_date
                     ?? null,
+                'treating_doctor' =>
+                    $latestHealth->aut_authorizing_physician
+                    ?? $latestHealth->doctor_name
+                    ?? null,
             ];
         }
 
@@ -947,6 +951,7 @@ class PlayerPortalDataService
         return compact(
             'healthRecords',
             'playerStats',
+            'latestPerformance',
             'playerLicenses',
             'performanceTrends',
             'playerPerformanceTests',

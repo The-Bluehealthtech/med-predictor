@@ -3120,11 +3120,12 @@
                             new Chart(statsCtx, {
                                 type: 'bar',
                                 data: {
-                                    labels: ['Matchs', 'Buts', 'Passes', 'Jaunes', 'Rouges'],
+                                    labels: ['Matchs', 'Minutes', 'Buts', 'Passes', 'Jaunes', 'Rouges'],
                                     datasets: [{
                                         label: 'Statistiques de saison',
                                         data: seasonStats ? [
                                             Number(seasonStats.matches_played ?? 0),
+                                            Number(seasonStats.minutes_played ?? 0),
                                             Number(seasonStats.goals ?? 0),
                                             Number(seasonStats.assists ?? 0),
                                             Number(seasonStats.yellow_cards ?? 0),

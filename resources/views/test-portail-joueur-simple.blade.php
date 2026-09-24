@@ -290,9 +290,46 @@
                             <div class="text-2xl font-bold text-gray-400">
                                 Données non disponibles
                             </div>
+
                             <div class="text-xs text-gray-400">
                                 Le Score FIT nécessite les cinq axes vérifiés.
                             </div>
+
+                            @if($latestFitAttempt)
+                                @php
+                                    $fitAxisLabels = [
+                                        'physical' => 'PHYSIQUE',
+                                        'technical' => 'TECHNIQUE',
+                                        'tactical' => 'TACTIQUE',
+                                        'mental' => 'MENTAL',
+                                        'social' => 'SOCIAL',
+                                    ];
+
+                                    $fitMissingAxisLabels = [];
+
+                                    foreach (($fitMissingAxes ?? []) as $axis) {
+                                        if (isset($fitAxisLabels[$axis])) {
+                                            $fitMissingAxisLabels[] = $fitAxisLabels[$axis];
+                                        }
+                                    }
+                                @endphp
+
+                                <div class="mt-2 text-xs text-blue-200">
+                                    Dernier calcul :
+                                    {{ \Carbon\Carbon::parse($latestFitAttempt->snapshot_at)->format('d/m/Y H:i') }}
+                                </div>
+
+                                @if(count($fitMissingAxisLabels) > 0)
+                                    <div class="mt-1 text-xs text-yellow-300">
+                                        Axes manquants :
+                                        {{ implode(', ', $fitMissingAxisLabels) }}
+                                    </div>
+                                @endif
+                            @else
+                                <div class="mt-2 text-xs text-gray-500">
+                                    Aucune tentative de calcul FIT enregistrée.
+                                </div>
+                            @endif
                         @endif
                     </div>
                 </div>

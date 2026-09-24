@@ -287,9 +287,14 @@ class FitSnapshotServiceTest extends TestCase
             'calculation_version' => FitSnapshotService::CALCULATION_VERSION,
         ]);
 
-        FitScoreSnapshot::create([
+        $incomplete = FitScoreSnapshot::create([
             'player_id' => 1,
             'snapshot_at' => $now,
+            'physical_score' => 80,
+            'technical_score' => 81,
+            'tactical_score' => null,
+            'mental_score' => null,
+            'social_score' => null,
             'fit_score' => null,
             'is_complete' => false,
             'window_days' => 30,
@@ -332,6 +337,16 @@ class FitSnapshotServiceTest extends TestCase
         $this->assertSame($previous->id, $result['previous_snapshot']->id);
         $this->assertEquals(4.0, $result['evolution']['points']);
         $this->assertEquals(5.1, $result['evolution']['percent']);
+
+        $this->assertSame(
+            $incomplete->id,
+            $result['latest_attempt']->id
+        );
+
+        $this->assertSame(
+            ['tactical', 'mental', 'social'],
+            $result['missing_axes']
+        );
     }
 
     public function test_same_inputs_do_not_create_duplicate_snapshots(): void

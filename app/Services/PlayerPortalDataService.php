@@ -54,6 +54,8 @@ class PlayerPortalDataService
         $fitSnapshotData = $this->fitSnapshotService->latestForPlayer($player);
         $latestFitSnapshot = $fitSnapshotData['snapshot'];
         $previousFitSnapshot = $fitSnapshotData['previous_snapshot'];
+        $latestFitAttempt = $fitSnapshotData['latest_attempt'];
+        $fitMissingAxes = $fitSnapshotData['missing_axes'];
         $fitEvolution = $fitSnapshotData['evolution'];
 
         $medicalRecords = DB::table('medical_records')
@@ -978,6 +980,8 @@ class PlayerPortalDataService
             'latestPerformance',
             'latestFitSnapshot',
             'previousFitSnapshot',
+            'latestFitAttempt',
+            'fitMissingAxes',
             'fitEvolution',
             'playerLicenses',
             'performanceTrends',

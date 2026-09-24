@@ -22,6 +22,8 @@ class FitSnapshotService
             return [
                 'snapshot' => null,
                 'previous_snapshot' => null,
+                'latest_attempt' => null,
+                'missing_axes' => null,
                 'evolution' => [
                     'previous_snapshot_id' => null,
                     'previous_score' => null,
@@ -32,12 +34,19 @@ class FitSnapshotService
             ];
         }
 
-        $snapshots = FitScoreSnapshot::query()
+        $baseQuery = FitScoreSnapshot::query()
             ->where('player_id', $player->id)
             ->where('calculation_version', self::CALCULATION_VERSION)
+            ->where('snapshot_at', '<=', now());
+
+        $latestAttempt = (clone $baseQuery)
+            ->orderByDesc('snapshot_at')
+            ->orderByDesc('id')
+            ->first();
+
+        $snapshots = (clone $baseQuery)
             ->where('is_complete', true)
             ->whereNotNull('fit_score')
-            ->where('snapshot_at', '<=', now())
             ->orderByDesc('snapshot_at')
             ->orderByDesc('id')
             ->limit(2)
@@ -49,6 +58,10 @@ class FitSnapshotService
         return [
             'snapshot' => $current,
             'previous_snapshot' => $previous,
+            'latest_attempt' => $latestAttempt,
+            'missing_axes' => $latestAttempt
+                ? $this->missingAxes($latestAttempt)
+                : null,
             'evolution' => $current
                 ? $this->calculateEvolution($current, $previous)
                 : [
@@ -59,6 +72,27 @@ class FitSnapshotService
                     'percent' => null,
                 ],
         ];
+    }
+
+    private function missingAxes(FitScoreSnapshot $snapshot): array
+    {
+        $axes = [
+            'physical' => 'physical_score',
+            'technical' => 'technical_score',
+            'tactical' => 'tactical_score',
+            'mental' => 'mental_score',
+            'social' => 'social_score',
+        ];
+
+        $missing = [];
+
+        foreach ($axes as $axis => $field) {
+            if ($snapshot->{$field} === null) {
+                $missing[] = $axis;
+            }
+        }
+
+        return $missing;
     }
 
     public function createSnapshot(

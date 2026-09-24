@@ -480,7 +480,9 @@
                             metric_name: nameInput.value,
                             metric_value: Number(valueInput.value),
                             metric_unit: unitInput.value,
-                            measurement_date: measurementDateInput.value,
+                            measurement_date: new Date(
+                                measurementDateInput.value
+                            ).toISOString(),
                             data_source: 'manual',
                             confidence_score: Number(
                                 confidenceInput.value

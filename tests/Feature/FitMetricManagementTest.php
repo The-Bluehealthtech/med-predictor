@@ -163,6 +163,8 @@ class FitMetricManagementTest extends TestCase
             ->assertSee('Sélectionner un axe')
             ->assertSee('Sélectionner d\'abord un axe', false)
             ->assertSee('Niveau de confiance (0 à 1)')
+            ->assertSee('measurementDateInput.value', false)
+            ->assertSee('.toISOString()', false)
             ->assertSee(
                 json_encode(
                     route(

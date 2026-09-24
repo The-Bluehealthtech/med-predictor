@@ -27,7 +27,7 @@ class LoginController extends Controller
             $user = Auth::user();
             if ($user->role === 'player' && $user->player_id) {
                 // Redirection directe vers le portail joueur simple
-                return redirect('/test-portail-joueur-simple?player_id=' . $user->player_id);
+                return redirect()->route('test.portail.joueur.simple');
             }
             
             // Redirection par rôle

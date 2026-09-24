@@ -38,8 +38,7 @@ class PlayerAccessController extends Controller
     {
         try {
             \Log::info('PlayerAccessController authenticate called', [
-                'playerId' => $playerId,
-                'request_data' => $request->all()
+                'player_id' => $playerId,
             ]);
             
             $player = Player::findOrFail($playerId);
@@ -68,12 +67,11 @@ class PlayerAccessController extends Controller
                 \Log::info('Access code authentication attempted');
                 // Authentification par code d'accès unique
                 $accessCode = $request->input('access_code');
-                \Log::info('Access code received', ['accessCode' => $accessCode]);
+
                 
                 if (!$this->validateAccessCode($player, $accessCode)) {
-                    \Log::warning('Access code validation failed', [
-                        'received' => $accessCode,
-                        'expected' => $this->generateAccessCode($player)
+                    \Log::warning('Player access code validation failed', [
+                        'player_id' => $player->id,
                     ]);
                     return back()->withErrors(['access_code' => 'Code d\'accès incorrect']);
                 }

@@ -7403,41 +7403,10 @@ Route::prefix('license-requests')->name('license-requests.')->middleware(['auth'
 });
 
 // Test du nouveau portail joueur avec hero zone simple
-Route::get('/test-portail-joueur-simple', function (Request $request) {
-    $playerId = (int) $request->get('player_id', 4);
-
-    $player = \App\Models\Player::with(['club', 'association'])
-        ->find($playerId);
-
-    abort_if(!$player, 404, 'Joueur introuvable.');
-
-    $associations = \App\Models\Association::with(['confederation'])
-        ->orderBy('name')
-        ->get();
-
-    $clubs = \App\Models\Club::with(['association'])
-        ->orderBy('name')
-        ->get();
-
-    $confederations = \App\Models\Confederation::orderBy('name')
-        ->get();
-
-    $portalData = app(\App\Services\PlayerPortalDataService::class)
-        ->forPlayer($player);
-
-    return view(
-        'test-portail-joueur-simple',
-        array_merge(
-            compact(
-                'player',
-                'associations',
-                'clubs',
-                'confederations'
-            ),
-            $portalData
-        )
-    );
-})->name('test.portail.joueur.simple');
+Route::get(
+    '/test-portail-joueur-simple',
+    [\App\Http\Controllers\PlayerPortalSimpleController::class, 'show']
+)->middleware(['auth'])->name('test.portail.joueur.simple');
 
 // Route de test pour la feuille de match (sans auth)
 Route::get('/referee-match-sheet-test/{matchId}', function ($matchId) {

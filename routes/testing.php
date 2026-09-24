@@ -74,3 +74,18 @@ Route::get(
 Route::get('/modules', function () {
     return response()->json(['status' => 'ok']);
 })->name('modules.index');
+
+
+// Minimal login target required by auth middleware during feature tests.
+Route::get('/login', function () {
+    return response()->json(['status' => 'login']);
+})->name('login');
+
+
+// Current player portal route used by security feature tests.
+// Uses the same controller and auth middleware as production.
+Route::get(
+    '/test-portail-joueur-simple',
+    [\App\Http\Controllers\PlayerPortalSimpleController::class, 'show']
+)->middleware(['auth'])->name('test.portail.joueur.simple');
+

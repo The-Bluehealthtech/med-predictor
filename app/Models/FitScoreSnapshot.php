@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\UsesEnhancedTenantScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -9,6 +10,7 @@ class FitScoreSnapshot extends Model
 {
     protected $fillable = [
         'player_id',
+        'tenant_id',
         'snapshot_at',
         'physical_score',
         'technical_score',
@@ -20,6 +22,7 @@ class FitScoreSnapshot extends Model
         'is_complete',
         'window_days',
         'calculation_version',
+        'input_signature',
         'evidence',
         'generated_by_user_id',
     ];

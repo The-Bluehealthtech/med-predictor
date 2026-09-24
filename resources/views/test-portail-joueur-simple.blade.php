@@ -221,183 +221,79 @@
                         </div>
                         <h3 class="text-lg font-semibold text-white">Score FIT</h3>
                     </div>
-                    
-                    <div class="space-y-2">
-                        <div class="text-center">
+
+                    <div class="space-y-2 text-center">
+                        @if($latestFitSnapshot)
                             @php
-                                // Calcul du score FIT basé sur les données de la base
-                                $fitScore = 0;
-                                $totalFactors = 0;
-                                
-                                // Facteur 1: Minutes jouées (poids: 30%)
-                                $totalMinutes = \DB::table('player_season_stats')
-                                    ->where('player_id', $player->id)
-                                    ->sum('minutes_played');
-                                if ($totalMinutes > 0) {
-                                    $minutesScore = min(100, ($totalMinutes / 1000) * 100);
-                                    $fitScore += $minutesScore * 0.3;
-                                    $totalFactors += 0.3;
-                                }
-                                
-                                // Facteur 2: Âge optimal (poids: 25%)
-                                $age = $player->date_of_birth ? \Carbon\Carbon::parse($player->date_of_birth)->age : 25;
-                                // Calcul dynamique de l'âge optimal basé sur la position du joueur
-                                $optimalAge = $player->position === 'Attaquant' ? 26 : 
-                                            ($player->position === 'Milieu' ? 27 : 
-                                            ($player->position === 'Défenseur' ? 28 : 27));
-                                $ageScore = max(0, 100 - abs($age - $optimalAge) * 5);
-                                $fitScore += $ageScore * 0.25;
-                                $totalFactors += 0.25;
-                                
-                                // Facteur 3: Performance récente (poids: 25%)
-                                $recentStats = \DB::table('player_season_stats')
-                                    ->where('player_id', $player->id)
-                                    ->first();
-                                if ($recentStats) {
-                                    $performanceScore = min(100, 
-                                        (($recentStats->goals * 10) + 
-                                         ($recentStats->assists * 8) + 
-                                         ($recentStats->matches_played * 2))
-                                    );
-                                    $fitScore += $performanceScore * 0.25;
-                                    $totalFactors += 0.25;
-                                }
-                                
-                                // Facteur 4: Santé (poids: 20%) - Calculé dynamiquement
-                                $healthScore = 0;
-                                // Score de base calculé selon l'âge et la position (pas de table santé)
-                                $healthScore = max(60, 90 - ($age - 20) * 2);
-                                
-                                // Ajuster selon la position du joueur
-                                if ($player->position === 'Attaquant') {
-                                    $healthScore += 5; // Attaquants ont généralement une meilleure forme
-                                } elseif ($player->position === 'Défenseur') {
-                                    $healthScore -= 3; // Défenseurs plus exposés aux blessures
-                                }
-                                
-                                $fitScore += $healthScore * 0.2;
-                                $totalFactors += 0.2;
-                                
-                                // Normalisation du score final
-                                $finalFitScore = $totalFactors > 0 ? round($fitScore / $totalFactors) : 75;
-                                
-                                // Ajustement du score pour qu'il soit cohérent avec l'indicateur graphique
-                                // Calcul dynamique des seuils basé sur les performances du joueur
-                                $avgPerformance = \DB::table('player_season_stats')
-                                    ->where('player_id', $player->id)
-                                    ->avg('goals');
-                                $avgPerformance = $avgPerformance ?: 0;
-                                
-                                // Seuils adaptatifs selon la performance moyenne du joueur
-                                $excellentThreshold = min(85, max(75, 80 + ($avgPerformance * 2)));
-                                $goodThreshold = min(70, max(55, 60 + ($avgPerformance * 1.5)));
-                                $averageThreshold = min(55, max(40, 45 + ($avgPerformance * 1)));
-                                
-                                if ($finalFitScore > $excellentThreshold) {
-                                    // Score très élevé = position vers le bleu (bien-être)
-                                    $displayScore = min(100, max($excellentThreshold, $finalFitScore));
-                                    $scoreColor = "text-blue-400";
-                                    $scoreStatus = "Excellente forme";
-                                } elseif ($finalFitScore > $goodThreshold) {
-                                    // Score élevé = position vers le vert (transition)
-                                    $displayScore = min($excellentThreshold - 1, max($goodThreshold, $finalFitScore));
-                                    $scoreColor = "text-green-400";
-                                    $scoreStatus = "Bonne forme";
-                                } elseif ($finalFitScore > $averageThreshold) {
-                                    // Score moyen = position vers le vert-rouge (transition)
-                                    $displayScore = min($goodThreshold - 1, max($averageThreshold, $finalFitScore));
-                                    $scoreColor = "text-yellow-400";
-                                    $scoreStatus = "Forme moyenne";
-                                } else {
-                                    // Score bas = position vers le rouge (maladie)
-                                    $displayScore = max(20, min($averageThreshold - 1, $finalFitScore));
-                                    $scoreColor = "text-red-400";
-                                    $scoreStatus = "Forme dégradée";
-                                }
-                                
-                                // Calcul de la tendance (comparaison avec la semaine précédente)
-                                // Essayer de récupérer des données réelles de tendance
-                                $lastWeekScore = $displayScore;
-                                $trend = 0;
-                                
-                                // Vérifier s'il y a des données de performance récentes pour calculer la tendance
-                                $recentPerformance = \DB::table('player_season_stats')
-                                    ->where('player_id', $player->id)
-                                    ->orderBy('created_at', 'desc')
-                                    ->limit(2)
-                                    ->get();
-                                
-                                if ($recentPerformance->count() >= 2) {
-                                    // Calculer la tendance basée sur les vraies données
-                                    $currentPerformance = ($recentPerformance[0]->goals ?? 0) + 
-                                                        ($recentPerformance[0]->assists ?? 0) + 
-                                                        ($recentPerformance[0]->matches_played ?? 0);
-                                    $previousPerformance = ($recentPerformance[1]->goals ?? 0) + 
-                                                          ($recentPerformance[1]->assists ?? 0) + 
-                                                          ($recentPerformance[1]->matches_played ?? 0);
-                                    
-                                    if ($previousPerformance > 0) {
-                                        $trend = round((($currentPerformance - $previousPerformance) / $previousPerformance) * 100);
-                                        $trend = max(-20, min(20, $trend)); // Limiter entre -20% et +20%
-                                    }
-                                }
-                                
-                                $lastWeekScore = $displayScore - $trend;
-                                $trendDirection = $trend > 0 ? 'up' : ($trend < 0 ? 'down' : 'stable');
-                                
-                                // Calcul de l'accélération (vitesse de changement par semaine)
-                                $acceleration = abs($trend);
-                                $accelerationLevel = $acceleration > 10 ? 'rapide' : ($acceleration > 5 ? 'modérée' : 'lente');
-                                
-                                // Couleur de la flèche selon l'accélération
-                                $arrowColor = $acceleration > 10 ? 'text-red-500' : ($acceleration > 5 ? 'text-yellow-500' : 'text-green-500');
-                                
-                                // Texte explicatif de la tendance
-                                if ($trendDirection === 'up') {
-                                    $trendText = "Amélioration " . $accelerationLevel;
-                                } elseif ($trendDirection === 'down') {
-                                    $trendText = "Détérioration " . $accelerationLevel;
-                                } else {
-                                    $trendText = "Stable";
-                                }
+                                $fitDisplayScore = round(
+                                    (float) $latestFitSnapshot->fit_score,
+                                    1
+                                );
+
+                                $fitConfidence = $latestFitSnapshot->confidence_score !== null
+                                    ? round(
+                                        (float) $latestFitSnapshot->confidence_score * 100,
+                                        1
+                                    )
+                                    : null;
+
+                                $fitPoints = $fitEvolution['points'] ?? null;
+                                $fitPercent = $fitEvolution['percent'] ?? null;
                             @endphp
-                            
-                            <div class="text-4xl font-bold {{ $scoreColor }} mb-2">{{ $displayScore }}%</div>
-                            <div class="text-gray-300 text-sm mb-2">{{ $scoreStatus }}</div>
-                            <div class="text-green-200 text-sm mb-4">Score de Santé 360</div>
-                            
-                            <!-- Ligne de tendance colorée -->
-                            <div class="relative mb-3">
-                                <div class="w-full h-3 bg-gradient-to-r from-blue-500 via-green-500 to-red-500 rounded-full"></div>
-                                <!-- Curseur positionné selon le score (inversé : score élevé = gauche) -->
-                                <div class="absolute top-0 transform -translate-y-1" style="left: {{ 100 - $displayScore }}%">
-                                    <div class="w-4 h-4 bg-white border-2 border-gray-800 rounded-lg"></div>
-                                </div>
+
+                            <div class="text-4xl font-bold text-green-400 mb-2">
+                                {{ number_format($fitDisplayScore, 1) }}/100
                             </div>
-                            
-                            <!-- Indicateur de tendance et accélération -->
-                            <div class="flex items-center justify-center space-x-2 mb-2">
-                                @if($trendDirection === 'up')
-                                    <i class="fas fa-arrow-up {{ $arrowColor }} text-lg"></i>
-                                @elseif($trendDirection === 'down')
-                                    <i class="fas fa-arrow-down {{ $arrowColor }} text-lg"></i>
-                                @else
-                                    <i class="fas fa-minus text-gray-400 text-lg"></i>
-                                @endif
-                                <span class="text-white text-sm font-medium">{{ $trendText }}</span>
+
+                            <div class="text-green-200 text-sm">
+                                Score FIT {{ $latestFitSnapshot->calculation_version }}
                             </div>
-                            
-                            <!-- Détails de la tendance -->
+
                             <div class="text-xs text-gray-300">
-                                @if($trendDirection !== 'stable')
-                                    <span class="{{ $trend > 0 ? 'text-green-400' : 'text-red-400' }}">
-                                        {{ $trend > 0 ? '+' : '' }}{{ $trend }}% cette semaine
+                                Calculé le
+                                {{ \Carbon\Carbon::parse($latestFitSnapshot->snapshot_at)->format('d/m/Y H:i') }}
+                            </div>
+
+                            @if($fitConfidence !== null)
+                                <div class="text-xs text-gray-300">
+                                    Confiance : {{ number_format($fitConfidence, 1) }}%
+                                </div>
+                            @endif
+
+                            <div class="pt-2 text-sm">
+                                @if($fitPoints !== null)
+                                    <span class="{{ $fitPoints > 0
+                                        ? 'text-green-400'
+                                        : ($fitPoints < 0
+                                            ? 'text-red-400'
+                                            : 'text-gray-300') }}">
+                                        {{ $fitPoints > 0 ? '+' : '' }}{{ number_format($fitPoints, 1) }} pts
+
+                                        @if($fitPercent !== null)
+                                            ({{ $fitPercent > 0 ? '+' : '' }}{{ number_format($fitPercent, 1) }}%)
+                                        @endif
                                     </span>
+
+                                    @if($previousFitSnapshot)
+                                        <div class="text-xs text-gray-400 mt-1">
+                                            Référence :
+                                            {{ \Carbon\Carbon::parse($previousFitSnapshot->snapshot_at)->format('d/m/Y H:i') }}
+                                        </div>
+                                    @endif
                                 @else
-                                    <span class="text-gray-400">Aucun changement</span>
+                                    <span class="text-gray-400">
+                                        Aucun snapshot antérieur comparable
+                                    </span>
                                 @endif
                             </div>
-                        </div>
+                        @else
+                            <div class="text-2xl font-bold text-gray-400">
+                                Données non disponibles
+                            </div>
+                            <div class="text-xs text-gray-400">
+                                Le Score FIT nécessite les cinq axes vérifiés.
+                            </div>
+                        @endif
                     </div>
                 </div>
                 
@@ -484,87 +380,54 @@
                 </div>
             </div>
             
-            <!-- Navigation rapide vers les modules -->
+            <!-- Statistiques FIT canoniques -->
             <div class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                <h3 class="text-lg font-semibold text-white mb-3">⚽ Statistiques FIT</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    @php
-                        // Récupération des données pour calculer les statistiques
-                        $stats = \DB::table('player_season_stats')->where('player_id', $player->id)->get();
-                        $age = $player->date_of_birth ? \Carbon\Carbon::parse($player->date_of_birth)->age : 25;
-                        
-                        // Calcul des statistiques FIT
-                        $totalMatches = $stats->sum('matches_played');
-                        $totalMinutes = $stats->sum('minutes_played');
-                        $totalGoals = $stats->sum('goals');
-                        $totalAssists = $stats->sum('assists');
-                        
-                        // Calcul des notes (basé sur les performances réelles ou valeurs par défaut)
-                        $vit = min(100, max(50, 70 + ($totalMinutes / 100) + (30 - $age)));
-                        $tir = min(100, max(50, 65 + ($totalGoals * 3)));
-                        $pas = min(100, max(50, 70 + ($totalAssists * 4)));
-                        $dri = min(100, max(50, 75 + ($totalMatches * 2)));
-                        $def = min(100, max(50, 60 + ($totalMatches * 1.5)));
-                        $phy = min(100, max(50, 80 - ($age - 20) + ($totalMinutes / 200)));
-                        
-                        // Note générale (moyenne des 6 attributs)
-                        $gen = round(($vit + $tir + $pas + $dri + $def + $phy) / 6);
-                        
-                        // Détermination du rang
-                        if ($gen >= 90) $rang = "Élite";
-                        elseif ($gen >= 80) $rang = "Top 10";
-                        elseif ($gen >= 70) $rang = "Pro";
-                        elseif ($gen >= 60) $rang = "Amateur";
-                        else $rang = "Débutant";
-                    @endphp
-                    
-                    <!-- RANG -->
-                    <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg p-3 text-center">
-                        <div class="text-white font-bold text-lg">{{ $rang }}</div>
-                        <div class="text-white text-xs opacity-90">RANG</div>
-                    </div>
-                    
-                    <!-- GÉN -->
-                    <div class="bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg p-3 text-center">
-                        <div class="text-white font-bold text-lg">{{ $gen }}</div>
-                        <div class="text-white text-xs opacity-90">GÉN</div>
-                    </div>
-                    
-                    <!-- VIT -->
-                    <div class="bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg p-3 text-center">
-                        <div class="text-white font-bold text-lg">{{ round($vit) }}</div>
-                        <div class="text-white text-xs opacity-90">VIT</div>
-                    </div>
-                    
-                    <!-- TIR -->
-                    <div class="bg-gradient-to-br from-red-500 to-pink-500 rounded-lg p-3 text-center">
-                        <div class="text-white font-bold text-lg">{{ round($tir) }}</div>
-                        <div class="text-white text-xs opacity-90">TIR</div>
-                    </div>
-                    
-                    <!-- PAS -->
-                    <div class="bg-gradient-to-br from-purple-500 to-violet-500 rounded-lg p-3 text-center">
-                        <div class="text-white font-bold text-lg">{{ round($pas) }}</div>
-                        <div class="text-white text-xs opacity-90">PAS</div>
-                    </div>
-                    
-                    <!-- DRI -->
-                    <div class="bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg p-3 text-center">
-                        <div class="text-white font-bold text-lg">{{ round($dri) }}</div>
-                        <div class="text-white text-xs opacity-90">DRI</div>
-                    </div>
-                    
-                    <!-- DÉF -->
-                    <div class="bg-gradient-to-br from-orange-500 to-red-500 rounded-lg p-3 text-center">
-                        <div class="text-white font-bold text-lg">{{ round($def) }}</div>
-                        <div class="text-white text-xs opacity-90">DÉF</div>
-                    </div>
-                    
-                    <!-- PHY -->
-                    <div class="bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg p-3 text-center">
-                        <div class="text-white font-bold text-lg">{{ round($phy) }}</div>
-                        <div class="text-white text-xs opacity-90">PHY</div>
-                    </div>
+                <h3 class="text-lg font-semibold text-white mb-3">
+                    ⚽ Statistiques FIT
+                </h3>
+
+                @php
+                    $fitStatCards = [
+                        [
+                            'label' => 'FIT',
+                            'value' => $latestFitSnapshot?->fit_score,
+                        ],
+                        [
+                            'label' => 'PHYSIQUE',
+                            'value' => $latestFitSnapshot?->physical_score,
+                        ],
+                        [
+                            'label' => 'TECHNIQUE',
+                            'value' => $latestFitSnapshot?->technical_score,
+                        ],
+                        [
+                            'label' => 'TACTIQUE',
+                            'value' => $latestFitSnapshot?->tactical_score,
+                        ],
+                        [
+                            'label' => 'MENTAL',
+                            'value' => $latestFitSnapshot?->mental_score,
+                        ],
+                        [
+                            'label' => 'SOCIAL',
+                            'value' => $latestFitSnapshot?->social_score,
+                        ],
+                    ];
+                @endphp
+
+                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+                    @foreach($fitStatCards as $fitStat)
+                        <div class="bg-white/10 rounded-lg p-3 text-center border border-white/10">
+                            <div class="text-white font-bold text-lg">
+                                {{ $fitStat['value'] !== null
+                                    ? number_format((float) $fitStat['value'], 1)
+                                    : 'N/A' }}
+                            </div>
+                            <div class="text-gray-300 text-xs">
+                                {{ $fitStat['label'] }}
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -3028,12 +2891,12 @@
                         const ratingsCtx = document.getElementById('ratingsChart');
 
                         @php
-                            $ratingsData = $latestPerformance ? [
-                                'physical_score' => $latestPerformance->physical_score,
-                                'technical_score' => $latestPerformance->technical_score,
-                                'tactical_score' => $latestPerformance->tactical_score,
-                                'mental_score' => $latestPerformance->mental_score,
-                                'social_score' => $latestPerformance->social_score,
+                            $ratingsData = $latestFitSnapshot ? [
+                                'physical_score' => $latestFitSnapshot->physical_score,
+                                'technical_score' => $latestFitSnapshot->technical_score,
+                                'tactical_score' => $latestFitSnapshot->tactical_score,
+                                'mental_score' => $latestFitSnapshot->mental_score,
+                                'social_score' => $latestFitSnapshot->social_score,
                             ] : null;
                         @endphp
 
@@ -3047,9 +2910,11 @@
                             ratingsData.social_score
                         ] : [];
 
-                        const hasRatingsData = ratingsValues.some(
-                            value => value !== null
-                        );
+                        const hasRatingsData =
+                            ratingsValues.length === 5
+                            && ratingsValues.every(
+                                value => value !== null
+                            );
 
                         if (ratingsCtx && hasRatingsData) {
                             new Chart(ratingsCtx, {
@@ -3057,7 +2922,7 @@
                                 data: {
                                     labels: ['Physique', 'Technique', 'Tactique', 'Mental', 'Social'],
                                     datasets: [{
-                                        label: 'Performance FIT',
+                                        label: 'Performance FIT v1',
                                         data: ratingsValues.map(
                                             value => value === null ? null : Number(value)
                                         ),

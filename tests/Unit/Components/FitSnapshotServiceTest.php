@@ -46,6 +46,7 @@ class FitSnapshotServiceTest extends TestCase
         Schema::create('fit_score_snapshots', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('player_id');
+            $table->unsignedBigInteger('tenant_id')->nullable();
             $table->timestamp('snapshot_at');
             $table->decimal('physical_score', 5, 2)->nullable();
             $table->decimal('technical_score', 5, 2)->nullable();
@@ -57,13 +58,21 @@ class FitSnapshotServiceTest extends TestCase
             $table->boolean('is_complete')->default(false);
             $table->unsignedSmallInteger('window_days')->default(30);
             $table->string('calculation_version', 32);
+            $table->string('input_signature', 64)->nullable();
             $table->json('evidence')->nullable();
+
+            $table->unique([
+                'player_id',
+                'calculation_version',
+                'input_signature',
+            ]);
             $table->unsignedBigInteger('generated_by_user_id')->nullable();
             $table->timestamps();
         });
 
         $this->player = new Player();
         $this->player->id = 1;
+        $this->player->tenant_id = 42;
 
         $this->service = new FitSnapshotService(
             new FitScoreService()
@@ -93,6 +102,7 @@ class FitSnapshotServiceTest extends TestCase
         $snapshot = $result['snapshot'];
 
         $this->assertTrue($snapshot->exists);
+        $this->assertSame(42, $snapshot->tenant_id);
         $this->assertTrue($snapshot->is_complete);
         $this->assertEquals(84.0, $snapshot->fit_score);
         $this->assertEquals(0.90, $snapshot->confidence_score);
@@ -241,6 +251,188 @@ class FitSnapshotServiceTest extends TestCase
         );
         $this->assertNull($result['evolution']['points']);
         $this->assertNull($result['evolution']['percent']);
+    }
+
+    public function test_latest_for_player_uses_only_past_complete_current_version_snapshots(): void
+    {
+        $now = now()->startOfSecond();
+
+        $previous = FitScoreSnapshot::create([
+            'player_id' => 1,
+            'snapshot_at' => $now->copy()->subDays(10),
+            'physical_score' => 78,
+            'technical_score' => 78,
+            'tactical_score' => 78,
+            'mental_score' => 78,
+            'social_score' => 78,
+            'fit_score' => 78,
+            'confidence_score' => 0.90,
+            'is_complete' => true,
+            'window_days' => 30,
+            'calculation_version' => FitSnapshotService::CALCULATION_VERSION,
+        ]);
+
+        $current = FitScoreSnapshot::create([
+            'player_id' => 1,
+            'snapshot_at' => $now->copy()->subDay(),
+            'physical_score' => 82,
+            'technical_score' => 82,
+            'tactical_score' => 82,
+            'mental_score' => 82,
+            'social_score' => 82,
+            'fit_score' => 82,
+            'confidence_score' => 0.92,
+            'is_complete' => true,
+            'window_days' => 30,
+            'calculation_version' => FitSnapshotService::CALCULATION_VERSION,
+        ]);
+
+        FitScoreSnapshot::create([
+            'player_id' => 1,
+            'snapshot_at' => $now,
+            'fit_score' => null,
+            'is_complete' => false,
+            'window_days' => 30,
+            'calculation_version' => FitSnapshotService::CALCULATION_VERSION,
+        ]);
+
+        // Un snapshot futur de la bonne version ne doit jamais être affiché.
+        FitScoreSnapshot::create([
+            'player_id' => 1,
+            'snapshot_at' => $now->copy()->addMinute(),
+            'physical_score' => 99,
+            'technical_score' => 99,
+            'tactical_score' => 99,
+            'mental_score' => 99,
+            'social_score' => 99,
+            'fit_score' => 99,
+            'is_complete' => true,
+            'window_days' => 30,
+            'calculation_version' => FitSnapshotService::CALCULATION_VERSION,
+        ]);
+
+        // Une autre version, même plus récente, n'est pas comparable.
+        FitScoreSnapshot::create([
+            'player_id' => 1,
+            'snapshot_at' => $now->copy()->subHours(12),
+            'physical_score' => 97,
+            'technical_score' => 97,
+            'tactical_score' => 97,
+            'mental_score' => 97,
+            'social_score' => 97,
+            'fit_score' => 97,
+            'is_complete' => true,
+            'window_days' => 30,
+            'calculation_version' => 'fit_v0',
+        ]);
+
+        $result = $this->service->latestForPlayer($this->player);
+
+        $this->assertSame($current->id, $result['snapshot']->id);
+        $this->assertSame($previous->id, $result['previous_snapshot']->id);
+        $this->assertEquals(4.0, $result['evolution']['points']);
+        $this->assertEquals(5.1, $result['evolution']['percent']);
+    }
+
+    public function test_same_inputs_do_not_create_duplicate_snapshots(): void
+    {
+        $firstAt = now()->startOfSecond();
+
+        $this->createCompleteMetrics($firstAt);
+
+        $first = $this->service->createSnapshot(
+            $this->player,
+            30,
+            $firstAt
+        );
+
+        $second = $this->service->createSnapshot(
+            $this->player,
+            30,
+            $firstAt->copy()->addHour()
+        );
+
+        $this->assertTrue($first['created']);
+        $this->assertFalse($second['created']);
+
+        $this->assertSame(
+            $first['snapshot']->id,
+            $second['snapshot']->id
+        );
+
+        $this->assertSame(
+            $first['snapshot']->input_signature,
+            $second['snapshot']->input_signature
+        );
+
+        $this->assertSame(
+            1,
+            FitScoreSnapshot::query()
+                ->where('player_id', $this->player->id)
+                ->whereNotNull('input_signature')
+                ->count()
+        );
+    }
+
+    public function test_changed_verified_input_creates_new_snapshot_and_evolution(): void
+    {
+        $firstAt = now()->startOfSecond();
+
+        $this->createCompleteMetrics($firstAt);
+
+        $first = $this->service->createSnapshot(
+            $this->player,
+            30,
+            $firstAt
+        );
+
+        $secondAt = $firstAt->copy()->addHour();
+
+        $this->createMetric(
+            'technical',
+            'passing',
+            92,
+            '%',
+            $secondAt->copy()->subMinute()
+        );
+
+        $second = $this->service->createSnapshot(
+            $this->player,
+            30,
+            $secondAt
+        );
+
+        $this->assertTrue($first['created']);
+        $this->assertTrue($second['created']);
+
+        $this->assertNotSame(
+            $first['snapshot']->id,
+            $second['snapshot']->id
+        );
+
+        $this->assertNotSame(
+            $first['snapshot']->input_signature,
+            $second['snapshot']->input_signature
+        );
+
+        $this->assertEquals(84.0, $first['snapshot']->fit_score);
+        $this->assertEquals(86.0, $second['snapshot']->fit_score);
+
+        $this->assertSame(
+            $first['snapshot']->id,
+            $second['evolution']['previous_snapshot_id']
+        );
+
+        $this->assertEquals(2.0, $second['evolution']['points']);
+        $this->assertEquals(2.4, $second['evolution']['percent']);
+
+        $this->assertSame(
+            2,
+            FitScoreSnapshot::query()
+                ->where('player_id', $this->player->id)
+                ->whereNotNull('input_signature')
+                ->count()
+        );
     }
 
     private function createCompleteMetrics($snapshotAt): void

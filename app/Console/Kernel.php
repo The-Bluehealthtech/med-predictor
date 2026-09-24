@@ -70,6 +70,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\ProjectBackup::class,
         \App\Console\Commands\ProjectRoutesClean::class,
         \App\Console\Commands\SyncTenants::class,
+        \App\Console\Commands\GenerateFitSnapshots::class,
     ];
 
     /**

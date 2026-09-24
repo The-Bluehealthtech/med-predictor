@@ -5,6 +5,7 @@ namespace App\Services\Fit;
 use App\Models\FitScoreSnapshot;
 use App\Models\Player;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
 
 class FitSnapshotService
 {
@@ -13,6 +14,51 @@ class FitSnapshotService
     public function __construct(
         private readonly FitScoreService $fitScoreService
     ) {
+    }
+
+    public function latestForPlayer(Player $player): array
+    {
+        if (!Schema::hasTable('fit_score_snapshots')) {
+            return [
+                'snapshot' => null,
+                'previous_snapshot' => null,
+                'evolution' => [
+                    'previous_snapshot_id' => null,
+                    'previous_score' => null,
+                    'current_score' => null,
+                    'points' => null,
+                    'percent' => null,
+                ],
+            ];
+        }
+
+        $snapshots = FitScoreSnapshot::query()
+            ->where('player_id', $player->id)
+            ->where('calculation_version', self::CALCULATION_VERSION)
+            ->where('is_complete', true)
+            ->whereNotNull('fit_score')
+            ->where('snapshot_at', '<=', now())
+            ->orderByDesc('snapshot_at')
+            ->orderByDesc('id')
+            ->limit(2)
+            ->get();
+
+        $current = $snapshots->get(0);
+        $previous = $snapshots->get(1);
+
+        return [
+            'snapshot' => $current,
+            'previous_snapshot' => $previous,
+            'evolution' => $current
+                ? $this->calculateEvolution($current, $previous)
+                : [
+                    'previous_snapshot_id' => null,
+                    'previous_score' => null,
+                    'current_score' => null,
+                    'points' => null,
+                    'percent' => null,
+                ],
+        ];
     }
 
     public function createSnapshot(
@@ -29,49 +75,103 @@ class FitSnapshotService
             $snapshotAt
         );
 
+        $inputSignature = $this->buildInputSignature(
+            $player,
+            $days,
+            $result
+        );
+
         /*
-         * Seul un snapshot complet, calculé avec la même version,
-         * peut servir de référence pour une évolution FIT.
+         * L'unicité player + version + signature garantit qu'un même
+         * ensemble d'entrées ne crée pas plusieurs snapshots.
+         */
+        $snapshot = FitScoreSnapshot::firstOrCreate(
+            [
+                'player_id' => $player->id,
+                'calculation_version' => self::CALCULATION_VERSION,
+                'input_signature' => $inputSignature,
+            ],
+            [
+                'tenant_id' => $player->tenant_id,
+                'snapshot_at' => $snapshotAt,
+                'physical_score' => $result['physical_score'],
+                'technical_score' => $result['technical_score'],
+                'tactical_score' => $result['tactical_score'],
+                'mental_score' => $result['mental_score'],
+                'social_score' => $result['social_score'],
+                'fit_score' => $result['overall_score'],
+                'confidence_score' => $result['confidence'],
+                'is_complete' => $result['complete'],
+                'window_days' => $days,
+                'evidence' => [
+                    'axes' => $result['axes'],
+                ],
+                'generated_by_user_id' => $generatedByUserId,
+            ]
+        );
+
+        /*
+         * L'évolution appartient au snapshot réellement persisté.
+         * Si firstOrCreate a retrouvé un ancien snapshot identique,
+         * on ne compare donc pas avec la nouvelle heure de recalcul.
          */
         $previous = null;
 
-        if ($result['complete'] && $result['overall_score'] !== null) {
+        if ($snapshot->is_complete && $snapshot->fit_score !== null) {
             $previous = FitScoreSnapshot::query()
                 ->where('player_id', $player->id)
                 ->where('calculation_version', self::CALCULATION_VERSION)
                 ->where('is_complete', true)
                 ->whereNotNull('fit_score')
-                ->where('snapshot_at', '<', $snapshotAt)
+                ->where('snapshot_at', '<', $snapshot->snapshot_at)
                 ->orderByDesc('snapshot_at')
+                ->orderByDesc('id')
                 ->first();
         }
 
-        $snapshot = FitScoreSnapshot::create([
-            'player_id' => $player->id,
-            'snapshot_at' => $snapshotAt,
-            'physical_score' => $result['physical_score'],
-            'technical_score' => $result['technical_score'],
-            'tactical_score' => $result['tactical_score'],
-            'mental_score' => $result['mental_score'],
-            'social_score' => $result['social_score'],
-            'fit_score' => $result['overall_score'],
-            'confidence_score' => $result['confidence'],
-            'is_complete' => $result['complete'],
-            'window_days' => $days,
-            'calculation_version' => self::CALCULATION_VERSION,
-            'evidence' => [
-                'axes' => $result['axes'],
-            ],
-            'generated_by_user_id' => $generatedByUserId,
-        ]);
-
         return [
             'snapshot' => $snapshot,
+            'created' => $snapshot->wasRecentlyCreated,
             'evolution' => $this->calculateEvolution(
                 $snapshot,
                 $previous
             ),
         ];
+    }
+
+    private function buildInputSignature(
+        Player $player,
+        int $days,
+        array $result
+    ): string {
+        /*
+         * snapshot_at et generated_by_user_id sont volontairement exclus :
+         * ils ne changent pas les données sportives ayant produit le score.
+         */
+        $payload = [
+            'player_id' => (int) $player->id,
+            'calculation_version' => self::CALCULATION_VERSION,
+            'window_days' => $days,
+            'physical_score' => $result['physical_score'],
+            'technical_score' => $result['technical_score'],
+            'tactical_score' => $result['tactical_score'],
+            'mental_score' => $result['mental_score'],
+            'social_score' => $result['social_score'],
+            'overall_score' => $result['overall_score'],
+            'confidence' => $result['confidence'],
+            'complete' => $result['complete'],
+            'axes' => $result['axes'],
+        ];
+
+        return hash(
+            'sha256',
+            json_encode(
+                $payload,
+                JSON_THROW_ON_ERROR
+                | JSON_PRESERVE_ZERO_FRACTION
+                | JSON_UNESCAPED_SLASHES
+            )
+        );
     }
 
     private function calculateEvolution(

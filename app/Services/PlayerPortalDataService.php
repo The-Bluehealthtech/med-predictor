@@ -3,12 +3,18 @@
 namespace App\Services;
 
 use App\Models\Player;
+use App\Services\Fit\FitSnapshotService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class PlayerPortalDataService
 {
+    public function __construct(
+        private readonly FitSnapshotService $fitSnapshotService
+    ) {
+    }
+
     public function forPlayer(Player $player): array
     {
         $playerId = $player->id;
@@ -44,6 +50,11 @@ class PlayerPortalDataService
             ->where('player_id', $playerId)
             ->orderByDesc('performance_date')
             ->first();
+
+        $fitSnapshotData = $this->fitSnapshotService->latestForPlayer($player);
+        $latestFitSnapshot = $fitSnapshotData['snapshot'];
+        $previousFitSnapshot = $fitSnapshotData['previous_snapshot'];
+        $fitEvolution = $fitSnapshotData['evolution'];
 
         $medicalRecords = DB::table('medical_records')
             ->where('player_id', $playerId)
@@ -965,6 +976,9 @@ class PlayerPortalDataService
             'healthRecords',
             'playerStats',
             'latestPerformance',
+            'latestFitSnapshot',
+            'previousFitSnapshot',
+            'fitEvolution',
             'playerLicenses',
             'performanceTrends',
             'playerPerformanceTests',

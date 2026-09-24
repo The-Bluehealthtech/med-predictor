@@ -331,35 +331,48 @@ class PlayerPortalDataService
         $playerMedicalAptitude = null;
 
         if ($latestHealth || $latestPcma) {
-            $healthRisk = (float) ($latestHealth->risk_score ?? 0);
+            $healthRisk = $latestHealth?->risk_score;
+            $healthRiskPercent = null;
 
             // health_records.risk_score peut être stocké comme ratio
             // (0.09 = 9 %) ou, pour d'anciennes données, en pourcentage.
-            $healthRiskPercent = $healthRisk <= 1
-                ? $healthRisk * 100
-                : $healthRisk;
+            if ($healthRisk !== null) {
+                $healthRisk = (float) $healthRisk;
+                $healthRiskPercent = $healthRisk <= 1
+                    ? $healthRisk * 100
+                    : $healthRisk;
+            }
 
-            $healthScore =
-                $player->fitness_score
-                ?? (100 - $healthRiskPercent);
+            $healthScore = $player->fitness_score;
+
+            if ($healthScore === null && $healthRiskPercent !== null) {
+                $healthScore = 100 - $healthRiskPercent;
+            }
 
             $playerMedicalAptitude = (object) [
                 'overall_health_score' =>
-                    round($this->clamp((float) $healthScore, 0, 100), 1),
+                    $healthScore !== null
+                        ? round(
+                            $this->clamp((float) $healthScore, 0, 100),
+                            1
+                        )
+                        : null,
 
-                'medical_status' =>
-                    $player->match_availability
-                        ? 'fit'
-                        : 'temporarily_unfit',
+                // La disponibilité pour un match ne constitue pas
+                // une aptitude médicale.
+                'medical_status' => null,
 
                 'fitness_level' =>
-                    $this->fitnessLevel((float) $healthScore),
+                    $healthScore !== null
+                        ? $this->fitnessLevel((float) $healthScore)
+                        : null,
 
                 'assessment_date' =>
-                    $latestPcma->assessment_date
-                    ?? $latestHealth->visit_date
-                    ?? $latestHealth->record_date
+                    $latestPcma?->assessment_date
+                    ?? $latestHealth?->visit_date
+                    ?? $latestHealth?->record_date
                     ?? null,
+
                 'treating_doctor' =>
                     $latestHealth?->aut_authorizing_physician
                     ?? $latestHealth?->doctor_name
@@ -447,12 +460,12 @@ class PlayerPortalDataService
         if ($latestPcma) {
             $pcmaResults = $this->json($latestPcma->result_json);
 
-            $rawStatus = $latestPcma->status ?? 'pending';
+            $rawStatus = $latestPcma->status;
 
             $status = match ($rawStatus) {
                 'approved' => 'cleared',
                 'rejected' => 'not_cleared',
-                default => $rawStatus ?: 'pending',
+                default => $rawStatus ?: null,
             };
 
             $playerPcma = (object) [

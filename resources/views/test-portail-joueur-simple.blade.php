@@ -465,64 +465,19 @@
                         <div class="flex justify-between">
                             <span class="text-orange-200 text-sm">FIT CONNECT ID:</span>
                             <span class="text-white font-medium">
-                                @php
-                                    $fifaRequest = \DB::table('license_requests')
-                                        ->where('fifa_connect_id', 'LIKE', '%' . $player->id . '%')
-                                        ->orWhere('current_club_id', $player->club_id ?? 0)
-                                        ->first();
-                                    
-                                    if ($fifaRequest && $fifaRequest->fifa_connect_id) {
-                                        echo $fifaRequest->fifa_connect_id;
-                                    } else {
-                                        // Génération locale si pas de sync FIFA
-                                        $countryCode = '';
-                                        if ($player->association) {
-                                            if (stripos($player->association->country, 'Tunisie') !== false) {
-                                                $countryCode = 'TUN';
-                                            } elseif (stripos($player->association->country, 'France') !== false) {
-                                                $countryCode = 'FRA';
-                                            } elseif (stripos($player->association->country, 'Angleterre') !== false) {
-                                                $countryCode = 'ENG';
-                                            } else {
-                                                $countryCode = substr($player->association->country, 0, 3);
-                                            }
-                                        } else {
-                                            $countryCode = 'XXX';
-                                        }
-                                        echo $countryCode . '-P-' . str_pad($player->id, 9, '0', STR_PAD_LEFT);
-                                    }
-                                @endphp
+                                {{ $player->fifa_connect_id
+                                    ?? $player->passport?->fifa_connect_id
+                                    ?? 'Données non disponibles' }}
                             </span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-orange-200 text-sm">Document d'identité:</span>
                             <span class="text-white font-medium">
-                                @php
-                                    $identityDoc = \DB::table('license_requests')
-                                        ->where('fifa_connect_id', 'LIKE', '%' . $player->id . '%')
-                                        ->orWhere('current_club_id', $player->club_id ?? 0)
-                                        ->first();
-                                    
-                                    if ($identityDoc) {
-                                        // Priorité 1: Passeport
-                                        if ($identityDoc->passport_number) {
-                                            echo 'Passeport: ' . $identityDoc->passport_number;
-                                        }
-                                        // Priorité 2: Carte d'identité nationale
-                                        elseif ($identityDoc->national_id_number) {
-                                            echo 'CNI: ' . $identityDoc->national_id_number;
-                                        }
-                                        // Priorité 3: Acte de naissance
-                                        elseif ($identityDoc->birth_certificate_number) {
-                                            echo 'Acte de naissance: ' . $identityDoc->birth_certificate_number;
-                                        }
-                                        else {
-                                            echo 'N/A';
-                                        }
-                                    } else {
-                                        echo 'N/A';
-                                    }
-                                @endphp
+                                @if($player->passport?->passport_number)
+                                    Passeport: {{ $player->passport->passport_number }}
+                                @else
+                                    Données non disponibles
+                                @endif
                             </span>
                         </div>
                     </div>
@@ -1597,25 +1552,41 @@
                         @if($playerMedicalAptitude)
                             <div class="fifa-stat-header">
                                 <span>Score de Santé Global</span>
-                                <span class="fifa-stat-value highlight">{{ $playerMedicalAptitude->overall_health_score }}/100</span>
+                                <span class="fifa-stat-value highlight">{{ $playerMedicalAptitude->overall_health_score !== null
+            ? $playerMedicalAptitude->overall_health_score . '/100'
+            : 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Statut Médical</span>
                                 @php
-                                    $statusColor = $playerMedicalAptitude->medical_status == 'fit' ? '#51cf66' : 
-                                                 ($playerMedicalAptitude->medical_status == 'temporarily_unfit' ? '#ffd700' : '#ff6b6b');
-                                    $statusText = $playerMedicalAptitude->medical_status == 'fit' ? '🟢 APTE AU JEU' : 
-                                                 ($playerMedicalAptitude->medical_status == 'temporarily_unfit' ? '🟡 TEMPORAIREMENT INAPTE' : '🔴 INAPTE');
+                                    $statusColor = match ($playerMedicalAptitude->medical_status) {
+                                    'fit' => '#51cf66',
+                                    'temporarily_unfit' => '#ffd700',
+                                    'unfit' => '#ff6b6b',
+                                    default => '#6c757d',
+                                };
+
+                                $statusText = match ($playerMedicalAptitude->medical_status) {
+                                    'fit' => '🟢 APTE AU JEU',
+                                    'temporarily_unfit' => '🟡 TEMPORAIREMENT INAPTE',
+                                    'unfit' => '🔴 INAPTE',
+                                    null => 'Données non disponibles',
+                                    default => 'ℹ️ STATUT INCONNU',
+                                };
                                 @endphp
                                 <span class="fifa-stat-value positive" style="color: {{ $statusColor }};">{{ $statusText }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Niveau de Forme</span>
-                                <span class="fifa-stat-value">{{ ucfirst($playerMedicalAptitude->fitness_level) }}</span>
+                                <span class="fifa-stat-value">{{ $playerMedicalAptitude->fitness_level
+            ? ucfirst($playerMedicalAptitude->fitness_level)
+            : 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Dernière Évaluation</span>
-                                <span class="fifa-stat-value">{{ \Carbon\Carbon::parse($playerMedicalAptitude->assessment_date)->format('d M Y') }}</span>
+                                <span class="fifa-stat-value">{{ $playerMedicalAptitude->assessment_date
+            ? \Carbon\Carbon::parse($playerMedicalAptitude->assessment_date)->format('d M Y')
+            : 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Médecin Traitant</span>
@@ -1781,48 +1752,62 @@
                                 <span>Statut PCMA</span>
                                 @php
                                     $pcmaColor = match ($playerPcma->pcma_status) {
-                                        'cleared', 'approved' => '#51cf66',
-                                        'pending' => '#ffd700',
-                                        'completed' => '#4dabf7',
-                                        default => '#ff6b6b',
-                                    };
+                                    'cleared', 'approved' => '#51cf66',
+                                    'pending' => '#ffd700',
+                                    'completed' => '#4dabf7',
+                                    'not_cleared', 'failed', 'rejected' => '#ff6b6b',
+                                    default => '#6c757d',
+                                };
 
-                                    $pcmaText = match ($playerPcma->pcma_status) {
-                                        'cleared' => '✅ APTE',
-                                        'approved' => '✅ APPROUVÉ',
-                                        'pending' => '⏳ EN ATTENTE',
-                                        'completed' => 'ℹ️ TERMINÉ',
-                                        'not_cleared' => '❌ NON APTE',
-                                        'failed' => '❌ ÉCHEC',
-                                        'rejected' => '❌ REJETÉ',
-                                        default => 'ℹ️ STATUT INCONNU',
-                                    };
+                                $pcmaText = match ($playerPcma->pcma_status) {
+                                    'cleared' => '✅ APTE',
+                                    'approved' => '✅ APPROUVÉ',
+                                    'pending' => '⏳ EN ATTENTE',
+                                    'completed' => 'ℹ️ TERMINÉ',
+                                    'not_cleared' => '❌ NON APTE',
+                                    'failed' => '❌ ÉCHEC',
+                                    'rejected' => '❌ REJETÉ',
+                                    null => 'Données non disponibles',
+                                    default => 'ℹ️ STATUT INCONNU',
+                                };
                                 @endphp
                                 <span class="fifa-stat-value positive" style="color: {{ $pcmaColor }};">{{ $pcmaText }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Score Global PCMA</span>
-                                <span class="fifa-stat-value highlight">{{ $playerPcma->pcma_score }}/100</span>
+                                <span class="fifa-stat-value highlight">{{ $playerPcma->pcma_score !== null
+            ? $playerPcma->pcma_score . '/100'
+            : 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Forme Cardiovasculaire</span>
-                                <span class="fifa-stat-value">{{ $playerPcma->cardiovascular_fitness }}/100</span>
+                                <span class="fifa-stat-value">{{ $playerPcma->cardiovascular_fitness !== null
+            ? $playerPcma->cardiovascular_fitness . '/100'
+            : 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Forme Respiratoire</span>
-                                <span class="fifa-stat-value">{{ $playerPcma->respiratory_fitness }}/100</span>
+                                <span class="fifa-stat-value">{{ $playerPcma->respiratory_fitness !== null
+            ? $playerPcma->respiratory_fitness . '/100'
+            : 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Forme Musculosquelettique</span>
-                                <span class="fifa-stat-value">{{ $playerPcma->musculoskeletal_fitness }}/100</span>
+                                <span class="fifa-stat-value">{{ $playerPcma->musculoskeletal_fitness !== null
+            ? $playerPcma->musculoskeletal_fitness . '/100'
+            : 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Forme Neurologique</span>
-                                <span class="fifa-stat-value">{{ $playerPcma->neurological_fitness }}/100</span>
+                                <span class="fifa-stat-value">{{ $playerPcma->neurological_fitness !== null
+            ? $playerPcma->neurological_fitness . '/100'
+            : 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Prochaine Évaluation</span>
-                                <span class="fifa-stat-value">{{ \Carbon\Carbon::parse($playerPcma->next_assessment_date)->format('d M Y') }}</span>
+                                <span class="fifa-stat-value">{{ $playerPcma->next_assessment_date
+            ? \Carbon\Carbon::parse($playerPcma->next_assessment_date)->format('d M Y')
+            : 'Données non disponibles' }}</span>
                             </div>
                         @else
                             <div class="fifa-stat-header">
@@ -3123,6 +3108,10 @@
                         const statsCtx = document.getElementById('statsChart');
                         if (statsCtx) {
                             const seasonStats = @json($playerStats->first());
+                            const nullableNumber = value =>
+                                value === null || value === undefined || value === ''
+                                    ? null
+                                    : Number(value);
 
                             new Chart(statsCtx, {
                                 type: 'bar',
@@ -3132,12 +3121,12 @@
                                         {
                                             label: 'Statistiques de saison',
                                             data: seasonStats ? [
-                                                Number(seasonStats.matches_played ?? 0),
+                                                nullableNumber(seasonStats.matches_played),
                                                 null,
-                                                Number(seasonStats.goals ?? 0),
-                                                Number(seasonStats.assists ?? 0),
-                                                Number(seasonStats.yellow_cards ?? 0),
-                                                Number(seasonStats.red_cards ?? 0)
+                                                nullableNumber(seasonStats.goals),
+                                                nullableNumber(seasonStats.assists),
+                                                nullableNumber(seasonStats.yellow_cards),
+                                                nullableNumber(seasonStats.red_cards)
                                             ] : [],
                                             yAxisID: 'y'
                                         },
@@ -3145,7 +3134,7 @@
                                             label: 'Minutes jouées',
                                             data: seasonStats ? [
                                                 null,
-                                                Number(seasonStats.minutes_played ?? 0),
+                                                nullableNumber(seasonStats.minutes_played),
                                                 null,
                                                 null,
                                                 null,

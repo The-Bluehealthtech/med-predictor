@@ -1556,6 +1556,17 @@ Route::prefix('gcs/public')->group(function () {
     Route::get('/file-url', [GcsController::class, 'getFileUrl']);
 });
 
+// Canonical FIT metric recording
+Route::post(
+    '/fit/players/{player}/performance-metrics',
+    \App\Http\Controllers\Api\PerformanceMetricRecordingController::class
+)->middleware([
+    'web',
+    'auth',
+    'auth.unified',
+    'permission.unified:record-performance-metrics',
+]);
+
 // Canonical FIT metric verification
 Route::post(
     '/fit/players/{player}/performance-metrics/{metric}/verify',

@@ -47,6 +47,19 @@ class FitScoreService
         ],
     ];
 
+    public function isMetricEligibleForFit(
+        PerformanceMetric $metric
+    ): bool {
+        $config = self::CATALOG[$metric->metric_type][$metric->metric_name]
+            ?? null;
+
+        if ($config === null) {
+            return false;
+        }
+
+        return $this->normalize($metric, $config) !== null;
+    }
+
     public function calculate(
         Player $player,
         int $days = 30,

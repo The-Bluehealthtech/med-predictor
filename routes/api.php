@@ -1555,3 +1555,14 @@ Route::prefix('gcs')->middleware(['auth:sanctum'])->group(function () {
 Route::prefix('gcs/public')->group(function () {
     Route::get('/file-url', [GcsController::class, 'getFileUrl']);
 });
+
+// Canonical FIT metric verification
+Route::post(
+    '/fit/players/{player}/performance-metrics/{metric}/verify',
+    \App\Http\Controllers\Api\PerformanceMetricVerificationController::class
+)->middleware([
+    'web',
+    'auth',
+    'auth.unified',
+    'permission.unified:verify-performance-metrics',
+]);

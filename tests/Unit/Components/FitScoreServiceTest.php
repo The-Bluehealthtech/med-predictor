@@ -271,6 +271,59 @@ class FitScoreServiceTest extends TestCase
         $this->assertEquals(0.90, $result['confidence']);
     }
 
+    public function test_result_contains_traceable_metric_evidence(): void
+    {
+        $metric = $this->createMetric(
+            type: 'technical',
+            name: 'passing',
+            value: 87,
+            unit: '%'
+        );
+
+        $result = $this->service->calculate($this->player);
+
+        $evidence = $result['axes']['technical']['metrics'];
+
+        $this->assertCount(1, $evidence);
+        $this->assertSame($metric->id, $evidence[0]['metric_id']);
+        $this->assertSame('passing', $evidence[0]['name']);
+        $this->assertEquals(87.0, $evidence[0]['raw_value']);
+        $this->assertSame('%', $evidence[0]['unit']);
+        $this->assertEquals(87.0, $evidence[0]['score']);
+        $this->assertEquals(0.90, $evidence[0]['confidence']);
+        $this->assertSame('manual', $evidence[0]['source']);
+        $this->assertNotNull($evidence[0]['measurement_date']);
+    }
+
+    public function test_calculation_respects_snapshot_reference_date(): void
+    {
+        $asOf = now()->subDays(5);
+
+        $this->createMetric(
+            type: 'technical',
+            name: 'passing',
+            value: 81,
+            unit: '%',
+            date: $asOf->copy()->subDay()
+        );
+
+        $this->createMetric(
+            type: 'technical',
+            name: 'passing',
+            value: 96,
+            unit: '%',
+            date: $asOf->copy()->addDay()
+        );
+
+        $result = $this->service->calculate(
+            $this->player,
+            30,
+            $asOf
+        );
+
+        $this->assertEquals(81.0, $result['technical_score']);
+    }
+
     private function createMetric(
         string $type,
         string $name,

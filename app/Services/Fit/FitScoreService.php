@@ -4,6 +4,7 @@ namespace App\Services\Fit;
 
 use App\Models\PerformanceMetric;
 use App\Models\Player;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class FitScoreService
@@ -46,12 +47,20 @@ class FitScoreService
         ],
     ];
 
-    public function calculate(Player $player, int $days = 30): array
-    {
+    public function calculate(
+        Player $player,
+        int $days = 30,
+        ?Carbon $asOf = null
+    ): array {
+        $asOf ??= now();
+
         $metrics = PerformanceMetric::query()
             ->where('player_id', $player->id)
             ->verified()
-            ->where('measurement_date', '>=', now()->subDays($days))
+            ->whereBetween('measurement_date', [
+                $asOf->copy()->subDays($days),
+                $asOf,
+            ])
             ->orderByDesc('measurement_date')
             ->get();
 
@@ -117,9 +126,14 @@ class FitScoreService
             }
 
             $normalized[] = [
+                'metric_id' => $metric->id,
                 'name' => $metricName,
+                'raw_value' => (float) $metric->metric_value,
+                'unit' => $metric->metric_unit,
                 'score' => $score,
-                'confidence' => $metric->confidence_score,
+                'confidence' => $metric->confidence_score !== null
+                    ? (float) $metric->confidence_score
+                    : null,
                 'source' => $metric->data_source,
                 'measurement_date' => $metric->measurement_date,
             ];

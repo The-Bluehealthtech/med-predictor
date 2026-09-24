@@ -3,6 +3,9 @@ set -eu
 
 cd /var/www/html
 
+echo "Clearing compiled Blade views..."
+php artisan view:clear
+
 echo "Preparing canonical FIT data..."
 
 php artisan fit:deploy \

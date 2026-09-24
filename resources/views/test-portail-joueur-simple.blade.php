@@ -3042,13 +3042,17 @@
                          // Graphique Radar des Ratings FIFA
                         const ratingsCtx = document.getElementById('ratingsChart');
 
-                        const ratingsData = @json($latestPerformance ? [
-                            'physical_score' => $latestPerformance->physical_score,
-                            'technical_score' => $latestPerformance->technical_score,
-                            'tactical_score' => $latestPerformance->tactical_score,
-                            'mental_score' => $latestPerformance->mental_score,
-                            'social_score' => $latestPerformance->social_score,
-                        ] : null);
+                        @php
+                            $ratingsData = $latestPerformance ? [
+                                'physical_score' => $latestPerformance->physical_score,
+                                'technical_score' => $latestPerformance->technical_score,
+                                'tactical_score' => $latestPerformance->tactical_score,
+                                'mental_score' => $latestPerformance->mental_score,
+                                'social_score' => $latestPerformance->social_score,
+                            ] : null;
+                        @endphp
+
+                        const ratingsData = @json($ratingsData);
 
                         const ratingsValues = ratingsData ? [
                             ratingsData.physical_score,

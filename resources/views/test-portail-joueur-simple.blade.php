@@ -3134,15 +3134,36 @@
                                     }]
                                 },
                                 options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true,
-                                            ticks: { precision: 0 }
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        labels: {
+                                            color: '#f3f4f6',
+                                            font: { size: 14, weight: '600' }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        ticks: {
+                                            color: '#f3f4f6',
+                                            font: { size: 13, weight: '600' }
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            precision: 0,
+                                            color: '#f3f4f6',
+                                            font: { size: 12 }
+                                        },
+                                        grid: {
+                                            color: 'rgba(255, 255, 255, 0.15)'
                                         }
                                     }
                                 }
+                            }
                             });
                         }
 

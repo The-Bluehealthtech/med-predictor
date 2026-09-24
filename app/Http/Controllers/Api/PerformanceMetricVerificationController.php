@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PerformanceMetric;
 use App\Models\Player;
 use App\Services\Fit\FitScoreService;
+use App\Services\Fit\FitSnapshotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +14,8 @@ use Illuminate\Support\Facades\DB;
 class PerformanceMetricVerificationController extends Controller
 {
     public function __construct(
-        private readonly FitScoreService $fitScoreService
+        private readonly FitScoreService $fitScoreService,
+        private readonly FitSnapshotService $fitSnapshotService
     ) {
     }
 
@@ -43,18 +45,33 @@ class PerformanceMetricVerificationController extends Controller
                     );
                 }
 
-                if ($performanceMetric->is_verified) {
-                    return [$performanceMetric, true];
+                $alreadyVerified = (bool) $performanceMetric->is_verified;
+
+                if (!$alreadyVerified) {
+                    $performanceMetric->forceFill([
+                        'is_verified' => true,
+                        'verified_by' => $user->id,
+                        'verified_at' => now(),
+                        'updated_by' => $user->id,
+                    ])->save();
+
+                    $performanceMetric = $performanceMetric->fresh();
                 }
 
-                $performanceMetric->forceFill([
-                    'is_verified' => true,
-                    'verified_by' => $user->id,
-                    'verified_at' => now(),
-                    'updated_by' => $user->id,
-                ])->save();
+                /*
+                 * Persist the canonical calculation attempt immediately.
+                 * Incomplete axes remain null; no score is fabricated.
+                 *
+                 * This is deliberately inside the same transaction so a
+                 * newly verified metric and its FIT snapshot stay atomic.
+                 * createSnapshot() is signature-idempotent.
+                 */
+                $this->fitSnapshotService->createSnapshot(
+                    $scopedPlayer,
+                    generatedByUserId: $user->id
+                );
 
-                return [$performanceMetric->fresh(), false];
+                return [$performanceMetric, $alreadyVerified];
             }
         );
 

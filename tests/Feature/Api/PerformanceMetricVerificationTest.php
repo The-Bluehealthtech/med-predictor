@@ -101,7 +101,34 @@ class PerformanceMetricVerificationTest extends TestCase
             $table->timestamps();
             $table->softDeletes();
         });
+        Schema::create('fit_score_snapshots', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('player_id');
+            $table->unsignedBigInteger('tenant_id')->nullable();
+            $table->timestamp('snapshot_at');
+            $table->decimal('physical_score', 5, 2)->nullable();
+            $table->decimal('technical_score', 5, 2)->nullable();
+            $table->decimal('tactical_score', 5, 2)->nullable();
+            $table->decimal('mental_score', 5, 2)->nullable();
+            $table->decimal('social_score', 5, 2)->nullable();
+            $table->decimal('fit_score', 5, 2)->nullable();
+            $table->decimal('confidence_score', 5, 4)->nullable();
+            $table->boolean('is_complete')->default(false);
+            $table->unsignedSmallInteger('window_days')->default(30);
+            $table->string('calculation_version', 32);
+            $table->string('input_signature', 64)->nullable();
+            $table->json('evidence')->nullable();
+            $table->unsignedBigInteger('generated_by_user_id')->nullable();
+            $table->timestamps();
+
+            $table->unique(
+                ['player_id', 'calculation_version', 'input_signature'],
+                'fit_snapshot_input_unique'
+            );
+        });
+
     }
+
 
     protected function tearDown(): void
     {
@@ -133,6 +160,28 @@ class PerformanceMetricVerificationTest extends TestCase
             'is_verified' => true,
             'verified_by' => $user->id,
         ]);
+
+        $this->assertDatabaseHas('fit_score_snapshots', [
+            'player_id' => $playerId,
+            'tenant_id' => $tenantId,
+            'physical_score' => 82,
+            'technical_score' => null,
+            'tactical_score' => null,
+            'mental_score' => null,
+            'social_score' => null,
+            'fit_score' => null,
+            'is_complete' => false,
+            'window_days' => 30,
+            'calculation_version' => 'fit_v1',
+            'generated_by_user_id' => $user->id,
+        ]);
+
+        $snapshot = DB::table('fit_score_snapshots')
+            ->where('player_id', $playerId)
+            ->first();
+
+        $this->assertNotNull($snapshot);
+        $this->assertNotEmpty($snapshot->input_signature);
     }
 
     public function test_sports_scientist_can_verify_metric_in_accessible_tenant(): void
@@ -281,6 +330,23 @@ class PerformanceMetricVerificationTest extends TestCase
         $this->assertSame(
             $verifiedAt,
             $finalState->verified_at->toDateTimeString()
+        );
+
+        $this->assertSame(
+            1,
+            DB::table('fit_score_snapshots')
+                ->where('player_id', $playerId)
+                ->count()
+        );
+
+        $snapshot = DB::table('fit_score_snapshots')
+            ->where('player_id', $playerId)
+            ->first();
+
+        $this->assertNotNull($snapshot);
+        $this->assertSame(
+            $firstVerifier->id,
+            (int) $snapshot->generated_by_user_id
         );
 
         Carbon::setTestNow();

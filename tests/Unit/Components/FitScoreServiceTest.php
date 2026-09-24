@@ -188,13 +188,97 @@ class FitScoreServiceTest extends TestCase
         $this->assertNull($result['overall_score']);
     }
 
+    public function test_social_percentage_metric_is_accepted(): void
+    {
+        $this->createMetric(
+            type: 'social',
+            name: 'team_cohesion',
+            value: 76,
+            unit: '%'
+        );
+
+        $result = $this->service->calculate($this->player);
+
+        $this->assertEquals(76.0, $result['social_score']);
+        $this->assertNull($result['overall_score']);
+    }
+
+    public function test_social_metric_with_explicit_metadata_scale_is_normalized(): void
+    {
+        $this->createMetric(
+            type: 'social',
+            name: 'communication_skills',
+            value: 4.5,
+            unit: 'score',
+            metadata: [
+                'scale_min' => 0,
+                'scale_max' => 5,
+            ]
+        );
+
+        $result = $this->service->calculate($this->player);
+
+        $this->assertEquals(90.0, $result['social_score']);
+    }
+
+    public function test_all_five_axes_produce_a_global_fit_score(): void
+    {
+        $this->createMetric(
+            type: 'physical',
+            name: 'endurance',
+            value: 80,
+            unit: '%'
+        );
+
+        $this->createMetric(
+            type: 'technical',
+            name: 'passing',
+            value: 82,
+            unit: '%'
+        );
+
+        $this->createMetric(
+            type: 'tactical',
+            name: 'positioning',
+            value: 8.4,
+            unit: 'score'
+        );
+
+        $this->createMetric(
+            type: 'mental',
+            name: 'concentration',
+            value: 86,
+            unit: '%'
+        );
+
+        $this->createMetric(
+            type: 'social',
+            name: 'team_cohesion',
+            value: 88,
+            unit: '%'
+        );
+
+        $result = $this->service->calculate($this->player);
+
+        $this->assertEquals(80.0, $result['physical_score']);
+        $this->assertEquals(82.0, $result['technical_score']);
+        $this->assertEquals(84.0, $result['tactical_score']);
+        $this->assertEquals(86.0, $result['mental_score']);
+        $this->assertEquals(88.0, $result['social_score']);
+
+        $this->assertTrue($result['complete']);
+        $this->assertEquals(84.0, $result['overall_score']);
+        $this->assertEquals(0.90, $result['confidence']);
+    }
+
     private function createMetric(
         string $type,
         string $name,
         float $value,
         string $unit,
         bool $verified = true,
-        $date = null
+        $date = null,
+        ?array $metadata = null
     ): PerformanceMetric {
         return PerformanceMetric::create([
             'player_id' => $this->player->id,
@@ -209,6 +293,7 @@ class FitScoreServiceTest extends TestCase
             'verified_by' => $verified ? 1 : null,
             'verified_at' => $verified ? now() : null,
             'created_by' => 1,
+            'metadata' => $metadata,
         ]);
     }
 }

@@ -167,8 +167,46 @@ class FitScoreService
             return round($value * 10, 1);
         }
 
-        // Social : aucune conversion implicite.
-        // L'échelle devra être explicitement définie avant utilisation.
+        if (($config['scale'] ?? null) === 'explicit') {
+            // Une valeur déjà exprimée en pourcentage est directement exploitable.
+            if (
+                $metric->metric_unit === '%'
+                && $value >= 0
+                && $value <= 100
+            ) {
+                return round($value, 1);
+            }
+
+            // Toute autre échelle doit être explicitement déclarée
+            // dans les métadonnées de la métrique.
+            $metadata = is_array($metric->metadata)
+                ? $metric->metadata
+                : [];
+
+            $min = $metadata['scale_min'] ?? null;
+            $max = $metadata['scale_max'] ?? null;
+
+            if (!is_numeric($min) || !is_numeric($max)) {
+                return null;
+            }
+
+            $min = (float) $min;
+            $max = (float) $max;
+
+            if (
+                $max <= $min
+                || $value < $min
+                || $value > $max
+            ) {
+                return null;
+            }
+
+            return round(
+                (($value - $min) / ($max - $min)) * 100,
+                1
+            );
+        }
+
         return null;
     }
 }

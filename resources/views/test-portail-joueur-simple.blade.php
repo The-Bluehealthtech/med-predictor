@@ -512,23 +512,23 @@
                         ],
                         [
                             'label' => 'PHYSIQUE',
-                            'value' => $latestFitSnapshot?->physical_score,
+                            'value' => $latestFitAttempt?->physical_score,
                         ],
                         [
                             'label' => 'TECHNIQUE',
-                            'value' => $latestFitSnapshot?->technical_score,
+                            'value' => $latestFitAttempt?->technical_score,
                         ],
                         [
                             'label' => 'TACTIQUE',
-                            'value' => $latestFitSnapshot?->tactical_score,
+                            'value' => $latestFitAttempt?->tactical_score,
                         ],
                         [
                             'label' => 'MENTAL',
-                            'value' => $latestFitSnapshot?->mental_score,
+                            'value' => $latestFitAttempt?->mental_score,
                         ],
                         [
                             'label' => 'SOCIAL',
-                            'value' => $latestFitSnapshot?->social_score,
+                            'value' => $latestFitAttempt?->social_score,
                         ],
                     ];
                 @endphp
@@ -3009,12 +3009,12 @@
                         const ratingsCtx = document.getElementById('ratingsChart');
 
                         @php
-                            $ratingsData = $latestFitSnapshot ? [
-                                'physical_score' => $latestFitSnapshot->physical_score,
-                                'technical_score' => $latestFitSnapshot->technical_score,
-                                'tactical_score' => $latestFitSnapshot->tactical_score,
-                                'mental_score' => $latestFitSnapshot->mental_score,
-                                'social_score' => $latestFitSnapshot->social_score,
+                            $ratingsData = $latestFitAttempt ? [
+                                'physical_score' => $latestFitAttempt->physical_score,
+                                'technical_score' => $latestFitAttempt->technical_score,
+                                'tactical_score' => $latestFitAttempt->tactical_score,
+                                'mental_score' => $latestFitAttempt->mental_score,
+                                'social_score' => $latestFitAttempt->social_score,
                             ] : null;
                         @endphp
 

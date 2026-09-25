@@ -4040,7 +4040,48 @@ Route::get('/dashboard-test', function () {
         $stats['Compétitions'] = $competitions->count();
     }
 
-    return view('dashboard-test', compact('stats'));
+    $positions = (clone $players)
+        ->select('position')
+        ->selectRaw('COUNT(*) as total')
+        ->groupBy('position')
+        ->orderByDesc('total')
+        ->get();
+
+    $monthlyPlayers = collect(range(5, 0))->map(function ($monthsAgo) use ($players) {
+        $month = now()->startOfMonth()->subMonths($monthsAgo);
+        return [
+            'label' => $month->translatedFormat('M Y'),
+            'count' => (clone $players)->whereBetween('created_at', [
+                $month, $month->copy()->endOfMonth(),
+            ])->count(),
+        ];
+    });
+
+    $topClubs = (clone $clubs)
+        ->withCount(['players' => function ($query) use ($user) {
+            if ($user->isAssociationUser()) {
+                $query->where('association_id', $user->association_id);
+            } elseif ($user->isClubUser()) {
+                $query->where('club_id', $user->club_id);
+            }
+        }])
+        ->orderByDesc('players_count')
+        ->limit(5)
+        ->get(['id', 'name']);
+
+    $recentPlayers = (clone $players)
+        ->with('club:id,name')
+        ->latest('created_at')
+        ->limit(5)
+        ->get(['id', 'name', 'first_name', 'last_name', 'position', 'club_id', 'created_at']);
+
+    $recentCompetitions = $user->isClubUser()
+        ? collect()
+        : (clone $competitions)->latest('created_at')->limit(5)->get(['id', 'name', 'status', 'created_at']);
+
+    return view('dashboard-test', compact(
+        'stats', 'positions', 'monthlyPlayers', 'topClubs', 'recentPlayers', 'recentCompetitions'
+    ));
 })->middleware(['auth'])->name('dashboard.test');
 
 Route::get('/profile-selector', function () {

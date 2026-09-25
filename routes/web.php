@@ -4791,9 +4791,8 @@ Route::middleware(['auth'])->group(function () {
         [\App\Http\Controllers\FifaConnectDashboardController::class, 'status']
     )->middleware(['auth'])->name('fifa.connectivity.status');
     
-    Route::get('/fifa/connectivity', function () {
-        return view('modules.fifa.connectivity');
-    })->name('fifa.connectivity');
+    Route::get('/fifa/connectivity', [\App\Http\Controllers\FifaConnectDashboardController::class, 'index'])
+        ->name('fifa.connectivity');
     
     Route::get('/fifa/sync-dashboard', function () {
         return view('modules.fifa.sync-dashboard');
@@ -4807,9 +4806,8 @@ Route::middleware(['auth'])->group(function () {
         return view('modules.fifa.analytics');
     })->name('fifa.analytics');
     
-    Route::get('/fifa/statistics', function () {
-        return view('modules.fifa.statistics');
-    })->name('fifa.statistics');
+    Route::get('/fifa/statistics', [\App\Http\Controllers\FifaConnectDashboardController::class, 'index'])
+        ->name('fifa.statistics');
     
     // Device Connections routes
     Route::get('/device-connections', function () {

@@ -260,6 +260,8 @@ class PCMAController extends Controller
      */
     public function getAthletePCMAs(Athlete $athlete): JsonResponse
     {
+        $this->authorizeAthleteMedicalAccess($athlete);
+
         $pcmas = $athlete->pcmas()
             ->with(['assessor'])
             ->orderBy('created_at', 'desc')
@@ -276,6 +278,8 @@ class PCMAController extends Controller
      */
     public function getAthletePCMAStats(Athlete $athlete): JsonResponse
     {
+        $this->authorizeAthleteMedicalAccess($athlete);
+
         $stats = [
             'total_pcmas' => $athlete->pcmas()->count(),
             'completed_pcmas' => $athlete->pcmas()->where('status', 'completed')->count(),
@@ -302,6 +306,22 @@ class PCMAController extends Controller
             'success' => true,
             'data' => $stats
         ]);
+    }
+
+    private function authorizeAthleteMedicalAccess(Athlete $athlete): void
+    {
+        $user = request()->user();
+        abort_unless($user && $user->hasAnyRole(['system_admin', 'association_medical', 'club_medical', 'doctor', 'medical_staff']), 403);
+
+        if ($user->isSystemAdmin()) {
+            return;
+        }
+
+        $athlete->loadMissing('team.club');
+        $club = $athlete->team?->club;
+        $inClub = $user->club_id && $club && (int) $club->id === (int) $user->club_id;
+        $inAssociation = $user->association_id && $club && (int) $club->association_id === (int) $user->association_id;
+        abort_unless($inClub || $inAssociation, 403);
     }
 
     /**

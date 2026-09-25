@@ -27,7 +27,10 @@ class AdministrationViewSmokeTest extends TestCase
             ->assertOk()
             ->assertSee('Détection de fraude indisponible');
 
+        \Illuminate\Support\Facades\Http::fake();
         $this->get('/competitions/create')->assertOk();
+        $this->get('/fifa/connectivity')->assertOk();
+        $this->get('/fifa/statistics')->assertOk();
         $this->get('/teams')->assertOk();
         $this->get('/club-management/dashboard')->assertOk();
         $this->get('/player-registration')->assertOk();

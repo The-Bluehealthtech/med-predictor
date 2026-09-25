@@ -516,8 +516,8 @@ Route::prefix('v1')->group(function () {
 
         // Athlete PCMA routes
         Route::prefix('athletes/{athlete}/pcmas')->group(function () {
-            Route::get('/', [PCMAController::class, 'indexForAthlete']);
-            Route::get('/statistics', [PCMAController::class, 'statisticsForAthlete']);
+            Route::get('/', [PCMAController::class, 'getAthletePCMAs']);
+            Route::get('/statistics', [PCMAController::class, 'getAthletePCMAStats']);
         });
 
         // Injury routes

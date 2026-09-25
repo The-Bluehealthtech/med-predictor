@@ -21,5 +21,24 @@ class SanctumApiGuardTest extends TestCase
             ->getJson('/api/user')
             ->assertOk()
             ->assertJsonPath('id', $user->id);
+
+        $athlete = \App\Models\Athlete::create([
+            'fifa_id' => 'test-api-athlete-'.$user->id,
+            'name' => 'API Test Athlete',
+            'dob' => '2000-01-01',
+            'nationality' => 'FRA',
+            'team_id' => 999999,
+        ]);
+
+        $this->getJson("/api/v1/athletes/{$athlete->id}/pcmas")
+            ->assertOk()->assertJsonPath('data', []);
+        $this->getJson("/api/v1/athletes/{$athlete->id}/pcmas/statistics")
+            ->assertOk()->assertJsonPath('data.total_pcmas', 0);
+
+        $nonMedical = User::factory()->create(['role' => 'club_admin']);
+        auth()->forgetGuards();
+        $this->withToken($nonMedical->createToken('unauthorized-api-test')->plainTextToken)
+            ->getJson("/api/v1/athletes/{$athlete->id}/pcmas")
+            ->assertForbidden();
     }
 }

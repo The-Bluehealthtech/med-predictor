@@ -171,7 +171,7 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($matchSheets->take(10) as $matchSheet)
+                            @foreach($matchSheets as $matchSheet)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">{{ $matchSheet->match_number ?? 'MS-' . str_pad($matchSheet->match->id, 6, '0', STR_PAD_LEFT) }}</div>
@@ -207,20 +207,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <a href="{{ route('match-sheet.show', $matchSheet->match) }}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
-                                    @if($matchSheet->status === 'draft')
-                                        <a href="{{ route('match-sheet.show', $matchSheet->match) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                    @endif
+
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-                @if($matchSheets->count() > 10)
-                <div class="mt-4 text-center">
-                    <a href="#" class="text-blue-600 hover:text-blue-900 text-sm font-medium">View all {{ $matchSheets->count() }} match sheets</a>
-                </div>
-                @endif
             </div>
         </div>
         @endif

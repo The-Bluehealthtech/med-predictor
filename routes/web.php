@@ -850,321 +850,20 @@ Route::get('/test-competitions-auth', function () {
     return view('competition-management.index', compact('competitions', 'stats'));
 })->name('test-competitions-auth');
 
-Route::get('/test-competition-show/{id}', function ($id) {
-    // Simuler une authentification
-    $user = new stdClass();
-    $user->id = 1;
-    $user->role = 'admin';
-    $user->association_id = null;
-    
-    // Simuler l'authentification en créant un objet utilisateur simple
-    Auth::shouldUse('web');
-    
-    // Utiliser la même approche que la route qui fonctionne
-    return app(App\Http\Controllers\CompetitionManagementController::class)->show($id);
-})->name('test-competition-show');
 
-Route::get('/test-competition-main/{id}', function ($id) {
-    // Simuler une authentification
-    $user = new stdClass();
-    $user->id = 1;
-    $user->role = 'admin';
-    $user->association_id = null;
-    
-    // Simuler l'authentification en créant un objet utilisateur simple
-    Auth::shouldUse('web');
-    
-    // Tester la route principale
-    return redirect("/competitions/{$id}");
-})->name('test-competition-main');
 
-Route::get('/test-competition-direct/{id}', function ($id) {
-    // Simuler une authentification
-    $user = new stdClass();
-    $user->id = 1;
-    $user->role = 'admin';
-    $user->association_id = null;
-    
-    // Simuler l'authentification en créant un objet utilisateur simple
-    Auth::shouldUse('web');
-    
-    // Tester directement la route principale en appelant le contrôleur
-    return app(App\Http\Controllers\CompetitionManagementController::class)->show($id);
-})->name('test-competition-direct');
 
-Route::get('/test-competition-route/{id}', function ($id) {
-    // Simuler une authentification
-    $user = new stdClass();
-    $user->id = 1;
-    $user->role = 'admin';
-    $user->association_id = null;
-    
-    // Simuler l'authentification en créant un objet utilisateur simple
-    Auth::shouldUse('web');
-    
-    // Tester la route principale en appelant directement le contrôleur
-    // mais en simulant l'appel de la route
-    $request = request();
-    $request->setRouteResolver(function () use ($id) {
-        return new \Illuminate\Routing\Route(
-            'GET',
-            "/competitions/{$id}",
-            [App\Http\Controllers\CompetitionManagementController::class, 'show']
-        );
-    });
-    
-    return app(App\Http\Controllers\CompetitionManagementController::class)->show($id);
-})->name('test-competition-route');
 
-Route::get('/test-competition-final/{id}', function ($id) {
-    // Simuler une authentification
-    $user = new stdClass();
-    $user->id = 1;
-    $user->role = 'admin';
-    $user->association_id = null;
-    
-    // Simuler l'authentification en créant un objet utilisateur simple
-    Auth::shouldUse('web');
-    
-    // Tester la route principale en appelant directement le contrôleur
-    // mais en simulant l'appel de la route
-    $request = request();
-    $request->setRouteResolver(function () use ($id) {
-        return new \Illuminate\Routing\Route(
-            'GET',
-            "/competitions/{$id}",
-            [App\Http\Controllers\CompetitionManagementController::class, 'show']
-        );
-    });
-    
-    // Appeler directement la méthode show du contrôleur
-    $controller = app(App\Http\Controllers\CompetitionManagementController::class);
-    return $controller->show($id);
-})->name('test-competition-final');
 
-Route::get('/test-competition-simple/{id}', function ($id) {
-    // Route de test simple sans authentification stricte
-    $controller = app(App\Http\Controllers\CompetitionManagementController::class);
-    
-    // Créer un utilisateur factice pour le test
-    $user = new stdClass();
-    $user->id = 1;
-    $user->role = 'admin';
-    $user->association_id = null;
-    
-    // Injecter l'utilisateur dans la requête
-    request()->merge(['user' => $user]);
-    
-    return $controller->show($id);
-})->name('test-competition-simple');
 
-Route::get('/test-competition-no-auth/{id}', function ($id) {
-    // Route de test sans authentification - appelle directement la méthode show
-    // en contournant l'authentification
-    $competition = App\Models\Competition::with(['fifaConnectId', 'season', 'association'])
-        ->find($id);
 
-    if (!$competition) {
-        abort(404);
-    }
 
-    return view('competition-management.show', compact('competition'));
-})->name('test-competition-no-auth');
 
-Route::get('/test-competition-auth/{id}', function ($id) {
-    // Route de test avec authentification simulée
-    $user = new stdClass();
-    $user->id = 1;
-    $user->role = 'admin';
-    $user->association_id = null;
-    
-    // Simuler l'authentification
-    Auth::shouldUse('web');
-    
-    // Appeler le contrôleur avec l'utilisateur authentifié
-    $controller = app(App\Http\Controllers\CompetitionManagementController::class);
-    return $controller->show($id);
-})->name('test-competition-auth');
 
-Route::get('/test-competition-edit/{id}', function ($id) {
-    // Route de test pour la méthode edit
-    $competition = App\Models\Competition::with(['fifaConnectId', 'season', 'association', 'clubs'])
-        ->find($id);
 
-    if (!$competition) {
-        abort(404);
-    }
 
-    // Simuler des clubs pour le test
-    $clubs = App\Models\Club::limit(5)->get();
 
-    return view('competition-management.edit', compact('competition', 'clubs'));
-})->name('test-competition-edit');
 
-Route::get('/test-competition-load/{id}', function ($id) {
-    // Route de test pour vérifier que toutes les relations se chargent
-    try {
-        $competition = App\Models\Competition::with(['fifaConnectId', 'season', 'association', 'clubs'])
-            ->find($id);
-        
-        if (!$competition) {
-            return 'Competition not found';
-        }
-        
-        $result = [
-            'id' => $competition->id,
-            'name' => $competition->name,
-            'has_fifa_connect_id' => $competition->fifaConnectId ? 'Yes' : 'No',
-            'has_season' => $competition->season ? 'Yes' : 'No',
-            'has_association' => $competition->association ? 'Yes' : 'No',
-            'clubs_count' => $competition->clubs->count(),
-        ];
-        
-        return json_encode($result, JSON_PRETTY_PRINT);
-        
-    } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
-    }
-})->name('test-competition-load');
-
-Route::get('/test-competition-controller/{id}', function ($id) {
-    // Route de test qui appelle le contrôleur avec toutes les relations
-    try {
-        $controller = app(App\Http\Controllers\CompetitionManagementController::class);
-        
-        // Créer un utilisateur factice
-        $user = new stdClass();
-        $user->id = 1;
-        $user->role = 'admin';
-        $user->association_id = null;
-        
-        // Injecter l'utilisateur dans la requête
-        request()->merge(['user' => $user]);
-        
-        // Appeler la méthode show du contrôleur
-        return $controller->show($id);
-        
-    } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
-    }
-})->name('test-competition-controller');
-
-Route::get('/test-competition-final/{id}', function ($id) {
-    // Route de test finale qui simule l'appel du contrôleur
-    try {
-        // Charger la compétition avec toutes les relations
-        $competition = App\Models\Competition::with(['fifaConnectId', 'season', 'association', 'clubs'])
-            ->find($id);
-        
-        if (!$competition) {
-            abort(404);
-        }
-        
-        // Retourner la vue avec la compétition chargée
-        return view('competition-management.show', compact('competition'));
-        
-    } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
-    }
-})->name('test-competition-final');
-
-Route::get('/test-competition-main/{id}', function ($id) {
-    // Route de test qui simule l'appel de la route principale /competitions/{id}
-    try {
-        // Simuler l'authentification en créant un utilisateur factice
-        $user = new stdClass();
-        $user->id = 1;
-        $user->role = 'admin';
-        $user->association_id = null;
-        
-        // Charger la compétition avec toutes les relations (comme le contrôleur)
-        $competition = App\Models\Competition::with(['fifaConnectId', 'season', 'association', 'clubs'])
-            ->find($id);
-        
-        if (!$competition) {
-            abort(404);
-        }
-        
-        // Vérifier les permissions (comme le contrôleur)
-        if (!in_array($user->role, ['system_admin', 'admin'])) {
-            if (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
-                if ($competition->association_id !== $user->association_id) {
-                    abort(403);
-                }
-            } else {
-                abort(403);
-            }
-        }
-        
-        // Retourner la vue (comme le contrôleur)
-        return view('competition-management.show', compact('competition'));
-        
-    } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
-    }
-})->name('test-competition-main');
-
-Route::get('/test-competition-route/{id}', function ($id) {
-    // Route de test finale qui simule parfaitement la route principale /competitions/{id}
-    try {
-        // Simuler l'authentification en créant un utilisateur factice
-        $user = new stdClass();
-        $user->id = 1;
-        $user->role = 'admin';
-        $user->association_id = null;
-        
-        // Simuler l'appel du contrôleur avec toutes les relations
-        $competition = App\Models\Competition::with(['fifaConnectId', 'season', 'association', 'clubs'])
-            ->find($id);
-        
-        if (!$competition) {
-            abort(404);
-        }
-        
-        // Vérifier les permissions (comme le contrôleur)
-        if (!in_array($user->role, ['system_admin', 'admin'])) {
-            if (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
-                if ($competition->association_id !== $user->association_id) {
-                    abort(403);
-                }
-            } else {
-                abort(403);
-            }
-        }
-        
-        // Retourner la vue (comme le contrôleur)
-        return view('competition-management.show', compact('competition'));
-        
-    } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
-    }
-})->name('test-competition-route');
-
-Route::get('/test-competition-main-route/{id}', function ($id) {
-    // Simuler une authentification
-    $user = new stdClass();
-    $user->id = 1;
-    $user->role = 'admin';
-    $user->association_id = null;
-    
-    // Simuler l'authentification en créant un objet utilisateur simple
-    Auth::shouldUse('web');
-    
-    // Tester la route principale en appelant directement le contrôleur
-    // mais en simulant l'appel de la route
-    $request = request();
-    $request->setRouteResolver(function () use ($id) {
-        return new \Illuminate\Routing\Route(
-            'GET',
-            "/competitions/{$id}",
-            [App\Http\Controllers\CompetitionManagementController::class, 'show']
-        );
-    });
-    
-    // Appeler directement la méthode show du contrôleur
-    $controller = app(App\Http\Controllers\CompetitionManagementController::class);
-    return $controller->show($id);
-})->name('test-competition-main-route');
 
 // Account Request Form (public)
 Route::get('/account-request', function () {
@@ -1381,125 +1080,8 @@ Route::get('/test-portail-simplifie', function () {
 // Test d'authentification
 
 // API FIFA pour le portail
-Route::get('/api/fifa/player/{playerId}', function ($playerId) {
-    $player = \App\Models\Player::with(['club', 'association', 'healthRecords', 'pcmas'])->find($playerId);
-    
-    if (!$player) {
-        return response()->json(['error' => 'Joueur non trouvé'], 404);
-    }
-    
-    // Debug des relations
-    \Log::info('Player relations debug:', [
-        'player_id' => $player->id,
-        'club' => $player->club ? $player->club->toArray() : 'NULL',
-        'association' => $player->association ? $player->association->toArray() : 'NULL'
-    ]);
-    
-    // Préparer les données FIFA Connect avec la structure attendue par le JavaScript
-    $fifaData = [
-        'player' => [
-            'id' => $player->id,
-            'fifa_connect_id' => $player->fifa_connect_id,
-            'first_name' => $player->first_name,
-            'last_name' => $player->last_name,
-            'name' => $player->first_name . ' ' . $player->last_name,
-            'position' => $player->position,
-            'nationality' => $player->nationality,
-            'overall_rating' => $player->overall_rating,
-            'potential_rating' => $player->potential_rating,
-            'fitness_score' => $player->fitness ?? 90,
-            'form_percentage' => $player->form ?? 85,
-            'age' => 25, // Âge par défaut
-            'height' => 170, // Taille par défaut
-            'weight' => 70, // Poids par défaut
-            'preferred_foot' => 'Droit', // Pied préféré par défaut
-            'player_picture' => $player->player_picture ?? null,
-            'player_face_url' => $player->player_face_url ?? null,
-            'club' => [
-                'name' => $player->club ? $player->club->name : 'N/A',
-                'logo' => $player->club ? $player->club->logo : null,
-                'logo_url' => $player->club ? $player->club->logo : null,
-            ],
-            'association' => [
-                'name' => $player->association ? $player->association->name : 'Fédération Française de Football',
-                'logo' => $player->association ? $player->association->logo : null,
-            ],
-            'health' => [
-                'blood_type' => $player->healthRecords->first()->blood_type ?? 'N/A',
-                'allergies' => $player->healthRecords->first()->allergies ?? 'N/A',
-            ],
-            'pcma' => [
-                'status' => $player->pcmas->first()->status ?? 'N/A',
-                'score' => $player->pcmas->first()->overall_score ?? 'N/A',
-            ]
-        ],
-        // Données supplémentaires pour les onglets
-        'overall_rating' => $player->overall_rating,
-        'potential_rating' => $player->potential_rating,
-        'fitness' => $player->fitness,
-        'form' => $player->form,
-        'nationality' => $player->nationality,
-        'age' => 25,
-        'market_value' => '150M',
-        'negative_tests' => 12,
-        'positive_tests' => 0,
-        'pending_tests' => 0
-    ];
-    
-    return response()->json(['data' => $fifaData]);
-})->name('api.fifa.player');
 
 // API des licences pour le portail FIFA
-Route::get('/api/joueur/{playerId}/historique-licences', function ($playerId) {
-    // Simuler des données de licences pour le moment
-    $licences = [
-        [
-            'id' => 1,
-            'type' => 'Licence Fédérale',
-            'numero' => 'LF-' . str_pad($playerId, 6, '0', STR_PAD_LEFT),
-            'date_emission' => '2024-01-15',
-            'date_expiration' => '2024-12-31',
-            'statut' => 'Valide',
-            'federation' => 'Fédération Française de Football'
-        ],
-        [
-            'id' => 2,
-            'type' => 'Licence UEFA',
-            'numero' => 'UEFA-' . str_pad($playerId, 6, '0', STR_PAD_LEFT),
-            'date_emission' => '2024-01-20',
-            'date_expiration' => '2024-12-31',
-            'statut' => 'Valide',
-            'federation' => 'UEFA'
-        ]
-    ];
-    
-    $primes_formation = [
-        [
-            'id' => 1,
-            'type' => 'Prime Formation Club',
-            'montant' => 50000,
-            'devise' => 'EUR',
-            'date_calcul' => '2024-01-15',
-            'statut' => 'Payée'
-        ],
-        [
-            'id' => 2,
-            'type' => 'Prime Formation Fédération',
-            'montant' => 25000,
-            'devise' => 'EUR',
-            'date_calcul' => '2024-01-20',
-            'statut' => 'En attente'
-        ]
-    ];
-    
-    return response()->json([
-        'success' => true,
-        'data' => [
-            'licences' => $licences,
-            'primes_formation' => $primes_formation
-        ]
-    ]);
-})->name('api.joueur.licences');
 
 // Routes d'authentification
 Route::get('/login', function() {
@@ -1613,55 +1195,12 @@ Route::get('/api/players/{id}', function ($id) {
 })->middleware(['auth'])->name('api.players.show');
 
 // NOUVELLE ROUTE FIFA qui fonctionne
-Route::get('/api/fifa/player/{id}', function ($id) {
-    try {
-        $player = DB::table('players')
-            ->select('id', 'name', 'first_name', 'last_name', 'position', 'overall_rating', 'potential_rating', 'club_id', 'nationality', 'date_of_birth', 'age', 'height', 'weight', 'preferred_foot', 'skill_moves', 'international_reputation', 'ghs_overall_score', 'ghs_physical_score', 'ghs_mental_score', 'injury_risk_score', 'contribution_score', 'match_availability', 'value_eur', 'wage_eur', 'last_availability_update', 'player_picture', 'player_face_url')
-            ->where('id', $id)
-            ->first();
-        
-        if (!$player) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Joueur non trouvé'
-            ], 404);
-        }
-        
-        // Enrichir avec les informations du club
-        if ($player->club_id) {
-            $club = DB::table('clubs')->where('id', $player->club_id)->first();
-            $player->club = $club ? [
-                'id' => $club->id,
-                'name' => $club->name,
-                'logo_url' => $club->logo_url ?? null
-            ] : null;
-        } else {
-            $player->club = null;
-        }
-        
-        return response()->json([
-            'success' => true,
-            'data' => $player
-        ]);
-        
-    } catch (Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => 'Erreur lors du chargement du joueur',
-            'message' => $e->getMessage()
-        ], 500);
-    }
-});
 
 // Routes API pour l'historique des licences
 Route::prefix('api')->group(function () {
     // Historique complet des licences d'un joueur
-    Route::get('/joueur/{id}/historique-licences', [App\Http\Controllers\Controller::class, 'index'])
-        ->name('api.joueur.historique-licences');
     
     // Statistiques des licences
-    Route::get('/joueur/{id}/stats-licences', [App\Http\Controllers\Controller::class, 'index'])
-        ->name('api.joueur.stats-licences');
     
     // Barèmes de formation FIFA
     Route::get('/formation/barèmes', [App\Http\Controllers\Controller::class, 'index'])
@@ -3861,30 +3400,6 @@ Route::middleware(['auth'])->group(function () {
         }
     });    
     // Route de test pour le portail arbitre
-    Route::get('/referee-test', function () {
-        $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
-        if (!$user) {
-            return 'Utilisateur arbitre non trouvé';
-        }
-        
-        auth()->login($user);
-        session(['login_access_type' => 'referee']);
-        
-        try {
-            $assignedMatches = collect([]);
-            $recentMatches = collect([]);
-            $stats = [
-                'upcoming_matches' => 0,
-                'completed_matches' => 0,
-                'pending_reports' => 0,
-                'active_competitions' => 0
-            ];
-            
-            return view('referee.dashboard', compact('assignedMatches', 'recentMatches', 'stats'));
-        } catch (Exception $e) {
-            return 'Erreur: ' . $e->getMessage();
-        }
-    });
     
     // Route de test pour vérifier les permissions
     Route::get('/test-permissions', function () {
@@ -6161,28 +5676,6 @@ Route::prefix('api')->middleware(['auth'])->group(function () {
 // Route de test pour l'onglet médical (page simplifiée)
 
 // Route de test simple pour afficher les données brutes
-Route::get('/test/data/{playerId}', function ($playerId) {
-    $player = \App\Models\Player::find($playerId);
-    if (!$player) {
-        abort(404, 'Joueur non trouvé');
-    }
-    
-    $controller = new \App\Http\Controllers\PlayerAccessController();
-    $portalData = $controller->preparePortalData($player);
-    
-    return response()->json([
-        'player' => [
-            'id' => $player->id,
-            'name' => $player->first_name . ' ' . $player->last_name,
-            'position' => $player->position,
-            'date_of_birth' => $player->date_of_birth,
-            'age_calculated' => $player->date_of_birth ? $player->date_of_birth->diffInYears(now()) : null,
-            'age_type' => $player->date_of_birth ? gettype($player->date_of_birth->diffInYears(now())) : null,
-        ],
-        'personalInfo' => $portalData['personalInfo'],
-        'success' => true
-    ]);
-})->name('test.data');
 
 // Route de test simple pour la page médicale
 
@@ -6277,14 +5770,12 @@ Route::get('/test-api-fifa/{id}', function ($id) {
 })->name('test.api.fifa');
 
 // Test de l'API FIFA avec le contrôleur
-Route::get('/test-fifa-controller/{id}', [App\Http\Controllers\TestFIFAController::class, 'testAPI'])->name('test.fifa.controller');
 
 // Test Blade simple
 Route::get('/test-blade', [App\Http\Controllers\TestBladeController::class, 'test'])->name('test.blade');
 
 // Test FIFA avec vraies données
 Route::get('/fifa-test', [App\Http\Controllers\FIFATestController::class, 'test'])->name('fifa.test');
-Route::get('/fifa-test/{id}', [App\Http\Controllers\FIFATestController::class, 'test'])->name('fifa.test.id');
 
 // Test du logo FTF
 
@@ -6395,86 +5886,10 @@ Route::get(
 )->middleware(['auth'])->name('test.portail.joueur.simple');
 
 // Route de test pour la feuille de match (sans auth)
-Route::get('/referee-match-sheet-test/{matchId}', function ($matchId) {
-    $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
-    if (!$user) {
-        return 'Utilisateur arbitre non trouvé';
-    }
-    
-    auth()->login($user);
-    session(['login_access_type' => 'referee']);
-    
-    try {
-        $match = App\Models\GameMatch::with(['homeTeam', 'awayTeam', 'competition', 'officials'])->find($matchId);
-        if (!$match) {
-            return 'Match non trouvé';
-        }
-        
-        // Vérifier si l'arbitre est assigné à ce match
-        $isAssigned = $match->officials()->where('user_id', $user->id)->exists();
-        if (!$isAssigned) {
-            return 'Vous n\'êtes pas assigné à ce match';
-        }
-        
-        // Pas d'événements pour le moment (table match_events n'existe pas)
-        $events = collect([]);
-        
-        return view('referee.match-sheet', compact('match', 'events'));
-        
-    } catch (Exception $e) {
-        return 'Erreur: ' . $e->getMessage() . ' - Fichier: ' . $e->getFile() . ':' . $e->getLine();
-    }
-});
 
 // Route de test pour la création de rapport de match (sans auth)
-Route::get('/referee-create-report-test', function () {
-    $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
-    if (!$user) {
-        return 'Utilisateur arbitre non trouvé';
-    }
-    
-    auth()->login($user);
-    session(['login_access_type' => 'referee']);
-    
-    try {
-        // Récupérer les matches assignés à l'arbitre
-        $assignedMatches = App\Models\GameMatch::whereHas('officials', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
-        ->with(['homeTeam.club', 'awayTeam.club', 'competition'])
-        ->where('status', '!=', 'completed')
-        ->orderBy('match_date')
-        ->get();
-        
-        // Récupérer les matches récents
-        $recentMatches = App\Models\GameMatch::whereHas('officials', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
-        ->with(['homeTeam.club', 'awayTeam.club', 'competition'])
-        ->where('status', 'completed')
-        ->orderBy('updated_at', 'desc')
-        ->limit(5)
-        ->get();
-        
-        return view('referee.create-match-report', compact('assignedMatches', 'recentMatches'));
-        
-    } catch (Exception $e) {
-        return 'Erreur: ' . $e->getMessage() . ' - Fichier: ' . $e->getFile() . ':' . $e->getLine();
-    }
-});
 
 // Route de test pour l'authentification complète du portail arbitre
-Route::get('/referee-login-test', function () {
-    $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
-    if (!$user) {
-        return 'Utilisateur arbitre non trouvé';
-    }
-    
-    auth()->login($user);
-    session(['login_access_type' => 'referee']);
-    
-    return redirect()->route('referee.dashboard');
-});
 
 // Route de test pour le système de recherche et pagination
 
@@ -6485,116 +5900,8 @@ Route::get('/clubs-search-test', function () {
 });
 
 // Route de test pour toutes les cartes des modules
-Route::get('/test-all-modules', function () {
-    $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
-    if (!$user) {
-        return 'Utilisateur non trouvé';
-    }
-    
-    auth()->login($user);
-    
-    // Liste de tous les modules à tester
-    $modules = [
-        // Modules principaux
-        ['name' => 'Dashboard Principal', 'url' => '/modules', 'description' => 'Page d\'accueil des modules'],
-        ['name' => 'Joueurs', 'url' => '/modules/players', 'description' => 'Gestion des joueurs'],
-        ['name' => 'Clubs', 'url' => '/modules/clubs', 'description' => 'Gestion des clubs'],
-        ['name' => 'Compétitions', 'url' => '/modules/competitions', 'description' => 'Gestion des compétitions'],
-        ['name' => 'Équipes', 'url' => '/modules/teams', 'description' => 'Gestion des équipes'],
-        ['name' => 'Arbitres', 'url' => '/modules/referees', 'description' => 'Gestion des arbitres'],
-        ['name' => 'Associations', 'url' => '/modules/associations', 'description' => 'Gestion des associations'],
-        ['name' => 'Confédérations', 'url' => '/modules/confederations', 'description' => 'Gestion des confédérations'],
-        ['name' => 'Classements', 'url' => '/modules/rankings', 'description' => 'Classements des équipes'],
-        ['name' => 'Calendrier', 'url' => '/modules/fixtures', 'description' => 'Calendrier des matches'],
-        
-        // Modules spécialisés
-        ['name' => 'Portail Arbitre', 'url' => '/referee/dashboard', 'description' => 'Dashboard des arbitres'],
-        ['name' => 'Portail Secrétaire', 'url' => '/modules/secretary/dashboard', 'description' => 'Dashboard des secrétaires'],
-        ['name' => 'Gestion des Rôles', 'url' => '/modules/role-management', 'description' => 'Gestion des rôles utilisateurs'],
-        ['name' => 'Gestion des Utilisateurs', 'url' => '/user-management', 'description' => 'Gestion des utilisateurs'],
-        
-        // Modules DTN
-        ['name' => 'DTN Dashboard', 'url' => '/modules/dtn/dashboard', 'description' => 'Dashboard DTN'],
-        ['name' => 'DTN Sélections', 'url' => '/modules/dtn/selections', 'description' => 'Gestion des sélections DTN'],
-        ['name' => 'DTN Équipes', 'url' => '/modules/dtn/teams', 'description' => 'Gestion des équipes DTN'],
-        ['name' => 'DTN Planning', 'url' => '/modules/dtn/planning', 'description' => 'Planning DTN'],
-        ['name' => 'DTN Rapports', 'url' => '/modules/dtn/reports', 'description' => 'Rapports DTN'],
-        
-        // Modules RPM
-        ['name' => 'RPM Dashboard', 'url' => '/modules/rpm/dashboard', 'description' => 'Dashboard RPM'],
-        ['name' => 'RPM Matches', 'url' => '/modules/rpm/matches', 'description' => 'Gestion des matches RPM'],
-        ['name' => 'RPM Sessions', 'url' => '/modules/rpm/sessions', 'description' => 'Sessions RPM'],
-        ['name' => 'RPM Rapports', 'url' => '/modules/rpm/reports', 'description' => 'Rapports RPM'],
-        
-        // Modules Santé
-        ['name' => 'Santé Dashboard', 'url' => '/modules/healthcare/dashboard', 'description' => 'Dashboard santé'],
-        ['name' => 'Santé Prédictions', 'url' => '/modules/healthcare/predictions', 'description' => 'Prédictions santé'],
-        ['name' => 'Médical', 'url' => '/modules/medical', 'description' => 'Module médical'],
-        
-        // Modules FIFA
-        ['name' => 'FIFA Dashboard', 'url' => '/modules/fifa/dashboard', 'description' => 'Dashboard FIFA'],
-        
-        // Modules Licences
-        ['name' => 'Licences', 'url' => '/modules/licenses', 'description' => 'Gestion des licences'],
-        ['name' => 'Validation Licences', 'url' => '/modules/licenses/validation', 'description' => 'Validation des licences'],
-        
-        // Modules Performances
-        ['name' => 'Performances', 'url' => '/modules/performances', 'description' => 'Gestion des performances'],
-        
-        // Modules Appointments
-        ['name' => 'Rendez-vous', 'url' => '/modules/appointments', 'description' => 'Gestion des rendez-vous'],
-        
-        // Modules Device Connections
-        ['name' => 'Connexions Appareils', 'url' => '/modules/device-connections', 'description' => 'Gestion des connexions d\'appareils'],
-    ];
-    
-    return view('test-all-modules', compact('modules'));
-});
 
 // Route de test pour le portail arbitre - VERSION FINALE QUI FONCTIONNE
-Route::get('/referee-dashboard-test', function () {
-    $user = App\Models\User::where('email', 'mohamed.jebali@ftf.tn')->first();
-    if (!$user) {
-        return 'Utilisateur arbitre non trouvé';
-    }
-    
-    auth()->login($user);
-    session(['login_access_type' => 'referee']);
-    
-    try {
-        // Utiliser les vraies données de la base
-        $assignedMatches = App\Models\GameMatch::whereHas('officials', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
-        ->with(['homeTeam', 'awayTeam', 'competition', 'officials'])
-        ->where('status', '!=', 'completed')
-        ->orderBy('match_date')
-        ->get();
-
-        $recentMatches = App\Models\GameMatch::whereHas('officials', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
-        ->with(['homeTeam', 'awayTeam', 'competition', 'officials'])
-        ->where('status', 'completed')
-        ->orderBy('updated_at', 'desc')
-        ->limit(5)
-        ->get();
-
-        $stats = [
-            'upcoming_matches' => $assignedMatches->count(),
-            'completed_matches' => $recentMatches->count(),
-            'pending_reports' => 0, // Table match_events n'existe pas encore
-            'active_competitions' => App\Models\Competition::whereHas('matches.officials', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })->where('status', 'active')->count(),
-        ];
-
-        return view('referee.dashboard', compact('assignedMatches', 'recentMatches', 'stats'));
-        
-    } catch (Exception $e) {
-        return 'Erreur: ' . $e->getMessage() . ' - Fichier: ' . $e->getFile() . ':' . $e->getLine();
-    }
-});
 
 // Test routes for referee functions (no authentication required)
 Route::get('/referee-test/match-assignments', function () {

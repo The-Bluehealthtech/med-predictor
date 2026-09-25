@@ -53,15 +53,15 @@
             @if (Route::has('login'))
                 @auth
                     <a href="{{ route('login') }}" class="bg-[#2563EB] text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-[#3B82F6] transition-colors">
-                        Connexion
+                        {{ app()->getLocale() === 'en' ? 'Log in' : 'Connexion' }}
                     </a>
                 @else
                     <a href="{{ route('login') }}" class="text-[#0F172A] hover:text-[#2563EB] px-4 py-2 rounded-md text-sm font-semibold transition-colors">
-                        Connexion
+                        {{ app()->getLocale() === 'en' ? 'Log in' : 'Connexion' }}
                     </a>
                     @if (Route::has('register'))
                         <a href="{{ route('register') }}" class="bg-[#2563EB] text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-[#3B82F6] transition-colors">
-                            Inscription
+                            {{ app()->getLocale() === 'en' ? 'Sign up' : 'Inscription' }}
                         </a>
                     @endif
                 @endauth
@@ -91,23 +91,23 @@
                     @auth
                         <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-[#2563EB] text-white px-7 py-3.5 rounded-lg text-base font-bold hover:bg-[#3B82F6] transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                            Demander un Compte
+                            {{ app()->getLocale() === 'en' ? 'Request an account' : 'Demander un Compte' }}
                         </a>
                     @else
                         <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-[#2563EB] text-white px-7 py-3.5 rounded-lg text-base font-bold hover:bg-[#3B82F6] transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                            Demander un Compte
+                            {{ app()->getLocale() === 'en' ? 'Request an account' : 'Demander un Compte' }}
                         </a>
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 bg-transparent text-white px-7 py-3.5 rounded-lg text-base font-bold border border-[#334155] hover:border-[#64748B] transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                                S'inscrire
+                                {{ app()->getLocale() === 'en' ? 'Sign up' : "S'inscrire" }}
                             </a>
                         @endif
                     @endauth
                 @endif
                 <a href="#fonctionnalites" class="inline-flex items-center justify-center gap-2 bg-transparent text-white px-7 py-3.5 rounded-lg text-base font-bold border border-[#334155] hover:border-[#64748B] transition-colors">
-                    Découvrir les modules
+                    {{ app()->getLocale() === 'en' ? 'Explore modules' : 'Découvrir les modules' }}
                 </a>
             </div>
 
@@ -237,17 +237,17 @@
                     @auth
                         <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-white text-[#2563EB] px-8 py-3.5 rounded-lg text-base font-bold hover:bg-[#F1F5F9] transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                            Demander un Compte
+                            {{ app()->getLocale() === 'en' ? 'Request an account' : 'Demander un Compte' }}
                         </a>
                     @else
                         <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-white text-[#2563EB] px-8 py-3.5 rounded-lg text-base font-bold hover:bg-[#F1F5F9] transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                            Demander un Compte
+                            {{ app()->getLocale() === 'en' ? 'Request an account' : 'Demander un Compte' }}
                         </a>
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 bg-transparent text-white px-8 py-3.5 rounded-lg text-base font-bold border-2 border-white hover:bg-white/10 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                                S'inscrire
+                                {{ app()->getLocale() === 'en' ? 'Sign up' : "S'inscrire" }}
                             </a>
                         @endif
                     @endauth
@@ -275,7 +275,7 @@
                         <li><a href="#fonctionnalites" class="text-[#94A3B8] hover:text-white transition-colors text-sm">{{ app()->getLocale() === 'en' ? 'Features' : 'Fonctionnalités' }}</a></li>
                         <!-- Tarifs / API : pages pas encore créées. Liste en texte neutre plutôt
                              qu'un lien mort tant que ces pages n'existent pas. -->
-                        <li><span class="text-[#475569] text-sm cursor-default">Tarifs <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
+                        <li><span class="text-[#475569] text-sm cursor-default">{{ app()->getLocale() === 'en' ? 'Pricing' : 'Tarifs' }} <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
                         <li><span class="text-[#475569] text-sm cursor-default">API <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
                     </ul>
                 </div>
@@ -284,7 +284,7 @@
                     <ul class="space-y-3">
                         <!-- Documentation / Aide / Contact : pas encore de page dédiée. -->
                         <li><span class="text-[#475569] text-sm cursor-default">Documentation <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
-                        <li><span class="text-[#475569] text-sm cursor-default">Aide <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
+                        <li><span class="text-[#475569] text-sm cursor-default">{{ app()->getLocale() === 'en' ? 'Help' : 'Aide' }} <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
                         <li><span class="text-[#475569] text-sm cursor-default">Contact <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
                     </ul>
                 </div>
@@ -294,8 +294,8 @@
                         <!-- Pages légales : à créer avant mise en avant publique (mentions
                              obligatoires) — laissées en texte neutre pour ne pas laisser croire
                              qu'elles existent déjà. -->
-                        <li><span class="text-[#475569] text-sm cursor-default">Confidentialité <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
-                        <li><span class="text-[#475569] text-sm cursor-default">Conditions <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
+                        <li><span class="text-[#475569] text-sm cursor-default">{{ app()->getLocale() === 'en' ? 'Privacy' : 'Confidentialité' }} <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
+                        <li><span class="text-[#475569] text-sm cursor-default">{{ app()->getLocale() === 'en' ? 'Terms' : 'Conditions' }} <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
                         <li><span class="text-[#475569] text-sm cursor-default">Cookies <span class="text-xs align-middle">{{ app()->getLocale() === 'en' ? '(coming soon)' : '(bientôt)' }}</span></span></li>
                     </ul>
                 </div>

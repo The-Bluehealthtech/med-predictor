@@ -921,14 +921,14 @@
                                 <div class="w-32 bg-gray-700 rounded-full h-2">
                                     <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
                                 </div>
-                                <span class="text-green-400 font-bold">85%</span>
+                                <span class="text-gray-400">Non renseigné</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span>Énergie</span>
                                 <div class="w-32 bg-gray-700 rounded-full h-2">
                                     <div class="bg-blue-500 h-2 rounded-full" style="width: 72%"></div>
                                 </div>
-                                <span class="text-blue-400 font-bold">72%</span>
+                                <span class="text-gray-400">Non renseigné</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span>Hydratation</span>
@@ -999,8 +999,8 @@
                             <div class="flex items-center space-x-3">
                                 <i class="fas fa-watch text-2xl text-cyan-400"></i>
                                 <div>
-                                    <h4 class="font-semibold">Apple Watch Series 9</h4>
-                                    <p class="text-sm text-gray-300">Connecté • 85% batterie</p>
+                                    <h4 class="font-semibold">Appareil non renseigné</h4>
+                                    <p class="text-sm text-gray-300">État de connexion indisponible</p>
                                 </div>
                             </div>
                         </div>
@@ -1009,7 +1009,7 @@
                                 <i class="fas fa-mobile-alt text-2xl text-purple-400"></i>
                                 <div>
                                     <h4 class="font-semibold">iPhone 15 Pro</h4>
-                                    <p class="text-sm text-gray-300">Connecté • 92% batterie</p>
+                                    <p class="text-sm text-gray-400">État de connexion et batterie indisponibles</p>
                                 </div>
                             </div>
                         </div>

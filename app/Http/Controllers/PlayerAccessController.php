@@ -285,12 +285,12 @@ class PlayerAccessController extends Controller
                 'potential_rating' => $player->potential_rating ?? 0
             ],
             'healthMetrics' => [
-                'ghs_overall_score' => $player->ghs_overall_score ?? 0,
-                'ghs_physical_score' => $player->ghs_physical_score ?? 0,
-                'ghs_mental_score' => $player->ghs_mental_score ?? 0,
-                'ghs_sleep_score' => $player->ghs_sleep_score ?? 0,
-                'injury_risk_score' => $player->injury_risk_score ?? 0,
-                'injury_risk_level' => $player->injury_risk_level ?? 'Faible'
+                'ghs_overall_score' => $player->ghs_overall_score,
+                'ghs_physical_score' => $player->ghs_physical_score,
+                'ghs_mental_score' => $player->ghs_mental_score,
+                'ghs_sleep_score' => $player->ghs_sleep_score,
+                'injury_risk_score' => $player->injury_risk_score,
+                'injury_risk_level' => $player->injury_risk_level
             ],
             'performanceStats' => [
                 'total_matches' => 0, // Relation performances non disponible
@@ -318,11 +318,11 @@ class PlayerAccessController extends Controller
                     'level' => 'Faible'
                 ],
                 'player_state' => [
-                    'form' => $player->form_percentage ?? 85,
-                    'morale' => $player->morale_percentage ?? 80
+                    'form' => $player->form_percentage,
+                    'morale' => $player->morale_percentage
                 ],
-                'overall_rating' => $player->overall_rating ?? 85,
-                'potential_rating' => $player->potential_rating ?? 90,
+                'overall_rating' => $player->overall_rating,
+                'potential_rating' => $player->potential_rating,
                 'fitness_level' => 'Bon',
                 'match_availability' => 'Disponible',
                 'market_value' => 1000000,

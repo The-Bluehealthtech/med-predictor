@@ -3473,14 +3473,7 @@ Route::get('/joueurs', [PlayerSelectionController::class, 'index'])->name('joueu
 Route::get('/joueurs/{id}', [PlayerSelectionController::class, 'show'])->name('joueurs.show');
 
 // Test public du portail (sans authentification)
-Route::get('/test-portal/{playerId}', function($playerId) {
-    try {
-        $player = \App\Models\Player::with(['club'])->findOrFail($playerId);
-        return view('portail-joueur', compact('player'));
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-})->name('test.portal');
+Route::get('/test-portal/{playerId}', fn () => abort(410))->name('test.portal');
 
 Route::get('/csrf-token', function () {
     return response()->json(['token' => csrf_token()]);

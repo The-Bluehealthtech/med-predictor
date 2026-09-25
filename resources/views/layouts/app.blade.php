@@ -569,9 +569,9 @@
 
                     <!-- FIFA Connect -->
                     <div>
-                        <h3 class="text-lg font-semibold mb-4">FIFA Connect Compliant</h3>
+                        <h3 class="text-lg font-semibold mb-4">{{ app()->getLocale() === 'en' ? 'FIFA Connect data model' : 'Modèle de données FIFA Connect' }}</h3>
                         <p class="text-gray-400 text-sm mb-4">
-                            Adhering to FIFA's global standards for digital identity and licensing.
+                            {{ app()->getLocale() === 'en' ? 'Demonstration records are not official FIFA identities or certifications.' : 'Les données de démonstration ne sont ni des identités ni des certifications officielles FIFA.' }}
                         </p>
                         <a href="https://www.fifa.com/what-we-do/fifa-connect" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm">
                             Learn more →

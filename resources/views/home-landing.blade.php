@@ -75,15 +75,15 @@
 
             <div class="inline-flex items-center gap-2 bg-[#1E293B] rounded-full pl-3.5 pr-4 py-2">
                 <svg class="w-4 h-4 text-[#60A5FA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><ellipse cx="12" cy="12" rx="4" ry="9"></ellipse><line x1="3" y1="12" x2="21" y2="12"></line></svg>
-                <span class="text-[#93C5FD] text-xs font-bold tracking-wider">{{ app()->getLocale() === 'en' ? 'FIFA DATA STANDARDS' : "CONNECTÉ À L'ÉCOSYSTÈME FIFA" }}</span>
+                <span class="text-[#93C5FD] text-xs font-bold tracking-wider">{{ app()->getLocale() === 'en' ? 'FIFA DATA STANDARDS' : 'STANDARDS DE DONNÉES FIFA' }}</span>
             </div>
 
             <h1 class="font-display text-4xl md:text-6xl leading-tight text-white max-w-3xl">
-                Suivi holistique des joueurs de football.
+                {{ app()->getLocale() === 'en' ? 'Holistic monitoring for football players.' : 'Suivi holistique des joueurs de football.' }}
             </h1>
 
             <p class="text-lg text-[#CBD5E1] max-w-2xl leading-relaxed">
-                Performance, santé et gouvernance réunies sur une plateforme unique — pensée pour les clubs, associations et staffs médicaux.
+                {{ app()->getLocale() === 'en' ? 'Performance, health and governance in one platform for clubs, associations and medical staff.' : 'Performance, santé et gouvernance réunies sur une plateforme unique — pensée pour les clubs, associations et staffs médicaux.' }}
             </p>
 
             <div class="flex flex-col sm:flex-row gap-4 mt-2">
@@ -266,7 +266,7 @@
                         <span class="font-display text-lg font-bold">FIT Platform</span>
                     </div>
                     <p class="text-[#94A3B8] text-sm leading-relaxed">
-                        La solution complète pour le suivi holistique des joueurs de football.
+                        {{ app()->getLocale() === 'en' ? 'A platform for holistic monitoring of football players.' : 'La solution complète pour le suivi holistique des joueurs de football.' }}
                     </p>
                 </div>
                 <div>

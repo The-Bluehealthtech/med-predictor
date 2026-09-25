@@ -10,10 +10,13 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
     
-    <!-- Compiled Tailwind CSS (production build — replaces the unreliable CDN script,
-         which loads late or not at all depending on network conditions and was
-         causing the hero section and stat cards to render unstyled) -->
-    @vite(['resources/css/app.css'])
+    <!-- Tailwind CSS (CDN script — restored 2026-09-25 after two attempts to replace it broke
+         the site: the shared @vite/public/build bundle is a stale (~13 month old) build missing
+         classes this page uses (e.g. w-8/h-8 -> oversized header logo), and a page-specific
+         tailwindcss CLI build caused an unrelated 500 server error in production that couldn't be
+         diagnosed without access to Render's build logs. Reverted to the known-working CDN script;
+         revisit with Render build-log access before trying again. -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Custom Styles -->
     <style>

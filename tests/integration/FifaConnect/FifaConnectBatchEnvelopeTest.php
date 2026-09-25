@@ -5,10 +5,13 @@ namespace Tests\Integration\FifaConnect;
 use App\Models\FifaConnect\Competition;
 use App\Models\FifaConnect\MatchRecord;
 use App\Models\FifaConnect\MatchTeam;
+use App\Models\FifaConnect\Person;
 use App\Services\FifaConnect\CanonicalPersistenceService;
 use App\Services\FifaConnect\CanonicalXmlImporter;
 use App\Services\FifaConnect\CompetitionInternationalXmlSerializer;
 use App\Services\FifaConnect\MatchInternationalXmlSerializer;
+use App\Services\FifaConnect\PersonDataXmlSerializer;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Schema;
@@ -25,6 +28,7 @@ class FifaConnectBatchEnvelopeTest extends TestCase
         foreach ([
             'fifa_connect_competitions',
             'fifa_connect_matches',
+            'fifa_connect_persons',
         ] as $table) {
             if (!Schema::hasTable($table)) {
                 $this->markTestSkipped(
@@ -45,6 +49,27 @@ class FifaConnectBatchEnvelopeTest extends TestCase
                 'FIFA validation bundle is not installed.'
             );
         }
+    }
+
+    public function test_person_data_envelope_imports_and_persists_multiple_items(): void
+    {
+        $xml = app(PersonDataXmlSerializer::class)->serialize(
+            collect([
+                $this->person('ABC123A', 'Dupont'),
+                $this->person('DEF456B', 'Martin'),
+            ]),
+            Carbon::parse('2026-09-25'),
+            true
+        );
+        $items = app(CanonicalXmlImporter::class)->importMany($xml);
+        $this->assertSame(
+            ['ABC123A', 'DEF456B'],
+            array_column(array_column($items, 'data'), 'person_fifa_id')
+        );
+        $stored = app(CanonicalPersistenceService::class)->persistXmlBatch($xml);
+        $this->assertCount(2, $stored);
+        $this->assertDatabaseHas('fifa_connect_persons', ['person_fifa_id' => 'ABC123A']);
+        $this->assertDatabaseHas('fifa_connect_persons', ['person_fifa_id' => 'DEF456B']);
     }
 
     public function test_competition_data_envelope_imports_and_persists_multiple_items(): void
@@ -144,6 +169,27 @@ class FifaConnectBatchEnvelopeTest extends TestCase
             'fifa_connect_matches',
             ['match_fifa_id' => 'FFF666F']
         );
+    }
+
+    private function person(string $id, string $name): Person
+    {
+        $person = new Person([
+            'person_fifa_id' => $id,
+            'international_first_name' => 'Jean',
+            'international_last_name' => $name,
+            'local_last_name' => $name,
+            'local_language' => 'fre',
+            'local_country' => 'FR',
+            'gender' => 'male',
+            'nationality' => 'FR',
+            'date_of_birth' => Carbon::parse('2000-01-02'),
+            'country_of_birth' => 'FR',
+            'place_of_birth' => 'Paris',
+        ]);
+        foreach (['picture', 'localNames', 'nationalIdentifiers', 'registrations', 'certifications'] as $relation) {
+            $person->setRelation($relation, $relation === 'picture' ? null : new Collection());
+        }
+        return $person;
     }
 
     private function competition(

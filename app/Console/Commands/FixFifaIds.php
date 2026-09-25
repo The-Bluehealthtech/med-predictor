@@ -9,27 +9,37 @@ use App\Models\FifaConnectId;
 class FixFifaIds extends Command
 {
     protected $signature = 'fix:fifa-ids';
-    protected $description = 'Fix missing FIFA Connect ID records';
+    protected $description = 'Audit legacy FIFA ID candidates without promoting them';
 
-    public function handle()
+    public function handle(\App\Services\FifaConnect\SchemaCatalog $catalog): int
     {
-        $players = Player::whereNotNull('fifa_connect_id')
-            ->where('fifa_connect_id', '!=', '')
-            ->get();
+        $candidates = 0;
+        $invalid = 0;
+        $missing = 0;
 
-        $created = 0;
-        foreach ($players as $player) {
-            if (!FifaConnectId::where('fifa_id', $player->fifa_connect_id)->exists()) {
-                FifaConnectId::create([
-                    'fifa_id' => $player->fifa_connect_id,
-                    'entity_type' => 'player',
-                    'status' => 'active'
-                ]);
-                $created++;
-                $this->info("Created FIFA ID: {$player->fifa_connect_id}");
-            }
-        }
+        Player::query()->whereNotNull('fifa_connect_id')
+            ->where('fifa_connect_id', '<>', '')
+            ->select(['id', 'fifa_connect_id'])
+            ->chunkById(500, function ($players) use ($catalog, &$candidates, &$invalid, &$missing): void {
+                foreach ($players as $player) {
+                    $candidates++;
+                    $id = trim((string) $player->fifa_connect_id);
+                    try {
+                        $catalog->assertFifaIdentifier($id);
+                    } catch (\RuntimeException) {
+                        $invalid++;
+                        continue;
+                    }
 
-        $this->info("Created {$created} FIFA Connect ID records");
+                    if (!FifaConnectId::query()->where('fifa_id', $id)->exists()) {
+                        $missing++;
+                    }
+                }
+            });
+
+        $this->line("Legacy candidates: {$candidates}; invalid format: {$invalid}; absent from legacy ID table: {$missing}.");
+        $this->warn('No FIFA ID was created. Verify provenance and authority before promoting legacy values.');
+
+        return self::SUCCESS;
     }
 } 

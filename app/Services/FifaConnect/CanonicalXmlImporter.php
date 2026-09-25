@@ -40,6 +40,11 @@ class CanonicalXmlImporter
 
         $type = $root->localName;
 
+        if ($type === 'PersonData') {
+            $child = $this->singleEnvelopeChild($root, 'PersonLocal');
+            return ['type' => 'PersonLocal', 'data' => $this->parsePerson($child)];
+        }
+
         if ($type === 'CompetitionInternationalData') {
             $child = $this->singleEnvelopeChild(
                 $root,
@@ -109,6 +114,16 @@ class CanonicalXmlImporter
         if (!$root) {
             throw new RuntimeException(
                 'FIFA XML root is missing.'
+            );
+        }
+
+        if ($root->localName === 'PersonData') {
+            return array_map(
+                fn (DOMElement $child) => [
+                    'type' => 'PersonLocal',
+                    'data' => $this->parsePerson($child),
+                ],
+                $this->childrenNamed($root, 'PersonLocal')
             );
         }
 

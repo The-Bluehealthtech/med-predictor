@@ -70,6 +70,7 @@ class CheckFifaDataStandardCompliance extends Command
         \App\Services\FifaConnect\SchemaCatalog::class,
         \App\Services\FifaConnect\XsdValidator::class,
         \App\Services\FifaConnect\PersonLocalXmlSerializer::class,
+        \App\Services\FifaConnect\PersonDataXmlSerializer::class,
         \App\Services\FifaConnect\OrganisationLocalXmlSerializer::class,
         \App\Services\FifaConnect\FacilityLocalXmlSerializer::class,
         \App\Services\FifaConnect\CompetitionInternationalXmlSerializer::class,

@@ -2287,8 +2287,8 @@
                                        value="{{ auth()->user()?->name ?? '' }}" readonly>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">License Number:</span>
-                                <span class="ml-2 text-gray-900" id="signoff-license-number">Non renseigné</span>
+                                <span class="font-semibold text-gray-700">FIFA ID du médecin :</span>
+                                <span class="ml-2 text-gray-900" id="signoff-license-number">{{ $teamDoctorRegistration?->person_fifa_id ?? 'Inscription TeamDoctor indisponible' }}</span>
                             </div>
                             <div>
                                 <span class="font-semibold text-gray-700">Timestamp:</span>
@@ -2374,7 +2374,7 @@ window.generatePDF = async function() {
             formData.append('signature_data', JSON.stringify(window.signedPCMAData));
             formData.append('is_signed', '1');
             formData.append('signed_by', window.signedPCMAData.signedBy);
-            formData.append('license_number', window.signedPCMAData.licenseNumber);
+            formData.append('doctor_fifa_id', window.signedPCMAData.doctorFifaId);
             formData.append('signed_at', window.signedPCMAData.signedAt);
             formData.append('signature_image', window.signedPCMAData.signatureImage);
             formData.append('legal_declaration', 'confirmed');
@@ -2676,7 +2676,7 @@ window.printReport = function() {
              </div>
              <div class="field">
                  <label>Numéro de licence:</label>
-                 <value>${window.signedPCMAData.licenseNumber}</value>
+                 <value>${window.signedPCMAData.doctorFifaId}</value>
              </div>
              <div class="field">
                  <label>Date de signature:</label>
@@ -2764,7 +2764,7 @@ window.testSignatureData = function() {
     if (window.signedPCMAData) {
         alert(' Signature data is available!\n\n' + 
               'Signed by: ' + window.signedPCMAData.signedBy + '\n' +
-              'License: ' + window.signedPCMAData.licenseNumber + '\n' +
+              'FIFA ID: ' + window.signedPCMAData.doctorFifaId + '\n' +
               'Date: ' + window.signedPCMAData.signedAt + '\n' +
               'Status: ' + window.signedPCMAData.fitnessStatus);
     } else {
@@ -2806,7 +2806,7 @@ window.openDoctorSignoff = function() {
             assessmentId: null,
             clinicalNotes: formDataObj.notes || null,
             doctorName: doctorName,
-            licenseNumber: null
+            doctorFifaId: @json($teamDoctorRegistration?->person_fifa_id)
         };
         
         // Show the modal
@@ -2828,7 +2828,7 @@ window.openDoctorSignoff = function() {
         document.getElementById('signoff-examination-date').textContent = signoffData.examinationDate;
         document.getElementById('signoff-assessment-id').textContent = signoffData.assessmentId;
         document.getElementById('signoff-doctor-name-input').value = signoffData.doctorName;
-        document.getElementById('signoff-license-number').textContent = signoffData.licenseNumber;
+        document.getElementById('signoff-license-number').textContent = signoffData.doctorFifaId || 'Inscription TeamDoctor indisponible';
         document.getElementById('signoff-timestamp').textContent = new Date().toLocaleString('en-US', {
             year: 'numeric',
             month: '2-digit',
@@ -3068,7 +3068,7 @@ function updateActionStatus() {
 }
 
 function handleSignoff(signoffData) {
-    if (!signoffData.licenseNumber || !signoffData.doctorName || !signoffData.fitnessDecision) {
+    if (!signoffData.doctorFifaId || !signoffData.doctorName || !signoffData.fitnessDecision) {
         alert('Signature indisponible : identité, numéro professionnel et décision médicale vérifiés requis.');
         return;
     }
@@ -3094,7 +3094,7 @@ function handleSignoff(signoffData) {
         // Create signed data
         const signedData = {
             signedBy: actualDoctorName,
-            licenseNumber: signoffData.licenseNumber,
+            doctorFifaId: signoffData.doctorFifaId,
             signedAt: new Date().toISOString(),
             signatureImage: signatureImage,
             fitnessStatus: signoffData.fitnessDecision,
@@ -3199,7 +3199,7 @@ function saveSignedPCMA(signedData) {
     formData.append('is_signed', '1');
     formData.append('signed_at', signedData.signedAt);
     formData.append('signed_by', signedData.signedBy);
-    formData.append('license_number', signedData.licenseNumber);
+    formData.append('doctor_fifa_id', signedData.doctorFifaId);
     formData.append('signature_image', signedData.signatureImage);
     
             console.log(' FormData contents:');

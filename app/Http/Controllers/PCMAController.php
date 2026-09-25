@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\PCMA;
+use App\Models\FifaConnect\Organisation as FifaOrganisation;
+use App\Models\FifaConnect\Person as FifaPerson;
+use App\Models\FifaConnect\Registration as FifaRegistration;
 use App\Models\Player;
 use App\Models\Athlete;
 use App\Models\User;
@@ -18,6 +21,31 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class PCMAController extends Controller
 {
+    private function activeTeamDoctorRegistration(User $user): ?FifaRegistration
+    {
+        $fifaId = $user->fifa_connect_id;
+        if (!$fifaId || !in_array($user->role, ['team_doctor', 'doctor', 'club_medical', 'association_medical'], true)) {
+            return null;
+        }
+
+        $person = FifaPerson::where('person_fifa_id', $fifaId)->first();
+        if (!$person) {
+            return null;
+        }
+
+        $today = now()->toDateString();
+        return FifaRegistration::where('person_id', $person->id)
+            ->where('person_fifa_id', $fifaId)
+            ->where('registration_type', FifaRegistration::TYPE_TEAM_OFFICIAL)
+            ->where('team_official_role', 'TeamDoctor')
+            ->where('status', 'active')
+            ->whereDate('registration_valid_from', '<=', $today)
+            ->where(function ($query) use ($today) {
+                $query->whereNull('registration_valid_to')
+                    ->orWhereDate('registration_valid_to', '>=', $today);
+            })->first();
+    }
+
     public function index(): View
     {
         $pcmas = PCMA::with(['athlete', 'assessor'])
@@ -32,20 +60,7 @@ class PCMAController extends Controller
         // Vérifier les autorisations
         $user = auth()->user();
         
-        // Si pas d'utilisateur connecté, utiliser des données par défaut pour le test
-        if (!$user) {
-            $athletes = collect([
-                (object)['id' => 1, 'first_name' => 'Test', 'last_name' => 'Player 1', 'club_id' => 1],
-                (object)['id' => 2, 'first_name' => 'Test', 'last_name' => 'Player 2', 'club_id' => 1],
-            ]);
-            
-            $users = collect([
-                (object)['id' => 1, 'name' => 'Dr. Test Doctor', 'role' => 'doctor'],
-                (object)['id' => 2, 'name' => 'Nurse Test', 'role' => 'medical_staff'],
-            ]);
-            
-            return view('pcma.create', compact('athletes', 'users'));
-        }
+        abort_unless($user, 401);
         
         // Récupérer les joueurs selon le rôle de l'utilisateur
         $athletes = collect();
@@ -66,12 +81,12 @@ class PCMAController extends Controller
             $athletes = Player::orderBy('first_name')->orderBy('last_name')->get();
         }
         
-        // Récupérer les utilisateurs autorisés à évaluer (médecins, personnel médical)
-        $users = User::whereIn('role', ['doctor', 'medical_staff', 'club_medical', 'association_medical'])
-            ->orderBy('name')
-            ->get();
+        // Seul le médecin connecté, identifié par FIFA et inscrit TeamDoctor,
+        // peut signer. Les autres utilisateurs ne sont pas proposés comme signataires.
+        $teamDoctorRegistration = $this->activeTeamDoctorRegistration($user);
+        $users = $teamDoctorRegistration ? collect([$user]) : collect();
         
-        return view('pcma.create', compact('athletes', 'users'));
+        return view('pcma.create', compact('athletes', 'users', 'teamDoctorRegistration'));
     }
 
     public function store(Request $request)
@@ -185,27 +200,45 @@ class PCMAController extends Controller
             $validated
         );
 
-        // Note: assessor_id is set from the form, not from auth()->id()
+        // La sélection client ne constitue pas une preuve d'identité du signataire.
 
-        // Handle FIFA compliant checkbox
-        $validated['fifa_compliant'] = $request->has('fifa_compliant');
-        
+        // La vérification du médecin ne certifie pas le PCMA comme objet FIFA Connect.
+        $validated['fifa_compliant'] = false;
+
                         // Handle signature data
-                if ($request->has('is_signed') && $request->is_signed) {
+                if ($request->boolean('is_signed')) {
+                    $doctor = $request->user();
+                    $registration = $doctor ? $this->activeTeamDoctorRegistration($doctor) : null;
+                    $player = Player::find($validated['player_id']);
+                    $sameClub = $registration && $player?->club_id
+                        && FifaOrganisation::where('organisation_fifa_id', $registration->organisation_fifa_id)
+                            ->where('club_id', $player->club_id)->exists();
+                    if (!$sameClub || (int) $validated['assessor_id'] !== (int) $doctor->id) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            'assessor_id' => 'Signature réservée au médecin connecté disposant d’un FIFA ID et d’une inscription TeamDoctor active.',
+                        ]);
+                    }
                     $validated['is_signed'] = true;
-                    $validated['signed_at'] = $request->signed_at;
-                    $validated['signed_by'] = $request->signed_by;
-                    $validated['license_number'] = $request->license_number;
-                    $validated['signature_data'] = $request->signature_data;
+                    $validated['signed_at'] = now();
+                    $validated['signed_by'] = $doctor->name;
+                    $validated['license_number'] = null;
+                    $signaturePayload = json_decode($request->input('signature_data', '{}'), true);
+                    $signaturePayload = is_array($signaturePayload) ? $signaturePayload : [];
+                    unset($signaturePayload['licenseNumber'], $signaturePayload['signedBy'], $signaturePayload['doctorFifaId']);
+                    $signaturePayload['signedBy'] = $doctor->name;
+                    $signaturePayload['doctorFifaId'] = $registration->person_fifa_id;
+                    $signaturePayload['teamDoctorRegistrationId'] = $registration->id;
+                    $signaturePayload['signedAt'] = $validated['signed_at']->toISOString();
+                    $validated['signature_data'] = json_encode($signaturePayload);
                     
                     // Add default result_json if not provided
                     if (!isset($validated['result_json'])) {
                         $validated['result_json'] = json_encode([
                             'assessment_type' => $validated['type'],
-                            'status' => 'completed',
-                            'signed_by' => $request->signed_by,
-                            'signed_at' => $request->signed_at,
-                            'signature_data' => $request->signature_data
+                            'status' => $validated['status'],
+                            'signed_by' => $doctor->name,
+                            'signed_at' => $validated['signed_at']->toISOString(),
+                            'signature_data' => $signaturePayload
                         ]);
                     }
             

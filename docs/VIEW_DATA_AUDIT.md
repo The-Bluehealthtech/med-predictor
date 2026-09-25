@@ -23,3 +23,7 @@ Références normatives : https://data.fifaconnect.org/scenarios/ ; https://data
 2. Relier chaque champ affiché aux enregistrements persistés et à son type FIFA Connect applicable. Un champ local sans équivalent FIFA ne doit pas être qualifié de donnée FIFA.
 3. Déterminer la source autoritative du numéro professionnel du médecin et de la décision PCMA ; la signature reste bloquée jusqu'à preuve.
 4. Rejouer les routes en environnement authentifié et vérifier les jeux de données réels, les rôles et les erreurs 500. Le registre `ROUTE_500_AUDIT.md` garde l'instantané initial et les corrections vérifiées séparés.
+
+## Règle médicale précisée par le propriétaire
+
+Une signature PCMA exige que le compte connecté porte un FIFA ID correspondant à `fifa_connect_persons.person_fifa_id`, une inscription canonique active `TeamOfficial` avec `TeamOfficialRole=TeamDoctor` valable à la date de signature, et une organisation FIFA reliée au club du joueur. L'assesseur envoyé par le navigateur doit être le compte connecté ; le nom, le FIFA ID et l'inscription du signataire sont fixés par le serveur. Le FIFA ID ne tient pas lieu de numéro de licence médicale. Le flux de confirmation reste bloqué tant que la décision clinique vérifiée n'est pas disponible dans le formulaire.

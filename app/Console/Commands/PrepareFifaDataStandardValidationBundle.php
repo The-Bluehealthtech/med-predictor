@@ -35,6 +35,25 @@ class PrepareFifaDataStandardValidationBundle extends Command
             return self::FAILURE;
         }
 
+        $expectedHashes = config('fifa_connect_xsd_hashes');
+        if (!is_array($expectedHashes) || count($expectedHashes) !== 10) {
+            $this->error('Reviewed FIFA Connect XSD hashes are unavailable.');
+            return self::FAILURE;
+        }
+
+        foreach ($expectedHashes as $relative => $expected) {
+            $path = $source . DIRECTORY_SEPARATOR . $relative;
+            if (!is_file($path) || !hash_equals($expected, hash_file('sha256', $path))) {
+                $this->error("FIFA Connect Data 3.3 XSD mismatch: {$relative}");
+                return self::FAILURE;
+            }
+        }
+
+        if (realpath($source) === realpath($target)) {
+            $this->error('FIFA XSD source and validation paths must differ.');
+            return self::FAILURE;
+        }
+
         File::deleteDirectory($target);
         File::copyDirectory($source, $target);
 

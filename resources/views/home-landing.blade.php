@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>FIT Platform - Suivi Holistique des Joueurs</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
-    
+
     <!-- Tailwind CSS (CDN script - restored 2026-09-25 after two attempts to replace it broke
          the site: the shared Vite public-build bundle is a stale (over a year old) build missing
          classes this page uses (e.g. w-8/h-8 caused an oversized header logo), and a page-specific
@@ -23,284 +19,250 @@
 
     <!-- Custom Styles -->
     <style>
-        .hero-gradient {
-            background: linear-gradient(135deg, #000000 0%, #0f172a 20%, #1e293b 50%, #0f172a 80%, #000000 100%);
+        body {
+            font-family: Calibri, 'Segoe UI', Arial, sans-serif;
         }
-        .hero-pattern {
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.01'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        .font-display {
+            font-family: Cambria, Georgia, serif;
         }
         .card-hover {
-            transition: all 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-        .floating-delayed {
-            animation: floating 3s ease-in-out infinite 1.5s;
-        }
-        .pulse-slow {
-            animation: pulse-slow 2s ease-in-out infinite;
-        }
-        @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        .text-shadow {
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-        }
-        .text-shadow-strong {
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
-        }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 35px -15px rgba(15, 23, 42, 0.25);
         }
     </style>
 </head>
-<body class="font-inter antialiased">
+<body class="antialiased bg-white">
     <!-- Navigation -->
-    <nav class="bg-white/95 backdrop-blur-sm shadow-lg fixed w-full top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 flex items-center">
-                        <img src="{{ asset('images/the-fit-logo.png') }}" alt="The FIT Logo" class="w-8 h-8 mr-3">
-                        <h1 class="text-2xl font-bold text-gray-900">FIT Platform</h1>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <!-- Language Switcher -->
-                    <div class="relative">
-                        <select class="bg-gray-100 text-gray-700 px-3 py-2 rounded-md text-sm font-medium border-0 focus:ring-2 focus:ring-blue-500">
-                            <option value="fr">🇫🇷 FR</option>
-                            <option value="en">🇬🇧 EN</option>
-                            <option value="es">🇪🇸 ES</option>
-                        </select>
-                    </div>
-                    
-                    @if (Route::has('login'))
-                        @auth
-                            <a href="{{ route('login') }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
-                                Connexion
-                            </a>
-                        @else
-                            <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                                Connexion
-                            </a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
-                                    Inscription
-                                </a>
-                            @endif
-                        @endauth
-                    @endif
-                </div>
-            </div>
+    <header class="flex items-center justify-between px-6 md:px-16 py-4 border-b border-[#E2E8F0] bg-white">
+        <div class="flex items-center gap-3">
+            <img src="{{ asset('images/the-fit-logo.png') }}" alt="The FIT Logo" class="w-9 h-9 rounded-lg object-contain">
+            <span class="font-display text-lg font-bold text-[#0F172A]">FIT Platform</span>
         </div>
-    </nav>
+
+        <nav class="hidden md:flex items-center gap-9">
+            <a href="#fonctionnalites" class="text-sm font-semibold text-[#0F172A] hover:text-[#2563EB] transition-colors">Fonctionnalités</a>
+            <a href="#securite" class="text-sm font-semibold text-[#0F172A] hover:text-[#2563EB] transition-colors">Sécurité</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+            <!-- Language Switcher -->
+            <select class="hidden sm:block bg-white text-[#64748B] text-sm font-medium border border-[#E2E8F0] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2563EB]">
+                <option value="fr">🇫🇷 FR</option>
+                <option value="en">🇬🇧 EN</option>
+                <option value="es">🇪🇸 ES</option>
+            </select>
+
+            @if (Route::has('login'))
+                @auth
+                    <a href="{{ route('login') }}" class="bg-[#2563EB] text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-[#3B82F6] transition-colors">
+                        Connexion
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="text-[#0F172A] hover:text-[#2563EB] px-4 py-2 rounded-md text-sm font-semibold transition-colors">
+                        Connexion
+                    </a>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="bg-[#2563EB] text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-[#3B82F6] transition-colors">
+                            Inscription
+                        </a>
+                    @endif
+                @endauth
+            @endif
+        </div>
+    </header>
 
     <!-- Hero Section -->
-    <section class="hero-gradient hero-pattern relative overflow-hidden">
-        <!-- Animated Background Elements -->
-        <div class="absolute inset-0">
-            <!-- Football Animation -->
-            <div class="absolute top-20 left-10 floating">
-                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    </svg>
+    <section class="bg-[#0F172A] px-6 md:px-16 pt-14 pb-14 md:pt-20 md:pb-20">
+        <div class="max-w-5xl mx-auto flex flex-col items-start gap-6">
+
+            <div class="inline-flex items-center gap-2 bg-[#1E293B] rounded-full pl-3.5 pr-4 py-2">
+                <svg class="w-4 h-4 text-[#60A5FA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><ellipse cx="12" cy="12" rx="4" ry="9"></ellipse><line x1="3" y1="12" x2="21" y2="12"></line></svg>
+                <span class="text-[#93C5FD] text-xs font-bold tracking-wider">CONNECTÉ À L'ÉCOSYSTÈME FIFA</span>
+            </div>
+
+            <h1 class="font-display text-4xl md:text-6xl leading-tight text-white max-w-3xl">
+                Suivi holistique des joueurs de football.
+            </h1>
+
+            <p class="text-lg text-[#CBD5E1] max-w-2xl leading-relaxed">
+                Performance, santé et gouvernance réunies sur une plateforme unique — pensée pour les clubs, associations et staffs médicaux.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 mt-2">
+                @if (Route::has('login'))
+                    @auth
+                        <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-[#2563EB] text-white px-7 py-3.5 rounded-lg text-base font-bold hover:bg-[#3B82F6] transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                            Demander un Compte
+                        </a>
+                    @else
+                        <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-[#2563EB] text-white px-7 py-3.5 rounded-lg text-base font-bold hover:bg-[#3B82F6] transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                            Demander un Compte
+                        </a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 bg-transparent text-white px-7 py-3.5 rounded-lg text-base font-bold border border-[#334155] hover:border-[#64748B] transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                                S'inscrire
+                            </a>
+                        @endif
+                    @endauth
+                @endif
+                <a href="#fonctionnalites" class="inline-flex items-center justify-center gap-2 bg-transparent text-white px-7 py-3.5 rounded-lg text-base font-bold border border-[#334155] hover:border-[#64748B] transition-colors">
+                    Découvrir les modules
+                </a>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 md:gap-5 mt-10 w-full max-w-md">
+                <div class="bg-[#1E293B] border border-[#334155] rounded-xl p-6 flex flex-col gap-1.5">
+                    <span class="font-display text-3xl md:text-4xl font-bold text-white">32</span>
+                    <span class="text-sm text-[#CBD5E1]">Modules actifs</span>
+                </div>
+                <div class="bg-[#1E293B] border border-[#334155] rounded-xl p-6 flex flex-col gap-1.5">
+                    <span class="font-display text-3xl md:text-4xl font-bold text-white">8</span>
+                    <span class="text-sm text-[#CBD5E1]">Domaines fonctionnels</span>
                 </div>
             </div>
-            
-            <!-- AI Brain Animation -->
-            <div class="absolute top-32 right-20 floating-delayed">
-                <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center pulse-slow">
-                    <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                    </svg>
-                </div>
-            </div>
-            
-            <!-- Performance Chart Animation -->
-            <div class="absolute bottom-20 left-1/4 floating">
-                <div class="w-24 h-24 bg-white/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
-                    </svg>
-                </div>
-            </div>
-            
-            <!-- Trophy Animation -->
-            <div class="absolute bottom-32 right-1/4 floating-delayed">
-                <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
-                    <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M7 4V2c0-1.1.9-2 2-2h6c1.1 0 2 .9 2 2v2h4c1.1 0 2 .9 2 2v2c0 1.1-.9 2-2 2h-1v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8H3c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h4zm2-2v2h6V2H9z"/>
-                    </svg>
-                </div>
-            </div>
+
         </div>
-        
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-            <div class="text-center">
-                <h1 class="text-5xl md:text-7xl font-black text-white mb-6 text-shadow-strong">
-                    FIT Platform
-                    </h1>
-                <p class="text-2xl md:text-3xl text-white mb-8 max-w-4xl mx-auto font-semibold text-shadow-strong">
-                    Suivi holistique des joueurs de football avec analyse complète des performances, santé et développement
-                </p>
-                <div class="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-                    @if (Route::has('login'))
-                        @auth
-                            <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                                Demander un Compte
-                            </a>
-                        @else
-                            <a href="/account-request" class="inline-flex items-center justify-center gap-2 glass-effect text-white px-10 py-4 rounded-xl text-xl font-bold hover:bg-white/20 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                                Demander un Compte
-                            </a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                                    S'inscrire
-                                </a>
-                            @endif
-                        @endauth
-                    @endif
+    </section>
+
+    <!-- Domaines / modules -->
+    <section id="fonctionnalites" class="px-6 md:px-16 py-20 md:py-24 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <span class="text-[#2563EB] text-xs font-bold tracking-wider">ARCHITECTURE</span>
+            <h2 class="font-display text-2xl md:text-3xl font-bold text-[#0F172A] mt-2 mb-2">8 domaines, 32 modules, une seule plateforme</h2>
+            <p class="text-[#64748B] max-w-xl mb-10 md:mb-12">Un accès organisé par domaine métier, pour que chaque profil retrouve exactement ce dont il a besoin.</p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+
+                <div class="card-hover bg-[#F1F5F9] rounded-xl p-6 flex flex-col gap-4">
+                    <span class="w-12 h-12 rounded-full bg-[#0F172A] flex items-center justify-center">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5l3.2 2.3-1.2 3.7h-4l-1.2-3.7z"></path><path d="M12 3v4.5M6.2 9.3L3.5 8.5M6.2 14.7l-2 2.6M17.8 9.3l2.7-.8M17.8 14.7l2 2.6"></path></svg>
+                    </span>
+                    <span class="text-sm font-bold text-[#0F172A]">Gestion du Football</span>
+                    <span class="text-xs font-bold text-[#2563EB]">4 modules</span>
                 </div>
-                
+
+                <div class="card-hover bg-[#F1F5F9] rounded-xl p-6 flex flex-col gap-4">
+                    <span class="w-12 h-12 rounded-full bg-[#0F172A] flex items-center justify-center">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l2-6 4 12 2-6h4l2 3h4"></path></svg>
+                    </span>
+                    <span class="text-sm font-bold text-[#0F172A]">Santé &amp; Médecine</span>
+                    <span class="text-xs font-bold text-[#2563EB]">4 modules</span>
+                </div>
+
+                <div class="card-hover bg-[#F1F5F9] rounded-xl p-6 flex flex-col gap-4">
+                    <span class="w-12 h-12 rounded-full bg-[#0F172A] flex items-center justify-center">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 3 7-9"></path><circle cx="8" cy="11" r="1.1" fill="#ffffff" stroke="none"></circle><circle cx="12" cy="14" r="1.1" fill="#ffffff" stroke="none"></circle><circle cx="19" cy="5" r="1.1" fill="#ffffff" stroke="none"></circle></svg>
+                    </span>
+                    <span class="text-sm font-bold text-[#0F172A]">Analytics &amp; Performance</span>
+                    <span class="text-xs font-bold text-[#2563EB]">6 modules</span>
+                </div>
+
+                <div class="card-hover bg-[#F1F5F9] rounded-xl p-6 flex flex-col gap-4">
+                    <span class="w-12 h-12 rounded-full bg-[#0F172A] flex items-center justify-center">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="3"></rect><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"></path></svg>
+                    </span>
+                    <span class="text-sm font-bold text-[#0F172A]">IA &amp; Technologie</span>
+                    <span class="text-xs font-bold text-[#2563EB]">2 modules</span>
+                </div>
+
+                <div class="card-hover bg-[#F1F5F9] rounded-xl p-6 flex flex-col gap-4">
+                    <span class="w-12 h-12 rounded-full bg-[#0F172A] flex items-center justify-center">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"></rect><line x1="8" y1="7" x2="10" y2="7"></line><line x1="14" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="10" y2="11"></line><line x1="14" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="10" y2="15"></line><line x1="14" y1="15" x2="16" y2="15"></line></svg>
+                    </span>
+                    <span class="text-sm font-bold text-[#0F172A]">Organisations</span>
+                    <span class="text-xs font-bold text-[#2563EB]">3 modules</span>
+                </div>
+
+                <div class="card-hover bg-[#F1F5F9] rounded-xl p-6 flex flex-col gap-4">
+                    <span class="w-12 h-12 rounded-full bg-[#0F172A] flex items-center justify-center">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><circle cx="8" cy="12" r="2"></circle><line x1="13" y1="10" x2="18" y2="10"></line><line x1="13" y1="14" x2="17" y2="14"></line></svg>
+                    </span>
+                    <span class="text-sm font-bold text-[#0F172A]">Licences &amp; Documents</span>
+                    <span class="text-xs font-bold text-[#2563EB]">3 modules</span>
+                </div>
+
+                <div class="card-hover bg-[#F1F5F9] rounded-xl p-6 flex flex-col gap-4">
+                    <span class="w-12 h-12 rounded-full bg-[#0F172A] flex items-center justify-center">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><ellipse cx="12" cy="12" rx="4" ry="9"></ellipse><line x1="3" y1="12" x2="21" y2="12"></line></svg>
+                    </span>
+                    <span class="text-sm font-bold text-[#0F172A]">Portails &amp; Connectivité</span>
+                    <span class="text-xs font-bold text-[#2563EB]">7 modules</span>
+                </div>
+
+                <div class="card-hover bg-[#F1F5F9] rounded-xl p-6 flex flex-col gap-4">
+                    <span class="w-12 h-12 rounded-full bg-[#0F172A] flex items-center justify-center">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"></rect><path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="3" y1="13" x2="21" y2="13"></line></svg>
+                    </span>
+                    <span class="text-sm font-bold text-[#0F172A]">Administration</span>
+                    <span class="text-xs font-bold text-[#2563EB]">3 modules</span>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="fonctionnalites" class="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                    Fonctionnalités principales
-                </h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Une plateforme complète pour le suivi et l'analyse des joueurs de football
-                </p>
-            </div>
+    <!-- Conformité & sécurité -->
+    <section id="securite" class="px-6 md:px-16 py-20 md:py-24 bg-[#0F172A]">
+        <div class="max-w-6xl mx-auto">
+            <span class="text-[#93C5FD] text-xs font-bold tracking-wider">CONFORMITÉ &amp; SÉCURITÉ</span>
+            <h2 class="font-display text-xl md:text-2xl font-bold text-white mt-2 mb-10 md:mb-12 max-w-xl">Pensée pour les exigences du football institutionnel</h2>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Module 1 -->
-                <div class="bg-white rounded-2xl p-8 shadow-xl card-hover border border-gray-100">
-                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Analytics Avancées</h3>
-                    <p class="text-gray-600 text-lg">
-                        Suivi détaillé des performances avec métriques personnalisées et tableaux de bord interactifs.
-                    </p>
+            <div class="grid md:grid-cols-3 gap-6">
+
+                <div class="bg-[#1E293B] rounded-xl p-8 flex flex-col gap-4">
+                    <span class="w-12 h-12 rounded-full bg-[#2563EB] flex items-center justify-center">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><ellipse cx="12" cy="12" rx="4" ry="9"></ellipse><line x1="3" y1="12" x2="21" y2="12"></line></svg>
+                    </span>
+                    <span class="font-display text-base font-bold text-white">Standards FIFA Connect</span>
+                    <span class="text-sm text-[#CBD5E1] leading-relaxed">Structure de données alignée sur les standards FIFA pour les joueurs, clubs et associations.</span>
                 </div>
 
-                <!-- Module 2 -->
-                <div class="bg-white rounded-2xl p-8 shadow-xl card-hover border border-gray-100">
-                    <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Santé & Bien-être</h3>
-                    <p class="text-gray-600 text-lg">
-                        Monitoring de la condition physique, récupération et prévention des blessures.
-                    </p>
+                <div class="bg-[#1E293B] rounded-xl p-8 flex flex-col gap-4">
+                    <span class="w-12 h-12 rounded-full bg-[#2563EB] flex items-center justify-center">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6z"></path></svg>
+                    </span>
+                    <span class="font-display text-base font-bold text-white">Gestion des rôles &amp; accès</span>
+                    <span class="text-sm text-[#CBD5E1] leading-relaxed">Comptes dédiés par profil : administrateur, staff médical, club, joueur, arbitre.</span>
                 </div>
 
-                <!-- Module 3 -->
-                <div class="bg-white rounded-2xl p-8 shadow-xl card-hover border border-gray-100">
-                    <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Gestion d'Équipe</h3>
-                    <p class="text-gray-600 text-lg">
-                        Coordination des équipes, planning des entraînements et suivi des objectifs.
-                    </p>
+                <div class="bg-[#1E293B] rounded-xl p-8 flex flex-col gap-4">
+                    <span class="w-12 h-12 rounded-full bg-[#2563EB] flex items-center justify-center">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+                    </span>
+                    <span class="font-display text-base font-bold text-white">Données de santé protégées</span>
+                    <span class="text-sm text-[#CBD5E1] leading-relaxed">Dossiers médicaux cloisonnés, accessibles uniquement aux profils autorisés.</span>
                 </div>
 
-                <!-- Module 4 -->
-                <div class="bg-white rounded-2xl p-8 shadow-xl card-hover border border-gray-100">
-                    <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Conformité FIFA</h3>
-                    <p class="text-gray-600 text-lg">
-                        Intégration avec les standards FIFA Connect pour la gestion des licences et transferts.
-                    </p>
-                </div>
-
-                <!-- Module 5 -->
-                <div class="bg-white rounded-2xl p-8 shadow-xl card-hover border border-gray-100">
-                    <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Performance Temps Réel</h3>
-                    <p class="text-gray-600 text-lg">
-                        Données en temps réel pendant les matchs et entraînements avec alertes automatiques.
-                    </p>
-                </div>
-
-                <!-- Module 6 -->
-                <div class="bg-white rounded-2xl p-8 shadow-xl card-hover border border-gray-100">
-                    <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Rapports Intelligents</h3>
-                    <p class="text-gray-600 text-lg">
-                        Génération automatique de rapports détaillés avec insights et recommandations.
-                    </p>
-                </div>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="bg-gradient-to-r from-blue-600 to-blue-800 py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
-                Prêt à optimiser les performances de vos joueurs ?
-            </h2>
-            <p class="text-2xl text-blue-100 mb-12 max-w-3xl mx-auto">
-                Rejoignez les clubs qui font confiance à FIT Platform pour le suivi holistique de leurs joueurs.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-6 justify-center">
+    <section class="px-6 md:px-16 py-20 bg-[#2563EB]">
+        <div class="max-w-2xl mx-auto flex flex-col items-center text-center gap-4">
+            <h2 class="font-display text-2xl md:text-3xl font-bold text-white">Prêt à optimiser les performances de vos joueurs ?</h2>
+            <p class="text-[#DBEAFE] max-w-md">Rejoignez les clubs qui font confiance à FIT Platform pour le suivi holistique de leurs joueurs.</p>
+            <div class="flex flex-col sm:flex-row gap-4 mt-2">
                 @if (Route::has('login'))
                     @auth
-                        <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                        <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-white text-[#2563EB] px-8 py-3.5 rounded-lg text-base font-bold hover:bg-[#F1F5F9] transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
                             Demander un Compte
                         </a>
                     @else
-                        <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                        <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-white text-[#2563EB] px-8 py-3.5 rounded-lg text-base font-bold hover:bg-[#F1F5F9] transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
                             Demander un Compte
                         </a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 bg-blue-500 text-white px-10 py-4 rounded-xl text-xl font-bold hover:bg-blue-400 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 border-2 border-white">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                            <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 bg-transparent text-white px-8 py-3.5 rounded-lg text-base font-bold border-2 border-white hover:bg-white/10 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                                 S'inscrire
                             </a>
                         @endif
@@ -311,64 +273,64 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer class="bg-[#0F172A] text-white py-16 px-6 md:px-16">
+        <div class="max-w-6xl mx-auto">
             <div class="grid md:grid-cols-4 gap-8">
-                        <div>
-                    <div class="flex items-center mb-6">
-                        <img src="{{ asset('images/the-fit-logo.png') }}" alt="The FIT Logo" class="w-8 h-8 mr-3">
-                        <h3 class="text-2xl font-bold">FIT Platform</h3>
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <img src="{{ asset('images/the-fit-logo.png') }}" alt="The FIT Logo" class="w-9 h-9 rounded-lg object-contain">
+                        <span class="font-display text-lg font-bold">FIT Platform</span>
                     </div>
-                    <p class="text-gray-400 text-lg">
+                    <p class="text-[#94A3B8] text-sm leading-relaxed">
                         La solution complète pour le suivi holistique des joueurs de football.
                     </p>
                 </div>
-                        <div>
-                    <h4 class="text-lg font-semibold text-gray-300 uppercase tracking-wider mb-6">Produit</h4>
+                <div>
+                    <h4 class="text-xs font-bold text-[#93C5FD] uppercase tracking-wider mb-5">Produit</h4>
                     <ul class="space-y-3">
-                        <li><a href="#fonctionnalites" class="text-gray-400 hover:text-white transition-colors text-lg">Fonctionnalités</a></li>
+                        <li><a href="#fonctionnalites" class="text-[#94A3B8] hover:text-white transition-colors text-sm">Fonctionnalités</a></li>
                         <!-- Tarifs / API : pages pas encore créées. Liste en texte neutre plutôt
                              qu'un lien mort tant que ces pages n'existent pas. -->
-                        <li><span class="text-gray-600 text-lg cursor-default">Tarifs <span class="text-xs align-middle">(bientôt)</span></span></li>
-                        <li><span class="text-gray-600 text-lg cursor-default">API <span class="text-xs align-middle">(bientôt)</span></span></li>
-                            </ul>
-                        </div>
+                        <li><span class="text-[#475569] text-sm cursor-default">Tarifs <span class="text-xs align-middle">(bientôt)</span></span></li>
+                        <li><span class="text-[#475569] text-sm cursor-default">API <span class="text-xs align-middle">(bientôt)</span></span></li>
+                    </ul>
+                </div>
                 <div>
-                    <h4 class="text-lg font-semibold text-gray-300 uppercase tracking-wider mb-6">Support</h4>
+                    <h4 class="text-xs font-bold text-[#93C5FD] uppercase tracking-wider mb-5">Support</h4>
                     <ul class="space-y-3">
                         <!-- Documentation / Aide / Contact : pas encore de page dédiée. -->
-                        <li><span class="text-gray-600 text-lg cursor-default">Documentation <span class="text-xs align-middle">(bientôt)</span></span></li>
-                        <li><span class="text-gray-600 text-lg cursor-default">Aide <span class="text-xs align-middle">(bientôt)</span></span></li>
-                        <li><span class="text-gray-600 text-lg cursor-default">Contact <span class="text-xs align-middle">(bientôt)</span></span></li>
-                            </ul>
-                        </div>
+                        <li><span class="text-[#475569] text-sm cursor-default">Documentation <span class="text-xs align-middle">(bientôt)</span></span></li>
+                        <li><span class="text-[#475569] text-sm cursor-default">Aide <span class="text-xs align-middle">(bientôt)</span></span></li>
+                        <li><span class="text-[#475569] text-sm cursor-default">Contact <span class="text-xs align-middle">(bientôt)</span></span></li>
+                    </ul>
+                </div>
                 <div>
-                    <h4 class="text-lg font-semibold text-gray-300 uppercase tracking-wider mb-6">Légal</h4>
+                    <h4 class="text-xs font-bold text-[#93C5FD] uppercase tracking-wider mb-5">Légal</h4>
                     <ul class="space-y-3">
                         <!-- Pages légales : à créer avant mise en avant publique (mentions
                              obligatoires) — laissées en texte neutre pour ne pas laisser croire
                              qu'elles existent déjà. -->
-                        <li><span class="text-gray-600 text-lg cursor-default">Confidentialité <span class="text-xs align-middle">(bientôt)</span></span></li>
-                        <li><span class="text-gray-600 text-lg cursor-default">Conditions <span class="text-xs align-middle">(bientôt)</span></span></li>
-                        <li><span class="text-gray-600 text-lg cursor-default">Cookies <span class="text-xs align-middle">(bientôt)</span></span></li>
+                        <li><span class="text-[#475569] text-sm cursor-default">Confidentialité <span class="text-xs align-middle">(bientôt)</span></span></li>
+                        <li><span class="text-[#475569] text-sm cursor-default">Conditions <span class="text-xs align-middle">(bientôt)</span></span></li>
+                        <li><span class="text-[#475569] text-sm cursor-default">Cookies <span class="text-xs align-middle">(bientôt)</span></span></li>
                     </ul>
                 </div>
             </div>
-            <div class="border-t border-gray-800 mt-12 pt-8">
-                <div class="flex flex-col md:flex-row items-center justify-between">
-                    <div class="flex items-center mb-4 md:mb-0">
+            <div class="border-t border-[#1E293B] mt-12 pt-8">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center">
                         {{-- Le fichier images/logos/the-blue-healthtech-logo.png existe mais fait
                              0 octet (image jamais uploadée) : l'<img> cassait le rendu (icône
                              d'image brisée). Retiré en attendant le vrai fichier logo ; remettre
                              <img src="{{ asset('images/logos/the-blue-healthtech-logo.png') }}"
                                   alt="The Blue Healthtech" class="h-8 mr-3">
                              dès qu'il sera fourni. --}}
-                        <span class="text-gray-400 text-lg">Développé par The Blue Healthtech</span>
+                        <span class="text-[#94A3B8] text-sm">Développé par The Blue Healthtech</span>
                     </div>
-                    <p class="text-gray-400 text-lg">&copy; 2025 The Blue Healthtech Ltd. Tous droits réservés.</p>
+                    <p class="text-[#94A3B8] text-sm">&copy; 2025 The Blue Healthtech Ltd. Tous droits réservés.</p>
                 </div>
             </div>
         </div>
     </footer>
 </body>
-</html> 
+</html>

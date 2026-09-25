@@ -3547,15 +3547,20 @@ Route::get('/dental-chart-test', function () {
     }
 })->name('dental.chart.test');
 
-// Portail Joueur route (protégé par authentification)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/portail-joueur/{playerId?}', [App\Http\Controllers\PlayerAccessController::class, 'showPortal'])->name('joueur.portal');
-    Route::get('/portail-joueur', [App\Http\Controllers\PlayerPortalController::class, 'show'])->name('portail.joueur');
-});
+// Toutes les URL historiques d'un joueur affichent le même portail canonique.
+$redirectToPlayerPortal = function (?string $playerId = null) {
+    return redirect()->route(
+        'test.portail.joueur.simple',
+        $playerId === null ? [] : ['player_id' => $playerId]
+    );
+};
 
-// Accès Joueur par identifiant unique
-Route::get('/joueur/{playerId}', [App\Http\Controllers\PlayerAccessController::class, 'showPortal'])->name('joueur.show');
-Route::get('/joueur/{playerId}/portal', [App\Http\Controllers\PlayerAccessController::class, 'showPortal'])->name('player.portal');
+Route::middleware(['auth'])->group(function () use ($redirectToPlayerPortal) {
+    Route::get('/portail-joueur/{playerId?}', $redirectToPlayerPortal)->name('joueur.portal');
+    Route::get('/portail-joueur', [App\Http\Controllers\PlayerPortalController::class, 'show'])->name('portail.joueur');
+    Route::get('/joueur/{playerId}', $redirectToPlayerPortal)->name('joueur.show');
+    Route::get('/joueur/{playerId}/portal', $redirectToPlayerPortal)->name('player.portal');
+});
 
 // Routes pour la gestion des photos des joueurs
 Route::get('/joueur/{playerId}/photo/upload', [App\Http\Controllers\PlayerPhotoController::class, 'showUploadForm'])->name('joueur.photo.upload');

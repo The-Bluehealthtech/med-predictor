@@ -20,7 +20,7 @@ class DashboardController extends Controller
             case 'club_admin':
                 return redirect()->route('club-management.dashboard');
             case 'player':
-                return redirect()->route('dashboard.test'); // Dashboard le plus récent avec 20+ cards
+                return redirect()->route('test.portail.joueur.simple');
             case 'admin':
                 return redirect()->route('admin.dashboard');
             default:

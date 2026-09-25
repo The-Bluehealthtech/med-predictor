@@ -179,21 +179,6 @@
                     @endif
                 </div>
                 
-                <!-- Stats Section -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                    <div class="bg-black/40 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
-                        <div class="text-3xl font-bold text-white mb-2 text-shadow-strong">500+</div>
-                        <div class="text-white font-bold text-shadow-strong">Joueurs suivis</div>
-                        </div>
-                    <div class="bg-black/40 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
-                        <div class="text-3xl font-bold text-white mb-2 text-shadow-strong">50+</div>
-                        <div class="text-white font-bold text-shadow-strong">Clubs partenaires</div>
-                        </div>
-                    <div class="bg-black/40 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
-                        <div class="text-3xl font-bold text-white mb-2 text-shadow-strong">99.9%</div>
-                        <div class="text-white font-bold text-shadow-strong">Disponibilité</div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>

@@ -3997,8 +3997,12 @@ Route::get('/syntax-debugger', function () {
 })->name('syntax.debugger');
 
 Route::get('/dashboard-test', function () {
-    return view('dashboard-test');
-})->name('dashboard.test');
+    if (auth()->user()->isPlayer()) {
+        return redirect()->route('test.portail.joueur.simple');
+    }
+
+    return redirect()->route('dashboard');
+})->middleware(['auth'])->name('dashboard.test');
 
 Route::get('/profile-selector', function () {
     $footballType = request('footballType', '11aside');

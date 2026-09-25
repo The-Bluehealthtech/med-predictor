@@ -312,3 +312,11 @@ Plusieurs routes partagent la même URL : le test HTTP observe la route effectiv
 - `/fifa-complete` et `/fifa-working` figuraient à 500 dans l'instantané initial. Leur GET est maintenant défini en 410, car les écrans contenaient des fiches fictives. Ce retrait ne constitue pas une remise en service.
 - Le code de `/fifa-stable`, `/fifa-ultimate-complete`, `/fifa-ultimate-working`, `/fifa-test-public`, `/dashboard-temp` et `/dashboard-simulated` définit désormais un 410. Cette modification locale reste à vérifier après déploiement. `/fifa-test-simple` reste à examiner.
 - La liste historique de 147 GET et 38 mutations conserve ses résultats du balayage initial. Les entrées sans vérification ciblée restent **non revérifiées**, sans prétention de résolution globale.
+
+## Mise à jour ciblée du 25 septembre 2026 — données de démonstration
+
+Cet audit initial conserve ses 147 chemins GET et 38 requêtes mutantes en erreur comme instantané ; ils n'ont pas été retestés exhaustivement après cette mise à jour.
+
+- `/dashboard-test` : un 500 transitoire introduit par la traduction Blade a été corrigé dans `7390e65` ; contrôle HTTP authentifié en ligne : 200 en français et en anglais.
+- `/match-sheet` : l'ancien contrôleur renvoyait des collections vides malgré les lignes en base. Il lit désormais les feuilles et matchs avec restriction par rôle et périmètre. Contrôle en ligne administrateur : 24 feuilles, 10 matchs récents, détail `/match-sheet/24` accessible (200).
+- Les 24 rencontres et 48 événements de but proviennent du seeder idempotent `FitDemoFixturesSeeder` exécuté au démarrage Render. Ils sont des données de démonstration et leurs feuilles restent non signées.

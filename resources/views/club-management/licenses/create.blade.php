@@ -90,7 +90,7 @@
                                 <select name="player_id" id="player_id" required class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                     <option value="">Choose a player...</option>
                                     @foreach($availablePlayers as $player)
-                                        <option value="{{ $player->id }}" {{ $player && $player->id == $player->id ? 'selected' : '' }}>
+                                        <option value="{{ $player->id }}" {{ old('player_id') == $player->id ? 'selected' : '' }}>
                                             {{ $player->name }} ({{ $player->position }}) - {{ $player->nationality }}
                                         </option>
                                     @endforeach
@@ -101,11 +101,8 @@
                             </div>
 
                             <div>
-                                <label for="fifa_connect_id" class="block text-sm font-medium text-gray-700 mb-2">FIFA Connect ID</label>
-                                <input type="text" name="fifa_connect_id" id="fifa_connect_id" 
-                                       class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                       placeholder="Auto-generated if empty">
-                                <p class="mt-1 text-xs text-gray-500">Leave empty to auto-generate FIFA Connect ID</p>
+                                <p class="text-sm font-medium text-gray-700">Identifiant FIFA Connect</p>
+                                <p class="mt-2 text-sm text-gray-600">La demande utilise uniquement l'identifiant déjà associé au joueur sélectionné. Aucun identifiant n'est généré ici.</p>
                             </div>
                         </div>
                     </div>
@@ -339,14 +336,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-generate FIFA Connect ID if empty
-    const fifaConnectIdField = document.getElementById('fifa_connect_id');
-    if (fifaConnectIdField && !fifaConnectIdField.value) {
-        const timestamp = Date.now().toString().slice(-6);
-        const random = Math.random().toString(36).substring(2, 5).toUpperCase();
-        fifaConnectIdField.value = `PL-${timestamp}-${random}`;
-    }
-
     // Form validation
     const form = document.querySelector('form');
     form.addEventListener('submit', function(e) {

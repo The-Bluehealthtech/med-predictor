@@ -1,0 +1,5729 @@
+{
+  "scope": "Static heuristic inventory of current Blade files only; no signal does not certify data lineage or FIFA compliance.",
+  "view_count": 634,
+  "summary": {
+    "review_required": 133,
+    "no_static_signal_not_verified": 501
+  },
+  "views": [
+    {
+      "view": "account-request.create",
+      "path": "resources/views/account-request/create.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "account-request.success",
+      "path": "resources/views/account-request/success.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.account-requests.index",
+      "path": "resources/views/admin/account-requests/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.audit-trail.index",
+      "path": "resources/views/admin/audit-trail/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.audit-trail.show",
+      "path": "resources/views/admin/audit-trail/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.content-management.announcements",
+      "path": "resources/views/admin/content-management/announcements.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.content-management.articles",
+      "path": "resources/views/admin/content-management/articles.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.content-management.faq",
+      "path": "resources/views/admin/content-management/faq.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.content-management.index",
+      "path": "resources/views/admin/content-management/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.content-management.media",
+      "path": "resources/views/admin/content-management/media.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.content-management.pages",
+      "path": "resources/views/admin/content-management/pages.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.content-management.user-guide",
+      "path": "resources/views/admin/content-management/user-guide.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          72,
+          90,
+          129,
+          146,
+          177,
+          216,
+          258,
+          296
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "admin.dashboard",
+      "path": "resources/views/admin/dashboard.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.rbac.index",
+      "path": "resources/views/admin/rbac/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.rbac.module-permissions",
+      "path": "resources/views/admin/rbac/module-permissions.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.rbac.permissions",
+      "path": "resources/views/admin/rbac/permissions.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.rbac.roles",
+      "path": "resources/views/admin/rbac/roles.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.rbac.users",
+      "path": "resources/views/admin/rbac/users.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.referee-assignments",
+      "path": "resources/views/admin/referee-assignments.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.registration-requests.index",
+      "path": "resources/views/admin/registration-requests/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.registration-requests.show",
+      "path": "resources/views/admin/registration-requests/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.system-settings.create",
+      "path": "resources/views/admin/system-settings/create.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.system-settings.index",
+      "path": "resources/views/admin/system-settings/index.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "numeric_assignment": [
+          187
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "admin.system-stats",
+      "path": "resources/views/admin/system-stats.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "numeric_assignment": [
+          430,
+          436,
+          440,
+          444
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "admin.transfer-management.index",
+      "path": "resources/views/admin/transfer-management/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.transfer-management.transfers",
+      "path": "resources/views/admin/transfer-management/transfers.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.transfer-management.type",
+      "path": "resources/views/admin/transfer-management/type.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "admin.user-management.index",
+      "path": "resources/views/admin/user-management/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "administration.index",
+      "path": "resources/views/administration/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "ai-testing.index",
+      "path": "resources/views/ai-testing/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "ai-testing.test",
+      "path": "resources/views/ai-testing/test.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "alerts.performance",
+      "path": "resources/views/alerts/performance.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "analytics.dashboard-canonical",
+      "path": "resources/views/analytics/dashboard-canonical.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          38
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "analytics.dashboard",
+      "path": "resources/views/analytics/dashboard.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          124
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "analytics.digital-twin-canonical",
+      "path": "resources/views/analytics/digital-twin-canonical.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          3,
+          11,
+          18,
+          84
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "analytics.digital-twin",
+      "path": "resources/views/analytics/digital-twin.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "simulation_words": [
+          21,
+          41,
+          50,
+          67,
+          107,
+          123,
+          155,
+          156,
+          174,
+          204,
+          224,
+          225,
+          226,
+          231,
+          234,
+          236,
+          241,
+          363,
+          408,
+          456,
+          484,
+          514
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "app",
+      "path": "resources/views/app.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "appointments.create",
+      "path": "resources/views/appointments/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "appointments.index",
+      "path": "resources/views/appointments/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "appointments.show",
+      "path": "resources/views/appointments/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "associations.edit-logo",
+      "path": "resources/views/associations/edit-logo.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "audit-trail.index",
+      "path": "resources/views/audit-trail/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "auth.confirm-password",
+      "path": "resources/views/auth/confirm-password.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "auth.forgot-password",
+      "path": "resources/views/auth/forgot-password.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "auth.login-simple",
+      "path": "resources/views/auth/login-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "auth.login",
+      "path": "resources/views/auth/login.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "auth.register",
+      "path": "resources/views/auth/register.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "auth.reset-password",
+      "path": "resources/views/auth/reset-password.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "auth.verify-email",
+      "path": "resources/views/auth/verify-email.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.audit-trail.index",
+      "path": "resources/views/back-office/audit-trail/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.audit-trail.show",
+      "path": "resources/views/back-office/audit-trail/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.content.create",
+      "path": "resources/views/back-office/content/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.content.index",
+      "path": "resources/views/back-office/content/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.dashboard",
+      "path": "resources/views/back-office/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.layouts.app",
+      "path": "resources/views/back-office/layouts/app.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.license-types.create",
+      "path": "resources/views/back-office/license-types/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.license-types.index",
+      "path": "resources/views/back-office/license-types/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.logs",
+      "path": "resources/views/back-office/logs.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.seasons.create",
+      "path": "resources/views/back-office/seasons/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.seasons.edit",
+      "path": "resources/views/back-office/seasons/edit.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.seasons.index",
+      "path": "resources/views/back-office/seasons/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.seasons.show",
+      "path": "resources/views/back-office/seasons/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.settings",
+      "path": "resources/views/back-office/settings.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "back-office.system-status",
+      "path": "resources/views/back-office/system-status.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "clinical.clinician-portal",
+      "path": "resources/views/clinical/clinician-portal.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "simulation_words": [
+          567,
+          569,
+          570,
+          571,
+          572,
+          581,
+          613
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "clinical.patient-portal",
+      "path": "resources/views/clinical/patient-portal.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club.player-licenses.index",
+      "path": "resources/views/club/player-licenses/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club.player-licenses.show",
+      "path": "resources/views/club/player-licenses/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.assignments.index",
+      "path": "resources/views/club-management/assignments/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.dashboard",
+      "path": "resources/views/club-management/dashboard.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.index",
+      "path": "resources/views/club-management/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.licenses.audit-trail",
+      "path": "resources/views/club-management/licenses/audit-trail.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.licenses.compliance-report",
+      "path": "resources/views/club-management/licenses/compliance-report.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.licenses.create-template",
+      "path": "resources/views/club-management/licenses/create-template.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.licenses.create",
+      "path": "resources/views/club-management/licenses/create.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.licenses.edit",
+      "path": "resources/views/club-management/licenses/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.licenses.index",
+      "path": "resources/views/club-management/licenses/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.licenses.pdf",
+      "path": "resources/views/club-management/licenses/pdf.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.licenses.show",
+      "path": "resources/views/club-management/licenses/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.licenses.templates",
+      "path": "resources/views/club-management/licenses/templates.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.licenses.test-pdf",
+      "path": "resources/views/club-management/licenses/test-pdf.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.licenses.test-simple",
+      "path": "resources/views/club-management/licenses/test-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.lineups.create",
+      "path": "resources/views/club-management/lineups/create.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "numeric_assignment": [
+          210,
+          232
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "club-management.lineups.edit",
+      "path": "resources/views/club-management/lineups/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.lineups.generator",
+      "path": "resources/views/club-management/lineups/generator.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.lineups.index",
+      "path": "resources/views/club-management/lineups/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.lineups.show",
+      "path": "resources/views/club-management/lineups/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.logo.upload",
+      "path": "resources/views/club-management/logo/upload.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.players.bulk-import",
+      "path": "resources/views/club-management/players/bulk-import.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.players.export",
+      "path": "resources/views/club-management/players/export.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.players.import",
+      "path": "resources/views/club-management/players/import.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.players.index",
+      "path": "resources/views/club-management/players/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.teams.create",
+      "path": "resources/views/club-management/teams/create.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.teams.edit",
+      "path": "resources/views/club-management/teams/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.teams.index",
+      "path": "resources/views/club-management/teams/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.teams.manage-players",
+      "path": "resources/views/club-management/teams/manage-players.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-management.teams.show",
+      "path": "resources/views/club-management/teams/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "club-player-assignments.index",
+      "path": "resources/views/club-player-assignments/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competition-management.create",
+      "path": "resources/views/competition-management/create.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competition-management.edit",
+      "path": "resources/views/competition-management/edit.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competition-management.fixtures",
+      "path": "resources/views/competition-management/fixtures.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competition-management.index",
+      "path": "resources/views/competition-management/index.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competition-management.manual-fixtures",
+      "path": "resources/views/competition-management/manual-fixtures.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competition-management.matches.index",
+      "path": "resources/views/competition-management/matches/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competition-management.register-team",
+      "path": "resources/views/competition-management/register-team.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competition-management.show",
+      "path": "resources/views/competition-management/show.blade.php",
+      "direct_view_reference_count": 5,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competition-management.standings",
+      "path": "resources/views/competition-management/standings.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competition-management.test",
+      "path": "resources/views/competition-management/test.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.association.calendrier-global",
+      "path": "resources/views/competitions/association/calendrier-global.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.association.designation-arbitres",
+      "path": "resources/views/competitions/association/designation-arbitres.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.association.discipline-sanctions",
+      "path": "resources/views/competitions/association/discipline-sanctions.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "simulation_words": [
+          536
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "competitions.association.engagements-clubs",
+      "path": "resources/views/competitions/association/engagements-clubs.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.association.fixtures",
+      "path": "resources/views/competitions/association/fixtures.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "numeric_assignment": [
+          53
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "competitions.association.rapports-avances",
+      "path": "resources/views/competitions/association/rapports-avances.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.association.rapports-statistiques",
+      "path": "resources/views/competitions/association/rapports-statistiques.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "simulation_words": [
+          243,
+          251,
+          285
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "competitions.association.resultats-classements",
+      "path": "resources/views/competitions/association/resultats-classements.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.association.supervision",
+      "path": "resources/views/competitions/association/supervision.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.classement",
+      "path": "resources/views/competitions/classement.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.club.calendrier",
+      "path": "resources/views/competitions/club/calendrier.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.club.discipline",
+      "path": "resources/views/competitions/club/discipline.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.club.effectif",
+      "path": "resources/views/competitions/club/effectif.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "simulation_words": [
+          255,
+          260,
+          265,
+          270,
+          275
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "competitions.club.engagements",
+      "path": "resources/views/competitions/club/engagements.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.club.feuilles-match",
+      "path": "resources/views/competitions/club/feuilles-match.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.club.fixtures",
+      "path": "resources/views/competitions/club/fixtures.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "numeric_assignment": [
+          35
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "competitions.components.association-card",
+      "path": "resources/views/competitions/components/association-card.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.components.club-card",
+      "path": "resources/views/competitions/components/club-card.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "competitions.feuille-match",
+      "path": "resources/views/competitions/feuille-match.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          361
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "competitions.index",
+      "path": "resources/views/competitions/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.account-request-form-simple",
+      "path": "resources/views/components/account-request-form-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.account-request-form",
+      "path": "resources/views/components/account-request-form.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.app-layout",
+      "path": "resources/views/components/app-layout.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.application-logo",
+      "path": "resources/views/components/application-logo.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.association-logo-simple",
+      "path": "resources/views/components/association-logo-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.association-logo-working",
+      "path": "resources/views/components/association-logo-working.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.association-logo",
+      "path": "resources/views/components/association-logo.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.auth-session-status",
+      "path": "resources/views/components/auth-session-status.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.back-office-layout",
+      "path": "resources/views/components/back-office-layout.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.card",
+      "path": "resources/views/components/card.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.club-logo-inline",
+      "path": "resources/views/components/club-logo-inline.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.club-logo-working",
+      "path": "resources/views/components/club-logo-working.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.club-logo",
+      "path": "resources/views/components/club-logo.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.country-flag",
+      "path": "resources/views/components/country-flag.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.danger-button",
+      "path": "resources/views/components/danger-button.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.dashboard-layout",
+      "path": "resources/views/components/dashboard-layout.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.dropdown-link",
+      "path": "resources/views/components/dropdown-link.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.dropdown",
+      "path": "resources/views/components/dropdown.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.fifa-association-logo",
+      "path": "resources/views/components/fifa-association-logo.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.flag-logo-display",
+      "path": "resources/views/components/flag-logo-display.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.flag-logo-inline",
+      "path": "resources/views/components/flag-logo-inline.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.input-error",
+      "path": "resources/views/components/input-error.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.input-label",
+      "path": "resources/views/components/input-label.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.language-switcher",
+      "path": "resources/views/components/language-switcher.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.logout-button",
+      "path": "resources/views/components/logout-button.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.modal",
+      "path": "resources/views/components/modal.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.modern-button",
+      "path": "resources/views/components/modern-button.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.nav-link",
+      "path": "resources/views/components/nav-link.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.notification-messages",
+      "path": "resources/views/components/notification-messages.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.primary-button",
+      "path": "resources/views/components/primary-button.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.responsive-nav-link",
+      "path": "resources/views/components/responsive-nav-link.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.search-pagination",
+      "path": "resources/views/components/search-pagination.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.secondary-button",
+      "path": "resources/views/components/secondary-button.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.test-logo",
+      "path": "resources/views/components/test-logo.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "components.text-input",
+      "path": "resources/views/components/text-input.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "content.index",
+      "path": "resources/views/content/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "contracts.create",
+      "path": "resources/views/contracts/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "contracts.index",
+      "path": "resources/views/contracts/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "daily-passport.index",
+      "path": "resources/views/daily-passport/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "dashboard.index",
+      "path": "resources/views/dashboard/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          203,
+          220
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "dashboard.main",
+      "path": "resources/views/dashboard/main.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "dashboard-simple",
+      "path": "resources/views/dashboard-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "dashboard-test",
+      "path": "resources/views/dashboard-test.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          69,
+          145,
+          164,
+          178
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "dashboard",
+      "path": "resources/views/dashboard.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          338,
+          354,
+          363,
+          372
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "data-sync.index",
+      "path": "resources/views/data-sync/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "dataset-analytics",
+      "path": "resources/views/dataset-analytics.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "literal_metric_markup": [
+          277,
+          298,
+          307,
+          316,
+          325,
+          334,
+          353,
+          362,
+          371,
+          380,
+          389
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "debug-dashboard-button",
+      "path": "resources/views/debug-dashboard-button.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "debug-fifa-js-realtime",
+      "path": "resources/views/debug-fifa-js-realtime.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          45,
+          47,
+          283,
+          285,
+          287,
+          288,
+          289,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297,
+          298,
+          299,
+          300,
+          301,
+          302,
+          303,
+          304,
+          305,
+          343,
+          345,
+          346,
+          356,
+          357,
+          358,
+          359
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "debug-fifa-visual",
+      "path": "resources/views/debug-fifa-visual.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          243,
+          245,
+          247,
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255,
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          262,
+          263,
+          264,
+          265
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "debug-hierarchie-conteneurs",
+      "path": "resources/views/debug-hierarchie-conteneurs.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "debug-onglets-performance",
+      "path": "resources/views/debug-onglets-performance.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          54,
+          56,
+          305,
+          307,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          352,
+          354,
+          355,
+          365,
+          366,
+          367,
+          368,
+          369,
+          370,
+          387,
+          396,
+          399,
+          400
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "debug-portail-principal",
+      "path": "resources/views/debug-portail-principal.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "debug-visibilite-fifa",
+      "path": "resources/views/debug-visibilite-fifa.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "demo-clubs-ftf",
+      "path": "resources/views/demo-clubs-ftf.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          377
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "demo-logos-officiels",
+      "path": "resources/views/demo-logos-officiels.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "demo-vrais-logos-ftf",
+      "path": "resources/views/demo-vrais-logos-ftf.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "dental-chart-test",
+      "path": "resources/views/dental-chart-test.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "device-connections.apple-health-kit",
+      "path": "resources/views/device-connections/apple-health-kit.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          144
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "device-connections.catapult",
+      "path": "resources/views/device-connections/catapult.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          144,
+          186,
+          197,
+          208
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "device-connections.garmin-connect",
+      "path": "resources/views/device-connections/garmin-connect.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "device-connections.index",
+      "path": "resources/views/device-connections/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          180
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "device-connections.oauth2.tokens",
+      "path": "resources/views/device-connections/oauth2/tokens.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "diagnostic",
+      "path": "resources/views/diagnostic.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "dtn.index-canonical",
+      "path": "resources/views/dtn/index-canonical.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "dtn.index",
+      "path": "resources/views/dtn/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "dynamic-dashboard",
+      "path": "resources/views/dynamic-dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "errors.competition-not-found",
+      "path": "resources/views/errors/competition-not-found.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "errors.database",
+      "path": "resources/views/errors/database.blade.php",
+      "direct_view_reference_count": 7,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "errors.generic",
+      "path": "resources/views/errors/generic.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "federations.create",
+      "path": "resources/views/federations/create.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "federations.index",
+      "path": "resources/views/federations/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fifa.analytics",
+      "path": "resources/views/fifa/analytics.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "numeric_assignment": [
+          89
+        ],
+        "literal_metric_markup": [
+          225
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "fifa.connectivity",
+      "path": "resources/views/fifa/connectivity.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          971
+        ],
+        "simulation_words": [
+          41,
+          437,
+          438,
+          446,
+          449,
+          450,
+          658,
+          674,
+          895,
+          896,
+          912
+        ],
+        "literal_metric_markup": [
+          527,
+          696,
+          706,
+          716,
+          726
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "fifa.contracts",
+      "path": "resources/views/fifa/contracts.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fifa.dashboard",
+      "path": "resources/views/fifa/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fifa.federations",
+      "path": "resources/views/fifa/federations.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fifa.players.search",
+      "path": "resources/views/fifa/players/search.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fifa.portal",
+      "path": "resources/views/fifa/portal.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          39,
+          41
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "fifa.reports",
+      "path": "resources/views/fifa/reports.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "simulation_words": [
+          572
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "fifa.statistics",
+      "path": "resources/views/fifa/statistics.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fifa.sync-dashboard",
+      "path": "resources/views/fifa/sync-dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fifa.transfer-documents",
+      "path": "resources/views/fifa/transfer-documents.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fifa.transfers",
+      "path": "resources/views/fifa/transfers.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fifa-debug",
+      "path": "resources/views/fifa-debug.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fifa-portal-integrated",
+      "path": "resources/views/fifa-portal-integrated.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          5647,
+          5648,
+          5649,
+          5650,
+          5651,
+          5741,
+          5742,
+          5743,
+          5744,
+          5745,
+          5849,
+          5850,
+          5851,
+          5852,
+          5853,
+          5854,
+          5864,
+          5865,
+          5866,
+          5867,
+          5868,
+          5869
+        ],
+        "simulation_words": [
+          7147,
+          7167,
+          7169,
+          7203
+        ],
+        "literal_metric_markup": [
+          2911,
+          2916,
+          2930,
+          5162
+        ],
+        "external_club_or_person_fixture": [
+          4282,
+          5126,
+          6415,
+          6659,
+          7191
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "fifa-simple-test",
+      "path": "resources/views/fifa-simple-test.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fit-dashboard",
+      "path": "resources/views/fit-dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "fixtures.index",
+      "path": "resources/views/fixtures/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "football-type-selector",
+      "path": "resources/views/football-type-selector.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "gemini.index",
+      "path": "resources/views/gemini/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.create-old",
+      "path": "resources/views/health-records/create-old.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.create-simple",
+      "path": "resources/views/health-records/create-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.create-tabs",
+      "path": "resources/views/health-records/create-tabs.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.create",
+      "path": "resources/views/health-records/create.blade.php",
+      "direct_view_reference_count": 4,
+      "signals": {
+        "simulation_words": [
+          244,
+          257,
+          279,
+          585,
+          607
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "health-records.dental-chart-simple",
+      "path": "resources/views/health-records/dental-chart-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.dental-chart",
+      "path": "resources/views/health-records/dental-chart.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.edit",
+      "path": "resources/views/health-records/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.index",
+      "path": "resources/views/health-records/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.partials.tab-ai-assistant",
+      "path": "resources/views/health-records/partials/tab-ai-assistant.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "simulation_words": [
+          212,
+          220
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "health-records.partials.tab-doping-control",
+      "path": "resources/views/health-records/partials/tab-doping-control.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.partials.tab-general",
+      "path": "resources/views/health-records/partials/tab-general.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.partials.tab-medical-categories",
+      "path": "resources/views/health-records/partials/tab-medical-categories.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.partials.tab-medical-imaging",
+      "path": "resources/views/health-records/partials/tab-medical-imaging.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.partials.tab-notes-observations",
+      "path": "resources/views/health-records/partials/tab-notes-observations.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.partials.tab-physical-assessments",
+      "path": "resources/views/health-records/partials/tab-physical-assessments.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.partials.tab-postural-assessment",
+      "path": "resources/views/health-records/partials/tab-postural-assessment.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.partials.tab-vaccinations",
+      "path": "resources/views/health-records/partials/tab-vaccinations.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "health-records.show",
+      "path": "resources/views/health-records/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "healthcare.export",
+      "path": "resources/views/healthcare/export.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "healthcare.index",
+      "path": "resources/views/healthcare/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "healthcare.predictions",
+      "path": "resources/views/healthcare/predictions.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "healthcare.records.create",
+      "path": "resources/views/healthcare/records/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "healthcare.records.edit",
+      "path": "resources/views/healthcare/records/edit.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "healthcare.records.index",
+      "path": "resources/views/healthcare/records/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "healthcare.records.show",
+      "path": "resources/views/healthcare/records/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "home",
+      "path": "resources/views/home.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "landing-simple",
+      "path": "resources/views/landing-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "landing",
+      "path": "resources/views/landing.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "literal_metric_markup": [
+          182
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "layouts.app",
+      "path": "resources/views/layouts/app.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "layouts.empty",
+      "path": "resources/views/layouts/empty.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "layouts.guest",
+      "path": "resources/views/layouts/guest.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "layouts.navigation",
+      "path": "resources/views/layouts/navigation.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "layouts.secretary",
+      "path": "resources/views/layouts/secretary.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "layouts.simple",
+      "path": "resources/views/layouts/simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "league-championship.index",
+      "path": "resources/views/league-championship/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "league-championship.match",
+      "path": "resources/views/league-championship/match.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "license-requests.create",
+      "path": "resources/views/license-requests/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "license-requests.index",
+      "path": "resources/views/license-requests/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "license-types.index",
+      "path": "resources/views/license-types/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.create",
+      "path": "resources/views/licenses/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.demo",
+      "path": "resources/views/licenses/demo.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.edit",
+      "path": "resources/views/licenses/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.index",
+      "path": "resources/views/licenses/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.player-request",
+      "path": "resources/views/licenses/player-request.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.request",
+      "path": "resources/views/licenses/request.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.requests.create",
+      "path": "resources/views/licenses/requests/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.requests.index",
+      "path": "resources/views/licenses/requests/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.requests.show",
+      "path": "resources/views/licenses/requests/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.upload-photo",
+      "path": "resources/views/licenses/upload-photo.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.validation-canonical",
+      "path": "resources/views/licenses/validation-canonical.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "licenses.validation",
+      "path": "resources/views/licenses/validation.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "livewire.health-records.health-record-form",
+      "path": "resources/views/livewire/health-records/health-record-form.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "livewire.players.player-list",
+      "path": "resources/views/livewire/players/player-list.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "logos-clubs-ftf",
+      "path": "resources/views/logos-clubs-ftf.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          246
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "logos-originaux-ftf",
+      "path": "resources/views/logos-originaux-ftf.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "logs.index",
+      "path": "resources/views/logs/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "match-sheet.edit",
+      "path": "resources/views/match-sheet/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "numeric_assignment": [
+          158,
+          175,
+          195,
+          212
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "match-sheet.import-players",
+      "path": "resources/views/match-sheet/import-players.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "match-sheet.index",
+      "path": "resources/views/match-sheet/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "match-sheet.show",
+      "path": "resources/views/match-sheet/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "medical-assessment-demo",
+      "path": "resources/views/medical-assessment-demo.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          141,
+          144
+        ],
+        "simulation_words": [
+          7,
+          26,
+          40,
+          79,
+          81,
+          85,
+          88,
+          91,
+          93,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          135,
+          137
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "medical-predictions.create",
+      "path": "resources/views/medical-predictions/create.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "medical-predictions.dashboard",
+      "path": "resources/views/medical-predictions/dashboard.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "medical-predictions.edit",
+      "path": "resources/views/medical-predictions/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          112,
+          114,
+          134,
+          136
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "medical-predictions.index",
+      "path": "resources/views/medical-predictions/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "medical-predictions.show",
+      "path": "resources/views/medical-predictions/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "module-test-results",
+      "path": "resources/views/module-test-results.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.administration.index",
+      "path": "resources/views/modules/administration/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.appointments.index",
+      "path": "resources/views/modules/appointments/index.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.association.fraud-detection.alerts",
+      "path": "resources/views/modules/association/fraud-detection/alerts.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          207
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.association.fraud-detection.analysis",
+      "path": "resources/views/modules/association/fraud-detection/analysis.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          49
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.association.fraud-detection.index",
+      "path": "resources/views/modules/association/fraud-detection/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          218
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.association.fraud-detection.reports",
+      "path": "resources/views/modules/association/fraud-detection/reports.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          102
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.association.fraud-detection.settings",
+      "path": "resources/views/modules/association/fraud-detection/settings.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          45,
+          66,
+          74,
+          82
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.association.index",
+      "path": "resources/views/modules/association/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          119
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.association.registration",
+      "path": "resources/views/modules/association/registration.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.associations.edit",
+      "path": "resources/views/modules/associations/edit.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.associations.index",
+      "path": "resources/views/modules/associations/index.blade.php",
+      "direct_view_reference_count": 5,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.associations.show-simple",
+      "path": "resources/views/modules/associations/show-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.associations.show",
+      "path": "resources/views/modules/associations/show.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.clinical.support-dashboard",
+      "path": "resources/views/modules/clinical/support-dashboard.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.club.player-licenses.index",
+      "path": "resources/views/modules/club/player-licenses/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.clubs.edit",
+      "path": "resources/views/modules/clubs/edit.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.clubs.index",
+      "path": "resources/views/modules/clubs/index.blade.php",
+      "direct_view_reference_count": 5,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.clubs.show",
+      "path": "resources/views/modules/clubs/show.blade.php",
+      "direct_view_reference_count": 4,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.clubs.test",
+      "path": "resources/views/modules/clubs/test.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.competitions.index",
+      "path": "resources/views/modules/competitions/index.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.competitions.test",
+      "path": "resources/views/modules/competitions/test.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.confederations.edit",
+      "path": "resources/views/modules/confederations/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.confederations.index",
+      "path": "resources/views/modules/confederations/index.blade.php",
+      "direct_view_reference_count": 4,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.confederations.show",
+      "path": "resources/views/modules/confederations/show.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.dataset.analytics",
+      "path": "resources/views/modules/dataset/analytics.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.demo",
+      "path": "resources/views/modules/demo.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.device-connections.index",
+      "path": "resources/views/modules/device-connections/index.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "literal_metric_markup": [
+          204
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.devices-portal.index",
+      "path": "resources/views/modules/devices-portal/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.dtn.dashboard",
+      "path": "resources/views/modules/dtn/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.dtn.expats",
+      "path": "resources/views/modules/dtn/expats.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.dtn.index",
+      "path": "resources/views/modules/dtn/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          39,
+          48,
+          129,
+          130
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.dtn.medical",
+      "path": "resources/views/modules/dtn/medical.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.dtn.planning",
+      "path": "resources/views/modules/dtn/planning.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.dtn.reports",
+      "path": "resources/views/modules/dtn/reports.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.dtn.selections",
+      "path": "resources/views/modules/dtn/selections.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.dtn.settings",
+      "path": "resources/views/modules/dtn/settings.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.dtn.teams",
+      "path": "resources/views/modules/dtn/teams.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.fifa.analytics",
+      "path": "resources/views/modules/fifa/analytics.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.fifa.dashboard",
+      "path": "resources/views/modules/fifa/dashboard.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.fifa.players.search",
+      "path": "resources/views/modules/fifa/players/search.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.finance.bank-integrations",
+      "path": "resources/views/modules/finance/bank-integrations.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.finance.budgets",
+      "path": "resources/views/modules/finance/budgets.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "literal_metric_markup": [
+          45,
+          58,
+          71,
+          95,
+          113,
+          131,
+          149,
+          178,
+          190,
+          202,
+          214
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.finance.dashboard",
+      "path": "resources/views/modules/finance/dashboard.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.finance.edit-transaction",
+      "path": "resources/views/modules/finance/edit-transaction.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.finance.integrations",
+      "path": "resources/views/modules/finance/integrations.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.finance.reports",
+      "path": "resources/views/modules/finance/reports.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "literal_metric_markup": [
+          43,
+          47,
+          51,
+          62,
+          66
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.fixtures.index",
+      "path": "resources/views/modules/fixtures/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.healthcare.dashboard",
+      "path": "resources/views/modules/healthcare/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.healthcare.index",
+      "path": "resources/views/modules/healthcare/index.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.healthcare.predictions",
+      "path": "resources/views/modules/healthcare/predictions.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.healthcare.records.edit",
+      "path": "resources/views/modules/healthcare/records/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          59,
+          60,
+          61
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.healthcare.records.show",
+      "path": "resources/views/modules/healthcare/records/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          58
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.index-dark",
+      "path": "resources/views/modules/index-dark.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          214
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.index-professional",
+      "path": "resources/views/modules/index-professional.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          353
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.index-reorganized",
+      "path": "resources/views/modules/index-reorganized.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.index-simple",
+      "path": "resources/views/modules/index-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.index",
+      "path": "resources/views/modules/index.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {
+        "numeric_assignment": [
+          313
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.licenses.index",
+      "path": "resources/views/modules/licenses/index.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.licenses.validation",
+      "path": "resources/views/modules/licenses/validation.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {
+        "external_club_or_person_fixture": [
+          497
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.medical.athlete-edit",
+      "path": "resources/views/modules/medical/athlete-edit.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "simulation_words": [
+          16,
+          17
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.medical.athlete-profile",
+      "path": "resources/views/modules/medical/athlete-profile.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "simulation_words": [
+          2319,
+          2562,
+          2909,
+          2998,
+          3080,
+          3254,
+          3305
+        ],
+        "literal_metric_markup": [
+          75,
+          439,
+          1100,
+          1136,
+          1172,
+          1189,
+          1212,
+          1228
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.medical.athlete",
+      "path": "resources/views/modules/medical/athlete.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          16,
+          17,
+          81,
+          82,
+          125,
+          132,
+          133,
+          136
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.medical.index",
+      "path": "resources/views/modules/medical/index.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {
+        "simulation_words": [
+          152,
+          153,
+          199,
+          201,
+          211,
+          255,
+          256,
+          266
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.pcma.fraud-detection",
+      "path": "resources/views/modules/pcma/fraud-detection.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.performance-recommendations.index",
+      "path": "resources/views/modules/performance-recommendations/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.performances.analytics-canonical",
+      "path": "resources/views/modules/performances/analytics-canonical.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.performances.analytics",
+      "path": "resources/views/modules/performances/analytics.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.performances.index",
+      "path": "resources/views/modules/performances/index.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.player-passports.index",
+      "path": "resources/views/modules/player-passports/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.player-registration.bulk-import",
+      "path": "resources/views/modules/player-registration/bulk-import.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          407
+        ],
+        "literal_metric_markup": [
+          146
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.player-registration.create-stakeholder",
+      "path": "resources/views/modules/player-registration/create-stakeholder.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.player-registration.create",
+      "path": "resources/views/modules/player-registration/create.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.player-registration.dashboard",
+      "path": "resources/views/modules/player-registration/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.player-registration.edit",
+      "path": "resources/views/modules/player-registration/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.player-registration.health-records",
+      "path": "resources/views/modules/player-registration/health-records.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.player-registration.index",
+      "path": "resources/views/modules/player-registration/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.player-registration.show",
+      "path": "resources/views/modules/player-registration/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          535
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.players.index",
+      "path": "resources/views/modules/players/index.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.players.registration",
+      "path": "resources/views/modules/players/registration.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.portal.dashboard",
+      "path": "resources/views/modules/portal/dashboard.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          25
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.portal.devices",
+      "path": "resources/views/modules/portal/devices.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          79
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.profile.show",
+      "path": "resources/views/modules/profile/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.rankings.index",
+      "path": "resources/views/modules/rankings/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.referee.competition-schedule",
+      "path": "resources/views/modules/referee/competition-schedule.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.referee.create-match-report",
+      "path": "resources/views/modules/referee/create-match-report.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.referee.dashboard",
+      "path": "resources/views/modules/referee/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.referee.match-assignments",
+      "path": "resources/views/modules/referee/match-assignments.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.referee.performance-stats",
+      "path": "resources/views/modules/referee/performance-stats.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.referee.settings",
+      "path": "resources/views/modules/referee/settings.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.referees.index",
+      "path": "resources/views/modules/referees/index.blade.php",
+      "direct_view_reference_count": 4,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.role-management.create",
+      "path": "resources/views/modules/role-management/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.role-management.edit",
+      "path": "resources/views/modules/role-management/edit.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.role-management.index",
+      "path": "resources/views/modules/role-management/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.role-management.show",
+      "path": "resources/views/modules/role-management/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.rpm.attendance",
+      "path": "resources/views/modules/rpm/attendance.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.rpm.calendar",
+      "path": "resources/views/modules/rpm/calendar.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.rpm.dashboard",
+      "path": "resources/views/modules/rpm/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          63,
+          82
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "modules.rpm.load",
+      "path": "resources/views/modules/rpm/load.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.rpm.matches",
+      "path": "resources/views/modules/rpm/matches.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.rpm.reports",
+      "path": "resources/views/modules/rpm/reports.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.rpm.sessions",
+      "path": "resources/views/modules/rpm/sessions.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.rpm.settings",
+      "path": "resources/views/modules/rpm/settings.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.rpm.sync",
+      "path": "resources/views/modules/rpm/sync.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.secretary.dashboard",
+      "path": "resources/views/modules/secretary/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.teams.create",
+      "path": "resources/views/modules/teams/create.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.teams.edit",
+      "path": "resources/views/modules/teams/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.teams.index",
+      "path": "resources/views/modules/teams/index.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.teams.show",
+      "path": "resources/views/modules/teams/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.user-management.create",
+      "path": "resources/views/modules/user-management/create.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.user-management.dashboard",
+      "path": "resources/views/modules/user-management/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.user-management.edit",
+      "path": "resources/views/modules/user-management/edit.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.user-management.index",
+      "path": "resources/views/modules/user-management/index.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "modules.user-management.show",
+      "path": "resources/views/modules/user-management/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "pcma.create-simple",
+      "path": "resources/views/pcma/create-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "pcma.create",
+      "path": "resources/views/pcma/create.blade.php",
+      "direct_view_reference_count": 7,
+      "signals": {
+        "literal_metric_markup": [
+          1353
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "pcma.dashboard",
+      "path": "resources/views/pcma/dashboard.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "pcma.doctor-signoff-demo",
+      "path": "resources/views/pcma/doctor-signoff-demo.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          6,
+          14,
+          140
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "pcma.edit",
+      "path": "resources/views/pcma/edit.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "pcma.index",
+      "path": "resources/views/pcma/index.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "pcma.pdf",
+      "path": "resources/views/pcma/pdf.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "pcma.show",
+      "path": "resources/views/pcma/show.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "pcma.test-dropdowns",
+      "path": "resources/views/pcma/test-dropdowns.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "pcma.test-simple",
+      "path": "resources/views/pcma/test-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "pcma.voice-fallback",
+      "path": "resources/views/pcma/voice-fallback.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "performance.index",
+      "path": "resources/views/performance/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          130,
+          144,
+          165,
+          182
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "performance-recommendations.index",
+      "path": "resources/views/performance-recommendations/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "performances.create",
+      "path": "resources/views/performances/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "performances.dashboard",
+      "path": "resources/views/performances/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "performances.fit-metrics",
+      "path": "resources/views/performances/fit-metrics.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "performances.index",
+      "path": "resources/views/performances/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "performances.show",
+      "path": "resources/views/performances/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player.photo.upload",
+      "path": "resources/views/player/photo/upload.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-access.form",
+      "path": "resources/views/player-access/form.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-access.portal",
+      "path": "resources/views/player-access/portal.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-dashboard.index",
+      "path": "resources/views/player-dashboard/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-licenses.index",
+      "path": "resources/views/player-licenses/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-licenses.request",
+      "path": "resources/views/player-licenses/request.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-licenses.show",
+      "path": "resources/views/player-licenses/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-passports.create",
+      "path": "resources/views/player-passports/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          247
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "player-passports.edit",
+      "path": "resources/views/player-passports/edit.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-passports.index",
+      "path": "resources/views/player-passports/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-passports.show",
+      "path": "resources/views/player-passports/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.dashboard",
+      "path": "resources/views/player-portal/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.debug",
+      "path": "resources/views/player-portal/debug.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.documents",
+      "path": "resources/views/player-portal/documents.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.fifa-debug",
+      "path": "resources/views/player-portal/fifa-debug.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.fifa-ultimate-dashboard",
+      "path": "resources/views/player-portal/fifa-ultimate-dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "simulation_words": [
+          2025,
+          2213,
+          2361
+        ],
+        "literal_metric_markup": [
+          200,
+          257,
+          264
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "player-portal.fifa-ultimate-light",
+      "path": "resources/views/player-portal/fifa-ultimate-light.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          108,
+          148
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "player-portal.fifa-ultimate-optimized",
+      "path": "resources/views/player-portal/fifa-ultimate-optimized.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          212,
+          304,
+          308,
+          515,
+          550,
+          554,
+          562,
+          1019
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "player-portal.fifa-ultimate-simple",
+      "path": "resources/views/player-portal/fifa-ultimate-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.matches",
+      "path": "resources/views/player-portal/matches.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.medical-records-simple",
+      "path": "resources/views/player-portal/medical-records-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.medical-records",
+      "path": "resources/views/player-portal/medical-records.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.performances",
+      "path": "resources/views/player-portal/performances.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.player-360-card",
+      "path": "resources/views/player-portal/player-360-card.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.player-360-enhanced",
+      "path": "resources/views/player-portal/player-360-enhanced.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "simulation_words": [
+          503,
+          515,
+          536,
+          555,
+          614,
+          632
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "player-portal.player-360-simple",
+      "path": "resources/views/player-portal/player-360-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "external_club_or_person_fixture": [
+          102,
+          334
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "player-portal.predictions",
+      "path": "resources/views/player-portal/predictions.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.profile",
+      "path": "resources/views/player-portal/profile.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.settings",
+      "path": "resources/views/player-portal/settings.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.simple-dashboard",
+      "path": "resources/views/player-portal/simple-dashboard.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.test-vue",
+      "path": "resources/views/player-portal/test-vue.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-portal.test",
+      "path": "resources/views/player-portal/test.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-registration.create",
+      "path": "resources/views/player-registration/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-registration.index",
+      "path": "resources/views/player-registration/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-selection-simple",
+      "path": "resources/views/player-selection-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "player-selection",
+      "path": "resources/views/player-selection.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "players.bulk-import-form",
+      "path": "resources/views/players/bulk-import-form.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "players.bulk-import",
+      "path": "resources/views/players/bulk-import.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          407
+        ],
+        "literal_metric_markup": [
+          146
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "players.create",
+      "path": "resources/views/players/create.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "players.edit",
+      "path": "resources/views/players/edit.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "players.health-records",
+      "path": "resources/views/players/health-records.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "players.index",
+      "path": "resources/views/players/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "simulation_words": [
+          985
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "players.show",
+      "path": "resources/views/players/show.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          316
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "players-list-public",
+      "path": "resources/views/players-list-public.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "portail-joueur-FONCTIONNEL-DRAPEAUX-OK",
+      "path": "resources/views/portail-joueur-FONCTIONNEL-DRAPEAUX-OK.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          454,
+          493,
+          498,
+          650,
+          657,
+          664,
+          710
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-avant-correction",
+      "path": "resources/views/portail-joueur-avant-correction.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-clean",
+      "path": "resources/views/portail-joueur-clean.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          220,
+          227,
+          234,
+          280
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-colonnes-corrigees",
+      "path": "resources/views/portail-joueur-colonnes-corrigees.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          509,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-completement-corrige",
+      "path": "resources/views/portail-joueur-completement-corrige.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-corrige-simple",
+      "path": "resources/views/portail-joueur-corrige-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          509,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-division-zero-final",
+      "path": "resources/views/portail-joueur-division-zero-final.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          509,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-donnees-completes",
+      "path": "resources/views/portail-joueur-donnees-completes.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          206,
+          298,
+          302,
+          509,
+          544,
+          548,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-donnees-finales",
+      "path": "resources/views/portail-joueur-donnees-finales.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          509,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-exact-image",
+      "path": "resources/views/portail-joueur-exact-image.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "portail-joueur-final-backup",
+      "path": "resources/views/portail-joueur-final-backup.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          206,
+          556
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final-complet",
+      "path": "resources/views/portail-joueur-final-complet.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          509,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final-corrige-dynamique-BACKUP-20250815-131050",
+      "path": "resources/views/portail-joueur-final-corrige-dynamique-BACKUP-20250815-131050.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          453,
+          492,
+          497,
+          649,
+          656,
+          663,
+          709
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final-corrige-dynamique-ERREUR-20250815-132018",
+      "path": "resources/views/portail-joueur-final-corrige-dynamique-ERREUR-20250815-132018.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          469,
+          508,
+          513,
+          665,
+          672,
+          679,
+          725
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final-corrige-dynamique-backup-2",
+      "path": "resources/views/portail-joueur-final-corrige-dynamique-backup-2.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          2414,
+          2767,
+          2768,
+          2769,
+          2770,
+          2771,
+          2773,
+          2774,
+          2775,
+          2776,
+          2777
+        ],
+        "literal_metric_markup": [
+          593
+        ],
+        "external_club_or_person_fixture": [
+          208
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final-corrige-dynamique-backup-3",
+      "path": "resources/views/portail-joueur-final-corrige-dynamique-backup-3.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          2373,
+          2726,
+          2727,
+          2728,
+          2729,
+          2730,
+          2732,
+          2733,
+          2734,
+          2735,
+          2736
+        ],
+        "literal_metric_markup": [
+          593
+        ],
+        "external_club_or_person_fixture": [
+          208
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final-corrige-dynamique-backup-4",
+      "path": "resources/views/portail-joueur-final-corrige-dynamique-backup-4.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          2373,
+          2726,
+          2727,
+          2728,
+          2729,
+          2730,
+          2732,
+          2733,
+          2734,
+          2735,
+          2736
+        ],
+        "literal_metric_markup": [
+          593
+        ],
+        "external_club_or_person_fixture": [
+          208
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final-corrige-dynamique-backup-5",
+      "path": "resources/views/portail-joueur-final-corrige-dynamique-backup-5.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          2377,
+          2730,
+          2731,
+          2732,
+          2733,
+          2734,
+          2736,
+          2737,
+          2738,
+          2739,
+          2740
+        ],
+        "literal_metric_markup": [
+          597
+        ],
+        "external_club_or_person_fixture": [
+          212
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final-corrige-dynamique-backup-6",
+      "path": "resources/views/portail-joueur-final-corrige-dynamique-backup-6.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          2377,
+          2730,
+          2731,
+          2732,
+          2733,
+          2734,
+          2736,
+          2737,
+          2738,
+          2739,
+          2740
+        ],
+        "literal_metric_markup": [
+          597
+        ],
+        "external_club_or_person_fixture": [
+          212
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final-corrige-dynamique-backup",
+      "path": "resources/views/portail-joueur-final-corrige-dynamique-backup.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "random_generation": [
+          2414,
+          2767,
+          2768,
+          2769,
+          2770,
+          2771,
+          2773,
+          2774,
+          2775,
+          2776,
+          2777
+        ],
+        "literal_metric_markup": [
+          593
+        ],
+        "external_club_or_person_fixture": [
+          208
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final-corrige-dynamique",
+      "path": "resources/views/portail-joueur-final-corrige-dynamique.blade.php",
+      "direct_view_reference_count": 9,
+      "signals": {
+        "literal_metric_markup": [
+          496,
+          535,
+          540,
+          924,
+          931,
+          938,
+          984
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final-corrige",
+      "path": "resources/views/portail-joueur-final-corrige.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-final",
+      "path": "resources/views/portail-joueur-final.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          206,
+          556
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-html-nettoye",
+      "path": "resources/views/portail-joueur-html-nettoye.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          509,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-js-clean",
+      "path": "resources/views/portail-joueur-js-clean.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          206,
+          298,
+          509,
+          544,
+          548,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-js-fixed",
+      "path": "resources/views/portail-joueur-js-fixed.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          556
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-latest-corrige",
+      "path": "resources/views/portail-joueur-latest-corrige.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          509,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-ligne291-corrige",
+      "path": "resources/views/portail-joueur-ligne291-corrige.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-nettoye",
+      "path": "resources/views/portail-joueur-nettoye.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          556
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-original-dynamique",
+      "path": "resources/views/portail-joueur-original-dynamique.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "portail-joueur-original-restored",
+      "path": "resources/views/portail-joueur-original-restored.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          206,
+          298,
+          302,
+          509,
+          544,
+          548,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-performances-corrige",
+      "path": "resources/views/portail-joueur-performances-corrige.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-safe-corrige",
+      "path": "resources/views/portail-joueur-safe-corrige.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          509,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-simple-corrige",
+      "path": "resources/views/portail-joueur-simple-corrige.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-simple-fifa",
+      "path": "resources/views/portail-joueur-simple-fifa.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "portail-joueur-simplifie",
+      "path": "resources/views/portail-joueur-simplifie.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          191
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-specifique-corrige",
+      "path": "resources/views/portail-joueur-specifique-corrige.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-statiques-corrigees",
+      "path": "resources/views/portail-joueur-statiques-corrigees.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          298,
+          302,
+          509,
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-syntaxe-corrige",
+      "path": "resources/views/portail-joueur-syntaxe-corrige.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur-syntaxe-minimal",
+      "path": "resources/views/portail-joueur-syntaxe-minimal.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portail-joueur",
+      "path": "resources/views/portail-joueur.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          544,
+          556,
+          1014
+        ],
+        "external_club_or_person_fixture": [
+          170,
+          177
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portal.dashboard",
+      "path": "resources/views/portal/dashboard.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "portal.devices",
+      "path": "resources/views/portal/devices.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          84,
+          124,
+          128,
+          164,
+          226
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portal.index",
+      "path": "resources/views/portal/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "portal.medical-appointments",
+      "path": "resources/views/portal/medical-appointments.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "portal.medical-record",
+      "path": "resources/views/portal/medical-record.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "literal_metric_markup": [
+          106
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "portal.messages",
+      "path": "resources/views/portal/messages.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "portal.notifications",
+      "path": "resources/views/portal/notifications.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "portal.wellness",
+      "path": "resources/views/portal/wellness.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "postural-assessments.create-minimal",
+      "path": "resources/views/postural-assessments/create-minimal.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "postural-assessments.create-simple",
+      "path": "resources/views/postural-assessments/create-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "postural-assessments.create",
+      "path": "resources/views/postural-assessments/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "postural-assessments.history",
+      "path": "resources/views/postural-assessments/history.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "postural-assessments.index",
+      "path": "resources/views/postural-assessments/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "profile.edit",
+      "path": "resources/views/profile/edit.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "profile.partials.delete-user-form",
+      "path": "resources/views/profile/partials/delete-user-form.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "profile.partials.notification-preferences-form",
+      "path": "resources/views/profile/partials/notification-preferences-form.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "profile.partials.security-settings-form",
+      "path": "resources/views/profile/partials/security-settings-form.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "profile.partials.update-password-form",
+      "path": "resources/views/profile/partials/update-password-form.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "profile.partials.update-profile-information-form",
+      "path": "resources/views/profile/partials/update-profile-information-form.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "profile.partials.update-settings-form",
+      "path": "resources/views/profile/partials/update-settings-form.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "profile.settings",
+      "path": "resources/views/profile/settings.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "profile.show",
+      "path": "resources/views/profile/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "profile-picture-test",
+      "path": "resources/views/profile-picture-test.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "profile-selector",
+      "path": "resources/views/profile-selector.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "rankings.index",
+      "path": "resources/views/rankings/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "rankings.test",
+      "path": "resources/views/rankings/test.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "react-app",
+      "path": "resources/views/react-app.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.calendar-simple",
+      "path": "resources/views/referee/calendar-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.calendar",
+      "path": "resources/views/referee/calendar.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.competition-schedule",
+      "path": "resources/views/referee/competition-schedule.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.create-match-report-simple",
+      "path": "resources/views/referee/create-match-report-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.create-match-report",
+      "path": "resources/views/referee/create-match-report.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.create-report-form",
+      "path": "resources/views/referee/create-report-form.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.dashboard",
+      "path": "resources/views/referee/dashboard.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.match-assignments",
+      "path": "resources/views/referee/match-assignments.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.match-sheet-simple-fixed",
+      "path": "resources/views/referee/match-sheet-simple-fixed.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.match-sheet-simple",
+      "path": "resources/views/referee/match-sheet-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.match-sheet-with-tabs",
+      "path": "resources/views/referee/match-sheet-with-tabs.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.match-sheet",
+      "path": "resources/views/referee/match-sheet.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.notifications",
+      "path": "resources/views/referee/notifications.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.performance-stats",
+      "path": "resources/views/referee/performance-stats.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.report-success",
+      "path": "resources/views/referee/report-success.blade.php",
+      "direct_view_reference_count": 2,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "referee.settings",
+      "path": "resources/views/referee/settings.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "registration-requests.index",
+      "path": "resources/views/registration-requests/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "reports.player-performance",
+      "path": "resources/views/reports/player-performance.blade.php",
+      "direct_view_reference_count": 4,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "role-management.index",
+      "path": "resources/views/role-management/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "rpm.index-canonical",
+      "path": "resources/views/rpm/index-canonical.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "rpm.index",
+      "path": "resources/views/rpm/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "seasons.index",
+      "path": "resources/views/seasons/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "secretary.appointments.index",
+      "path": "resources/views/secretary/appointments/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "secretary.athletes.search",
+      "path": "resources/views/secretary/athletes/search.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "secretary.dashboard",
+      "path": "resources/views/secretary/dashboard.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "secretary.documents.index",
+      "path": "resources/views/secretary/documents/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "secretary.partials.appointment-modal",
+      "path": "resources/views/secretary/partials/appointment-modal.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "secretary.partials.athlete-search-modal",
+      "path": "resources/views/secretary/partials/athlete-search-modal.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "secretary.partials.document-modal",
+      "path": "resources/views/secretary/partials/document-modal.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "secretary.stats",
+      "path": "resources/views/secretary/stats.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "settings.index",
+      "path": "resources/views/settings/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "stakeholder-gallery.index",
+      "path": "resources/views/stakeholder-gallery/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "syntax-debugger",
+      "path": "resources/views/syntax-debugger.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "numeric_assignment": [
+          18,
+          19,
+          22,
+          23,
+          24,
+          27,
+          60,
+          61
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "system-status.index",
+      "path": "resources/views/system-status/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "team-portal.dashboard",
+      "path": "resources/views/team-portal/dashboard.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "team-portal.team-details",
+      "path": "resources/views/team-portal/team-details.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "teams.index",
+      "path": "resources/views/teams/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test.performance-chart",
+      "path": "resources/views/test/performance-chart.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-association-logo",
+      "path": "resources/views/test-association-logo.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-association-system",
+      "path": "resources/views/test-association-system.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-auth",
+      "path": "resources/views/test-auth.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-basic",
+      "path": "resources/views/test-basic.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-blade",
+      "path": "resources/views/test-blade.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-clubs-ftf-simple",
+      "path": "resources/views/test-clubs-ftf-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-clubs-ftf",
+      "path": "resources/views/test-clubs-ftf.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-clubs-reels",
+      "path": "resources/views/test-clubs-reels.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          117
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-dashboard-routing",
+      "path": "resources/views/test-dashboard-routing.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-dashboard",
+      "path": "resources/views/test-dashboard.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-dental-simple",
+      "path": "resources/views/test-dental-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "random_generation": [
+          200
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-dental",
+      "path": "resources/views/test-dental.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-fifa-debug",
+      "path": "resources/views/test-fifa-debug.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          35,
+          37,
+          42,
+          120,
+          121,
+          124,
+          132,
+          135,
+          140,
+          157,
+          159,
+          165,
+          168,
+          171,
+          174,
+          177,
+          180,
+          183,
+          194,
+          197,
+          199
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-fifa-direct",
+      "path": "resources/views/test-fifa-direct.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "random_generation": [
+          274,
+          286,
+          287,
+          296
+        ],
+        "simulation_words": [
+          20,
+          107,
+          109,
+          120,
+          123,
+          126,
+          129,
+          132,
+          135,
+          141,
+          152,
+          155,
+          156,
+          173,
+          174,
+          177,
+          178,
+          181,
+          184,
+          185,
+          191,
+          256
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-fifa-js",
+      "path": "resources/views/test-fifa-js.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          34,
+          109,
+          110,
+          113,
+          121,
+          124,
+          129,
+          143,
+          145,
+          150,
+          153,
+          156,
+          159,
+          162,
+          165,
+          168,
+          179,
+          182,
+          183,
+          194
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-fifa-performance",
+      "path": "resources/views/test-fifa-performance.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-fifa-same-method",
+      "path": "resources/views/test-fifa-same-method.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-fifa-simple",
+      "path": "resources/views/test-fifa-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-form",
+      "path": "resources/views/test-form.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-hero-components",
+      "path": "resources/views/test-hero-components.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-images-simple",
+      "path": "resources/views/test-images-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-integration-fifa",
+      "path": "resources/views/test-integration-fifa.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "random_generation": [
+          258,
+          272,
+          273,
+          512,
+          525,
+          526,
+          537,
+          559,
+          573,
+          574
+        ],
+        "simulation_words": [
+          132,
+          239
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-licenses",
+      "path": "resources/views/test-licenses.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-logo-ftf",
+      "path": "resources/views/test-logo-ftf.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-logos-portail",
+      "path": "resources/views/test-logos-portail.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          16,
+          206
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-logos-simple",
+      "path": "resources/views/test-logos-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-logos",
+      "path": "resources/views/test-logos.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-matches-search",
+      "path": "resources/views/test-matches-search.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-medical",
+      "path": "resources/views/test-medical.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-minimal",
+      "path": "resources/views/test-minimal.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-modules",
+      "path": "resources/views/test-modules.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-performance-system",
+      "path": "resources/views/test-performance-system.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          97,
+          135,
+          147
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-performance-working",
+      "path": "resources/views/test-performance-working.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "literal_metric_markup": [
+          95,
+          133,
+          145
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-player-display",
+      "path": "resources/views/test-player-display.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          90,
+          91,
+          102,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-player-portal-admin",
+      "path": "resources/views/test-player-portal-admin.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-players-with-clubs",
+      "path": "resources/views/test-players-with-clubs.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-portail-club-logos",
+      "path": "resources/views/test-portail-club-logos.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          21,
+          141
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-portail-direct",
+      "path": "resources/views/test-portail-direct.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-portail-final",
+      "path": "resources/views/test-portail-final.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          17,
+          21,
+          154
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-portail-joueur-simple",
+      "path": "resources/views/test-portail-joueur-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-portal-context",
+      "path": "resources/views/test-portal-context.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-portal-data",
+      "path": "resources/views/test-portal-data.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-portal-debug",
+      "path": "resources/views/test-portal-debug.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-portal-exact",
+      "path": "resources/views/test-portal-exact.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-portal-simple",
+      "path": "resources/views/test-portal-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-portal-simulation",
+      "path": "resources/views/test-portal-simulation.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "simulation_words": [
+          6,
+          11,
+          15,
+          17
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-postural-actual",
+      "path": "resources/views/test-postural-actual.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "simulation_words": [
+          94,
+          101
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-postural-simple",
+      "path": "resources/views/test-postural-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-postural",
+      "path": "resources/views/test-postural.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-routes",
+      "path": "resources/views/test-routes.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-search",
+      "path": "resources/views/test-search.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "numeric_assignment": [
+          47
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-simple-portal",
+      "path": "resources/views/test-simple-portal.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {
+        "external_club_or_person_fixture": [
+          724
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "test-simple",
+      "path": "resources/views/test-simple.blade.php",
+      "direct_view_reference_count": 3,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-super-admin",
+      "path": "resources/views/test-super-admin.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-svg",
+      "path": "resources/views/test-svg.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-tabs",
+      "path": "resources/views/test-tabs.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-ultra-simple",
+      "path": "resources/views/test-ultra-simple.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-view",
+      "path": "resources/views/test-view.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "test-vue-debug",
+      "path": "resources/views/test-vue-debug.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "transfers.create",
+      "path": "resources/views/transfers/create.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "transfers.index",
+      "path": "resources/views/transfers/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "user-management.index",
+      "path": "resources/views/user-management/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "visits.create",
+      "path": "resources/views/visits/create.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "visits.index",
+      "path": "resources/views/visits/index.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "visits.show",
+      "path": "resources/views/visits/show.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "welcome-simple",
+      "path": "resources/views/welcome-simple.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    },
+    {
+      "view": "welcome",
+      "path": "resources/views/welcome.blade.php",
+      "direct_view_reference_count": 0,
+      "signals": {
+        "simulation_words": [
+          1
+        ]
+      },
+      "status": "review_required"
+    },
+    {
+      "view": "whisper.index",
+      "path": "resources/views/whisper/index.blade.php",
+      "direct_view_reference_count": 1,
+      "signals": {},
+      "status": "no_static_signal_not_verified"
+    }
+  ]
+}

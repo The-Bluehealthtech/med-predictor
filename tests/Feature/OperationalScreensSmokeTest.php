@@ -21,11 +21,16 @@ class OperationalScreensSmokeTest extends TestCase
         $this->get('/test-referee-assignments')
             ->assertRedirect(route('admin.referee-assignments'));
         $this->actingAs(User::factory()->create(['role' => 'system_admin']));
-        foreach (['/dtn', '/rpm', '/admin/referee-assignments'] as $path) {
+        foreach (['/dtn', '/rpm', '/admin/referee-assignments', '/modules/referees'] as $path) {
             $response = $this->get($path);
             $exception = $response->baseResponse->exception ?? null;
             $this->assertSame(200, $response->status(), $path . ': ' . $exception?->getMessage());
         }
+
+        $this->get('/modules/referees')
+            ->assertOk()
+            ->assertDontSee('EST vs CSS')
+            ->assertDontSee('Modifications sauvegardées');
 
         $record = (object) ['measurement_time' => '2026-09-25 10:30:00',
             'first_name' => 'Test', 'last_name' => 'Fixture', 'club_name' => null,

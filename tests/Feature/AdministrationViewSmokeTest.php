@@ -41,10 +41,20 @@ class AdministrationViewSmokeTest extends TestCase
             ->assertOk()->assertSee('RechercheUnique')->assertSee('CANONICAL-TEST-123');
         $this->get('/teams')->assertOk();
         $this->get('/club-management/dashboard')->assertOk();
+        $this->get('/player-portal')->assertRedirect(route('portail.joueur'));
+        $this->get('/player-portal/fifa-ultimate')->assertRedirect(route('portail.joueur'));
         $this->get('/player-registration')->assertOk();
         $this->get('/healthcare')->assertOk();
 
         auth()->logout();
         $this->get('/healthcare')->assertRedirect();
+        $this->get('/')->assertOk()->assertDontSee('120000000');
+        $this->get('/dashboard-temp')->assertGone();
+        $this->get('/dashboard-simulated')->assertGone();
+        $this->get('/fifa-ultimate-working')->assertGone();
+        $this->get('/fifa-ultimate-complete')->assertGone();
+        $this->get('/fifa-test-public')->assertGone();
+        $this->get('/fifa-working')->assertGone();
+        $this->get('/fifa-complete')->assertGone();
     }
 }

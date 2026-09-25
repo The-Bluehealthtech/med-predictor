@@ -306,3 +306,9 @@ Plusieurs routes partagent la même URL : le test HTTP observe la route effectiv
 - `/api/v1/athletes/{athlete}/pcmas` et `/statistics` : correction des actions vers les méthodes existantes ; tests des réponses authentifiées, des données vides et du refus d'un rôle non médical. Les mutations PCMA restent à traiter.
 - `/api/federations` et `/api/federations/{federation}` : routage vers les méthodes JSON existantes du contrôleur au lieu des vues HTML ; liste testée sous token administrateur.
 - `/fifa/players/search` : ajout d'une recherche authentifiée, limitée à 25 résultats et au club ou à l'association de l'utilisateur, avec identifiant FIFA Connect uniquement s'il est stocké. Testée sans résultat et avec un joueur créé dans la base de test.
+
+## Suivi du 25 septembre : routes de démonstration retirées
+
+- `/fifa-complete` et `/fifa-working` figuraient à 500 dans l'instantané initial. Leur GET est maintenant défini en 410, car les écrans contenaient des fiches fictives. Ce retrait ne constitue pas une remise en service.
+- Le code de `/fifa-stable`, `/fifa-ultimate-complete`, `/fifa-ultimate-working`, `/fifa-test-public`, `/dashboard-temp` et `/dashboard-simulated` définit désormais un 410. Cette modification locale reste à vérifier après déploiement. `/fifa-test-simple` reste à examiner.
+- La liste historique de 147 GET et 38 mutations conserve ses résultats du balayage initial. Les entrées sans vérification ciblée restent **non revérifiées**, sans prétention de résolution globale.

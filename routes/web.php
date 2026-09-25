@@ -2301,8 +2301,8 @@ Route::middleware(['auth'])->group(function () {
     
     // Route de test temporaire pour les arbitres (sans authentification)
     Route::get('/test-referees', function () {
-        return view('modules.referees.index', ['footballType' => 'association']);
-    })->name('test.referees')->withoutMiddleware(['auth', 'auth:web']);
+        return redirect()->route('modules.referees.index');
+    })->name('test.referees');
     
     // Route de test temporaire pour la désignation des arbitres (sans authentification)
     Route::get('/test-referee-assignments', function () {
@@ -3992,35 +3992,8 @@ Route::get('/test-dashboard', function () {
     return view('test-dashboard');
 })->name('test.dashboard');
 
-Route::get('/dashboard-temp', function () {
-    return view('welcome');
-})->name('dashboard.temp');
-
-Route::get('/dashboard-simulated', function () {
-    // Données simulées pour le tableau de bord
-    $data = [
-        'db_fallback' => true,
-        'simulated_data' => [
-            'players' => [
-                'total' => 25,
-                'active' => 22,
-                'avg_age' => 24.5
-            ],
-            'clubs' => [
-                'total' => 8,
-                'associations' => 3,
-                'confederations' => 2
-            ],
-            'performance' => [
-                'stats' => 156,
-                'avg_goals' => 12.3,
-                'avg_assists' => 8.7
-            ]
-        ]
-    ];
-    
-    return view('welcome', $data);
-})->name('dashboard.simulated');
+Route::get('/dashboard-temp', fn () => abort(410))->name('dashboard.temp');
+Route::get('/dashboard-simulated', fn () => abort(410))->name('dashboard.simulated');
 
 Route::get('/diagnostic', function () {
     return view('diagnostic');
@@ -6097,12 +6070,12 @@ Route::get('/test-pdf', function() {
     
     Route::get('/modules/referees', function () {
         return view('modules.referees.index', ['footballType' => 'association']);
-    })->name('modules.referees.index');
+    })->middleware('role:system_admin')->name('modules.referees.index');
     
     // Route pour la gestion des arbitres (avec authentification)
     Route::get('/referees', function () {
         return view('modules.referees.index', ['footballType' => 'association']);
-    })->name('referees.index');
+    })->middleware('role:system_admin')->name('referees.index');
     
     Route::get('/modules/associations', function () {
         $associations = \App\Models\Association::with(['confederation'])->orderBy('name')->get();
@@ -6628,7 +6601,7 @@ Route::middleware(['auth'])->get('/player-dashboard', function () {
 Route::middleware(['auth'])->group(function () {
     Route::prefix('player-portal')->name('player-portal.')->group(function () {
         Route::get('/', function () {
-            return redirect()->route('player-portal.fifa-ultimate');
+            return redirect()->route('portail.joueur');
         });
         Route::get('/home', function () {
             return redirect()->route('admin.dashboard');
@@ -6653,7 +6626,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/documents', [App\Http\Controllers\PlayerPortalController::class, 'documents'])->name('documents');
         Route::get('/settings', [App\Http\Controllers\PlayerPortalController::class, 'settings'])->name('settings');
         Route::get('/fifa-ultimate', function () {
-            return view('player-portal.fifa-ultimate-working');
+            return redirect()->route('portail.joueur');
         })->name('fifa-ultimate');
     Route::get('/fifa-light', [App\Http\Controllers\PlayerPortalController::class, 'fifaUltimateDashboard'])->name('fifa-light');
     });
@@ -6665,17 +6638,11 @@ Route::get('/test-minimal', function () {
 })->name('test-minimal');
 
 // Routes FIFA publiques pour test sans authentification
-Route::get('/fifa-ultimate-complete', function () {
-    return view('player-portal.fifa-ultimate-complete');
-})->name('fifa-ultimate-complete');
+Route::get('/fifa-ultimate-complete', fn () => abort(410))->name('fifa-ultimate-complete');
 
-Route::get('/fifa-ultimate-working', function () {
-    return view('player-portal.fifa-ultimate-working');
-})->name('fifa-ultimate-working');
+Route::get('/fifa-ultimate-working', fn () => abort(410))->name('fifa-ultimate-working');
 
-Route::get('/fifa-test-public', function () {
-    return view('player-portal.fifa-ultimate-complete');
-})->name('fifa-test-public');
+Route::get('/fifa-test-public', fn () => abort(410))->name('fifa-test-public');
 
 Route::get('/test-tabs', function () {
     return view('test-tabs');
@@ -6697,19 +6664,15 @@ Route::get('/fifa-debug', function () {
     return view('fifa-debug');
 })->name('fifa-debug');
 
-Route::get('/fifa-stable', function () {
-    return view('player-portal.fifa-stable');
-})->name('fifa-stable');
+Route::get('/fifa-stable', fn () => abort(410))->name('fifa-stable');
 
 Route::get('/fifa-simple-test', function () {
     return view('fifa-simple-test');
 })->name('fifa-simple-test');
 
-Route::get('/fifa-working', function () {
-    return view('player-portal.fifa-working');
-})->name('fifa-working');
+Route::get('/fifa-working', fn () => abort(410))->name('fifa-working');
 
-Route::get('/fifa-complete', [App\Http\Controllers\FifaDashboardController::class, 'index'])->name('fifa-complete');
+Route::get('/fifa-complete', fn () => abort(410))->name('fifa-complete');
 
 Route::get('/fifa-debug', function () {
     return view('player-portal.fifa-debug');

@@ -30,7 +30,7 @@ class LandingPageController extends Controller
         }
         
         // Sinon, afficher la landing page avec en-têtes de cache
-        return response()->view('welcome')->withHeaders([
+        return response()->view('landing')->withHeaders([
             'Cache-Control' => 'no-cache, no-store, must-revalidate, private',
             'Pragma' => 'no-cache',
             'Expires' => '0',

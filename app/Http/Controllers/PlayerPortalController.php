@@ -177,8 +177,7 @@ class PlayerPortalController extends Controller
             // Charger les données du joueur
             $player->load(['club', 'association', 'healthRecords', 'pcmas']);
             
-                    // Return the FIFA working view with hero zone and tabs that displays real player data
-                    return view('player-portal.fifa-working', compact('player'));
+            return redirect()->route('joueur.portal', ['playerId' => $player->id]);
             
         } catch (\Exception $e) {
             \Log::error('PlayerPortalController showPlayer error: ' . $e->getMessage());

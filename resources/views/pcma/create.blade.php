@@ -2284,11 +2284,11 @@
                                 <input type="text" id="signoff-doctor-name-input" 
                                        class="ml-2 px-2 py-1 border border-gray-300 rounded text-gray-900 text-sm"
                                        placeholder="Enter doctor name"
-                                       value="Dr. Médecin Responsable">
+                                       value="{{ auth()->user()?->name ?? '' }}" readonly>
                             </div>
                             <div>
                                 <span class="font-semibold text-gray-700">License Number:</span>
-                                <span class="ml-2 text-gray-900" id="signoff-license-number">Loading...</span>
+                                <span class="ml-2 text-gray-900" id="signoff-license-number">Non renseigné</span>
                             </div>
                             <div>
                                 <span class="font-semibold text-gray-700">Timestamp:</span>
@@ -2296,7 +2296,7 @@
                             </div>
                             <div>
                                 <span class="font-semibold text-gray-700">IP Address:</span>
-                                <span class="ml-2 text-gray-900" id="signoff-ip-address">192.168.1.100</span>
+                                <span class="ml-2 text-gray-900" id="signoff-ip-address">Non renseignée</span>
                             </div>
                         </div>
                     </div>
@@ -2357,28 +2357,10 @@ window.generatePDF = async function() {
         }
         console.log(' Total form fields collected:', formData.entries().length);
         
-        // Add required fields if they're missing (same as in saveSignedPCMA)
-        if (!formData.has('athlete_id') || !formData.get('athlete_id')) {
-            formData.append('athlete_id', '1');
-        }
-        if (!formData.has('type') || !formData.get('type')) {
-            formData.append('type', 'bpma');
-        }
-        if (!formData.has('assessor_id') || !formData.get('assessor_id')) {
-            formData.append('assessor_id', '1');
-        }
-        if (!formData.has('assessment_date') || !formData.get('assessment_date')) {
-            formData.append('assessment_date', new Date().toISOString().split('T')[0]);
-        }
-        if (!formData.has('status') || !formData.get('status')) {
-            formData.append('status', 'completed');
-        }
-        // Only add default values if the fields are completely empty
-        if (!formData.has('notes') || formData.get('notes') === '') {
-            formData.append('notes', 'Évaluation médicale complétée');
-            }
-        if (!formData.has('clinical_notes') || formData.get('clinical_notes') === '') {
-            formData.append('clinical_notes', 'Notes cliniques standard');
+        // Aucune valeur médicale ou identité ne doit être fabriquée pour produire le PDF.
+        if (!formData.get('athlete_id') || !formData.get('type') || !formData.get('assessor_id') || !formData.get('assessment_date')) {
+            alert('Renseignez les informations obligatoires avant de produire le PDF.');
+            return;
         }
         
         // Add fitness assessment results if available
@@ -2809,22 +2791,22 @@ window.openDoctorSignoff = function() {
         
         // Get fitness assessment results if available
         const fitnessResults = document.getElementById('fitness-results-content');
-        const fitnessDecision = fitnessResults && fitnessResults.innerHTML.includes('APT') ? 'FIT' : 'NOT_FIT';
+        const fitnessDecision = formDataObj.fitness_decision || null;
         
         // Get doctor/assessor information
         const assessorSelect = document.getElementById('assessor_id');
         const selectedAssessor = assessorSelect ? assessorSelect.options[assessorSelect.selectedIndex] : null;
-        const doctorName = selectedAssessor ? selectedAssessor.text : 'Dr. Médecin Responsable';
+        const doctorName = selectedAssessor?.value ? selectedAssessor.text : null;
         
         // Create signoff data
         const signoffData = {
             playerName: athleteName,
             fitnessDecision: fitnessDecision,
-            examinationDate: formDataObj.assessment_date || new Date().toISOString().split('T')[0],
-            assessmentId: 'PCMA-' + Date.now(),
-            clinicalNotes: formDataObj.notes || 'Aucune note clinique',
+            examinationDate: formDataObj.assessment_date || null,
+            assessmentId: null,
+            clinicalNotes: formDataObj.notes || null,
             doctorName: doctorName,
-            licenseNumber: 'MED-' + Math.floor(Math.random() * 10000)
+            licenseNumber: null
         };
         
         // Show the modal
@@ -3079,13 +3061,17 @@ function updateActionStatus() {
         confirmSignoff.disabled = true;
         console.log(' Button disabled: Signature confirmation required');
     } else {
-        actionStatus.textContent = 'Ready to sign';
-        confirmSignoff.disabled = false;
+        actionStatus.textContent = 'Signature indisponible : numéro professionnel vérifié requis';
+        confirmSignoff.disabled = true;
         console.log(' Button enabled: Ready to sign');
     }
 }
 
 function handleSignoff(signoffData) {
+    if (!signoffData.licenseNumber || !signoffData.doctorName || !signoffData.fitnessDecision) {
+        alert('Signature indisponible : identité, numéro professionnel et décision médicale vérifiés requis.');
+        return;
+    }
     console.log(' handleSignoff function called with data:', signoffData);
     const loadingSpinner = document.getElementById('loading-spinner');
     const confirmText = document.getElementById('confirm-signoff-text');
@@ -3115,7 +3101,7 @@ function handleSignoff(signoffData) {
             assessmentId: signoffData.assessmentId,
             playerName: signoffData.playerName,
             examinationDate: signoffData.examinationDate,
-            ipAddress: '192.168.1.100'
+            ipAddress: null
         };
         
         // Store signed data globally
@@ -3189,13 +3175,10 @@ function saveSignedPCMA(signedData) {
     const clinicalNotesInput = saveForm.querySelector('input[name="clinical_notes"], textarea[name="clinical_notes"]');
     
     // Set default values if they're empty (with null checks)
-    if (athleteSelect && !athleteSelect.value) athleteSelect.value = '1';
-    if (typeSelect && !typeSelect.value) typeSelect.value = 'bpma';
-    if (assessorSelect && !assessorSelect.value) assessorSelect.value = '1';
-    if (assessmentDateInput && !assessmentDateInput.value) assessmentDateInput.value = new Date().toISOString().split('T')[0];
-    if (statusSelect && !statusSelect.value) statusSelect.value = 'completed';
-    if (notesInput && !notesInput.value) notesInput.value = 'Évaluation médicale complétée';
-    if (clinicalNotesInput && !clinicalNotesInput.value) clinicalNotesInput.value = 'Notes cliniques standard';
+    if (!athleteSelect?.value || !typeSelect?.value || !assessorSelect?.value || !assessmentDateInput?.value) {
+        alert('Renseignez le joueur, le type, le médecin et la date avant la signature.');
+        return Promise.resolve(false);
+    }
     
     // Debug: Log the form values after setting defaults
     console.log(' Form values after setting defaults:', {
@@ -3235,11 +3218,7 @@ function saveSignedPCMA(signedData) {
         }
         
         // Ensure we have the basic required fields for PDF
-        if (!formData.has('athlete_id')) formData.append('athlete_id', '1');
-        if (!formData.has('type')) formData.append('type', 'bpma');
-        if (!formData.has('assessor_id')) formData.append('assessor_id', '1');
-        if (!formData.has('assessment_date')) formData.append('assessment_date', new Date().toISOString().split('T')[0]);
-        if (!formData.has('status')) formData.append('status', 'completed');
+
         
         // Only add default values if the fields are actually empty (not just missing)
         // This ensures we don't override actual form data with defaults
@@ -3372,11 +3351,7 @@ window.generateFitnessAssessment = async function() {
         const formData = new FormData(fitnessForm);
         
         // Add required fields if missing
-        if (!formData.has('athlete_id')) formData.append('athlete_id', '1');
-        if (!formData.has('type')) formData.append('type', 'bpma');
-        if (!formData.has('assessor_id')) formData.append('assessor_id', '1');
-        if (!formData.has('assessment_date')) formData.append('assessment_date', new Date().toISOString().split('T')[0]);
-        if (!formData.has('status')) formData.append('status', 'completed');
+
         
         // Show loading state
         const button = document.getElementById('ai-fitness-assessment');

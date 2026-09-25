@@ -16,7 +16,7 @@ Route::get('/match-sheet/{gameMatch}', [\App\Http\Controllers\MatchSheetControll
 
 // Force HTTP landing for /home to avoid HTTPS redirects locally
 Route::get('/home', function () {
-    return redirect('http://localhost/dashboard-test');
+    return redirect()->route('dashboard');
 })->name('home');
 
 // Routes de santé pour Kubernetes
@@ -801,11 +801,6 @@ Route::prefix('secretary')->name('secretary.')->group(function () {
     })->name('stats');
 });
 
-// Route d'accueil /home - Redirection vers le dashboard complet
-Route::get('/home', function () {
-    // Rediriger vers le dashboard complet le plus récent
-    return redirect()->route('dashboard.test');
-})->name('home');
 
 // Route principale pour les compétitions (sans authentification)
 

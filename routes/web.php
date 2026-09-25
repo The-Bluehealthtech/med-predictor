@@ -1299,14 +1299,8 @@ Route::get('/account-request/fifa-connect-types', function () {
 
 
 // Test du composant association-logo
-Route::get('/test-association-logo', function () {
-    return view('test-association-logo');
-})->name('test.association.logo');
 
 // Test simple du composant
-Route::get('/test-simple', function () {
-    return view('test-simple');
-})->name('test.simple');
 
 // Test PCMA simple - Route manquante pour l'Assistant Vocal
 Route::get('/test-pcma-simple', function () {
@@ -1366,29 +1360,14 @@ Route::post('/api/pcma/auto-save', function (Request $request) {
 })->name('api.pcma.auto.save');
 
 // Test du composant dans le contexte du portail
-Route::get('/test-portal-context', function () {
-    return view('test-portal-context');
-})->name('test.portal.context');
 
 // Test exact du portail patient
-Route::get('/test-portal-exact', function () {
-    return view('test-portal-exact');
-})->name('test.portal.exact');
 
 // Test ultra-simple
-Route::get('/test-ultra-simple', function () {
-    return view('test-ultra-simple');
-})->name('test.ultra.simple');
 
 // Test simulation portail patient
-Route::get('/test-portal-simulation', function () {
-    return view('test-portal-simulation');
-})->name('test.portal.simulation');
 
 // Test portail simple
-Route::get('/test-portal-simple', function () {
-    return view('test-portal-simple');
-})->name('test.portal.simple');
 
 // Routes pour la gestion des associations
 Route::prefix('associations')->name('associations.')->group(function () {
@@ -1401,14 +1380,8 @@ Route::prefix('associations')->name('associations.')->group(function () {
 });
 
 // Test du système association
-Route::get('/test-association-system', function () {
-    return view('test-association-system');
-})->name('test.association.system');
 
 // Démonstration des logos officiels
-Route::get('/demo-logos-officiels', function () {
-    return view('demo-logos-officiels');
-})->name('demo.logos.officiels');
 
 // Test du portail patient avec logos des fédérations
 Route::get('/test-portail-patient', function () {
@@ -1429,36 +1402,8 @@ Route::get('/test-portail-patient', function () {
 })->name('test.portail.patient');
 
 // Test des logos dans le contexte du portail
-Route::get('/test-logos-portail', function () {
-    return view('test-logos-portail');
-})->name('test.logos.portail');
 
 // Test du portail patient intégré (version publique)
-Route::get('/test-portail-integre', function () {
-    // Simuler un joueur avec une association
-    $player = (object)[
-        'id' => 7,
-        'first_name' => 'Joueur',
-        'last_name' => 'Test',
-        'name' => 'Joueur Test',
-        'association' => (object)[
-            'id' => 7,
-            'name' => 'Fédération Royale Marocaine de Football',
-            'country' => 'Maroc'
-        ]
-    ];
-    
-    // Simuler les données du portail
-    $portalData = [
-        'healthRecords' => collect([]),
-        'pcmas' => collect([]),
-        'matchPerformances' => collect([]),
-        'matchMetrics' => collect([]),
-        'trophies' => collect([])
-    ];
-    
-    return view('portail-joueur-final-corrige-dynamique', compact('player', 'portalData'));
-})->name('test.portail.integre');
 
 // Test du portail patient simplifié (version publique)
 Route::get('/test-portail-simplifie', function () {
@@ -3539,14 +3484,6 @@ Route::get('/test-dental-chart', function () {
 })->name('test.dental.chart');
 
 // Test Dental Chart Simple route (public access for testing)
-Route::get('/test-dental-simple', function () {
-    try {
-        return view('test-dental-simple');
-    } catch (\Exception $e) {
-        \Log::error('Dental chart simple test route error: ' . $e->getMessage());
-        return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);
-    }
-})->name('test.dental.simple');
 
 // Test Dental Chart Adapted route (public access for testing)
 Route::get('/dental-chart-test', function () {
@@ -3997,20 +3934,11 @@ Route::get('/', function () {
     return view('home-landing');
 })->name('landing');
 
-Route::get('/test-dashboard', function () {
-    return view('test-dashboard');
-})->name('test.dashboard');
 
 Route::get('/dashboard-temp', fn () => abort(410))->name('dashboard.temp');
 Route::get('/dashboard-simulated', fn () => abort(410))->name('dashboard.simulated');
 
-Route::get('/diagnostic', function () {
-    return view('diagnostic');
-})->name('diagnostic');
 
-Route::get('/syntax-debugger', function () {
-    return view('syntax-debugger');
-})->name('syntax.debugger');
 
 Route::get('/dashboard-test', function () {
     $user = auth()->user();
@@ -4110,9 +4038,6 @@ Route::middleware('guest')->group(function () {
 // Logout routes
 
 // Test page for JavaScript debugging
-Route::get('/test-player-display', function () {
-    return view('test-player-display');
-})->name('test.player.display');
 
 // Get signed PCMAs for dashboard (public route)
 Route::get('/api/signed-pcmas', function () {
@@ -6197,9 +6122,6 @@ Route::get('/test-pdf', function() {
 
     // AI Testing routes
     Route::get('/ai-testing', [App\Http\Controllers\AITestingController::class, 'index'])->name('ai-testing.index');
-    Route::get('/ai-testing/test', function () {
-        return view('ai-testing.test');
-    })->name('ai-testing.test');
     Route::post('/ai-testing/run-tests', [App\Http\Controllers\AITestingController::class, 'runTests'])->name('ai-testing.run-tests');
     Route::post('/ai-testing/test-provider', [App\Http\Controllers\AITestingController::class, 'testProvider'])->name('ai-testing.test-provider');
     Route::get('/ai-testing/providers', [App\Http\Controllers\AITestingController::class, 'getProviders'])->name('ai-testing.providers');
@@ -6694,20 +6616,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/home', function () {
             return redirect()->route('admin.dashboard');
         })->name('dashboard');
-        Route::get('/simple', function () {
-            return view('player-portal.simple-dashboard');
-        })->name('simple-dashboard');
-        Route::get('/debug', function () {
-            return view('player-portal.debug');
-        })->name('debug');
-        Route::get('/test', function () {
-            return view('player-portal.test');
-        })->name('test');
         Route::get('/profile', [App\Http\Controllers\PlayerPortalController::class, 'profile'])->name('profile');
         Route::put('/profile', [App\Http\Controllers\PlayerPortalController::class, 'updateProfile'])->name('update-profile');
-        Route::get('/medical-records', function () {
-            return view('player-portal.medical-records-simple');
-        })->name('medical-records');
         Route::get('/predictions', [App\Http\Controllers\PlayerPortalController::class, 'predictions'])->name('predictions');
         Route::get('/performances', [App\Http\Controllers\PlayerPortalController::class, 'performances'])->name('performances');
         Route::get('/matches', [App\Http\Controllers\PlayerPortalController::class, 'matches'])->name('matches');
@@ -6721,9 +6631,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Routes de test publiques (en dehors du groupe player-portal)
-Route::get('/test-minimal', function () {
-    return view('test-minimal');
-})->name('test-minimal');
 
 // Routes FIFA publiques pour test sans authentification
 Route::get('/fifa-ultimate-complete', fn () => abort(410))->name('fifa-ultimate-complete');
@@ -6732,9 +6639,6 @@ Route::get('/fifa-ultimate-working', fn () => abort(410))->name('fifa-ultimate-w
 
 Route::get('/fifa-test-public', fn () => abort(410))->name('fifa-test-public');
 
-Route::get('/test-tabs', function () {
-    return view('test-tabs');
-})->name('test-tabs');
 
 Route::get('/test-medical-tabs', function () {
     return view('health-records.create-tabs');
@@ -6748,23 +6652,14 @@ Route::get('/fifa-test-simple', function () {
     return view('fifa-test-simple');
 })->name('fifa-test-simple');
 
-Route::get('/fifa-debug', function () {
-    return view('fifa-debug');
-})->name('fifa-debug');
 
 Route::get('/fifa-stable', fn () => abort(410))->name('fifa-stable');
 
-Route::get('/fifa-simple-test', function () {
-    return view('fifa-simple-test');
-})->name('fifa-simple-test');
 
 Route::get('/fifa-working', fn () => abort(410))->name('fifa-working');
 
 Route::get('/fifa-complete', fn () => abort(410))->name('fifa-complete');
 
-Route::get('/fifa-debug', function () {
-    return view('player-portal.fifa-debug');
-})->name('fifa-debug');
 
 // Route de test pour l'authentification
 Route::get('/test-auth', function () {
@@ -6809,25 +6704,6 @@ Route::get('/public-test', function () {
 })->name('public-test');
 
 // Route de debug FIFA (temporaire)
-Route::get('/fifa-debug', function () {
-    // Trouver un joueur pour le test
-    $user = App\Models\User::where('email', 'lionel.messi@example.com')->first();
-    $player = $user ? $user->player : null;
-    
-    if (!$player) {
-        // Créer des données de test si le joueur n'existe pas
-        $player = (object) [
-            'first_name' => 'Lionel',
-            'last_name' => 'Messi',
-            'email' => 'lionel.messi@example.com',
-            'club' => (object) ['name' => 'Paris Saint-Germain']
-        ];
-    } else {
-        $player->load('club');
-    }
-    
-    return view('player-portal.fifa-debug', compact('player'));
-})->name('fifa-debug');
 
 // Route fixe pour le portail patient
 Route::get('/portail-patient', function () {
@@ -6901,172 +6777,8 @@ Route::prefix('api')->middleware(['auth'])->group(function () {
 });
 
 // Test simple du fichier Blade - AMÉLIORÉ avec plus de données
-Route::get('/test-blade-simple', function() {
-    try {
-        $player = \App\Models\Player::with(['club', 'association'])->find(1);
-        
-        // Données dynamiques complètes
-        $portalData = [
-            'fifaStats' => [
-                'overall_rating' => rand(75, 95),
-                'potential_rating' => rand(70, 90),
-                'fitness_score' => rand(80, 100)
-            ],
-            'performanceData' => [
-                'monthly_ratings' => array_map(function() { return rand(65, 95) / 10; }, range(1, 6)),
-                'monthly_goals' => array_map(function() { return rand(0, 4); }, range(1, 6)),
-                'monthly_assists' => array_map(function() { return rand(0, 3); }, range(1, 6))
-            ],
-            'sdohData' => [
-                'environment' => rand(60, 90),
-                'social_support' => rand(50, 95),
-                'healthcare_access' => rand(70, 100),
-                'financial_situation' => rand(60, 90),
-                'mental_wellbeing' => rand(70, 95)
-            ],
-            'playerStats' => [
-                'age' => $player->date_of_birth ? $player->date_of_birth->diffInYears(now()) : rand(18, 35),
-                'height' => rand(165, 195),
-                'weight' => rand(65, 85),
-                'preferred_foot' => ['Gauche', 'Droit'][rand(0, 1)],
-                'ballon_dor_count' => rand(0, 5),
-                'total_goals' => rand(50, 500),
-                'total_assists' => rand(100, 800),
-                'champions_league_count' => rand(0, 10),
-                'season_goals' => rand(0, 30),
-                'season_assists' => rand(0, 20)
-            ],
-            'seasonProgress' => [
-                'currentSeason' => '2024-25',
-                'completion' => rand(60, 90),
-                'matchesPlayed' => rand(15, 35),
-                'matchesRemaining' => rand(5, 15)
-            ],
-            'recentPerformances' => ['W', 'W', 'D', 'W', 'W'],
-            'performanceStats' => [
-                'current_month_goals' => rand(2, 8),
-                'current_month_assists' => rand(1, 5),
-                'current_month_distance' => rand(200, 400),
-                'matches_played' => rand(3, 8),
-                'average_rating' => rand(65, 95) / 10
-            ],
-            'heroMetrics' => [
-                'injury_risk' => [
-                    'percentage' => rand(5, 25),
-                    'level' => (function() {
-                        $percentage = rand(5, 25);
-                        if ($percentage <= 10) return 'TRÈS FAIBLE';
-                        if ($percentage <= 20) return 'FAIBLE';
-                        if ($percentage <= 30) return 'MODÉRÉ';
-                        return 'ÉLEVÉ';
-                    })(),
-                    'color' => 'text-green-400'
-                ],
-                'market_value' => [
-                    'current' => rand(50, 300),
-                    'change' => rand(-30, 50),
-                    'trend' => 'up'
-                ],
-                'availability' => [
-                    'status' => rand(0, 1) ? 'DISPONIBLE' : 'INDISPONIBLE',
-                    'next_match' => ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'][rand(0, 6)],
-                    'icon' => '✅'
-                ],
-                'player_state' => [
-                    'form' => rand(60, 95),
-                    'morale' => rand(65, 90)
-                ]
-            ],
-            'images' => [
-                'player_profile' => 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face',
-                'club_logo' => 'https://via.placeholder.com/200x200/cccccc/666666?text=' . urlencode($player->club->name ?? 'Club'),
-                'country_flag' => 'https://flagcdn.com/w40/' . strtolower(substr($player->nationality ?? 'fr', 0, 2)) . '.png'
-            ]
-        ];
-        
-        return view('portail-joueur-final-corrige-dynamique', compact('player', 'portalData'));
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
-    }
-})->name('test.blade.simple');
 
 // Test du fichier Blade simple - AMÉLIORÉ avec données dynamiques
-Route::get('/test-simple-blade', function() {
-    try {
-        $player = \App\Models\Player::with(['club', 'association'])->find(1);
-        
-        // Données dynamiques complètes
-        $portalData = [
-            'fifaStats' => [
-                'overall_rating' => rand(75, 95),
-                'potential_rating' => rand(70, 90),
-                'fitness_score' => rand(80, 100)
-            ],
-            'playerStats' => [
-                'age' => $player->date_of_birth ? $player->date_of_birth->diffInYears(now()) : rand(18, 35),
-                'height' => rand(165, 195),
-                'weight' => rand(65, 85),
-                'preferred_foot' => ['Gauche', 'Droit'][rand(0, 1)],
-                'ballon_dor_count' => rand(0, 5),
-                'total_goals' => rand(50, 500),
-                'total_assists' => rand(100, 800),
-                'champions_league_count' => rand(0, 10),
-                'season_goals' => rand(0, 30),
-                'season_assists' => rand(0, 20)
-            ],
-            'seasonProgress' => [
-                'currentSeason' => '2024-25',
-                'completion' => rand(60, 90),
-                'matchesPlayed' => rand(15, 35),
-                'matchesRemaining' => rand(5, 15)
-            ],
-            'recentPerformances' => ['W', 'W', 'D', 'W', 'W'],
-            'performanceStats' => [
-                'current_month_goals' => rand(2, 8),
-                'current_month_assists' => rand(1, 5),
-                'current_month_distance' => rand(200, 400),
-                'matches_played' => rand(3, 8),
-                'average_rating' => rand(65, 95) / 10
-            ],
-            'heroMetrics' => [
-                'injury_risk' => [
-                    'percentage' => rand(5, 25),
-                    'level' => (function() {
-                        $percentage = rand(5, 25);
-                        if ($percentage <= 10) return 'TRÈS FAIBLE';
-                        if ($percentage <= 20) return 'FAIBLE';
-                        if ($percentage <= 30) return 'MODÉRÉ';
-                        return 'ÉLEVÉ';
-                    })(),
-                    'color' => 'text-green-400'
-                ],
-                'market_value' => [
-                    'current' => rand(50, 300),
-                    'change' => rand(-30, 50),
-                    'trend' => 'up'
-                ],
-                'availability' => [
-                    'status' => rand(0, 1) ? 'DISPONIBLE' : 'INDISPONIBLE',
-                    'next_match' => ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'][rand(0, 6)],
-                    'icon' => '✅'
-                ],
-                'player_state' => [
-                    'form' => rand(60, 95),
-                    'morale' => rand(65, 90)
-                ]
-            ],
-            'images' => [
-                'player_profile' => 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face',
-                'club_logo' => 'https://via.placeholder.com/200x200/cccccc/666666?text=' . urlencode($player->club->name ?? 'Club'),
-                'country_flag' => 'https://flagcdn.com/w40/' . strtolower(substr($player->nationality ?? 'fr', 0, 2)) . '.png'
-            ]
-        ];
-        
-        return view('test-simple-portal', compact('player', 'portalData', 'allPlayers'));
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
-    }
-})->name('test.simple.blade');
 
 // Route pour le portail original dynamique - SUPPRIMÉE car problématique
 
@@ -7147,19 +6859,10 @@ Route::get('/test/minimal/{playerId}', function ($playerId) {
 })->name('test.minimal.player');
 
 // Test des logos des clubs FTF
-Route::get('/test-clubs-ftf', function () {
-    return view('test-clubs-ftf');
-})->name('test.clubs.ftf');
 
 // Test des logos des clubs FTF (version simplifiée)
-Route::get('/test-clubs-ftf-simple', function () {
-    return view('test-clubs-ftf-simple');
-})->name('test.clubs.ftf.simple');
 
 // Démonstration finale des logos des clubs FTF
-Route::get('/demo-clubs-ftf', function () {
-    return view('demo-clubs-ftf');
-})->name('demo.clubs.ftf');
 
 // Page des logos des clubs FTF
 Route::get('/logos-clubs-ftf', function () {
@@ -7172,45 +6875,14 @@ Route::get('/logos-originaux-ftf', function () {
 })->name('logos.originaux.ftf');
 
 // Démonstration des vrais logos des clubs FTF
-Route::get('/demo-vrais-logos-ftf', function () {
-    return view('demo-vrais-logos-ftf');
-})->name('demo.vrais.logos.ftf');
 
 // Test du portail joueur avec le composant club-logo-working
-Route::get('/test-portail-club-logos', function () {
-    // Simuler un joueur avec un club
-    $player = (object) [
-        'id' => 999,
-        'first_name' => 'Test',
-        'last_name' => 'Joueur',
-        'club' => (object) [
-            'name' => 'Esperance Sportive de Tunis',
-            'code' => 'EST'
-        ],
-        'association' => (object) [
-            'id' => 1,
-            'name' => 'Fédération Tunisienne de Football',
-            'country' => 'Tunisie'
-        ]
-    ];
-    
-    return view('portail-joueur-final-corrige-dynamique', compact('player'));
-})->name('test.portail.club.logos');
 
 // Test simple du composant club-logo-working
-Route::get('/test-portail-club-logos-simple', function () {
-    return view('test-portail-club-logos');
-})->name('test.portail.club.logos.simple');
 
 // Test des clubs réels de la base de données
-Route::get('/test-clubs-reels', function () {
-    return view('test-clubs-reels');
-})->name('test.clubs.reels');
 
 // Test final du portail joueur avec logos clubs
-Route::get('/test-portail-final', function () {
-    return view('test-portail-final');
-})->name('test.portail.final');
 
 // Test du portail joueur principal avec de vrais joueurs
 Route::get('/test-portail-principal/{id}', function ($id) {
@@ -7223,14 +6895,8 @@ Route::get('/test-portail-principal/{id}', function ($id) {
 })->name('test.portail.principal');
 
 // Test du système de performances enrichi
-Route::get('/test-performance-system', function () {
-    return view('test-performance-system');
-})->name('test.performance.system');
 
 // Test du système de performances simplifié
-Route::get('/test-performance-working', function () {
-    return view('test-performance-working');
-})->name('test.performance.working');
 
 // Endpoint FIFA performance legacy: désactivé pour éviter les valeurs calculées
 // à partir de fallbacks non vérifiés. Le portail canonique utilise les données réelles
@@ -7244,14 +6910,8 @@ Route::get('/api/player-performance/{id}', function () {
 })->middleware(['auth'])->name('api.player.performance');
 
 // Page de test debug FIFA
-Route::get('/test-fifa-debug', function () {
-    return view('test-fifa-debug');
-})->name('test.fifa.debug');
 
 // Page de test JavaScript FIFA
-Route::get('/test-fifa-js', function () {
-    return view('test-fifa-js');
-})->name('test.fifa.js');
 
 // Page de test du portail FIFA sans authentification
 Route::get('/test-portail-fifa/{playerId?}', function ($playerId = 7) {
@@ -7274,62 +6934,29 @@ Route::get('/test-portail-fifa/{playerId?}', function ($playerId = 7) {
 })->name('test.portail.fifa');
 
 // Page de test FIFA direct (JavaScript pur)
-Route::get('/test-fifa-direct', function () {
-    return view('test-fifa-direct');
-})->name('test.fifa.direct');
 
 // Page de debug FIFA JavaScript en temps réel
-Route::get('/debug-fifa-js-realtime', function () {
-    return view('debug-fifa-js-realtime');
-})->name('debug.fifa.js.realtime');
 
 // Page de debug FIFA affichage visuel
-Route::get('/debug-fifa-visual', function () {
-    return view('debug-fifa-visual');
-})->name('debug.fifa.visual');
 
 // Page de debug onglets performance FIFA
-Route::get('/debug-onglets-performance', function () {
-    return view('debug-onglets-performance');
-})->name('debug.onglets.performance');
 
 // Page de debug portail principal FIFA
-Route::get('/debug-portail-principal', function () {
-    return view('debug-portail-principal');
-})->name('debug.portail.principal');
 
 // Test direct du portail principal FIFA
-Route::get('/test-portail-direct', function () {
-    return view('test-portail-direct');
-})->name('test.portail.direct');
 
 // Debug visibilité des éléments FIFA
-Route::get('/debug-visibilite-fifa', function () {
-    return view('debug-visibilite-fifa');
-})->name('debug.visibilite.fifa');
 
 // Debug hiérarchie des conteneurs FIFA
-Route::get('/debug-hierarchie-conteneurs', function () {
-    return view('debug-hierarchie-conteneurs');
-})->name('debug.hierarchie.conteneurs');
 
 // Portail joueur FIFA simple et fonctionnel
-Route::get('/portail-fifa-simple', function () {
-    return view('portail-joueur-simple-fifa');
-})->name('portail.fifa.simple');
 
 // Portail FIFA intégré sous la landing page
 Route::get('/fifa-portal', [App\Http\Controllers\FIFATestController::class, 'show'])->middleware(['auth'])->name('fifa.portal.integrated');
 
 // Test du système FIFA Connect
-Route::get('/test-fifa-performance', function () {
-    return view('test-fifa-performance');
-})->name('test.fifa.performance');
 
 // Test de l'intégration FIFA Connect
-Route::get('/test-integration-fifa', function () {
-    return view('test-integration-fifa');
-})->name('test.integration.fifa');
 
 // Test simple de l'API FIFA
 Route::get('/test-api-fifa/{id}', function ($id) {
@@ -7356,9 +6983,6 @@ Route::get('/fifa-test', [App\Http\Controllers\FIFATestController::class, 'test'
 Route::get('/fifa-test/{id}', [App\Http\Controllers\FIFATestController::class, 'test'])->name('fifa.test.id');
 
 // Test du logo FTF
-Route::get('/test-logo-ftf', function () {
-    return view('test-logo-ftf');
-})->name('test.logo.ftf');
 
 // Routes Google Assistant déplacées vers api.php (sans CSRF)
 
@@ -7381,28 +7005,12 @@ Route::get('/test-appointments', function () {
 })->name('test-appointments');
 
 // Test route pour vérifier l'affichage des logos
-Route::get('/test-logos', function () {
-    $players = \App\Models\Player::with(['club', 'association'])->limit(5)->get();
-    $clubs = \App\Models\Club::limit(5)->get();
-    $associations = \App\Models\Association::limit(5)->get();
-
-    return view('test-logos', compact('players', 'clubs', 'associations'));
-})->name('test.logos');
 
 // Test route simple pour diagnostiquer les logos
-Route::get('/test-logos-simple', function () {
-    return view('test-logos-simple');
-})->name('test.logos.simple');
 
 // Test route très simple pour diagnostiquer les images
-Route::get('/test-images-simple', function () {
-    return view('test-images-simple');
-})->name('test.images.simple');
 
 // Test route basique sans CSS
-Route::get('/test-basic', function () {
-    return view('test-basic');
-})->name('test.basic');
 
 // Player module requires authentication.
 Route::get('/modules/players', function () {
@@ -7424,9 +7032,6 @@ Route::middleware(['auth'])->prefix('license-photos')->name('license.')->group(f
 Route::get('/api/clubs/{club}/players', [App\Http\Controllers\LicensePhotoController::class, 'getClubPlayers']);
 
 // Route de test pour le système de licences (sans authentification)
-Route::get('/test-licenses', function () {
-    return view('test-licenses');
-})->name('test.licenses');
 
 // Route de démonstration du système de licences existant
 Route::get('/licenses-demo', function () {
@@ -7568,64 +7173,6 @@ Route::get('/referee-login-test', function () {
 });
 
 // Route de test pour le système de recherche et pagination
-Route::get('/search-test', function () {
-    // Données de test pour le composant de recherche
-    $searchFields = [
-        [
-            'name' => 'name',
-            'label' => 'Nom du joueur',
-            'type' => 'text',
-            'placeholder' => 'Rechercher par nom...'
-        ],
-        [
-            'name' => 'position',
-            'label' => 'Position',
-            'type' => 'select',
-            'options' => [
-                'Goalkeeper' => 'Gardien',
-                'Defender' => 'Défenseur',
-                'Midfielder' => 'Milieu',
-                'Forward' => 'Attaquant'
-            ]
-        ],
-        [
-            'name' => 'club',
-            'label' => 'Club',
-            'type' => 'text',
-            'placeholder' => 'Rechercher par club...'
-        ],
-        [
-            'name' => 'nationality',
-            'label' => 'Nationalité',
-            'type' => 'text',
-            'placeholder' => 'Rechercher par nationalité...'
-        ],
-        [
-            'name' => 'birth_date',
-            'label' => 'Date de naissance',
-            'type' => 'date_range'
-        ],
-        [
-            'name' => 'status',
-            'label' => 'Statut',
-            'type' => 'select',
-            'options' => [
-                'active' => 'Actif',
-                'inactive' => 'Inactif',
-                'suspended' => 'Suspendu',
-                'injured' => 'Blessé'
-            ]
-        ]
-    ];
-
-    // Données de pagination simulées
-    $currentPage = request('page', 1);
-    $totalPages = 5;
-    $perPage = 20;
-    $totalItems = 100;
-
-    return view('test-search', compact('searchFields', 'currentPage', 'totalPages', 'perPage', 'totalItems'));
-});
 
 // Route de test pour les clubs avec recherche et pagination
 Route::get('/clubs-search-test', function () {

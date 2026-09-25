@@ -34,7 +34,7 @@
                 @forelse ($positions as $position)
                     <div class="mb-4">
                         <div class="flex justify-between text-sm mb-1">
-                            <span>{{ $position->position ?: '{{ __('dashboard_test.unknown') }}' }}</span>
+                            <span>{{ $position->position ?: __('dashboard_test.unknown') }}</span>
                             <strong>{{ number_format($position->total, 0, ',', ' ') }}</strong>
                         </div>
                         <div class="h-2 rounded-full bg-gray-100 overflow-hidden">
@@ -82,7 +82,7 @@
                         <div class="flex items-center justify-between gap-4 py-3">
                             <div>
                                 <a href="{{ route('joueur.portal', ['playerId' => $player->id]) }}" class="font-medium text-blue-700 hover:underline">{{ trim($player->first_name . ' ' . $player->last_name) ?: $player->name }}</a>
-                                <p class="text-sm text-gray-500">{{ $player->club?->name ?? '{{ __('dashboard_test.unknown_club') }}' }} · {{ $player->position ?: '{{ __('dashboard_test.unknown_position') }}' }}</p>
+                                <p class="text-sm text-gray-500">{{ $player->club?->name ?? __('dashboard_test.unknown_club') }} · {{ $player->position ?: __('dashboard_test.unknown_position') }}</p>
                             </div>
                             <time class="text-xs text-gray-500 whitespace-nowrap">{{ $player->created_at?->format('d/m/Y') }}</time>
                         </div>
@@ -105,7 +105,7 @@
                     @forelse ($recentCompetitions as $competition)
                         <div class="flex items-center justify-between gap-4 py-3">
                             <span class="font-medium">{{ $competition->name }}</span>
-                            <span class="text-sm text-gray-500">{{ $competition->status ?: '{{ __('dashboard_test.unknown_status') }}' }}</span>
+                            <span class="text-sm text-gray-500">{{ $competition->status ?: __('dashboard_test.unknown_status') }}</span>
                         </div>
                     @empty
                         <p class="text-gray-500">{{ __('dashboard_test.no_competitions') }}</p>

@@ -66,7 +66,7 @@ function filterByCategory(category, event) {
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au Dashboard Général</a>
+                    <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ app()->getLocale() === 'en' ? '← Back to the dashboard' : '← Retour au Dashboard Général' }}</a>
                     @auth
                         <form method="POST" action="{{ route('logout') }}" class="inline-block">
                             @csrf
@@ -75,7 +75,7 @@ function filterByCategory(category, event) {
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                                 </svg>
-                                <span>Déconnexion</span>
+                                <span>{{ app()->getLocale() === 'en' ? 'Log out' : 'Déconnexion' }}</span>
                             </button>
                         </form>
                     @endauth
@@ -90,22 +90,22 @@ function filterByCategory(category, event) {
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
             <div class="p-6">
                 <div class="text-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Bienvenue sur la plateforme FIT</h2>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ app()->getLocale() === 'en' ? 'Welcome to FIT' : 'Bienvenue sur la plateforme FIT' }}</h2>
                     <p class="text-lg text-gray-600 mb-6">
-                        Sélectionnez un module pour accéder aux fonctionnalités de gestion du football
+                        {{ app()->getLocale() === 'en' ? 'Choose a module to access the football management tools' : 'Sélectionnez un module pour accéder aux fonctionnalités de gestion du football' }}
                     </p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            Système opérationnel
+                            {{ app()->getLocale() === 'en' ? 'System operational' : 'Système opérationnel' }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            {{ $totalModules ?? count($modules) }} modules disponibles
+                            {{ $totalModules ?? count($modules) }} {{ app()->getLocale() === 'en' ? 'modules available' : 'modules disponibles' }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                            8 catégories organisées
+                            {{ collect($modules)->pluck('category')->filter()->unique()->count() }} {{ app()->getLocale() === 'en' ? 'organized categories' : 'catégories organisées' }}
                         </div>
                     </div>
                 </div>
@@ -201,14 +201,14 @@ function filterByCategory(category, event) {
         <!-- Filtres par catégorie -->
         <div class="mb-8">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtrer par catégorie</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ app()->getLocale() === 'en' ? 'Filter by category' : 'Filtrer par catégorie' }}</h3>
                 <div class="flex flex-wrap gap-2">
                     <button onclick="showAllCategories(event)" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        Toutes les catégories
+                        {{ app()->getLocale() === 'en' ? 'All categories' : 'Toutes les catégories' }}
                     </button>
                     @foreach($categories as $key => $category)
                     <button onclick="filterByCategory('{{ $key }}', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="{{ $key }}">
-                        {{ $category['name'] }}
+                        {{ app()->getLocale() === 'en' ? (trans('modules_fit.categories')[$key] ?? $category['name']) : $category['name'] }}
                     </button>
                     @endforeach
                 </div>
@@ -235,7 +235,7 @@ function filterByCategory(category, event) {
                                 @elseif($categoryKey === 'administration') ⚙️
                                 @endif
                             </span>
-                            <h3 class="text-xl font-semibold text-gray-900">{{ $categoryInfo['name'] }}</h3>
+                            <h3 class="text-xl font-semibold text-gray-900">{{ app()->getLocale() === 'en' ? (trans('modules_fit.categories')[$categoryKey] ?? $categoryInfo['name']) : $categoryInfo['name'] }}</h3>
                         </div>
                         <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                             {{ count($groupedModules[$categoryKey]) }} modules
@@ -305,7 +305,7 @@ function filterByCategory(category, event) {
                 @endphp
                 @if($canAccess)
                 <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
-                     onclick="handleModuleClick('{{ $item['route'] }}', '{{ $item['name'] }}', event)">
+                     onclick="handleModuleClick('{{ $item['route'] }}', '{{ app()->getLocale() === 'en' ? (trans('modules_fit.names')[$item['name']] ?? $item['name']) : $item['name'] }}', event)">
                     <div class="flex items-start justify-between mb-3">
                         <div class="flex items-center">
                             <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
@@ -337,16 +337,16 @@ function filterByCategory(category, event) {
                             @else bg-gray-500 @endif"></div>
                     </div>
                     <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                        {{ $item['name'] }}
+                        {{ app()->getLocale() === 'en' ? (trans('modules_fit.names')[$item['name']] ?? $item['name']) : $item['name'] }}
                     </h4>
                     
                     <p class="text-sm text-gray-600 mb-3 line-clamp-2">
-                        {{ $item['description'] }}
+                        {{ app()->getLocale() === 'en' ? (trans('modules_fit.descriptions')[$item['description']] ?? $item['description']) : $item['description'] }}
                     </p>
                     
                     <div class="flex items-center justify-between">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            ✅ Actif
+                            {{ app()->getLocale() === 'en' ? 'Available' : 'Disponible' }}
                         </span>
                         <span class="text-xs text-gray-500 font-mono">{{ $item['route'] }}</span>
                     </div>
@@ -364,8 +364,8 @@ function filterByCategory(category, event) {
             <div class="flex items-center mb-4">
                 <div class="w-10 h-10 rounded-lg flex items-center justify-center text-2xl mr-4 bg-gray-100 text-gray-600">📦</div>
                 <div>
-                    <h3 class="text-xl font-semibold text-gray-900">Modules disponibles</h3>
-                    <p class="text-sm text-gray-600">Accès aux fonctionnalités</p>
+                    <h3 class="text-xl font-semibold text-gray-900">{{ app()->getLocale() === 'en' ? 'Available modules' : 'Modules disponibles' }}</h3>
+                    <p class="text-sm text-gray-600">{{ app()->getLocale() === 'en' ? 'Access features' : 'Accès aux fonctionnalités' }}</p>
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -380,14 +380,14 @@ function filterByCategory(category, event) {
                             </div>
                             <div class="flex-1">
                                 <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                    {{ $item['name'] }}
+                                    {{ app()->getLocale() === 'en' ? (trans('modules_fit.names')[$item['name']] ?? $item['name']) : $item['name'] }}
                                 </h3>
-                                <p class="text-sm text-gray-600 mt-1">{{ $item['description'] }}</p>
+                                <p class="text-sm text-gray-600 mt-1">{{ app()->getLocale() === 'en' ? (trans('modules_fit.descriptions')[$item['description']] ?? $item['description']) : $item['description'] }}</p>
                             </div>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                ✅ Actif
+                                {{ app()->getLocale() === 'en' ? 'Available' : 'Disponible' }}
                             </span>
                             <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

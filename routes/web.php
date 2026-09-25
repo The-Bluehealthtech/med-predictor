@@ -2859,88 +2859,6 @@ Route::get('/dashboard-simulated', fn () => abort(410))->name('dashboard.simulat
 
 
 
-Route::get('/dashboard-test', function () {
-    $user = auth()->user();
-
-    if ($user->isPlayer()) {
-        return redirect()->route('test.portail.joueur.simple');
-    }
-
-    if (!$user->isSystemAdmin() && !$user->isAssociationUser() && !$user->isClubUser()) {
-        return redirect()->route('dashboard');
-    }
-
-    $players = \App\Models\Player::query();
-    $clubs = \App\Models\Club::query();
-    $teams = \App\Models\Team::query();
-    $competitions = \App\Models\Competition::query();
-
-    if ($user->isClubUser()) {
-        abort_unless($user->club_id, 403);
-        $players->where('club_id', $user->club_id);
-        $clubs->whereKey($user->club_id);
-        $teams->where('club_id', $user->club_id);
-    } elseif ($user->isAssociationUser()) {
-        abort_unless($user->association_id, 403);
-        $players->where('association_id', $user->association_id);
-        $clubs->where('association_id', $user->association_id);
-        $teams->whereHas('club', fn ($club) => $club->where('association_id', $user->association_id));
-        $competitions->where('association_id', $user->association_id);
-    }
-
-    $stats = [
-        'Joueurs' => $players->count(),
-        'Clubs' => $clubs->count(),
-        'Équipes' => $teams->count(),
-    ];
-
-    if (!$user->isClubUser()) {
-        $stats['Compétitions'] = $competitions->count();
-    }
-
-    $positions = (clone $players)
-        ->select('position')
-        ->selectRaw('COUNT(*) as total')
-        ->groupBy('position')
-        ->orderByDesc('total')
-        ->get();
-
-    $monthlyPlayers = collect(range(5, 0))->map(function ($monthsAgo) use ($players) {
-        $month = now()->startOfMonth()->subMonths($monthsAgo);
-        return [
-            'label' => $month->translatedFormat('M Y'),
-            'count' => (clone $players)->whereBetween('created_at', [
-                $month, $month->copy()->endOfMonth(),
-            ])->count(),
-        ];
-    });
-
-    $topClubs = (clone $clubs)
-        ->withCount(['players' => function ($query) use ($user) {
-            if ($user->isAssociationUser()) {
-                $query->where('association_id', $user->association_id);
-            } elseif ($user->isClubUser()) {
-                $query->where('club_id', $user->club_id);
-            }
-        }])
-        ->orderByDesc('players_count')
-        ->limit(5)
-        ->get(['id', 'name']);
-
-    $recentPlayers = (clone $players)
-        ->with('club:id,name')
-        ->latest('created_at')
-        ->limit(5)
-        ->get(['id', 'name', 'first_name', 'last_name', 'position', 'club_id', 'created_at']);
-
-    $recentCompetitions = $user->isClubUser()
-        ? collect()
-        : (clone $competitions)->latest('created_at')->limit(5)->get(['id', 'name', 'status', 'created_at']);
-
-    return view('dashboard-test', compact(
-        'stats', 'positions', 'monthlyPlayers', 'topClubs', 'recentPlayers', 'recentCompetitions'
-    ));
-})->middleware(['auth'])->name('dashboard.test');
 
 Route::get('/profile-selector', function () {
     $footballType = request('footballType', '11aside');
@@ -5807,24 +5725,6 @@ Route::get('/api/clubs/{club}/players', [App\Http\Controllers\LicensePhotoContro
 // Route de test pour le système de licences (sans authentification)
 
 // Route de démonstration du système de licences existant
-Route::get('/licenses-demo', function () {
-    // Récupérer les statistiques des licences
-    $stats = [
-        'total' => \App\Models\License::count(),
-        'active' => \App\Models\License::where('status', 'active')->count(),
-        'pending' => \App\Models\License::where('status', 'pending')->count(),
-        'rejected' => \App\Models\License::where('status', 'rejected')->count(),
-        'amateur' => \App\Models\License::where('type', 'amateur')->count(),
-        'semi_pro' => \App\Models\License::where('type', 'semi_pro')->count(),
-        'professional' => \App\Models\License::where('type', 'professional')->count(),
-        'international' => \App\Models\License::where('type', 'international')->count(),
-    ];
-    
-    // Récupérer quelques exemples de licences
-    $sampleLicenses = \App\Models\License::orderBy('created_at', 'desc')->limit(10)->get();
-    
-    return view('licenses.demo', compact('stats', 'sampleLicenses'));
-})->name('licenses.demo');
 
 // Route de test des droits super admin
 Route::get('/test-super-admin', function () {

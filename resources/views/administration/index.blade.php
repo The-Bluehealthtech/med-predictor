@@ -98,12 +98,9 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                     </svg>
                                 </a>
-                                <a href="{{ route('admin.rbac.module-permissions') }}" class="inline-flex items-center px-3 py-1 border border-green-300 text-xs font-medium rounded-md text-green-700 bg-green-50 hover:bg-green-100 transition-colors duration-200">
-                                    Permissions par Module
-                                    <svg class="ml-1 w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </a>
+                                <span class="inline-flex items-center px-3 py-1 border border-gray-200 text-xs text-gray-600 bg-gray-50">
+                                    Permissions par module indisponibles
+                                </span>
                             </div>
                         </div>
                     </div>

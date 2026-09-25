@@ -296,3 +296,8 @@ Plusieurs routes partagent la même URL : le test HTTP observe la route effectiv
 | GET,HEAD | `/player-portal/fifa-light` | `App\Http\Controllers\PlayerPortalController@fifaUltimateDashboard` |
 | GET,HEAD | `/fifa-test` | `App\Http\Controllers\FIFATestController@test` |
 | GET,HEAD | `/fifa-test/{id}` | `App\Http\Controllers\FIFATestController@test` |
+
+## Correction vérifiée après l'instantané
+
+- `/administration` : 500 dans l'inventaire initial ; 200 en administrateur après suppression du lien vers une page de permissions non implémentée. Le JSON reste l'instantané initial.
+- `/association/dashboard` : 500 dans l'inventaire initial ; 200 en administrateur après désactivation de trois raccourcis vers des pages de détection de fraude inexistantes. L'API de détection n'est pas modifiée.

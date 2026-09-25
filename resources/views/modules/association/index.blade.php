@@ -229,15 +229,9 @@
                 <a href="{{ route('licenses.validation') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     ✅ Validation
                 </a>
-                <a href="{{ route('association.fraud-detection.index') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    🛡️ Fraud Detection
-                </a>
-                <a href="{{ route('association.fraud-detection.alerts') }}" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    🚨 Alertes
-                </a>
-                <a href="{{ route('association.fraud-detection.reports') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    📊 Rapports
-                </a>
+                <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-center" aria-disabled="true">🛡️ Détection de fraude indisponible</span>
+                <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-center" aria-disabled="true">🚨 Alertes indisponibles</span>
+                <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-center" aria-disabled="true">📊 Rapports indisponibles</span>
             </div>
         </div>
     </div>

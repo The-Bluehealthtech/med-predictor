@@ -5596,7 +5596,7 @@ Route::get('/test-pdf', function() {
     
     // Performances Trends routes
     Route::get('/performances/trends', function () {
-        return view('modules.performances.trends');
+        return redirect()->route('performances.analytics');
     })->name('performances.trends');
     
     // Alerts Performance routes

@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Gestion des Compétitions')
+@section('title', __('competition_management.title'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Gestion des Compétitions</h1>
-            <p class="text-gray-600 mt-2">Gérez toutes les compétitions du système</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('competition_management.title') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('competition_management.subtitle') }}</p>
         </div>
         <div class="flex space-x-4">
             <a href="{{ route('competitions.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                <i class="fas fa-plus mr-2"></i>Nouvelle Compétition
+                <i class="fas fa-plus mr-2"></i>{{ __('competition_management.new') }}
             </a>
             <a href="{{ route('modules.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i>Retour aux Modules
+                <i class="fas fa-arrow-left mr-2"></i>{{ __('competition_management.back_modules') }}
             </a>
         </div>
     </div>
@@ -39,7 +39,7 @@
                     <i class="fas fa-play text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Actives</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competition_management.active') }}</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $stats['active'] }}</p>
                 </div>
             </div>
@@ -51,7 +51,7 @@
                     <i class="fas fa-clock text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">À venir</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competition_management.upcoming') }}</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $stats['upcoming'] }}</p>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                     <i class="fas fa-check text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Terminées</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competition_management.completed') }}</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $stats['completed'] }}</p>
                 </div>
             </div>
@@ -73,7 +73,7 @@
     <!-- Liste des compétitions -->
     <div class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Liste des Compétitions</h2>
+            <h2 class="text-lg font-semibold text-gray-900">{{ __('competition_management.list') }}</h2>
         </div>
         
         @if($competitions->count() > 0)
@@ -81,12 +81,12 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competition_management.name') }}</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Association</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Saison</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competition_management.season') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competition_management.status') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competition_management.dates') }}</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -131,7 +131,7 @@
                                         $statusColor = $statusColors[$competition->status] ?? 'bg-gray-100 text-gray-800';
                                     @endphp
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $statusColor }}">
-                                        {{ ucfirst($competition->status ?? 'N/A') }}
+                                        {{ $competition->status ? __('competition_management.statuses.' . $competition->status) : 'N/A' }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -144,16 +144,16 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <a href="{{ route('competitions.show', $competition) }}" class="text-blue-600 hover:text-blue-900" title="Voir">
+                                        <a href="{{ route('competitions.show', $competition) }}" class="text-blue-600 hover:text-blue-900" title="{{ __('competition_management.view') }}">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('competitions.edit', $competition) }}" class="text-indigo-600 hover:text-indigo-900" title="Modifier">
+                                        <a href="{{ route('competitions.edit', $competition) }}" class="text-indigo-600 hover:text-indigo-900" title="{{ __('competition_management.edit') }}">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('competitions.destroy', $competition) }}" method="POST" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette compétition ?')">
+                                        <form action="{{ route('competitions.destroy', $competition) }}" method="POST" class="inline" onsubmit="return confirm(@js(__('competition_management.confirm_delete')))">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900" title="Supprimer">
+                                            <button type="submit" class="text-red-600 hover:text-red-900" title="{{ __('competition_management.delete') }}">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
@@ -176,10 +176,10 @@
                 <div class="text-gray-400 text-6xl mb-4">
                     <i class="fas fa-trophy"></i>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune compétition trouvée</h3>
-                <p class="text-gray-500 mb-6">Commencez par créer votre première compétition.</p>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('competition_management.empty') }}</h3>
+                <p class="text-gray-500 mb-6">{{ __('competition_management.empty_help') }}</p>
                 <a href="{{ route('competitions.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                    <i class="fas fa-plus mr-2"></i>Créer une Compétition
+                    <i class="fas fa-plus mr-2"></i>{{ __('competition_management.create') }}
                 </a>
             </div>
         @endif

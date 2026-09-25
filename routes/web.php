@@ -1,6 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+Route::post('/language', function (\Illuminate\Http\Request $request) {
+    $locale = $request->validate(['locale' => ['required', \Illuminate\Validation\Rule::in(['fr', 'en'])]])['locale'];
+    $request->session()->put('locale', $locale);
+
+    return redirect()->back();
+})->name('language.update');
+
 // Controllers will be used as needed
 
 // Force HTTP landing for /home to avoid HTTPS redirects locally

@@ -1,10 +1,8 @@
-<div class="flex items-center space-x-2">
-    <a href="{{ url('lang/fr') }}" 
-       class="px-2 py-1 rounded border text-sm font-semibold transition-colors duration-200 {{ app()->getLocale() == 'fr' ? 'bg-blue-700 text-white' : 'bg-white text-blue-700 hover:bg-blue-50' }}">
-        FR
-    </a>
-    <a href="{{ url('lang/en') }}" 
-       class="px-2 py-1 rounded border text-sm font-semibold transition-colors duration-200 {{ app()->getLocale() == 'en' ? 'bg-blue-700 text-white' : 'bg-white text-blue-700 hover:bg-blue-50' }}">
-        EN
-    </a>
-</div> 
+<form method="POST" action="{{ route('language.update') }}" aria-label="{{ __('dashboard_test.language') }}">
+    @csrf
+    <label for="fit-language" class="sr-only">{{ __('dashboard_test.language') }}</label>
+    <select id="fit-language" name="locale" onchange="this.form.submit()" class="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900">
+        <option value="fr" @selected(app()->getLocale() === 'fr')>Français</option>
+        <option value="en" @selected(app()->getLocale() === 'en')>English</option>
+    </select>
+</form>

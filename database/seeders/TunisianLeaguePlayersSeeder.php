@@ -428,7 +428,7 @@ class TunisianLeaguePlayersSeeder extends Seeder
             'association_id' => 1,
             'club_id' => 1,
             'team_id' => 1,
-            'fifa_connect_id' => 'PLAYER' . str_pad($joueur->id, 3, '0', STR_PAD_LEFT),
+            'fifa_connect_id' => null, // Synthetic identity is not an official FIFA ID.
             'phone' => '+216' . rand(20000000, 99999999),
             'preferences' => json_encode(['theme' => 'light', 'language' => 'fr']),
             'last_login_at' => now(),

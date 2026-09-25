@@ -351,6 +351,7 @@
             {{-- @include('layouts.navigation') --}}
             <!-- Connection Status & Notification Bell -->
             <div class="fixed top-4 right-8 z-50 flex items-center space-x-4">
+                <x-language-switcher />
                 <!-- Connection Status Button -->
                 @php
                     // Vérification globale de l'état de connexion

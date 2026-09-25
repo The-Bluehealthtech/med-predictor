@@ -19,6 +19,7 @@ class DeployFit extends Command
 
     protected $signature = 'fit:deploy
         {--days=30 : FIT metric lookback window in days}
+        {--demo-data : Populate repeatable demonstration fixtures}
         {--strict-snapshots : Fail if FIT snapshot generation reports an error}';
 
     protected $description = 'Apply FIT migrations and generate canonical snapshots safely';
@@ -59,6 +60,17 @@ class DeployFit extends Command
                 $this->error('FIT migrations failed.');
 
                 return self::FAILURE;
+            }
+
+            if ($this->option('demo-data')) {
+                $seedExitCode = $this->call('db:seed', [
+                    '--class' => \Database\Seeders\FitDemoFixturesSeeder::class,
+                    '--force' => true,
+                ]);
+                if ($seedExitCode !== self::SUCCESS) {
+                    $this->error('FIT demonstration fixtures failed.');
+                    return self::FAILURE;
+                }
             }
 
             $snapshotArguments = [

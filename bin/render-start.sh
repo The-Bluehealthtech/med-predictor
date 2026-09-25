@@ -10,6 +10,7 @@ echo "Preparing canonical FIT data..."
 
 php artisan fit:deploy \
   --days=30 \
+  --demo-data \
   --no-interaction
 
 PORT="${PORT:-10000}"

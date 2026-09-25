@@ -30,6 +30,8 @@ class SanctumApiGuardTest extends TestCase
             'team_id' => 999999,
         ]);
 
+        $this->getJson('/api/federations')->assertOk()->assertJsonPath('success', true);
+
         $this->getJson("/api/v1/athletes/{$athlete->id}/pcmas")
             ->assertOk()->assertJsonPath('data', []);
         $this->getJson("/api/v1/athletes/{$athlete->id}/pcmas/statistics")

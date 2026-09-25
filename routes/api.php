@@ -813,8 +813,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/players/{player}/transfers', [PassportController::class, 'playerTransfers']);
 
     // Fédérations
-    Route::get('/federations', [FederationController::class, 'index']);
-    Route::get('/federations/{federation}', [FederationController::class, 'show']);
+    Route::get('/federations', [FederationController::class, 'apiIndex']);
+    Route::get('/federations/{federation}', [FederationController::class, 'apiShow']);
 });
 
 // Webhook FIFA (pas d'authentification requise)

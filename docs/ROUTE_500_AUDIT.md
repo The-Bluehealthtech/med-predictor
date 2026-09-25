@@ -305,3 +305,4 @@ Plusieurs routes partagent la même URL : le test HTTP observe la route effectiv
 - `/fifa/connectivity` et `/fifa/statistics` : 200 en administrateur via le tableau de bord FIFA existant, avec son état de connectivité et les statistiques persistées ; l'appel HTTP externe est simulé pendant le test.
 - `/api/v1/athletes/{athlete}/pcmas` et `/statistics` : correction des actions vers les méthodes existantes ; tests des réponses authentifiées, des données vides et du refus d'un rôle non médical. Les mutations PCMA restent à traiter.
 - `/api/federations` et `/api/federations/{federation}` : routage vers les méthodes JSON existantes du contrôleur au lieu des vues HTML ; liste testée sous token administrateur.
+- `/fifa/players/search` : ajout d'une recherche authentifiée, limitée à 25 résultats et au club ou à l'association de l'utilisateur, avec identifiant FIFA Connect uniquement s'il est stocké. Testée sans résultat et avec un joueur créé dans la base de test.

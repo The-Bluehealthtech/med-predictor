@@ -4875,8 +4875,31 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
     })->name('data-sync.index');
     
     // FIFA Players Search routes
-    Route::get('/fifa/players/search', function () {
-        return view('modules.fifa.players.search');
+    Route::get('/fifa/players/search', function (Request $request) {
+        $user = $request->user();
+        abort_unless($user->hasAnyRole(['system_admin', 'association_admin', 'association_registrar', 'club_admin', 'club_manager']), 403);
+        $validated = $request->validate(['q' => 'nullable|string|max:100']);
+        $query = trim((string) ($validated['q'] ?? ''));
+        $players = collect();
+        if ($query !== '') {
+            $playersQuery = \App\Models\Player::with('club');
+            if (!$user->isSystemAdmin()) {
+                if ($user->club_id) {
+                    $playersQuery->where('club_id', $user->club_id);
+                } elseif ($user->association_id) {
+                    $playersQuery->where('association_id', $user->association_id);
+                } else {
+                    $playersQuery->whereRaw('1 = 0');
+                }
+            }
+            $players = $playersQuery->where(function ($search) use ($query) {
+                $search->where('fifa_connect_id', $query)
+                    ->orWhere('first_name', 'like', "%{$query}%")
+                    ->orWhere('last_name', 'like', "%{$query}%");
+            })->orderBy('last_name')->limit(25)->get();
+        }
+
+        return view('modules.fifa.players.search', compact('players', 'query'));
     })->name('fifa.players.search');
     
     // Apple Health Kit routes

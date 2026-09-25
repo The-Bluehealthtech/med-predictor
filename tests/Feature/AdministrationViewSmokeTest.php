@@ -31,6 +31,14 @@ class AdministrationViewSmokeTest extends TestCase
         $this->get('/competitions/create')->assertOk();
         $this->get('/fifa/connectivity')->assertOk();
         $this->get('/fifa/statistics')->assertOk();
+        $this->get('/fifa/players/search')->assertOk()->assertDontSee('Aucun joueur trouvé.');
+        $this->get('/fifa/players/search?q=introuvable')->assertOk()->assertSee('Aucun joueur trouvé.');
+        \App\Models\Player::factory()->create([
+            'first_name' => 'RechercheUnique',
+            'fifa_connect_id' => 'CANONICAL-TEST-123',
+        ]);
+        $this->get('/fifa/players/search?q=CANONICAL-TEST-123')
+            ->assertOk()->assertSee('RechercheUnique')->assertSee('CANONICAL-TEST-123');
         $this->get('/teams')->assertOk();
         $this->get('/club-management/dashboard')->assertOk();
         $this->get('/player-registration')->assertOk();

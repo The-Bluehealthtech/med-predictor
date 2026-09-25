@@ -7938,7 +7938,8 @@ Route::get('/admin-system-stats-test', function () {
     }
 })->name('admin-system-stats-test');
 
-// Helper functions for real data collection
+// Helper functions for real data collection. Guarded because tests and tooling may load routes/web.php more than once.
+if (!function_exists('getDatabaseSize')) {
 function getDatabaseSize() {
     try {
         $result = \DB::select("SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS 'size_mb' FROM information_schema.tables WHERE table_schema = ?", [config('database.connections.mysql.database')]);
@@ -8209,6 +8210,7 @@ function getLogStats() {
             'log_file_size' => 0
         ];
     }
+}
 }
 
 Route::get('/admin-system-settings', function () {

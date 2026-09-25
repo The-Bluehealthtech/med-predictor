@@ -9,6 +9,9 @@ Route::post('/language', function (\Illuminate\Http\Request $request) {
     return redirect()->back();
 })->name('language.update');
 
+Route::get('/match-sheet/{gameMatch}', [\App\Http\Controllers\MatchSheetController::class, 'show'])
+    ->middleware('auth')->name('match-sheet.show');
+
 // Controllers will be used as needed
 
 // Force HTTP landing for /home to avoid HTTPS redirects locally

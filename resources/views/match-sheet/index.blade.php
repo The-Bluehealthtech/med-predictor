@@ -131,7 +131,7 @@
                                     <div class="text-sm text-gray-900">{{ $match->competition->name ?? 'N/A' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $match->scheduled_at ? $match->scheduled_at->format('M d, Y H:i') : 'TBD' }}</div>
+                                    <div class="text-sm text-gray-900">{{ $match->match_date ? $match->match_date->format('M d, Y H:i') : 'TBD' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ $match->venue ?? 'TBD' }}</div>
@@ -142,7 +142,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('competition-management.matches.match-sheet', $match) }}" class="text-blue-600 hover:text-blue-900">View Sheet</a>
+                                    <a href="{{ route('match-sheet.show', $match) }}" class="text-blue-600 hover:text-blue-900">View Sheet</a>
                                 </td>
                             </tr>
                             @endforeach
@@ -181,7 +181,7 @@
                                     <div class="text-sm font-medium text-gray-900">
                                         {{ $matchSheet->match->homeTeam->club->name ?? 'TBD' }} vs {{ $matchSheet->match->awayTeam->club->name ?? 'TBD' }}
                                     </div>
-                                    <div class="text-sm text-gray-500">{{ $matchSheet->match->scheduled_at ? $matchSheet->match->scheduled_at->format('M d, Y') : 'TBD' }}</div>
+                                    <div class="text-sm text-gray-500">{{ $matchSheet->match->match_date ? $matchSheet->match->match_date->format('M d, Y') : 'TBD' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ $matchSheet->match->competition->name ?? 'N/A' }}</div>
@@ -206,9 +206,9 @@
                                     <div class="text-sm text-gray-500">{{ $matchSheet->created_at->format('H:i') }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('competition-management.matches.match-sheet', $matchSheet->match) }}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
+                                    <a href="{{ route('match-sheet.show', $matchSheet->match) }}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
                                     @if($matchSheet->status === 'draft')
-                                        <a href="{{ route('competition-management.matches.match-sheet.edit', $matchSheet->match) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                        <a href="{{ route('match-sheet.show', $matchSheet->match) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                     @endif
                                 </td>
                             </tr>
@@ -254,7 +254,7 @@
                                     <div class="text-sm text-gray-900">{{ $match->competition->name ?? 'N/A' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $match->scheduled_at ? $match->scheduled_at->format('M d, Y') : 'TBD' }}</div>
+                                    <div class="text-sm text-gray-900">{{ $match->match_date ? $match->match_date->format('M d, Y') : 'TBD' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">
@@ -266,7 +266,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('competition-management.matches.match-sheet', $match) }}" class="text-blue-600 hover:text-blue-900">View Sheet</a>
+                                    <a href="{{ route('match-sheet.show', $match) }}" class="text-blue-600 hover:text-blue-900">View Sheet</a>
                                 </td>
                             </tr>
                             @endforeach

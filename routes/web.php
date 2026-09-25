@@ -50,7 +50,7 @@ use App\Http\Controllers\AdminController;
 
 // Routes publiques pour clubs et associations
 Route::get('/clubs', function () {
-    return view('modules.clubs.index');
+    return redirect()->route('clubs-view');
 })->name('clubs.public.index');
 
 // Route de test simple pour clubs
@@ -59,7 +59,7 @@ Route::get('/clubs-test', function () {
 });
 
 Route::get('/associations', function () {
-    return view('modules.associations.index');
+    return redirect()->route('associations-view');
 })->name('associations.public.index');
 
 // Test route

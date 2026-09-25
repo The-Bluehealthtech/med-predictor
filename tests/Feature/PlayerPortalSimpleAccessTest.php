@@ -102,4 +102,13 @@ class PlayerPortalSimpleAccessTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_player_cannot_open_player_list_or_search(): void
+    {
+        $this->bypassRouteAuthentication();
+        $this->authenticatedUser(['role' => 'player', 'player_id' => 900101]);
+
+        $this->get(route('players.list'))->assertForbidden();
+        $this->get(route('admin.search.players'))->assertForbidden();
+    }
 }

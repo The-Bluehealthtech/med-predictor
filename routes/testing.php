@@ -89,3 +89,9 @@ Route::get(
     [\App\Http\Controllers\PlayerPortalSimpleController::class, 'show']
 )->middleware(['auth'])->name('test.portail.joueur.simple');
 
+
+// Player directory endpoints used by portal authorization tests.
+Route::get('/players/list', [\App\Http\Controllers\AdminController::class, 'playersList'])
+    ->middleware(['auth'])->name('players.list');
+Route::get('/admin/search-players', [\App\Http\Controllers\AdminController::class, 'searchPlayers'])
+    ->middleware(['auth'])->name('admin.search.players');

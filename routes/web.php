@@ -4002,11 +4002,45 @@ Route::get('/syntax-debugger', function () {
 })->name('syntax.debugger');
 
 Route::get('/dashboard-test', function () {
-    if (auth()->user()->isPlayer()) {
+    $user = auth()->user();
+
+    if ($user->isPlayer()) {
         return redirect()->route('test.portail.joueur.simple');
     }
 
-    return redirect()->route('dashboard');
+    if (!$user->isSystemAdmin() && !$user->isAssociationUser() && !$user->isClubUser()) {
+        return redirect()->route('dashboard');
+    }
+
+    $players = \App\Models\Player::query();
+    $clubs = \App\Models\Club::query();
+    $teams = \App\Models\Team::query();
+    $competitions = \App\Models\Competition::query();
+
+    if ($user->isClubUser()) {
+        abort_unless($user->club_id, 403);
+        $players->where('club_id', $user->club_id);
+        $clubs->whereKey($user->club_id);
+        $teams->where('club_id', $user->club_id);
+    } elseif ($user->isAssociationUser()) {
+        abort_unless($user->association_id, 403);
+        $players->where('association_id', $user->association_id);
+        $clubs->where('association_id', $user->association_id);
+        $teams->whereHas('club', fn ($club) => $club->where('association_id', $user->association_id));
+        $competitions->where('association_id', $user->association_id);
+    }
+
+    $stats = [
+        'Joueurs' => $players->count(),
+        'Clubs' => $clubs->count(),
+        'Équipes' => $teams->count(),
+    ];
+
+    if (!$user->isClubUser()) {
+        $stats['Compétitions'] = $competitions->count();
+    }
+
+    return view('dashboard-test', compact('stats'));
 })->middleware(['auth'])->name('dashboard.test');
 
 Route::get('/profile-selector', function () {

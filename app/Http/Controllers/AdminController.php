@@ -27,9 +27,10 @@ class AdminController extends Controller
      */
     public function playersList(Request $request)
     {
-        if (!Auth::check() || !in_array(Auth::user()->role, ['super_admin', 'system_admin', 'association_admin'])) {
-            return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
-        }
+        abort_unless(
+            Auth::check() && in_array(Auth::user()->role, ['super_admin', 'system_admin', 'association_admin']),
+            403
+        );
 
         $query = Player::with(['club', 'association']);
 
@@ -69,6 +70,11 @@ class AdminController extends Controller
      */
     public function searchPlayers(Request $request)
     {
+        abort_unless(
+            Auth::check() && in_array(Auth::user()->role, ['super_admin', 'system_admin', 'association_admin']),
+            403
+        );
+
         $query = $request->get('search');
         
         if (empty($query)) {

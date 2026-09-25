@@ -13,11 +13,13 @@
     <!-- Lien de retour à la liste -->
     <div class="bg-gray-800 border-b border-gray-700">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/players/list" 
-               class="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200">
-                <i class="fas fa-arrow-left"></i>
-                <span>Retour à la Liste</span>
-            </a>
+            @unless(auth()->user()->isPlayer())
+                <a href="{{ route('players.list') }}"
+                   class="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Retour à la Liste</span>
+                </a>
+            @endunless
             
             <!-- Connection Status Button -->
             @php

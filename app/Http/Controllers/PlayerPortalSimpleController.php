@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Association;
-use App\Models\Club;
-use App\Models\Confederation;
 use App\Models\Player;
 use App\Services\PlayerPortalDataService;
 use Illuminate\Http\Request;
@@ -109,34 +106,11 @@ class PlayerPortalSimpleController extends Controller
             }
         }
 
-        $associations = Association::with(['confederation'])
-            ->orderBy('name')
-            ->get();
-
-        $clubs = Club::with(['association'])
-            ->orderBy('name')
-            ->get();
-
-        /*
-         * Confederation ne possède actuellement pas le tenant scope.
-         * Son comportement de référentiel global reste inchangé.
-         */
-        $confederations = Confederation::orderBy('name')
-            ->get();
-
         $portalData = $this->portalDataService->forPlayer($player);
 
-        return view(
-            'test-portail-joueur-simple',
-            array_merge(
-                compact(
-                    'player',
-                    'associations',
-                    'clubs',
-                    'confederations'
-                ),
-                $portalData
-            )
-        );
+        return view('test-portail-joueur-simple', array_merge(
+            ['player' => $player],
+            $portalData
+        ));
     }
 }

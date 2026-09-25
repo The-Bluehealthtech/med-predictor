@@ -58,6 +58,7 @@ class PlayerPerformance extends Model
     ];
 
     protected $casts = [
+        'performance_date' => 'date',
         'distance_covered' => 'decimal:2',
         'sprint_distance' => 'decimal:2',
         'max_speed' => 'decimal:1',

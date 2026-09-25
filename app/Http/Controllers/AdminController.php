@@ -17,7 +17,7 @@ class AdminController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
         }
 
-        $players = Player::with(['club', 'association'])->orderBy('first_name')->get();
+        $players = Player::with(['club', 'association'])->orderBy('first_name')->paginate(20);
         
         return view('admin.dashboard', compact('players'));
     }

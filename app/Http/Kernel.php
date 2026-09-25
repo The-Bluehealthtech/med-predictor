@@ -67,6 +67,8 @@ class Kernel extends HttpKernel
         'permission.unified' => \App\Http\Middleware\UnifiedPermissionMiddleware::class,
         'auth.unified' => \App\Http\Middleware\UnifiedAuthMiddleware::class,
         'referee.access' => \App\Http\Middleware\RefereeAccessMiddleware::class,
+        'referee' => \App\Http\Middleware\IsReferee::class,
+        'v3.api' => \App\Http\Middleware\V3ApiMiddleware::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'rbac' => \App\Http\Middleware\RBACMiddleware::class,
         'tenant.enforce' => \App\Http\Middleware\TenantEnforcer::class,

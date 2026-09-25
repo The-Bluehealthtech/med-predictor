@@ -42,6 +42,7 @@ class OperationalScreensSmokeTest extends TestCase
 
         $performance = new \App\Models\PlayerPerformance();
         $performance->performance_date = '2026-09-25';
+        $this->assertInstanceOf(\Carbon\CarbonInterface::class, $performance->performance_date);
         $dtn = view('dtn.index-canonical', [
             'recentPerformances' => collect([$performance]),
             'stats' => array_fill_keys(['players', 'clubs', 'teams',

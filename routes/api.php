@@ -608,7 +608,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // League Championship Routes (temporarily public for testing)
-Route::prefix('league-championship')->group(function () {
+Route::prefix('league-championship')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/competitions/{competition}', [LeagueChampionshipController::class, 'show']);
     Route::get('/competitions/{competition}/schedule', [LeagueChampionshipController::class, 'getSchedule']);
     Route::post('/competitions/{competition}/generate-schedule', [LeagueChampionshipController::class, 'generateSchedule']);
@@ -632,77 +632,79 @@ Route::prefix('league-championship')->group(function () {
     });
 });
 
-// Simple test endpoints (temporary)
-Route::get('/competitions', function () {
-    try {
-        $competitions = Competition::all();
-        return response()->json(['success' => true, 'data' => $competitions]);
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
-    }
-});
+Route::middleware(['auth:sanctum'])->group(function () {
+    // Simple test endpoints (temporary)
+    Route::get('/competitions', function () {
+        try {
+            $competitions = Competition::all();
+            return response()->json(['success' => true, 'data' => $competitions]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    });
 
-Route::get('/competitions/{competition}', function (Competition $competition) {
-    $competition->load(['association', 'clubs']);
-    return response()->json(['success' => true, 'data' => $competition]);
-});
+    Route::get('/competitions/{competition}', function (Competition $competition) {
+        $competition->load(['association', 'clubs']);
+        return response()->json(['success' => true, 'data' => $competition]);
+    });
 
-Route::get('/matches/recent', function () {
-    $matches = \App\Models\GameMatch::with(['homeTeam', 'awayTeam'])
-        ->orderBy('kickoff_time', 'desc')
-        ->limit(10)
-        ->get();
-    return response()->json(['success' => true, 'data' => $matches]);
-});
-
-Route::get('/matches/{gameMatch}', function (\App\Models\GameMatch $gameMatch) {
-    $gameMatch->load(['homeTeam', 'awayTeam', 'competition']);
-    return response()->json(['success' => true, 'data' => $gameMatch]);
-});
-
-Route::get('/matches/{gameMatch}/events', function (\App\Models\GameMatch $gameMatch) {
-    $events = $gameMatch->events()->with('player')->get();
-    return response()->json(['success' => true, 'data' => $events]);
-});
-
-Route::post('/matches/{gameMatch}/events', function (Request $request, \App\Models\GameMatch $gameMatch) {
-    $event = $gameMatch->events()->create($request->all());
-    return response()->json(['success' => true, 'data' => $event]);
-});
-
-Route::delete('/matches/{gameMatch}/events/{event}', function (\App\Models\GameMatch $gameMatch, \App\Models\MatchEvent $event) {
-    $event->delete();
-    return response()->json(['success' => true]);
-});
-
-// Add rosters endpoint for MatchSheet component
-Route::get('/matches/{gameMatch}/rosters', function (\App\Models\GameMatch $gameMatch) {
-    $rosters = [];
-    foreach ([$gameMatch->home_team_id, $gameMatch->away_team_id] as $teamId) {
-        $players = \App\Models\MatchRoster::where('match_id', $gameMatch->id)
-            ->where('team_id', $teamId)
-            ->with('player')
-            ->orderBy('is_starter', 'desc')
-            ->orderBy('jersey_number')
+    Route::get('/matches/recent', function () {
+        $matches = \App\Models\GameMatch::with(['homeTeam', 'awayTeam'])
+            ->orderBy('kickoff_time', 'desc')
+            ->limit(10)
             ->get();
-        $rosters[] = [
-            'team_id' => $teamId,
-            'players' => $players
-        ];
-    }
-    return response()->json(['success' => true, 'data' => $rosters]);
-});
+        return response()->json(['success' => true, 'data' => $matches]);
+    });
 
-// Add match status update endpoint
-Route::put('/matches/{gameMatch}/status', function (Request $request, \App\Models\GameMatch $gameMatch) {
-    $validated = $request->validate([
-        'status' => 'required|in:scheduled,in_progress,completed,cancelled',
-        'home_score' => 'nullable|integer|min:0',
-        'away_score' => 'nullable|integer|min:0'
-    ]);
+    Route::get('/matches/{gameMatch}', function (\App\Models\GameMatch $gameMatch) {
+        $gameMatch->load(['homeTeam', 'awayTeam', 'competition']);
+        return response()->json(['success' => true, 'data' => $gameMatch]);
+    });
+
+    Route::get('/matches/{gameMatch}/events', function (\App\Models\GameMatch $gameMatch) {
+        $events = $gameMatch->events()->with('player')->get();
+        return response()->json(['success' => true, 'data' => $events]);
+    });
+
+    Route::post('/matches/{gameMatch}/events', function (Request $request, \App\Models\GameMatch $gameMatch) {
+        $event = $gameMatch->events()->create($request->all());
+        return response()->json(['success' => true, 'data' => $event]);
+    });
+
+    Route::delete('/matches/{gameMatch}/events/{event}', function (\App\Models\GameMatch $gameMatch, \App\Models\MatchEvent $event) {
+        $event->delete();
+        return response()->json(['success' => true]);
+    });
+
+    // Add rosters endpoint for MatchSheet component
+    Route::get('/matches/{gameMatch}/rosters', function (\App\Models\GameMatch $gameMatch) {
+        $rosters = [];
+        foreach ([$gameMatch->home_team_id, $gameMatch->away_team_id] as $teamId) {
+            $players = \App\Models\MatchRoster::where('match_id', $gameMatch->id)
+                ->where('team_id', $teamId)
+                ->with('player')
+                ->orderBy('is_starter', 'desc')
+                ->orderBy('jersey_number')
+                ->get();
+            $rosters[] = [
+                'team_id' => $teamId,
+                'players' => $players
+            ];
+        }
+        return response()->json(['success' => true, 'data' => $rosters]);
+    });
+
+    // Add match status update endpoint
+    Route::put('/matches/{gameMatch}/status', function (Request $request, \App\Models\GameMatch $gameMatch) {
+        $validated = $request->validate([
+            'status' => 'required|in:scheduled,in_progress,completed,cancelled',
+            'home_score' => 'nullable|integer|min:0',
+            'away_score' => 'nullable|integer|min:0'
+        ]);
     
-    $gameMatch->update($validated);
-    return response()->json(['success' => true, 'data' => $gameMatch]);
+        $gameMatch->update($validated);
+        return response()->json(['success' => true, 'data' => $gameMatch]);
+    });
 });
 
 // Referee Routes
@@ -1095,7 +1097,7 @@ Route::middleware('auth:sanctum')->prefix('modules/healthcare')->group(function 
 });
 
 // Secretary API Routes
-Route::prefix('secretary')->group(function () {
+Route::prefix('secretary')->middleware(['auth:sanctum'])->group(function () {
     // Créer un rendez-vous
     Route::post('/appointments', function (Request $request) {
         try {
@@ -1170,7 +1172,7 @@ Route::prefix('secretary')->group(function () {
 });
 
 // Routes pour le module dentaire
-Route::prefix('dental')->group(function () {
+Route::prefix('dental')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/annotations', [App\Http\Controllers\DentalController::class, 'index']);
     Route::get('/annotations/{dentalAnnotation}', [App\Http\Controllers\DentalController::class, 'show']);
     Route::post('/annotations', [App\Http\Controllers\DentalController::class, 'store']);
@@ -1224,10 +1226,7 @@ Route::prefix('google-assistant')->group(function () {
 });
 
 // Route pour récupérer les données de session PCMA
-Route::get('/google-assistant/session/{sessionId}', [GoogleAssistantController::class, 'getSessionData']);
-
-// Route pour récupérer les données de session PCMA
-Route::get('/google-assistant/session/{sessionId}', [GoogleAssistantController::class, 'getSessionData']);
+Route::get('/google-assistant/session/{sessionId}', [GoogleAssistantController::class, 'getSessionData'])->middleware(['auth:sanctum']);
 
 // Route pour la recherche de joueurs (renommée pour éviter les conflits)
 Route::get('/athletes/search', function (Request $request) {

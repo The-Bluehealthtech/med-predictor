@@ -234,241 +234,243 @@ Route::get('/test-clubs-view/show', function (Request $request) {
 })->name('test-clubs-view.show');
 
 // Route principale pour voir les clubs
-Route::get('/clubs-view', function (Request $request) {
-    try {
-        $associationId = $request->get('association_id');
-        $confederationId = $request->get('confederation_id');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/clubs-view', function (Request $request) {
+        try {
+            $associationId = $request->get('association_id');
+            $confederationId = $request->get('confederation_id');
         
-        // Initialiser les variables
-        $association = null;
-        $confederation = null;
-        $filtered = false;
-        
-        if ($associationId) {
-            // Filtrer par association
-            $association = \App\Models\Association::find($associationId);
-            $clubs = \App\Models\Club::where('association_id', $associationId)->with('association')->get();
-            $filtered = true;
-        } elseif ($confederationId) {
-            // Filtrer par confédération
-            $confederation = \App\Models\Confederation::find($confederationId);
-            $clubs = \App\Models\Club::whereHas('association', function($query) use ($confederationId) {
-                $query->where('confederation_id', $confederationId);
-            })->with('association')->get();
-            $filtered = true;
-        } else {
-            // Tous les clubs
-            $clubs = \App\Models\Club::with('association')->get();
+            // Initialiser les variables
+            $association = null;
+            $confederation = null;
             $filtered = false;
-        }
         
-        return view('modules.clubs.index', compact('clubs', 'filtered', 'association'));
-        
-    } catch (\Exception $e) {
-        \Log::error("Erreur dans /clubs-view: " . $e->getMessage());
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-})->name('clubs-view');
-
-// Route principale pour vue détaillée d'un club
-Route::get('/clubs-view/show', function (Request $request) {
-    $id = $request->get('id');
-    $club = \App\Models\Club::with(['association', 'players', 'teams'])->findOrFail($id);
-    return view('modules.clubs.show', compact('club'));
-})->name('clubs-view.show');
-
-// Route principale pour éditer un club
-Route::get('/clubs-view/edit/{id}', function ($id) {
-    $club = \App\Models\Club::with(['association'])->findOrFail($id);
-    $associations = \App\Models\Association::orderBy('name')->get();
-    return view('modules.clubs.edit', compact('club', 'associations'));
-})->name('clubs-view.edit');
-
-// Route pour mettre à jour un club
-Route::put('/clubs-view/update/{id}', function (Request $request, $id) {
-    try {
-        $club = \App\Models\Club::findOrFail($id);
-        
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'short_name' => 'nullable|string|max:50',
-            'address' => 'nullable|string',
-            'phone' => 'nullable|string|max:50',
-            'email' => 'nullable|email|max:255',
-            'website' => 'nullable|url|max:255',
-            'founded_year' => 'nullable|integer|min:1800|max:2030',
-            'status' => 'required|in:active,inactive,pending'
-        ]);
-        
-        $club->update($validatedData);
-        
-        // Gestion du logo si fourni
-        if ($request->hasFile('logo')) {
-            try {
-                $logo = $request->file('logo');
-                
-                // Validation du fichier
-                if (!$logo->isValid()) {
-                    throw new \Exception('Fichier invalide: ' . $logo->getErrorMessage());
-                }
-                
-                // Vérification du type MIME
-                $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
-                if (!in_array($logo->getMimeType(), $allowedMimes)) {
-                    throw new \Exception('Type de fichier non autorisé: ' . $logo->getMimeType());
-                }
-                
-                // Création du nom de fichier
-                $logoName = 'club_logos/club_' . $club->id . '_' . time() . '.' . $logo->getClientOriginalExtension();
-                
-                // Création du dossier club_logos s'il n'existe pas
-                $clubLogosPath = storage_path('app/public/club_logos');
-                if (!is_dir($clubLogosPath)) {
-                    mkdir($clubLogosPath, 0755, true);
-                }
-                
-                // Upload du fichier avec chemin complet
-                $logoName = 'club_' . $club->id . '_' . time() . '.' . $logo->getClientOriginalExtension();
-                $fullPath = $clubLogosPath . '/' . $logoName;
-                
-                // Copie du fichier uploadé
-                $uploaded = copy($logo->getRealPath(), $fullPath);
-                if (!$uploaded) {
-                    throw new \Exception('Échec de la copie du fichier vers: ' . $fullPath);
-                }
-                
-                // Mise à jour du chemin en base (sans le chemin complet)
-                $dbPath = 'club_logos/' . $logoName;
-                
-                // Mise à jour de la base de données
-                $club->update(['logo_path' => $dbPath]);
-                
-                \Log::info("Logo uploadé avec succès: {$dbPath} pour le club {$club->name}");
-                
-            } catch (\Exception $e) {
-                \Log::error("Erreur lors de l'upload du logo: " . $e->getMessage());
-                return back()->withInput()->with('error', 'Erreur lors de l\'upload du logo: ' . $e->getMessage());
+            if ($associationId) {
+                // Filtrer par association
+                $association = \App\Models\Association::find($associationId);
+                $clubs = \App\Models\Club::where('association_id', $associationId)->with('association')->get();
+                $filtered = true;
+            } elseif ($confederationId) {
+                // Filtrer par confédération
+                $confederation = \App\Models\Confederation::find($confederationId);
+                $clubs = \App\Models\Club::whereHas('association', function($query) use ($confederationId) {
+                    $query->where('confederation_id', $confederationId);
+                })->with('association')->get();
+                $filtered = true;
+            } else {
+                // Tous les clubs
+                $clubs = \App\Models\Club::with('association')->get();
+                $filtered = false;
             }
-        }
         
-        return redirect()->route('clubs-view.show', ['id' => $club->id])
-                        ->with('success', 'Club mis à jour avec succès !');
+            return view('modules.clubs.index', compact('clubs', 'filtered', 'association'));
+        
+        } catch (\Exception $e) {
+            \Log::error("Erreur dans /clubs-view: " . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    })->name('clubs-view');
+
+    // Route principale pour vue détaillée d'un club
+    Route::get('/clubs-view/show', function (Request $request) {
+        $id = $request->get('id');
+        $club = \App\Models\Club::with(['association', 'players', 'teams'])->findOrFail($id);
+        return view('modules.clubs.show', compact('club'));
+    })->name('clubs-view.show');
+
+    // Route principale pour éditer un club
+    Route::get('/clubs-view/edit/{id}', function ($id) {
+        $club = \App\Models\Club::with(['association'])->findOrFail($id);
+        $associations = \App\Models\Association::orderBy('name')->get();
+        return view('modules.clubs.edit', compact('club', 'associations'));
+    })->name('clubs-view.edit');
+
+    // Route pour mettre à jour un club
+    Route::put('/clubs-view/update/{id}', function (Request $request, $id) {
+        try {
+            $club = \App\Models\Club::findOrFail($id);
+        
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'short_name' => 'nullable|string|max:50',
+                'address' => 'nullable|string',
+                'phone' => 'nullable|string|max:50',
+                'email' => 'nullable|email|max:255',
+                'website' => 'nullable|url|max:255',
+                'founded_year' => 'nullable|integer|min:1800|max:2030',
+                'status' => 'required|in:active,inactive,pending'
+            ]);
+        
+            $club->update($validatedData);
+        
+            // Gestion du logo si fourni
+            if ($request->hasFile('logo')) {
+                try {
+                    $logo = $request->file('logo');
+                
+                    // Validation du fichier
+                    if (!$logo->isValid()) {
+                        throw new \Exception('Fichier invalide: ' . $logo->getErrorMessage());
+                    }
+                
+                    // Vérification du type MIME
+                    $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+                    if (!in_array($logo->getMimeType(), $allowedMimes)) {
+                        throw new \Exception('Type de fichier non autorisé: ' . $logo->getMimeType());
+                    }
+                
+                    // Création du nom de fichier
+                    $logoName = 'club_logos/club_' . $club->id . '_' . time() . '.' . $logo->getClientOriginalExtension();
+                
+                    // Création du dossier club_logos s'il n'existe pas
+                    $clubLogosPath = storage_path('app/public/club_logos');
+                    if (!is_dir($clubLogosPath)) {
+                        mkdir($clubLogosPath, 0755, true);
+                    }
+                
+                    // Upload du fichier avec chemin complet
+                    $logoName = 'club_' . $club->id . '_' . time() . '.' . $logo->getClientOriginalExtension();
+                    $fullPath = $clubLogosPath . '/' . $logoName;
+                
+                    // Copie du fichier uploadé
+                    $uploaded = copy($logo->getRealPath(), $fullPath);
+                    if (!$uploaded) {
+                        throw new \Exception('Échec de la copie du fichier vers: ' . $fullPath);
+                    }
+                
+                    // Mise à jour du chemin en base (sans le chemin complet)
+                    $dbPath = 'club_logos/' . $logoName;
+                
+                    // Mise à jour de la base de données
+                    $club->update(['logo_path' => $dbPath]);
+                
+                    \Log::info("Logo uploadé avec succès: {$dbPath} pour le club {$club->name}");
+                
+                } catch (\Exception $e) {
+                    \Log::error("Erreur lors de l'upload du logo: " . $e->getMessage());
+                    return back()->withInput()->with('error', 'Erreur lors de l\'upload du logo: ' . $e->getMessage());
+                }
+            }
+        
+            return redirect()->route('clubs-view.show', ['id' => $club->id])
+                            ->with('success', 'Club mis à jour avec succès !');
                         
-    } catch (\Exception $e) {
-        return back()->withInput()->with('error', 'Erreur lors de la mise à jour : ' . $e->getMessage());
-    }
-})->name('clubs-view.update');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Erreur lors de la mise à jour : ' . $e->getMessage());
+        }
+    })->name('clubs-view.update');
 
-// Route pour supprimer un club
-Route::delete('/clubs-view/delete/{id}', function ($id) {
-    try {
-        $club = \App\Models\Club::findOrFail($id);
+    // Route pour supprimer un club
+    Route::delete('/clubs-view/delete/{id}', function ($id) {
+        try {
+            $club = \App\Models\Club::findOrFail($id);
         
-        // Vérifier s'il y a des données associées
-        $playersCount = $club->players()->count();
-        $licensesCount = $club->playerLicenses()->count();
+            // Vérifier s'il y a des données associées
+            $playersCount = $club->players()->count();
+            $licensesCount = $club->playerLicenses()->count();
         
-        if ($playersCount > 0 || $licensesCount > 0) {
+            if ($playersCount > 0 || $licensesCount > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Impossible de supprimer ce club : {$playersCount} joueur(s) et {$licensesCount} licence(s) associé(s)"
+                ], 400);
+            }
+        
+            // Supprimer le club
+            $club->delete();
+        
+            return response()->json([
+                'success' => true,
+                'message' => 'Club supprimé avec succès'
+            ]);
+        
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Impossible de supprimer ce club : {$playersCount} joueur(s) et {$licensesCount} licence(s) associé(s)"
-            ], 400);
+                'message' => 'Erreur lors de la suppression : ' . $e->getMessage()
+            ], 500);
         }
-        
-        // Supprimer le club
-        $club->delete();
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Club supprimé avec succès'
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur lors de la suppression : ' . $e->getMessage()
-        ], 500);
-    }
-})->name('clubs-view.delete');
+    })->name('clubs-view.delete');
 
-// Route pour obtenir les options de fusion
-Route::get('/clubs-view/merge-options/{id}', function ($id) {
-    try {
-        $currentClub = \App\Models\Club::findOrFail($id);
+    // Route pour obtenir les options de fusion
+    Route::get('/clubs-view/merge-options/{id}', function ($id) {
+        try {
+            $currentClub = \App\Models\Club::findOrFail($id);
         
-        // Récupérer tous les autres clubs (sauf le courant)
-        $otherClubs = \App\Models\Club::where('id', '!=', $id)
-            ->withCount(['players', 'playerLicenses'])
-            ->get()
-            ->map(function ($club) {
-                return [
-                    'id' => $club->id,
-                    'name' => $club->name,
-                    'city' => $club->city,
-                    'country' => $club->country,
-                    'players_count' => $club->players_count,
-                    'licenses_count' => $club->player_licenses_count
-                ];
-            });
+            // Récupérer tous les autres clubs (sauf le courant)
+            $otherClubs = \App\Models\Club::where('id', '!=', $id)
+                ->withCount(['players', 'playerLicenses'])
+                ->get()
+                ->map(function ($club) {
+                    return [
+                        'id' => $club->id,
+                        'name' => $club->name,
+                        'city' => $club->city,
+                        'country' => $club->country,
+                        'players_count' => $club->players_count,
+                        'licenses_count' => $club->player_licenses_count
+                    ];
+                });
         
-        return response()->json([
-            'success' => true,
-            'clubs' => $otherClubs
-        ]);
+            return response()->json([
+                'success' => true,
+                'clubs' => $otherClubs
+            ]);
         
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur lors du chargement des options : ' . $e->getMessage()
-        ], 500);
-    }
-})->name('clubs-view.merge-options');
-
-// Route pour fusionner les clubs
-Route::post('/clubs-view/merge', function (Request $request) {
-    try {
-        $sourceClubId = $request->input('source_club_id');
-        $targetClubId = $request->input('target_club_id');
-        
-        if (!$sourceClubId || !$targetClubId) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'IDs des clubs requis'
-            ], 400);
+                'message' => 'Erreur lors du chargement des options : ' . $e->getMessage()
+            ], 500);
         }
+    })->name('clubs-view.merge-options');
+
+    // Route pour fusionner les clubs
+    Route::post('/clubs-view/merge', function (Request $request) {
+        try {
+            $sourceClubId = $request->input('source_club_id');
+            $targetClubId = $request->input('target_club_id');
         
-        $sourceClub = \App\Models\Club::findOrFail($sourceClubId);
-        $targetClub = \App\Models\Club::findOrFail($targetClubId);
+            if (!$sourceClubId || !$targetClubId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'IDs des clubs requis'
+                ], 400);
+            }
         
-        // Vérifier que les clubs sont différents
-        if ($sourceClubId === $targetClubId) {
+            $sourceClub = \App\Models\Club::findOrFail($sourceClubId);
+            $targetClub = \App\Models\Club::findOrFail($targetClubId);
+        
+            // Vérifier que les clubs sont différents
+            if ($sourceClubId === $targetClubId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Impossible de fusionner un club avec lui-même'
+                ], 400);
+            }
+        
+            // Transférer les joueurs du club source vers le club cible
+            $sourceClub->players()->update(['club_id' => $targetClubId]);
+        
+            // Transférer les licences du club source vers le club cible
+            $sourceClub->playerLicenses()->update(['club_id' => $targetClubId]);
+        
+            // Supprimer le club source
+            $sourceClub->delete();
+        
+            return response()->json([
+                'success' => true,
+                'message' => "Club '{$sourceClub->name}' fusionné avec '{$targetClub->name}'"
+            ]);
+        
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Impossible de fusionner un club avec lui-même'
-            ], 400);
+                'message' => 'Erreur lors de la fusion : ' . $e->getMessage()
+            ], 500);
         }
-        
-        // Transférer les joueurs du club source vers le club cible
-        $sourceClub->players()->update(['club_id' => $targetClubId]);
-        
-        // Transférer les licences du club source vers le club cible
-        $sourceClub->playerLicenses()->update(['club_id' => $targetClubId]);
-        
-        // Supprimer le club source
-        $sourceClub->delete();
-        
-        return response()->json([
-            'success' => true,
-            'message' => "Club '{$sourceClub->name}' fusionné avec '{$targetClub->name}'"
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur lors de la fusion : ' . $e->getMessage()
-        ], 500);
-    }
-})->name('clubs-view.merge');
+    })->name('clubs-view.merge');
+});
 
 // Test route pour vue des associations
 Route::get('/test-associations-view', function () {
@@ -476,154 +478,156 @@ Route::get('/test-associations-view', function () {
 })->name('test-associations-view');
 
 // Route principale pour vue des associations
-Route::get('/associations-view', function (Request $request) {
-    $confederationId = $request->get('confederation_id');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/associations-view', function (Request $request) {
+        $confederationId = $request->get('confederation_id');
     
-    if ($confederationId) {
-        // Filtrer par confédération
-        $associations = \App\Models\Association::where('confederation_id', $confederationId)
-            ->with(['confederation'])
-            ->orderBy('name')
-            ->get();
-        $confederation = \App\Models\Confederation::find($confederationId);
-    } else {
-        // Toutes les associations
-        $associations = \App\Models\Association::with(['confederation'])
-            ->orderBy('name')
-            ->get();
-        $confederation = null;
-    }
+        if ($confederationId) {
+            // Filtrer par confédération
+            $associations = \App\Models\Association::where('confederation_id', $confederationId)
+                ->with(['confederation'])
+                ->orderBy('name')
+                ->get();
+            $confederation = \App\Models\Confederation::find($confederationId);
+        } else {
+            // Toutes les associations
+            $associations = \App\Models\Association::with(['confederation'])
+                ->orderBy('name')
+                ->get();
+            $confederation = null;
+        }
     
-    return view('modules.associations.index', compact('associations', 'confederation'));
-})->name('associations-view');
+        return view('modules.associations.index', compact('associations', 'confederation'));
+    })->name('associations-view');
 
-// Route principale pour vue détaillée d'une association
-Route::get('/associations-view/show/{id}', function ($id) {
-    $association = \App\Models\Association::with(['confederation', 'clubs', 'players'])
-        ->findOrFail($id);
-    return view('modules.associations.show', compact('association'));
-})->name('associations-view.show');
+    // Route principale pour vue détaillée d'une association
+    Route::get('/associations-view/show/{id}', function ($id) {
+        $association = \App\Models\Association::with(['confederation', 'clubs', 'players'])
+            ->findOrFail($id);
+        return view('modules.associations.show', compact('association'));
+    })->name('associations-view.show');
 
-// Route principale pour éditer une association
-Route::get('/associations-view/edit/{id}', function ($id) {
-    $association = \App\Models\Association::with(['confederation'])->findOrFail($id);
-    $confederations = \App\Models\Confederation::orderBy('name')->get();
-    return view('modules.associations.edit', compact('association', 'confederations'));
-})->name('associations-view.edit');
+    // Route principale pour éditer une association
+    Route::get('/associations-view/edit/{id}', function ($id) {
+        $association = \App\Models\Association::with(['confederation'])->findOrFail($id);
+        $confederations = \App\Models\Confederation::orderBy('name')->get();
+        return view('modules.associations.edit', compact('association', 'confederations'));
+    })->name('associations-view.edit');
 
-// Route pour mettre à jour une association
-Route::put('/associations-view/update/{id}', function (Request $request, $id) {
-    try {
-        $association = \App\Models\Association::findOrFail($id);
+    // Route pour mettre à jour une association
+    Route::put('/associations-view/update/{id}', function (Request $request, $id) {
+        try {
+            $association = \App\Models\Association::findOrFail($id);
         
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'country' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:50',
-            'email' => 'nullable|email|max:255',
-            'website' => 'nullable|url|max:255',
-            'founded_year' => 'nullable|integer|min:1800|max:2030',
-            'status' => 'required|in:active,inactive,pending',
-            'confederation_id' => 'required|exists:confederations,id'
-        ]);
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'country' => 'nullable|string|max:255',
+                'phone' => 'nullable|string|max:50',
+                'email' => 'nullable|email|max:255',
+                'website' => 'nullable|url|max:255',
+                'founded_year' => 'nullable|integer|min:1800|max:2030',
+                'status' => 'required|in:active,inactive,pending',
+                'confederation_id' => 'required|exists:confederations,id'
+            ]);
         
-        $association->update($validatedData);
+            $association->update($validatedData);
         
-        // Gestion du logo de l'association si fourni
-        if ($request->hasFile('association_logo')) {
-            try {
-                $logo = $request->file('association_logo');
+            // Gestion du logo de l'association si fourni
+            if ($request->hasFile('association_logo')) {
+                try {
+                    $logo = $request->file('association_logo');
                 
-                // Validation du fichier
-                if (!$logo->isValid()) {
-                    throw new \Exception('Fichier invalide: ' . $logo->getErrorMessage());
+                    // Validation du fichier
+                    if (!$logo->isValid()) {
+                        throw new \Exception('Fichier invalide: ' . $logo->getErrorMessage());
+                    }
+                
+                    // Vérification du type MIME
+                    $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+                    if (!in_array($logo->getMimeType(), $allowedMimes)) {
+                        throw new \Exception('Type de fichier non autorisé: ' . $logo->getMimeType());
+                    }
+                
+                    // Création du dossier association_logos s'il n'existe pas
+                    $logoPath = storage_path('app/public/association_logos');
+                    if (!is_dir($logoPath)) {
+                        mkdir($logoPath, 0755, true);
+                    }
+                
+                    // Upload du fichier
+                    $logoName = 'association_' . $association->id . '_' . time() . '.' . $logo->getClientOriginalExtension();
+                    $fullPath = $logoPath . '/' . $logoName;
+                
+                    // Copie du fichier uploadé
+                    $uploaded = copy($logo->getRealPath(), $fullPath);
+                    if (!$uploaded) {
+                        throw new \Exception('Échec de la copie du fichier vers: ' . $fullPath);
+                    }
+                
+                    // Mise à jour du chemin en base
+                    $dbPath = 'association_logos/' . $logoName;
+                    $association->update(['association_logo_url' => $dbPath]);
+                
+                    \Log::info("Logo d'association uploadé avec succès: {$dbPath} pour l'association {$association->name}");
+                
+                } catch (\Exception $e) {
+                    \Log::error("Erreur lors de l'upload du logo d'association: " . $e->getMessage());
+                    return back()->withInput()->with('error', 'Erreur lors de l\'upload du logo: ' . $e->getMessage());
                 }
-                
-                // Vérification du type MIME
-                $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
-                if (!in_array($logo->getMimeType(), $allowedMimes)) {
-                    throw new \Exception('Type de fichier non autorisé: ' . $logo->getMimeType());
-                }
-                
-                // Création du dossier association_logos s'il n'existe pas
-                $logoPath = storage_path('app/public/association_logos');
-                if (!is_dir($logoPath)) {
-                    mkdir($logoPath, 0755, true);
-                }
-                
-                // Upload du fichier
-                $logoName = 'association_' . $association->id . '_' . time() . '.' . $logo->getClientOriginalExtension();
-                $fullPath = $logoPath . '/' . $logoName;
-                
-                // Copie du fichier uploadé
-                $uploaded = copy($logo->getRealPath(), $fullPath);
-                if (!$uploaded) {
-                    throw new \Exception('Échec de la copie du fichier vers: ' . $fullPath);
-                }
-                
-                // Mise à jour du chemin en base
-                $dbPath = 'association_logos/' . $logoName;
-                $association->update(['association_logo_url' => $dbPath]);
-                
-                \Log::info("Logo d'association uploadé avec succès: {$dbPath} pour l'association {$association->name}");
-                
-            } catch (\Exception $e) {
-                \Log::error("Erreur lors de l'upload du logo d'association: " . $e->getMessage());
-                return back()->withInput()->with('error', 'Erreur lors de l\'upload du logo: ' . $e->getMessage());
             }
-        }
         
-        // Gestion du drapeau du pays si fourni
-        if ($request->hasFile('nation_flag')) {
-            try {
-                $flag = $request->file('nation_flag');
+            // Gestion du drapeau du pays si fourni
+            if ($request->hasFile('nation_flag')) {
+                try {
+                    $flag = $request->file('nation_flag');
                 
-                // Validation du fichier
-                if (!$flag->isValid()) {
-                    throw new \Exception('Fichier invalide: ' . $flag->getErrorMessage());
+                    // Validation du fichier
+                    if (!$flag->isValid()) {
+                        throw new \Exception('Fichier invalide: ' . $flag->getErrorMessage());
+                    }
+                
+                    // Vérification du type MIME
+                    $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+                    if (!in_array($flag->getMimeType(), $allowedMimes)) {
+                        throw new \Exception('Type de fichier non autorisé: ' . $flag->getMimeType());
+                    }
+                
+                    // Création du dossier nation_flags s'il n'existe pas
+                    $flagPath = storage_path('app/public/nation_flags');
+                    if (!is_dir($flagPath)) {
+                        mkdir($flagPath, 0755, true);
+                    }
+                
+                    // Upload du fichier
+                    $flagName = 'nation_' . $association->id . '_' . time() . '.' . $flag->getClientOriginalExtension();
+                    $fullPath = $flagPath . '/' . $flagName;
+                
+                    // Copie du fichier uploadé
+                    $uploaded = copy($flag->getRealPath(), $fullPath);
+                    if (!$uploaded) {
+                        throw new \Exception('Échec de la copie du fichier vers: ' . $fullPath);
+                    }
+                
+                    // Mise à jour du chemin en base
+                    $dbPath = 'nation_flags/' . $flagName;
+                    $association->update(['nation_flag_url' => $dbPath]);
+                
+                    \Log::info("Drapeau national uploadé avec succès: {$dbPath} pour l'association {$association->name}");
+                
+                } catch (\Exception $e) {
+                    \Log::error("Erreur lors de l'upload du drapeau: " . $e->getMessage());
+                    return back()->withInput()->with('error', 'Erreur lors de l\'upload du drapeau: ' . $e->getMessage());
                 }
-                
-                // Vérification du type MIME
-                $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
-                if (!in_array($flag->getMimeType(), $allowedMimes)) {
-                    throw new \Exception('Type de fichier non autorisé: ' . $flag->getMimeType());
-                }
-                
-                // Création du dossier nation_flags s'il n'existe pas
-                $flagPath = storage_path('app/public/nation_flags');
-                if (!is_dir($flagPath)) {
-                    mkdir($flagPath, 0755, true);
-                }
-                
-                // Upload du fichier
-                $flagName = 'nation_' . $association->id . '_' . time() . '.' . $flag->getClientOriginalExtension();
-                $fullPath = $flagPath . '/' . $flagName;
-                
-                // Copie du fichier uploadé
-                $uploaded = copy($flag->getRealPath(), $fullPath);
-                if (!$uploaded) {
-                    throw new \Exception('Échec de la copie du fichier vers: ' . $fullPath);
-                }
-                
-                // Mise à jour du chemin en base
-                $dbPath = 'nation_flags/' . $flagName;
-                $association->update(['nation_flag_url' => $dbPath]);
-                
-                \Log::info("Drapeau national uploadé avec succès: {$dbPath} pour l'association {$association->name}");
-                
-            } catch (\Exception $e) {
-                \Log::error("Erreur lors de l'upload du drapeau: " . $e->getMessage());
-                return back()->withInput()->with('error', 'Erreur lors de l\'upload du drapeau: ' . $e->getMessage());
             }
-        }
         
-        return redirect()->route('associations-view.show', ['id' => $association->id])
-                        ->with('success', 'Association mise à jour avec succès !');
+            return redirect()->route('associations-view.show', ['id' => $association->id])
+                            ->with('success', 'Association mise à jour avec succès !');
                         
-    } catch (\Exception $e) {
-        return back()->withInput()->with('error', 'Erreur lors de la mise à jour : ' . $e->getMessage());
-    }
-})->name('associations-view.update');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Erreur lors de la mise à jour : ' . $e->getMessage());
+        }
+    })->name('associations-view.update');
+});
 
 // Test route pour vue détaillée d'une association
 Route::get('/test-associations-view/show', function () {
@@ -811,7 +815,7 @@ Route::get('/competitions-club-engagements', [App\Http\Controllers\CompetitionCo
 Route::get('/competitions-club-effectif', [App\Http\Controllers\CompetitionController::class, 'clubEffectif'])->name('competitions-club-effectif');
 
 // Routes FIFA Connect - Vérifications de conformité
-Route::prefix('fifa-connect')->name('fifa-connect.')->group(function () {
+Route::prefix('fifa-connect')->name('fifa-connect.')->middleware(['auth'])->group(function () {
     Route::get('/player/{playerId}/compliance', [App\Http\Controllers\FifaConnectController::class, 'checkPlayerCompliance'])->name('player.compliance');
     Route::get('/club/{clubId}/compliance', [App\Http\Controllers\FifaConnectController::class, 'checkClubCompliance'])->name('club.compliance');
     Route::get('/association/{associationId}/compliance', [App\Http\Controllers\FifaConnectController::class, 'checkAssociationCompliance'])->name('association.compliance');
@@ -1021,7 +1025,7 @@ Route::post('/api/pcma/auto-save', function (Request $request) {
 // Test portail simple
 
 // Routes pour la gestion des associations
-Route::prefix('associations')->name('associations.')->group(function () {
+Route::prefix('associations')->name('associations.')->middleware(['auth'])->group(function () {
     Route::get('/{association}/edit', [App\Http\Controllers\AssociationController::class, 'edit'])->name('edit');
     Route::put('/{association}', [App\Http\Controllers\AssociationController::class, 'update'])->name('update');
     Route::get('/{association}/logo/edit', [App\Http\Controllers\AssociationLogoController::class, 'editLogo'])->name('edit-logo');
@@ -2339,7 +2343,7 @@ Route::get('/dataset-analytics', function () {
 
 // Sélection des joueurs
 Route::get('/joueurs', [PlayerSelectionController::class, 'index'])->name('joueurs.selection');
-Route::get('/joueurs/{id}', [PlayerSelectionController::class, 'show'])->name('joueurs.show');
+Route::get('/joueurs/{id}', [PlayerSelectionController::class, 'show'])->middleware(['auth'])->name('joueurs.show');
 
 // Test public du portail (sans authentification)
 Route::get('/test-portal/{playerId}', fn () => abort(410))->name('test.portal');
@@ -2424,11 +2428,13 @@ Route::middleware(['auth'])->group(function () use ($redirectToPlayerPortal) {
 });
 
 // Routes pour la gestion des photos des joueurs
-Route::get('/joueur/{playerId}/photo/upload', [App\Http\Controllers\PlayerPhotoController::class, 'showUploadForm'])->name('joueur.photo.upload');
-Route::post('/joueur/{playerId}/photo/upload', [App\Http\Controllers\PlayerPhotoController::class, 'upload'])->name('joueur.photo.upload.post');
-Route::delete('/joueur/{playerId}/photo', [App\Http\Controllers\PlayerPhotoController::class, 'delete'])->name('joueur.photo.delete');
-Route::put('/joueur/{playerId}/photo/external', [App\Http\Controllers\PlayerPhotoController::class, 'updateExternalUrl'])->name('joueur.photo.external');
-Route::post('/joueur/{playerId}/photo/generate', [App\Http\Controllers\PlayerPhotoController::class, 'generateAvatar'])->name('joueur.photo.generate');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/joueur/{playerId}/photo/upload', [App\Http\Controllers\PlayerPhotoController::class, 'showUploadForm'])->name('joueur.photo.upload');
+    Route::post('/joueur/{playerId}/photo/upload', [App\Http\Controllers\PlayerPhotoController::class, 'upload'])->name('joueur.photo.upload.post');
+    Route::delete('/joueur/{playerId}/photo', [App\Http\Controllers\PlayerPhotoController::class, 'delete'])->name('joueur.photo.delete');
+    Route::put('/joueur/{playerId}/photo/external', [App\Http\Controllers\PlayerPhotoController::class, 'updateExternalUrl'])->name('joueur.photo.external');
+    Route::post('/joueur/{playerId}/photo/generate', [App\Http\Controllers\PlayerPhotoController::class, 'generateAvatar'])->name('joueur.photo.generate');
+});
 
 
 
@@ -5414,37 +5420,9 @@ Route::post('/api/v1/licenses/fraud-detection/analyze/{licenseId}', [App\Http\Co
 Route::post('/api/v1/licenses/fraud-detection/check-all', [App\Http\Controllers\LicenseController::class, 'checkAllLicenses'])
     ->name('licenses.fraud-detection.check-all');
 
-// Clinical Data Support System Routes
-Route::get('/clinical/support', [App\Http\Controllers\ClinicalDataSupportController::class, 'index'])
-    ->name('clinical.support.dashboard');
-
-Route::post('/api/v1/clinical/analyze-pcma/{pCMAId}', [App\Http\Controllers\ClinicalDataSupportController::class, 'analyzePCMA'])
-    ->name('clinical.analyze.pcma');
-
-Route::post('/api/v1/clinical/analyze-visit/{visitId}', [App\Http\Controllers\ClinicalDataSupportController::class, 'analyzeVisit'])
-    ->name('clinical.analyze.visit');
-
-Route::post('/api/v1/clinical/batch-analyze-pcma', [App\Http\Controllers\ClinicalDataSupportController::class, 'batchAnalyzePCMA'])
-    ->name('clinical.batch.analyze.pcma');
-
-Route::post('/api/v1/clinical/batch-analyze-visits', [App\Http\Controllers\ClinicalDataSupportController::class, 'batchAnalyzeVisits'])
-    ->name('clinical.batch.analyze.visits');
-
-Route::post('/api/v1/clinical/test-gemini', [App\Http\Controllers\ClinicalDataSupportController::class, 'testGeminiConnection'])
-    ->name('clinical.test.gemini');
-
-Route::get('/api/v1/clinical/stats', [App\Http\Controllers\ClinicalDataSupportController::class, 'getClinicalStats'])
-    ->name('clinical.stats');
-
-Route::get('/api/v1/clinical/recommendations', [App\Http\Controllers\ClinicalDataSupportController::class, 'getClinicalRecommendations'])
-    ->name('clinical.recommendations');
-
-Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupportController::class, 'generateClinicalReport'])
-    ->name('clinical.report');
-
 // Routes pour le diagramme dentaire
-Route::get('/dental-chart', [App\Http\Controllers\DentalChartController::class, 'index'])->name('dental-chart.index');
-Route::get('/dental-chart/{patient}', [App\Http\Controllers\DentalChartController::class, 'show'])->name('dental-chart.show');
+Route::get('/dental-chart', [App\Http\Controllers\DentalChartController::class, 'index'])->middleware(['auth'])->name('dental-chart.index');
+Route::get('/dental-chart/{patient}', [App\Http\Controllers\DentalChartController::class, 'show'])->middleware(['auth'])->name('dental-chart.show');
 
 // Route pour le diagramme dentaire (supprimée - doublon)
 
@@ -5824,7 +5802,7 @@ Route::middleware(['auth'])->prefix('license-photos')->name('license.')->group(f
 });
 
 // API pour récupérer les joueurs d'un club
-Route::get('/api/clubs/{club}/players', [App\Http\Controllers\LicensePhotoController::class, 'getClubPlayers']);
+Route::get('/api/clubs/{club}/players', [App\Http\Controllers\LicensePhotoController::class, 'getClubPlayers'])->middleware(['auth']);
 
 // Route de test pour le système de licences (sans authentification)
 
@@ -6503,28 +6481,30 @@ Route::get('/admin/transfer-management/free-transfer', function () {
 Route::get('/modules/finance', [App\Http\Controllers\FinanceController::class, 'index'])->middleware(['auth'])->name('modules.finance.dashboard');
 
 // Finance Integrations Page
-Route::get('/modules/finance/integrations', [App\Http\Controllers\FinanceController::class, 'integrations'])->name('modules.finance.integrations');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/modules/finance/integrations', [App\Http\Controllers\FinanceController::class, 'integrations'])->name('modules.finance.integrations');
 
-// Finance API Routes
-Route::post('/modules/finance/sync', [App\Http\Controllers\FinanceController::class, 'syncWithExternal'])->name('modules.finance.sync');
-Route::post('/modules/finance/test-connection', [App\Http\Controllers\FinanceController::class, 'testConnection'])->name('modules.finance.test-connection');
+    // Finance API Routes
+    Route::post('/modules/finance/sync', [App\Http\Controllers\FinanceController::class, 'syncWithExternal'])->name('modules.finance.sync');
+    Route::post('/modules/finance/test-connection', [App\Http\Controllers\FinanceController::class, 'testConnection'])->name('modules.finance.test-connection');
 
-// Additional Finance Routes
-Route::get('/modules/finance/reports', function () {
-    return view('modules.finance.reports');
-})->name('modules.finance.reports');
+    // Additional Finance Routes
+    Route::get('/modules/finance/reports', function () {
+        return view('modules.finance.reports');
+    })->name('modules.finance.reports');
 
-Route::get('/modules/finance/budgets', function () {
-    return view('modules.finance.budgets');
-})->name('modules.finance.budgets');
+    Route::get('/modules/finance/budgets', function () {
+        return view('modules.finance.budgets');
+    })->name('modules.finance.budgets');
 
-Route::get('/modules/finance/transaction/edit/{id}', function ($id) {
-    return view('modules.finance.transaction-edit', compact('id'));
-})->name('modules.finance.transaction.edit');
+    Route::get('/modules/finance/transaction/edit/{id}', function ($id) {
+        return view('modules.finance.transaction-edit', compact('id'));
+    })->name('modules.finance.transaction.edit');
 
-Route::get('/modules/finance/bank-integrations', function () {
-    return view('modules.finance.bank-integrations');
-})->name('modules.finance.bank-integrations');
+    Route::get('/modules/finance/bank-integrations', function () {
+        return view('modules.finance.bank-integrations');
+    })->name('modules.finance.bank-integrations');
+});
 
 // Route de test pour toutes les cartes des modules
 Route::get('/test-modules-cards', function () {

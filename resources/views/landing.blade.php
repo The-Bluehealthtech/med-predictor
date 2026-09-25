@@ -10,16 +10,10 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
     
-    <!-- Compiled Tailwind CSS, generated specifically for this page from resources/css/app.css
-         via `npx tailwindcss -i resources/css/app.css -c tailwind.config.js -o public/css/landing-compiled.css --minify`.
-         This replaces the unreliable Tailwind CDN script (loaded late/inconsistently, causing the
-         hero section and stat cards to render unstyled). NOTE: the existing @vite()/public/build
-         asset bundle was NOT used here because it is a stale build (dated ~13 months ago) that
-         predates many utility classes this page uses (it was missing basics like w-8/h-8, which
-         made the header logo render at full 1024px size) — using it would have broken more than
-         the CDN script did. If you add Tailwind classes to this file later, regenerate this CSS
-         with the command above. -->
-    <link rel="stylesheet" href="{{ asset('css/landing-compiled.css') }}">
+    <!-- Compiled Tailwind CSS (production build — replaces the unreliable CDN script,
+         which loads late or not at all depending on network conditions and was
+         causing the hero section and stat cards to render unstyled) -->
+    @vite(['resources/css/app.css'])
 
     <!-- Custom Styles -->
     <style>

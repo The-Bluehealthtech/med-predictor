@@ -301,3 +301,4 @@ Plusieurs routes partagent la même URL : le test HTTP observe la route effectiv
 
 - `/administration` : 500 dans l'inventaire initial ; 200 en administrateur après suppression du lien vers une page de permissions non implémentée. Le JSON reste l'instantané initial.
 - `/association/dashboard` : 500 dans l'inventaire initial ; 200 en administrateur après désactivation de trois raccourcis vers des pages de détection de fraude inexistantes. L'API de détection n'est pas modifiée.
+- `/competitions/create`, `/player-registration`, `/teams`, `/healthcare`, `/club-management/dashboard` : 200 en administrateur dans le test de rendu après correction des noms de routes, de la section Blade dupliquée et de l'alimentation des vues par des données persistées. Le GET invité de `/healthcare` redirige vers la connexion. Ces vérifications ne couvrent pas les formulaires soumis ni les accès avec des enregistrements réels.

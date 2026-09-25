@@ -26,5 +26,14 @@ class AdministrationViewSmokeTest extends TestCase
         $this->get('/association/dashboard')
             ->assertOk()
             ->assertSee('Détection de fraude indisponible');
+
+        $this->get('/competitions/create')->assertOk();
+        $this->get('/teams')->assertOk();
+        $this->get('/club-management/dashboard')->assertOk();
+        $this->get('/player-registration')->assertOk();
+        $this->get('/healthcare')->assertOk();
+
+        auth()->logout();
+        $this->get('/healthcare')->assertRedirect();
     }
 }

@@ -62,7 +62,7 @@
                                                 {{ $record->player ? $record->player->full_name : __('healthcare.anonymous_patient') }}
                                             </div>
                                             <div class="text-sm text-gray-500">
-                                                {{ $record->user->name }}
+                                                {{ $record->user?->name ?? __('healthcare.na') }}
                                             </div>
                                         </div>
                                     </div>

@@ -21,7 +21,37 @@ class ClubManagementController extends Controller
 
     public function dashboard()
     {
-        return view('club-management.dashboard');
+        $user = Auth::user();
+        $clubs = Club::query();
+        if (!$user->isSystemAdmin()) {
+            if ($user->club_id) {
+                $clubs->whereKey($user->club_id);
+            } elseif ($user->association_id) {
+                $clubs->where('association_id', $user->association_id);
+            } else {
+                $clubs->whereRaw('1 = 0');
+            }
+        }
+        $clubIds = $clubs->pluck('id');
+        $players = Player::whereIn('club_id', $clubIds);
+        $teams = Team::whereIn('club_id', $clubIds);
+        $licenses = \App\Models\License::whereIn('club_id', $clubIds);
+        $dashboardData = [
+            'is_association_admin' => (bool) $user->association_id && !$user->club_id,
+            'association' => $user->association_id ? \App\Models\Association::find($user->association_id) : null,
+            'club' => $user->club_id ? Club::with('association')->find($user->club_id) : null,
+            'stats' => [
+                'total_clubs' => $clubIds->count(),
+                'total_players' => $players->count(),
+                'total_teams' => $teams->count(),
+                'total_licenses' => (clone $licenses)->count(),
+                'active_licenses' => (clone $licenses)->where('status', 'active')->count(),
+                'pending_licenses' => (clone $licenses)->where('status', 'pending')->count(),
+                'expiring_licenses' => (clone $licenses)->where('status', 'active')->whereDate('expiry_date', '>=', today())->whereDate('expiry_date', '<=', today()->addDays(30))->count(),
+            ],
+        ];
+
+        return view('club-management.dashboard', compact('dashboardData'));
     }
 
     public function players(Request $request)

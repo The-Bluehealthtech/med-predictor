@@ -4687,7 +4687,22 @@ Route::middleware(['auth'])->group(function () {
     
     // Teams routes
     Route::get('/teams', function () {
-        return view('modules.teams.index');
+        $user = auth()->user();
+        $clubQuery = \App\Models\Club::with('association');
+        if (!$user->isSystemAdmin()) {
+            if ($user->club_id) {
+                $clubQuery->whereKey($user->club_id);
+            } elseif ($user->association_id) {
+                $clubQuery->where('association_id', $user->association_id);
+            } else {
+                $clubQuery->whereRaw('1 = 0');
+            }
+        }
+        $clubs = $clubQuery->orderBy('name')->get();
+        $teams = \App\Models\Team::with(['club.association'])
+            ->whereIn('club_id', $clubs->modelKeys())->orderBy('name')->get();
+
+        return view('modules.teams.index', compact('teams', 'clubs'));
     })->name('teams.index');
     
     // Club Player Assignments routes
@@ -4888,7 +4903,23 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
     
     // Healthcare routes
     Route::get('/healthcare', function () {
-        return view('modules.healthcare.index');
+        $user = auth()->user();
+        abort_unless($user->hasAnyRole(['system_admin', 'super_admin', 'association_medical', 'club_medical', 'doctor', 'medical_staff']), 403);
+
+        $query = \App\Models\HealthRecord::with(['player', 'user', 'predictions']);
+        if (!$user->isSystemAdmin()) {
+            if ($user->club_id) {
+                $query->whereHas('player', fn ($player) => $player->where('club_id', $user->club_id));
+            } elseif ($user->association_id) {
+                $query->whereHas('player', fn ($player) => $player->where('association_id', $user->association_id));
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+
+        $healthRecords = $query->orderByDesc('record_date')->get();
+
+        return view('modules.healthcare.index', compact('healthRecords'));
     })->name('healthcare.index');
     
     Route::get('/healthcare/predictions', function () {

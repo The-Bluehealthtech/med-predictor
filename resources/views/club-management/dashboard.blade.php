@@ -364,7 +364,7 @@
                         <div class="space-y-3">
                             @if($dashboardData['is_association_admin'] ?? false)
                             <!-- Association Admin Actions -->
-                            <a href="{{ route('club-management.licenses.index') }}" class="flex items-center p-3 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors duration-200 group">
+                            <a href="{{ route('modules.licenses.index') }}" class="flex items-center p-3 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors duration-200 group">
                                 <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -393,7 +393,7 @@
                                 </svg>
                                 <span class="font-medium">Import Players</span>
                             </a>
-                            <a href="{{ route('club-management.licenses.index') }}" class="flex items-center p-3 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors duration-200 group">
+                            <a href="{{ route('modules.licenses.index') }}" class="flex items-center p-3 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors duration-200 group">
                                 <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -408,11 +408,11 @@
                                 </svg>
                                 <span class="font-medium">FIFA Connect Status</span>
                             </a>
-                            <a href="{{ route('fifa.players.search') }}" class="flex items-center p-3 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200 group">
+                            <a href="{{ route('fifa.dashboard') }}" class="flex items-center p-3 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200 group">
                                 <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
-                                <span class="text-sm font-medium">Search FIFA Data</span>
+                                <span class="text-sm font-medium">FIFA Connect Dashboard</span>
                             </a>
                             @endif
                         </div>
@@ -508,7 +508,7 @@
                             <p class="text-yellow-100">You have {{ $dashboardData['stats']['pending_licenses'] }} license(s) waiting for approval</p>
                         </div>
                     </div>
-                    <a href="{{ route('club-management.licenses.index') }}" class="bg-white text-yellow-600 px-6 py-3 rounded-lg font-semibold hover:bg-yellow-50 transition-colors duration-200 flex items-center">
+                    <a href="{{ route('modules.licenses.index') }}" class="bg-white text-yellow-600 px-6 py-3 rounded-lg font-semibold hover:bg-yellow-50 transition-colors duration-200 flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>

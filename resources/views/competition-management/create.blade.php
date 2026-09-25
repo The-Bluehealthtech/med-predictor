@@ -9,7 +9,7 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <form action="{{ route('competition-management.competitions.store') }}" method="POST" class="space-y-6">
+                    <form action="{{ route('competitions.store') }}" method="POST" class="space-y-6">
                         @csrf
                         
                         <!-- Informations de base -->
@@ -157,7 +157,7 @@
 
                         <!-- Boutons d'action -->
                         <div class="flex items-center justify-end mt-6 space-x-4">
-                            <a href="{{ route('competition-management.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                            <a href="{{ route('competitions.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                                 {{ __('Annuler') }}
                             </a>
                             <x-primary-button>

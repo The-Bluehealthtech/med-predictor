@@ -15,7 +15,10 @@
     </header>
     <main class="max-w-7xl mx-auto px-6 py-10">
         <h2 class="text-3xl font-bold mb-2">Vue d’ensemble</h2>
-        <p class="text-gray-600 mb-8">Enregistrements accessibles à votre compte, comptés dans la base FIT.</p>
+        <p class="text-gray-600 mb-5">Enregistrements accessibles à votre compte, comptés dans la base FIT.</p>
+        <div class="bg-amber-50 border border-amber-300 text-amber-950 rounded-xl p-4 mb-8" role="note">
+            Ces chiffres décrivent les enregistrements présents en base. Certains peuvent provenir de jeux de démonstration ; leur identité et leur conformité FIFA Connect ne sont pas validées par ce tableau de bord.
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach ($stats as $label => $count)
                 <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">

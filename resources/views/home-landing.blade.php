@@ -10,12 +10,15 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
     
-    <!-- Tailwind CSS (CDN script — restored 2026-09-25 after two attempts to replace it broke
-         the site: the shared @vite/public/build bundle is a stale (~13 month old) build missing
-         classes this page uses (e.g. w-8/h-8 -> oversized header logo), and a page-specific
-         tailwindcss CLI build caused an unrelated 500 server error in production that couldn't be
-         diagnosed without access to Render's build logs. Reverted to the known-working CDN script;
-         revisit with Render build-log access before trying again. -->
+    <!-- Tailwind CSS (CDN script - restored 2026-09-25 after two attempts to replace it broke
+         the site: the shared Vite public-build bundle is a stale (over a year old) build missing
+         classes this page uses (e.g. w-8/h-8 caused an oversized header logo), and a page-specific
+         tailwindcss CLI build caused an unrelated 500 server error in production. Reverted to the
+         known-working CDN script. IMPORTANT: never write the literal directive name for the Vite
+         asset helper inside an HTML comment in a .blade.php file - Blade scans the whole file for
+         directive tokens regardless of HTML comments, so it gets compiled as a real zero-argument
+         call and throws ArgumentCountError at runtime. This exact mistake caused a production
+         outage on 2026-09-25; keep this note as a warning, written safely without the token. -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Custom Styles -->

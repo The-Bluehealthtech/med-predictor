@@ -53,29 +53,27 @@
                         <p class="mt-1 text-sm text-gray-500">Statut de la connexion avec le système FIFA Transfer Matching System</p>
                     </div>
                     <div class="flex items-center space-x-4">
-                        @if($fifaTmsStatus['status'] === 'connected')
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                                Connecté
-                            </span>
-                        @elseif($fifaTmsStatus['status'] === 'disconnected')
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                                <span class="w-2 h-2 bg-red-400 rounded-full mr-2"></span>
-                                Déconnecté
-                            </span>
-                        @else
+                        @if($fifaTmsStatus['status'] === 'unconfigured')
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                                 <span class="w-2 h-2 bg-yellow-400 rounded-full mr-2"></span>
-                                Erreur
+                                Non configuré
+                            </span>
+                        @elseif($fifaTmsStatus['status'] === 'configured')
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                <span class="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                                Configuration présente
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                Statut indisponible
                             </span>
                         @endif
-                        
-                        <form action="{{ route('admin.transfer-management.sync-fifa-tms') }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                                🔄 Synchroniser
-                            </button>
-                        </form>
+
+                        <button type="button" disabled
+                            class="bg-gray-300 text-gray-600 px-4 py-2 rounded-lg cursor-not-allowed"
+                            title="La synchronisation FIFA TMS sera activée après configuration et validation des clés API.">
+                            🔄 Synchronisation TMS reportée
+                        </button>
                     </div>
                 </div>
                 
@@ -251,147 +249,15 @@
 
 <script>
 function handleTransferTypeClick(type, name) {
-    console.log('Transfer type clicked:', type, name);
-    
-    // Get transfer statistics for this type
-    const stats = getTransferStats(type);
-    
-    // Show notification
-    showNotification(`Ouverture de la gestion des ${name}`, 'info');
-    
-    // Show detailed modal with data
-    setTimeout(() => {
-        showTransferTypeModal(type, name, stats);
-    }, 300);
-}
-
-function getTransferStats(type) {
-    // Simulate different stats for each transfer type
-    const statsData = {
-        'domestic': {
-            total: 45,
-            pending: 8,
-            approved: 32,
-            rejected: 5,
-            description: 'Transferts entre clubs du même pays'
-        },
-        'international': {
-            total: 67,
-            pending: 12,
-            approved: 48,
-            rejected: 7,
-            description: 'Transferts entre clubs de pays différents'
-        },
-        'loan': {
-            total: 23,
-            pending: 3,
-            approved: 18,
-            rejected: 2,
-            description: 'Prêts temporaires de joueurs'
-        },
-        'free_transfer': {
-            total: 21,
-            pending: 0,
-            approved: 21,
-            rejected: 0,
-            description: 'Transferts sans frais de transfert'
-        }
+    const routes = {
+        domestic: '/admin/transfer-management/domestic',
+        international: '/admin/transfer-management/international',
+        loan: '/admin/transfer-management/loan',
+        free_transfer: '/admin/transfer-management/free-transfer'
     };
-    
-    return statsData[type] || { total: 0, pending: 0, approved: 0, rejected: 0, description: 'Type inconnu' };
-}
 
-function showTransferTypeModal(type, name, stats) {
-    // Create modal overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
-    overlay.onclick = () => closeModal(overlay);
-    
-    // Create modal content
-    const modal = document.createElement('div');
-    modal.className = 'bg-white rounded-lg shadow-xl max-w-md w-full max-h-96 overflow-y-auto';
-    modal.onclick = (e) => e.stopPropagation();
-    
-    modal.innerHTML = `
-        <div class="p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-900">${name}</h3>
-                <button onclick="closeModal(this.closest('.fixed'))" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="mb-4">
-                <p class="text-sm text-gray-600">${stats.description}</p>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div class="bg-blue-50 p-3 rounded-lg">
-                    <div class="text-2xl font-bold text-blue-600">${stats.total}</div>
-                    <div class="text-sm text-blue-800">Total</div>
-                </div>
-                <div class="bg-yellow-50 p-3 rounded-lg">
-                    <div class="text-2xl font-bold text-yellow-600">${stats.pending}</div>
-                    <div class="text-sm text-yellow-800">En attente</div>
-                </div>
-                <div class="bg-green-50 p-3 rounded-lg">
-                    <div class="text-2xl font-bold text-green-600">${stats.approved}</div>
-                    <div class="text-sm text-green-800">Approuvés</div>
-                </div>
-                <div class="bg-red-50 p-3 rounded-lg">
-                    <div class="text-2xl font-bold text-red-600">${stats.rejected}</div>
-                    <div class="text-sm text-red-800">Rejetés</div>
-                </div>
-            </div>
-            
-            <div class="flex space-x-3">
-                <button onclick="closeModal(this.closest('.fixed'))" class="flex-1 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
-                    Fermer
-                </button>
-                <button onclick="manageTransfers('${type}')" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                    Gérer
-                </button>
-            </div>
-        </div>
-    `;
-    
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-    
-    // Animate in
-    setTimeout(() => {
-        modal.style.transform = 'scale(1)';
-        modal.style.opacity = '1';
-    }, 10);
-}
-
-function closeModal(overlay) {
-    overlay.style.opacity = '0';
-    setTimeout(() => {
-        document.body.removeChild(overlay);
-    }, 300);
-}
-
-function manageTransfers(type) {
-    showNotification(`Redirection vers la gestion des transferts ${type}`, 'success');
-    closeModal(document.querySelector('.fixed'));
-    
-    // Redirect to the appropriate transfer management page
-    setTimeout(() => {
-        const routes = {
-            'domestic': '/admin/transfer-management/domestic',
-            'international': '/admin/transfer-management/international', 
-            'loan': '/admin/transfer-management/loan',
-            'free_transfer': '/admin/transfer-management/free-transfer'
-        };
-        
-        const route = routes[type] || '/admin/transfer-management';
-        
-        // Redirect to the actual page
-        window.location.href = route;
-    }, 500);
+    window.location.href = routes[type]
+        || '{{ route("admin.transfer-management.transfers") }}';
 }
 
 function showNotification(message, type = 'info') {

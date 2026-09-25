@@ -168,9 +168,21 @@ class Player extends Model
         return $this->belongsTo(Association::class);
     }
 
-    public function fifaConnectId(): BelongsTo
+    public function fifaConnectRecord(): HasOne
     {
-        return $this->belongsTo(FifaConnectId::class);
+        return $this->hasOne(
+            FifaConnectId::class,
+            'fifa_id',
+            'fifa_connect_id'
+        );
+    }
+
+    public function fifaCanonicalPerson(): HasOne
+    {
+        return $this->hasOne(
+            \App\Models\FifaConnect\Person::class,
+            'player_id'
+        );
     }
 
     public function user(): HasOne
@@ -691,16 +703,13 @@ class Player extends Model
     }
 
     /**
-     * Génère un FIFA Connect ID unique
+     * FIFA IDs are issued by FIFA Connect and must never be fabricated locally.
      */
     public static function generateFifaConnectId(): string
     {
-        $prefix = 'FIFA';
-        $year = date('Y');
-        $country = 'TUN'; // Tunisie par défaut
-        $sequence = str_pad(static::count() + 1, 3, '0', STR_PAD_LEFT);
-        
-        return "{$prefix}{$year}{$country}{$sequence}";
+        throw new \LogicException(
+            'FIFA Connect IDs must come from the authoritative FIFA source.'
+        );
     }
 
     /**

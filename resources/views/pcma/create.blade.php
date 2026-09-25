@@ -676,7 +676,7 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">ID FIFA Connect ou Numéro de Licence</label>
-                                <input type="text" id="confirmation-id" placeholder="Ex: TUN_001 ou LIC_2024_123" 
+                                <input type="text" id="confirmation-id" placeholder="FIFA ID officiel (7 caractères) ou référence locale de licence"
                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
@@ -2434,7 +2434,7 @@ window.generatePDF = async function() {
         
         formData.append('_token', csrfToken);
         
-        const response = await fetch('/api/pcma/pdf', {
+        const response = await fetch('{{ route("pcma.pdf.post") }}', {
             method: 'POST',
             body: formData
         });
@@ -3276,15 +3276,15 @@ function saveSignedPCMA(signedData) {
         console.log('📄 PDF FormData ready with', formData.entries().length, 'entries');
     
     // Log the actual URL being called
-            console.log('🔄 Fetch URL:', '/api/pcma/store');
+            console.log('🔄 Fetch URL:', '{{ route("pcma.store") }}');
     console.log('🔄 Request method: POST');
     console.log('🔄 Has signature_data:', formData.has('signature_data'));
     console.log('🔄 Has is_signed:', formData.has('is_signed'));
     
     // Send to server and return a Promise
-            console.log('🔄 About to send fetch request to:', '/api/pcma/store');
+            console.log('🔄 About to send fetch request to:', '{{ route("pcma.store") }}');
     console.log('🔄 CSRF token found:', !!document.querySelector('meta[name="csrf-token"]'));
-            return fetch('/api/pcma/store', {
+            return fetch('{{ route("pcma.store") }}', {
         method: 'POST',
         body: formData
     })
@@ -5241,7 +5241,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const testPlayer = {
                 id: 88,
                 name: 'Ali Jebali',
-                fifa_connect_id: 'TUN_001',
+                fifa_connect_id: null,
                 position: 'Milieu offensif',
                 age: 24,
                 nationality: 'Tunisie'

@@ -50,16 +50,16 @@
                     </div>
                     
                     <div>
-                        <label for="fifa_connect_id_prefix" class="block text-sm font-medium text-gray-700 mb-2">
-                            FIFA Connect ID Prefix
+                        <label for="account_reference_prefix" class="block text-sm font-medium text-gray-700 mb-2">
+                            Préfixe de référence de compte
                         </label>
-                        <input type="text" name="fifa_connect_id_prefix" id="fifa_connect_id_prefix" value="{{ old('fifa_connect_id_prefix', $role->fifa_connect_id_prefix) }}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('fifa_connect_id_prefix') border-red-500 @enderror"
+                        <input type="text" name="account_reference_prefix" id="account_reference_prefix" value="{{ old('account_reference_prefix', $role->account_reference_prefix) }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('account_reference_prefix') border-red-500 @enderror"
                                placeholder="e.g., FIFA_CUSTOM_ROLE">
-                        @error('fifa_connect_id_prefix')
+                        @error('account_reference_prefix')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
-                        <p class="text-gray-500 text-sm mt-1">Prefix for FIFA Connect IDs assigned to users with this role</p>
+                        <p class="text-gray-500 text-sm mt-1">Prefix for Référence de comptes assigned to users with this role</p>
                     </div>
                 </div>
                 

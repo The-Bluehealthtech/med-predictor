@@ -101,11 +101,9 @@ class CompetitionManagementController extends Controller
 
         DB::beginTransaction();
         try {
-            // Create FIFA Connect ID if sync is enabled
+            // FIFA IDs are authoritative external identifiers.
+            // Enabling synchronization only marks intent; it must not fabricate an ID.
             $fifaConnectId = null;
-            if ($request->has('fifa_sync_enabled')) {
-                $fifaConnectId = $this->fifaConnectService->generateCompetitionId();
-            }
 
             // Create competition
             $competition = Competition::create([
@@ -125,7 +123,7 @@ class CompetitionManagementController extends Controller
                 'entry_fee' => $validated['entry_fee'],
                 'prize_pool' => $validated['prize_pool'],
                 'association_id' => in_array($user->role, ['system_admin', 'admin']) ? null : $user->association_id,
-                'fifa_connect_id' => $fifaConnectId?->id,
+                'fifa_connect_id' => null,
                 'require_federation_license' => $request->has('require_federation_license'),
             ]);
 
@@ -154,7 +152,7 @@ class CompetitionManagementController extends Controller
         }
 
         // Récupérer la compétition avec ses relations
-        $competition = Competition::with(['fifaConnectId', 'season', 'association'])
+        $competition = Competition::with(['fifaConnectRecord', 'season', 'association'])
             ->find($id);
 
         if (!$competition) {
@@ -192,7 +190,7 @@ class CompetitionManagementController extends Controller
                 ->get();
         }
 
-        $competition->load(['association', 'fifaConnectId', 'clubs']);
+        $competition->load(['association', 'fifaConnectRecord', 'clubs']);
         
         return view('competition-management.edit', compact('competition', 'clubs'));
     }
@@ -227,11 +225,8 @@ class CompetitionManagementController extends Controller
 
         DB::beginTransaction();
         try {
-            // Handle FIFA sync checkbox
+            // Synchronization intent never creates a FIFA identifier locally.
             $fifaConnectId = null;
-            if ($request->has('fifa_sync_enabled') && !$competition->fifaConnectId) {
-                $fifaConnectId = $this->fifaConnectService->generateCompetitionId();
-            }
 
             $competition->update([
                 'name' => $validated['name'],
@@ -250,7 +245,7 @@ class CompetitionManagementController extends Controller
                 'entry_fee' => $validated['entry_fee'],
                 'prize_pool' => $validated['prize_pool'],
                 'require_federation_license' => $request->has('require_federation_license'),
-                'fifa_connect_id' => $fifaConnectId?->id ?? $competition->fifa_connect_id,
+                'fifa_connect_id' => $competition->fifa_connect_id,
             ]);
 
             // Update clubs if provided
@@ -259,7 +254,7 @@ class CompetitionManagementController extends Controller
             }
 
             // Sync with FIFA Connect if needed
-            if ($competition->fifaConnectId) {
+            if ($competition->fifaConnectRecord) {
                 $this->fifaConnectService->syncCompetition($competition);
             }
 
@@ -330,7 +325,7 @@ class CompetitionManagementController extends Controller
 
         if ($user->role === 'association') {
             $competitions = Competition::where('association_id', $user->association_id)
-                ->with(['association', 'fifaConnectId', 'clubs'])
+                ->with(['association', 'fifaConnectRecord', 'clubs'])
                 ->get();
         }
 
@@ -352,7 +347,7 @@ class CompetitionManagementController extends Controller
 
             foreach ($competitions as $competition) {
                 fputcsv($file, [
-                    $competition->fifaConnectId?->fifa_id ?? 'N/A',
+                    $competition->fifaConnectRecord?->fifa_id ?? 'N/A',
                     $competition->name,
                     $competition->type,
                     $competition->season,

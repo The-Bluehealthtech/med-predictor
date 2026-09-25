@@ -51,8 +51,8 @@
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">FIFA Connect ID Prefix</label>
-                        <p class="text-sm text-gray-900">{{ $role->fifa_connect_id_prefix ?: 'Not set' }}</p>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Préfixe de référence de compte</label>
+                        <p class="text-sm text-gray-900">{{ $role->account_reference_prefix ?: 'Not set' }}</p>
                     </div>
                     
                     <div>

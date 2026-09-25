@@ -91,7 +91,7 @@ class CreateSampleStakeholders extends Command
                     'role' => $role,
                     'club_id' => in_array($role, ['club_admin', 'club_manager', 'club_medical']) ? $club->id : null,
                     'association_id' => in_array($role, ['association_admin', 'association_registrar', 'association_medical', 'referee', 'assistant_referee', 'fourth_official']) ? $association->id : null,
-                    'fifa_connect_id' => 'SAMPLE_' . strtoupper(Str::random(8)),
+                    'fifa_connect_id' => null,
                     'status' => 'active',
                     'profile_picture_url' => $this->generateProfilePictureUrl($name),
                     'profile_picture_alt' => $name . ' Profile Picture',
@@ -106,7 +106,7 @@ class CreateSampleStakeholders extends Command
                 $nationality = $sampleNationalities[$i % count($sampleNationalities)];
 
                 Player::create([
-                    'fifa_connect_id' => $user->fifa_connect_id,
+                    'fifa_connect_id' => null,
                     'name' => $name,
                     'first_name' => explode(' ', $name)[0],
                     'last_name' => explode(' ', $name)[1] ?? '',

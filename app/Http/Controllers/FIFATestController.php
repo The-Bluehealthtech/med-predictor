@@ -3,20 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Models\Player;
+use App\Services\FifaConnectService;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class FIFATestController extends Controller
 {
-    public function show($player_id = null)
+    public function __construct(
+        private readonly FifaConnectService $fifaConnectService
+    ) {
+    }
+
+    public function show(Request $request): View
     {
-        // Utiliser EXACTEMENT la même méthode que la page de test qui fonctionne
-        $player = Player::with(['club', 'association'])->find($player_id);
-        
-        if (!$player) {
-            $player = Player::with(['club', 'association'])->first();
+        $players = Player::query()
+            ->with(['club', 'association'])
+            ->orderBy('first_name')
+            ->orderBy('last_name')
+            ->limit(100)
+            ->get();
+
+        $selectedPlayer = null;
+
+        if ($request->filled('player_id')) {
+            $playerId = filter_var(
+                $request->input('player_id'),
+                FILTER_VALIDATE_INT,
+                ['options' => ['min_range' => 1]]
+            );
+
+            abort_unless($playerId !== false, 404);
+
+            $selectedPlayer = Player::query()
+                ->with(['club', 'association'])
+                ->findOrFail((int) $playerId);
         }
-        
-        // Passer directement le modèle Player à la vue (comme la page de test)
-        return view('fifa-portal-integrated', compact('player'));
+
+        return view('fifa.portal', [
+            'players' => $players,
+            'selectedPlayer' => $selectedPlayer,
+            'connectivity' => $this->fifaConnectService->checkConnectivity(),
+        ]);
     }
 }

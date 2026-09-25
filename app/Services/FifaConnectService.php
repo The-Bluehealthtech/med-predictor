@@ -28,8 +28,7 @@ class FifaConnectService
      */
     private function isMockMode(): bool
     {
-        return config('services.fifa_connect.mock_mode', false) || 
-               config('app.env') === 'local' && !$this->apiKey;
+        return (bool) config('services.fifa_connect.mock_mode', false);
     }
 
     /**
@@ -78,14 +77,24 @@ class FifaConnectService
      */
     public function checkConnectivity(): array
     {
-        // Check if mock mode is enabled
         if ($this->isMockMode()) {
             return [
-                'connected' => true,
+                'connected' => false,
                 'status' => 'mock',
-                'response_time' => 0.1,
                 'timestamp' => now()->toISOString(),
-                'mock_mode' => true
+                'mock_mode' => true,
+                'simulated' => true,
+                'message' => 'FIFA Connect mock mode is explicitly enabled; no live connection was tested.',
+            ];
+        }
+
+        if (!$this->apiKey) {
+            return [
+                'connected' => false,
+                'status' => 'unconfigured',
+                'timestamp' => now()->toISOString(),
+                'mock_mode' => false,
+                'message' => 'FIFA Connect API key is not configured.',
             ];
         }
 
@@ -102,60 +111,32 @@ class FifaConnectService
                     'connected' => true,
                     'status' => 'online',
                     'response_time' => $response->handlerStats()['total_time'] ?? null,
-                    'timestamp' => now()->toISOString()
-                ];
-            }
-
-            // If we get a 503 or other server error, fall back to mock mode in development
-            if (in_array($response->status(), [503, 502, 504]) && config('app.env') === 'local') {
-                Log::warning('FIFA Connect service unavailable, using mock mode', [
-                    'status' => $response->status(),
-                    'base_url' => $this->baseUrl
-                ]);
-                
-                return [
-                    'connected' => true,
-                    'status' => 'mock',
-                    'response_time' => 0.1,
                     'timestamp' => now()->toISOString(),
-                    'mock_mode' => true,
-                    'fallback_reason' => 'Service unavailable (HTTP ' . $response->status() . ')'
+                    'mock_mode' => false,
+                    'message' => 'FIFA Connect API responded successfully.',
                 ];
             }
 
             return [
                 'connected' => false,
                 'status' => 'error',
-                'error' => 'FIFA Connect service returned status: ' . $response->status(),
-                'timestamp' => now()->toISOString()
+                'http_status' => $response->status(),
+                'timestamp' => now()->toISOString(),
+                'mock_mode' => false,
+                'message' => 'FIFA Connect API returned HTTP ' . $response->status() . '.',
             ];
         } catch (Exception $e) {
             Log::error('FIFA Connect connectivity check failed', [
                 'error' => $e->getMessage(),
-                'base_url' => $this->baseUrl
+                'base_url' => $this->baseUrl,
             ]);
-
-            // In development, fall back to mock mode for connection errors
-            if (config('app.env') === 'local') {
-                Log::warning('FIFA Connect connection failed, using mock mode', [
-                    'error' => $e->getMessage()
-                ]);
-                
-                return [
-                    'connected' => true,
-                    'status' => 'mock',
-                    'response_time' => 0.1,
-                    'timestamp' => now()->toISOString(),
-                    'mock_mode' => true,
-                    'fallback_reason' => 'Connection failed: ' . $e->getMessage()
-                ];
-            }
 
             return [
                 'connected' => false,
                 'status' => 'offline',
-                'error' => 'Unable to connect to FIFA Connect service: ' . $e->getMessage(),
-                'timestamp' => now()->toISOString()
+                'timestamp' => now()->toISOString(),
+                'mock_mode' => false,
+                'message' => 'Unable to reach FIFA Connect API.',
             ];
         }
     }
@@ -356,7 +337,9 @@ class FifaConnectService
      */
     public function generatePlayerId(): string
     {
-        return 'FIFA_' . uniqid() . '_' . time();
+        throw new \LogicException(
+            'Player FIFA IDs must come from the authoritative FIFA source.'
+        );
     }
 
     /**
@@ -364,7 +347,9 @@ class FifaConnectService
      */
     public function generateCompetitionId(): string
     {
-        return 'COMP_' . uniqid() . '_' . time();
+        throw new \LogicException(
+            'Competition FIFA IDs must come from the authoritative FIFA source.'
+        );
     }
 
     /**
@@ -372,7 +357,9 @@ class FifaConnectService
      */
     public function generateHealthRecordId(): string
     {
-        return 'HEALTH_' . uniqid() . '_' . time();
+        throw new \LogicException(
+            'Health records do not receive fabricated FIFA identifiers.'
+        );
     }
 
     /**
@@ -380,9 +367,9 @@ class FifaConnectService
      */
     public function generateFifaConnectId(string $type, string $prefix = ''): string
     {
-        $type = strtoupper($type);
-        $prefix = $prefix ? $prefix . '_' : '';
-        return $prefix . $type . '_' . uniqid() . '_' . time();
+        throw new \LogicException(
+            'FIFA Connect IDs must come from the authoritative FIFA source.'
+        );
     }
 
     /**

@@ -110,20 +110,6 @@ class Competition extends Model
     const FORMAT_MIXED = 'mixed';
 
     /**
-     * Boot method pour générer l'UUID FIFA Connect
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($competition) {
-            if (empty($competition->fifa_connect_id)) {
-                $competition->fifa_connect_id = 'COMP_' . Str::random(8) . '_' . time();
-            }
-        });
-    }
-
-    /**
      * Relation avec l'association
      */
     public function association(): BelongsTo
@@ -150,9 +136,12 @@ class Competition extends Model
     /**
      * Relation avec FIFA Connect ID
      */
-    public function fifaConnectId(): HasOne
+    public function fifaConnectRecord(): HasOne
     {
-        return $this->hasOne(FifaConnectId::class, 'entity_id')->where('entity_type', 'competition');
+        return $this->hasOne(
+            FifaConnectId::class,
+            'entity_id'
+        )->where('entity_type', 'competition');
     }
 
     /**

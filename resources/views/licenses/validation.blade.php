@@ -236,15 +236,15 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ $license->license_type_label }}</div>
-                                        <div class="text-sm text-gray-500">{{ $license->position }}</div>
+                                        <div class="text-sm text-gray-900">{{ $license->license_type_text }}</div>
+                                        <div class="text-sm text-gray-500">{{ $license->player?->position ?? 'N/A' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-900">{{ $license->club->name ?? 'N/A' }}</div>
                                         <div class="text-sm text-gray-500">{{ $license->club->city ?? '' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $license->requested_at ? $license->requested_at->format('d/m/Y H:i') : 'N/A' }}
+                                        {{ $license->created_at?->format('d/m/Y H:i') ?? 'N/A' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($license->fraud_risk === 'high')

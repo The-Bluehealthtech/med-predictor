@@ -179,7 +179,7 @@ class PopulateEPLTeamsWithPlayers extends Command
                 'contract_end_date' => now()->addYears(rand(1, 5)),
                 'wage_eur' => rand(50000, 200000),
                 'value_eur' => rand(1000000, 50000000),
-                'fifa_connect_id' => $club->fifa_connect_id . '_P' . str_pad($i + 1, 3, '0', STR_PAD_LEFT),
+                'fifa_connect_id' => null,
             ]);
 
             $players->push($player);

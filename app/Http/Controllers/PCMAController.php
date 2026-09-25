@@ -6,6 +6,7 @@ use App\Models\PCMA;
 use App\Models\Player;
 use App\Models\Athlete;
 use App\Models\User;
+use App\Rules\FifaIdentifier;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -97,7 +98,14 @@ class PCMAController extends Controller
                 'status' => 'required|in:pending,completed,failed',
                 'notes' => 'nullable|string',
                 // FIFA Compliance Fields
-                'fifa_id' => 'nullable|string|max:255',
+                'fifa_connect_id' => [
+                    'nullable',
+                    new FifaIdentifier(),
+                ],
+                'fifa_id' => [
+                    'nullable',
+                    new FifaIdentifier(),
+                ],
                 'competition_name' => 'nullable|string|max:255',
                 'competition_date' => 'nullable|date',
                 'team_name' => 'nullable|string|max:255',
@@ -173,8 +181,12 @@ class PCMAController extends Controller
             throw $e;
         }
         
+        $validated = $this->normalizeFifaIdentifierInput(
+            $validated
+        );
+
         // Note: assessor_id is set from the form, not from auth()->id()
-        
+
         // Handle FIFA compliant checkbox
         $validated['fifa_compliant'] = $request->has('fifa_compliant');
         
@@ -274,7 +286,14 @@ class PCMAController extends Controller
             'status' => 'required|in:pending,completed,failed',
             'notes' => 'nullable|string',
             // FIFA Compliance Fields
-            'fifa_id' => 'nullable|string|max:255',
+            'fifa_connect_id' => [
+                'nullable',
+                new FifaIdentifier(),
+            ],
+            'fifa_id' => [
+                'nullable',
+                new FifaIdentifier(),
+            ],
             'competition_name' => 'nullable|string|max:255',
             'competition_date' => 'nullable|date',
             'team_name' => 'nullable|string|max:255',
@@ -326,6 +345,10 @@ class PCMAController extends Controller
             'ct_scan_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
             'ultrasound_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
         ]);
+
+        $validated = $this->normalizeFifaIdentifierInput(
+            $validated
+        );
 
         // Handle FIFA compliant checkbox
         $validated['fifa_compliant'] = $request->has('fifa_compliant');
@@ -417,7 +440,7 @@ class PCMAController extends Controller
             'skin_examination' => $pcma->skin_examination ?? 'Non évalué',
             'cardiac_rhythm' => $pcma->cardiac_rhythm ?? 'Non évalué',
             'heart_murmur' => $pcma->heart_murmur ?? 'Non évalué',
-            'fifa_connect_id' => $pcma->fifa_connect_id ?? 'Non spécifié',
+            'fifa_connect_id' => $pcma->fifa_id ?? 'Non spécifié',
             'status' => $pcma->status ?? 'pending'
         ];
         
@@ -428,6 +451,28 @@ class PCMAController extends Controller
         
         $athleteName = $pcma->athlete->name ?? 'unknown';
         return $pdf->download("PCMA-{$pcma->id}-{$athleteName}.pdf");
+    }
+
+    private function normalizeFifaIdentifierInput(
+        array $validated
+    ): array {
+        $legacy = $validated['fifa_connect_id'] ?? null;
+        $official = $validated['fifa_id'] ?? null;
+
+        if ($legacy && $official && $legacy !== $official) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'fifa_connect_id' =>
+                    'The legacy FIFA Connect field must match fifa_id.',
+            ]);
+        }
+
+        if ($legacy && !$official) {
+            $validated['fifa_id'] = $legacy;
+        }
+
+        unset($validated['fifa_connect_id']);
+
+        return $validated;
     }
 
     // AI Analysis Methods
@@ -828,14 +873,11 @@ class PCMAController extends Controller
 
         } catch (\Exception $e) {
             Log::error('CT Analysis Error: ' . $e->getMessage());
-            
-            // Return mock data for now
-            $mockData = $this->getMockAnalysis($analysisType ?? 'ct_image');
-            
+
             return response()->json([
-                'success' => true,
-                'analysis' => $mockData
-            ]);
+                'success' => false,
+                'message' => 'Service d’analyse IA indisponible pour le scanner.',
+            ], 503);
         }
     }
 
@@ -866,14 +908,11 @@ class PCMAController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Ultrasound Analysis Error: ' . $e->getMessage());
-            
-            // Return mock data for now
-            $mockData = $this->getMockAnalysis($analysisType ?? 'ultrasound_image');
-            
+
             return response()->json([
-                'success' => true,
-                'analysis' => $mockData
-            ]);
+                'success' => false,
+                'message' => 'Service d’analyse IA indisponible pour l’échographie.',
+            ], 503);
         }
     }
 
@@ -908,29 +947,21 @@ class PCMAController extends Controller
                     'assessment' => $result['analysis']
                 ]);
             } else {
-                // AI service returned an error, use mock data
-                Log::warning('AI service returned error, using mock data', ['result' => $result]);
-                $mockData = $this->getMockFitnessAssessment();
-                
+                Log::warning('AI fitness assessment unavailable', ['result' => $result]);
+
                 return response()->json([
-                    'success' => true,
-                    'assessment' => $mockData
-                ]);
+                    'success' => false,
+                    'message' => 'Service d’évaluation IA indisponible.',
+                ], 503);
             }
 
         } catch (\Exception $e) {
             Log::error('Fitness Assessment Error: ' . $e->getMessage());
-            
-            // Return mock data for now with error information
-            $mockData = $this->getMockFitnessAssessment();
-            $mockData['ai_service_error'] = $e->getMessage();
-            $mockData['ai_service_status'] = 'fallback_mode';
-            
+
             return response()->json([
-                'success' => true,
-                'assessment' => $mockData,
-                'message' => 'AI service temporarily unavailable, using fallback assessment'
-            ]);
+                'success' => false,
+                'message' => 'Service d’évaluation IA indisponible.',
+            ], 503);
         }
     }
 
@@ -948,16 +979,12 @@ class PCMAController extends Controller
                     'prompt' => $prompt
                 ]);
             } elseif ($analysisType === 'fitness_assessment') {
-                // For fitness assessment, we'll use a different approach
-                // Since the AI service is designed for image analysis, we'll use mock data for now
-                // but log the attempt for future integration
-                Log::info('Fitness assessment requested - using enhanced mock data', [
-                    'prompt_length' => strlen($customPrompt ?? ''),
-                    'ai_service_url' => $aiServiceUrl
+                $prompt = $customPrompt ?? $this->getAnalysisPrompt($analysisType);
+
+                $response = Http::timeout(30)->post($aiServiceUrl . '/api/v1/med-gemini/analyze', [
+                    'analysis_type' => $analysisType,
+                    'prompt' => $prompt,
                 ]);
-                
-                // Return mock data for fitness assessment
-                return $this->getMockFitnessAssessment();
             } else {
                 // File-based analysis
                 if (!$filePath) {

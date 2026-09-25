@@ -663,12 +663,9 @@ class ClubManagementController extends Controller
 
         $player = Player::findOrFail($request->player_id);
         
-        // Generate FIFA Connect ID if not exists
+        // A FIFA ID is external authoritative data. Never fabricate one
+        // locally merely to create a licence request.
         $fifaConnectId = $player->fifa_connect_id;
-        if (!$fifaConnectId) {
-            $fifaConnectId = 'FIFA' . str_pad($player->id, 6, '0', STR_PAD_LEFT);
-            $player->update(['fifa_connect_id' => $fifaConnectId]);
-        }
 
         // Generate license number
         $licenseNumber = 'LIC' . str_pad(\App\Models\PlayerLicense::count() + 1, 6, '0', STR_PAD_LEFT);

@@ -205,6 +205,7 @@
                                                         $latestLicense = $player->licenses->sortByDesc('created_at')->first();
                                                         $statusColor = match($latestLicense->status ?? 'unknown') {
                                                             'valid' => 'bg-green-100 text-green-800',
+                                                            'active' => 'bg-green-100 text-green-800',
                                                             'pending' => 'bg-yellow-100 text-yellow-800',
                                                             'expired' => 'bg-red-100 text-red-800',
                                                             'suspended' => 'bg-orange-100 text-orange-800',
@@ -225,7 +226,7 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <a href="{{ route('player-registration.create', ['player_id' => $player->id]) }}" 
+                                                <a href="{{ route('player-licenses.request.create', $player) }}"
                                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
                                                     📋 Demander Licence
                                                 </a>

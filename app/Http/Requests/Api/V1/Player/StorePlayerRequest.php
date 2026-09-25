@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1\Player;
 
+use App\Rules\FifaIdentifier;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -31,7 +32,11 @@ class StorePlayerRequest extends FormRequest
             'club_id' => ['required', 'exists:clubs,id'],
             'team_id' => ['nullable', 'exists:teams,id'],
             'status' => ['required', Rule::in(['active', 'inactive', 'suspended'])],
-            'fifa_connect_id' => ['nullable', 'string', 'max:255', 'unique:players,fifa_connect_id'],
+            'fifa_connect_id' => [
+                'nullable',
+                new FifaIdentifier(),
+                'unique:players,fifa_connect_id',
+            ],
             'emergency_contact_name' => ['nullable', 'string', 'max:255'],
             'emergency_contact_phone' => ['nullable', 'string', 'max:20'],
             'medical_conditions' => ['nullable', 'string'],

@@ -39,7 +39,7 @@
             </a>
 
             <!-- Licensing Module -->
-            <a href="/licenses" class="block">
+            <a href="{{ route('modules.licenses.index') }}" class="block">
                 <div class="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-6 h-full border border-gray-100 hover:border-blue-200 group">
                     <div class="flex flex-col items-center text-center h-full">
                         <div class="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">

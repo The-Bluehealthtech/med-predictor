@@ -2,290 +2,118 @@
 
 namespace Tests\Unit\Services;
 
-use Tests\TestCase;
 use App\Services\FifaConnectService;
-use App\Models\Player;
-use App\Models\Club;
-use App\Models\Federation;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
+use Exception;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Mockery;
+use Illuminate\Support\Facades\Http;
+use LogicException;
+use Tests\TestCase;
 
 class FifaConnectServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
-    private FifaConnectService $fifaService;
+    private FifaConnectService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->fifaService = new FifaConnectService();
-    }
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
-    }
-
-    /** @test */
-    public function it_can_sync_player_data_from_fifa_connect()
-    {
-        // Arrange
-        $player = Player::factory()->create([
-            'fifa_id' => '12345',
-            'first_name' => 'John',
-            'last_name' => 'Doe'
+        config([
+            'services.fifa_connect.base_url' => 'https://fifa.example.test/v1',
+            'services.fifa_connect.api_key' => 'test-token',
+            'services.fifa_connect.timeout' => 5,
+            'services.fifa_connect.mock_mode' => false,
         ]);
 
-        $fifaResponse = [
-            'player' => [
-                'id' => '12345',
-                'firstName' => 'John',
-                'lastName' => 'Doe',
-                'dateOfBirth' => '1995-01-15',
-                'nationality' => 'France',
-                'position' => 'Forward',
-                'club' => [
-                    'id' => '67890',
-                    'name' => 'Paris Saint-Germain'
-                ],
-                'federation' => [
-                    'id' => '11111',
-                    'name' => 'French Football Federation'
-                ]
-            ]
-        ];
+        Cache::flush();
+        $this->service = new FifaConnectService();
+    }
 
+    public function test_player_sync_returns_authoritative_payload_and_caches_it(): void
+    {
         Http::fake([
-            'fifa-connect-api.com/players/*' => Http::response($fifaResponse, 200)
+            'https://fifa.example.test/v1/players/ABC123A' =>
+                Http::response([
+                    'first_name' => 'A',
+                    'last_name' => 'B',
+                    'nationality' => 'FRA',
+                ], 200),
         ]);
 
-        // Act
-        $result = $this->fifaService->syncPlayerData($player->fifa_id);
+        $first = $this->service->syncPlayerData('ABC123A');
+        $second = $this->service->syncPlayerData('ABC123A');
 
-        // Assert
-        $this->assertTrue($result['success']);
-        $this->assertEquals('Player data synchronized successfully', $result['message']);
-        
-        $updatedPlayer = Player::find($player->id);
-        $this->assertEquals('1995-01-15', $updatedPlayer->date_of_birth);
-        $this->assertEquals('France', $updatedPlayer->nationality);
-        $this->assertEquals('Forward', $updatedPlayer->position);
+        $this->assertSame('A', $first['first_name']);
+        $this->assertSame($first, $second);
+        $this->assertTrue(Cache::has('fifa_player_ABC123A'));
+        Http::assertSentCount(1);
     }
 
-    /** @test */
-    public function it_handles_fifa_api_errors_gracefully()
+    public function test_player_sync_sends_bearer_token(): void
     {
-        // Arrange
-        $player = Player::factory()->create(['fifa_id' => '12345']);
-
         Http::fake([
-            'fifa-connect-api.com/players/*' => Http::response(['error' => 'Player not found'], 404)
+            '*' => Http::response(['first_name' => 'A'], 200),
         ]);
 
-        // Act
-        $result = $this->fifaService->syncPlayerData($player->fifa_id);
+        $this->service->syncPlayerData('ABC123A');
 
-        // Assert
-        $this->assertFalse($result['success']);
-        $this->assertEquals('Failed to sync player data: Player not found', $result['message']);
-        $this->assertEquals(404, $result['status_code']);
+        Http::assertSent(fn ($request) =>
+            $request->hasHeader('Authorization', 'Bearer test-token')
+        );
     }
 
-    /** @test */
-    public function it_caches_player_data_for_performance()
+    public function test_player_sync_throws_on_http_error(): void
     {
-        // Arrange
-        $player = Player::factory()->create(['fifa_id' => '12345']);
-        $fifaResponse = ['player' => ['id' => '12345', 'firstName' => 'John']];
-
         Http::fake([
-            'fifa-connect-api.com/players/*' => Http::response($fifaResponse, 200)
+            '*' => Http::response(['error' => 'not found'], 404),
         ]);
 
-        // Act
-        $this->fifaService->syncPlayerData($player->fifa_id);
-        $this->fifaService->syncPlayerData($player->fifa_id); // Second call should use cache
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('FIFA API error: 404');
 
-        // Assert
-        $this->assertTrue(Cache::has("fifa_player_{$player->fifa_id}"));
-        Http::assertSentCount(1); // Only one HTTP request should be made
+        $this->service->syncPlayerData('ABC123A');
     }
 
-    /** @test */
-    public function it_validates_fifa_compliance_requirements()
+    public function test_compliance_returns_api_payload_on_success(): void
     {
-        // Arrange
-        $player = Player::factory()->create([
-            'fifa_id' => '12345',
-            'date_of_birth' => '2000-01-01',
-            'nationality' => 'France'
-        ]);
-
-        $complianceResponse = [
-            'compliance' => [
-                'eligible' => true,
-                'requirements' => [
-                    'age_verified' => true,
-                    'nationality_confirmed' => true,
-                    'medical_clearance' => true
-                ]
-            ]
-        ];
-
         Http::fake([
-            'fifa-connect-api.com/compliance/*' => Http::response($complianceResponse, 200)
+            'https://fifa.example.test/v1/compliance/ABC123A' =>
+                Http::response([
+                    'compliant' => true,
+                    'requirements' => ['identity' => true],
+                ], 200),
         ]);
 
-        // Act
-        $result = $this->fifaService->checkCompliance($player->fifa_id);
+        $result = $this->service->validateCompliance('ABC123A');
 
-        // Assert
-        $this->assertTrue($result['success']);
-        $this->assertTrue($result['data']['eligible']);
-        $this->assertTrue($result['data']['requirements']['age_verified']);
+        $this->assertTrue($result['compliant']);
+        $this->assertTrue($result['requirements']['identity']);
     }
 
-    /** @test */
-    public function it_syncs_club_data_from_fifa_connect()
+    public function test_compliance_fails_closed_on_http_error(): void
     {
-        // Arrange
-        $club = Club::factory()->create(['fifa_id' => '67890']);
-
-        $fifaResponse = [
-            'club' => [
-                'id' => '67890',
-                'name' => 'Paris Saint-Germain',
-                'country' => 'France',
-                'league' => 'Ligue 1',
-                'stadium' => 'Parc des Princes'
-            ]
-        ];
-
         Http::fake([
-            'fifa-connect-api.com/clubs/*' => Http::response($fifaResponse, 200)
+            '*' => Http::response([], 503),
         ]);
 
-        // Act
-        $result = $this->fifaService->syncClubData($club->fifa_id);
+        $result = $this->service->validateCompliance('ABC123A');
 
-        // Assert
-        $this->assertTrue($result['success']);
-        
-        $updatedClub = Club::find($club->id);
-        $this->assertEquals('Paris Saint-Germain', $updatedClub->name);
-        $this->assertEquals('France', $updatedClub->country);
+        $this->assertFalse($result['compliant']);
+        $this->assertNotEmpty($result['errors']);
     }
 
-    /** @test */
-    public function it_syncs_federation_data_from_fifa_connect()
+    public function test_cache_can_be_cleared(): void
     {
-        // Arrange
-        $federation = Federation::factory()->create(['fifa_id' => '11111']);
+        Cache::put('fifa_player_ABC123A', ['ok' => true], 60);
 
-        $fifaResponse = [
-            'federation' => [
-                'id' => '11111',
-                'name' => 'French Football Federation',
-                'country' => 'France',
-                'region' => 'UEFA',
-                'member_since' => '1904'
-            ]
-        ];
+        $this->service->clearCache('ABC123A');
 
-        Http::fake([
-            'fifa-connect-api.com/federations/*' => Http::response($fifaResponse, 200)
-        ]);
-
-        // Act
-        $result = $this->fifaService->syncFederationData($federation->fifa_id);
-
-        // Assert
-        $this->assertTrue($result['success']);
-        
-        $updatedFederation = Federation::find($federation->id);
-        $this->assertEquals('French Football Federation', $updatedFederation->name);
-        $this->assertEquals('UEFA', $updatedFederation->region);
+        $this->assertFalse(Cache::has('fifa_player_ABC123A'));
     }
 
-    /** @test */
-    public function it_handles_network_timeouts()
+    public function test_service_never_generates_fifa_identifiers(): void
     {
-        // Arrange
-        $player = Player::factory()->create(['fifa_id' => '12345']);
+        $this->expectException(LogicException::class);
 
-        Http::fake([
-            'fifa-connect-api.com/players/*' => Http::timeout()
-        ]);
-
-        // Act
-        $result = $this->fifaService->syncPlayerData($player->fifa_id);
-
-        // Assert
-        $this->assertFalse($result['success']);
-        $this->assertStringContainsString('timeout', strtolower($result['message']));
+        $this->service->generatePlayerId();
     }
-
-    /** @test */
-    public function it_logs_errors_for_debugging()
-    {
-        // Arrange
-        $player = Player::factory()->create(['fifa_id' => '12345']);
-
-        Http::fake([
-            'fifa-connect-api.com/players/*' => Http::response(['error' => 'Server error'], 500)
-        ]);
-
-        Log::shouldReceive('error')->once();
-
-        // Act
-        $this->fifaService->syncPlayerData($player->fifa_id);
-
-        // Assert
-        // Log::error should have been called
-    }
-
-    /** @test */
-    public function it_retries_failed_requests()
-    {
-        // Arrange
-        $player = Player::factory()->create(['fifa_id' => '12345']);
-
-        Http::fake([
-            'fifa-connect-api.com/players/*' => Http::sequence()
-                ->push(['error' => 'Temporary error'], 503)
-                ->push(['error' => 'Temporary error'], 503)
-                ->push(['player' => ['id' => '12345', 'firstName' => 'John']], 200)
-        ]);
-
-        // Act
-        $result = $this->fifaService->syncPlayerData($player->fifa_id);
-
-        // Assert
-        $this->assertTrue($result['success']);
-        Http::assertSentCount(3); // Should have retried 3 times
-    }
-
-    /** @test */
-    public function it_clears_cache_when_data_is_updated()
-    {
-        // Arrange
-        $player = Player::factory()->create(['fifa_id' => '12345']);
-        $fifaResponse = ['player' => ['id' => '12345', 'firstName' => 'John']];
-
-        Http::fake([
-            'fifa-connect-api.com/players/*' => Http::response($fifaResponse, 200)
-        ]);
-
-        // Act
-        $this->fifaService->syncPlayerData($player->fifa_id);
-        $this->fifaService->clearPlayerCache($player->fifa_id);
-
-        // Assert
-        $this->assertFalse(Cache::has("fifa_player_{$player->fifa_id}"));
-    }
-} 
+}

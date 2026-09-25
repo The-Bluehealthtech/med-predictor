@@ -34,8 +34,8 @@ use Illuminate\Support\Facades\DB;
 // Landing page route without web middleware
 Route::get('/landing', [LandingPageController::class, 'index'])->name('api.landing');
 
-// Public player routes for portail-joueur (no authentication required)
-Route::prefix('players')->group(function () {
+// Authenticated legacy player API; canonical portal data is server-rendered.
+Route::middleware(['auth:sanctum'])->prefix('players')->group(function () {
     Route::get('/', function () {
         $players = \App\Models\Player::with(['club'])
             ->select('id', 'first_name', 'last_name', 'position', 'nationality', 'club_id')
@@ -76,25 +76,24 @@ Route::prefix('players')->group(function () {
             'height' => $player->height,
             'weight' => $player->weight,
             'preferred_foot' => $player->preferred_foot,
-            'overall_rating' => $player->overall_rating ?? rand(70, 95),
-            'potential_rating' => $player->potential_rating ?? rand(75, 99),
-            'skill_moves' => $player->skill_moves ?? rand(1, 5),
-            'international_reputation' => $player->international_reputation ?? rand(1, 5),
+            'overall_rating' => $player->overall_rating,
+            'potential_rating' => $player->potential_rating,
+            'skill_moves' => $player->skill_moves,
+            'international_reputation' => $player->international_reputation,
             'club' => $player->club ? [
                 'id' => $player->club->id,
                 'name' => $player->club->name,
                 'logo_url' => $player->club->logo_url ?? null
             ] : null,
-            // Mock FIT Health System data
-            'ghs_overall_score' => rand(75, 95),
-            'ghs_physical_score' => rand(70, 90),
-            'ghs_mental_score' => rand(75, 95),
-            'injury_risk_score' => rand(10, 80) / 100,
-            'contribution_score' => rand(60, 90),
-            'match_availability' => rand(0, 1),
-            'value_eur' => rand(1000000, 50000000),
-            'wage_eur' => rand(50000, 500000),
-            'last_availability_update' => now()->subDays(rand(1, 30))->toISOString()
+            'ghs_overall_score' => $player->ghs_overall_score,
+            'ghs_physical_score' => $player->ghs_physical_score,
+            'ghs_mental_score' => $player->ghs_mental_score,
+            'injury_risk_score' => $player->injury_risk_score,
+            'contribution_score' => $player->contribution_score,
+            'match_availability' => $player->match_availability,
+            'value_eur' => $player->value_eur,
+            'wage_eur' => $player->wage_eur,
+            'last_availability_update' => $player->last_availability_update
         ];
         
         return response()->json([
@@ -401,8 +400,8 @@ Route::get('/test-pdf', function() {
     }
 })->name('api.test.pdf');
 
-Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->name('api.pcma.pdf');
-Route::post('/pcma/store', [App\Http\Controllers\PCMAController::class, 'store'])->name('api.pcma.store');
+Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->middleware('auth:sanctum')->name('api.pcma.pdf');
+Route::post('/pcma/store', [App\Http\Controllers\PCMAController::class, 'store'])->middleware('auth:sanctum')->name('api.pcma.store');
 
 // API Version 1 Routes
 Route::prefix('v1')->group(function () {
@@ -884,7 +883,7 @@ Route::get('/pcma/doctor-signoff-demo', function () {
 // ========================================
 
 // Medical Module API Routes
-Route::prefix('modules/medical')->group(function () {
+Route::middleware('auth:sanctum')->prefix('modules/medical')->group(function () {
     // Créer une visite médicale
     Route::post('/', function (Request $request) {
         try {
@@ -895,9 +894,11 @@ Route::prefix('modules/medical')->group(function () {
                 'start_time' => 'required|date'
             ]);
             
+            \App\Models\Player::query()->findOrFail($data['player_id']);
+
             // Créer un health record pour la visite
             $healthRecord = \App\Models\HealthRecord::create([
-                'user_id' => 1, // Utilisateur par défaut
+                'user_id' => $request->user()->id,
                 'player_id' => $data['player_id'],
                 'record_date' => $data['start_time'],
                 'visit_type' => $data['visit_type'],
@@ -924,6 +925,8 @@ Route::prefix('modules/medical')->group(function () {
                 'end_time' => 'required|date'
             ]);
             
+            \App\Models\Player::query()->findOrFail($player_id);
+
             // Trouver la visite en cours pour ce joueur
             $healthRecord = \App\Models\HealthRecord::where('player_id', $player_id)
                 ->where('status', 'active')
@@ -976,9 +979,11 @@ Route::prefix('modules/medical')->group(function () {
                 'injury_date' => 'required|date'
             ]);
             
+            \App\Models\Player::query()->findOrFail($data['player_id']);
+
             // Créer un health record pour la blessure
             $healthRecord = \App\Models\HealthRecord::create([
-                'user_id' => 1, // Utilisateur par défaut
+                'user_id' => $request->user()->id,
                 'player_id' => $data['player_id'],
                 'record_date' => $data['injury_date'],
                 'visit_type' => 'consultation', // Utiliser une valeur valide de l'enum visit_type
@@ -1000,7 +1005,7 @@ Route::prefix('modules/medical')->group(function () {
 });
 
 // Healthcare Module API Routes
-Route::prefix('modules/healthcare')->group(function () {
+Route::middleware('auth:sanctum')->prefix('modules/healthcare')->group(function () {
     // Créer un diagnostic
     Route::post('/', function (Request $request) {
         try {
@@ -1011,9 +1016,11 @@ Route::prefix('modules/healthcare')->group(function () {
                 'diagnosis_date' => 'required|date'
             ]);
             
+            \App\Models\Player::query()->findOrFail($data['player_id']);
+
             // Créer un health record pour le diagnostic
             $healthRecord = \App\Models\HealthRecord::create([
-                'user_id' => 1, // Utilisateur par défaut
+                'user_id' => $request->user()->id,
                 'player_id' => $data['player_id'],
                 'record_date' => $data['diagnosis_date'],
                 'visit_type' => 'consultation', // Utiliser une valeur valide de l'enum visit_type
@@ -1036,6 +1043,8 @@ Route::prefix('modules/healthcare')->group(function () {
     // Lister les diagnostics d'un joueur
     Route::get('/{player_id}', function ($player_id) {
         try {
+            \App\Models\Player::query()->findOrFail($player_id);
+
             $diagnoses = \App\Models\HealthRecord::where('player_id', $player_id)
                 ->whereNotNull('diagnosis') // Chercher les enregistrements avec un diagnostic
                 ->orderBy('record_date', 'desc')
@@ -1060,9 +1069,11 @@ Route::prefix('modules/healthcare')->group(function () {
                 'created_date' => 'required|date'
             ]);
             
+            \App\Models\Player::query()->findOrFail($data['player_id']);
+
             // Créer un health record pour le plan de soins
             $healthRecord = \App\Models\HealthRecord::create([
-                'user_id' => 1, // Utilisateur par défaut
+                'user_id' => $request->user()->id,
                 'player_id' => $data['player_id'],
                 'record_date' => $data['created_date'],
                 'visit_type' => 'consultation', // Utiliser une valeur valide de l'enum visit_type
@@ -1097,7 +1108,7 @@ Route::prefix('secretary')->group(function () {
             
             // Créer un health record pour le rendez-vous
             $healthRecord = \App\Models\HealthRecord::create([
-                'user_id' => 1, // Utilisateur par défaut
+                'user_id' => $request->user()->id,
                 'player_id' => $data['player_id'] ?? 1, // Default player if not specified
                 'record_date' => $data['date'],
                 'visit_type' => 'consultation', // Utiliser une valeur valide de l'enum visit_type
@@ -1177,244 +1188,21 @@ Route::prefix('joueurs')->group(function () {
 });
 
 // Routes API pour le portail dynamique
-Route::prefix('portal')->group(function () {
-    Route::get('/performance-data', function () {
+Route::middleware('auth:sanctum')->prefix('portal')->group(function () {
+    $deprecatedPortalEndpoint = function () {
         return response()->json([
-            'radar' => [
-                'labels' => ['Vitesse', 'Force', 'Endurance', 'Technique', 'Mental', 'Récupération'],
-                'data' => [
-                    rand(70, 95), rand(75, 90), rand(80, 95), 
-                    rand(85, 98), rand(70, 90), rand(75, 95)
-                ]
-            ],
-            'lineChart' => [
-                'labels' => ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6'],
-                'data' => [
-                    rand(75, 85), rand(78, 88), rand(80, 90), 
-                    rand(82, 92), rand(85, 95), rand(88, 98)
-                ]
-            ],
-            'barChart' => [
-                'labels' => ['Buts', 'Passes', 'Tacles', 'Interceptions'],
-                'data' => [rand(15, 25), rand(20, 30), rand(80, 120), rand(40, 60)]
-            ],
-            'doughnutChart' => [
-                'labels' => ['Victoires', 'Nuls', 'Défaites'],
-                'data' => [rand(60, 80), rand(15, 25), rand(5, 20)]
-            ]
-        ]);
-    });
+            'success' => false,
+            'status' => 'deprecated',
+            'message' => 'Endpoint legacy désactivé. Utilisez le portail joueur canonique.',
+        ], 410);
+    };
 
-    Route::get('/notifications', function () {
-        $notifications = [
-            [
-                'id' => 1,
-                'type' => 'performance',
-                'title' => 'Nouveau record personnel !',
-                'message' => 'Vous avez battu votre record de vitesse sur 100m',
-                'date' => now()->subMinutes(rand(5, 120))->diffForHumans(),
-                'status' => 'unread',
-                'icon' => '🏃‍♂️',
-                'color' => 'green'
-            ],
-            [
-                'id' => 2,
-                'type' => 'medical',
-                'title' => 'Rappel contrôle médical',
-                'message' => 'Votre contrôle de routine est prévu dans 3 jours',
-                'date' => now()->subHours(rand(1, 6))->diffForHumans(),
-                'status' => 'read',
-                'icon' => '🏥',
-                'color' => 'blue'
-            ],
-            [
-                'id' => 3,
-                'type' => 'training',
-                'title' => 'Session d\'entraînement',
-                'message' => 'Nouvelle session de musculation programmée',
-                'date' => now()->subMinutes(rand(30, 180))->diffForHumans(),
-                'status' => 'unread',
-                'icon' => '💪',
-                'color' => 'orange'
-            ],
-            [
-                'id' => 4,
-                'type' => 'doping',
-                'title' => 'Contrôle antidopage',
-                'message' => 'Contrôle surprise prévu ce soir',
-                'date' => now()->subMinutes(rand(10, 60))->diffForHumans(),
-                'status' => 'unread',
-                'icon' => '🧪',
-                'color' => 'red'
-            ]
-        ];
-        
-        return response()->json($notifications);
-    });
-
-    Route::get('/health-data', function () {
-        return response()->json([
-            'metrics' => [
-                'heartRate' => rand(60, 85),
-                'sleepQuality' => rand(70, 95),
-                'stressLevel' => rand(20, 60),
-                'recoveryScore' => rand(65, 90)
-            ],
-            'radar' => [
-                'labels' => ['Sommeil', 'Nutrition', 'Hydratation', 'Récupération', 'Stress', 'Énergie'],
-                'data' => [
-                    rand(70, 95), rand(75, 90), rand(80, 95), 
-                    rand(75, 90), rand(60, 85), rand(70, 90)
-                ]
-            ],
-            'lineChart' => [
-                'labels' => ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
-                'data' => [
-                    rand(20, 40), rand(25, 45), rand(30, 50), 
-                    rand(25, 45), rand(20, 40), rand(15, 35), rand(10, 30)
-                ]
-            ]
-        ]);
-    });
-
-    Route::get('/medical-data', function () {
-        return response()->json([
-            'alerts' => [
-                [
-                    'type' => 'warning',
-                    'title' => 'Blessure Mineure',
-                    'description' => 'Entorse légère cheville',
-                    'icon' => '🚨',
-                    'color' => 'red'
-                ],
-                [
-                    'type' => 'info',
-                    'title' => 'Contrôle Requis',
-                    'description' => 'Bilan sanguin mensuel',
-                    'icon' => '⚠️',
-                    'color' => 'yellow'
-                ],
-                [
-                    'type' => 'success',
-                    'title' => 'En Forme',
-                    'description' => 'Aptitude confirmée',
-                    'icon' => '✅',
-                    'color' => 'green'
-                ]
-            ],
-            'charts' => [
-                'lineChart' => [
-                    'labels' => ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
-                    'data' => [
-                        rand(0, 2), rand(0, 1), rand(0, 2), 
-                        rand(0, 1), rand(0, 2), rand(0, 1)
-                    ]
-                ],
-                'pieChart' => [
-                    'labels' => ['Entorses', 'Fractures', 'Contusions', 'Fatigue'],
-                    'data' => [
-                        rand(30, 50), rand(10, 25), rand(20, 35), rand(15, 30)
-                    ]
-                ]
-            ]
-        ]);
-    });
-
-    Route::get('/devices-data', function () {
-        return response()->json([
-            'devices' => [
-                [
-                    'name' => 'Apple Watch',
-                    'model' => 'Série 8 - 45mm',
-                    'battery' => rand(60, 95),
-                    'status' => 'online',
-                    'icon' => '⌚',
-                    'color' => 'green'
-                ],
-                [
-                    'name' => 'iPhone 15 Pro',
-                    'model' => '256GB - iOS 17.2',
-                    'battery' => rand(40, 85),
-                    'status' => 'online',
-                    'icon' => '📱',
-                    'color' => 'blue'
-                ],
-                [
-                    'name' => 'AirPods Pro',
-                    'model' => '2ème génération',
-                    'battery' => rand(70, 100),
-                    'status' => 'online',
-                    'icon' => '🎧',
-                    'color' => 'purple'
-                ]
-            ],
-            'charts' => [
-                'barChart' => [
-                    'labels' => ['Apple Watch', 'iPhone', 'AirPods', 'iPad'],
-                    'data' => [
-                        rand(8, 16), rand(4, 10), rand(2, 6), rand(1, 4)
-                    ]
-                ],
-                'pieChart' => [
-                    'labels' => ['Social Media', 'Fitness', 'Communication', 'Divertissement'],
-                    'data' => [
-                        rand(30, 50), rand(20, 35), rand(15, 25), rand(10, 20)
-                    ]
-                ]
-            ],
-            'metrics' => [
-                'steps' => rand(8000, 15000),
-                'calories' => rand(400, 800),
-                'distance' => rand(5, 12),
-                'notifications' => rand(20, 50),
-                'apps' => rand(8, 15),
-                'screenTime' => rand(3, 8)
-            ]
-        ]);
-    });
-
-    Route::get('/doping-data', function () {
-        return response()->json([
-            'status' => [
-                [
-                    'type' => 'success',
-                    'title' => 'Dernier Contrôle',
-                    'description' => 'Négatif - ' . now()->subDays(rand(1, 30))->format('d/m/Y'),
-                    'icon' => '✅',
-                    'color' => 'green'
-                ],
-                [
-                    'type' => 'info',
-                    'title' => 'Prochain Contrôle',
-                    'description' => now()->addDays(rand(5, 60))->format('d/m/Y'),
-                    'icon' => '📋',
-                    'color' => 'blue'
-                ],
-                [
-                    'type' => 'warning',
-                    'title' => 'Risque',
-                    'description' => 'Faible - ' . rand(5, 15) . '%',
-                    'icon' => '⚠️',
-                    'color' => 'yellow'
-                ]
-            ],
-            'charts' => [
-                'lineChart' => [
-                    'labels' => ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
-                    'data' => [
-                        rand(2, 4), rand(1, 3), rand(2, 4), 
-                        rand(1, 3), rand(2, 4), rand(1, 3)
-                    ]
-                ],
-                'doughnutChart' => [
-                    'labels' => ['Négatif', 'En attente', 'Positif'],
-                    'data' => [
-                        rand(80, 95), rand(5, 15), rand(0, 5)
-                    ]
-                ]
-            ]
-        ]);
-    });
+    Route::get('/performance-data', $deprecatedPortalEndpoint);
+    Route::get('/notifications', $deprecatedPortalEndpoint);
+    Route::get('/health-data', $deprecatedPortalEndpoint);
+    Route::get('/medical-data', $deprecatedPortalEndpoint);
+    Route::get('/devices-data', $deprecatedPortalEndpoint);
+    Route::get('/doping-data', $deprecatedPortalEndpoint);
 });
 
 // =============================================================================

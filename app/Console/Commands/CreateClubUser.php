@@ -92,7 +92,7 @@ class CreateClubUser extends Command
                 'role' => $role,
                 'club_id' => $club->id,
                 'association_id' => $association->id,
-                'fifa_connect_id' => $this->generateFifaConnectId($club, $role),
+                'fifa_connect_id' => null,
                 'permissions' => $permissions,
                 'status' => 'active',
                 'login_count' => 0,
@@ -138,10 +138,8 @@ class CreateClubUser extends Command
 
     private function generateFifaConnectId(Club $club, string $role): string
     {
-        $clubShort = strtoupper(preg_replace('/[^A-Z]/', '', $club->name));
-        $roleShort = strtoupper(substr($role, 5, 3)); // club_admin -> ADMIN
-        $random = strtoupper(substr(md5(uniqid()), 0, 3));
-        
-        return "{$clubShort}_{$roleShort}_{$random}";
+        throw new \LogicException(
+            'FIFA Connect IDs must come from the authoritative FIFA source.'
+        );
     }
 } 

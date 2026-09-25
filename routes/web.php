@@ -712,7 +712,7 @@ Route::get('/test-secretary-dashboard', function () {
     $recentAppointments = collect([
         (object) [
             'id' => 1,
-            'athlete' => (object) ['name' => 'Mohamed Ben Ali', 'fifa_connect_id' => 'FIFA001'],
+            'athlete' => (object) ['name' => 'Mohamed Ben Ali', 'fifa_connect_id' => null],
             'appointment_date' => now()->addDays(1),
             'type' => 'consultation',
             'type_label' => 'Consultation',
@@ -721,7 +721,7 @@ Route::get('/test-secretary-dashboard', function () {
         ],
         (object) [
             'id' => 2,
-            'athlete' => (object) ['name' => 'Ahmed Khelifi', 'fifa_connect_id' => 'FIFA002'],
+            'athlete' => (object) ['name' => 'Ahmed Khelifi', 'fifa_connect_id' => null],
             'appointment_date' => now()->addDays(2),
             'type' => 'examination',
             'type_label' => 'Examen',
@@ -730,7 +730,7 @@ Route::get('/test-secretary-dashboard', function () {
         ],
         (object) [
             'id' => 3,
-            'athlete' => (object) ['name' => 'Karim Mansouri', 'fifa_connect_id' => 'FIFA003'],
+            'athlete' => (object) ['name' => 'Karim Mansouri', 'fifa_connect_id' => null],
             'appointment_date' => now()->addDays(3),
             'type' => 'follow_up',
             'type_label' => 'Suivi',
@@ -746,7 +746,7 @@ Route::get('/test-secretary-dashboard', function () {
             'file_name' => 'Rapport médical - Mohamed Ben Ali.pdf',
             'file_size_human' => '2.5 MB',
             'visit' => (object) [
-                'athlete' => (object) ['name' => 'Mohamed Ben Ali', 'fifa_connect_id' => 'FIFA001']
+                'athlete' => (object) ['name' => 'Mohamed Ben Ali', 'fifa_connect_id' => null]
             ],
             'document_type_label' => 'Rapport médical',
             'status' => 'analyzed',
@@ -757,7 +757,7 @@ Route::get('/test-secretary-dashboard', function () {
             'file_name' => 'Résultats laboratoire - Ahmed Khelifi.pdf',
             'file_size_human' => '1.8 MB',
             'visit' => (object) [
-                'athlete' => (object) ['name' => 'Ahmed Khelifi', 'fifa_connect_id' => 'FIFA002']
+                'athlete' => (object) ['name' => 'Ahmed Khelifi', 'fifa_connect_id' => null]
             ],
             'document_type_label' => 'Résultat de laboratoire',
             'status' => 'pending',
@@ -768,7 +768,7 @@ Route::get('/test-secretary-dashboard', function () {
             'file_name' => 'Imagerie - Karim Mansouri.jpg',
             'file_size_human' => '4.2 MB',
             'visit' => (object) [
-                'athlete' => (object) ['name' => 'Karim Mansouri', 'fifa_connect_id' => 'FIFA003']
+                'athlete' => (object) ['name' => 'Karim Mansouri', 'fifa_connect_id' => null]
             ],
             'document_type_label' => 'Imagerie médicale',
             'status' => 'analyzing',
@@ -869,7 +869,7 @@ Route::get('/test-competitions-auth', function () {
             'id' => 1,
             'name' => 'Ligue 1 Test',
             'format_label' => 'Aller-retour',
-            'fifa_connect_id' => 'FIFA_TEST_001',
+            'fifa_connect_id' => null,
             'type_label' => 'Ligue',
             'season' => (object) ['name' => '2024-2025'],
             'status' => 'active'
@@ -1625,7 +1625,7 @@ Route::get('/search-players', function (Request $request) {
     } catch (Exception $e) {
         return response()->json(['error' => 'Erreur lors de la recherche'], 500);
     }
-})->name('search.players');
+})->middleware(['auth'])->name('search.players');
 
 // Route pour récupérer la liste complète des joueurs FIFA
 Route::get('/api/players', function () {
@@ -1660,7 +1660,7 @@ Route::get('/api/players', function () {
             'message' => $e->getMessage()
         ], 500);
     }
-})->name('api.players');
+})->middleware(['auth'])->name('api.players');
 
 // Route pour récupérer un joueur spécifique FIFA
 Route::get('/api/players/{id}', function ($id) {
@@ -1702,7 +1702,7 @@ Route::get('/api/players/{id}', function ($id) {
             'message' => $e->getMessage()
         ], 500);
     }
-})->name('api.players.show');
+})->middleware(['auth'])->name('api.players.show');
 
 // NOUVELLE ROUTE FIFA qui fonctionne
 Route::get('/api/fifa/player/{id}', function ($id) {
@@ -1977,7 +1977,7 @@ Route::get('/create-future-appointments', function (Request $request) {
         foreach ($athletes as $index => $athlete) {
             $appointment = new \App\Models\Appointment();
             $appointment->athlete_id = $athlete->id;
-            $appointment->fifa_connect_id = $athlete->fifa_id ?? 'TEST_' . $athlete->id;
+            $appointment->fifa_connect_id = null;
             $appointment->appointment_date = now()->addDays($index + 1)->setTime(9 + $index, 0, 0);
             $appointment->type = ['consultation', 'examination', 'follow_up'][$index % 3];
             $appointment->status = ['scheduled', 'confirmed'][$index % 2];
@@ -2323,19 +2323,19 @@ Route::middleware(['auth'])->group(function () {
             'footballType' => 'association',
             'confederations' => $confederations
         ]);
-    })->name('modules.confederations.index');
+    })->middleware(['auth'])->name('modules.confederations.index');
 
-    // Portal devices route without auth for immediate use
+    // Connected devices portal requires authentication.
     Route::get('/portal/devices', function () {
         return view('modules.portal.devices');
-    })->name('portal.devices');
+    })->middleware(['auth'])->name('portal.devices');
 
-    // Referee portal route without auth for immediate use
+    // Referee portal requires authentication.
     Route::get('/referee-portal', function () {
         return view('modules.referees.index', ['footballType' => 'association']);
-    })->name('referee-portal.index');
+    })->middleware(['auth'])->name('referee-portal.index');
 
-    // Modules route without auth for immediate use
+    // Modules index requires an authenticated user.
     Route::get('/modules', function () {
         try {
             $footballType = request('footballType', 'association');
@@ -2508,7 +2508,7 @@ Route::middleware(['auth'])->group(function () {
                         'name' => 'Referee Portal',
                         'description' => 'Portail des arbitres et officiels',
                         'icon' => '👨‍⚖️',
-                        'route' => 'referee-dashboard-test',
+                        'route' => 'referee-portal.index',
                         'status' => 'active',
                         'color' => 'green',
                         'category' => 'portals'
@@ -2540,6 +2540,15 @@ Route::middleware(['auth'])->group(function () {
                         'route' => 'performances.analytics',
                         'status' => 'active',
                         'color' => 'yellow',
+                        'category' => 'analytics'
+                    ],
+                    [
+                        'name' => 'FIT Metrics',
+                        'description' => 'Saisie et vérification des métriques du score FIT canonique',
+                        'icon' => '🎯',
+                        'route' => 'performances.fit-metrics',
+                        'status' => 'active',
+                        'color' => 'purple',
                         'category' => 'analytics'
                     ],
                     
@@ -2643,7 +2652,7 @@ Route::middleware(['auth'])->group(function () {
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    })->name('modules.index');
+    })->middleware(['auth'])->name('modules.index');
 
 
         // Routes de test temporaires pour diagnostiquer les modules (sans authentification)
@@ -4060,7 +4069,7 @@ Route::get('/api/signed-pcmas', function () {
             'message' => 'Erreur lors du chargement des PCMAs signés'
         ], 500);
     }
-})->name('api.signed-pcmas');
+})->middleware(['auth'])->name('api.signed-pcmas');
 
 // Dashboard Routes (protected by auth)
 Route::middleware(['auth'])->group(function () {
@@ -4160,7 +4169,7 @@ Route::middleware(['auth'])->group(function () {
                 'status' => $request->status,
                 'association_id' => $request->association_id,
                 'club_id' => $request->club_id,
-                'fifa_connect_id' => strtoupper(substr($request->role, 0, 3)) . '_' . time(),
+                'fifa_connect_id' => null,
                 'email_verified_at' => now(),
             ]);
             
@@ -4754,72 +4763,15 @@ Route::middleware(['auth'])->group(function () {
     })->name('contracts.index');
     
     // FIFA routes
-    Route::get('/fifa/dashboard', function () {
-        // Données de connectivité FIFA
-        $connectivity = [
-            'connected' => true,
-            'message' => 'Connexion FIFA établie avec succès',
-            'last_sync' => now()->subMinutes(5)
-        ];
+    Route::get(
+        '/fifa/dashboard',
+        [\App\Http\Controllers\FifaConnectDashboardController::class, 'index']
+    )->middleware(['auth'])->name('fifa.dashboard');
 
-        // Statistiques FIFA
-        $fifaStats = [
-            'confederations' => [
-                'total' => 6,
-                'synced' => 4
-            ],
-            'associations' => [
-                'total' => \App\Models\Association::count(),
-                'synced' => \App\Models\Association::count() // Simulation pour éviter l'erreur
-            ],
-            'clubs' => [
-                'total' => \App\Models\Club::count(),
-                'synced' => \App\Models\Club::count() // Simulation pour éviter l'erreur
-            ],
-            'players' => [
-                'total' => \App\Models\Player::count(),
-                'synced' => \App\Models\Player::count() // Simulation pour éviter l'erreur
-            ]
-        ];
-
-        // Confédérations avec statut de synchronisation
-        $confederations = collect([
-            (object)[
-                'name' => 'Confédération Africaine de Football',
-                'fifa_sync_status' => 'synced',
-                'fifa_sync_date' => now()->subHours(2)
-            ],
-            (object)[
-                'name' => 'Union des Associations Européennes de Football',
-                'fifa_sync_status' => 'synced',
-                'fifa_sync_date' => now()->subHours(1)
-            ],
-            (object)[
-                'name' => 'Confédération Sud-Américaine de Football',
-                'fifa_sync_status' => 'pending',
-                'fifa_sync_date' => now()->subDays(1)
-            ],
-            (object)[
-                'name' => 'Confédération d\'Asie de Football',
-                'fifa_sync_status' => 'failed',
-                'fifa_sync_date' => now()->subDays(2)
-            ],
-            (object)[
-                'name' => 'Confédération de Football d\'Amérique du Nord, Centrale et Caraïbes',
-                'fifa_sync_status' => 'synced',
-                'fifa_sync_date' => now()->subMinutes(30)
-            ],
-            (object)[
-                'name' => 'Confédération Océanienne de Football',
-                'fifa_sync_status' => 'pending',
-                'fifa_sync_date' => now()->subDays(3)
-            ]
-        ]);
-
-        $filteredConfederation = null; // Pas de filtre par défaut
-
-        return view('modules.fifa.dashboard', compact('connectivity', 'fifaStats', 'confederations', 'filteredConfederation'));
-    })->name('fifa.dashboard');
+    Route::get(
+        '/fifa/connectivity/status',
+        [\App\Http\Controllers\FifaConnectDashboardController::class, 'status']
+    )->middleware(['auth'])->name('fifa.connectivity.status');
     
     Route::get('/fifa/connectivity', function () {
         return view('modules.fifa.connectivity');
@@ -5037,7 +4989,7 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
             // Validate the request
             $validated = $request->validate([
                 'athlete_id' => 'required|exists:athletes,id',
-                'fifa_connect_id' => 'nullable|string|max:255',
+                'fifa_connect_id' => ['nullable', new \App\Rules\FifaIdentifier()],
                 'type' => 'required|in:bpma,cardio,dental,neurological,orthopedic',
                 'assessor_id' => 'required|exists:users,id',
                 'assessment_date' => 'required|date',
@@ -5311,7 +5263,7 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
             // Validate the request
             $validated = $request->validate([
                 'athlete_id' => 'required|exists:athletes,id',
-                'fifa_connect_id' => 'nullable|string|max:255',
+                'fifa_connect_id' => ['nullable', new \App\Rules\FifaIdentifier()],
                 'type' => 'required|in:bpma,cardio,dental,neurological,orthopedic',
                 'assessor_id' => 'required|exists:users,id',
                 'assessment_date' => 'required|date',
@@ -5637,9 +5589,10 @@ Route::get('/test-pdf', function() {
     ])->name('performances.fit-metrics');
 
     // Performances Analytics routes
-    Route::get('/performances/analytics', function () {
-        return view('modules.performances.analytics');
-    })->name('performances.analytics');
+    Route::get(
+        '/performances/analytics',
+        [\App\Http\Controllers\PerformanceAnalyticsController::class, 'index']
+    )->name('performances.analytics');
     
     // Performances Trends routes
     Route::get('/performances/trends', function () {
@@ -6109,13 +6062,20 @@ Route::get('/test-pdf', function() {
         return view('modules.administration.index', ['footballType' => 'association']);
     })->name('modules.administration.index');
     
-    Route::get('/modules/licenses', function () {
-        $players = \App\Models\Player::with(['club', 'association'])->orderBy('last_name')->get();
-        return view('modules.licenses.index', [
-            'footballType' => 'association',
-            'players' => $players
-        ]);
-    })->name('modules.licenses.index');
+    Route::get(
+        '/modules/licenses',
+        [\App\Http\Controllers\PlayerLicenseWorkflowController::class, 'index']
+    )->name('modules.licenses.index');
+
+    Route::get(
+        '/modules/licenses/players/{player}/request',
+        [\App\Http\Controllers\PlayerLicenseWorkflowController::class, 'create']
+    )->name('player-licenses.request.create');
+
+    Route::post(
+        '/modules/licenses/players/{player}/request',
+        [\App\Http\Controllers\PlayerLicenseWorkflowController::class, 'store']
+    )->name('player-licenses.request.store');
 
     // Routes dupliquées supprimées - elles existent déjà ailleurs dans le fichier
 
@@ -6490,13 +6450,15 @@ Route::get('/test-tabs', function () {
 })->name('test-tabs');
 
 // Analytics routes
-Route::get('/analytics/dashboard', function () {
-    return view('analytics.dashboard');
-})->name('analytics.dashboard');
+Route::get(
+    '/analytics/dashboard',
+    [\App\Http\Controllers\AnalyticsDashboardController::class, 'index']
+)->middleware(['auth'])->name('analytics.dashboard');
 
-Route::get('/analytics/digital-twin', function () {
-    return view('analytics.digital-twin');
-})->name('analytics.digital-twin');
+Route::get(
+    '/analytics/digital-twin',
+    [\App\Http\Controllers\DigitalTwinController::class, 'index']
+)->middleware(['auth'])->name('analytics.digital-twin');
 
 // Performance routes
 Route::get('/performance', function () {
@@ -6504,14 +6466,16 @@ Route::get('/performance', function () {
 })->name('performance.index');
 
 // DTN routes
-Route::get('/dtn', function () {
-    return view('dtn.index');
-})->name('dtn.index');
+Route::get(
+    '/dtn',
+    [\App\Http\Controllers\DtnController::class, 'index']
+)->middleware(['auth'])->name('dtn.index');
 
 // RPM routes
-Route::get('/rpm', function () {
-    return view('rpm.index');
-})->name('rpm.index');
+Route::get(
+    '/rpm',
+    [\App\Http\Controllers\RpmController::class, 'index']
+)->middleware(['auth'])->name('rpm.index');
 
 // License Fraud Detection Routes
 Route::post('/api/v1/licenses/fraud-detection/batch', [App\Http\Controllers\LicenseController::class, 'batchFraudDetection'])
@@ -6771,8 +6735,8 @@ Route::redirect('/fifa-complete-original.html', '/portail-patient', 301);
 
 
 
-// API Routes for Player Portal
-Route::prefix('api')->group(function () {
+// Legacy browser API used by authenticated application screens.
+Route::prefix('api')->middleware(['auth'])->group(function () {
     // Get all players
     Route::get('/players', function () {
         try {
@@ -7162,9 +7126,16 @@ Route::get('/test-performance-working', function () {
     return view('test-performance-working');
 })->name('test.performance.working');
 
-// API pour récupérer les VRAIES performances FIFA d'un joueur depuis la base de données
-Route::get('/api/player-performance/{id}', [App\Http\Controllers\RealFIFAController::class, 'getRealFIFAPerformance'])
-    ->name('api.player.performance');
+// Endpoint FIFA performance legacy: désactivé pour éviter les valeurs calculées
+// à partir de fallbacks non vérifiés. Le portail canonique utilise les données réelles
+// du joueur et les métriques FIT vérifiées.
+Route::get('/api/player-performance/{id}', function () {
+    return response()->json([
+        'success' => false,
+        'status' => 'deprecated',
+        'message' => 'Endpoint legacy désactivé. Utilisez le portail joueur canonique.',
+    ], 410);
+})->middleware(['auth'])->name('api.player.performance');
 
 // Page de test debug FIFA
 Route::get('/test-fifa-debug', function () {
@@ -7242,7 +7213,7 @@ Route::get('/portail-fifa-simple', function () {
 })->name('portail.fifa.simple');
 
 // Portail FIFA intégré sous la landing page
-Route::get('/fifa-portal', [App\Http\Controllers\FIFATestController::class, 'show'])->name('fifa.portal.integrated');
+Route::get('/fifa-portal', [App\Http\Controllers\FIFATestController::class, 'show'])->middleware(['auth'])->name('fifa.portal.integrated');
 
 // Test du système FIFA Connect
 Route::get('/test-fifa-performance', function () {
@@ -7327,11 +7298,11 @@ Route::get('/test-basic', function () {
     return view('test-basic');
 })->name('test.basic');
 
-// Route publique pour les joueurs (sans authentification)
+// Player module requires authentication.
 Route::get('/modules/players', function () {
     $players = \App\Models\Player::with(['club'])->orderBy('last_name')->orderBy('first_name')->paginate(20);
     return view('modules.players.index', compact('players'));
-})->name('modules.players.index');
+})->middleware(['auth'])->name('modules.players.index');
 
 
 
@@ -8227,100 +8198,43 @@ Route::get('/admin-system-settings', function () {
 })->name('admin-system-settings');
 
 Route::get('/admin-content-management', function () {
-    return view('admin.content-management.index');
-})->name('admin.content-management.index');
+    return redirect()->route('admin.content-management.index');
+})->middleware(['auth'])->name('legacy.admin-content-management');
 
 Route::get('/admin-transfer-management', function () {
-    // FIFA TMS Status (simulated - would be real API call in production)
-    $fifaTmsStatus = [
-        'status' => 'connected', // or 'disconnected', 'error'
-        'last_sync' => now()->subMinutes(5),
-        'api_version' => '2.1',
-        'response_time' => '120ms',
-        'message' => 'Connexion établie avec succès'
-    ];
-    
-    // Transfer statistics (simulated - would be real data in production)
-    $stats = [
-        'total_transfers' => 156,
-        'pending_transfers' => 23,
-        'approved_transfers' => 98,
-        'rejected_transfers' => 12,
-        'fifa_tms_synced' => 134,
-        'local_transfers' => 22
-    ];
-    
-    // Transfer types configuration
-    $transferTypes = [
-        'domestic' => [
-            'name' => 'Transfert National',
-            'description' => 'Transferts entre clubs du même pays',
-            'icon' => '🏠',
-            'color' => 'blue'
-        ],
-        'international' => [
-            'name' => 'Transfert International',
-            'description' => 'Transferts entre clubs de pays différents',
-            'icon' => '🌍',
-            'color' => 'green'
-        ],
-        'loan' => [
-            'name' => 'Prêt',
-            'description' => 'Prêts temporaires de joueurs',
-            'icon' => '📋',
-            'color' => 'yellow'
-        ],
-        'free_transfer' => [
-            'name' => 'Transfert Libre',
-            'description' => 'Transferts sans frais de transfert',
-            'icon' => '🆓',
-            'color' => 'purple'
-        ]
-    ];
-    
-    return view('admin.transfer-management.index', compact('fifaTmsStatus', 'stats', 'transferTypes'));
-})->name('admin.transfer-management.index');
+    return redirect()->route('admin.transfer-management.index');
+})->middleware(['auth'])->name('legacy.admin-transfer-management');
 
-// Specific transfer type management routes
 Route::get('/admin/transfer-management/domestic', function () {
-    $transferType = 'domestic';
-    $transfers = [
-        ['id' => 1, 'player' => 'Ahmed Ben Ali', 'from_club' => 'ES Tunis', 'to_club' => 'Club Africain', 'status' => 'pending', 'date' => '2024-01-15'],
-        ['id' => 2, 'player' => 'Mohamed Trabelsi', 'from_club' => 'CS Sfaxien', 'to_club' => 'ES Sahel', 'status' => 'approved', 'date' => '2024-01-10'],
-        ['id' => 3, 'player' => 'Youssef Msakni', 'from_club' => 'Al Duhail', 'to_club' => 'ES Tunis', 'status' => 'pending', 'date' => '2024-01-12']
-    ];
-    return view('admin.transfer-management.type', compact('transferType', 'transfers'));
-})->name('admin.transfer-management.domestic');
+    return redirect()->route(
+        'admin.transfer-management.transfers',
+        ['type' => 'domestic']
+    );
+})->middleware(['auth'])->name('admin.transfer-management.domestic');
 
 Route::get('/admin/transfer-management/international', function () {
-    $transferType = 'international';
-    $transfers = [
-        ['id' => 4, 'player' => 'Wahbi Khazri', 'from_club' => 'Montpellier', 'to_club' => 'ES Tunis', 'status' => 'approved', 'date' => '2024-01-08'],
-        ['id' => 5, 'player' => 'Aymen Mathlouthi', 'from_club' => 'ES Tunis', 'to_club' => 'Al Ahli', 'status' => 'pending', 'date' => '2024-01-14']
-    ];
-    return view('admin.transfer-management.type', compact('transferType', 'transfers'));
-})->name('admin.transfer-management.international');
+    return redirect()->route(
+        'admin.transfer-management.transfers',
+        ['type' => 'international']
+    );
+})->middleware(['auth'])->name('admin.transfer-management.international');
 
 Route::get('/admin/transfer-management/loan', function () {
-    $transferType = 'loan';
-    $transfers = [
-        ['id' => 6, 'player' => 'Ali Maaloul', 'from_club' => 'Al Ahly', 'to_club' => 'ES Tunis', 'status' => 'approved', 'date' => '2024-01-05'],
-        ['id' => 7, 'player' => 'Ferjani Sassi', 'from_club' => 'ES Tunis', 'to_club' => 'Al Sadd', 'status' => 'pending', 'date' => '2024-01-13']
-    ];
-    return view('admin.transfer-management.type', compact('transferType', 'transfers'));
-})->name('admin.transfer-management.loan');
+    return redirect()->route(
+        'admin.transfer-management.transfers',
+        ['type' => 'loan']
+    );
+})->middleware(['auth'])->name('admin.transfer-management.loan');
 
 Route::get('/admin/transfer-management/free-transfer', function () {
-    $transferType = 'free_transfer';
-    $transfers = [
-        ['id' => 8, 'player' => 'Taha Yassine Khenissi', 'from_club' => 'Al Kuwait', 'to_club' => 'ES Tunis', 'status' => 'approved', 'date' => '2024-01-03'],
-        ['id' => 9, 'player' => 'Anis Ben Slimane', 'from_club' => 'Brøndby', 'to_club' => 'Club Africain', 'status' => 'approved', 'date' => '2024-01-01']
-    ];
-    return view('admin.transfer-management.type', compact('transferType', 'transfers'));
-})->name('admin.transfer-management.free-transfer');
+    return redirect()->route(
+        'admin.transfer-management.transfers',
+        ['type' => 'free_transfer']
+    );
+})->middleware(['auth'])->name('admin.transfer-management.free-transfer');
 
 // Finance Management Dashboard - Original ERP Integration System
-Route::get('/modules/finance', [App\Http\Controllers\FinanceController::class, 'index'])->name('modules.finance.dashboard');
+Route::get('/modules/finance', [App\Http\Controllers\FinanceController::class, 'index'])->middleware(['auth'])->name('modules.finance.dashboard');
 
 // Finance Integrations Page
 Route::get('/modules/finance/integrations', [App\Http\Controllers\FinanceController::class, 'integrations'])->name('modules.finance.integrations');

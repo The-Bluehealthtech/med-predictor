@@ -51,18 +51,37 @@ class PlayerLicense extends Model
         'player_id',
         'club_id',
         'license_type',
-        'start_date',
-        'end_date',
+        'license_category',
         'status',
-        'issued_at',
+        'approval_status',
+        'approved_at',
+        'approved_by',
+        'contract_start_date',
+        'contract_end_date',
+        'expiry_date',
+        'issue_date',
+        'issued_date',
+        'issued_by',
+        'fifa_connect_id',
+        'fitness_certificate',
+        'medical_clearance',
+        'international_clearance',
         'notes',
         'license_number',
+        'requested_by',
+        'rejection_reason',
+        'transfer_status',
     ];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-        'issued_at' => 'datetime',
+        'contract_start_date' => 'date',
+        'contract_end_date' => 'date',
+        'expiry_date' => 'date',
+        'issue_date' => 'date',
+        'issued_date' => 'date',
+        'approved_at' => 'datetime',
+        'fitness_certificate' => 'boolean',
+        'international_clearance' => 'boolean',
     ];
 
     /**
@@ -125,7 +144,7 @@ class PlayerLicense extends Model
      */
     public function getIsExpiredAttribute()
     {
-        return $this->end_date->isPast();
+        return $this->expiry_date ? $this->expiry_date->isPast() : false;
     }
 
     /**
@@ -145,7 +164,9 @@ class PlayerLicense extends Model
             return 0;
         }
 
-        return now()->diffInDays($this->end_date, false);
+        return $this->expiry_date
+            ? now()->diffInDays($this->expiry_date, false)
+            : null;
     }
 
     /**
@@ -154,7 +175,10 @@ class PlayerLicense extends Model
     public function scopeActive($query)
     {
         return $query->where('status', 'active')
-            ->where('end_date', '>', now());
+            ->where(function ($q) {
+                $q->whereNull('expiry_date')
+                    ->orWhere('expiry_date', '>', now());
+            });
     }
 
     /**
@@ -162,7 +186,8 @@ class PlayerLicense extends Model
      */
     public function scopeExpired($query)
     {
-        return $query->where('end_date', '<', now());
+        return $query->whereNotNull('expiry_date')
+            ->where('expiry_date', '<=', now());
     }
 
     /**
@@ -218,12 +243,13 @@ class PlayerLicense extends Model
     // Methods
     public function isActive(): bool
     {
-        return $this->status === 'active' && $this->expiry_date > now();
+        return $this->status === 'active'
+            && (!$this->expiry_date || $this->expiry_date->isFuture());
     }
 
     public function isExpired(): bool
     {
-        return $this->expiry_date <= now();
+        return $this->expiry_date ? $this->expiry_date->isPast() : false;
     }
 
     public function isPending(): bool
@@ -236,14 +262,20 @@ class PlayerLicense extends Model
         return $this->status === 'suspended';
     }
 
-    public function daysUntilExpiry(): int
+    public function daysUntilExpiry(): ?int
     {
-        return now()->diffInDays($this->expiry_date, false);
+        return $this->expiry_date
+            ? now()->diffInDays($this->expiry_date, false)
+            : null;
     }
 
     public function requiresRenewal(): bool
     {
-        return $this->daysUntilExpiry() <= 30 && $this->status === 'active';
+        $days = $this->daysUntilExpiry();
+
+        return $days !== null
+            && $days <= 30
+            && $this->status === 'active';
     }
 
     public function canTransfer(): bool

@@ -65,6 +65,16 @@ return [
         'webhook_secret' => env('FIFA_WEBHOOK_SECRET'),
         'compliance_check' => env('FIFA_COMPLIANCE_CHECK', true),
         'mock_mode' => env('FIFA_CONNECT_MOCK_MODE', false),
+        'data_standard_version' => env('FIFA_CONNECT_DATA_STANDARD_VERSION', '3.3'),
+        'xml_namespace' => env('FIFA_CONNECT_XML_NAMESPACE', 'http://fifa.com/fc'),
+        'xsd_path' => env(
+            'FIFA_CONNECT_XSD_PATH',
+            storage_path('app/fifa-connect/xsd')
+        ),
+        'xsd_validation_path' => env(
+            'FIFA_CONNECT_XSD_VALIDATION_PATH',
+            storage_path('app/fifa-connect/xsd-validation')
+        ),
     ],
 
     'fifa_tms' => [

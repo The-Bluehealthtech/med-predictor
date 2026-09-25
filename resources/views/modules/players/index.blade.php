@@ -189,7 +189,7 @@
                                                class="text-blue-600 hover:text-blue-900" title="Dossier Médical">
                                                 🏥
                                             </a>
-                                            <a href="{{ route('licenses.create', ['player_id' => $player->id]) }}" 
+                                            <a href="{{ route('player-licenses.request.create', $player) }}"
                                                class="text-green-600 hover:text-green-900" title="Licence">
                                                 📋
                                             </a>

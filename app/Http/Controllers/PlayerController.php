@@ -30,7 +30,7 @@ class PlayerController extends Controller
         if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
             if ($user->club_id) {
                 $players = Player::where('club_id', $user->club_id)
-                    ->with(['club.association.confederation', 'association.confederation', 'fifaConnectId'])
+                    ->with(['club.association.confederation', 'association.confederation', 'fifaConnectRecord'])
                     ->orderBy('first_name')
                     ->paginate(15);
             }
@@ -38,7 +38,7 @@ class PlayerController extends Controller
             $players = Player::whereHas('club', function ($query) use ($user) {
                 $query->where('association_id', $user->association_id);
             })
-            ->with(['club.association.confederation', 'association.confederation', 'fifaConnectId'])
+            ->with(['club.association.confederation', 'association.confederation', 'fifaConnectRecord'])
             ->orderBy('first_name')
             ->paginate(15);
         } elseif (in_array($user->role, ['system_admin', 'admin', 'super_admin'])) {
@@ -172,7 +172,7 @@ class PlayerController extends Controller
                 'overall_rating' => $validated['overall_rating'],
                 'potential_rating' => $validated['potential_rating'],
                 'fitness' => $validated['fitness'],
-                'fifa_connect_id' => Player::generateFifaConnectId(),
+                'fifa_connect_id' => null,
                 'created_by' => Auth::id(),
             ]);
 
@@ -473,7 +473,7 @@ class PlayerController extends Controller
                         'position' => trim($data[4]),
                         'club_id' => $clubId,
                         'association_id' => $associationId,
-                        'fifa_connect_id' => Player::generateFifaConnectId(),
+                        'fifa_connect_id' => null,
                         'created_by' => Auth::id(),
                     ]);
 

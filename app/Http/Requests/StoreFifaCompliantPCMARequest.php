@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FifaIdentifier;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,6 +16,18 @@ class StoreFifaCompliantPCMARequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if (
+            $this->filled('fifa_connect_id')
+            && !$this->filled('fifa_id')
+        ) {
+            $this->merge([
+                'fifa_id' => $this->input('fifa_connect_id'),
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      */
@@ -24,7 +37,13 @@ class StoreFifaCompliantPCMARequest extends FormRequest
             // Basic PCMA fields
             'athlete_id' => 'required|exists:athletes,id',
             'player_id' => 'nullable|exists:players,id',
-            'fifa_connect_id' => 'nullable|exists:fifa_connect_ids,id',
+            'fifa_connect_record_id' => 'nullable|exists:fifa_connect_ids,id',
+            // Legacy form alias for the official FIFAIdentifier.
+            'fifa_connect_id' => [
+                'nullable',
+                new FifaIdentifier(),
+                'same:fifa_id',
+            ],
             'type' => ['required', Rule::in(['bpma', 'cardio', 'dental', 'neurological', 'orthopedic'])],
             'status' => ['required', Rule::in(['pending', 'completed', 'failed', 'cleared', 'not_cleared'])],
             'assessor_id' => 'required|exists:users,id',
@@ -32,7 +51,7 @@ class StoreFifaCompliantPCMARequest extends FormRequest
             'notes' => 'nullable|string|max:1000',
             
             // FIFA-specific fields
-            'fifa_id' => 'nullable|string|max:50',
+            'fifa_id' => ['nullable', new FifaIdentifier()],
             'competition_name' => 'nullable|string|max:100',
             'competition_date' => 'nullable|string|max:20',
             'team_name' => 'nullable|string|max:100',

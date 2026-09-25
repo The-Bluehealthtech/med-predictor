@@ -13,6 +13,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class TransferController extends Controller
 {
@@ -29,7 +30,9 @@ class TransferController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Transfer::with(['player', 'clubOrigin', 'clubDestination', 'federationOrigin', 'federationDestination']);
+        $query = $this->scopeTransfersForUser(
+            Transfer::with(['player', 'clubOrigin', 'clubDestination', 'federationOrigin', 'federationDestination'])
+        );
 
         // Filtres
         if ($request->filled('status')) {
@@ -63,6 +66,8 @@ class TransferController extends Controller
      */
     public function create(): View
     {
+        $this->authorizeTransferManagement();
+
         $players = Player::where('is_transfer_eligible', true)->get();
         $clubs = Club::where('can_conduct_transfers', true)->get();
         $federations = Federation::active()->get();
@@ -75,6 +80,8 @@ class TransferController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $this->authorizeTransferManagement();
+
         $request->validate([
             'player_id' => 'required|exists:players,id',
             'club_origin_id' => 'required|exists:clubs,id',
@@ -91,8 +98,6 @@ class TransferController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
-
             $player = Player::findOrFail($request->player_id);
             $clubOrigin = Club::findOrFail($request->club_origin_id);
             $clubDestination = Club::findOrFail($request->club_destination_id);
@@ -115,6 +120,8 @@ class TransferController extends Controller
 
             // Déterminer si c'est un transfert international
             $isInternational = $clubOrigin->country !== $clubDestination->country;
+
+            DB::beginTransaction();
 
             $transfer = Transfer::create([
                 'player_id' => $request->player_id,
@@ -187,6 +194,8 @@ class TransferController extends Controller
      */
     public function show(Transfer $transfer): View
     {
+        $this->authorizeTransferAccess($transfer);
+
         $transfer->load([
             'player', 'clubOrigin', 'clubDestination', 
             'federationOrigin', 'federationDestination',
@@ -201,6 +210,9 @@ class TransferController extends Controller
      */
     public function edit(Transfer $transfer): View
     {
+        $this->authorizeTransferManagement();
+        $this->authorizeTransferAccess($transfer);
+
         $transfer->load(['player', 'clubOrigin', 'clubDestination']);
         $clubs = Club::where('can_conduct_transfers', true)->get();
         $federations = Federation::active()->get();
@@ -213,6 +225,9 @@ class TransferController extends Controller
      */
     public function update(Request $request, Transfer $transfer): JsonResponse
     {
+        $this->authorizeTransferManagement();
+        $this->authorizeTransferAccess($transfer);
+
         $request->validate([
             'transfer_fee' => 'nullable|numeric|min:0',
             'currency' => 'required|string|size:3',
@@ -271,6 +286,9 @@ class TransferController extends Controller
      */
     public function destroy(Transfer $transfer): JsonResponse
     {
+        $this->authorizeTransferManagement();
+        $this->authorizeTransferAccess($transfer);
+
         try {
             // Vérifier si le transfert peut être supprimé
             if (!in_array($transfer->transfer_status, ['draft', 'rejected'])) {
@@ -306,6 +324,9 @@ class TransferController extends Controller
      */
     public function submitToFifa(Transfer $transfer): JsonResponse
     {
+        $this->authorizeTransferManagement();
+        $this->authorizeTransferAccess($transfer);
+
         try {
             // Vérifier si le transfert peut être soumis
             if (!$transfer->canBeSubmitted()) {
@@ -362,6 +383,9 @@ class TransferController extends Controller
      */
     public function checkItcStatus(Transfer $transfer): JsonResponse
     {
+        $this->authorizeTransferManagement();
+        $this->authorizeTransferAccess($transfer);
+
         try {
             $result = $this->fifaService->checkItcStatus($transfer);
 
@@ -393,20 +417,86 @@ class TransferController extends Controller
         }
     }
 
+    private function scopeTransfersForUser(Builder $query): Builder
+    {
+        $user = Auth::user();
+        abort_unless($user, 401);
+
+        if ($user->isSystemAdmin()) {
+            return $query;
+        }
+
+        if ($user->isPlayer()) {
+            return $user->player_id
+                ? $query->where('player_id', $user->player_id)
+                : $query->whereRaw('1 = 0');
+        }
+
+        if ($user->isClubUser()) {
+            return $user->club_id
+                ? $query->where(function ($q) use ($user) {
+                    $q->where('club_origin_id', $user->club_id)
+                        ->orWhere('club_destination_id', $user->club_id);
+                })
+                : $query->whereRaw('1 = 0');
+        }
+
+        if ($user->isAssociationUser()) {
+            if (!$user->association_id) {
+                return $query->whereRaw('1 = 0');
+            }
+
+            return $query->where(function ($q) use ($user) {
+                $q->whereHas('clubOrigin', fn ($club) =>
+                    $club->where('association_id', $user->association_id)
+                )->orWhereHas('clubDestination', fn ($club) =>
+                    $club->where('association_id', $user->association_id)
+                );
+            });
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
+
+    private function authorizeTransferManagement(): void
+    {
+        $user = Auth::user();
+
+        abort_unless(
+            $user && (
+                $user->isSystemAdmin()
+                || $user->isClubUser()
+                || $user->isAssociationUser()
+            ),
+            403
+        );
+    }
+
+    private function authorizeTransferAccess(Transfer $transfer): void
+    {
+        $visible = $this->scopeTransfersForUser(
+            Transfer::query()->whereKey($transfer->getKey())
+        )->exists();
+
+        abort_unless($visible, 403);
+    }
+
     /**
      * Obtenir les statistiques des transferts
      */
     public function statistics(): JsonResponse
     {
         try {
+            $query = $this->scopeTransfersForUser(Transfer::query());
+
             $stats = [
-                'total' => Transfer::count(),
-                'pending' => Transfer::where('transfer_status', 'pending')->count(),
-                'approved' => Transfer::count(),
-                'rejected' => Transfer::where('transfer_status', 'rejected')->count(),
-                'international' => Transfer::where('is_international', true)->count(),
-                'this_month' => Transfer::whereMonth('created_at', now()->month)->count(),
-                'total_fees' => Transfer::where('transfer_status', 'approved')->sum('transfer_fee'),
+                'total' => (clone $query)->count(),
+                'pending' => (clone $query)->where('transfer_status', 'pending')->count(),
+                'approved' => (clone $query)->where('transfer_status', 'approved')->count(),
+                'rejected' => (clone $query)->where('transfer_status', 'rejected')->count(),
+                'international' => (clone $query)->where('is_international', true)->count(),
+                'this_month' => (clone $query)->whereMonth('created_at', now()->month)->count(),
+                'total_fees' => (clone $query)->where('transfer_status', 'approved')->sum('transfer_fee'),
             ];
 
             return response()->json([

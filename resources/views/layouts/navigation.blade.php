@@ -61,7 +61,7 @@
                     <a href="{{ route('seasons.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.seasons') }}</a>
                     <a href="{{ route('federations.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.federations') }}</a>
                     <a href="{{ route('registration-requests.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.registration_requests') }}</a>
-                    <a href="{{ route('licenses.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.licenses') }}</a>
+                    <a href="{{ route('modules.licenses.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.licenses') }}</a>
                     <a href="{{ route('player-licenses.index') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-blue-700">{{ __('navigation.player_license_requests') }}</a>
                     <a href="{{ route('contracts.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.contracts') }}</a>
                 </div>

@@ -239,17 +239,21 @@ class LicenseHistoryAggregator
             $player = $fifaData['data'];
             $rows = [];
 
-            // Créer une licence basée sur les données FIFA actuelles
-            if (isset($player['club']) && isset($player['nationality'])) {
+            // Les données générales d'un joueur FIFA ne prouvent pas
+            // l'existence d'une licence. N'ajouter une ligne que si la source
+            // fournit explicitement un objet licence traçable.
+            $license = $player['license'] ?? null;
+
+            if (is_array($license) && !empty($license)) {
                 $rows[] = [
-                    'date_debut' => '2020-01-01', // Date par défaut
-                    'date_fin' => null, // Licence actuelle
-                    'club' => $player['club']['name'] ?? 'Club inconnu',
-                    'association' => $player['nationality'] ?? 'Association inconnue',
-                    'type_licence' => 'Pro',
+                    'date_debut' => $license['start_date'] ?? null,
+                    'date_fin' => $license['end_date'] ?? null,
+                    'club' => $license['club_name'] ?? null,
+                    'association' => $license['association_name'] ?? null,
+                    'type_licence' => $license['type'] ?? null,
                     'source_donnee' => 'FIFA API',
-                    'license_number' => null,
-                    'status' => 'active'
+                    'license_number' => $license['license_number'] ?? null,
+                    'status' => $license['status'] ?? null,
                 ];
             }
 

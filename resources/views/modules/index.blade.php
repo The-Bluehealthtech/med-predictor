@@ -284,7 +284,24 @@ function filterByCategory(category, event) {
                         'admin.transfer-management.index' => 'access-transfer-management'
                     ];
                     $permission = $gateMap[$routeName] ?? 'access-modules';
-                    $canAccess = true; // Always show modules on this page
+
+                    // FIT Metrics follows the canonical RBAC permission used
+                    // by its destination route. Legacy module permissions are
+                    // audited separately before enforcing them globally here.
+                    $canAccess = match ($routeName) {
+                        'performances.fit-metrics' => auth()->check()
+                            && app(\App\Services\RBACService::class)
+                                ->userHasPermission(
+                                    auth()->user(),
+                                    'record-performance-metrics'
+                                ),
+                        'dtn.index' => auth()->check()
+                            && (
+                                auth()->user()->isSystemAdmin()
+                                || auth()->user()->isAssociationUser()
+                            ),
+                        default => true,
+                    };
                 @endphp
                 @if($canAccess)
                 <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
@@ -415,6 +432,7 @@ function handleModuleClick(route, moduleName, event) {
         'fifa.analytics': '/fifa/analytics',
         'analytics.digital-twin': '/analytics/digital-twin',
         'performances.analytics': '/performances/analytics',
+        'performances.fit-metrics': '/performances/fit-metrics',
         'dtn.index': '/dtn',
         'rpm.index': '/rpm',
         'gemini.index': '/gemini',

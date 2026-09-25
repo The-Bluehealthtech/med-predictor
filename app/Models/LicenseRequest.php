@@ -521,27 +521,23 @@ class LicenseRequest extends Model
 
     public static function generateFifaConnectId(): string
     {
-        $prefix = 'FIFA';
-        $year = date('Y');
-        $random = strtoupper(substr(md5(uniqid()), 0, 8));
-        return "{$prefix}{$year}{$random}";
+        throw new \LogicException(
+            'FIFA Connect IDs must come from the authoritative FIFA source.'
+        );
     }
 
     public static function generateFifaLicenseRequestNumber(): string
     {
-        $prefix = 'FIFA-REQ';
-        $year = date('Y');
-        $month = date('m');
-        $random = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
-        return "{$prefix}{$year}{$month}{$random}";
+        throw new \LogicException(
+            'FIFA licence request numbers must not be fabricated locally.'
+        );
     }
 
     public static function generateFifaLicenseNumber(): string
     {
-        $prefix = 'FIFA-LIC';
-        $year = date('Y');
-        $random = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
-        return "{$prefix}{$year}{$random}";
+        throw new \LogicException(
+            'FIFA licence numbers must not be fabricated locally.'
+        );
     }
 
     // ========================================

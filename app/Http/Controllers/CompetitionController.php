@@ -104,7 +104,7 @@ class CompetitionController extends Controller
             $players = Player::with([
                 'club.association.confederation', // Hiérarchie FIFA : Club > Association > Confédération
                 'association.confederation', // Hiérarchie FIFA : Association > Confédération
-                'fifaConnectId'
+                'fifaConnectRecord'
             ])
             ->whereHas('club') // Filtrer par club si nécessaire
             ->orderBy('last_name')
@@ -1179,7 +1179,7 @@ class CompetitionController extends Controller
      */
     public function apiEffectif($clubId): JsonResponse
     {
-        $players = Player::with(['club', 'fifaConnectId'])
+        $players = Player::with(['club', 'fifaConnectRecord'])
             ->where('club_id', $clubId)
             ->get()
             ->map(function($player) {

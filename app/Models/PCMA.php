@@ -20,7 +20,7 @@ class PCMA extends Model
         'athlete_id',
         'player_id', // Link to Player model
         'visit_id', // Link to Visit model
-        'fifa_connect_id', // Link to FIFA Connect ID
+        'fifa_connect_record_id', // Legacy internal mapping record
         'type',
         'result_json',
         'medical_history',
@@ -111,9 +111,12 @@ class PCMA extends Model
     /**
      * Get the FIFA Connect ID that this PCMA belongs to.
      */
-    public function fifaConnectId(): BelongsTo
+    public function fifaConnectRecord(): BelongsTo
     {
-        return $this->belongsTo(FifaConnectId::class, 'fifa_connect_id');
+        return $this->belongsTo(
+            FifaConnectId::class,
+            'fifa_connect_record_id'
+        );
     }
 
     /**

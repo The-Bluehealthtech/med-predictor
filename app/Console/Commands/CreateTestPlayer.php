@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use App\Models\User;
 use App\Models\Club;
 use App\Models\Association;
-use App\Models\FifaConnectId;
 use Illuminate\Support\Facades\Hash;
 
 class CreateTestPlayer extends Command
@@ -21,7 +20,6 @@ class CreateTestPlayer extends Command
         // Create test association and club
         $association = Association::firstOrCreate([
             'name' => 'Test Football Association',
-            'fifa_association_id' => 'TFA-001'
         ], [
             'country' => 'Test Country',
             'association_logo_url' => null,
@@ -33,7 +31,6 @@ class CreateTestPlayer extends Command
 
         $club = Club::firstOrCreate([
             'name' => 'Test FC',
-            'fifa_club_id' => 'TFC-001'
         ], [
             'association_id' => $association->id,
             'country' => 'Test Country',
@@ -45,17 +42,6 @@ class CreateTestPlayer extends Command
             'status' => 'active'
         ]);
 
-        // Create FIFA Connect ID for player
-        $fifaConnectId = FifaConnectId::firstOrCreate([
-            'fifa_id' => 'PLAYER-001'
-        ], [
-            'entity_type' => 'player',
-            'status' => 'active',
-            'metadata' => [
-                'created_by' => 1
-            ]
-        ]);
-
         // Create user account for the player
         $user = User::firstOrCreate([
             'email' => 'john.doe@testfc.com'
@@ -65,7 +51,7 @@ class CreateTestPlayer extends Command
             'role' => 'player',
             'club_id' => $club->id,
             'association_id' => $association->id,
-            'fifa_connect_id' => $fifaConnectId->id,
+            'fifa_connect_id' => null,
             'permissions' => ['player_dashboard_access'],
             'status' => 'active'
         ]);
@@ -74,7 +60,7 @@ class CreateTestPlayer extends Command
         $this->info("✅ Email: {$user->email}");
         $this->info("✅ Password: password123");
         $this->info("✅ Role: {$user->role}");
-        $this->info("✅ FIFA Connect ID: {$fifaConnectId->fifa_id}");
+        $this->info('ℹ️ FIFA Connect ID: non attribué (donnée autoritative externe)');
         $this->info('');
         $this->info('🔐 Test the Player Dashboard:');
         $this->info('1. Go to: http://localhost:8000/login?access_type=player');

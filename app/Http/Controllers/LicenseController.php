@@ -20,174 +20,42 @@ class LicenseController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin,club_admin,club_manager,club_medical,association_admin,association_registrar,association_medical,system_admin,super_admin');
+        $this->middleware(
+            'role:club_admin,club_manager,club_medical,association_admin,association_registrar,association_medical,system_admin'
+        );
     }
 
     public function index(Request $request)
     {
-        $user = Auth::user();
-        
-        // Debug logging
-        \Log::info('LicenseController::index called', [
-            'user_id' => $user->id,
-            'user_email' => $user->email,
-            'user_role' => $user->role,
-            'club_id' => $user->club_id,
-            'association_id' => $user->association_id
-        ]);
-
-        $licenses = collect();
-
-        // Check if user has club-related role - ONLY show club-specific data
-        if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
-            if (!$user->club_id) {
-                return redirect()->route('dashboard')
-                    ->with('error', 'Vous n\'êtes associé à aucun club.');
-            }
-            
-            $licenses = License::where('club_id', $user->club_id)
-                ->with(['club', 'association', 'requestedByUser', 'approvedByUser'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(15);
-        } 
-        // Check if user has association-related role - show all clubs in association
-        elseif (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
-            if (!$user->association_id) {
-                return redirect()->route('dashboard')
-                    ->with('error', 'Vous n\'êtes associé à aucune association.');
-            }
-            
-            $licenses = License::whereHas('club', function ($query) use ($user) {
-                $query->where('association_id', $user->association_id);
-            })
-            ->with(['club', 'association', 'requestedByUser', 'approvedByUser'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
-        }
-        // For system admin, admin and super_admin, show all licenses
-        elseif (in_array($user->role, ['system_admin', 'admin', 'super_admin'])) {
-            $licenses = License::with(['player', 'club', 'association', 'requestedByUser', 'approvedByUser'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(15);
-        }
-
-        return view('licenses.index', compact('licenses'));
+        return redirect()->route('modules.licenses.index');
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $user = Auth::user();
-        $clubs = collect();
-        $associations = collect();
+        $playerId = filter_var(
+            $request->query('player_id'),
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]]
+        );
 
-        // Get clubs based on user role
-        if (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
-            $clubs = Club::where('association_id', $user->association_id)
-                ->orderBy('name')
-                ->get();
-        } elseif (in_array($user->role, ['system_admin', 'admin', 'super_admin'])) {
-            $clubs = Club::orderBy('name')->get();
+        if ($playerId !== false) {
+            return redirect()->route(
+                'player-licenses.request.create',
+                ['player' => (int) $playerId]
+            );
         }
 
-        // Get associations for system admin, admin and super_admin
-        if (in_array($user->role, ['system_admin', 'admin', 'super_admin'])) {
-            $associations = Association::orderBy('name')->get();
-        }
-
-        return view('licenses.create', compact('clubs', 'associations'));
+        return redirect()->route('modules.licenses.index');
     }
 
     public function store(Request $request)
     {
-        $user = Auth::user();
-        
-        $validated = $request->validate([
-            'license_type' => 'required|in:player,staff,medical',
-            'applicant_name' => 'required|string|max:255',
-            'date_of_birth' => 'required|date|before:today',
-            'nationality' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'required|string|max:20',
-            'club_id' => in_array($user->role, ['association_admin', 'association_registrar', 'association_medical']) ? 'required|exists:clubs,id' : 'nullable',
-            'license_reason' => 'required|string|max:1000',
-            'validity_period' => 'required|in:1_year,2_years,3_years,5_years',
-            'id_document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'medical_certificate' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'proof_of_age' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'additional_documents.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        ]);
-
-        try {
-            DB::beginTransaction();
-
-            // Determine club_id based on user role
-            if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
-                $validated['club_id'] = $user->club_id;
-            }
-
-            // Upload documents
-            $documents = [];
-            $uploadFields = ['id_document', 'medical_certificate', 'proof_of_age'];
-            
-            foreach ($uploadFields as $field) {
-                if ($request->hasFile($field)) {
-                    $path = $request->file($field)->store('licenses/documents', 'public');
-                    $documents[$field] = $path;
-                }
-            }
-
-            // Handle additional documents
-            if ($request->hasFile('additional_documents')) {
-                $additionalDocs = [];
-                foreach ($request->file('additional_documents') as $file) {
-                    $path = $file->store('licenses/additional', 'public');
-                    $additionalDocs[] = $path;
-                }
-                $documents['additional_documents'] = $additionalDocs;
-            }
-
-            // Create license with pending status
-            $license = License::create([
-                'license_type' => $validated['license_type'],
-                'applicant_name' => $validated['applicant_name'],
-                'date_of_birth' => $validated['date_of_birth'],
-                'nationality' => $validated['nationality'],
-                'position' => $validated['position'],
-                'email' => $validated['email'],
-                'phone' => $validated['phone'],
-                'club_id' => $validated['club_id'],
-                'association_id' => $user->association_id ?? Club::find($validated['club_id'])->association_id,
-                'license_reason' => $validated['license_reason'],
-                'validity_period' => $validated['validity_period'],
-                'documents' => $documents,
-                'status' => 'pending',
-                'requested_by' => $user->id,
-                'requested_at' => now(),
-            ]);
-
-            DB::commit();
-
-            return redirect()->route('licenses.index')
-                ->with('success', 'Demande de licence soumise avec succès. Elle sera examinée par l\'association.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            
-            // Clean up uploaded files on error
-            foreach ($documents as $path) {
-                if (is_array($path)) {
-                    foreach ($path as $filePath) {
-                        Storage::disk('public')->delete($filePath);
-                    }
-                } else {
-                    Storage::disk('public')->delete($path);
-                }
-            }
-
-            return back()->withInput()
-                ->with('error', 'Erreur lors de la soumission de la demande de licence: ' . $e->getMessage());
-        }
+        return redirect()
+            ->route('modules.licenses.index')
+            ->with(
+                'error',
+                'Ancien formulaire de licence désactivé. Utilisez la demande liée à un joueur.'
+            );
     }
 
     public function edit(License $license)
@@ -348,105 +216,126 @@ class LicenseController extends Controller
             ->with('success', 'Licence supprimée.');
     }
 
-    public function approve(License $license)
+    public function approve(License $license): JsonResponse
     {
+        $this->authorizeLicenseAccess($license);
+
         $user = Auth::user();
-        
-        // Only association users can approve licenses
-        if (!in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
-            return back()->with('error', 'Vous n\'avez pas les permissions pour approuver cette licence.');
+
+        abort_unless(
+            $user->isSystemAdmin() || $user->isAssociationUser(),
+            403
+        );
+
+        if ($license->status !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Seule une licence en attente peut être approuvée.',
+            ], 422);
+        }
+
+        if (!$license->expiry_date || $license->expiry_date->isPast()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Une date d’expiration future est requise avant approbation.',
+            ], 422);
         }
 
         $license->update([
-            'status' => 'approved',
+            'status' => 'active',
+            'approval_status' => 'approved',
             'approved_by' => $user->id,
             'approved_at' => now(),
+            'issue_date' => now()->toDateString(),
+            'issued_date' => now()->toDateString(),
+            'issued_by' => $user->id,
         ]);
 
-        return redirect()->route('licenses.index')
-            ->with('success', 'Licence approuvée avec succès.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Licence approuvée avec succès.',
+        ]);
     }
 
-    public function reject(License $license)
+    public function reject(Request $request, License $license): JsonResponse
     {
+        $this->authorizeLicenseAccess($license);
+
         $user = Auth::user();
-        
-        // Only association users can reject licenses
-        if (!in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
-            return back()->with('error', 'Vous n\'avez pas les permissions pour rejeter cette licence.');
+
+        abort_unless(
+            $user->isSystemAdmin() || $user->isAssociationUser(),
+            403
+        );
+
+        $validated = $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+
+        if ($license->status !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Seule une licence en attente peut être rejetée.',
+            ], 422);
         }
 
         $license->update([
-            'status' => 'rejected',
+            'status' => 'revoked',
+            'approval_status' => 'rejected',
+            'rejection_reason' => $validated['rejection_reason'],
             'approved_by' => $user->id,
             'approved_at' => now(),
         ]);
 
-        return redirect()->route('licenses.index')
-            ->with('success', 'Licence rejetée.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Licence rejetée.',
+        ]);
     }
 
     public function validation()
     {
         $user = Auth::user();
-        
-        // System admin and association users can access this page
-        if (!in_array($user->role, ['system_admin', 'association_admin', 'association_registrar', 'association_medical'])) {
-            return redirect()->route('dashboard')
-                ->with('error', 'Vous n\'avez pas les permissions pour accéder à cette page.');
-        }
-        
-        // For System Admin, show all licenses. For association users, filter by association
-        if ($user->role === 'system_admin') {
-            $licenses = License::with(['player', 'club'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(15);
-            
-            // Statistics for System Admin
-            $pendingCount = License::where('status', 'pending')->count();
-            $approvedCount = License::where('status', 'approved')->count();
-            $rejectedCount = License::where('status', 'rejected')->count();
-            $totalCount = $pendingCount + $approvedCount + $rejectedCount;
-            
-            // All clubs for System Admin
-            $clubs = Club::orderBy('name')->get();
-        } else {
-            // Association users - filter by association
-            $licenses = License::whereHas('club', function ($query) use ($user) {
-                $query->where('association_id', $user->association_id);
-            })
+        abort_unless($user, 401);
+
+        abort_unless(
+            $user->isSystemAdmin() || $user->isAssociationUser(),
+            403
+        );
+
+        $query = License::query()
             ->with(['player', 'club'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
-            
-            // Statistics for association users
-            $pendingCount = License::whereHas('club', function ($query) use ($user) {
-                $query->where('association_id', $user->association_id);
-            })->where('status', 'pending')->count();
-            
-            $approvedCount = License::whereHas('club', function ($query) use ($user) {
-                $query->where('association_id', $user->association_id);
-            })->where('status', 'approved')->count();
-            
-            $rejectedCount = License::whereHas('club', function ($query) use ($user) {
-                $query->where('association_id', $user->association_id);
-            })->where('status', 'rejected')->count();
-            
-            $totalCount = $pendingCount + $approvedCount + $rejectedCount;
-            
-            // Clubs of the association
-            $clubs = Club::where('association_id', $user->association_id)
-                ->orderBy('name')
-                ->get();
+            ->orderByDesc('created_at');
+
+        if ($user->isAssociationUser()) {
+            abort_unless($user->association_id, 403);
+
+            $query->whereHas('club', function ($club) use ($user) {
+                $club->where('association_id', $user->association_id);
+            });
         }
-        
-        return view('modules.licenses.validation', compact(
-            'licenses', 
-            'pendingCount', 
-            'approvedCount', 
-            'rejectedCount', 
-            'totalCount',
-            'clubs'
+
+        $statsQuery = clone $query;
+
+        $pendingCount = (clone $statsQuery)
+            ->where('status', 'pending')
+            ->count();
+        $approvedCount = (clone $statsQuery)
+            ->where('status', 'active')
+            ->count();
+        $rejectedCount = (clone $statsQuery)
+            ->where('status', 'revoked')
+            ->count();
+        $totalCount = (clone $statsQuery)->count();
+
+        $licenses = $query->paginate(20);
+
+        return view('licenses.validation-canonical', compact(
+            'licenses',
+            'pendingCount',
+            'approvedCount',
+            'rejectedCount',
+            'totalCount'
         ));
     }
 
@@ -668,24 +557,33 @@ class LicenseController extends Controller
     protected function authorizeLicenseAccess(License $license)
     {
         $user = Auth::user();
-        
-        // System admin and admin can access all licenses
-        if (in_array($user->role, ['system_admin', 'admin'])) {
+        abort_unless($user, 401);
+
+        if ($user->isSystemAdmin()) {
             return;
         }
-        
-        // Club users can only access their club's licenses
-        if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
-            if ($license->club_id !== $user->club_id) {
-                abort(403, 'Vous n\'avez pas accès à cette licence.');
-            }
+
+        if ($user->isClubUser()) {
+            abort_unless(
+                $user->club_id
+                && (int) $license->club_id === (int) $user->club_id,
+                403,
+                'Vous n\'avez pas accès à cette licence.'
+            );
+            return;
         }
-        
-        // Association users can access licenses from clubs in their association
-        if (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
-            if ($license->association_id !== $user->association_id) {
-                abort(403, 'Vous n\'avez pas accès à cette licence.');
-            }
+
+        if ($user->isAssociationUser()) {
+            abort_unless(
+                $user->association_id
+                && $license->club
+                && (int) $license->club->association_id === (int) $user->association_id,
+                403,
+                'Vous n\'avez pas accès à cette licence.'
+            );
+            return;
         }
+
+        abort(403, 'Vous n\'avez pas accès à cette licence.');
     }
 } 

@@ -285,9 +285,9 @@ class AccountRequest extends Model
     {
         $password = $this->generatePassword();
         
-        // Generate FIFA Connect ID based on role and organization type
-        $fifaConnectId = $this->generateFifaConnectId();
-        
+        // A local application account does not receive a fabricated FIFA ID.
+        $fifaConnectId = null;
+
         // Get default permissions for the role
         $permissions = $this->getDefaultPermissions();
         
@@ -324,32 +324,9 @@ class AccountRequest extends Model
      */
     private function generateFifaConnectId(): string
     {
-        $role = $this->getDefaultRole();
-        $prefix = match($role) {
-            'system_admin' => 'FIFA_SYS',
-            'club_admin' => 'FIFA_CLUB_ADMIN',
-            'club_manager' => 'FIFA_CLUB_MGR',
-            'club_medical' => 'FIFA_CLUB_MED',
-            'association_admin' => 'FIFA_ASSOC_ADMIN',
-            'association_registrar' => 'FIFA_ASSOC_REG',
-            'association_medical' => 'FIFA_ASSOC_MED',
-            'referee' => 'FIFA_REF',
-            'assistant_referee' => 'FIFA_ASST_REF',
-            'fourth_official' => 'FIFA_4TH_OFF',
-            'var_official' => 'FIFA_VAR_OFF',
-            'match_commissioner' => 'FIFA_MATCH_COMM',
-            'match_official' => 'FIFA_MATCH_OFF',
-            'team_doctor' => 'FIFA_TEAM_DOC',
-            'physiotherapist' => 'FIFA_PHYSIO',
-            'sports_scientist' => 'FIFA_SPORTS_SCI',
-            'player' => 'FIFA_PLAYER',
-            default => 'FIFA_USER'
-        };
-
-        $timestamp = now()->format('YmdHis');
-        $random = strtoupper(\Illuminate\Support\Str::random(6));
-        
-        return $prefix . '_' . $timestamp . '_' . $random;
+        throw new \LogicException(
+            'Application users must not be assigned fabricated FIFA IDs.'
+        );
     }
 
     /**

@@ -72,6 +72,9 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\SyncTenants::class,
         \App\Console\Commands\GenerateFitSnapshots::class,
         \App\Console\Commands\DeployFit::class,
+        \App\Console\Commands\TestFifaConnectivity::class,
+        \App\Console\Commands\CheckFifaDataStandardCompliance::class,
+        \App\Console\Commands\PrepareFifaDataStandardValidationBundle::class,
     ];
 
     /**

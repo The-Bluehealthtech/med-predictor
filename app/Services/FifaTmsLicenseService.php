@@ -19,7 +19,7 @@ class FifaTmsLicenseService
         $this->baseUrl = config('services.fifa_tms.base_url', 'https://api.fifa.com/tms/v1');
         $this->apiKey = config('services.fifa_tms.api_key');
         $this->timeout = config('services.fifa_tms.timeout', 15);
-        $this->mockMode = config('services.fifa_tms.mock_mode', false) || config('app.env') === 'local';
+        $this->mockMode = (bool) config('services.fifa_tms.mock_mode', false);
     }
 
     /**
@@ -280,11 +280,24 @@ class FifaTmsLicenseService
     {
         if ($this->mockMode) {
             return [
-                'connected' => true,
+                'connected' => false,
                 'status' => 'mock',
-                'response_time' => 0.1,
+                'response_time' => null,
                 'timestamp' => now()->toISOString(),
-                'mock_mode' => true
+                'mock_mode' => true,
+                'simulated' => true,
+                'message' => 'FIFA TMS mock mode is explicitly enabled; no live connection was tested.',
+            ];
+        }
+
+        if (!$this->apiKey) {
+            return [
+                'connected' => false,
+                'status' => 'unconfigured',
+                'response_time' => null,
+                'timestamp' => now()->toISOString(),
+                'mock_mode' => false,
+                'message' => 'FIFA TMS API key is not configured.',
             ];
         }
 

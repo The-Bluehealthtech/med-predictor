@@ -349,7 +349,7 @@ class PlayerRegistrationController extends Controller
                     'position' => $validated['position'],
                     'club_id' => $validated['club_id'],
                     'association_id' => $validated['association_id'],
-                    'fifa_connect_id' => Player::generateFifaConnectId(),
+                    'fifa_connect_id' => null,
                     'created_by' => Auth::id(),
                     // Nouveaux champs pour la demande de licence
                     'address' => $validated['address'] ?? null,

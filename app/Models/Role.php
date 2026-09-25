@@ -17,7 +17,7 @@ class Role extends Model
         'permissions',
         'is_system_role',
         'is_active',
-        'fifa_connect_id_prefix',
+        'account_reference_prefix',
         'created_by',
         'updated_by'
     ];
@@ -117,9 +117,9 @@ class Role extends Model
         return $this->display_name ?: $this->name;
     }
 
-    public function getFifaConnectIdPrefix(): string
+    public function getAccountReferencePrefix(): string
     {
-        return $this->fifa_connect_id_prefix ?: 'FIFA_USER';
+        return $this->account_reference_prefix ?: 'USER';
     }
 
     // Static methods for default roles
@@ -139,7 +139,7 @@ class Role extends Model
                     'fifa_connect_access',
                     'fifa_data_sync'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_SYS',
+                'account_reference_prefix' => 'SYS',
                 'is_system_role' => true
             ],
             'club_admin' => [
@@ -151,7 +151,7 @@ class Role extends Model
                     'healthcare_access',
                     'fifa_connect_access'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_CLUB_ADMIN',
+                'account_reference_prefix' => 'CLUB_ADMIN',
                 'is_system_role' => true
             ],
             'club_manager' => [
@@ -163,7 +163,7 @@ class Role extends Model
                     'healthcare_access',
                     'fifa_connect_access'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_CLUB_MGR',
+                'account_reference_prefix' => 'CLUB_MGR',
                 'is_system_role' => true
             ],
             'club_medical' => [
@@ -173,7 +173,7 @@ class Role extends Model
                     'healthcare_access',
                     'health_record_management'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_CLUB_MED',
+                'account_reference_prefix' => 'CLUB_MED',
                 'is_system_role' => true
             ],
             'association_admin' => [
@@ -187,7 +187,7 @@ class Role extends Model
                     'fifa_connect_access',
                     'fifa_data_sync'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_ASSOC_ADMIN',
+                'account_reference_prefix' => 'ASSOC_ADMIN',
                 'is_system_role' => true
             ],
             'association_registrar' => [
@@ -198,7 +198,7 @@ class Role extends Model
                     'competition_management_access',
                     'fifa_connect_access'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_ASSOC_REG',
+                'account_reference_prefix' => 'ASSOC_REG',
                 'is_system_role' => true
             ],
             'association_medical' => [
@@ -208,7 +208,7 @@ class Role extends Model
                     'healthcare_access',
                     'health_record_management'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_ASSOC_MED',
+                'account_reference_prefix' => 'ASSOC_MED',
                 'is_system_role' => true
             ],
             'referee' => [
@@ -218,7 +218,7 @@ class Role extends Model
                     'match_sheet_management',
                     'referee_access'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_REF',
+                'account_reference_prefix' => 'REF',
                 'is_system_role' => true
             ],
             'assistant_referee' => [
@@ -227,7 +227,7 @@ class Role extends Model
                 'permissions' => [
                     'match_sheet_management'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_ASST_REF',
+                'account_reference_prefix' => 'ASST_REF',
                 'is_system_role' => true
             ],
             'fourth_official' => [
@@ -236,7 +236,7 @@ class Role extends Model
                 'permissions' => [
                     'match_sheet_management'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_4TH_OFF',
+                'account_reference_prefix' => '4TH_OFF',
                 'is_system_role' => true
             ],
             'var_official' => [
@@ -245,7 +245,7 @@ class Role extends Model
                 'permissions' => [
                     'match_sheet_management'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_VAR_OFF',
+                'account_reference_prefix' => 'VAR_OFF',
                 'is_system_role' => true
             ],
             'match_commissioner' => [
@@ -255,7 +255,7 @@ class Role extends Model
                     'match_sheet_management',
                     'competition_management_access'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_MATCH_COMM',
+                'account_reference_prefix' => 'MATCH_COMM',
                 'is_system_role' => true
             ],
             'match_official' => [
@@ -264,7 +264,7 @@ class Role extends Model
                 'permissions' => [
                     'match_sheet_management'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_MATCH_OFF',
+                'account_reference_prefix' => 'MATCH_OFF',
                 'is_system_role' => true
             ],
             'team_doctor' => [
@@ -274,7 +274,7 @@ class Role extends Model
                     'healthcare_access',
                     'health_record_management'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_TEAM_DOC',
+                'account_reference_prefix' => 'TEAM_DOC',
                 'is_system_role' => true
             ],
             'physiotherapist' => [
@@ -283,7 +283,7 @@ class Role extends Model
                 'permissions' => [
                     'healthcare_access'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_PHYSIO',
+                'account_reference_prefix' => 'PHYSIO',
                 'is_system_role' => true
             ],
             'sports_scientist' => [
@@ -294,7 +294,7 @@ class Role extends Model
                     'record-performance-metrics',
                     'verify-performance-metrics'
                 ],
-                'fifa_connect_id_prefix' => 'FIFA_SPORTS_SCI',
+                'account_reference_prefix' => 'SPORTS_SCI',
                 'is_system_role' => true
             ]
         ];

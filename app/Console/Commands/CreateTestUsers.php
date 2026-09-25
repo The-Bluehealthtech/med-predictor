@@ -20,25 +20,25 @@ class CreateTestUsers extends Command
                 'name' => 'John Doe',
                 'email' => 'john.doe@testfc.com',
                 'role' => 'player',
-                'fifa_connect_id' => 'TEST_PLAYER_001'
+                'fifa_connect_id' => null
             ],
             [
                 'name' => 'Admin User',
                 'email' => 'admin@testfc.com',
                 'role' => 'system_admin',
-                'fifa_connect_id' => 'TEST_ADMIN_001'
+                'fifa_connect_id' => null
             ],
             [
                 'name' => 'Club Manager',
                 'email' => 'manager@testfc.com',
                 'role' => 'club_manager',
-                'fifa_connect_id' => 'TEST_MANAGER_001'
+                'fifa_connect_id' => null
             ],
             [
                 'name' => 'Medical Staff',
                 'email' => 'medical@testfc.com',
                 'role' => 'club_medical',
-                'fifa_connect_id' => 'TEST_MEDICAL_001'
+                'fifa_connect_id' => null
             ]
         ];
 
@@ -60,7 +60,7 @@ class CreateTestUsers extends Command
                     'password' => Hash::make('password123'),
                     'role' => $userData['role'],
                     'status' => 'active',
-                    'fifa_connect_id' => $userData['fifa_connect_id'],
+                    'fifa_connect_id' => null,
                     'profile_picture_url' => $this->getRealisticPlayerPhoto($userData['name']),
                     'profile_picture_alt' => $userData['name'] . ' Profile Picture'
                 ]);

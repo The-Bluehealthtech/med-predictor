@@ -13,11 +13,20 @@ return new class extends Migration
          * Ces trois tables utilisent le Player moderne,
          * pas l'ancien modèle Joueur.
          */
+        $driver = DB::getDriverName();
+
         foreach ([
             'player_real_time_health',
             'player_sdoh_data',
             'player_connected_devices',
         ] as $tableName) {
+            // SQLite cannot alter/drop existing foreign keys in place.
+            // Test databases keep the existing column and skip only the
+            // constraint rebinding; PostgreSQL production performs it.
+            if ($driver === 'sqlite') {
+                continue;
+            }
+
             Schema::table($tableName, function (Blueprint $table) {
                 $table->dropForeign(['player_id']);
             });
@@ -79,23 +88,34 @@ return new class extends Migration
          * Backfill non destructif pour d'éventuelles anciennes données
          * déjà reliées à un Athlete ayant un player_id.
          */
-        DB::statement('
-            UPDATE injuries i
-            SET player_id = a.player_id
-            FROM athletes a
-            WHERE i.athlete_id = a.id
-              AND a.player_id IS NOT NULL
-              AND i.player_id IS NULL
-        ');
+        foreach (['injuries', 'pcmas'] as $targetTable) {
+            DB::table($targetTable)
+                ->whereNull('player_id')
+                ->whereNotNull('athlete_id')
+                ->orderBy('id')
+                ->chunkById(200, function ($rows) use ($targetTable) {
+                    $athleteIds = $rows
+                        ->pluck('athlete_id')
+                        ->filter()
+                        ->unique()
+                        ->values();
 
-        DB::statement('
-            UPDATE pcmas p
-            SET player_id = a.player_id
-            FROM athletes a
-            WHERE p.athlete_id = a.id
-              AND a.player_id IS NOT NULL
-              AND p.player_id IS NULL
-        ');
+                    $links = DB::table('athletes')
+                        ->whereIn('id', $athleteIds)
+                        ->whereNotNull('player_id')
+                        ->pluck('player_id', 'id');
+
+                    foreach ($rows as $row) {
+                        $playerId = $links->get($row->athlete_id);
+
+                        if ($playerId !== null) {
+                            DB::table($targetTable)
+                                ->where('id', $row->id)
+                                ->update(['player_id' => $playerId]);
+                        }
+                    }
+                });
+        }
     }
 
     public function down(): void

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FifaIdentifier;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,8 +26,7 @@ class StoreAthleteRequest extends FormRequest
         return [
             'fifa_id' => [
                 'required',
-                'string',
-                'max:50',
+                new FifaIdentifier(),
                 Rule::unique('athletes', 'fifa_id')->ignore($this->athlete),
             ],
             'name' => 'required|string|max:255',

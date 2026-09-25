@@ -68,15 +68,23 @@ class PCMAController extends Controller
     {
         try {
             $validatedData = $request->validated();
+
+            $fifaId = $validatedData['fifa_id'] ?? null;
+            unset($validatedData['fifa_connect_id']);
             
             // Set default values
             $validatedData['status'] = $validatedData['status'] ?? 'pending';
             $validatedData['form_version'] = $validatedData['form_version'] ?? '1.0';
             $validatedData['last_updated_at'] = now();
             
-            // Link to player if FIFA Connect ID is provided
-            if (!empty($validatedData['fifa_connect_id'])) {
-                $player = Player::where('fifa_connect_id', $validatedData['fifa_connect_id'])->first();
+            // Link to the local player only when an authoritative
+            // FIFAIdentifier is supplied. The legacy form alias has already
+            // been normalized to fifa_id by the request.
+            if ($fifaId) {
+                $player = Player::query()
+                    ->where('fifa_connect_id', $fifaId)
+                    ->first();
+
                 if ($player) {
                     $validatedData['player_id'] = $player->id;
                 }
@@ -185,6 +193,7 @@ class PCMAController extends Controller
     {
         try {
             $validatedData = $request->validated();
+            unset($validatedData['fifa_connect_id']);
             $validatedData['last_updated_at'] = now();
 
             // Handle file uploads
@@ -489,17 +498,11 @@ class PCMAController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Exception during ' . $request->pcma_type . ' extraction: ' . $e->getMessage());
-            
-            // Fallback to mock data
-            $mockData = $this->generateMockData($request->transcript, $request->pcma_type);
-            
+
             return response()->json([
-                'success' => true,
-                'data' => $mockData,
-                'confidence_score' => 0.6,
-                'extracted_fields' => array_keys($mockData),
-                'message' => 'Utilisation de données simulées (service AI non disponible)'
-            ]);
+                'success' => false,
+                'message' => 'Service d’extraction IA indisponible.',
+            ], 503);
         }
     }
 
@@ -923,14 +926,19 @@ class PCMAController extends Controller
 
             if ($response->successful()) {
                 return $response->json();
-            } else {
-                // Fallback to mock data if AI service is unavailable
-                return $this->getMockAnalysis($analysisType);
             }
 
+            throw new \RuntimeException(
+                'AI service HTTP error: ' . $response->status()
+            );
+
         } catch (\Exception $e) {
-            Log::warning('AI service unavailable, using mock data: ' . $e->getMessage());
-            return $this->getMockAnalysis($analysisType);
+            Log::error('AI service unavailable', [
+                'analysis_type' => $analysisType,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw $e;
         }
     }
 

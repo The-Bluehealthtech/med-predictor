@@ -39,13 +39,12 @@ class TestFifaConnectivity extends Command
             $this->line('Response Time: ' . number_format($result['response_time'] * 1000, 2) . 'ms');
         }
         
-        if (isset($result['mock_mode']) && $result['mock_mode']) {
-            $this->line('Mode: 🔧 Mock Mode (Development)');
-            if (isset($result['fallback_reason'])) {
-                $this->line('Fallback Reason: ' . $result['fallback_reason']);
-            }
+        if (($result['status'] ?? null) === 'mock') {
+            $this->line('Mode: 🔧 Mock explicite — aucune connexion live testée');
+        } elseif (($result['status'] ?? null) === 'unconfigured') {
+            $this->line('Mode: ⚠️ Non configuré');
         } else {
-            $this->line('Mode: 🌐 Live Mode (Production)');
+            $this->line('Mode: 🌐 Live');
         }
         
         if (isset($result['error'])) {
@@ -63,7 +62,7 @@ class TestFifaConnectivity extends Command
             $this->line('1. Check your FIFA_CONNECT_API_KEY environment variable');
             $this->line('2. Verify the FIFA_CONNECT_BASE_URL is correct');
             $this->line('3. Ensure your network can reach the FIFA API');
-            $this->line('4. In development, the service will automatically use mock mode');
+            $this->line('4. Mock mode is only used when FIFA_CONNECT_MOCK_MODE is explicitly enabled');
         }
         
         return $result['connected'] ? 0 : 1;

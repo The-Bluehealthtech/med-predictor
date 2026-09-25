@@ -280,7 +280,7 @@ class PerformanceAlert extends Model
     /**
      * Acknowledge the alert
      */
-    public function acknowledge(User $user, string $notes = null): void
+    public function acknowledge(User $user, ?string $notes = null): void
     {
         $this->update([
             'is_acknowledged' => true,
@@ -293,7 +293,7 @@ class PerformanceAlert extends Model
     /**
      * Resolve the alert
      */
-    public function resolve(User $user, string $notes = null): void
+    public function resolve(User $user, ?string $notes = null): void
     {
         $this->update([
             'is_resolved' => true,

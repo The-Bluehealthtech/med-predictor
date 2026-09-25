@@ -134,7 +134,7 @@
                                                class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded text-xs">
                                                 FIFA Portal
                                             </a>
-                                            <a href="{{ route('licenses.create', ['player_id' => $player->id]) }}" 
+                                            <a href="{{ route('player-licenses.request.create', $player) }}"
                                                class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-2 py-1 rounded text-xs">
                                                 📋 Licence
                                             </a>

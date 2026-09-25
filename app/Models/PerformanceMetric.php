@@ -26,7 +26,7 @@ class PerformanceMetric extends Model
         'verified_at',
         'notes',
         'metadata', // JSON field for additional data
-        'fifa_connect_id',
+        'fifa_connect_record_id',
         'hl7_fhir_resource_id',
         'created_by',
         'updated_by',
@@ -84,9 +84,12 @@ class PerformanceMetric extends Model
     /**
      * Get the FIFA Connect ID record
      */
-    public function fifaConnectId(): BelongsTo
+    public function fifaConnectRecord(): BelongsTo
     {
-        return $this->belongsTo(FifaConnectId::class, 'fifa_connect_id');
+        return $this->belongsTo(
+            FifaConnectId::class,
+            'fifa_connect_record_id'
+        );
     }
 
     /**

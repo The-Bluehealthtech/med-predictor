@@ -587,7 +587,7 @@
                             <div class="space-y-4">
                                 <div class="flex justify-between items-center p-3 bg-white rounded-lg">
                                     <span class="text-gray-600">FIFA Connect ID</span>
-                                    <span class="font-mono font-medium">{{ Auth::user()->player->fifa_connect_id ?? 'FC-' . str_pad(Auth::user()->player->id, 8, '0', STR_PAD_LEFT) }}</span>
+                                    <span class="font-mono font-medium">{{ Auth::user()->player->fifa_connect_id ?? 'N/A' }}</span>
                                 </div>
                                 <div class="flex justify-between items-center p-3 bg-white rounded-lg">
                                     <span class="text-gray-600">Statut Joueur</span>

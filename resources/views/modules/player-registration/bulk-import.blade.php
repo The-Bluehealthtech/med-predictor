@@ -527,7 +527,7 @@ function exportPlayers() {
 function loadSampleData() {
     const sampleData = [
         {
-            "fifa_connect_id": "sample_001",
+            "fifa_connect_id": null,
             "name": "Lionel Messi",
             "first_name": "Lionel",
             "last_name": "Messi",
@@ -555,7 +555,7 @@ function loadSampleData() {
             "fifa_version": "FIFA 24"
         },
         {
-            "fifa_connect_id": "sample_002",
+            "fifa_connect_id": null,
             "name": "Cristiano Ronaldo",
             "first_name": "Cristiano",
             "last_name": "Ronaldo",

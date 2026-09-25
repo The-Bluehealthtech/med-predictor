@@ -802,6 +802,20 @@
                             >
                         </div>
 
+                        <!-- Décision médicale PCMA -->
+                        <div>
+                            <label for="final_statement_overall_decision" class="block text-sm font-medium text-gray-700 mb-2">
+                                Décision médicale *
+                            </label>
+                            <select id="final_statement_overall_decision" name="final_statement[overall_decision]" required class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="">Sélectionner la décision</option>
+                                <option value="FIT" {{ old('final_statement.overall_decision') === 'FIT' ? 'selected' : '' }}>Apte</option>
+                                <option value="NOT_FIT" {{ old('final_statement.overall_decision') === 'NOT_FIT' ? 'selected' : '' }}>Inapte</option>
+                                <option value="CONDITIONAL" {{ old('final_statement.overall_decision') === 'CONDITIONAL' ? 'selected' : '' }}>Apte sous conditions</option>
+                            </select>
+                            <p class="text-xs text-gray-500 mt-1">Cette décision saisie dans le PCMA sera la seule décision proposée à la signature.</p>
+                        </div>
+
                         <!-- Status -->
                         <div>
                             <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
@@ -2791,7 +2805,7 @@ window.openDoctorSignoff = function() {
         
         // Get fitness assessment results if available
         const fitnessResults = document.getElementById('fitness-results-content');
-        const fitnessDecision = formDataObj.fitness_decision || null;
+        const fitnessDecision = formDataObj['final_statement[overall_decision]'] || null;
         
         // Get doctor/assessor information
         const assessorSelect = document.getElementById('assessor_id');
@@ -2806,7 +2820,8 @@ window.openDoctorSignoff = function() {
             assessmentId: null,
             clinicalNotes: formDataObj.notes || null,
             doctorName: doctorName,
-            doctorFifaId: @json($teamDoctorRegistration?->person_fifa_id)
+            doctorFifaId: @json($teamDoctorRegistration?->person_fifa_id),
+            finalStatement: { overall_decision: fitnessDecision }
         };
         
         // Show the modal
@@ -3068,7 +3083,7 @@ function updateActionStatus() {
 }
 
 function handleSignoff(signoffData) {
-    if (!signoffData.doctorFifaId || !signoffData.doctorName || !signoffData.fitnessDecision) {
+    if (!signoffData.doctorFifaId || !signoffData.doctorName || !signoffData.fitnessDecision || !['FIT', 'NOT_FIT', 'CONDITIONAL'].includes(signoffData.fitnessDecision)) {
         alert('Signature indisponible : identité, numéro professionnel et décision médicale vérifiés requis.');
         return;
     }

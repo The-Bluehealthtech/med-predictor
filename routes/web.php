@@ -3978,7 +3978,7 @@ Route::get('/api/proxy/allergies', function (Request $request) {
 
 // Global routes (no auth required)
 Route::get('/', function () {
-    return view('landing');
+    return view('home-landing');
 })->name('landing');
 
 Route::get('/test-dashboard', function () {

@@ -28,21 +28,31 @@ class DataHolderService
             throw new InvalidArgumentException('Invalid FIFA_ID.', 0, $exception);
         }
 
-        return DataHolder::query()->updateOrCreate(
-            [
-                'association_id' => $association->id,
-                'person_fifa_id' => $fifaId,
-            ],
-            [
-                'claim_status' => $connectMutationSent
-                    ? 'covered_by_mutation'
-                    : 'claim_required',
-                'claim_reason' => $connectMutationSent
-                    ? 'connect_id_mutation_sent'
-                    : 'existing_fifa_id_stored_without_mutation',
-                'last_error' => null,
-            ]
-        );
+        $holder = DataHolder::query()->firstOrNew([
+            'association_id' => $association->id,
+            'person_fifa_id' => $fifaId,
+        ]);
+
+        if ($holder->exists && (
+            $holder->remote_deleted
+            || $holder->merged_into_fifa_id
+            || in_array($holder->claim_status, ['registered', 'verified', 'merged'], true)
+            || ($holder->claim_status === 'covered_by_mutation' && !$connectMutationSent)
+        )) {
+            return $holder;
+        }
+
+        $holder->fill([
+            'claim_status' => $connectMutationSent
+                ? 'covered_by_mutation'
+                : 'claim_required',
+            'claim_reason' => $connectMutationSent
+                ? 'connect_id_mutation_sent'
+                : 'existing_fifa_id_stored_without_mutation',
+            'last_error' => null,
+        ])->save();
+
+        return $holder;
     }
 
     public function markClaimAccepted(DataHolder $holder): DataHolder
@@ -74,9 +84,20 @@ class DataHolderService
         DataHolder $holder,
         string $primaryFifaId
     ): DataHolder {
+        $primaryFifaId = trim($primaryFifaId);
+        try {
+            $this->catalog->assertFifaIdentifier($primaryFifaId);
+        } catch (RuntimeException $exception) {
+            throw new InvalidArgumentException('Invalid primary FIFA_ID.', 0, $exception);
+        }
+
+        if ($primaryFifaId === $holder->person_fifa_id) {
+            throw new InvalidArgumentException('Primary FIFA_ID must differ from the merged FIFA_ID.');
+        }
+
         $holder->forceFill([
             'claim_status' => 'merged',
-            'merged_into_fifa_id' => trim($primaryFifaId),
+            'merged_into_fifa_id' => $primaryFifaId,
         ])->save();
 
         return $holder->refresh();

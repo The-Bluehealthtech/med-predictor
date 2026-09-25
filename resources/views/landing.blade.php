@@ -10,9 +10,11 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
+    <!-- Compiled Tailwind CSS (production build — replaces the unreliable CDN script,
+         which loads late or not at all depending on network conditions and was
+         causing the hero section and stat cards to render unstyled) -->
+    @vite(['resources/css/app.css'])
+
     <!-- Custom Styles -->
     <style>
         .hero-gradient {
@@ -46,10 +48,10 @@
             50% { opacity: 0.7; }
         }
         .text-shadow {
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.6);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
         }
         .text-shadow-strong {
-            text-shadow: 0 8px 16px rgba(0, 0, 0, 1), 0 4px 8px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.6);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
         }
         .glass-effect {
             background: rgba(255, 255, 255, 0.1);
@@ -152,16 +154,19 @@
                 <div class="flex flex-col sm:flex-row gap-6 justify-center mb-12">
                     @if (Route::has('login'))
                         @auth
-                            <a href="/account-request" class="bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
-                                📝 Demander un Compte
+                            <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                                Demander un Compte
                             </a>
                         @else
-                            <a href="/account-request" class="glass-effect text-white px-10 py-4 rounded-xl text-xl font-bold hover:bg-white/20 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
-                                📝 Demander un Compte
+                            <a href="/account-request" class="inline-flex items-center justify-center gap-2 glass-effect text-white px-10 py-4 rounded-xl text-xl font-bold hover:bg-white/20 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                                Demander un Compte
                             </a>
                             @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
-                                    ⚡ S'inscrire
+                                <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                                    S'inscrire
                                 </a>
                             @endif
                         @endauth
@@ -188,7 +193,7 @@
     </section>
 
     <!-- Features Section -->
-    <section class="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+    <section id="fonctionnalites" class="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-20">
                 <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -293,16 +298,19 @@
             <div class="flex flex-col sm:flex-row gap-6 justify-center">
                 @if (Route::has('login'))
                     @auth
-                        <a href="/account-request" class="bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
-                            📝 Demander un Compte
+                        <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                            Demander un Compte
                         </a>
                     @else
-                        <a href="/account-request" class="bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
-                            📝 Demander un Compte
+                        <a href="/account-request" class="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-10 py-4 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                            Demander un Compte
                         </a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="bg-blue-500 text-white px-10 py-4 rounded-xl text-xl font-bold hover:bg-blue-400 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 border-2 border-white">
-                                ⚡ S'inscrire
+                            <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 bg-blue-500 text-white px-10 py-4 rounded-xl text-xl font-bold hover:bg-blue-400 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 border-2 border-white">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                                S'inscrire
                             </a>
                         @endif
                     @endauth
@@ -327,33 +335,44 @@
                         <div>
                     <h4 class="text-lg font-semibold text-gray-300 uppercase tracking-wider mb-6">Produit</h4>
                     <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-lg">Fonctionnalités</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-lg">Tarifs</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-lg">API</a></li>
+                        <li><a href="#fonctionnalites" class="text-gray-400 hover:text-white transition-colors text-lg">Fonctionnalités</a></li>
+                        <!-- Tarifs / API : pages pas encore créées. Liste en texte neutre plutôt
+                             qu'un lien mort tant que ces pages n'existent pas. -->
+                        <li><span class="text-gray-600 text-lg cursor-default">Tarifs <span class="text-xs align-middle">(bientôt)</span></span></li>
+                        <li><span class="text-gray-600 text-lg cursor-default">API <span class="text-xs align-middle">(bientôt)</span></span></li>
                             </ul>
                         </div>
                 <div>
                     <h4 class="text-lg font-semibold text-gray-300 uppercase tracking-wider mb-6">Support</h4>
                     <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-lg">Documentation</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-lg">Aide</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-lg">Contact</a></li>
+                        <!-- Documentation / Aide / Contact : pas encore de page dédiée. -->
+                        <li><span class="text-gray-600 text-lg cursor-default">Documentation <span class="text-xs align-middle">(bientôt)</span></span></li>
+                        <li><span class="text-gray-600 text-lg cursor-default">Aide <span class="text-xs align-middle">(bientôt)</span></span></li>
+                        <li><span class="text-gray-600 text-lg cursor-default">Contact <span class="text-xs align-middle">(bientôt)</span></span></li>
                             </ul>
                         </div>
                 <div>
                     <h4 class="text-lg font-semibold text-gray-300 uppercase tracking-wider mb-6">Légal</h4>
                     <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-lg">Confidentialité</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-lg">Conditions</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-lg">Cookies</a></li>
+                        <!-- Pages légales : à créer avant mise en avant publique (mentions
+                             obligatoires) — laissées en texte neutre pour ne pas laisser croire
+                             qu'elles existent déjà. -->
+                        <li><span class="text-gray-600 text-lg cursor-default">Confidentialité <span class="text-xs align-middle">(bientôt)</span></span></li>
+                        <li><span class="text-gray-600 text-lg cursor-default">Conditions <span class="text-xs align-middle">(bientôt)</span></span></li>
+                        <li><span class="text-gray-600 text-lg cursor-default">Cookies <span class="text-xs align-middle">(bientôt)</span></span></li>
                     </ul>
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-12 pt-8">
                 <div class="flex flex-col md:flex-row items-center justify-between">
                     <div class="flex items-center mb-4 md:mb-0">
-                        <img src="{{ asset('images/logos/the-blue-healthtech-logo.png') }}" alt="The Blue Healthtech" class="h-8 mr-3">
-                        <span class="text-gray-400 text-lg">Développé par</span>
+                        {{-- Le fichier images/logos/the-blue-healthtech-logo.png existe mais fait
+                             0 octet (image jamais uploadée) : l'<img> cassait le rendu (icône
+                             d'image brisée). Retiré en attendant le vrai fichier logo ; remettre
+                             <img src="{{ asset('images/logos/the-blue-healthtech-logo.png') }}"
+                                  alt="The Blue Healthtech" class="h-8 mr-3">
+                             dès qu'il sera fourni. --}}
+                        <span class="text-gray-400 text-lg">Développé par The Blue Healthtech</span>
                     </div>
                     <p class="text-gray-400 text-lg">&copy; 2025 The Blue Healthtech Ltd. Tous droits réservés.</p>
                 </div>

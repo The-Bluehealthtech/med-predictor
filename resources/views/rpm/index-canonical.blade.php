@@ -30,7 +30,7 @@
         <div class="bg-white rounded-lg shadow p-4">
             <div class="text-sm text-gray-500">Dernière mesure</div>
             <div class="text-sm font-semibold">
-                {{ $stats['latest_measurement'] ? CarbonCarbon::parse($stats['latest_measurement'])->format('d/m/Y H:i') : 'N/A' }}
+                {{ $stats['latest_measurement'] ? \Carbon\Carbon::parse($stats['latest_measurement'])->format('d/m/Y H:i') : 'N/A' }}
             </div>
         </div>
     </div>
@@ -60,7 +60,7 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse($measurements as $row)
                         <tr>
-                            <td class="px-4 py-3 text-sm">{{ CarbonCarbon::parse($row->measurement_time)->format('d/m/Y H:i') }}</td>
+                            <td class="px-4 py-3 text-sm">{{ \Carbon\Carbon::parse($row->measurement_time)->format('d/m/Y H:i') }}</td>
                             <td class="px-4 py-3 text-sm">
                                 {{ trim(($row->first_name ?? '') . ' ' . ($row->last_name ?? '')) ?: 'N/A' }}
                                 @if($row->club_name)<div class="text-xs text-gray-500">{{ $row->club_name }}</div>@endif

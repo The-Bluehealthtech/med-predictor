@@ -2232,7 +2232,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/players', [AdminController::class, 'playersList'])->name('admin.players.list');
     Route::get('/admin/search-players', [AdminController::class, 'searchPlayers'])->name('admin.search.players');
     Route::get('/admin/system-stats', [AdminController::class, 'systemStats'])->name('admin.system.stats');
-    Route::get('/admin/referee-assignments', [App\Http\Controllers\AdminRefereeAssignmentController::class, 'index'])->name('admin.referee-assignments');
+    Route::get('/admin/referee-assignments', [App\Http\Controllers\AdminRefereeAssignmentController::class, 'index'])->middleware('role:system_admin')->name('admin.referee-assignments');
+    Route::post('/admin/assign-referees', [App\Http\Controllers\AdminRefereeAssignmentController::class, 'assignReferees'])->middleware('role:system_admin')->name('admin.assign-referees');
     
     // Routes RBAC
     Route::prefix('admin/rbac')->name('admin.rbac.')->group(function () {
@@ -2304,7 +2305,9 @@ Route::middleware(['auth'])->group(function () {
     })->name('test.referees')->withoutMiddleware(['auth', 'auth:web']);
     
     // Route de test temporaire pour la désignation des arbitres (sans authentification)
-    Route::get('/test-referee-assignments', [App\Http\Controllers\AdminRefereeAssignmentController::class, 'index'])->name('test.referee-assignments')->withoutMiddleware(['auth', 'auth:web']);
+    Route::get('/test-referee-assignments', function () {
+        return redirect()->route('admin.referee-assignments');
+    })->name('test.referee-assignments')->withoutMiddleware(['auth', 'auth:web']);
     
     // Nouvelle route pour lister les joueurs (accessible depuis /modules)
     Route::get('/players/list', [AdminController::class, 'playersList'])->name('players.list');

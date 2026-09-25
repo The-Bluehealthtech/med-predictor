@@ -40,10 +40,10 @@ class AdminRefereeAssignmentController extends Controller
     {
         $request->validate([
             'match_id' => 'required|exists:matches,id',
-            'main_referee' => 'required|exists:users,id',
-            'assistant_referee_1' => 'required|exists:users,id',
-            'assistant_referee_2' => 'required|exists:users,id',
-            'fourth_official' => 'nullable|exists:users,id',
+            'main_referee' => ['required', \Illuminate\Validation\Rule::exists('users', 'id')->where('role', 'referee')],
+            'assistant_referee_1' => ['required', 'different:main_referee', \Illuminate\Validation\Rule::exists('users', 'id')->where('role', 'referee')],
+            'assistant_referee_2' => ['required', 'different:main_referee', 'different:assistant_referee_1', \Illuminate\Validation\Rule::exists('users', 'id')->where('role', 'referee')],
+            'fourth_official' => ['nullable', 'different:main_referee', 'different:assistant_referee_1', 'different:assistant_referee_2', \Illuminate\Validation\Rule::exists('users', 'id')->where('role', 'referee')],
         ]);
 
         try {

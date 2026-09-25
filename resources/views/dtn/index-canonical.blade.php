@@ -68,7 +68,7 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse($recentPerformances as $performance)
                         <tr>
-                            <td class="px-4 py-3">{{ $performance->performance_date?->format('d/m/Y') ?? 'N/A' }}</td>
+                            <td class="px-4 py-3">{{ $performance->performance_date ? \Carbon\Carbon::parse($performance->performance_date)->format('d/m/Y') : 'N/A' }}</td>
                             <td class="px-4 py-3">
                                 {{ trim(($performance->player?->first_name ?? '') . ' ' . ($performance->player?->last_name ?? '')) ?: 'N/A' }}
                             </td>

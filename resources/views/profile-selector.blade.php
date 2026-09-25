@@ -12,8 +12,9 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- Scripts -->
-    @vite(['resources/css/app.css'])
-    @vite(['resources/js/app.js'])
+    <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
+    <link rel="stylesheet" href="{{ mix('/css/fifa-design-system.css') }}">
+    <script src="{{ mix('/js/app.js') }}" defer></script>
 </head>
 <body class="font-sans text-gray-900 antialiased">
     <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

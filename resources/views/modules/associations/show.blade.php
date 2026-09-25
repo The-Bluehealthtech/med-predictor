@@ -235,7 +235,7 @@
                                     @endif
                                     <p class="text-xs text-gray-500">{{ $club->city ?? 'N/A' }}, {{ $club->country ?? 'Tunisie' }}</p>
                                 </div>
-                                <a href="{{ route('test-clubs-view.show') }}?id={{ $club->id }}" 
+                                <a href="{{ route('modules.clubs.show', $club->id) }}" 
                                    class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors">
                                     Voir
                                 </a>

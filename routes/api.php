@@ -367,38 +367,6 @@ Route::middleware(['auth'])->get('/players/{player}/complete-profile', function 
 })->name('api.players.complete-profile');
 
 // PDF generation routes (public access)
-Route::get('/test-pdf', function() {
-    try {
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML('
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Test PDF</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                h1 { color: #333; }
-            </style>
-        </head>
-        <body>
-            <h1>Test PDF Generation</h1>
-            <p>This is a test PDF to verify DomPDF is working correctly.</p>
-            <p>Generated at: ' . now()->format('Y-m-d H:i:s') . '</p>
-        </body>
-        </html>');
-        $pdf->setPaper('A4', 'portrait');
-        
-        return response()->make($pdf->output(), 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="test.pdf"',
-            'Cache-Control' => 'no-cache, no-store, must-revalidate',
-            'Pragma' => 'no-cache',
-            'Expires' => '0'
-        ]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-})->name('api.test.pdf');
 
 Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->middleware('auth:sanctum')->name('api.pcma.pdf');
 Route::post('/pcma/store', [App\Http\Controllers\PCMAController::class, 'store'])->middleware('auth:sanctum')->name('api.pcma.store');

@@ -68,7 +68,7 @@
                         <div class="ml-4 flex-1">
                             <h3 class="text-lg font-semibold text-gray-900 mb-2">Gestion des Utilisateurs</h3>
                             <p class="text-sm text-gray-600 mb-4">Créer, modifier et gérer les comptes utilisateurs</p>
-                            <a href="{{ route('public-user-management') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200">
+                            <a href="{{ route('user-management.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200">
                                 Accéder
                                 <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

@@ -15,7 +15,7 @@
             <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open" class="px-3 py-2 rounded hover:bg-blue-100 font-semibold text-gray-700 hover:text-blue-700 transition-colors">{{ __('navigation.admin') }}</button>
                 <div x-show="open" @click.away="open = false" class="absolute z-20 bg-white border rounded shadow-lg mt-2 min-w-[200px]">
-                    <a href="{{ route('public-user-management') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.user_management') }}</a>
+                    <a href="{{ route('user-management.index') }}" class="block px-4 py-2 hover:bg-blue-50">{{ __('navigation.user_management') }}</a>
                     @if($user && in_array($user->role, ['system_admin', 'association_admin', 'association_registrar']))
                         <a href="{{ route('admin.account-requests.index') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-blue-700">{{ __('navigation.account_requests') }}</a>
                     @endif

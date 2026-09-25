@@ -183,7 +183,7 @@ function exportEngagements() {
     // Créer un formulaire pour l'export
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = '{{ route("test.export.engagements") }}';
+    form.action = '{{ route("competitions.association.export-engagements") }}';
     form.target = '_blank';
     
     // Ajouter le token CSRF
@@ -201,7 +201,7 @@ function exportEngagements() {
 
 function validateAllEngagements() {
     if (confirm('Voulez-vous valider tous les engagements en attente ?')) {
-        fetch('{{ route("test.validate.all.engagements") }}', {
+        fetch('{{ route("competitions.association.validate-all-engagements") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

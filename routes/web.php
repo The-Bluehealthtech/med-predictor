@@ -65,18 +65,12 @@ Route::get('/clubs', function () {
 })->name('clubs.public.index');
 
 // Route de test simple pour clubs
-Route::get('/clubs-test', function () {
-    return '<h1>Test Clubs - Route fonctionne !</h1>';
-});
 
 Route::get('/associations', function () {
     return redirect()->route('associations-view');
 })->name('associations.public.index');
 
 // Test route
-Route::get('/test', function () {
-    return response()->json(['status' => 'ok', 'message' => 'Server is working']);
-})->name('test');
 
 // Test route FIFA Connect
 
@@ -87,105 +81,16 @@ Route::get('/test', function () {
 
 
     // Test route to see what's captured
-    Route::get('/test-route-capture', function () {
-        return response()->json([
-            'current_route' => request()->route()->getName(),
-            'current_uri' => request()->getRequestUri(),
-            'method' => request()->getMethod(),
-            'all_routes' => \Route::getRoutes()->map(function($route) {
-                return [
-                    'uri' => $route->uri(),
-                    'name' => $route->getName(),
-                    'methods' => $route->methods()
-                ];
-            })->filter(function($route) {
-                return str_contains($route['uri'], 'health-records');
-            })->values()
-        ]);
-    })->name('test.route.capture');
 
 
 
     // Test route to debug route capture
-    Route::get('/test-health-debug-route', function () {
-        $request = request();
-        $route = $request->route();
-        
-        return response()->json([
-            'uri' => $request->getRequestUri(),
-            'route_name' => $route ? $route->getName() : 'No route',
-            'route_uri' => $route ? $route->uri() : 'No route',
-            'route_parameters' => $route ? $route->parameters() : [],
-            'route_middleware' => $route ? $route->middleware() : [],
-            'all_matching_routes' => collect(\Route::getRoutes())->filter(function($route) {
-                return str_contains($route->uri(), 'health-records');
-            })->map(function($route) {
-                return [
-                    'uri' => $route->uri(),
-                    'name' => $route->getName(),
-                    'methods' => $route->methods(),
-                    'middleware' => $route->middleware()
-                ];
-            })->values()
-        ]);
-    })->name('test.health.debug.route');
 
     // Test route to see what's happening with health-records
-    Route::get('/test-health-what', function () {
-        $request = request();
-        $route = $request->route();
-        
-        // Test if we can access the controller directly
-        try {
-            $controller = new \App\Http\Controllers\HealthRecordController();
-            $result = $controller->create($request);
-            return response()->json([
-                'status' => 'controller_works',
-                'result_type' => get_class($result),
-                'view_name' => $result->getName(),
-                'current_route' => $route ? $route->getName() : 'No route',
-                'current_uri' => $request->getRequestUri()
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'controller_error',
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-        }
-    })->name('test.health.what');
 
     // Test route with exact same controller but different name
-    Route::get('/test-health-create', [App\Http\Controllers\HealthRecordController::class, 'create'])->name('test.health.create');
 
     // Test route to see what captures health-records/create
-    Route::get('/test-health-capture', function () {
-        // Simulate the exact request to health-records/create
-        $request = \Illuminate\Http\Request::create('/health-records/create', 'GET');
-        $request->setRouteResolver(function () {
-            return new \Illuminate\Routing\Route(['GET'], '/health-records/create', function () {
-                return 'This should be the health-records.create route';
-            });
-        });
-        
-        // Get all routes that match this pattern
-        $routes = collect(\Route::getRoutes())->filter(function($route) {
-            return str_contains($route->uri(), 'health-records');
-        })->map(function($route) {
-            return [
-                'uri' => $route->uri(),
-                'name' => $route->getName(),
-                'methods' => $route->methods(),
-                'middleware' => $route->middleware(),
-                'pattern' => $route->getCompiled()->getRegexPattern()
-            ];
-        })->values();
-        
-        return response()->json([
-            'routes' => $routes,
-            'message' => 'Check which route pattern matches /health-records/create'
-        ]);
-    })->name('test.health.capture');
 
 
 
@@ -204,34 +109,10 @@ Route::get('/test', function () {
 // Test route Portal Data
 
 // Test route clubs
-Route::get('/test-clubs', function () {
-    return '<h1>Test Clubs - Route dans la section test</h1>';
-});
 
 // Test route avec vue clubs
-Route::get('/test-clubs-view', function () {
-    $clubs = \App\Models\Club::with(['association', 'players'])->orderBy('name')->get();
-    $filtered = false;
-    $association = null;
-    
-    return view('modules.clubs.index', compact('clubs', 'filtered', 'association'));
-})->name('test-clubs-view');
 
 // Test route pour vue détaillée d'un club
-Route::get('/test-clubs-view/show', function (Request $request) {
-    $id = $request->get('id');
-    if (!$id) {
-        return response()->json(['error' => 'ID du club requis'], 400);
-    }
-    
-    try {
-        $club = \App\Models\Club::with(['association', 'players'])->findOrFail($id);
-        return view('modules.clubs.show', compact('club'));
-    } catch (\Exception $e) {
-        \Log::error("Erreur dans /test-clubs-view/show: " . $e->getMessage());
-        return response()->json(['error' => 'Club non trouvé'], 404);
-    }
-})->name('test-clubs-view.show');
 
 // Route principale pour voir les clubs
 Route::middleware(['auth'])->group(function () {
@@ -473,9 +354,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Test route pour vue des associations
-Route::get('/test-associations-view', function () {
-    return view('modules.associations.index');
-})->name('test-associations-view');
 
 // Route principale pour vue des associations
 Route::middleware(['auth'])->group(function () {
@@ -630,20 +508,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Test route pour vue détaillée d'une association
-Route::get('/test-associations-view/show', function () {
-    return view('modules.associations.show');
-})->name('test-associations-view.show');
 
 // Test route pour vue des confédérations
-Route::get('/test-confederations-view', function () {
-    $confederations = \App\Models\Confederation::orderBy('name')->get();
-    return view('modules.confederations.index', compact('confederations'));
-})->name('test-confederations-view');
 
 // Test route pour vue détaillée d'une confédération
-Route::get('/test-confederations-view/show', function () {
-    return view('modules.confederations.show');
-})->name('test-confederations-view.show');
 
 // Route principale pour vue détaillée d'une confédération
 Route::get('/confederations-view/show', function (Request $request) {
@@ -661,118 +529,12 @@ Route::get('/confederations-view/show', function (Request $request) {
 
 
 // Test route pour la validation des licences (sans authentification)
-Route::get('/test-licenses-validation', function () {
-    return view('modules.licenses.validation');
-})->name('test-licenses-validation');
 
 // Test route secretary dashboard (sans authentification)
-Route::get('/test-secretary-dashboard', function () {
-    // Données simulées pour le dashboard secretary (évite les erreurs de base de données)
-    $stats = [
-        'total_appointments' => 25,
-        'upcoming_appointments' => 8,
-        'total_documents' => 156,
-        'pending_documents' => 12,
-    ];
-
-    // Données simulées pour les rendez-vous récents
-    $recentAppointments = collect([
-        (object) [
-            'id' => 1,
-            'athlete' => (object) ['name' => 'Mohamed Ben Ali', 'fifa_connect_id' => null],
-            'appointment_date' => now()->addDays(1),
-            'type' => 'consultation',
-            'type_label' => 'Consultation',
-            'status' => 'confirmed',
-            'status_label' => 'Confirmé'
-        ],
-        (object) [
-            'id' => 2,
-            'athlete' => (object) ['name' => 'Ahmed Khelifi', 'fifa_connect_id' => null],
-            'appointment_date' => now()->addDays(2),
-            'type' => 'examination',
-            'type_label' => 'Examen',
-            'status' => 'scheduled',
-            'status_label' => 'Programmé'
-        ],
-        (object) [
-            'id' => 3,
-            'athlete' => (object) ['name' => 'Karim Mansouri', 'fifa_connect_id' => null],
-            'appointment_date' => now()->addDays(3),
-            'type' => 'follow_up',
-            'type_label' => 'Suivi',
-            'status' => 'confirmed',
-            'status_label' => 'Confirmé'
-        ]
-    ]);
-
-    // Données simulées pour les documents récents
-    $recentDocuments = collect([
-        (object) [
-            'id' => 1,
-            'file_name' => 'Rapport médical - Mohamed Ben Ali.pdf',
-            'file_size_human' => '2.5 MB',
-            'visit' => (object) [
-                'athlete' => (object) ['name' => 'Mohamed Ben Ali', 'fifa_connect_id' => null]
-            ],
-            'document_type_label' => 'Rapport médical',
-            'status' => 'analyzed',
-            'status_label' => 'Analysé'
-        ],
-        (object) [
-            'id' => 2,
-            'file_name' => 'Résultats laboratoire - Ahmed Khelifi.pdf',
-            'file_size_human' => '1.8 MB',
-            'visit' => (object) [
-                'athlete' => (object) ['name' => 'Ahmed Khelifi', 'fifa_connect_id' => null]
-            ],
-            'document_type_label' => 'Résultat de laboratoire',
-            'status' => 'pending',
-            'status_label' => 'En attente'
-        ],
-        (object) [
-            'id' => 3,
-            'file_name' => 'Imagerie - Karim Mansouri.jpg',
-            'file_size_human' => '4.2 MB',
-            'visit' => (object) [
-                'athlete' => (object) ['name' => 'Karim Mansouri', 'fifa_connect_id' => null]
-            ],
-            'document_type_label' => 'Imagerie médicale',
-            'status' => 'analyzing',
-            'status_label' => 'En cours d\'analyse'
-        ]
-    ]);
-
-    return view('secretary.dashboard', compact('stats', 'recentAppointments', 'recentDocuments'));
-})->name('test-secretary-dashboard');
 
 // Route de test simple secretary dashboard
-Route::get('/test-secretary-simple', function () {
-    return '<h1>Test Secretary Dashboard</h1><p>Cette route fonctionne !</p>';
-})->name('test-secretary-simple');
 
 // Route de test secretary dashboard avec données réelles (sans authentification)
-Route::get('/test-secretary-real', function () {
-    // Données dynamiques pour le dashboard secretary - Utilisation des tables existantes
-    $stats = [
-        'total_appointments' => \App\Models\HealthRecord::count(), // Utilise health_records
-        'upcoming_appointments' => \App\Models\HealthRecord::where('created_at', '>=', now()->subDays(7))->count(),
-        'total_documents' => \App\Models\HealthRecord::count(), // Utilise health_records
-        'pending_documents' => \App\Models\HealthRecord::where('status', 'pending')->count(),
-    ];
-
-    $recentAppointments = \App\Models\HealthRecord::with('player')
-        ->orderBy('created_at', 'desc')
-        ->limit(10)
-        ->get();
-
-    $recentDocuments = \App\Models\HealthRecord::with('player')
-        ->orderBy('created_at', 'desc')
-        ->limit(10)
-        ->get();
-
-    return view('secretary.dashboard', compact('stats', 'recentAppointments', 'recentDocuments'));
-})->name('test-secretary-real');
 
 // Routes Secretary manquantes
 Route::prefix('secretary')->name('secretary.')->group(function () {
@@ -818,36 +580,6 @@ Route::prefix('fifa-connect')->name('fifa-connect.')->middleware(['auth'])->grou
 });
 
 // Test route pour les compétitions avec authentification simulée
-Route::get('/test-competitions-auth', function () {
-    // Simuler un utilisateur authentifié
-    $user = (object) [
-        'role' => 'admin',
-        'association_id' => null
-    ];
-    
-    // Simuler des compétitions
-    $competitions = collect([
-        (object) [
-            'id' => 1,
-            'name' => 'Ligue 1 Test',
-            'format_label' => 'Aller-retour',
-            'fifa_connect_id' => null,
-            'type_label' => 'Ligue',
-            'season' => (object) ['name' => '2024-2025'],
-            'status' => 'active'
-        ]
-    ]);
-    
-    // Simuler des statistiques
-    $stats = [
-        'total' => 1,
-        'active' => 1,
-        'upcoming' => 0,
-        'completed' => 0
-    ];
-    
-    return view('competition-management.index', compact('competitions', 'stats'));
-})->name('test-competitions-auth');
 
 
 
@@ -953,9 +685,6 @@ Route::get('/account-request/fifa-connect-types', function () {
 // Test simple du composant
 
 // Test PCMA simple - Route manquante pour l'Assistant Vocal
-Route::get('/test-pcma-simple', function () {
-    return view('pcma.create');
-})->name('test.pcma.simple');
 
 // Route pour récupérer la clé API Google Speech-to-Text
 Route::get('/api/google-speech-key', function () {
@@ -1034,47 +763,12 @@ Route::prefix('associations')->name('associations.')->middleware(['auth'])->grou
 // Démonstration des logos officiels
 
 // Test du portail patient avec logos des fédérations
-Route::get('/test-portail-patient', function () {
-    // Simuler un joueur avec une association
-    $player = (object)[
-        'id' => 7,
-        'first_name' => 'Joueur',
-        'last_name' => 'Test',
-        'name' => 'Joueur Test',
-        'association' => (object)[
-            'id' => 7,
-            'name' => 'Fédération Royale Marocaine de Football',
-            'country' => 'Maroc'
-        ]
-    ];
-    
-    return view('portail-joueur-FONCTIONNEL-DRAPEAUX-OK', compact('player'));
-})->name('test.portail.patient');
 
 // Test des logos dans le contexte du portail
 
 // Test du portail patient intégré (version publique)
 
 // Test du portail patient simplifié (version publique)
-Route::get('/test-portail-simplifie', function () {
-    // Simuler un joueur avec une association
-    $player = (object)[
-        'id' => 7,
-        'first_name' => 'Joueur',
-        'last_name' => 'Test',
-        'name' => 'Joueur Test',
-        'association' => (object)[
-            'id' => 7,
-            'name' => 'Fédération Royale Marocaine de Football',
-            'country' => 'Maroc'
-        ],
-        'club' => (object)[
-            'name' => 'Club Test'
-        ]
-    ];
-    
-    return view('portail-joueur-simplifie', compact('player'));
-})->name('test.portail.simplifie');
 
 // Test d'authentification
 
@@ -1228,448 +922,22 @@ Route::get('/create-health-record/{playerId?}', function ($playerId = null) {
 })->name('create-health-record');
 
 // Test route to verify both pages use the same appointment data
-Route::get('/test-appointment-sync', function (Request $request) {
-    try {
-        // Simulate login
-        $user = \App\Models\User::where('email', 'admin@medpredictor.com')->first();
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-        
-        \Illuminate\Support\Facades\Auth::login($user);
-        
-        // Get upcoming appointments (same logic for both pages)
-        $upcomingAppointments = \App\Models\Appointment::with('athlete')
-            ->where('appointment_date', '>=', now())
-            ->whereIn('status', ['scheduled', 'confirmed'])
-            ->orderBy('appointment_date', 'asc')
-            ->limit(10)
-            ->get();
-        
-        $appointmentData = [];
-        foreach ($upcomingAppointments as $appointment) {
-            $appointmentData[] = [
-                'id' => $appointment->id,
-                'athlete_name' => $appointment->athlete ? $appointment->athlete->name : 'N/A',
-                'athlete_id' => $appointment->athlete_id,
-                'appointment_date' => $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d H:i:s') : 'N/A',
-                'type' => $appointment->type ?? 'N/A',
-                'status' => $appointment->status ?? 'N/A'
-            ];
-        }
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Les deux pages utilisent maintenant les mêmes données de rendez-vous futurs',
-            'upcoming_appointments' => $appointmentData,
-            'total_upcoming' => $upcomingAppointments->count(),
-            'total_appointments' => \App\Models\Appointment::count(),
-            'total_future_appointments' => \App\Models\Appointment::where('appointment_date', '>=', now())->count()
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Erreur dans le test',
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ], 500);
-    }
-})->name('test.appointment.sync');
 
 // Debug route to check all appointments and their dates
-Route::get('/debug-appointments', function (Request $request) {
-    try {
-        // Simulate login
-        $user = \App\Models\User::where('email', 'admin@medpredictor.com')->first();
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-        
-        \Illuminate\Support\Facades\Auth::login($user);
-        
-        // Get ALL appointments
-        $allAppointments = \App\Models\Appointment::with('athlete')
-            ->orderBy('appointment_date', 'desc')
-            ->get();
-        
-        $appointmentData = [];
-        foreach ($allAppointments as $appointment) {
-            $isFuture = $appointment->appointment_date && $appointment->appointment_date >= now();
-            $appointmentData[] = [
-                'id' => $appointment->id,
-                'athlete_name' => $appointment->athlete ? $appointment->athlete->name : 'N/A',
-                'appointment_date' => $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d H:i:s') : 'N/A',
-                'type' => $appointment->type ?? 'N/A',
-                'status' => $appointment->status ?? 'N/A',
-                'is_future' => $isFuture,
-                'now' => now()->format('Y-m-d H:i:s')
-            ];
-        }
-        
-        return response()->json([
-            'success' => true,
-            'all_appointments' => $appointmentData,
-            'total_appointments' => $allAppointments->count(),
-            'future_count' => count(array_filter($appointmentData, fn($apt) => $apt['is_future'])),
-            'current_time' => now()->format('Y-m-d H:i:s')
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Erreur dans le debug',
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ], 500);
-    }
-})->name('debug.appointments');
 
 // Test route to check what each page actually displays
-Route::get('/test-both-pages', function (Request $request) {
-    try {
-        // Simulate login
-        $user = \App\Models\User::where('email', 'admin@medpredictor.com')->first();
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-        
-        \Illuminate\Support\Facades\Auth::login($user);
-        
-        // Secretary Dashboard logic
-        $secretaryAppointments = \App\Models\Appointment::with('athlete')
-            ->where('appointment_date', '>=', now())
-            ->whereIn('status', ['scheduled', 'confirmed'])
-            ->orderBy('appointment_date', 'asc')
-            ->limit(10)
-            ->get();
-        
-        // Clinician Portal logic (from controller)
-        $clinicianAppointments = \App\Models\Appointment::with('athlete')
-            ->where('appointment_date', '>=', now())
-            ->whereIn('status', ['scheduled', 'confirmed'])
-            ->orderBy('appointment_date', 'asc')
-            ->limit(50)
-            ->get();
-        
-        // Check if there are any appointments without date filter
-        $allAppointments = \App\Models\Appointment::with('athlete')
-            ->orderBy('appointment_date', 'desc')
-            ->limit(10)
-            ->get();
-        
-        return response()->json([
-            'success' => true,
-            'secretary_dashboard_count' => $secretaryAppointments->count(),
-            'clinician_portal_count' => $clinicianAppointments->count(),
-            'all_appointments_count' => $allAppointments->count(),
-            'secretary_data' => $secretaryAppointments->map(function($apt) {
-                return [
-                    'id' => $apt->id,
-                    'athlete_name' => $apt->athlete ? $apt->athlete->name : 'N/A',
-                    'appointment_date' => $apt->appointment_date ? $apt->appointment_date->format('Y-m-d H:i:s') : 'N/A',
-                    'status' => $apt->status
-                ];
-            }),
-            'clinician_data' => $clinicianAppointments->map(function($apt) {
-                return [
-                    'id' => $apt->id,
-                    'athlete_name' => $apt->athlete ? $apt->athlete->name : 'N/A',
-                    'appointment_date' => $apt->appointment_date ? $apt->appointment_date->format('Y-m-d H:i:s') : 'N/A',
-                    'status' => $apt->status
-                ];
-            }),
-            'all_data' => $allAppointments->map(function($apt) {
-                return [
-                    'id' => $apt->id,
-                    'athlete_name' => $apt->athlete ? $apt->athlete->name : 'N/A',
-                    'appointment_date' => $apt->appointment_date ? $apt->appointment_date->format('Y-m-d H:i:s') : 'N/A',
-                    'status' => $apt->status
-                ];
-            })
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Erreur dans le test',
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ], 500);
-    }
-})->name('test.both.pages');
 
 // Route to create future appointments for testing
-Route::get('/create-future-appointments', function (Request $request) {
-    try {
-        // Simulate login
-        $user = \App\Models\User::where('email', 'admin@medpredictor.com')->first();
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-        
-        \Illuminate\Support\Facades\Auth::login($user);
-        
-        // Get some athletes to assign appointments to
-        $athletes = \App\Models\Athlete::limit(3)->get();
-        
-        if ($athletes->count() == 0) {
-            return response()->json(['error' => 'No athletes found'], 404);
-        }
-        
-        $createdAppointments = [];
-        
-        // Create 3 future appointments
-        foreach ($athletes as $index => $athlete) {
-            $appointment = new \App\Models\Appointment();
-            $appointment->athlete_id = $athlete->id;
-            $appointment->fifa_connect_id = null;
-            $appointment->appointment_date = now()->addDays($index + 1)->setTime(9 + $index, 0, 0);
-            $appointment->type = ['consultation', 'examination', 'follow_up'][$index % 3];
-            $appointment->status = ['scheduled', 'confirmed'][$index % 2];
-            $appointment->title = 'Rendez-vous ' . ['consultation', 'examination', 'follow_up'][$index % 3];
-            $appointment->description = 'Rendez-vous créé pour test synchronisation';
-            $appointment->save();
-            
-            $createdAppointments[] = [
-                'id' => $appointment->id,
-                'athlete_name' => $athlete->name,
-                'appointment_date' => $appointment->appointment_date->format('Y-m-d H:i:s'),
-                'type' => $appointment->type,
-                'status' => $appointment->status
-            ];
-        }
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Rendez-vous futurs créés avec succès',
-            'created_appointments' => $createdAppointments,
-            'total_created' => count($createdAppointments)
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Erreur lors de la création',
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ], 500);
-    }
-})->name('create.future.appointments');
 
 // Test route to verify clinician portal modal functionality
-Route::get('/test-clinician-modal', function (Request $request) {
-    try {
-        // Simulate login
-        $user = \App\Models\User::where('email', 'admin@medpredictor.com')->first();
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-        
-        \Illuminate\Support\Facades\Auth::login($user);
-        
-        // Get upcoming appointments for testing
-        $upcomingAppointments = \App\Models\Appointment::with('athlete')
-            ->where('appointment_date', '>=', now())
-            ->whereIn('status', ['scheduled', 'confirmed'])
-            ->orderBy('appointment_date', 'asc')
-            ->limit(3)
-            ->get();
-        
-        $appointmentData = [];
-        foreach ($upcomingAppointments as $appointment) {
-            $appointmentData[] = [
-                'id' => $appointment->id,
-                'athlete_id' => $appointment->athlete_id,
-                'athlete_name' => $appointment->athlete ? $appointment->athlete->name : 'N/A',
-                'athlete_dob' => $appointment->athlete ? $appointment->athlete->dob : 'N/A',
-                'athlete_fifa_id' => $appointment->athlete ? $appointment->athlete->fifa_id : 'N/A',
-                'appointment_type' => $appointment->type ?? 'N/A',
-                'appointment_status' => $appointment->status ?? 'N/A',
-                'appointment_date' => $appointment->appointment_date ? $appointment->appointment_date->format('Y-m-d H:i:s') : 'N/A',
-                'medical_url' => "/health-records/create?" . http_build_query([
-                    'patient_id' => $appointment->athlete_id,
-                    'first_name' => $appointment->athlete ? explode(' ', $appointment->athlete->name)[0] : '',
-                    'last_name' => $appointment->athlete ? implode(' ', array_slice(explode(' ', $appointment->athlete->name), 1)) : '',
-                    'fifa_connect_id' => $appointment->athlete ? $appointment->athlete->fifa_id : 'N/A',
-                    'date_of_birth' => $appointment->athlete ? $appointment->athlete->dob : 'N/A',
-                    'appointment_type' => $appointment->type ?? 'N/A',
-                    'status' => $appointment->status ?? 'N/A',
-                    'source' => 'clinician_portal'
-                ]),
-                'pcma_url' => "/pcma/create?" . http_build_query([
-                    'patient_id' => $appointment->athlete_id,
-                    'first_name' => $appointment->athlete ? explode(' ', $appointment->athlete->name)[0] : '',
-                    'last_name' => $appointment->athlete ? implode(' ', array_slice(explode(' ', $appointment->athlete->name), 1)) : '',
-                    'fifa_connect_id' => $appointment->athlete ? $appointment->athlete->fifa_id : 'N/A',
-                    'date_of_birth' => $appointment->athlete ? $appointment->athlete->dob : 'N/A',
-                    'appointment_type' => $appointment->type ?? 'N/A',
-                    'status' => $appointment->status ?? 'N/A',
-                    'source' => 'clinician_portal'
-                ])
-            ];
-        }
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Modal de sélection de patient configuré avec succès',
-            'appointments' => $appointmentData,
-            'total_appointments' => $upcomingAppointments->count(),
-            'instructions' => [
-                'step1' => 'Cliquer sur "Consulter" dans le portail clinicien',
-                'step2' => 'Choisir entre Medical ou PCMA dans le modal',
-                'step3' => 'Le dossier s\'ouvre pré-rempli avec les données du patient'
-            ]
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Erreur dans le test modal',
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ], 500);
-    }
-})->name('test.clinician.modal');
 
 // Test route for clinician portal without authentication
-Route::get('/test-clinician-portal-no-auth', function (Request $request) {
-    try {
-        // Get upcoming appointments for testing
-        $upcomingAppointments = \App\Models\Appointment::with('athlete')
-            ->where('appointment_date', '>=', now())
-            ->whereIn('status', ['scheduled', 'confirmed'])
-            ->orderBy('appointment_date', 'asc')
-            ->limit(10)
-            ->get();
-        
-        // Récupérer les dossiers médicaux récents pour les statistiques
-        $recentHealthRecords = \App\Models\HealthRecord::with('player')
-            ->orderBy('record_date', 'desc')
-            ->limit(20)
-            ->get();
-        
-        $pcmas = \App\Models\PCMA::with('player')
-            ->orderBy('created_at', 'desc')
-            ->limit(20)
-            ->get();
-        
-        // Statistiques réelles
-        $stats = [
-            'total_patients' => \App\Models\Player::count(),
-            'upcoming_appointments' => \App\Models\Appointment::where('appointment_date', '>=', now())->whereIn('status', ['scheduled', 'confirmed'])->count(),
-            'active_health_records' => \App\Models\HealthRecord::where('status', 'active')->count(),
-            'pending_pcmas' => \App\Models\PCMA::where('status', 'pending')->count(),
-            'completed_pcmas' => \App\Models\PCMA::where('status', 'completed')->count(),
-            'consultations_today' => \App\Models\HealthRecord::whereDate('record_date', today())->count(),
-            'alerts' => \App\Models\HealthRecord::where('status', 'pending')->count()
-        ];
-        
-        return view('clinical.clinician-portal', compact('upcomingAppointments', 'recentHealthRecords', 'pcmas', 'stats'));
-        
-    } catch (\Exception $e) {
-        \Log::error('Erreur dans test-clinician-portal-no-auth: ' . $e->getMessage());
-        \Log::error('Stack trace: ' . $e->getTraceAsString());
-        
-        return response()->json([
-            'error' => 'Erreur dans le test portail clinicien',
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ], 500);
-    }
-})->name('test.clinician.portal.no.auth');
 
 // Route de test simple pour vérifier que le modal fonctionne
-Route::get('/test-modal-success', function (Request $request) {
-    return response()->json([
-        'success' => true,
-        'message' => 'Modal fonctionne parfaitement !',
-        'patient_data' => $request->query(),
-        'instructions' => [
-            'step1' => '✅ Modal de sélection patient fonctionne',
-            'step2' => '✅ Choix Medical/PCMA fonctionne', 
-            'step3' => '✅ Génération d\'URLs fonctionne',
-            'step4' => '✅ Transmission des données fonctionne'
-        ]
-    ]);
-})->name('test.modal.success');
 
 // Route de test pour health-records-create qui fonctionne
-Route::get('/test-health-records-create', function (Request $request) {
-    try {
-        // Récupérer les paramètres du patient depuis l'URL
-        $patientData = [
-            'patient_id' => $request->get('patient_id'),
-            'first_name' => $request->get('first_name'),
-            'last_name' => $request->get('last_name'),
-            'fifa_connect_id' => $request->get('fifa_connect_id'),
-            'date_of_birth' => $request->get('date_of_birth'),
-            'appointment_type' => $request->get('appointment_type'),
-            'status' => $request->get('status'),
-            'source' => $request->get('source')
-        ];
-        
-        // Retourner une page simple qui montre les données reçues
-        return response()->json([
-            'success' => true,
-            'message' => 'Données du patient reçues avec succès',
-            'patient_data' => $patientData,
-            'url_params' => $request->query(),
-            'instructions' => [
-                'step1' => 'Le modal fonctionne correctement',
-                'step2' => 'Les données du patient sont transmises',
-                'step3' => 'Maintenant il faut intégrer avec les vues existantes'
-            ]
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Erreur dans test-health-records-create',
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ], 500);
-    }
-})->name('test.health.records.create');
 
 // Route de test pour pcma-create qui fonctionne
-Route::get('/test-pcma-create', function (Request $request) {
-    try {
-        // Récupérer les paramètres du patient depuis l'URL
-        $patientData = [
-            'patient_id' => $request->get('patient_id'),
-            'first_name' => $request->get('first_name'),
-            'last_name' => $request->get('last_name'),
-            'fifa_connect_id' => $request->get('fifa_connect_id'),
-            'date_of_birth' => $request->get('date_of_birth'),
-            'appointment_type' => $request->get('appointment_type'),
-            'status' => $request->get('status'),
-            'source' => $request->get('source')
-        ];
-        
-        // Retourner une page simple qui montre les données reçues
-        return response()->json([
-            'success' => true,
-            'message' => 'Données du patient reçues avec succès pour PCMA',
-            'patient_data' => $patientData,
-            'url_params' => $request->query(),
-            'instructions' => [
-                'step1' => 'Le modal fonctionne correctement',
-                'step2' => 'Les données du patient sont transmises',
-                'step3' => 'Maintenant il faut intégrer avec les vues PCMA existantes'
-            ]
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Erreur dans test-pcma-create',
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ], 500);
-    }
-})->name('test.pcma.create');
 
 // Routes protégées
 Route::middleware(['auth'])->group(function () {
@@ -1689,6 +957,8 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/roles/{id}', [App\Http\Controllers\RBACController::class, 'updateRole'])->name('update-role');
         Route::delete('/roles/{id}', [App\Http\Controllers\RBACController::class, 'deleteRole'])->name('delete-role');
         Route::get('/permissions', [App\Http\Controllers\RBACController::class, 'permissions'])->name('permissions');
+        Route::get('/module-permissions', [App\Http\Controllers\RBACController::class, 'modulePermissions'])->name('module-permissions');
+        Route::post('/module-permissions', [App\Http\Controllers\RBACController::class, 'updateModulePermissions'])->name('module-permissions.update');
         Route::post('/permissions', [App\Http\Controllers\RBACController::class, 'createPermission'])->name('create-permission');
         Route::post('/initialize-permissions', [App\Http\Controllers\RBACController::class, 'initializePermissions'])->name('initialize-permissions');
         Route::get('/users', [App\Http\Controllers\RBACController::class, 'users'])->name('users');
@@ -1746,14 +1016,8 @@ Route::middleware(['auth'])->group(function () {
     });
     
     // Route de test temporaire pour les arbitres (sans authentification)
-    Route::get('/test-referees', function () {
-        return redirect()->route('modules.referees.index');
-    })->name('test.referees');
     
     // Route de test temporaire pour la désignation des arbitres (sans authentification)
-    Route::get('/test-referee-assignments', function () {
-        return redirect()->route('admin.referee-assignments');
-    })->name('test.referee-assignments')->withoutMiddleware(['auth', 'auth:web']);
     
     // Nouvelle route pour lister les joueurs (accessible depuis /modules)
     Route::get('/players/list', [AdminController::class, 'playersList'])->name('players.list');
@@ -2105,213 +1369,26 @@ Route::middleware(['auth'])->group(function () {
 
 
         // Routes de test temporaires pour diagnostiquer les modules (sans authentification)
-        Route::get('/test-modules-debug', function () {
-            $modules = [
-                'pcma.dashboard' => 'PCMA Dashboard',
-                'analytics.dashboard' => 'Analytics Dashboard', 
-                'fifa.dashboard' => 'FIFA Dashboard',
-                'device-connections.index' => 'Device Connections',
-                'performance.index' => 'Performance',
-                'dtn.index' => 'DTN',
-                'rpm.index' => 'RPM',
-                'gemini.index' => 'Gemini',
-                'modules.medical.index' => 'Medical Module',
-                'modules.healthcare.index' => 'Healthcare Module',
-                'modules.players.index' => 'Players Module',
-                'modules.teams.index' => 'Teams Module',
-                'modules.referees.index' => 'Referees Module',
-                'modules.associations.index' => 'Associations Module',
-                'modules.clubs.index' => 'Clubs Module',
-                'modules.licenses.index' => 'Licenses Module',
-                'competitions.index' => 'Competitions'
-            ];
-            
-            $results = [];
-            foreach ($modules as $route => $name) {
-                try {
-                    $url = route($route);
-                    $results[] = "✅ $name: $url";
-                } catch (\Exception $e) {
-                    $results[] = "❌ $name: " . $e->getMessage();
-                }
-            }
-            
-            return '<h1>Test des Routes des Modules</h1><pre>' . implode("\n", $results) . '</pre>';
-        });
 
         // Routes de test pour vérifier les vues (sans authentification)
-        Route::get('/test-view-pcma', function () {
-            try {
-                return view('pcma.dashboard');
-            } catch (\Exception $e) {
-                return "❌ Erreur PCMA: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-analytics', function () {
-            try {
-                return view('analytics.dashboard');
-            } catch (\Exception $e) {
-                return "❌ Erreur Analytics: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-fifa', function () {
-            try {
-                return view('modules.fifa.dashboard');
-            } catch (\Exception $e) {
-                return "❌ Erreur FIFA: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-device-connections', function () {
-            try {
-                return view('modules.device-connections.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Device Connections: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-performance', function () {
-            try {
-                return view('modules.performances.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Performance: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-dtn', function () {
-            try {
-                return view('modules.dtn.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur DTN: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-rpm', function () {
-            try {
-                return view('modules.rpm.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur RPM: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-gemini', function () {
-            try {
-                return view('modules.gemini.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Gemini: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-medical', function () {
-            try {
-                return view('modules.medical.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Medical: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-healthcare', function () {
-            try {
-                return view('modules.healthcare.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Healthcare: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-players', function () {
-            try {
-                return view('modules.players.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Players: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-teams', function () {
-            try {
-                return view('modules.teams.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Teams: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-referees', function () {
-            try {
-                return view('modules.referees.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Referees: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-associations', function () {
-            try {
-                return view('modules.associations.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Associations: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-clubs', function () {
-            try {
-                return view('modules.clubs.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Clubs: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-licenses', function () {
-            try {
-                return view('modules.licenses.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Licenses: " . $e->getMessage();
-            }
-        });
 
-        Route::get('/test-view-competitions', function () {
-            try {
-                return view('modules.competitions.index');
-            } catch (\Exception $e) {
-                return "❌ Erreur Competitions: " . $e->getMessage();
-            }
-        });
 
         // Route de test temporaire pour /modules
-        Route::get('/test-modules-real', function () {
-            $user = Auth::user();
-            if (!$user) {
-                return response()->json(['error' => 'Not authenticated'], 401);
-            }
-            
-            try {
-                $footballType = request('footballType', '11aside');
-                return view('modules.index', [
-                    'footballType' => $footballType,
-                    'modules' => [
-                        [
-                            'name' => 'Medical',
-                            'description' => 'Gestion médicale des athlètes, vaccinations, et dossiers de santé',
-                            'icon' => '🏥',
-                            'route' => 'modules.medical.index',
-                            'color' => 'blue'
-                        ],
-                        [
-                            'name' => 'Compétitions',
-                            'description' => 'Gestion des compétitions, calendriers et résultats',
-                            'icon' => '🏆',
-                            'route' => 'competitions.index',
-                            'color' => 'yellow'
-                        ]
-                    ]
-                ]);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'error' => $e->getMessage(),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine()
-                ], 500);
-            }
-        })->middleware('auth');
 
 
 
@@ -2341,71 +1418,20 @@ Route::get('/joueurs', [PlayerSelectionController::class, 'index'])->name('joueu
 Route::get('/joueurs/{id}', [PlayerSelectionController::class, 'show'])->middleware(['auth'])->name('joueurs.show');
 
 // Test public du portail (sans authentification)
-Route::get('/test-portal/{playerId}', fn () => abort(410))->name('test.portal');
 
 Route::get('/csrf-token', function () {
     return response()->json(['token' => csrf_token()]);
 })->name('csrf.token');
 
 // Test PCMA create view
-Route::get('/test-pcma-view', function () {
-    try {
-        return view('pcma.create', [
-            'athletes' => collect([]),
-            'users' => collect([])
-        ]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'View error: ' . $e->getMessage()], 500);
-    }
-})->name('test.pcma.view');
 
 // Test PCMA create route (temporary, no auth required)
-Route::get('/test-pcma-create', function () {
-    try {
-        // Simuler les données nécessaires pour la vue
-        $players = collect([
-            (object)['id' => 1, 'first_name' => 'Test', 'last_name' => 'Player 1', 'club_id' => 1],
-            (object)['id' => 2, 'first_name' => 'Test', 'last_name' => 'Player 2', 'club_id' => 1],
-        ]);
-        
-        $assessors = collect([
-            (object)['id' => 1, 'name' => 'Dr. Test Doctor', 'role' => 'doctor'],
-            (object)['id' => 2, 'name' => 'Nurse Test', 'role' => 'medical_staff'],
-        ]);
-        
-        return view('pcma.create', compact('players', 'assessors'));
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Test PCMA create error: ' . $e->getMessage()], 500);
-    }
-})->name('test.pcma.create');
 
 // Test Dental Chart route (public access for testing)
-Route::get('/test-dental-chart', function () {
-    try {
-        return view('health-records.create', [
-            'patients' => collect([
-                (object)['id' => 1, 'name' => 'Test Patient 1'],
-                (object)['id' => 2, 'name' => 'Test Patient 2'],
-                (object)['id' => 3, 'name' => 'Test Patient 3']
-            ])
-        ]);
-    } catch (\Exception $e) {
-        \Log::error('Dental chart test route error: ' . $e->getMessage());
-        return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);
-    }
-})->name('test.dental.chart');
 
 // Test Dental Chart Simple route (public access for testing)
 
 // Test Dental Chart Adapted route (public access for testing)
-Route::get('/dental-chart-test', function () {
-    try {
-        return view('dental-chart-test');
-    } catch (\Exception $e) {
-        \Log::error('Dental chart test route error: ' . $e->getMessage());
-        return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);
-    }
-})->name('dental.chart.test');
 
 // Toutes les URL historiques d'un joueur affichent le même portail canonique.
 $redirectToPlayerPortal = function (?string $playerId = null) {
@@ -2457,64 +1483,12 @@ Route::get('/health-records-simple', function () {
 
 
 // Simple PCMA test route
-Route::get('/pcma/test', function () {
-    return response()->json(['status' => 'ok', 'message' => 'PCMA route is working']);
-})->name('pcma.test');
 
 // PCMA test simple route
-Route::get('/pcma/test-simple', function () {
-    return response()->json(['status' => 'ok', 'message' => 'PCMA route is working']);
-})->name('pcma.test.simple');
 
 // PCMA test view route
-Route::get('/pcma/test-view', function () {
-    try {
-        $athletes = collect([
-            ['id' => 1, 'name' => 'Test Athlete 1'],
-            ['id' => 2, 'name' => 'Test Athlete 2'],
-            ['id' => 3, 'name' => 'Test Athlete 3']
-        ]);
-        
-        $users = collect([
-            ['id' => 1, 'name' => 'Dr. Test User 1'],
-            ['id' => 2, 'name' => 'Dr. Test User 2'],
-            ['id' => 3, 'name' => 'Dr. Test User 3']
-        ]);
-        
-        return view('pcma.test-simple', [
-            'athletes' => $athletes,
-            'users' => $users
-        ]);
-    } catch (\Exception $e) {
-        \Log::error('PCMA test view error: ' . $e->getMessage());
-        return response()->json(['error' => 'View error: ' . $e->getMessage()], 500);
-    }
-})->name('pcma.test.view');
 
 // Test route for PCMA with DoctorSignOff integration
-Route::get('/pcma/test-with-signoff', function () {
-    try {
-        $athletes = collect([
-            (object)['id' => 1, 'name' => 'Test Athlete 1', 'club' => (object)['name' => 'Test Club 1']],
-            (object)['id' => 2, 'name' => 'Test Athlete 2', 'club' => (object)['name' => 'Test Club 2']],
-            (object)['id' => 3, 'name' => 'Test Athlete 3', 'club' => (object)['name' => 'Test Club 3']]
-        ]);
-        
-        $users = collect([
-            (object)['id' => 1, 'name' => 'Dr. Test User 1'],
-            (object)['id' => 2, 'name' => 'Dr. Test User 2'],
-            (object)['id' => 3, 'name' => 'Dr. Test User 3']
-        ]);
-        
-        return view('pcma.create', [
-            'athletes' => $athletes,
-            'users' => $users
-        ]);
-    } catch (\Exception $e) {
-        \Log::error('PCMA test with signoff error: ' . $e->getMessage());
-        return response()->json(['error' => 'Test error: ' . $e->getMessage()], 500);
-    }
-})->name('pcma.test.signoff');
 
 // API Proxy Routes to avoid CORS issues (public access)
 Route::get('/api/proxy/icd11', function (Request $request) {
@@ -3072,142 +2046,12 @@ Route::middleware(['auth'])->group(function () {
     })->name('user-management.destroy');
     
     // Test route pour la création d'utilisateurs (sans authentification)
-    Route::get('/test-user-create', function () {
-        try {
-            $roles = [
-                (object)['name' => 'system_admin', 'display_name' => 'Administrateur Système', 'description' => 'Accès complet au système', 'is_system_role' => true],
-                (object)['name' => 'association_admin', 'display_name' => 'Administrateur Association', 'description' => 'Gestion des compétitions et clubs', 'is_system_role' => true],
-                (object)['name' => 'club_admin', 'display_name' => 'Administrateur Club', 'description' => 'Gestion des équipes du club', 'is_system_role' => true],
-                (object)['name' => 'club_manager', 'display_name' => 'Manager Club', 'description' => 'Gestion des équipes', 'is_system_role' => true],
-                (object)['name' => 'club_medical', 'display_name' => 'Médecin Club', 'description' => 'Soins médicaux', 'is_system_role' => true],
-                (object)['name' => 'association_registrar', 'display_name' => 'Enregistreur Association', 'description' => 'Enregistrement des données', 'is_system_role' => true],
-                (object)['name' => 'association_medical', 'display_name' => 'Médecin Association', 'description' => 'Soins médicaux association', 'is_system_role' => true],
-                (object)['name' => 'referee', 'display_name' => 'Arbitre', 'description' => 'Portail arbitre', 'is_system_role' => true],
-                (object)['name' => 'player', 'display_name' => 'Joueur', 'description' => 'Accès joueur', 'is_system_role' => true],
-            ];
-            
-            $associations = \App\Models\Association::all();
-            $clubs = \App\Models\Club::all();
-            
-            return view('modules.user-management.create', compact('roles', 'associations', 'clubs'));
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    })->name('test-user-create');
     
     // Test route pour la gestion des utilisateurs (sans authentification)
-    Route::get('/test-user-management', function () {
-        try {
-            $users = \App\Models\User::all();
-            $accountRequests = \App\Models\AccountRequest::where('status', 'pending')->get();
-            
-            // Permissions disponibles basées sur les vraies permissions de la base
-            $availablePermissions = [
-                'player_registration_access' => 'Accès enregistrement joueurs',
-                'competition_management_access' => 'Gestion des compétitions',
-                'healthcare_access' => 'Accès soins de santé',
-                'fifa_connect_access' => 'Accès FIFA Connect',
-                'club_management' => 'Gestion des clubs',
-                'team_management' => 'Gestion des équipes',
-                'user_read' => 'Lire les utilisateurs',
-                'user_write' => 'Créer/Modifier les utilisateurs',
-                'user_delete' => 'Supprimer les utilisateurs',
-                'referee_access' => 'Accès portail arbitre',
-                'admin_access' => 'Accès administration',
-                'report_generate' => 'Générer des rapports',
-                'data_export' => 'Exporter les données'
-            ];
-            
-            return view('modules.user-management.index', compact('users', 'accountRequests', 'availablePermissions'));
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ], 500);
-        }
-    })->name('test-user-management');
     
     // Test route pour l'édition d'utilisateur (sans authentification)
-    Route::get('/test-user-edit/{user}', function (\App\Models\User $user) {
-        try {
-            $roles = [
-                (object)['name' => 'system_admin', 'display_name' => 'Administrateur Système', 'description' => 'Accès complet au système', 'is_system_role' => true],
-                (object)['name' => 'association_admin', 'display_name' => 'Administrateur Association', 'description' => 'Gestion des compétitions et clubs', 'is_system_role' => true],
-                (object)['name' => 'club_admin', 'display_name' => 'Administrateur Club', 'description' => 'Gestion des équipes du club', 'is_system_role' => true],
-                (object)['name' => 'club_manager', 'display_name' => 'Manager Club', 'description' => 'Gestion des équipes', 'is_system_role' => true],
-                (object)['name' => 'club_medical', 'display_name' => 'Médecin Club', 'description' => 'Soins médicaux', 'is_system_role' => true],
-                (object)['name' => 'association_registrar', 'display_name' => 'Enregistreur Association', 'description' => 'Enregistrement des données', 'is_system_role' => true],
-                (object)['name' => 'association_medical', 'display_name' => 'Médecin Association', 'description' => 'Soins médicaux association', 'is_system_role' => true],
-                (object)['name' => 'referee', 'display_name' => 'Arbitre', 'description' => 'Portail arbitre', 'is_system_role' => true],
-                (object)['name' => 'player', 'display_name' => 'Joueur', 'description' => 'Accès joueur', 'is_system_role' => true],
-            ];
-            
-            $associations = \App\Models\Association::all();
-            $clubs = \App\Models\Club::all();
-            
-            return view('modules.user-management.edit', compact('user', 'roles', 'associations', 'clubs'));
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ], 500);
-        }
-    })->name('test-user-edit');
     
     // Test route pour l'édition d'utilisateur sans authentification (pour diagnostiquer l'erreur 500)
-    Route::get('/debug-user-edit/{user}', function (\App\Models\User $user) {
-        try {
-            // Vérifier que l'utilisateur existe
-            if (!$user) {
-                return response()->json(['error' => 'Utilisateur non trouvé'], 404);
-            }
-            
-            // Vérifier les modèles
-            $associations = \App\Models\Association::all();
-            $clubs = \App\Models\Club::all();
-            
-            // Créer les rôles
-            $roles = [
-                (object)['name' => 'system_admin', 'display_name' => 'Administrateur Système', 'description' => 'Accès complet au système', 'is_system_role' => true],
-                (object)['name' => 'association_admin', 'display_name' => 'Administrateur Association', 'description' => 'Gestion des compétitions et clubs', 'is_system_role' => true],
-                (object)['name' => 'club_admin', 'display_name' => 'Administrateur Club', 'description' => 'Gestion des équipes du club', 'is_system_role' => true],
-                (object)['name' => 'club_manager', 'display_name' => 'Manager Club', 'description' => 'Gestion des équipes', 'is_system_role' => true],
-                (object)['name' => 'club_medical', 'display_name' => 'Médecin Club', 'description' => 'Soins médicaux', 'is_system_role' => true],
-                (object)['name' => 'association_registrar', 'display_name' => 'Enregistreur Association', 'description' => 'Enregistrement des données', 'is_system_role' => true],
-                (object)['name' => 'association_medical', 'display_name' => 'Médecin Association', 'description' => 'Soins médicaux association', 'is_system_role' => true],
-                (object)['name' => 'referee', 'display_name' => 'Arbitre', 'description' => 'Portail arbitre', 'is_system_role' => true],
-                (object)['name' => 'player', 'display_name' => 'Joueur', 'description' => 'Accès joueur', 'is_system_role' => true],
-            ];
-            
-            // Retourner les données pour diagnostic
-            return response()->json([
-                'success' => true,
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => $user->role,
-                    'club_id' => $user->club_id,
-                    'association_id' => $user->association_id
-                ],
-                'associations_count' => $associations->count(),
-                'clubs_count' => $clubs->count(),
-                'roles_count' => count($roles),
-                'view_exists' => view()->exists('modules.user-management.edit')
-            ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ], 500);
-        }
-    })->name('debug-user-edit');
     
     // Role Management routes
     Route::get('/role-management', function () {
@@ -3321,24 +2165,6 @@ Route::middleware(['auth'])->group(function () {
     // Route de test pour le portail arbitre
     
     // Route de test pour vérifier les permissions
-    Route::get('/test-permissions', function () {
-        $user = auth()->user();
-        if (!$user) {
-            return 'Non connecté';
-        }
-        
-        $permissions = $user->permissions ?? [];
-        if (is_string($permissions)) {
-            $permissions = json_decode($permissions, true) ?? [];
-        }
-        
-        return response()->json([
-            'user' => $user->name,
-            'role' => $user->role,
-            'permissions' => $permissions,
-            'permission_count' => count($permissions)
-        ]);
-    })->middleware('auth');
     
     // Route pour appliquer les rôles prédéfinis à tous les utilisateurs existants
     Route::post('/api/apply-predefined-roles', function () {
@@ -4706,25 +3532,12 @@ Route::get('/test-pdf', function() {
     Route::get('/modules/competitions', [App\Http\Controllers\CompetitionController::class, 'moduleDashboard'])->name('modules.competitions.index');
     
     // Route de test pour le module competitions (sans authentification)
-    Route::get('/test-module-competitions', [App\Http\Controllers\CompetitionController::class, 'moduleDashboard'])->name('test.module.competitions')->withoutMiddleware(['auth', 'auth:web']);
     
     // Route de test pour les engagements clubs (sans authentification)
-    Route::get('/test-engagements-clubs', [App\Http\Controllers\CompetitionController::class, 'associationEngagementsClubs'])->name('test.engagements.clubs')->withoutMiddleware(['auth', 'auth:web']);
     
     // Routes pour les actions des engagements clubs
-    Route::post('/test-export-engagements', [App\Http\Controllers\CompetitionController::class, 'exportEngagements'])->name('test.export.engagements')->withoutMiddleware(['auth', 'auth:web']);
-    Route::post('/test-validate-all-engagements', [App\Http\Controllers\CompetitionController::class, 'validateAllEngagements'])->name('test.validate.all.engagements')->withoutMiddleware(['auth', 'auth:web']);
-    Route::post('/test-validate-engagement/{clubId}', [App\Http\Controllers\CompetitionController::class, 'validateEngagement'])->name('test.validate.engagement')->withoutMiddleware(['auth', 'auth:web']);
-    Route::get('/test-club-details/{clubId}', [App\Http\Controllers\CompetitionController::class, 'clubDetails'])->name('test.club.details')->withoutMiddleware(['auth', 'auth:web']);
-    Route::post('/test-export-club-data/{clubId}', [App\Http\Controllers\CompetitionController::class, 'exportClubData'])->name('test.export.club.data')->withoutMiddleware(['auth', 'auth:web']);
-    Route::post('/test-suspend-engagement/{clubId}', [App\Http\Controllers\CompetitionController::class, 'suspendEngagement'])->name('test.suspend.engagement')->withoutMiddleware(['auth', 'auth:web']);
     
     // Routes de test pour les autres pages
-    Route::get('/test-calendrier-global', [App\Http\Controllers\CompetitionController::class, 'associationCalendrierGlobal'])->name('test.calendrier.global')->withoutMiddleware(['auth', 'auth:web']);
-    Route::get('/test-resultats-classements', [App\Http\Controllers\CompetitionController::class, 'associationResultatsClassements'])->name('test.resultats.classements')->withoutMiddleware(['auth', 'auth:web']);
-    Route::get('/test-discipline-sanctions', [App\Http\Controllers\CompetitionController::class, 'associationDisciplineSanctions'])->name('test.discipline.sanctions')->withoutMiddleware(['auth', 'auth:web']);
-    Route::get('/test-rapports-statistiques', [App\Http\Controllers\CompetitionController::class, 'associationRapportsStatistiques'])->name('test.rapports.statistiques')->withoutMiddleware(['auth', 'auth:web']);
-    Route::get('/test-designation-arbitres', [App\Http\Controllers\CompetitionController::class, 'designationArbitres'])->name('test.designation.arbitres')->withoutMiddleware(['auth', 'auth:web']);
     
     // Routes Compétitions - Module FIT (Nouvelles fonctionnalités)
     Route::prefix('competitions')->name('competitions.')->group(function () {
@@ -4744,6 +3557,8 @@ Route::get('/test-pdf', function() {
         Route::prefix('association')->name('association.')->group(function () {
             Route::get('/supervision', [App\Http\Controllers\CompetitionController::class, 'associationSupervision'])->name('supervision');
             Route::get('/engagements-clubs', [App\Http\Controllers\CompetitionController::class, 'associationEngagementsClubs'])->name('engagements-clubs');
+            Route::post('/export-engagements', [App\Http\Controllers\CompetitionController::class, 'exportEngagements'])->name('export-engagements');
+            Route::post('/validate-all-engagements', [App\Http\Controllers\CompetitionController::class, 'validateAllEngagements'])->name('validate-all-engagements');
             Route::get('/calendrier-global', [App\Http\Controllers\CompetitionController::class, 'associationCalendrierGlobal'])->name('calendrier-global');
             Route::get('/resultats-classements', [App\Http\Controllers\CompetitionController::class, 'associationResultatsClassements'])->name('resultats-classements');
             Route::get('/discipline-sanctions', [App\Http\Controllers\CompetitionController::class, 'associationDisciplineSanctions'])->name('discipline-sanctions');
@@ -4756,26 +3571,8 @@ Route::get('/test-pdf', function() {
     });
     
     // Route de test temporaire pour les fixtures (sans authentification)
-    Route::get('/test-fixtures', [App\Http\Controllers\CompetitionController::class, 'associationFixtures'])->name('test.fixtures')->withoutMiddleware(['auth', 'auth:web']);
-    Route::get('/test-feuille-match/{id}', [App\Http\Controllers\CompetitionController::class, 'feuilleMatch'])->name('test.feuille-match')->withoutMiddleware(['auth', 'auth:web']);
     
     // Route de test pour vérifier la cohérence des arbitres
-    Route::get('/test-arbitres/{id}', function($id) {
-        $controller = new App\Http\Controllers\CompetitionController();
-        
-        // Utiliser la réflexion pour accéder aux méthodes privées
-        $reflection = new ReflectionClass($controller);
-        $method = $reflection->getMethod('getConsistentArbitresForMatch');
-        $method->setAccessible(true);
-        
-        $arbitres = $method->invoke($controller, $id);
-        
-        return response()->json([
-            'match_id' => $id,
-            'arbitres' => $arbitres,
-            'message' => 'Arbitres cohérents pour le match ' . $id
-        ]);
-    })->name('test.arbitres')->withoutMiddleware(['auth', 'auth:web']);
 
     
     Route::get('/modules/teams', function () {
@@ -5156,144 +3953,22 @@ Route::get('/test-pdf', function() {
 });
 
 // Test simple
-Route::get('/api/test-simple', function () {
-    return response()->json(['message' => 'Test simple réussi', 'timestamp' => now()]);
-});
 
 // Test portail clinicien simple
-    Route::get('/test-clinician-simple', function () {
-        try {
-            $stats = [
-                'total_patients' => \App\Models\Player::count(),
-                'health_records' => \App\Models\HealthRecord::count(),
-                'pcmas' => \App\Models\PCMA::count()
-            ];
-            
-            return response()->json([
-                'message' => 'Portail clinicien test réussi',
-                'stats' => $stats,
-                'timestamp' => now()
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Erreur dans le test',
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ], 500);
-        }
-    });
 
-    Route::get('/test-health-records', function () {
-        try {
-            $healthRecords = \App\Models\HealthRecord::with('player')
-                ->orderBy('record_date', 'desc')
-                ->limit(5)
-                ->get();
-            
-            $data = [];
-            foreach ($healthRecords as $record) {
-                $data[] = [
-                    'id' => $record->id,
-                    'player_id' => $record->player_id,
-                    'player_name' => $record->player ? $record->player->name : 'N/A',
-                    'player_first_name' => $record->player ? $record->player->first_name : 'N/A',
-                    'player_last_name' => $record->player ? $record->player->last_name : 'N/A',
-                    'record_date' => $record->record_date,
-                    'status' => $record->status
-                ];
-            }
-            
-            return response()->json([
-                'message' => 'Health records test réussi',
-                'data' => $data,
-                'timestamp' => now()
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Erreur dans le test',
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ], 500);
-        }
-    });
 
 
 // Patient List API (accessible sans authentification pour test)
-Route::get('/api/clinical/patients-test', function (Request $request) {
-    try {
-        $statusFilter = $request->get('status');
-        $typeFilter = $request->get('type');
-        $dateFilter = $request->get('date');
-
-        // Construire la requête pour récupérer les patients avec leurs RDV
-        $query = DB::table('appointments')
-            ->join('athletes', 'appointments.athlete_id', '=', 'athletes.id')
-            ->select(
-                'appointments.*',
-                'athletes.id as athlete_id',
-                'athletes.name',
-                'athletes.dob as date_of_birth',
-                'athletes.fifa_id as fifa_connect_id',
-                'athletes.nationality',
-                'athletes.position'
-            )
-            ->orderBy('appointments.appointment_date', 'desc');
-
-        // Appliquer les filtres
-        if ($statusFilter) {
-            $query->where('appointments.status', $statusFilter);
-        }
-        if ($typeFilter) {
-            $query->where('appointments.type', $typeFilter);
-        }
-        if ($dateFilter) {
-            $query->whereDate('appointments.appointment_date', $dateFilter);
-        }
-
-        $patients = $query->limit(50)->get();
-
-        return response()->json([
-            'success' => true,
-            'patients' => $patients,
-            'total' => $patients->count(),
-            'filters' => [
-                'status' => $statusFilter,
-                'type' => $typeFilter,
-                'date' => $dateFilter
-            ]
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => 'Erreur lors de la récupération des patients: ' . $e->getMessage(),
-            'debug' => [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ]
-        ], 500);
-    }
-});
 
 // PDF generation routes (public access)
 Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->name('pcma.pdf.post')->middleware('api');
 
 // Simple test route
-Route::get('/test-public', function () {
-    return response()->json(['message' => 'Public route working']);
-})->name('test.public');
 
 // API routes
 Route::get('/api/fit/kpis', [FitDashboardController::class, 'kpis'])->name('fit.kpis');
 
 // Test routes
-Route::get('/test-tabs', function () {
-    $players = \App\Models\Player::orderBy('name')->get();
-    return view('health-records.create', compact('players'));
-})->name('test-tabs');
 
 // Analytics routes
 Route::get(
@@ -5340,9 +4015,6 @@ Route::get('/dental-chart/{patient}', [App\Http\Controllers\DentalChartControlle
 // Route pour le diagramme dentaire (supprimée - doublon)
 
 // Route de test pour le diagramme dentaire
-Route::get('/dental-chart-test', function () {
-    return view('health-records.dental-chart-simple');
-})->name('dental-chart.test');
 
 // PCMA Routes (protected)
 Route::middleware(['auth'])->group(function () {
@@ -5417,20 +4089,13 @@ Route::get('/fifa-ultimate-complete', fn () => abort(410))->name('fifa-ultimate-
 
 Route::get('/fifa-ultimate-working', fn () => abort(410))->name('fifa-ultimate-working');
 
-Route::get('/fifa-test-public', fn () => abort(410))->name('fifa-test-public');
 
 
-Route::get('/test-medical-tabs', function () {
-    return view('health-records.create-tabs');
-})->name('test-medical-tabs');
 
 Route::get('/medical-tabs', function () {
     return view('health-records.create-tabs');
 })->name('medical-tabs');
 
-Route::get('/fifa-test-simple', function () {
-    return view('fifa-test-simple');
-})->name('fifa-test-simple');
 
 
 Route::get('/fifa-stable', fn () => abort(410))->name('fifa-stable');
@@ -5442,46 +4107,10 @@ Route::get('/fifa-complete', fn () => abort(410))->name('fifa-complete');
 
 
 // Route de test pour l'authentification
-Route::get('/test-auth', function () {
-    if (Auth::check()) {
-        return response()->json([
-            'authenticated' => true,
-            'user' => Auth::user()->email,
-            'role' => Auth::user()->role,
-            'session_id' => session()->getId()
-        ]);
-    } else {
-        return response()->json([
-            'authenticated' => false,
-            'session_id' => session()->getId()
-        ]);
-    }
-})->name('test-auth');
 
 // Route de test pour forcer la connexion
-Route::get('/force-login', function () {
-    $user = App\Models\User::where('email', 'lionel.messi@example.com')->first();
-    if ($user) {
-        Auth::login($user);
-        return response()->json([
-            'message' => 'User logged in',
-            'user' => $user->email,
-            'role' => $user->role,
-            'session_id' => session()->getId()
-        ]);
-    } else {
-        return response()->json(['error' => 'User not found']);
-        }
-})->name('force-login');
 
 // Route publique de test
-Route::get('/public-test', function () {
-    return response()->json([
-        'message' => 'Public route works',
-        'timestamp' => now(),
-        'session_id' => session()->getId()
-    ]);
-})->name('public-test');
 
 // Route de debug FIFA (temporaire)
 
@@ -5642,31 +4271,20 @@ Route::get('/api/player-performance/{id}', function () {
 // Portail FIFA intégré sous la landing page
 Route::get('/fifa-portal', [App\Http\Controllers\FIFATestController::class, 'show'])->middleware(['auth'])->name('fifa.portal.integrated');
 
+// Tombstone: ancienne route de test neutralisee (410 Gone), conservee car testee explicitement par AdministrationViewSmokeTest
+Route::get('/fifa-test-public', fn () => abort(410))->name('fifa-test-public');
+
 // Test du système FIFA Connect
 
 // Test de l'intégration FIFA Connect
 
 // Test simple de l'API FIFA
-Route::get('/test-api-fifa/{id}', function ($id) {
-    return response()->json([
-        'message' => 'API FIFA Connect fonctionne !',
-        'player_id' => $id,
-        'test_data' => [
-            'overall_rating' => 85,
-            'goals_scored' => 15,
-            'assists' => 8,
-            'matches_played' => 25
-        ]
-    ]);
-})->name('test.api.fifa');
 
 // Test de l'API FIFA avec le contrôleur
 
 // Test Blade simple
-Route::get('/test-blade', [App\Http\Controllers\TestBladeController::class, 'test'])->name('test.blade');
 
 // Test FIFA avec vraies données
-Route::get('/fifa-test', [App\Http\Controllers\FIFATestController::class, 'test'])->name('fifa.test');
 
 // Test du logo FTF
 
@@ -5675,20 +4293,8 @@ Route::get('/fifa-test', [App\Http\Controllers\FIFATestController::class, 'test'
 // Interface web de fallback pour PCMA (complètement publique)
 
 // Test route pour health-records (sans authentification)
-Route::get('/test-health-records-create', function () {
-    $players = collect([
-        (object) ['id' => 1, 'name' => 'John Smith', 'first_name' => 'John', 'last_name' => 'Smith', 'date_of_birth' => '1995-03-15', 'position' => 'ST', 'nationality' => 'USA'],
-        (object) ['id' => 2, 'name' => 'Sarah Johnson', 'first_name' => 'Sarah', 'last_name' => 'Johnson', 'date_of_birth' => '1993-07-22', 'position' => 'MF', 'nationality' => 'Canada'],
-        (object) ['id' => 3, 'name' => 'Mike Wilson', 'first_name' => 'Mike', 'last_name' => 'Wilson', 'date_of_birth' => '1997-11-08', 'position' => 'DF', 'nationality' => 'UK']
-    ]);
-    
-    return view('health-records.create', compact('players'));
-})->name('test-health-records-create');
 
 // Test route pour appointments (sans authentification)
-Route::get('/test-appointments', function () {
-    return view('modules.appointments.index');
-})->name('test-appointments');
 
 // Test route pour vérifier l'affichage des logos
 
@@ -5722,9 +4328,6 @@ Route::get('/api/clubs/{club}/players', [App\Http\Controllers\LicensePhotoContro
 // Route de démonstration du système de licences existant
 
 // Route de test des droits super admin
-Route::get('/test-super-admin', function () {
-    return view('test-super-admin');
-})->name('test.super.admin');
 
 // ========================================
 // 🏆 SYSTÈME DE DEMANDES DE LICENCE FIFA
@@ -5767,295 +4370,30 @@ Route::get(
 // Route de test pour le système de recherche et pagination
 
 // Route de test pour les clubs avec recherche et pagination
-Route::get('/clubs-search-test', function () {
-    $controller = new App\Http\Controllers\ClubController();
-    return $controller->index(request());
-});
 
 // Route de test pour toutes les cartes des modules
 
 // Route de test pour le portail arbitre - VERSION FINALE QUI FONCTIONNE
 
 // Test routes for referee functions (no authentication required)
-Route::get('/referee-test/match-assignments', function () {
-    return view('modules.referee.match-assignments');
-})->name('referee-test.match-assignments');
 
-Route::get('/referee-test/performance-stats', function () {
-    return view('modules.referee.performance-stats');
-})->name('referee-test.performance-stats');
 
-Route::get('/referee-test/competition-schedule', function () {
-    return view('modules.referee.competition-schedule');
-})->name('referee-test.competition-schedule');
 
-Route::get('/referee-test/settings', function () {
-    return view('modules.referee.settings');
-})->name('referee-test.settings');
 
-Route::get('/referee-test/create-match-report', function () {
-    return view('modules.referee.create-match-report');
-})->name('referee-test.create-match-report');
 
 // Administration routes using existing views (no authentication required for testing)
-Route::get('/public-user-management', function () {
-    try {
-        $users = \App\Models\User::all();
-        $accountRequests = \App\Models\AccountRequest::where('status', 'pending')->get();
-        
-        // Permissions disponibles basées sur les vraies permissions de la base
-        $availablePermissions = [
-            'manage_users' => 'Gérer les utilisateurs',
-            'manage_roles' => 'Gérer les rôles',
-            'manage_permissions' => 'Gérer les permissions',
-            'view_audit_logs' => 'Voir les logs d\'audit',
-            'manage_system_settings' => 'Gérer les paramètres système',
-            'manage_clubs' => 'Gérer les clubs',
-            'manage_associations' => 'Gérer les associations',
-            'manage_competitions' => 'Gérer les compétitions',
-            'manage_referees' => 'Gérer les arbitres',
-            'manage_players' => 'Gérer les joueurs',
-            'view_reports' => 'Voir les rapports',
-            'export_data' => 'Exporter les données',
-            'manage_finances' => 'Gérer les finances',
-            'manage_content' => 'Gérer le contenu',
-            'manage_transfers' => 'Gérer les transferts'
-        ];
-        
-        return view('admin.user-management.index', compact('users', 'accountRequests', 'availablePermissions'));
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
-    }
-})->name('public-user-management');
 
 // Test RBAC permissions route (no authentication required)
-Route::get('/test-rbac-permissions', function () {
-    try {
-        $permissions = \App\Models\Permission::all()->groupBy('module');
-        $modules = \App\Models\Permission::distinct()->pluck('module')->filter();
-        
-        return view('admin.rbac.permissions', compact('permissions', 'modules'));
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
-    }
-})->name('test-rbac-permissions');
 
 // Public module permissions route (no authentication required)
-Route::get('/public-module-permissions', function () {
-    try {
-        // Définir tous les modules disponibles (pas seulement ceux dans la base de données)
-        $allModules = [
-            'medical' => ['icon' => '🏥', 'description' => 'Gestion médicale des athlètes, vaccinations, et dossiers de santé', 'permissions' => ['access', 'manage', 'view', 'create', 'edit', 'delete']],
-            'healthcare' => ['icon' => '📋', 'description' => 'Dossiers médicaux et suivi de santé', 'permissions' => ['access', 'manage', 'view', 'create', 'edit', 'delete']],
-            'pcma' => ['icon' => '🏥', 'description' => 'Plateforme de Contrôle Médical des Athlètes', 'permissions' => ['access', 'manage', 'view', 'create', 'edit', 'delete']],
-            'players' => ['icon' => '👥', 'description' => 'Gestion des joueurs et licences', 'permissions' => ['view', 'create', 'edit', 'delete', 'manage']],
-            'teams' => ['icon' => '⚽', 'description' => 'Gestion des équipes', 'permissions' => ['view', 'create', 'edit', 'delete', 'manage']],
-            'competitions' => ['icon' => '🏆', 'description' => 'Gestion des compétitions', 'permissions' => ['view', 'create', 'edit', 'manage']],
-            'referees' => ['icon' => '👨‍⚖️', 'description' => 'Gestion des arbitres', 'permissions' => ['view', 'assign', 'manage']],
-            'clubs' => ['icon' => '🏟️', 'description' => 'Gestion des clubs', 'permissions' => ['view', 'create', 'edit', 'delete']],
-            'associations' => ['icon' => '🏛️', 'description' => 'Gestion des associations', 'permissions' => ['view', 'create', 'edit', 'delete', 'manage']],
-            'confederations' => ['icon' => '🌐', 'description' => 'Gestion des confédérations continentales', 'permissions' => ['view', 'create', 'edit', 'delete', 'manage']],
-            'licenses' => ['icon' => '📄', 'description' => 'Gestion des licences', 'permissions' => ['view', 'create', 'edit', 'delete', 'validate']],
-            'devices-portal' => ['icon' => '📱', 'description' => 'Portail des appareils connectés', 'permissions' => ['access', 'manage', 'view']],
-            'administration' => ['icon' => '⚙️', 'description' => 'Gestion administrative', 'permissions' => ['access', 'manage', 'admin']],
-            'content-management' => ['icon' => '📝', 'description' => 'Gérer les articles, pages, médias et contenu du site', 'permissions' => ['view', 'create', 'edit', 'delete', 'manage']],
-            'transfer-management' => ['icon' => '🔄', 'description' => 'Gérer les transferts de joueurs connecté à FIFA TMS', 'permissions' => ['view', 'create', 'edit', 'delete', 'manage']],
-            'player-portal' => ['icon' => '👤', 'description' => 'Portail personnel des joueurs avec FIT Portal', 'permissions' => ['access', 'view', 'manage']],
-            'referee-portal' => ['icon' => '🧑‍⚖️', 'description' => 'Dashboard et portail des arbitres', 'permissions' => ['access', 'view', 'manage']],
-            'analytics' => ['icon' => '📊', 'description' => 'Tableau de bord analytique', 'permissions' => ['view', 'access', 'manage']],
-            'digital-twin' => ['icon' => '🤖', 'description' => 'Jumeau numérique des athlètes', 'permissions' => ['view', 'access', 'manage']],
-            'performance-analytics' => ['icon' => '📈', 'description' => 'Analyses de performance', 'permissions' => ['view', 'access', 'manage']],
-            'dtn' => ['icon' => '🌐', 'description' => 'Module DTN (Digital Twin Network)', 'permissions' => ['view', 'access', 'manage']],
-            'rpm' => ['icon' => '⚡', 'description' => 'Module RPM (Real-time Performance Monitoring)', 'permissions' => ['view', 'access', 'manage']],
-            'gemini' => ['icon' => '🧠', 'description' => 'Module Gemini IA de Google', 'permissions' => ['view', 'access', 'manage']],
-            'fifa-portal' => ['icon' => '🌍', 'description' => 'Portail FIFA intégré', 'permissions' => ['view', 'access', 'manage']],
-            'fifa-analytics' => ['icon' => '📊', 'description' => 'Analyses et statistiques FIFA', 'permissions' => ['view', 'access', 'manage']],
-            'system' => ['icon' => '⚙️', 'description' => 'Administration système', 'permissions' => ['admin', 'manage', 'stats']],
-            'fifa' => ['icon' => '🌍', 'description' => 'Intégration FIFA et connectivité mondiale', 'permissions' => ['connect', 'sync', 'manage']],
-            'finance' => ['icon' => '💰', 'description' => 'Gestion financière et comptabilité', 'permissions' => ['view', 'create', 'edit', 'delete', 'manage']],
-            'user-management' => ['icon' => '👤', 'description' => 'Gestion des utilisateurs et permissions', 'permissions' => ['view', 'create', 'edit', 'delete', 'manage']],
-            'audit-trail' => ['icon' => '📋', 'description' => 'Traçabilité des actions et logs système', 'permissions' => ['view', 'access', 'manage']],
-            'system-settings' => ['icon' => '⚙️', 'description' => 'Configuration système et paramètres', 'permissions' => ['view', 'edit', 'manage']]
-        ];
-        
-        // Récupérer les permissions depuis la base de données pour les modules existants
-        $dbPermissions = \App\Models\Permission::all();
-        $permissionsByModule = $dbPermissions->groupBy('module');
-        
-        // Construire le tableau des modules avec leurs permissions
-        $modules = [];
-        foreach ($allModules as $moduleKey => $moduleInfo) {
-            $modules[$moduleKey] = [
-                'name' => ucfirst(str_replace('_', ' ', $moduleKey)),
-                'icon' => $moduleInfo['icon'],
-                'description' => $moduleInfo['description'],
-                'permissions' => $moduleInfo['permissions']
-            ];
-        }
-
-        // Récupérer les rôles depuis la base de données
-        $dbRoles = \App\Models\Role::all();
-        $roles = [];
-        foreach ($dbRoles as $role) {
-            $roles[$role->name] = $role->display_name ?? ucfirst(str_replace('_', ' ', $role->name));
-        }
-
-        // Si aucun rôle n'existe, utiliser les rôles par défaut
-        if (empty($roles)) {
-            $roles = [
-                'system_admin' => 'System Administrator',
-                'association_admin' => 'Association Administrator',
-                'association_medical_director' => 'Association Medical Director',
-                'association_registrar' => 'Association Registrar',
-                'club_admin' => 'Club Administrator',
-                'club_manager' => 'Club Manager',
-                'club_medical_staff' => 'Club Medical Staff',
-                'referee' => 'Referee',
-                'assistant_referee' => 'Assistant Referee',
-                'fourth_official' => 'Fourth Official',
-                'var_official' => 'VAR Official',
-                'match_commissioner' => 'Match Commissioner',
-                'match_official' => 'Match Official',
-                'physiotherapist' => 'Physiotherapist',
-                'sports_scientist' => 'Sports Scientist',
-                'team_doctor' => 'Team Doctor',
-                'player' => 'Player'
-            ];
-        }
-
-        // Charger les permissions actuelles depuis la base de données
-        $currentPermissions = [];
-        foreach ($roles as $roleKey => $roleName) {
-            $currentPermissions[$roleKey] = [];
-            
-            // Récupérer le rôle depuis la base
-            $role = \App\Models\Role::where('name', $roleKey)->first();
-            
-            foreach ($modules as $moduleKey => $module) {
-                foreach ($module['permissions'] as $permission) {
-                    // Chercher la permission correspondante dans la base
-                    $permissionRecord = \App\Models\Permission::where('module', $moduleKey)
-                                                              ->where('action', $permission)
-                                                              ->first();
-                    
-                    if ($permissionRecord && $role) {
-                        // Vérifier si cette permission existe pour ce rôle via la table role_permissions
-                        $hasPermission = \DB::table('role_permissions')
-                                           ->where('role_id', $role->id)
-                                           ->where('permission_id', $permissionRecord->id)
-                                           ->exists();
-                        $currentPermissions[$roleKey][$permission] = $hasPermission;
-                    } else {
-                        // Si la permission n'existe pas dans la base, elle n'est pas accordée
-                        $currentPermissions[$roleKey][$permission] = false;
-                    }
-                }
-            }
-        }
-        
-        return view('admin.rbac.module-permissions', compact('modules', 'roles', 'currentPermissions'));
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
-    }
-})->name('public-module-permissions');
 
 // Route to save permissions (no authentication required for testing)
-Route::post('/public-module-permissions/save', function () {
-    try {
-        $permissions = request('permissions');
-        
-        if (!$permissions) {
-            return response()->json(['success' => false, 'message' => 'No permissions data received'], 400);
-        }
-        
-        foreach ($permissions as $roleKey => $rolePermissions) {
-            $role = \App\Models\Role::where('name', $roleKey)->first();
-            
-            if ($role) {
-                // Clear existing permissions for this role
-                \DB::table('role_permissions')->where('role_id', $role->id)->delete();
-                
-                // Add new permissions
-                foreach ($rolePermissions as $permission => $isGranted) {
-                    if ($isGranted) {
-                        // Find the permission record
-                        $permissionRecord = \App\Models\Permission::where('action', $permission)->first();
-                        if ($permissionRecord) {
-                            \DB::table('role_permissions')->insert([
-                                'role_id' => $role->id,
-                                'permission_id' => $permissionRecord->id,
-                                'created_at' => now(),
-                                'updated_at' => now()
-                            ]);
-                        }
-                    }
-                }
-            }
-        }
-        
-        return response()->json(['success' => true, 'message' => 'Permissions saved successfully']);
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
-    }
-})->name('public-module-permissions.save');
 
 
 
 
 
 
-Route::get('/admin-system-stats-test', function () {
-    try {
-        // User Statistics (Real data from database)
-        $userStats = [
-            'total_users' => \App\Models\User::count(),
-            'active_users' => \App\Models\User::where('last_login_at', '>=', now()->subDays(7))->count(),
-            'admin_users' => \App\Models\User::where('role', 'system_admin')->count(),
-            'recent_logins' => \App\Models\User::where('last_login_at', '>=', now()->subDays(1))->count(),
-            'total_roles' => \App\Models\Role::count(),
-            'users_by_role' => \App\Models\User::selectRaw('role, count(*) as count')->groupBy('role')->pluck('count', 'role')
-        ];
-
-        // Database Statistics (Real data)
-        $databaseStats = [
-            'connection_status' => \DB::connection()->getPdo() ? 'Connected' : 'Disconnected',
-            'database_size' => getDatabaseSize(),
-            'total_tables' => getTableCount(),
-            'slow_queries' => getSlowQueryCount(),
-            'table_sizes' => getTableSizes()
-        ];
-
-        // System Statistics (Real data)
-        $systemStats = [
-            'cpu_usage' => getCpuUsage(),
-            'memory_usage' => memory_get_usage(true) / 1024 / 1024, // MB
-            'memory_limit' => ini_get('memory_limit'),
-            'php_version' => PHP_VERSION,
-            'laravel_version' => app()->version(),
-            'operating_system' => PHP_OS,
-            'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown'
-        ];
-
-        // Docker Statistics (Real data from system)
-        $dockerStats = getDockerStats();
-
-        // CI/CD Statistics (Real data from Git)
-        $cicdStats = getCicdStats();
-
-        // Security Statistics (Real data from audit logs)
-        $securityStats = getSecurityStats();
-
-        // Log Statistics (Real data from log files)
-        $logStats = getLogStats();
-
-        return view('admin.system-stats', compact(
-            'userStats', 'databaseStats', 'systemStats', 'dockerStats', 
-            'cicdStats', 'securityStats', 'logStats'
-        ));
-    } catch (Exception $e) {
-        return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
-    }
-})->name('admin-system-stats-test');
 
 // Helper functions for real data collection. Guarded because tests and tooling may load routes/web.php more than once.
 if (!function_exists('getDatabaseSize')) {
@@ -6402,6 +4740,3 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Route de test pour toutes les cartes des modules
-Route::get('/test-modules-cards', function () {
-    return view('test-modules-cards');
-});

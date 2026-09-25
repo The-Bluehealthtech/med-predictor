@@ -18,8 +18,8 @@ class OperationalScreensSmokeTest extends TestCase
         app('router')->getRoutes()->refreshNameLookups();
         app('router')->getRoutes()->refreshActionLookups();
 
-        $this->get('/test-referee-assignments')
-            ->assertRedirect(route('admin.referee-assignments'));
+        // Ancienne route de contournement d'authentification '/test-referee-assignments'
+        // supprimee (elle desactivait volontairement le middleware auth) - voir audit securite.
         $this->actingAs(User::factory()->create(['role' => 'system_admin']));
         foreach (['/dtn', '/rpm', '/admin/referee-assignments', '/modules/referees'] as $path) {
             $response = $this->get($path);

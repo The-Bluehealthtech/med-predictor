@@ -200,7 +200,7 @@ function savePermissions() {
     }
     
     // Send AJAX request to save permissions
-    fetch('/public-module-permissions/save', {
+    fetch('{{ route('admin.rbac.module-permissions.update') }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

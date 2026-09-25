@@ -10,6 +10,10 @@ return [
     'login' => 'Connexion',
     'start' => 'Commencer',
     'platform' => 'FIT Platform',
+    'fifa' => 'FIFA',
+    'injury_prediction' => 'Prédiction des blessures',
+    'performance_optimization' => 'Optimisation des performances',
+    'real_time_analysis' => 'Analyse en temps réel',
     'hero' => [
         'fifa_compliant' => 'Conforme FIFA',
         'title' => "L'IA Révolutionne le Football et la Santé",

@@ -645,6 +645,7 @@ class PlayerPortalDataService
         $sportsDevices = $devicesRaw
             ->map(fn ($device) => (object) [
                 'device_name' => $device->device_name,
+                'synthetic_test' => str_starts_with((string) $device->serial_number, 'SYNTH-WEAR-'),
                 'brand' => $device->manufacturer,
                 'model' => $device->device_model,
                 'battery_level' => $device->battery_level,
@@ -707,6 +708,7 @@ class PlayerPortalDataService
             ->map(fn ($device) => (object) [
                 'api_name' =>
                     trim($device->manufacturer . ' ' . $device->device_name),
+                'synthetic_test' => str_starts_with((string) $device->serial_number, 'SYNTH-WEAR-'),
                 'api_type' => $device->device_type,
                 'connection_status' => $device->connection_status,
                 'last_sync' => $device->last_sync_at,

@@ -1858,7 +1858,8 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                 @foreach($sportsDevices as $device)
                                     <div class="p-4 bg-gray-50 rounded-lg border-l-4 
-                                        @if($device->connection_status == 'connected') border-green-500
+                                        @if($device->synthetic_test) border-gray-500
+                                        @elseif($device->connection_status == 'connected') border-green-500
                                         @elseif($device->connection_status == 'syncing') border-blue-500
                                         @elseif($device->connection_status == 'error') border-red-500
                                         @else border-gray-500
@@ -1866,12 +1867,13 @@
                                         <div class="flex items-center justify-between mb-2">
                                             <div class="font-semibold text-gray-800">{{ $device->device_name }}</div>
                                             <span class="px-2 py-1 text-xs rounded-full 
-                                                @if($device->connection_status == 'connected') bg-green-100 text-green-800
+                                                @if($device->synthetic_test) bg-gray-100 text-gray-800
+                                                @elseif($device->connection_status == 'connected') bg-green-100 text-green-800
                                                 @elseif($device->connection_status == 'syncing') bg-blue-100 text-blue-800
                                                 @elseif($device->connection_status == 'error') bg-red-100 text-red-800
                                                 @else bg-gray-100 text-gray-800
                                                 @endif">
-                                                {{ ucfirst($device->connection_status) }}
+                                                {{ $device->synthetic_test ? 'Démonstration (non connecté)' : ucfirst($device->connection_status) }}
                                             </span>
                                         </div>
                                         <div class="text-sm text-gray-600 mb-2">{{ $device->brand }} {{ $device->model }}</div>
@@ -2063,9 +2065,10 @@
                                     <div class="p-4 bg-{{ $color }}-50 rounded-lg border-l-4 border-{{ $color }}-500">
                                         <h5 class="font-semibold text-{{ $color }}-800 mb-2">{{ $icon }} {{ $api->api_name }}</h5>
                                         <div class="text-sm text-{{ $color }}-700">
-                                            <div>Endpoint: {{ $api->api_endpoint }}</div>
+                                            <div>{{ $api->synthetic_test ? 'Endpoint de test inactif' : 'Endpoint' }}: {{ $api->api_endpoint }}</div>
                                             <div>Statut: 
-                                                @if($api->connection_status == 'connected') ✅ Connecté
+                                                @if($api->synthetic_test) Démonstration (non connecté)
+                                                @elseif($api->connection_status == 'connected') ✅ Connecté
                                                 @elseif($api->connection_status == 'disconnected') ❌ Déconnecté
                                                 @elseif($api->connection_status == 'error') ⚠️ Erreur
                                                 @else 🔄 En attente

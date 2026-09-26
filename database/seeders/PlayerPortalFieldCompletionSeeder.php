@@ -74,6 +74,12 @@ class PlayerPortalFieldCompletionSeeder extends Seeder
             . "OR season IS NULL OR season = '' OR issuing_authority IS NULL OR issuing_authority = '') AND "
             . $exists('player_licenses')
         );
+        $updates['capteurs de démonstration'] = DB::affectingStatement(
+            "UPDATE player_connected_devices SET sensors_available = '[\"heart_rate\",\"sleep\",\"activity\"]'::json, "
+            . "updated_at = CURRENT_TIMESTAMP WHERE (sensors_available IS NULL "
+            . "OR sensors_available::jsonb = '[]'::jsonb) AND "
+            . $exists('player_connected_devices')
+        );
         $updates['conseil médical de test'] = DB::affectingStatement(
             "UPDATE medical_predictions SET recommendations = '[\"Conseil fictif de test, sans valeur médicale.\"]'::json, "
             . "updated_at = CURRENT_TIMESTAMP WHERE (recommendations IS NULL "

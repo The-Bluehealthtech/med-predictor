@@ -17,7 +17,19 @@ class MedicationTestFixtureSeeder extends Seeder
         ]];
 
         $updated = DB::table('health_records')
-            ->where('notes', 'like', 'synthetic_demo%')
+            ->whereExists(function ($query): void {
+                $query->selectRaw('1')
+                    ->from('player_real_time_health')
+                    ->whereColumn(
+                        'player_real_time_health.player_id',
+                        'health_records.player_id'
+                    )
+                    ->where(
+                        'player_real_time_health.notes',
+                        'like',
+                        'synthetic_demo%'
+                    );
+            })
             ->whereNull('medications')
             ->update([
                 'medications' => json_encode($fixture, JSON_THROW_ON_ERROR),

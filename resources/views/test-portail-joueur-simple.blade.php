@@ -609,8 +609,8 @@
                         <h3>🏃 Forme Physique</h3>
                         <div style="text-align: left; margin-top: 15px;">
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Score de forme:</span>
-                                <span style="color: #ffd700; font-weight: bold;">{{ $player->form_percentage ?? 'Données non disponibles' }}</span>
+                                <span>Axe physique actuel:</span>
+                                <span style="color: #ffd700; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) $latestFitSnapshot->physical_score, 1).'/100' : 'Données non disponibles' }}</span>
                             </div>
                         </div>
                     </div>
@@ -621,11 +621,11 @@
                         <div style="text-align: left; margin-top: 15px;">
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                                 <span>Note actuelle:</span>
-                                <span style="color: #ffd700; font-weight: bold;">{{ $player->overall_rating ?? 'Données non disponibles' }}</span>
+                                <span style="color: #ffd700; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) $latestFitSnapshot->fit_score, 1).'/100' : 'Données non disponibles' }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Potentiel:</span>
-                                <span style="color: #51cf66; font-weight: bold;">{{ $player->potential_rating ?? 'Données non disponibles' }}</span>
+                                <span>Meilleur axe actuel:</span>
+                                <span style="color: #51cf66; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) max($latestFitSnapshot->physical_score, $latestFitSnapshot->technical_score, $latestFitSnapshot->tactical_score, $latestFitSnapshot->mental_score, $latestFitSnapshot->social_score), 1).'/100' : 'Données non disponibles' }}</span>
                             </div>
                         </div>
                     </div>

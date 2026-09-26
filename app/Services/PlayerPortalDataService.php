@@ -759,12 +759,17 @@ class PlayerPortalDataService
                     is_array($substance)
                         ? ($substance['name'] ?? 'Substance analysée')
                         : (string) $substance,
-                'substance_category' => 'Panel antidopage',
-                'wada_code' => null,
-                'detection_count' => 0,
-                'status' => 'screened',
-                'notes' =>
-                    'Présente dans le panel de contrôle; aucune violation n’est déduite.',
+                'substance_category' => is_array($substance)
+                    ? ($substance['category'] ?? 'Panel antidopage')
+                    : 'Panel antidopage',
+                'wada_code' => is_array($substance) ? ($substance['wada_code'] ?? null) : null,
+                'detection_count' => is_array($substance)
+                    ? ($substance['detection_count'] ?? null)
+                    : null,
+                'status' => is_array($substance) ? ($substance['status'] ?? 'panel') : 'panel',
+                'notes' => is_array($substance)
+                    ? ($substance['notes'] ?? 'Présente dans le panel de contrôle.')
+                    : 'Présente dans le panel de contrôle.',
             ]);
 
         /*

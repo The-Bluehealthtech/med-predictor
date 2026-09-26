@@ -2202,7 +2202,7 @@
                                             <span class="px-2 py-1 text-xs rounded-full {{ $statusColor }}">
                                                 @if($substance->status == 'active') 🔴 Actif
                                                 @elseif($substance->status == 'cleared') 🟢 Autorisé
-                                                @else 🔵 Surveillance
+                                                @else 🔵 Dans le panel
                                                 @endif
                                             </span>
                                         </div>
@@ -2210,16 +2210,12 @@
                                             <div class="text-xs text-gray-500 mb-2">Code WADA: {{ $substance->wada_code }}</div>
                                         @endif
                                         <div class="text-sm text-gray-700 mb-2">{{ $substance->notes }}</div>
-                                        @if($substance->detection_count > 0)
-                                            <div class="text-xs text-red-600">
-                                                <i class="fas fa-exclamation-triangle mr-1"></i>
-                                                {{ $substance->detection_count }} détection(s)
+                                        @if($substance->detection_count !== null)
+                                            <div class="text-xs {{ $substance->detection_count > 0 ? 'text-red-600' : 'text-gray-600' }}">
+                                                {{ $substance->detection_count }} détection(s) enregistrée(s)
                                             </div>
                                         @else
-                                            <div class="text-xs text-green-600">
-                                                <i class="fas fa-check-circle mr-1"></i>
-                                                Aucune détection
-                                            </div>
+                                            <div class="text-xs text-gray-600">Résultat individuel non enregistré</div>
                                         @endif
                                     </div>
                                 @endforeach

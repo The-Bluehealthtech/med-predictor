@@ -17,9 +17,12 @@ Chaque carte est assemblée par `PlayerPortalDataService::forPlayer`. Une valeur
 | Traitements actifs | `health_records.medications` | Seuls les éléments dont `status=active` comptent. |
 | Risque sanitaire, statut médical | `health_records.risk_score`, PCMA signé | Le risque est affiché comme risque ; aucun statut « apte » sans signature. |
 | Score et axes PCMA | `pcmas.result_json` | Une évaluation de test non signée reste clairement non officielle. |
+| Prime simulée de formation (test) | `player_licenses.bonus_structure.training_compensation_test` | Montant en unités de test, signalé comme simulation et jamais présenté comme prime FIFA officielle. |
+| Substances du panel antidopage | `doping_controls.substances_tested` | Le nombre de détections n’est affiché que si ce résultat est enregistré ; autrement, résultat individuel non enregistré. |
 
 Les fixtures sont limitées aux enregistrements marqués `synthetic_demo`, préservent les champs existants et sont réexécutables. Le lanceur `scripts/run_player_portal_completion.sh` complète profil, nutrition, traitements et FIT pour tous les joueurs de test, puis affiche une couverture par joueur. Les identifiants FIFA ne sont pas générés.
 
 L'identifiant FIFA affiché provient exclusivement de `players.fifa_connect_id` ; la licence active en en-tête provient de la même collection `playerLicenses` que le tableau des licences.
 
-| Prime simulée de formation (test) | `player_licenses.bonus_structure.training_compensation_test` | Montant en unités de test, signalé comme simulation et jamais présenté comme prime FIFA officielle. |
+
+Les intitulés de sections, catégories, liens de navigation et explications sont des textes d’interface. Les scores FIT, pourcentages et agrégats sont des calculs d’affichage à partir de données enregistrées. Le contrôle de rendu des 844 joueurs constate un seul champ personnel absent : `players.fifa_connect_id`, qui reste réservé à l’API FIFA. Ce contrôle concerne le portail joueur et la route analytique examinée, pas toutes les routes de l’application.

@@ -78,7 +78,6 @@ foreach ($ids as $index => $id) {
         }
         $translatedMissing = __('Données non disponibles');
         if ($player->fifa_connect_id === null
-            && $player->passport?->fifa_connect_id === null
             && !str_contains($visible, $translatedMissing)
             && !str_contains($visible, 'Données non disponibles')) {
             throw new RuntimeException('Contrôle de détection invalide : identifiant FIFA absent mais libellé introuvable (langue ' . app()->getLocale() . ').');
@@ -106,6 +105,22 @@ foreach ($ids as $index => $id) {
                 if (count($examples[$marker]) < 8) {
                     $examples[$marker][(int) $id] = $count;
                 }
+            }
+        }
+        $expectedMissing = $player->fifa_connect_id === null ? 1 : 0;
+        $actualMissing = substr_count($visible, (string) $translatedMissing);
+        if ($translatedMissing !== 'Données non disponibles') {
+            $actualMissing += substr_count($visible, 'Données non disponibles');
+        }
+        if ($actualMissing !== $expectedMissing) {
+            throw new RuntimeException(sprintf(
+                'Valeurs indisponibles : %d au lieu de %d (seul FIT CONNECT ID est admis)',
+                $actualMissing, $expectedMissing
+            ));
+        }
+        foreach (['N/A', 'Non renseigné'] as $unexpectedMarker) {
+            if (str_contains($visible, $unexpectedMarker)) {
+                throw new RuntimeException('Marqueur inattendu : ' . $unexpectedMarker);
             }
         }
         printf("Joueur %d : %s\n", $id, $playerMarkers ? implode(', ', $playerMarkers) : 'aucun marqueur de valeur absente');

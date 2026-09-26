@@ -74,6 +74,13 @@ class PlayerPortalFieldCompletionSeeder extends Seeder
             . "OR season IS NULL OR season = '' OR issuing_authority IS NULL OR issuing_authority = '') AND "
             . $exists('player_licenses')
         );
+        $updates['prime simulée de formation'] = DB::affectingStatement(
+            "UPDATE player_licenses SET bonus_structure = jsonb_set(COALESCE(bonus_structure::jsonb, '{}'::jsonb), "
+            . "'{training_compensation_test}', to_jsonb(1000 + (player_id % 500)), true), "
+            . "updated_at = CURRENT_TIMESTAMP WHERE notes LIKE 'synthetic_demo%' "
+            . "AND bonus_structure::jsonb->>'training_compensation_test' IS NULL AND "
+            . $exists('player_licenses')
+        );
         $updates['capteurs de démonstration'] = DB::affectingStatement(
             "UPDATE player_connected_devices SET sensors_available = '[\"heart_rate\",\"sleep\",\"activity\"]'::json, "
             . "updated_at = CURRENT_TIMESTAMP WHERE (sensors_available IS NULL "

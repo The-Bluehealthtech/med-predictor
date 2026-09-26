@@ -132,6 +132,12 @@ class PlayerPortalDataService
                 return $license;
             });
 
+        $latestLicense = $playerLicenses->first();
+        $playerTrainingCompensation = $latestLicense
+            && str_contains((string) ($latestLicense->notes ?? ''), 'synthetic_demo')
+            ? data_get($this->json($latestLicense->bonus_structure ?? null), 'training_compensation_test')
+            : null;
+
         /*
          * SDOH
          */
@@ -967,6 +973,7 @@ class PlayerPortalDataService
             'fitEvolution',
             'fitDiagnosis',
             'playerLicenses',
+            'playerTrainingCompensation',
             'performanceTrends',
             'playerPerformanceTests',
             'playerLaboratoryResults',

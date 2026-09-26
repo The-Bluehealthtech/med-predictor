@@ -98,3 +98,7 @@ Les cinq tests HTTP `PlayerPortalSimpleAccessTest` passent avec SQLite en mémoi
 ## Correction du détecteur de libellés
 
 Le premier lot exhaustif a rendu les 844 joueurs sans exception et la route analytics sans erreur. Son compte « zéro marqueur » était **invalide** : le checkout a `APP_LOCALE=en` et traduit « Données non disponibles » en « Data unavailable », alors que le détecteur n'inspectait que le français. Le compteur a été corrigé pour lire la traduction active, et chaque rendu échoue désormais si l'identifiant FIFA absent ne produit pas le libellé attendu. Une nouvelle exécution est nécessaire pour connaître les autres champs manquants effectivement affichés.
+
+## Résultat exhaustif du rendu corrigé
+
+Les quatre lots ont rendu 844/844 portails sans exception, et `/performances/analytics` a été rendu. Chacun des 844 portails affichait exactement deux « Data unavailable » : l'identifiant FIT CONNECT externe et la ligne de prime estimée codée en dur. Total : 1 688 occurrences, dont 844 pour chaque emplacement. La prime a été remplacée par une simulation explicite en unités de test, stockée dans `player_licenses.bonus_structure.training_compensation_test` sans écraser les autres clés. Elle n'est pas un montant FIFA officiel. Il reste à exécuter la fixture et à vérifier les 844 valeurs de cette source avant la conclusion finale ; `players.fifa_connect_id` reste non attribué.

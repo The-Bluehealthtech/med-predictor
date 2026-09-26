@@ -21,3 +21,5 @@ Chaque carte est assemblée par `PlayerPortalDataService::forPlayer`. Une valeur
 Les fixtures sont limitées aux enregistrements marqués `synthetic_demo`, préservent les champs existants et sont réexécutables. Le lanceur `scripts/run_player_portal_completion.sh` complète profil, nutrition, traitements et FIT pour tous les joueurs de test, puis affiche une couverture par joueur. Les identifiants FIFA ne sont pas générés.
 
 L'identifiant FIFA affiché provient exclusivement de `players.fifa_connect_id` ; la licence active en en-tête provient de la même collection `playerLicenses` que le tableau des licences.
+
+| Prime simulée de formation (test) | `player_licenses.bonus_structure.training_compensation_test` | Montant en unités de test, signalé comme simulation et jamais présenté comme prime FIFA officielle. |

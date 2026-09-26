@@ -2523,7 +2523,7 @@
 
             <!-- Résumé des primes de formation -->
             <div class="fifa-training-compensation">
-                <h3>Primes de Formation FIFA</h3>
+                <h3>Simulation de prime de formation</h3>
                 <div class="training-compensation-content">
                     <!-- 🆕 CONTENU BLADE DIRECT -->
                     <div class="fifa-compensation-card">
@@ -2544,9 +2544,9 @@
                                 </span>
                             </div>
                             <div class="fifa-compensation-stat">
-                                <span>Prime estimée:</span>
+                                <span>Prime simulée de test:</span>
                                 <span class="fifa-compensation-amount">
-                                    Données non disponibles
+                                    {{ $playerTrainingCompensation !== null ? number_format((float) $playerTrainingCompensation, 0, ' ', ' ') . ' unités de test' : 'Aucune simulation enregistrée' }}
                                 </span>
                             </div>
                         </div>

@@ -102,3 +102,10 @@ Le premier lot exhaustif a rendu les 844 joueurs sans exception et la route anal
 ## Résultat exhaustif du rendu corrigé
 
 Les quatre lots ont rendu 844/844 portails sans exception, et `/performances/analytics` a été rendu. Chacun des 844 portails affichait exactement deux « Data unavailable » : l'identifiant FIT CONNECT externe et la ligne de prime estimée codée en dur. Total : 1 688 occurrences, dont 844 pour chaque emplacement. La prime a été remplacée par une simulation explicite en unités de test, stockée dans `player_licenses.bonus_structure.training_compensation_test` sans écraser les autres clés. Elle n'est pas un montant FIFA officiel. Il reste à exécuter la fixture et à vérifier les 844 valeurs de cette source avant la conclusion finale ; `players.fifa_connect_id` reste non attribué.
+
+## Résultat final des vérifications du 26 septembre
+
+- Le rendu exhaustif avant correction de la prime a abouti pour **844/844 joueurs** sans erreur, et pour `/performances/analytics`. Deux libellés « Data unavailable » étaient présents par joueur : FIT CONNECT ID et prime estimée.
+- La correction ciblée remplace le second libellé par `player_licenses.bonus_structure.training_compensation_test`. La fixture a complété **844/844 licences** et l'audit de champs étendu ne signale plus que `players.fifa_connect_id` (844/844 absent).
+- Le nouveau Blade a été rendu pour le joueur 1 sans erreur : un seul « Data unavailable », dans FIT CONNECT ID. La même expression lit la même clé JSON par licence pour chacun des 844 joueurs ; cette dernière conclusion pour les 843 autres repose sur le contrôle de données exhaustif et sur la correction ciblée, **pas sur un second rendu complet**.
+- Le diagnostic concerne le portail `test-portail-joueur-simple` et l'analytics rendue, dans les données de test contrôlées. Il ne certifie pas toutes les autres routes Laravel, les API externes ni la validité d'un identifiant FIFA officiel. Les identifiants FIFA n'ont pas été inventés.

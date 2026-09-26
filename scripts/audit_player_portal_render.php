@@ -73,8 +73,18 @@ foreach ($ids as $index => $id) {
         ))->render();
         $visible = preg_replace('~<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>~si', ' ', $html);
         $visible = html_entity_decode(strip_tags((string) $visible), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        if (strlen($visible) < 5000) {
+            throw new RuntimeException('Rendu visible anormalement court : ' . strlen($visible) . ' caractères.');
+        }
+        $translatedMissing = __('Données non disponibles');
+        if ($player->fifa_connect_id === null
+            && $player->passport?->fifa_connect_id === null
+            && !str_contains($visible, $translatedMissing)
+            && !str_contains($visible, 'Données non disponibles')) {
+            throw new RuntimeException('Contrôle de détection invalide : identifiant FIFA absent mais libellé introuvable (langue ' . app()->getLocale() . ').');
+        }
         $playerMarkers = [];
-        foreach (['Données non disponibles', 'N/A', 'Non renseigné'] as $marker) {
+        foreach (array_unique(['Données non disponibles', $translatedMissing, 'N/A', 'Non renseigné']) as $marker) {
             $count = substr_count($visible, $marker);
             if ($count > 0) {
                 $playerMarkers[] = $marker . '=' . $count;

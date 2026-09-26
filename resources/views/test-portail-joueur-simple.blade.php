@@ -1008,7 +1008,7 @@
                                 <span style="color: #87ceeb; font-weight: bold;">{{ $injuryAlerts->injury_type }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Zone:</span>
+                                <span>Dernière zone blessée:</span>
                                 <span style="color: #87ceeb; font-weight: bold;">{{ $injuryAlerts->body_part }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">

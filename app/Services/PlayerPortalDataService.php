@@ -183,20 +183,39 @@ class PlayerPortalDataService
             });
 
         /*
+         * Historique canonique des blessures.
+         */
+        $playerInjuriesDiseases = DB::table('injuries')
+            ->where('player_id', $player->id)
+            ->orderByDesc('date')
+            ->get()
+            ->map(fn ($injury) => (object) [
+                'incident_date' => $injury->date,
+                'type' => 'injury',
+                'injury_type' => $injury->type,
+                'body_zone' => $injury->body_zone,
+                'severity' => $injury->severity,
+                'status' => $injury->status,
+                'description' => $injury->description,
+            ])
+            ->values();
+
+        /*
          * Risque de blessure.
          */
         $injuryAlerts = null;
 
-        $injuryRiskRatio = $player->injury_risk_score !== null
-            ? (float) $player->injury_risk_score
+        $injuryPrediction = $medicalPredictionsRaw->first(
+            fn ($prediction) => $prediction->prediction_type === 'injury_risk'
+        );
+        $injuryRiskRatio = $injuryPrediction?->risk_probability !== null
+            ? (float) $injuryPrediction->risk_probability
             : null;
-
-        $injuryMechanism = $latestHealth->injury_mechanism ?? null;
-        $injuryLocation = $latestHealth->injury_location ?? null;
+        $injuryMechanism = $injuryPrediction?->predicted_condition;
+        $injuryLocation = $playerInjuriesDiseases->first()?->body_zone;
 
         $hasInjuryRiskSignal = $injuryRiskRatio !== null && (
             $injuryRiskRatio > 0
-            || !empty($player->injury_risk_reason)
             || !empty($injuryMechanism)
             || !empty($injuryLocation)
         );
@@ -211,7 +230,6 @@ class PlayerPortalDataService
                     round($this->clamp($injuryRiskPercent, 0, 100), 1),
                 'injury_type' =>
                     $injuryMechanism
-                    ?? $player->injury_risk_reason
                     ?? 'Risque général',
                 'body_part' =>
                     $injuryLocation
@@ -620,24 +638,6 @@ class PlayerPortalDataService
             'healthy_diet' =>
                 $latestSdoh?->has_healthy_diet,
         ];
-
-        /*
-         * Historique canonique des blessures.
-         */
-        $playerInjuriesDiseases = DB::table('injuries')
-            ->where('player_id', $player->id)
-            ->orderByDesc('date')
-            ->get()
-            ->map(fn ($injury) => (object) [
-                'incident_date' => $injury->date,
-                'type' => 'injury',
-                'injury_type' => $injury->type,
-                'body_zone' => $injury->body_zone,
-                'severity' => $injury->severity,
-                'status' => $injury->status,
-                'description' => $injury->description,
-            ])
-            ->values();
 
         /*
          * Devices.

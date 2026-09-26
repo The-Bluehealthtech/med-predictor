@@ -36,3 +36,9 @@
 4. Faire rendre les routes concernées et contrôler les valeurs vides réelles. Les 104 branches de remplacement statiques ne permettent pas à elles seules de savoir combien sont activées.
 
 **Verdict actuel :** couverture des cinq catégories contrôlées confirmée ; aucune preuve de complétude à 100 % des champs ni d'unicité des sources. Les valeurs `null` et les sources de remplacement ci-dessus réfutent déjà ces deux affirmations pour le code actuel.
+
+## Audit de champs automatisé
+
+Exécuter `bash scripts/run_player_portal_field_audit.sh` avec l'URL PostgreSQL saisie sans écho. Le script ne modifie aucune donnée ; il affiche, pour les 844 joueurs de test, le nombre de valeurs absentes par colonne ou chemin JSON sur 14 sources consultées par le portail et des exemples d'identifiants de joueurs. Son code est dans `scripts/audit_player_portal_fields.php`.
+
+Cet audit de données ne prétend pas couvrir toutes les routes et toutes les branches conditionnelles. Un résultat sans absence sur ces champs ne lève pas les écarts de sources et les champs explicitement `null` documentés ci-dessus.

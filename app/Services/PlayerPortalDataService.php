@@ -109,8 +109,11 @@ class PlayerPortalDataService
             ->get();
 
         $playerLicenses = DB::table('player_licenses')
-            ->where('player_id', $playerId)
-            ->orderByDesc('issue_date')
+            ->leftJoin('clubs as license_clubs', 'license_clubs.id', '=', 'player_licenses.club_id')
+            ->leftJoin('associations as license_associations', 'license_associations.id', '=', 'license_clubs.association_id')
+            ->select('player_licenses.*', 'license_clubs.name as club_name', 'license_associations.name as association_name')
+            ->where('player_licenses.player_id', $playerId)
+            ->orderByDesc('player_licenses.issue_date')
             ->get()
             ->map(function ($license) {
                 $license->start_date =

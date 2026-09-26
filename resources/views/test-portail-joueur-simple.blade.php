@@ -2466,11 +2466,6 @@
                         @if($playerLicenses && $playerLicenses->count() > 0)
                             @foreach($playerLicenses as $license)
                                 @php
-                                    $club = \DB::table('clubs')->where('id', $license->club_id)->first();
-                                    $clubAssociation = null;
-                                    if ($club) {
-                                        $clubAssociation = \DB::table('associations')->where('id', $club->association_id)->first();
-                                    }
                                 @endphp
                                 <tr>
                                     <td>
@@ -2495,8 +2490,8 @@
                                         @endphp
                                         {{ $seasonLabel ? 'Saison ' . $seasonLabel : 'Données non disponibles' }}
                                     </td>
-                                    <td>{{ $club->name ?? 'N/A' }}</td>
-                                    <td>{{ $clubAssociation ? $clubAssociation->name : 'N/A' }}</td>
+                                    <td>{{ $license->club_name ?? 'N/A' }}</td>
+                                    <td>{{ $license->association_name ?? 'N/A' }}</td>
                                     <td>{{ ucfirst(str_replace('_', ' ', $license->license_type)) }}</td>
                                     <td>{{ $license->issuing_authority ?? 'Données non disponibles' }}</td>
                                     <td>

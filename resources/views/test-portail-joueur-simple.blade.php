@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $player->first_name }} {{ $player->last_name }} - Portail Joueur Simple</title>
+    <title>{{ $player->first_name }} {{ $player->last_name }} - {{ __('Portail Joueur Simple') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -17,7 +17,7 @@
                 <a href="{{ route('players.list') }}"
                    class="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200">
                     <i class="fas fa-arrow-left"></i>
-                    <span>Retour à la Liste</span>
+                    <span>{{ __('Retour à la Liste') }}</span>
                 </a>
             @endunless
             
@@ -58,26 +58,33 @@
                 if (!$isAuthenticated) {
                     $connectionStatus = 'not_connected';
                     $statusColor = 'gray';
-                    $statusText = 'Non connecté';
+                    $statusText = __('Non connecté');
                 } elseif ($isAuthenticated && $isSessionValid && $isTenantActive) {
                     $connectionStatus = 'connected';
                     $statusColor = 'green';
-                    $statusText = 'Connecté';
+                    $statusText = __('Connecté');
                 } elseif ($isAuthenticated && (!$isSessionValid || !$isTenantActive)) {
                     $connectionStatus = 'disconnected';
                     $statusColor = 'red';
-                    $statusText = 'Session expirée';
+                    $statusText = __('Session expirée');
                 } else {
                     $connectionStatus = 'not_connected';
                     $statusColor = 'gray';
-                    $statusText = 'Non connecté';
+                    $statusText = __('Non connecté');
                 }
             @endphp
             
+            <div class="flex items-center gap-2 mr-3" aria-label="Language selector">
+                <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}"
+                   class="px-2 py-1 rounded text-xs {{ app()->getLocale() === 'fr' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300' }}">FR</a>
+                <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}"
+                   class="px-2 py-1 rounded text-xs {{ app()->getLocale() === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300' }}">EN</a>
+            </div>
+
             <div class="flex items-center space-x-2 bg-gray-700 rounded-lg px-3 py-2">
                 <div class="flex items-center space-x-2">
                     <div class="w-2 h-2 bg-{{ $statusColor }}-500 rounded-full {{ $connectionStatus === 'connected' ? 'animate-pulse' : '' }}" 
-                         title="{{ $statusText }} - Session: {{ $isSessionValid ? 'Valide' : 'Invalide' }} | Tenant: {{ $isTenantActive ? 'Actif' : 'Inactif' }}"></div>
+                         title="{{ $statusText }} - Session: {{ $isSessionValid ? __('Valide') : __('Invalide') }} | Tenant: {{ $isTenantActive ? __('Actif') : __('Inactif') }}"></div>
                     <span class="text-xs text-{{ $statusColor }}-400 font-medium">{{ $statusText }}</span>
                 </div>
                 @if($isAuthenticated && $user)
@@ -119,8 +126,8 @@
                         {{ $player->first_name }} {{ $player->last_name }}
                     </h1>
                     <p class="text-xl text-blue-200 mb-4">
-                        {{ $player->position ?? 'Position non définie' }} • 
-                        {{ $player->club->name ?? 'Club non défini' }}
+                        {{ $player->position ?? __('Position non définie') }} •
+                        {{ $player->club->name ?? __('Club non défini') }}
                     </p>
                     
                     <!-- Drapeau nationalité -->
@@ -152,7 +159,7 @@
                         <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-shield-alt text-white text-lg"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-white">Club & Association</h3>
+                        <h3 class="text-lg font-semibold text-white">{{ __('Club & Association') }}</h3>
                     </div>
                     
                     @if($player->club)
@@ -211,7 +218,7 @@
                             @endif
                         </div>
                     @else
-                        <p class="text-gray-300 text-sm">Aucun club assigné</p>
+                        <p class="text-gray-300 text-sm">{{ __('Aucun club assigné') }}</p>
                     @endif
                 </div>
                 
@@ -221,7 +228,7 @@
                         <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-heartbeat text-white text-lg"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-white">Score FIT</h3>
+                        <h3 class="text-lg font-semibold text-white">{{ __('Score FIT') }}</h3>
                     </div>
 
                     <div class="space-y-2 text-center">
@@ -290,7 +297,7 @@
                             </div>
                         @else
                             <div class="text-2xl font-bold text-gray-400">
-                                Données non disponibles
+                                {{ __('Données non disponibles') }}
                             </div>
 
                             <div class="text-xs text-gray-400">
@@ -423,9 +430,12 @@
                         <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-user text-white text-lg"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-white">Informations</h3>
+                        <h3 class="text-lg font-semibold text-white">{{ __('Informations') }}</h3>
                     </div>
-                    
+                    @if($profileSynthetic)
+                        <p class="text-xs text-yellow-300 mb-2">{{ __('Profil fictif de test.') }}</p>
+                    @endif
+
                     <div class="space-y-2">
                         <div class="flex justify-between">
                             <span class="text-purple-200 text-sm">Âge:</span>
@@ -447,7 +457,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-purple-200 text-sm">Pied:</span>
-                            <span class="text-white font-medium">{{ $player->preferred_foot ?? 'N/A' }}</span>
+                            <span class="text-white font-medium">{{ match (strtolower($player->preferred_foot ?? '')) { 'left' => __('Gauche'), 'right' => __('Droit'), 'both' => __('Ambidextre'), default => $player->preferred_foot ?? 'N/A' } }}</span>
                         </div>
                     </div>
                 </div>
@@ -458,7 +468,7 @@
                         <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-id-card text-white text-lg"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-white">Informations FIT</h3>
+                        <h3 class="text-lg font-semibold text-white">{{ __('Informations FIT') }}</h3>
                     </div>
                     
                     <div class="space-y-2">
@@ -466,10 +476,7 @@
                             <span class="text-orange-200 text-sm">Licence Club:</span>
                             <span class="text-white font-medium">
                                 @php
-                                    $activeLicense = \DB::table('player_licenses')
-                                        ->where('player_id', $player->id)
-                                        ->where('status', 'active')
-                                        ->first();
+                                    $activeLicense = $playerLicenses->firstWhere('status', 'active');
                                 @endphp
                                 @if($activeLicense)
                                     {{ $activeLicense->license_number }}
@@ -481,18 +488,16 @@
                         <div class="flex justify-between">
                             <span class="text-orange-200 text-sm">FIT CONNECT ID:</span>
                             <span class="text-white font-medium">
-                                {{ $player->fifa_connect_id
-                                    ?? $player->passport?->fifa_connect_id
-                                    ?? 'Données non disponibles' }}
+                                {{ $player->fifa_connect_id ?? __('Données non disponibles') }}
                             </span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-orange-200 text-sm">Document d'identité:</span>
                             <span class="text-white font-medium">
                                 @if($player->passport?->passport_number)
-                                    Passeport: {{ $player->passport->passport_number }}
+                                    {{ str_starts_with($player->passport->passport_number, 'SYNTH-PASSPORT-') ? 'Passeport de test (non validé)' : 'Passeport' }}: {{ $player->passport->passport_number }}
                                 @else
-                                    Données non disponibles
+                                    {{ __('Données non disponibles') }}
                                 @endif
                             </span>
                         </div>
@@ -503,7 +508,7 @@
             <!-- Statistiques FIT canoniques -->
             <div class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
                 <h3 class="text-lg font-semibold text-white mb-3">
-                    ⚽ Statistiques FIT
+                    {{ __('⚽ Statistiques FIT') }}
                 </h3>
 
                 @php
@@ -514,26 +519,32 @@
                         ],
                         [
                             'label' => 'PHYSIQUE',
-                            'value' => $latestFitAttempt?->physical_score,
+                            'value' => $latestFitSnapshot?->physical_score,
                         ],
                         [
                             'label' => 'TECHNIQUE',
-                            'value' => $latestFitAttempt?->technical_score,
+                            'value' => $latestFitSnapshot?->technical_score,
                         ],
                         [
                             'label' => 'TACTIQUE',
-                            'value' => $latestFitAttempt?->tactical_score,
+                            'value' => $latestFitSnapshot?->tactical_score,
                         ],
                         [
                             'label' => 'MENTAL',
-                            'value' => $latestFitAttempt?->mental_score,
+                            'value' => $latestFitSnapshot?->mental_score,
                         ],
                         [
                             'label' => 'SOCIAL',
-                            'value' => $latestFitAttempt?->social_score,
+                            'value' => $latestFitSnapshot?->social_score,
                         ],
                     ];
                 @endphp
+
+                @if($latestFitSnapshot && collect(data_get($latestFitSnapshot->evidence, 'axes', []))
+                    ->flatMap(fn ($axis) => $axis['metrics'] ?? [])
+                    ->contains(fn ($metric) => ($metric['synthetic_test'] ?? false) === true))
+                    <p class="text-xs text-yellow-300 mb-3">{{ __('Score calculé à partir de métriques fictives de test.') }}</p>
+                @endif
 
                 <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
                     @foreach($fitStatCards as $fitStat)
@@ -564,10 +575,10 @@
             Notifications <span id="notifications-count">{{ $playerNotifications?->count() ?? 0 }}</span>
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('health')">
-            Santé & Bien-être
+            {{ __('Santé & Bien-être') }}
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('medical')">
-            Médical
+            {{ __('Médical') }}
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('devices')">
             Devices
@@ -582,74 +593,55 @@
 
     <!-- Contenu des onglets -->
     <div id="performances-tab" class="fifa-tab-content active">
-                            <h2>Centre de Performances FIT</h2>
+                            <h2>{{ __('Centre de Performances FIT') }}</h2>
         
         <!-- Sous-onglets Performances -->
         <div class="fifa-sub-tabs">
-            <button class="fifa-sub-tab-button active" onclick="showFIFASubTab('overview')">Vue d'ensemble</button>
-            <button class="fifa-sub-tab-button" onclick="showFIFASubTab('advanced-stats')">Statistiques avancées</button>
-            <button class="fifa-sub-tab-button" onclick="showFIFASubTab('match-stats')">Statistiques de match</button>
-            <button class="fifa-sub-tab-button" onclick="showFIFASubTab('comparison')">Analyse comparative</button>
+            <button class="fifa-sub-tab-button active" onclick="showFIFASubTab('overview')">{{ __('Vue d\'ensemble') }}</button>
+            <button class="fifa-sub-tab-button" onclick="showFIFASubTab('advanced-stats')">{{ __('Statistiques avancées') }}</button>
+            <button class="fifa-sub-tab-button" onclick="showFIFASubTab('match-stats')">{{ __('Statistiques de match') }}</button>
         </div>
         
         <!-- Contenu des sous-onglets Performances -->
         <div id="overview-sub-tab" class="fifa-sub-tab-content active">
-            <h3>Vue d'ensemble des performances</h3>
+            <h3>{{ __('Vue d\'ensemble des performances') }}</h3>
             <div id="overview-content">
                 <!-- 🆕 CONTENU BLADE DIRECT AU LIEU DU CHARGEMENT -->
                 <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                     <!-- Carte Forme Physique -->
                     <div class="fifa-stat-card">
-                        <h3>🏃 Forme Physique</h3>
+                        <h3>{{ __('🏃 Forme Physique') }}</h3>
                         <div style="text-align: left; margin-top: 15px;">
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Score de forme:</span>
-                                <span style="color: #ffd700; font-weight: bold;">{{ $player->form_percentage ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>État:</span>
-                                <span style="color: #87ceeb; font-weight: bold;">Données non disponibles</span>
+                                <span>Axe physique actuel:</span>
+                                <span style="color: #ffd700; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) $latestFitSnapshot->physical_score, 1).'/100' : __('Données non disponibles') }}</span>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Carte Note Globale FIFA -->
                     <div class="fifa-stat-card">
-                        <h3>⚽ Note Globale FIT</h3>
+                        <h3>{{ __('⚽ Note Globale FIT') }}</h3>
                         <div style="text-align: left; margin-top: 15px;">
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                                 <span>Note actuelle:</span>
-                                <span style="color: #ffd700; font-weight: bold;">{{ $player->overall_rating ?? 'Données non disponibles' }}</span>
+                                <span style="color: #ffd700; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) $latestFitSnapshot->fit_score, 1).'/100' : __('Données non disponibles') }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Potentiel:</span>
-                                <span style="color: #51cf66; font-weight: bold;">{{ $player->potential_rating ?? 'Données non disponibles' }}</span>
+                                <span>Meilleur axe actuel:</span>
+                                <span style="color: #51cf66; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) max($latestFitSnapshot->physical_score, $latestFitSnapshot->technical_score, $latestFitSnapshot->tactical_score, $latestFitSnapshot->mental_score, $latestFitSnapshot->social_score), 1).'/100' : __('Données non disponibles') }}</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Carte Statistiques Détaillées -->
-                    <div class="fifa-stat-card">
-                        <h3>📊 Statistiques Détaillées</h3>
-                        <div style="text-align: left; margin-top: 15px;">
-                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Vitesse:</span>
-                                <span style="color: #ffd700; font-weight: bold;">{{ $player->speed ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Tir:</span>
-                                <span style="color: #51cf66; font-weight: bold;">{{ $player->shooting ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 
                 <!-- Graphiques de performance -->
                 <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Graphique Radar des Ratings -->
                     <div class="fifa-stat-card">
-                        <h3 class="text-lg font-bold mb-4">📈 Ratings FIT</h3>
+                        <h3 class="text-lg font-bold mb-4">{{ __('📈 Ratings FIT') }}</h3>
                         <div class="h-64">
                             <canvas id="ratingsChart"></canvas>
                         </div>
@@ -657,7 +649,7 @@
                     
                     <!-- Graphique Barres des Statistiques -->
                     <div class="fifa-stat-card">
-                        <h3 class="text-lg font-bold mb-4">🎯 Statistiques de Match</h3>
+                        <h3 class="text-lg font-bold mb-4">{{ __('🎯 Statistiques de Match') }}</h3>
                         <div class="h-64">
                             <canvas id="statsChart"></canvas>
                         </div>
@@ -667,108 +659,48 @@
         </div>
 
         <div id="advanced-stats-sub-tab" class="fifa-sub-tab-content">
-            <h3>Statistiques avancées</h3>
-            <div id="advanced-stats-content">
-                <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
-                <div class="fifa-medical-grid">
-                    <!-- Carte Compétences Techniques -->
-                    <div class="fifa-medical-card">
-                        <h4>📊 Compétences Techniques</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Passe</span>
-                                <span class="fifa-stat-value highlight">{{ $player->passing ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Dribble</span>
-                                <span class="fifa-stat-value">{{ $player->dribbling ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Physique</span>
-                                <span class="fifa-stat-value">{{ $player->physical ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Défense</span>
-                                <span class="fifa-stat-value">{{ $player->defending ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Réactivité</span>
-                                <span class="fifa-stat-value">{{ $player->reactions ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Vision</span>
-                                <span class="fifa-stat-value">{{ $player->vision ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
+            <h3>{{ __('Évaluation des performances') }}</h3>
+            <div id="advanced-stats-content" class="fifa-medical-card">
+                @php
+                    $assessmentNotes = json_decode($latestPerformance?->notes ?? '{}', true) ?: [];
+                    $assessmentScores = [
+                        'Physique' => $latestFitSnapshot?->physical_score,
+                        'Technique' => $latestFitSnapshot?->technical_score,
+                        'Tactique' => $latestFitSnapshot?->tactical_score,
+                        'Mental' => $latestFitSnapshot?->mental_score,
+                        'Social' => $latestFitSnapshot?->social_score,
+                        'Endurance' => $latestPerformance?->endurance_score,
+                        'Force' => $latestPerformance?->strength_score,
+                        'Vitesse évaluée' => $latestPerformance?->speed_score,
+                        'Agilité' => $latestPerformance?->agility_score,
+                        'Précision des passes' => $latestPerformance?->passing_accuracy,
+                    ];
+                    $hasAssessment = collect($assessmentScores)->contains(
+                        fn ($score) => $score !== null
+                    );
+                @endphp
+                @if($hasAssessment)
+                    @if(($assessmentNotes['source'] ?? null) === 'synthetic_demo')
+                        <p>{{ __('Données synthétiques de test — évaluation non officielle. Les cinq axes proviennent du Score FIT.') }}</p>
+                    @endif
+                    <div class="fifa-medical-stat">
+                        @foreach($assessmentScores as $label => $score)
+                            @if($score !== null)
+                                <div class="fifa-stat-header">
+                                    <span>{{ $label }}</span>
+                                    <span class="fifa-stat-value">{{ $score }}/100</span>
+                                </div>
+                            @endif
+                        @endforeach
                     </div>
-                    
-                    <!-- Carte Performance Physique -->
-                    <div class="fifa-medical-card">
-                        <h4>💪 Performance Physique</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Endurance</span>
-                                <span class="fifa-stat-value highlight">{{ $player->stamina ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Force</span>
-                                <span class="fifa-stat-value">{{ $player->strength ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Agilité</span>
-                                <span class="fifa-stat-value">{{ $player->agility ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Équilibre</span>
-                                <span class="fifa-stat-value">{{ $player->balance ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Accélération</span>
-                                <span class="fifa-stat-value">{{ $player->acceleration ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Vitesse de Sprint</span>
-                                <span class="fifa-stat-value">{{ $player->sprint_speed ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Carte Intelligence de Jeu -->
-                    <div class="fifa-medical-card">
-                        <h4>🧠 Intelligence de Jeu</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Positionnement</span>
-                                <span class="fifa-stat-value highlight">{{ $player->positioning ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Anticipation</span>
-                                <span class="fifa-stat-value">{{ $player->anticipation ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Composure</span>
-                                <span class="fifa-stat-value">{{ $player->composure ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Décisions</span>
-                                <span class="fifa-stat-value">{{ $player->decisions ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Leadership</span>
-                                <span class="fifa-stat-value">{{ $player->leadership ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Esprit d'équipe</span>
-                                <span class="fifa-stat-value">{{ $player->teamwork ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @else
+                    <p>Aucune évaluation de performance enregistrée.</p>
+                @endif
             </div>
         </div>
 
         <div id="match-stats-sub-tab" class="fifa-sub-tab-content">
-            <h3>Statistiques de saison</h3>
+            <h3>{{ __('Statistiques de saison') }}</h3>
             <div id="match-stats-content">
                 @php
                     $seasonStat = $playerStats->first();
@@ -776,31 +708,31 @@
 
                 <div class="fifa-health-grid">
                     <div class="fifa-health-card">
-                        <h4>⚽ Performance de Saison</h4>
+                        <h4>{{ __('⚽ Performance de Saison') }}</h4>
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Matchs joués</span>
-                                <span class="fifa-stat-value highlight">{{ $seasonStat?->matches_played ?? 'Données non disponibles' }}</span>
+                                <span>{{ __('Matchs joués') }}</span>
+                                <span class="fifa-stat-value highlight">{{ $seasonStat?->matches_played ?? __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Buts marqués</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->goals ?? 'Données non disponibles' }}</span>
+                                <span>{{ __('Buts marqués') }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->goals ?? __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Passes décisives</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->assists ?? 'Données non disponibles' }}</span>
+                                <span>{{ __('Passes décisives') }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->assists ?? __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Minutes jouées</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->minutes_played ?? 'Données non disponibles' }}</span>
+                                <span>{{ __('Minutes jouées') }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->minutes_played ?? __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Cartons jaunes</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->yellow_cards ?? 'Données non disponibles' }}</span>
+                                <span>{{ __('Cartons jaunes') }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->yellow_cards ?? __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Cartons rouges</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->red_cards ?? 'Données non disponibles' }}</span>
+                                <span>{{ __('Cartons rouges') }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->red_cards ?? __('Données non disponibles') }}</span>
                             </div>
                         </div>
                     </div>
@@ -808,85 +740,32 @@
                     <div class="fifa-health-card">
                         <h4>📊 Statistiques avancées</h4>
                         <div class="fifa-health-stat">
-                            <p>
-                                Les données détaillées telles que les tacles,
-                                interceptions, tirs cadrés et précisions de passes
-                                ne sont pas disponibles dans la source canonique actuelle.
-                            </p>
+                            @if($latestMatchPerformance)
+                                @php
+                                    $matchExtras = json_decode($latestMatchPerformance->additional_metrics ?? '{}', true) ?: [];
+                                @endphp
+                                @if(str_contains($latestMatchPerformance->notes ?? '', 'synthetic_demo'))
+                                    <p>Match fictif de test du {{ \Carbon\Carbon::parse($latestMatchPerformance->match_date)->format('d/m/Y') }}.</p>
+                                @endif
+                                <div class="fifa-stat-header"><span>Tacles gagnés</span><span class="fifa-stat-value">{{ $latestMatchPerformance->tackles_won }}</span></div>
+                                @if(isset($matchExtras['interceptions']))
+                                    <div class="fifa-stat-header"><span>Interceptions</span><span class="fifa-stat-value">{{ $matchExtras['interceptions'] }}</span></div>
+                                @endif
+                                <div class="fifa-stat-header"><span>Tirs cadrés</span><span class="fifa-stat-value">{{ $latestMatchPerformance->shots_on_target }}</span></div>
+                                <div class="fifa-stat-header"><span>Précision des passes</span><span class="fifa-stat-value">{{ $latestMatchPerformance->passes_attempted > 0 ? number_format(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1).'%' : 'Données non disponibles' }}</span></div>
+                            @else
+                                <p>{{ __('Aucune statistique de match enregistrée.') }}</p>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="comparison-sub-tab" class="fifa-sub-tab-content">
-            <h3>Analyse comparative</h3>
-            <div id="comparison-content">
-                <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
-                <div class="fifa-medical-grid">
-                    <!-- Carte Comparaison avec la Ligue -->
-                    <div class="fifa-medical-card">
-                        <h4>📈 Comparaison avec la Ligue</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Position dans le classement</span>
-                                <span class="fifa-stat-value highlight">{{ $player->league_position ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Moyenne de la ligue</span>
-                                <span class="fifa-stat-value">{{ $player->league_average ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Écart avec la moyenne</span>
-                                <span class="fifa-stat-value">{{ $player->performance_gap ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Carte Comparaison avec les Joueurs Similaires -->
-                    <div class="fifa-medical-card">
-                        <h4>👥 Comparaison avec les Joueurs Similaires</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Rang dans la position</span>
-                                <span class="fifa-stat-value highlight">{{ $player->position_rank ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Top 10% de la position</span>
-                                <span class="fifa-stat-value">{{ $player->top_percentile ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Potentiel d'amélioration</span>
-                                <span class="fifa-stat-value">{{ $player->improvement_potential ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Carte Évolution Temporelle -->
-                    <div class="fifa-medical-card">
-                        <h4>📊 Évolution Temporelle</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Tendance sur 6 mois</span>
-                                <span class="fifa-stat-value highlight">{{ $player->trend_6months ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Progression annuelle</span>
-                                <span class="fifa-stat-value">{{ $player->annual_progress ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Objectifs atteints</span>
-                                <span class="fifa-stat-value">{{ $player->goals_achieved ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="trends-tab" class="fifa-tab-content">
-        <h2>📈 Tendances & Évolution</h2>
+        <h2>{{ __('📈 Tendances & Évolution') }}</h2>
         <div id="trends-content">
             <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
             
@@ -894,7 +773,7 @@
             <div class="fifa-medical-card mb-6">
                 <h4 class="text-lg font-bold mb-4 flex items-center">
                     <i class="fas fa-chart-line text-green-600 mr-2"></i>
-                    Évolution & Tendances (30 derniers jours)
+                    Évolution & Tendances (dernières mesures)
                 </h4>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Graphique des tendances -->
@@ -906,7 +785,7 @@
                     <!-- Indicateurs de tendances -->
                     <div class="space-y-3">
                         <div class="p-3 border-l-4 border-green-500 bg-green-50 rounded-lg">
-                            <div class="font-medium text-green-800">😴 Sommeil</div>
+                            <div class="font-medium text-green-800">{{ __('😴 Sommeil') }}</div>
                             <div class="text-sm text-green-700">
                                 @if($trendIndicators->sleep_quality_score !== null)
                                     Qualité : {{ $trendIndicators->sleep_quality_score }}/100
@@ -914,13 +793,13 @@
                                         · {{ $trendIndicators->sleep_duration_hours }} h
                                     @endif
                                 @else
-                                    Données non disponibles
+                                    {{ __('Données non disponibles') }}
                                 @endif
                             </div>
                         </div>
 
                         <div class="p-3 border-l-4 border-blue-500 bg-blue-50 rounded-lg">
-                            <div class="font-medium text-blue-800">💪 Préparation Physique</div>
+                            <div class="font-medium text-blue-800">{{ __('💪 Préparation Physique') }}</div>
                             <div class="text-sm text-blue-700">
                                 @if($trendIndicators->performance_change !== null)
                                     Tendance :
@@ -939,7 +818,7 @@
                         </div>
 
                         <div class="p-3 border-l-4 border-yellow-500 bg-yellow-50 rounded-lg">
-                            <div class="font-medium text-yellow-800">🥗 Nutrition</div>
+                            <div class="font-medium text-yellow-800">{{ __('🥗 Nutrition') }}</div>
                             <div class="text-sm text-yellow-700">
                                 @if($trendIndicators->healthy_diet === true)
                                     Alimentation équilibrée déclarée
@@ -952,7 +831,7 @@
                         </div>
 
                         <div class="p-3 border-l-4 border-purple-500 bg-purple-50 rounded-lg">
-                            <div class="font-medium text-purple-800">🧠 Bien-être Mental</div>
+                            <div class="font-medium text-purple-800">{{ __('🧠 Bien-être Mental') }}</div>
                             <div class="text-sm text-purple-700">
                                 @if($trendIndicators->mental_wellbeing_score !== null)
                                     Score : {{ $trendIndicators->mental_wellbeing_score }}/100
@@ -969,7 +848,7 @@
                                         @endif
                                     @endif
                                 @else
-                                    Données non disponibles
+                                    {{ __('Données non disponibles') }}
                                 @endif
                             </div>
                         </div>
@@ -981,7 +860,7 @@
             <div class="fifa-medical-card mb-6">
                 <h4 class="text-xl font-bold mb-4 flex items-center">
                     <i class="fas fa-users text-teal-600 mr-3"></i>
-                    Santé & Bien-être – Facteurs SDOH
+                    {{ __('Santé & Bien-être – Facteurs SDOH') }}
                 </h4>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Radar Chart SDOH -->
@@ -995,8 +874,7 @@
                         <div class="w-full space-y-4">
                             <p class="text-gray-700 mb-4">
                                 Cet indicateur <strong>SDOH</strong> (Social Determinants of Health) donne une vision
-                                à {{ $player->date_of_birth ? \Carbon\Carbon::parse($player->date_of_birth)->age : "N/A" }}° de l'état de bien-être global du joueur, en intégrant les
-                                facteurs sociaux, environnementaux et comportementaux.
+                                des facteurs sociaux, environnementaux et comportementaux du joueur.
                             </p>
                             
                             <!-- SDOH Factors breakdown -->
@@ -1005,7 +883,7 @@
                                     <div class="flex items-center justify-between p-3 bg-teal-50 rounded-lg border-l-4 border-teal-500">
                                         <div class="flex items-center space-x-3">
                                             <i class="fas fa-home text-teal-600"></i>
-                                            <span class="font-medium text-gray-800">Environnement de vie</span>
+                                            <span class="font-medium text-gray-800">{{ __('Environnement de vie') }}</span>
                                         </div>
                                         <div class="text-right">
                                             <div class="font-bold text-teal-600">{{ $sdohFactors->environment_score }}/100</div>
@@ -1016,7 +894,7 @@
                                     <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border-l-4 border-green-500">
                                         <div class="flex items-center space-x-3">
                                             <i class="fas fa-heart text-green-600"></i>
-                                            <span class="font-medium text-gray-800">Soutien social</span>
+                                            <span class="font-medium text-gray-800">{{ __('Soutien social') }}</span>
                                         </div>
                                         <div class="text-right">
                                             <div class="font-bold text-green-600">{{ $sdohFactors->social_support_score }}/100</div>
@@ -1027,7 +905,7 @@
                                     <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
                                         <div class="flex items-center space-x-3">
                                             <i class="fas fa-user-md text-blue-600"></i>
-                                            <span class="font-medium text-gray-800">Accès aux soins</span>
+                                            <span class="font-medium text-gray-800">{{ __('Accès aux soins') }}</span>
                                         </div>
                                         <div class="text-right">
                                             <div class="font-bold text-blue-600">{{ $sdohFactors->healthcare_access_score }}/100</div>
@@ -1038,7 +916,7 @@
                                     <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
                                         <div class="flex items-center space-x-3">
                                             <i class="fas fa-dollar-sign text-yellow-600"></i>
-                                            <span class="font-medium text-gray-800">Situation financière</span>
+                                            <span class="font-medium text-gray-800">{{ __('Situation financière') }}</span>
                                         </div>
                                         <div class="text-right">
                                             <div class="font-bold text-yellow-600">{{ $sdohFactors->financial_status_score }}/100</div>
@@ -1049,10 +927,10 @@
                                     <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border-l-4 border-purple-500">
                                         <div class="flex items-center space-x-3">
                                             <i class="fas fa-graduation-cap text-purple-600"></i>
-                                            <span class="font-medium text-gray-800">Éducation & Formation</span>
+                                            <span class="font-medium text-gray-800">{{ __('Éducation & Formation') }}</span>
                                         </div>
                                         <div class="text-right">
-                                            <div class="font-bold text-purple-600">{{ $sdohFactors->education_score }}/100</div>
+                                            <div class="font-bold text-purple-600">{{ $sdohFactors->education_level ?? __('Données non disponibles') }}</div>
                                             <div class="text-xs text-gray-600">Niveau académique, compétences</div>
                                         </div>
                                     </div>
@@ -1067,11 +945,11 @@
                 </div>
             </div>
             
-            <!-- Section Prédictions et Projections -->
+            <!-- Évolution mesurée depuis performance_trends -->
             <div class="fifa-medical-card">
                 <h4 class="text-xl font-bold mb-4 flex items-center">
                     <i class="fas fa-crystal-ball text-indigo-600 mr-3"></i>
-                    Prédictions & Projections
+                    {{ __('Évolution mesurée') }}
                 </h4>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     @if($performancePredictions && $performancePredictions->count() > 0)
@@ -1097,9 +975,11 @@
                                             @elseif($prediction->trend_direction == 'decreasing') 📉 Descendante
                                             @endif
                                         </span></div>
-                                        <div class="mb-1">Prédiction 3 mois: <span class="font-semibold">+{{ $prediction->predicted_score_3months - $prediction->current_score }}%</span></div>
-                                        <div>Objectif atteint: <span class="font-semibold">{{ $prediction->current_score }}%</span></div>
-                                    <div>Confiance: <span class="font-semibold">{{ $prediction->confidence_percent }}%</span></div>
+                                        <div>{{ __('Valeur initiale') }} : <span class="font-semibold">{{ $prediction->initial_score }}</span></div>
+                                        <div>{{ __('Valeur finale') }} : <span class="font-semibold">{{ $prediction->current_score }}</span></div>
+                                        <div>{{ __('Variation mesurée') }} : <span class="font-semibold">{{ $prediction->observed_change > 0 ? '+' : '' }}{{ $prediction->observed_change }}{{ $prediction->observed_change_percentage !== null ? ' (' . $prediction->observed_change_percentage . '%)' : '' }}</span></div>
+                                        <div>{{ __('Période') }} : <span class="font-semibold">{{ $prediction->prediction_period }}</span></div>
+                                        <div>{{ __('Confiance de tendance') }} : <span class="font-semibold">{{ $prediction->confidence_percent }}%</span></div>
                                     </div>
                                 </div>
                             </div>
@@ -1107,7 +987,7 @@
                     @else
                         <div class="col-span-3 text-center text-gray-500 py-8">
                             <i class="fas fa-info-circle text-2xl mb-2"></i>
-                            <p>Aucune prédiction disponible</p>
+                            <p>{{ __('Aucune tendance enregistrée') }}</p>
                         </div>
                     @endif
                 </div>
@@ -1117,12 +997,12 @@
 
     <!-- Nouveaux onglets FIFA -->
     <div id="notifications-tab" class="fifa-tab-content">
-        <h2>🔔 Notifications FIFA</h2>
+        <h2>{{ __('🔔 Notifications FIFA') }}</h2>
         <div id="notifications-content">
             <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                 <div class="fifa-stat-card">
-                    <h3>🚨 Alertes Blessures</h3>
+                    <h3>{{ __('🚨 Alertes Blessures') }}</h3>
                     <div style="text-align: left; margin-top: 15px;">
                         @if($injuryAlerts)
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
@@ -1134,7 +1014,7 @@
                                 <span style="color: #87ceeb; font-weight: bold;">{{ $injuryAlerts->injury_type }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Zone:</span>
+                                <span>Dernière zone blessée:</span>
                                 <span style="color: #87ceeb; font-weight: bold;">{{ $injuryAlerts->body_part }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
@@ -1149,18 +1029,21 @@
                         @else
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                                 <span>Risque de blessure:</span>
-                                <span style="color: #ffd700; font-weight: bold;">Données non disponibles</span>
+                                <span style="color: #ffd700; font-weight: bold;">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                                 <span>État:</span>
-                                <span style="color: #87ceeb; font-weight: bold;">Données non disponibles</span>
+                                <span style="color: #87ceeb; font-weight: bold;">{{ __('Données non disponibles') }}</span>
                             </div>
                         @endif
                     </div>
                 </div>
                 
                 <div class="fifa-stat-card">
-                    <h3>💊 Médicaments Actifs</h3>
+                    <h3>{{ __('💊 Médicaments Actifs') }}</h3>
+                    @if($playerMedications->contains(fn ($item) => $item->synthetic_test))
+                        <p class="text-xs text-yellow-700">{{ __('Traitement fictif de test.') }}</p>
+                    @endif
                     <div style="text-align: left; margin-top: 15px;">
                         @if($playerMedications && $playerMedications->count() > 0)
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
@@ -1178,18 +1061,18 @@
                         @else
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                                 <span>Traitements:</span>
-                                <span style="color: #ffd700; font-weight: bold;">Aucun traitement actif</span>
+                                <span style="color: #ffd700; font-weight: bold;">{{ __('Aucun traitement actif enregistré') }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                                 <span>Type:</span>
-                                <span style="color: #ffd700; font-weight: bold;">Données non disponibles</span>
+                                <span style="color: #ffd700; font-weight: bold;">{{ __('Données non disponibles') }}</span>
                             </div>
                         @endif
                     </div>
                 </div>
                 
                 <div class="fifa-stat-card">
-                    <h3>📊 Alertes Performance</h3>
+                    <h3>{{ __('📊 Alertes Performance') }}</h3>
                     <div style="text-align: left; margin-top: 15px;">
                         @if($playerNotifications && $playerNotifications->count() > 0)
                             @php
@@ -1211,11 +1094,11 @@
                         @else
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                                 <span>Forme physique:</span>
-                                <span style="color: #87ceeb; font-weight: bold;">Aucune alerte active</span>
+                                <span style="color: #87ceeb; font-weight: bold;">{{ __('Aucune alerte active') }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                                 <span>Moral:</span>
-                                <span style="color: #87ceeb; font-weight: bold;">Données non disponibles</span>
+                                <span style="color: #87ceeb; font-weight: bold;">{{ __('Données non disponibles') }}</span>
                             </div>
                         @endif
                     </div>
@@ -1223,7 +1106,7 @@
                 
                 <!-- Carte Liste des Notifications Récentes -->
                 <div class="fifa-stat-card mt-6" style="grid-column: 1 / -1;">
-                    <h3>📋 Notifications Récentes</h3>
+                    <h3>{{ __('📋 Notifications Récentes') }}</h3>
                     <div style="text-align: left; margin-top: 15px;">
                         @if($playerNotifications && $playerNotifications->count() > 0)
                             <div class="space-y-3">
@@ -1259,7 +1142,7 @@
                         @else
                             <div class="text-center text-gray-500 py-4">
                                 <i class="fas fa-info-circle text-2xl mb-2"></i>
-                                <p>Aucune notification active</p>
+                                <p>{{ __('Aucune notification active') }}</p>
                             </div>
                         @endif
                     </div>
@@ -1269,27 +1152,27 @@
     </div>
 
     <div id="health-tab" class="fifa-tab-content">
-        <h2>Santé & Bien-être</h2>
+        <h2>{{ __('Santé & Bien-être') }}</h2>
         <div id="health-content">
             <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
             <div class="fifa-health-grid">
                 <!-- Carte État Physique Général -->
                 <div class="fifa-health-card">
-                    <h4>❤️ État Physique Général</h4>
+                    <h4>{{ __('❤️ État Physique Général') }}</h4>
                     @if($playerHealthWellbeing)
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Score de Forme</span>
-                                <span class="fifa-stat-value highlight">{{ $playerHealthWellbeing->fitness_score }}/100</span>
+                                <span>{{ __('Préparation mesurée') }}</span>
+                                <span class="fifa-stat-value highlight">{{ $playerHealthWellbeing->fitness_score !== null ? $playerHealthWellbeing->fitness_score.'/100' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
-                                <div class="fifa-progress-fill" style="width: {{ $playerHealthWellbeing->fitness_score }}%"></div>
+                                <div class="fifa-progress-fill" style="width: {{ $playerHealthWellbeing->fitness_score ?? 0 }}%"></div>
                             </div>
                             <div class="fifa-health-indicator">
                                 @php
                                     $fitnessScore = $playerHealthWellbeing->fitness_score;
-                                    $fitnessColor = $fitnessScore >= 80 ? '#51cf66' : ($fitnessScore >= 60 ? '#ffd700' : '#ff6b6b');
-                                    $fitnessText = $fitnessScore >= 80 ? 'EXCELLENT' : ($fitnessScore >= 60 ? 'BON' : 'À AMÉLIORER');
+                                    $fitnessColor = $fitnessScore === null ? '#6c757d' : ($fitnessScore >= 80 ? '#51cf66' : ($fitnessScore >= 60 ? '#ffd700' : '#ff6b6b'));
+                                    $fitnessText = $fitnessScore === null ? __('Données non disponibles') : ($fitnessScore >= 80 ? 'EXCELLENT' : ($fitnessScore >= 60 ? 'BON' : 'À AMÉLIORER'));
                                 @endphp
                                 <span class="fifa-health-status" style="color: {{ $fitnessColor }};">{{ $fitnessText }}</span>
                             </div>
@@ -1297,41 +1180,41 @@
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Niveau d'Énergie</span>
-                                <span class="fifa-stat-value">{{ $playerHealthWellbeing->energy_level }}/100</span>
+                                <span>{{ __('Niveau d\'Énergie') }}</span>
+                                <span class="fifa-stat-value">{{ $playerHealthWellbeing->energy_level !== null ? $playerHealthWellbeing->energy_level.'/100' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
-                                <div class="fifa-progress-fill" style="width: {{ $playerHealthWellbeing->energy_level }}%"></div>
+                                <div class="fifa-progress-fill" style="width: {{ $playerHealthWellbeing->energy_level ?? 0 }}%"></div>
                             </div>
                         </div>
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Qualité du Sommeil</span>
-                                <span class="fifa-stat-value">{{ $playerHealthWellbeing->sleep_quality }}/10</span>
+                                <span>{{ __('Qualité du Sommeil') }}</span>
+                                <span class="fifa-stat-value">{{ $playerHealthWellbeing->sleep_quality !== null ? $playerHealthWellbeing->sleep_quality.'/10' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
-                                <div class="fifa-progress-fill" style="width: {{ $playerHealthWellbeing->sleep_quality * 10 }}%"></div>
+                                <div class="fifa-progress-fill" style="width: {{ ($playerHealthWellbeing->sleep_quality ?? 0) * 10 }}%"></div>
                             </div>
                         </div>
                     @else
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Score de Forme</span>
-                                <span class="fifa-stat-value highlight">Données non disponibles</span>
+                                <span>{{ __('Préparation mesurée') }}</span>
+                                <span class="fifa-stat-value highlight">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 <div class="fifa-progress-fill" style="width: 0%"></div>
                             </div>
                             <div class="fifa-health-indicator">
-                                <span class="fifa-health-status">Données non disponibles</span>
+                                <span class="fifa-health-status">{{ __('Données non disponibles') }}</span>
                             </div>
                         </div>
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Niveau d'Énergie</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Niveau d\'Énergie') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 <div class="fifa-progress-fill" style="width: 0%"></div>
@@ -1340,8 +1223,8 @@
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Qualité du Sommeil</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Qualité du Sommeil') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 <div class="fifa-progress-fill" style="width: 0%"></div>
@@ -1352,26 +1235,26 @@
                 
                 <!-- Carte Nutrition et Hydratation -->
                 <div class="fifa-health-card">
-                    <h4>🥗 Nutrition et Hydratation</h4>
+                    <h4>{{ __('🥗 Nutrition et Hydratation') }}</h4>
                     @if($playerNutrition)
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
                                 <span>Hydratation</span>
-                                <span class="fifa-stat-value">{{ $playerNutrition->hydration_score }}/100</span>
+                                <span class="fifa-stat-value">{{ $playerNutrition->hydration_score !== null ? $playerNutrition->hydration_score.'/100' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
-                                <div class="fifa-progress-fill" style="width: {{ $playerNutrition->hydration_score }}%"></div>
+                                <div class="fifa-progress-fill" style="width: {{ $playerNutrition->hydration_score ?? 0 }}%"></div>
                             </div>
                         </div>
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Calories Consommées</span>
-                                <span class="fifa-stat-value">{{ $playerNutrition->total_calories }} kcal</span>
+                                <span>{{ __('Calories Consommées') }}</span>
+                                <span class="fifa-stat-value">{{ $playerNutrition->total_calories !== null ? $playerNutrition->total_calories.' kcal' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 @php
-                                    $caloriePercentage = min(100, ($playerNutrition->total_calories / 3000) * 100);
+                                    $caloriePercentage = min(100, (($playerNutrition->total_calories ?? 0) / 3000) * 100);
                                 @endphp
                                 <div class="fifa-progress-fill" style="width: {{ $caloriePercentage }}%"></div>
                             </div>
@@ -1379,12 +1262,12 @@
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Protéines</span>
-                                <span class="fifa-stat-value">{{ $playerNutrition->protein_grams }}g</span>
+                                <span>{{ __('Protéines') }}</span>
+                                <span class="fifa-stat-value">{{ $playerNutrition->protein_grams !== null ? $playerNutrition->protein_grams.'g' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 @php
-                                    $proteinPercentage = min(100, ($playerNutrition->protein_grams / 200) * 100);
+                                    $proteinPercentage = min(100, (($playerNutrition->protein_grams ?? 0) / 200) * 100);
                                 @endphp
                                 <div class="fifa-progress-fill" style="width: {{ $proteinPercentage }}%"></div>
                             </div>
@@ -1392,18 +1275,18 @@
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Qualité des Repas</span>
-                                <span class="fifa-stat-value">{{ $playerNutrition->meal_quality_score }}/10</span>
+                                <span>{{ __('Qualité des Repas') }}</span>
+                                <span class="fifa-stat-value">{{ $playerNutrition->meal_quality_score !== null ? $playerNutrition->meal_quality_score.'/10' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
-                                <div class="fifa-progress-fill" style="width: {{ $playerNutrition->meal_quality_score * 10 }}%"></div>
+                                <div class="fifa-progress-fill" style="width: {{ ($playerNutrition->meal_quality_score ?? 0) * 10 }}%"></div>
                             </div>
                         </div>
                     @else
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
                                 <span>Hydratation</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 <div class="fifa-progress-fill" style="width: 0%"></div>
@@ -1412,8 +1295,8 @@
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Calories Consommées</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Calories Consommées') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 <div class="fifa-progress-fill" style="width: 0%"></div>
@@ -1422,8 +1305,8 @@
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Protéines</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Protéines') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 <div class="fifa-progress-fill" style="width: 0%"></div>
@@ -1434,16 +1317,16 @@
                 
                 <!-- Carte Récupération -->
                 <div class="fifa-health-card">
-                    <h4>🔄 Récupération</h4>
+                    <h4>{{ __('🔄 Récupération') }}</h4>
                     @if($playerRecovery)
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Heures de Sommeil</span>
-                                <span class="fifa-stat-value">{{ $playerRecovery->sleep_hours }}h</span>
+                                <span>{{ __('Heures de Sommeil') }}</span>
+                                <span class="fifa-stat-value">{{ $playerRecovery->sleep_hours !== null ? $playerRecovery->sleep_hours.'h' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 @php
-                                    $sleepPercentage = min(100, ($playerRecovery->sleep_hours / 8) * 100);
+                                    $sleepPercentage = min(100, (($playerRecovery->sleep_hours ?? 0) / 8) * 100);
                                 @endphp
                                 <div class="fifa-progress-fill" style="width: {{ $sleepPercentage }}%"></div>
                             </div>
@@ -1451,22 +1334,22 @@
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Qualité du Sommeil</span>
-                                <span class="fifa-stat-value">{{ $playerRecovery->sleep_quality_score }}/10</span>
+                                <span>{{ __('Qualité du Sommeil') }}</span>
+                                <span class="fifa-stat-value">{{ $playerRecovery->sleep_quality_score !== null ? $playerRecovery->sleep_quality_score.'/10' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
-                                <div class="fifa-progress-fill" style="width: {{ $playerRecovery->sleep_quality_score * 10 }}%"></div>
+                                <div class="fifa-progress-fill" style="width: {{ ($playerRecovery->sleep_quality_score ?? 0) * 10 }}%"></div>
                             </div>
                         </div>
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Douleur Musculaire</span>
-                                <span class="fifa-stat-value">{{ $playerRecovery->muscle_soreness }}/100</span>
+                                <span>{{ __('Douleur Musculaire') }}</span>
+                                <span class="fifa-stat-value">{{ $playerRecovery->muscle_soreness !== null ? $playerRecovery->muscle_soreness.'/100' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 @php
-                                    $sorenessPercentage = 100 - $playerRecovery->muscle_soreness;
+                                    $sorenessPercentage = $playerRecovery->muscle_soreness !== null ? 100 - $playerRecovery->muscle_soreness : 0;
                                 @endphp
                                 <div class="fifa-progress-fill" style="width: {{ $sorenessPercentage }}%"></div>
                             </div>
@@ -1474,12 +1357,12 @@
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Niveau de Fatigue</span>
-                                <span class="fifa-stat-value">{{ $playerRecovery->fatigue_level }}/100</span>
+                                <span>{{ __('Niveau de Fatigue') }}</span>
+                                <span class="fifa-stat-value">{{ $playerRecovery->fatigue_level !== null ? $playerRecovery->fatigue_level.'/100' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 @php
-                                    $fatiguePercentage = 100 - $playerRecovery->fatigue_level;
+                                    $fatiguePercentage = $playerRecovery->fatigue_level !== null ? 100 - $playerRecovery->fatigue_level : 0;
                                 @endphp
                                 <div class="fifa-progress-fill" style="width: {{ $fatiguePercentage }}%"></div>
                             </div>
@@ -1487,12 +1370,12 @@
                         
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Activités de Récupération</span>
-                                <span class="fifa-stat-value">{{ $playerRecovery->stretching_minutes }}min étirement</span>
+                                <span>{{ __('Activités de Récupération') }}</span>
+                                <span class="fifa-stat-value">{{ $playerRecovery->stretching_minutes !== null ? $playerRecovery->stretching_minutes.'min étirement' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 @php
-                                    $stretchingPercentage = min(100, ($playerRecovery->stretching_minutes / 30) * 100);
+                                    $stretchingPercentage = min(100, (($playerRecovery->stretching_minutes ?? 0) / 30) * 100);
                                 @endphp
                                 <div class="fifa-progress-fill" style="width: {{ $stretchingPercentage }}%"></div>
                             </div>
@@ -1501,7 +1384,7 @@
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
                                 <span>Temps de Récupération</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 <div class="fifa-progress-fill" style="width: 0%"></div>
@@ -1511,7 +1394,7 @@
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
                                 <span>Qualité de Récupération</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
                                 <div class="fifa-progress-fill" style="width: 0%"></div>
@@ -1524,23 +1407,23 @@
     </div>
 
     <div id="medical-tab" class="fifa-tab-content">
-        <h2>Médical</h2>
+        <h2>{{ __('Médical') }}</h2>
         <div id="medical-content">
             <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE (5 cartes) -->
             <div class="fifa-medical-grid space-y-4">
                 <!-- Carte État Général de Santé -->
                 <div class="fifa-medical-card w-full">
-                    <h4>🏥 État Général de Santé</h4>
+                    <h4>{{ __('🏥 État Général de Santé') }}</h4>
                     <div class="fifa-medical-stat">
                         @if($playerMedicalAptitude)
                             <div class="fifa-stat-header">
-                                <span>Score de Santé Global</span>
-                                <span class="fifa-stat-value highlight">{{ $playerMedicalAptitude->overall_health_score !== null
-            ? $playerMedicalAptitude->overall_health_score . '/100'
-            : 'Données non disponibles' }}</span>
+                                <span>{{ __('Risque sanitaire estimé') }}</span>
+                                <span class="fifa-stat-value highlight">{{ $playerMedicalAptitude->health_risk_percent !== null
+            ? $playerMedicalAptitude->health_risk_percent . '%'
+            : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Statut Médical</span>
+                                <span>{{ __('Statut Médical') }}</span>
                                 @php
                                     $statusColor = match ($playerMedicalAptitude->medical_status) {
                                     'fit' => '#51cf66',
@@ -1553,44 +1436,38 @@
                                     'fit' => '🟢 APTE AU JEU',
                                     'temporarily_unfit' => '🟡 TEMPORAIREMENT INAPTE',
                                     'unfit' => '🔴 INAPTE',
-                                    null => 'Données non disponibles',
+                                    null => __('Aucune aptitude signée'),
                                     default => 'ℹ️ STATUT INCONNU',
                                 };
                                 @endphp
                                 <span class="fifa-stat-value positive" style="color: {{ $statusColor }};">{{ $statusText }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Niveau de Forme</span>
-                                <span class="fifa-stat-value">{{ $playerMedicalAptitude->fitness_level
-            ? ucfirst($playerMedicalAptitude->fitness_level)
-            : 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Dernière Évaluation</span>
+                                <span>{{ __('Dernière Évaluation') }}</span>
                                 <span class="fifa-stat-value">{{ $playerMedicalAptitude->assessment_date
             ? \Carbon\Carbon::parse($playerMedicalAptitude->assessment_date)->format('d M Y')
-            : 'Données non disponibles' }}</span>
+            : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Médecin Traitant</span>
-                                <span class="fifa-stat-value">{{ $playerMedicalAptitude->treating_doctor ?? 'Données non disponibles' }}</span>
+                                <span>{{ __('Clinicien du dernier dossier') }}</span>
+                                <span class="fifa-stat-value">{{ $playerMedicalAptitude->latest_clinician ?? __('Données non disponibles') }}</span>
                             </div>
                         @else
                             <div class="fifa-stat-header">
-                                <span>Score de Santé Global</span>
-                                <span class="fifa-stat-value highlight">Données non disponibles</span>
+                                <span>{{ __('Risque sanitaire estimé') }}</span>
+                                <span class="fifa-stat-value highlight">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Statut Médical</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Statut Médical') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Dernière Évaluation</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Dernière Évaluation') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Médecin Traitant</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Clinicien du dernier dossier') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                         @endif
                     </div>
@@ -1598,61 +1475,61 @@
                 
                 <!-- Carte Paramètres Vitaux -->
                 <div class="fifa-medical-card w-full">
-                    <h4>💓 Paramètres Vitaux</h4>
+                    <h4>{{ __('💓 Paramètres Vitaux') }}</h4>
                     <div class="fifa-medical-stat">
                         @if($playerVitalSigns)
                             <div class="fifa-stat-header">
-                                <span>Fréquence Cardiaque Repos</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->heart_rate_resting }} bpm</span>
+                                <span>{{ __('Fréquence Cardiaque Repos') }}</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->heart_rate_resting !== null ? $playerVitalSigns->heart_rate_resting.' bpm' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Fréquence Cardiaque Max</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->heart_rate_max }} bpm</span>
+                                <span>{{ __('Fréquence Cardiaque Max') }}</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->heart_rate_max !== null ? $playerVitalSigns->heart_rate_max.' bpm' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Tension Artérielle</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->blood_pressure_systolic }}/{{ $playerVitalSigns->blood_pressure_diastolic }} mmHg</span>
+                                <span>{{ __('Tension Artérielle') }}</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->blood_pressure_systolic !== null && $playerVitalSigns->blood_pressure_diastolic !== null ? $playerVitalSigns->blood_pressure_systolic.'/'.$playerVitalSigns->blood_pressure_diastolic.' mmHg' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Température Corporelle</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->temperature }}°C</span>
+                                <span>{{ __('Température Corporelle') }}</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->temperature !== null ? $playerVitalSigns->temperature.'°C' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>SpO2 (Oxygénation)</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->oxygen_saturation }}%</span>
+                                <span>{{ __('SpO2 (Oxygénation)') }}</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->oxygen_saturation !== null ? $playerVitalSigns->oxygen_saturation.'%' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Réserve Cardiaque</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->heart_rate_max - $playerVitalSigns->heart_rate_resting }} bpm</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->heart_rate_max !== null && $playerVitalSigns->heart_rate_resting !== null ? ($playerVitalSigns->heart_rate_max - $playerVitalSigns->heart_rate_resting).' bpm' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Récupération Cardiaque</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->heart_rate_recovery }} bpm</span>
+                                <span>{{ __('Récupération Cardiaque') }}</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->heart_rate_recovery !== null ? $playerVitalSigns->heart_rate_recovery.' bpm' : __('Données non disponibles') }}</span>
                             </div>
                         @else
                             <div class="fifa-stat-header">
-                                <span>Fréquence Cardiaque Repos</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Fréquence Cardiaque Repos') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Fréquence Cardiaque Max</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Fréquence Cardiaque Max') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Tension Artérielle</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Tension Artérielle') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Température Corporelle</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Température Corporelle') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>SpO2 (Oxygénation)</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('SpO2 (Oxygénation)') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Réserve Cardiaque</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                         @endif
                     </div>
@@ -1660,67 +1537,68 @@
                 
                 <!-- Carte Biométrie Avancée -->
                 <div class="fifa-medical-card w-full">
-                    <h4>📊 Biométrie Avancée</h4>
+                    <h4>{{ __('📊 Biométrie Avancée') }}</h4>
                     <div class="fifa-medical-stat">
                         @if($playerVitalSigns)
+                            <p class="text-xs text-gray-400">{{ __('Mesure du') }} {{ \Carbon\Carbon::parse($playerVitalSigns->measurement_time)->format('d/m/Y') }}.</p>
                             <div class="fifa-stat-header">
-                                <span>Poids Corporel</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->body_weight }} kg</span>
+                                <span>{{ __('Poids mesuré') }}</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->body_weight !== null ? $playerVitalSigns->body_weight.' kg' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Taille</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->body_height }} cm</span>
+                                <span>{{ __('Taille du profil') }}</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->body_height !== null ? $playerVitalSigns->body_height.' cm' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>IMC</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->bmi }}</span>
+                                <span>{{ __('IMC') }}</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->bmi !== null ? $playerVitalSigns->bmi : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Masse Grasse</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->body_fat_percentage }}%</span>
+                                <span>{{ __('Masse Grasse') }}</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->body_fat_percentage !== null ? $playerVitalSigns->body_fat_percentage.'%' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Masse Musculaire</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->muscle_mass_percentage }}%</span>
+                                <span>{{ __('Masse Musculaire') }}</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->muscle_mass_percentage !== null ? $playerVitalSigns->muscle_mass_percentage.'%' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Hydratation</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->hydration_percentage }}%</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->hydration_percentage !== null ? $playerVitalSigns->hydration_percentage.'%' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Glycémie</span>
+                                <span>{{ __('Glycémie') }}</span>
                                 <span class="fifa-stat-value">
                                     @if($playerVitalSigns->blood_glucose !== null)
                                         {{ $playerVitalSigns->blood_glucose }} {{ $playerVitalSigns->blood_glucose_unit }}
                                     @else
-                                        Données non disponibles
+                                        {{ __('Données non disponibles') }}
                                     @endif
                                 </span>
                             </div>
                         @else
                             <div class="fifa-stat-header">
-                                <span>IMC</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('IMC') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Masse Corporelle</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Masse Grasse</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Masse Grasse') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Masse Musculaire</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Masse Musculaire') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Hydratation</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>Métabolisme de Base</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                         @endif
                     </div>
@@ -1728,11 +1606,14 @@
                 
                 <!-- Carte PCMA (Protocoles de Contrôle Médical et d'Aptitude) -->
                 <div class="fifa-medical-card w-full">
-                    <h4>🏥 PCMA - Contrôle Médical FIFA</h4>
+                    <h4>{{ __('🏥 PCMA - Contrôle Médical') }}</h4>
+                    @if($playerPcma?->synthetic_test)
+                        <p class="text-xs text-yellow-700">{{ __('Évaluation fictive de test, non signée et non officielle.') }}</p>
+                    @endif
                     <div class="fifa-medical-stat">
                         @if($playerPcma)
                             <div class="fifa-stat-header">
-                                <span>Statut PCMA</span>
+                                <span>{{ __('Statut PCMA') }}</span>
                                 @php
                                     $pcmaColor = match ($playerPcma->pcma_status) {
                                     'cleared', 'approved' => '#51cf66',
@@ -1741,8 +1622,13 @@
                                     'not_cleared', 'failed', 'rejected' => '#ff6b6b',
                                     default => '#6c757d',
                                 };
+                                if (!$playerPcma->is_signed) {
+                                    $pcmaColor = '#6c757d';
+                                }
 
-                                $pcmaText = match ($playerPcma->pcma_status) {
+                                $pcmaText = !$playerPcma->is_signed
+                                    ? __('Évaluation non signée')
+                                    : match ($playerPcma->pcma_status) {
                                     'cleared' => '✅ APTE',
                                     'approved' => '✅ APPROUVÉ',
                                     'pending' => '⏳ EN ATTENTE',
@@ -1750,72 +1636,72 @@
                                     'not_cleared' => '❌ NON APTE',
                                     'failed' => '❌ ÉCHEC',
                                     'rejected' => '❌ REJETÉ',
-                                    null => 'Données non disponibles',
+                                    null => __('Données non disponibles'),
                                     default => 'ℹ️ STATUT INCONNU',
                                 };
                                 @endphp
                                 <span class="fifa-stat-value positive" style="color: {{ $pcmaColor }};">{{ $pcmaText }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Score Global PCMA</span>
+                                <span>{{ __('Score Global PCMA') }}</span>
                                 <span class="fifa-stat-value highlight">{{ $playerPcma->pcma_score !== null
             ? $playerPcma->pcma_score . '/100'
-            : 'Données non disponibles' }}</span>
+            : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Forme Cardiovasculaire</span>
+                                <span>{{ __('Forme Cardiovasculaire') }}</span>
                                 <span class="fifa-stat-value">{{ $playerPcma->cardiovascular_fitness !== null
             ? $playerPcma->cardiovascular_fitness . '/100'
-            : 'Données non disponibles' }}</span>
+            : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Forme Respiratoire</span>
+                                <span>{{ __('Forme Respiratoire') }}</span>
                                 <span class="fifa-stat-value">{{ $playerPcma->respiratory_fitness !== null
             ? $playerPcma->respiratory_fitness . '/100'
-            : 'Données non disponibles' }}</span>
+            : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Forme Musculosquelettique</span>
+                                <span>{{ __('Forme Musculosquelettique') }}</span>
                                 <span class="fifa-stat-value">{{ $playerPcma->musculoskeletal_fitness !== null
             ? $playerPcma->musculoskeletal_fitness . '/100'
-            : 'Données non disponibles' }}</span>
+            : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Forme Neurologique</span>
+                                <span>{{ __('Forme Neurologique') }}</span>
                                 <span class="fifa-stat-value">{{ $playerPcma->neurological_fitness !== null
             ? $playerPcma->neurological_fitness . '/100'
-            : 'Données non disponibles' }}</span>
+            : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Prochaine Évaluation</span>
+                                <span>{{ __('Prochaine Évaluation') }}</span>
                                 <span class="fifa-stat-value">{{ $playerPcma->next_assessment_date
             ? \Carbon\Carbon::parse($playerPcma->next_assessment_date)->format('d M Y')
-            : 'Données non disponibles' }}</span>
+            : __('Données non disponibles') }}</span>
                             </div>
                         @else
                             <div class="fifa-stat-header">
-                                <span>Statut PCMA</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Statut PCMA') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Score Global PCMA</span>
-                                <span class="fifa-stat-value highlight">Données non disponibles</span>
+                                <span>{{ __('Score Global PCMA') }}</span>
+                                <span class="fifa-stat-value highlight">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Forme Cardiovasculaire</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Forme Cardiovasculaire') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Forme Respiratoire</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Forme Respiratoire') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Forme Musculosquelettique</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Forme Musculosquelettique') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Forme Neurologique</span>
-                                <span class="fifa-stat-value">Données non disponibles</span>
+                                <span>{{ __('Forme Neurologique') }}</span>
+                                <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                         @endif
                     </div>
@@ -1823,18 +1709,18 @@
                 
                 <!-- Carte Blessures et Maladies -->
                 <div class="fifa-medical-card w-full">
-                    <h4>🩹 Historique des Blessures</h4>
+                    <h4>{{ __('🩹 Historique des Blessures') }}</h4>
                     <div class="fifa-medical-stat">
                         @if($playerInjuriesDiseases && $playerInjuriesDiseases->count() > 0)
                             <!-- Statistiques générales -->
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div class="text-center p-3 bg-blue-50 rounded-lg">
                                     <div class="text-2xl font-bold text-blue-600">{{ $playerInjuriesDiseases->count() }}</div>
-                                    <div class="text-sm text-blue-700">Incidents totaux</div>
+                                    <div class="text-sm text-blue-700">{{ __('Incidents totaux') }}</div>
                                 </div>
                                 <div class="text-center p-3 bg-red-50 rounded-lg">
                                     <div class="text-2xl font-bold text-red-600">{{ $playerInjuriesDiseases->where('severity', 'severe')->count() + $playerInjuriesDiseases->where('severity', 'critical')->count() }}</div>
-                                    <div class="text-sm text-red-700">Blessures graves</div>
+                                    <div class="text-sm text-red-700">{{ __('Blessures graves') }}</div>
                                 </div>
                             </div>
                             
@@ -1856,7 +1742,7 @@
                             
                             <!-- Liste des incidents récents -->
                             <div class="mt-4">
-                                <h5 class="font-semibold mb-2">Incidents récents</h5>
+                                <h5 class="font-semibold mb-2">{{ __('Incidents récents') }}</h5>
                                 <div class="space-y-2 max-h-40 overflow-y-auto">
                                     @foreach($playerInjuriesDiseases->take(3) as $incident)
                                         <div class="p-2 bg-gray-50 rounded border-l-4 
@@ -1893,7 +1779,7 @@
                         @else
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-info-circle text-2xl mb-2"></i>
-                                <p>Aucun incident médical enregistré</p>
+                                <p>{{ __('Aucun incident médical enregistré') }}</p>
                             </div>
                         @endif
                     </div>
@@ -1901,62 +1787,62 @@
                 
                 <!-- Carte Tests de Performance -->
                 <div class="fifa-medical-card">
-                    <h4>🏃 Tests de Performance</h4>
+                    <h4>{{ __('🏃 Tests de Performance') }}</h4>
                     <div class="fifa-medical-stat">
                         <div class="fifa-stat-header">
-                            <span>Test de Cooper</span>
-                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->cooper_test ?? 'Données non disponibles' }}</span>
+                            <span>{{ __('Test de Cooper') }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->cooper_test ?? __('Données non disponibles') }}</span>
                         </div>
                         <div class="fifa-stat-header">
-                            <span>Test de Yo-Yo</span>
-                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->yoyo_test ?? 'Données non disponibles' }}</span>
+                            <span>{{ __('Test de Yo-Yo') }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->yoyo_test ?? __('Données non disponibles') }}</span>
                         </div>
                         <div class="fifa-stat-header">
-                            <span>Test de Wingate</span>
-                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->wingate_test ?? 'Données non disponibles' }}</span>
+                            <span>{{ __('Test de Wingate') }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->wingate_test ?? __('Données non disponibles') }}</span>
                         </div>
                         <div class="fifa-stat-header">
-                            <span>Test de Squat Jump</span>
-                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->squat_jump ?? 'Données non disponibles' }}</span>
+                            <span>{{ __('Test de Squat Jump') }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->squat_jump ?? __('Données non disponibles') }}</span>
                         </div>
                         <div class="fifa-stat-header">
-                            <span>Test de Sprint 30m</span>
-                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->sprint_30m ?? 'Données non disponibles' }}</span>
+                            <span>{{ __('Test de Sprint 30m') }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->sprint_30m ?? __('Données non disponibles') }}</span>
                         </div>
                         <div class="fifa-stat-header">
-                            <span>Test de Flexibilité</span>
-                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->flexibility_test ?? 'Données non disponibles' }}</span>
+                            <span>{{ __('Test de Flexibilité') }}</span>
+                            <span class="fifa-stat-value">{{ $playerPerformanceTests?->flexibility_test ?? __('Données non disponibles') }}</span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Carte Analyses de Laboratoire -->
                 <div class="fifa-medical-card">
-                    <h4>🧪 Analyses de Laboratoire</h4>
+                    <h4>{{ __('🧪 Analyses de Laboratoire') }}</h4>
                     <div class="fifa-medical-stat">
                         <div class="fifa-stat-header">
-                            <span>Hémoglobine</span>
-                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->hemoglobin !== null ? $playerLaboratoryResults->hemoglobin . ' ' . $playerLaboratoryResults->hemoglobin_unit : 'Données non disponibles' }}</span>
+                            <span>{{ __('Hémoglobine') }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->hemoglobin !== null ? $playerLaboratoryResults->hemoglobin . ' ' . $playerLaboratoryResults->hemoglobin_unit : __('Données non disponibles') }}</span>
                         </div>
                         <div class="fifa-stat-header">
-                            <span>Hématocrite</span>
-                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->hematocrit !== null ? $playerLaboratoryResults->hematocrit . ' ' . $playerLaboratoryResults->hematocrit_unit : 'Données non disponibles' }}</span>
+                            <span>{{ __('Hématocrite') }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->hematocrit !== null ? $playerLaboratoryResults->hematocrit . ' ' . $playerLaboratoryResults->hematocrit_unit : __('Données non disponibles') }}</span>
                         </div>
                         <div class="fifa-stat-header">
-                            <span>Fer Sérique</span>
-                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->serum_iron !== null ? $playerLaboratoryResults->serum_iron . ' ' . $playerLaboratoryResults->serum_iron_unit : 'Données non disponibles' }}</span>
+                            <span>{{ __('Fer Sérique') }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->serum_iron !== null ? $playerLaboratoryResults->serum_iron . ' ' . $playerLaboratoryResults->serum_iron_unit : __('Données non disponibles') }}</span>
                         </div>
                         <div class="fifa-stat-header">
-                            <span>Vitamine D</span>
-                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->vitamin_d !== null ? $playerLaboratoryResults->vitamin_d . ' ' . $playerLaboratoryResults->vitamin_d_unit : 'Données non disponibles' }}</span>
+                            <span>{{ __('Vitamine D') }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->vitamin_d !== null ? $playerLaboratoryResults->vitamin_d . ' ' . $playerLaboratoryResults->vitamin_d_unit : __('Données non disponibles') }}</span>
                         </div>
                         <div class="fifa-stat-header">
                             <span>CRP</span>
-                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->crp !== null ? $playerLaboratoryResults->crp . ' ' . $playerLaboratoryResults->crp_unit : 'Données non disponibles' }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->crp !== null ? $playerLaboratoryResults->crp . ' ' . $playerLaboratoryResults->crp_unit : __('Données non disponibles') }}</span>
                         </div>
                         <div class="fifa-stat-header">
-                            <span>Cholestérol Total</span>
-                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->total_cholesterol !== null ? $playerLaboratoryResults->total_cholesterol . ' ' . $playerLaboratoryResults->total_cholesterol_unit : 'Données non disponibles' }}</span>
+                            <span>{{ __('Cholestérol Total') }}</span>
+                            <span class="fifa-stat-value">{{ $playerLaboratoryResults?->total_cholesterol !== null ? $playerLaboratoryResults->total_cholesterol . ' ' . $playerLaboratoryResults->total_cholesterol_unit : __('Données non disponibles') }}</span>
                         </div>
                     </div>
                 </div>
@@ -1965,20 +1851,21 @@
     </div>
 
     <div id="devices-tab" class="fifa-tab-content">
-        <h2>🔄 Devices & Systèmes Connectés</h2>
+        <h2>{{ __('🔄 Devices & Systèmes Connectés') }}</h2>
         <div id="devices-content">
             <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
             <div class="fifa-devices-grid space-y-6">
                 
                 <!-- Carte Devices Sportifs Connectés -->
                 <div class="fifa-device-card w-full">
-                    <h4>⌚ Devices Sportifs & Wearables</h4>
+                    <h4>{{ __('⌚ Devices Sportifs & Wearables') }}</h4>
                     <div class="fifa-device-stat">
                         @if($sportsDevices && $sportsDevices->count() > 0)
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                 @foreach($sportsDevices as $device)
                                     <div class="p-4 bg-gray-50 rounded-lg border-l-4 
-                                        @if($device->connection_status == 'connected') border-green-500
+                                        @if($device->synthetic_test) border-gray-500
+                                        @elseif($device->connection_status == 'connected') border-green-500
                                         @elseif($device->connection_status == 'syncing') border-blue-500
                                         @elseif($device->connection_status == 'error') border-red-500
                                         @else border-gray-500
@@ -1986,16 +1873,19 @@
                                         <div class="flex items-center justify-between mb-2">
                                             <div class="font-semibold text-gray-800">{{ $device->device_name }}</div>
                                             <span class="px-2 py-1 text-xs rounded-full 
-                                                @if($device->connection_status == 'connected') bg-green-100 text-green-800
+                                                @if($device->synthetic_test) bg-gray-100 text-gray-800
+                                                @elseif($device->connection_status == 'connected') bg-green-100 text-green-800
                                                 @elseif($device->connection_status == 'syncing') bg-blue-100 text-blue-800
                                                 @elseif($device->connection_status == 'error') bg-red-100 text-red-800
                                                 @else bg-gray-100 text-gray-800
                                                 @endif">
-                                                {{ ucfirst($device->connection_status) }}
+                                                {{ $device->synthetic_test ? 'Démonstration (non connecté)' : ucfirst($device->connection_status) }}
                                             </span>
                                         </div>
                                         <div class="text-sm text-gray-600 mb-2">{{ $device->brand }} {{ $device->model }}</div>
-                                        <div class="text-xs text-gray-500 mb-2">API: {{ $device->api_endpoint }}</div>
+                                        @if($device->api_endpoint)
+                                            <div class="text-xs text-gray-500 mb-2">API: {{ $device->api_endpoint }}</div>
+                                        @endif
                                         <div class="flex justify-between text-xs">
                                             <span>Batterie: {{ $device->battery_level }}%</span>
                                             <span>Sync: {{ \Carbon\Carbon::parse($device->last_sync)->diffForHumans() }}</span>
@@ -2006,7 +1896,7 @@
                         @else
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-info-circle text-2xl mb-2"></i>
-                                <p>Aucun device sportif connecté</p>
+                                <p>{{ __('Aucun device sportif connecté') }}</p>
                             </div>
                         @endif
                     </div>
@@ -2014,7 +1904,7 @@
                 
                 <!-- Carte Données Comportementales -->
                 <div class="fifa-device-card w-full">
-                    <h4>📊 Données Comportementales & Biométriques</h4>
+                    <h4>{{ __('📊 Données Comportementales & Biométriques') }}</h4>
                     <div class="fifa-device-stat">
                         @if($behavioralData)
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -2028,7 +1918,7 @@
                                 </div>
                                 <div class="text-center p-3 bg-yellow-50 rounded-lg">
                                     <div class="text-2xl font-bold text-yellow-600">{{ $behavioralData->active_minutes }}min</div>
-                                    <div class="text-sm text-yellow-700">Actif</div>
+                                    <div class="text-sm text-yellow-700">{{ __('Actif') }}</div>
                                 </div>
                                 <div class="text-center p-3 bg-purple-50 rounded-lg">
                                     <div class="text-2xl font-bold text-purple-600">{{ $behavioralData->mood_score }}/10</div>
@@ -2039,7 +1929,7 @@
                         @else
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-info-circle text-2xl mb-2"></i>
-                                <p>Aucune donnée comportementale disponible</p>
+                                <p>{{ __('Aucune donnée comportementale disponible') }}</p>
                             </div>
                         @endif
                     </div>
@@ -2047,7 +1937,7 @@
                 
                 <!-- Carte Centres de Physiothérapie Connectés -->
                 <div class="fifa-device-card w-full">
-                    <h4>🏥 Centres de Physiothérapie & Rééducation</h4>
+                    <h4>{{ __('🏥 Centres de Physiothérapie & Rééducation') }}</h4>
                     <div class="fifa-device-stat">
                         @if($physioCenters && $physioCenters->count() > 0)
                             <div class="space-y-4">
@@ -2063,7 +1953,9 @@
                                                 <div class="text-xs text-gray-500">Dernière: {{ \Carbon\Carbon::parse($center->last_session_date)->format('d M Y') }}</div>
                                             </div>
                                         </div>
-                                        <div class="text-xs text-gray-500 mb-2">API: {{ $center->api_endpoint }}</div>
+                                        @if($center->api_endpoint)
+                                            <div class="text-xs text-gray-500 mb-2">API: {{ $center->api_endpoint }}</div>
+                                        @endif
                                         <div class="text-sm text-gray-700 mb-2">
                                             <strong>Plan de traitement:</strong> 
                                             @php $plan = json_decode($center->treatment_plan, true); @endphp
@@ -2081,7 +1973,7 @@
                         @else
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-info-circle text-2xl mb-2"></i>
-                                <p>Aucun centre de physiothérapie connecté</p>
+                                <p>{{ __('Aucun centre de physiothérapie connecté') }}</p>
                             </div>
                         @endif
                     </div>
@@ -2089,7 +1981,7 @@
                 
                 <!-- Carte Applications de Santé Mentale -->
                 <div class="fifa-device-card w-full">
-                    <h4>🧠 Applications de Santé Mentale & Bien-être</h4>
+                    <h4>{{ __('🧠 Applications de Santé Mentale & Bien-être') }}</h4>
                     <div class="fifa-device-stat">
                         @if($mentalHealthApps && $mentalHealthApps->count() > 0)
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2102,7 +1994,7 @@
                                             </div>
                                             <div class="text-right">
                                                 <div class="text-sm text-gray-600">{{ $app->session_duration }}min</div>
-                                                <div class="text-xs text-gray-500">Session</div>
+                                                <div class="text-xs text-gray-500">{{ __('Session') }}</div>
                                             </div>
                                         </div>
                                         <div class="text-xs text-gray-500 mb-2">API: {{ $app->api_endpoint }}</div>
@@ -2126,7 +2018,7 @@
                         @else
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-info-circle text-2xl mb-2"></i>
-                                <p>Aucune app de santé mentale connectée</p>
+                                <p>{{ __('Aucune app de santé mentale connectée') }}</p>
                             </div>
                         @endif
                     </div>
@@ -2134,7 +2026,7 @@
                 
                 <!-- Carte APIs & Intégrations -->
                 <div class="fifa-device-card w-full">
-                    <h4>🔌 APIs & Intégrations Systèmes</h4>
+                    <h4>{{ __('🔌 APIs & Intégrations Systèmes') }}</h4>
                     <div class="fifa-device-stat">
                         @if($apiIntegrations && $apiIntegrations->count() > 0)
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2179,9 +2071,10 @@
                                     <div class="p-4 bg-{{ $color }}-50 rounded-lg border-l-4 border-{{ $color }}-500">
                                         <h5 class="font-semibold text-{{ $color }}-800 mb-2">{{ $icon }} {{ $api->api_name }}</h5>
                                         <div class="text-sm text-{{ $color }}-700">
-                                            <div>Endpoint: {{ $api->api_endpoint }}</div>
+                                            <div>{{ $api->synthetic_test ? 'Endpoint de test inactif' : 'Endpoint' }}: {{ $api->api_endpoint }}</div>
                                             <div>Statut: 
-                                                @if($api->connection_status == 'connected') ✅ Connecté
+                                                @if($api->synthetic_test) Démonstration (non connecté)
+                                                @elseif($api->connection_status == 'connected') ✅ Connecté
                                                 @elseif($api->connection_status == 'disconnected') ❌ Déconnecté
                                                 @elseif($api->connection_status == 'error') ⚠️ Erreur
                                                 @else 🔄 En attente
@@ -2198,7 +2091,7 @@
                         @else
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-info-circle text-2xl mb-2"></i>
-                                <p>Aucune intégration API configurée</p>
+                                <p>{{ __('Aucune intégration API configurée') }}</p>
                             </div>
                         @endif
                     </div>
@@ -2208,14 +2101,14 @@
     </div>
 
     <div id="doping-tab" class="fifa-tab-content">
-        <h2>🧪 Contrôle Anti-Dopage & Conformité</h2>
+        <h2>{{ __('🧪 Contrôle Anti-Dopage & Conformité') }}</h2>
         <div id="doping-content">
             <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
             <div class="fifa-doping-grid space-y-6">
                 
                 <!-- Carte Tests Anti-Dopage -->
                 <div class="fifa-doping-card w-full">
-                    <h4>🧪 Tests Anti-Dopage</h4>
+                    <h4>{{ __('🧪 Tests Anti-Dopage') }}</h4>
                     <div class="fifa-doping-info">
                         @if($dopingTests && $dopingTests->count() > 0)
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
@@ -2274,7 +2167,7 @@
                         @else
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-info-circle text-2xl mb-2"></i>
-                                <p>Aucun test anti-dopage enregistré</p>
+                                <p>{{ __('Aucun test anti-dopage enregistré') }}</p>
                             </div>
                         @endif
                     </div>
@@ -2282,7 +2175,7 @@
                 
                 <!-- Carte Substances Interdites -->
                 <div class="fifa-doping-card w-full">
-                    <h4>🚫 Substances Interdites & Contrôles</h4>
+                    <h4>{{ __('🚫 Substances Interdites & Contrôles') }}</h4>
                     <div class="fifa-doping-info">
                         @if($bannedSubstances && $bannedSubstances->count() > 0)
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -2315,22 +2208,20 @@
                                             <span class="px-2 py-1 text-xs rounded-full {{ $statusColor }}">
                                                 @if($substance->status == 'active') 🔴 Actif
                                                 @elseif($substance->status == 'cleared') 🟢 Autorisé
-                                                @else 🔵 Surveillance
+                                                @else 🔵 Dans le panel
                                                 @endif
                                             </span>
                                         </div>
-                                        <div class="text-xs text-gray-500 mb-2">Code WADA: {{ $substance->wada_code }}</div>
+                                        @if($substance->wada_code)
+                                            <div class="text-xs text-gray-500 mb-2">Code WADA: {{ $substance->wada_code }}</div>
+                                        @endif
                                         <div class="text-sm text-gray-700 mb-2">{{ $substance->notes }}</div>
-                                        @if($substance->detection_count > 0)
-                                            <div class="text-xs text-red-600">
-                                                <i class="fas fa-exclamation-triangle mr-1"></i>
-                                                {{ $substance->detection_count }} détection(s)
+                                        @if($substance->detection_count !== null)
+                                            <div class="text-xs {{ $substance->detection_count > 0 ? 'text-red-600' : 'text-gray-600' }}">
+                                                {{ $substance->detection_count }} détection(s) enregistrée(s)
                                             </div>
                                         @else
-                                            <div class="text-xs text-green-600">
-                                                <i class="fas fa-check-circle mr-1"></i>
-                                                Aucune détection
-                                            </div>
+                                            <div class="text-xs text-gray-600">Résultat individuel non enregistré</div>
                                         @endif
                                     </div>
                                 @endforeach
@@ -2346,7 +2237,7 @@
                 
                 <!-- Carte Autorisations d'Usage Thérapeutique (TUE) -->
                 <div class="fifa-doping-card w-full">
-                    <h4>💊 Autorisations d'Usage Thérapeutique (TUE)</h4>
+                    <h4>{{ __('💊 Autorisations d\'Usage Thérapeutique (TUE)') }}</h4>
                     <div class="fifa-doping-info">
                         @if($therapeuticUseExemptions && $therapeuticUseExemptions->count() > 0)
                             <div class="space-y-4">
@@ -2355,35 +2246,35 @@
                                         <div class="flex justify-between items-start mb-3">
                                             <div>
                                                 <div class="font-semibold text-gray-800">{{ $tue->substance_name }}</div>
-                                                <div class="text-sm text-gray-600">{{ $tue->medical_condition }}</div>
+                                                <div class="text-sm text-gray-600">{{ $tue->medical_condition ?? 'Non renseignée' }}</div>
                                             </div>
                                             <div class="text-right">
-                                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                                                    ✅ Approuvé
+                                                <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                                                    Statut : {{ $tue->aut_status ?? 'Non renseigné' }}
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="text-sm text-gray-700 mb-2">
-                                            <strong>Médecin:</strong> {{ $tue->prescribing_doctor }} ({{ $tue->doctor_license }})
+                                            <strong>Médecin:</strong> {{ $tue->prescribing_doctor ?? 'Non renseigné' }}
                                         </div>
                                         <div class="text-sm text-gray-700 mb-2">
                                             <strong>Période:</strong> 
-                                            {{ \Carbon\Carbon::parse($tue->exemption_start_date)->format('d M Y') }} - 
-                                            {{ \Carbon\Carbon::parse($tue->exemption_end_date)->format('d M Y') }}
+                                            {{ $tue->exemption_start_date ? \Carbon\Carbon::parse($tue->exemption_start_date)->format('d M Y') : 'Non renseignée' }} -
+                                            {{ $tue->exemption_end_date ? \Carbon\Carbon::parse($tue->exemption_end_date)->format('d M Y') : 'Non renseignée' }}
                                         </div>
                                         <div class="text-sm text-gray-700 mb-2">
-                                            <strong>Approbations:</strong>
-                                            @if($tue->wada_approval) <span class="text-green-600">WADA ✅</span> @endif
-                                            @if($tue->fifa_approval) <span class="text-blue-600">FIFA ✅</span> @endif
+                                            <strong>Autorité d'approbation:</strong> Non vérifiée
                                         </div>
+                                        @if($tue->approval_notes)
                                         <div class="text-xs text-gray-600">{{ $tue->approval_notes }}</div>
+                                        @endif
                                     </div>
                                 @endforeach
                             </div>
                         @else
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-info-circle text-2xl mb-2"></i>
-                                <p>Aucune autorisation TUE enregistrée</p>
+                                <p>{{ __('Aucune autorisation TUE enregistrée') }}</p>
                             </div>
                         @endif
                     </div>
@@ -2391,7 +2282,7 @@
                 
                 <!-- Carte Alertes & Notifications -->
                 <div class="fifa-doping-card w-full">
-                    <h4>⚠️ Alertes & Notifications Anti-Dopage</h4>
+                    <h4>{{ __('⚠️ Alertes & Notifications Anti-Dopage') }}</h4>
                     <div class="fifa-doping-info">
                         @if($dopingAlerts && $dopingAlerts->count() > 0)
                             <div class="space-y-3">
@@ -2442,7 +2333,7 @@
                         @else
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-info-circle text-2xl mb-2"></i>
-                                <p>Aucune alerte anti-dopage active</p>
+                                <p>{{ __('Aucune alerte anti-dopage active') }}</p>
                             </div>
                         @endif
                     </div>
@@ -2450,11 +2341,11 @@
                 
                 <!-- Carte Conformité & Réglementation -->
                 <div class="fifa-doping-card w-full">
-                    <h4>📋 Statuts administratifs, médicaux & antidopage</h4>
+                    <h4>{{ __('📋 Statuts administratifs, médicaux & antidopage') }}</h4>
                     <div class="fifa-doping-info">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="p-4 bg-gray-50 rounded-lg border-l-4 border-gray-400">
-                                <h5 class="font-semibold text-gray-800 mb-2">📋 Statuts disponibles</h5>
+                                <h5 class="font-semibold text-gray-800 mb-2">{{ __('📋 Statuts disponibles') }}</h5>
                                 <div class="text-sm text-gray-700">
                                     @if($complianceStatus && $complianceStatus->count() > 0)
                                         @foreach($complianceStatus as $compliance)
@@ -2501,13 +2392,13 @@
                                         @endforeach
                                     @else
                                         <div class="text-gray-500">
-                                            Aucun statut disponible
+                                            {{ __('Aucun statut disponible') }}
                                         </div>
                                     @endif
                                 </div>
                             </div>
                             <div class="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                                <h5 class="font-semibold text-blue-800 mb-2">📚 Ressources & Informations</h5>
+                                <h5 class="font-semibold text-blue-800 mb-2">{{ __('📚 Ressources & Informations') }}</h5>
                                 <div class="text-sm text-blue-700">
                                     @if($complianceResources && $complianceResources->count() > 0)
                                         @foreach($complianceResources->take(4) as $resource)
@@ -2531,7 +2422,7 @@
                                                 @if($resource->resource_url)
                                                     <div class="text-xs text-blue-600">
                                                         <a href="{{ $resource->resource_url }}" target="_blank" class="hover:underline">
-                                                            Accéder à la ressource
+                                                            {{ __('Accéder à la ressource') }}
                                                         </a>
                                                     </div>
                                                 @endif
@@ -2545,7 +2436,7 @@
                                             </div>
                                         @endif
                                     @else
-                                        <div class="text-gray-500">Aucune ressource disponible</div>
+                                        <div class="text-gray-500">{{ __('Aucune ressource disponible') }}</div>
                                     @endif
                                 </div>
                             </div>
@@ -2557,7 +2448,7 @@
     </div>
 
     <div id="licenses-tab" class="fifa-tab-content">
-        <h2>🏆 Gestion des Licences & Validation FIFA</h2>
+        <h2>{{ __('🏆 Gestion des Licences & Validation FIFA') }}</h2>
         <div id="licenses-content">
             <!-- Tableau des licences -->
             <div class="fifa-license-table-container">
@@ -2567,9 +2458,9 @@
                             <th>Saison</th>
                             <th>Club</th>
                             <th>Association</th>
-                            <th>Type</th>
-                            <th>Source</th>
-                            <th>Statut</th>
+                            <th>{{ __('Type') }}</th>
+                            <th>{{ __('Source') }}</th>
+                            <th>{{ __('Statut') }}</th>
                         </tr>
                     </thead>
                     <tbody class="licenses-table-body">
@@ -2577,11 +2468,6 @@
                         @if($playerLicenses && $playerLicenses->count() > 0)
                             @foreach($playerLicenses as $license)
                                 @php
-                                    $club = \DB::table('clubs')->where('id', $license->club_id)->first();
-                                    $clubAssociation = null;
-                                    if ($club) {
-                                        $clubAssociation = \DB::table('associations')->where('id', $club->association_id)->first();
-                                    }
                                 @endphp
                                 <tr>
                                     <td>
@@ -2604,12 +2490,12 @@
                                         $seasonLabel = $startYear ?? $endYear;
                                     }
                                         @endphp
-                                        {{ $seasonLabel ? 'Saison ' . $seasonLabel : 'Données non disponibles' }}
+                                        {{ $seasonLabel ? 'Saison ' . $seasonLabel : __('Données non disponibles') }}
                                     </td>
-                                    <td>{{ $club->name ?? 'N/A' }}</td>
-                                    <td>{{ $clubAssociation ? $clubAssociation->name : 'N/A' }}</td>
+                                    <td>{{ $license->club_name ?? 'N/A' }}</td>
+                                    <td>{{ $license->association_name ?? 'N/A' }}</td>
                                     <td>{{ ucfirst(str_replace('_', ' ', $license->license_type)) }}</td>
-                                    <td>{{ $license->issuing_authority ?? 'Données non disponibles' }}</td>
+                                    <td>{{ $license->issuing_authority ?? __('Données non disponibles') }}</td>
                                     <td>
                                         <span class="fifa-status 
                                             @if($license->status == 'active') active
@@ -2629,7 +2515,7 @@
                         @else
                             <tr>
                                 <td colspan="6" class="text-center text-gray-500 py-4">
-                                    Aucune licence enregistrée
+                                    {{ __('Aucune licence enregistrée') }}
                                 </td>
                             </tr>
                         @endif
@@ -2639,11 +2525,11 @@
 
             <!-- Résumé des primes de formation -->
             <div class="fifa-training-compensation">
-                <h3>Primes de Formation FIFA</h3>
+                <h3>{{ __('Primes de Formation FIFA') }}</h3>
                 <div class="training-compensation-content">
                     <!-- 🆕 CONTENU BLADE DIRECT -->
                     <div class="fifa-compensation-card">
-                        <h4>💰 Calcul des Primes</h4>
+                        <h4>{{ __('💰 Calcul des Primes') }}</h4>
                         <div class="fifa-compensation-info">
                             <div class="fifa-compensation-stat">
                                 <span>Club de formation:</span>
@@ -2660,9 +2546,9 @@
                                 </span>
                             </div>
                             <div class="fifa-compensation-stat">
-                                <span>Prime estimée:</span>
+                                <span>Prime simulée de test:</span>
                                 <span class="fifa-compensation-amount">
-                                    Données non disponibles
+                                    {{ $playerTrainingCompensation !== null ? number_format((float) $playerTrainingCompensation, 0, ' ', ' ') . ' unités de test' : 'Aucune simulation enregistrée' }}
                                 </span>
                             </div>
                         </div>
@@ -2674,7 +2560,7 @@
 
     <!-- Bouton de rafraîchissement -->
     <div style="text-align: center; margin-top: 30px;">
-        <button class="fifa-refresh-btn" onclick="location.reload()">Rafraîchir les données</button>
+        <button class="fifa-refresh-btn" onclick="location.reload()">{{ __('Rafraîchir les données') }}</button>
     </div>
 
     <!-- 🎨 Styles CSS FIFA (identiques au portail FIFA) -->
@@ -3011,12 +2897,12 @@
                         const ratingsCtx = document.getElementById('ratingsChart');
 
                         @php
-                            $ratingsData = $latestFitAttempt ? [
-                                'physical_score' => $latestFitAttempt->physical_score,
-                                'technical_score' => $latestFitAttempt->technical_score,
-                                'tactical_score' => $latestFitAttempt->tactical_score,
-                                'mental_score' => $latestFitAttempt->mental_score,
-                                'social_score' => $latestFitAttempt->social_score,
+                            $ratingsData = $latestFitSnapshot ? [
+                                'physical_score' => $latestFitSnapshot->physical_score,
+                                'technical_score' => $latestFitSnapshot->technical_score,
+                                'tactical_score' => $latestFitSnapshot->tactical_score,
+                                'mental_score' => $latestFitSnapshot->mental_score,
+                                'social_score' => $latestFitSnapshot->social_score,
                             ] : null;
                         @endphp
 
@@ -3086,7 +2972,7 @@
                             });
                         } else if (ratingsCtx) {
                             ratingsCtx.parentElement.innerHTML =
-                                '<div class="flex h-full items-center justify-center text-gray-400">Données non disponibles</div>';
+                                '<div class="flex h-full items-center justify-center text-gray-400">{{ __('Données non disponibles') }}</div>';
                         }
 
                         // Graphique des statistiques de saison
@@ -3257,15 +3143,14 @@
                                  new Chart(sdohCtx, {
                                      type: 'radar',
                                      data: {
-                                         labels: ['Environnement', 'Soutien Social', 'Accès Soins', 'Situation Financière', 'Éducation'],
+                                         labels: ['Environnement', 'Soutien Social', 'Accès Soins', 'Situation Financière'],
                                          datasets: [{
                                              label: 'Score SDOH',
                                              data: [
                                                  sdohData.environment_score,
                                                  sdohData.social_support_score,
                                                  sdohData.healthcare_access_score,
-                                                 sdohData.financial_status_score,
-                                                 sdohData.education_score
+                                                 sdohData.financial_status_score
                                              ],
                                              borderColor: '#14b8a6',
                                              backgroundColor: 'rgba(20, 184, 166, 0.2)',

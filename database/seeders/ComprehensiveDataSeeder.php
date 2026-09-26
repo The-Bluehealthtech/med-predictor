@@ -3,497 +3,771 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\Club;
-use App\Models\Association;
-use App\Models\Competition;
-use App\Models\Team;
-use App\Models\Player;
-use App\Models\FifaConnectId;
-use App\Models\PlayerLicense;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ComprehensiveDataSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    private const REFERENCE_DATE = '2026-09-01';
+
+    private int $userId;
+    private int $competitionId;
+    private array $columnCache = [];
+
     public function run(): void
     {
-        $this->command->info('🌍 Starting comprehensive data seeding...');
+        $this->assertBaseData();
 
-        // 1. Create FIFA Connect IDs for all stakeholders
-        $this->createFifaConnectIds();
+        // Canonical portal coverage for every player.
+        $this->call(PlayerPortalDataSeeder::class);
 
-        // 2. Create comprehensive stakeholder users
-        $this->createStakeholders();
+        $this->seedCompetitionRelations();
 
-        // 3. Create additional clubs and teams
-        $this->createAdditionalClubs();
+        DB::table('players')
+            ->orderBy('id')
+            ->chunkById(100, function ($players): void {
+                DB::transaction(function () use ($players): void {
+                    foreach ($players as $player) {
+                        $this->seedPlayerScopedData($player);
+                    }
+                });
+            });
 
-        // 4. Create divisions and leagues
-        $this->createDivisionsAndLeagues();
+        $this->seedTransfers();
+        $this->seedCompetitionStandings();
+        $this->seedWorkflowData();
+        $this->seedRefereeReports();
 
-        // 5. Create match officials and referees
-        $this->createMatchOfficials();
-
-        // 6. Create medical staff
-        $this->createMedicalStaff();
-
-        // 7. Create additional players for all teams
-        $this->createAdditionalPlayers();
-
-        $this->command->info('✅ Comprehensive data seeding completed!');
+        $this->command?->info(
+            'Comprehensive deterministic synthetic demo data seeded.'
+        );
     }
 
-    private function createFifaConnectIds(): void
+    private function assertBaseData(): void
     {
-        $this->command->info('Creating FIFA Connect IDs...');
+        $user = DB::table('users')->orderBy('id')->first();
+        $competition = DB::table('competitions')->orderBy('id')->first();
+        $players = DB::table('players')->count();
 
-        $entityTypes = ['player', 'referee', 'official', 'medical', 'club', 'association'];
-        
-        foreach ($entityTypes as $type) {
-            for ($i = 1; $i <= 50; $i++) {
-                $fifaId = strtoupper($type) . str_pad($i, 6, '0', STR_PAD_LEFT);
-                
-                // Check if this FIFA ID already exists
-                if (!FifaConnectId::where('fifa_id', $fifaId)->exists()) {
-                    FifaConnectId::create([
-                        'fifa_id' => $fifaId,
-                        'entity_type' => $type,
-                        'status' => 'active',
-                        'metadata' => [
-                            'created_by' => 'seeder',
-                            'category' => $type
-                        ]
-                    ]);
+        if (!$user || !$competition || $players === 0) {
+            throw new \RuntimeException(
+                'Base data missing: user, competition and players are required.'
+            );
+        }
+
+        $linkedAthletes = Schema::hasTable('athletes')
+            ? DB::table('athletes')->whereNotNull('player_id')->count()
+            : 0;
+
+        if ($linkedAthletes !== $players) {
+            throw new \RuntimeException(
+                "Player/Athlete bridge incomplete: players={$players}, athletes={$linkedAthletes}."
+            );
+        }
+
+        $this->userId = (int) $user->id;
+        $this->competitionId = (int) $competition->id;
+    }
+
+    private function seedCompetitionRelations(): void
+    {
+        if (!Schema::hasTable('competition_team')) {
+            return;
+        }
+
+        $competitions = DB::table('competitions')
+            ->orderBy('id')
+            ->get();
+
+        DB::table('teams')
+            ->orderBy('id')
+            ->get()
+            ->each(function ($team) use ($competitions): void {
+                $associationId = null;
+
+                if ($this->hasColumn('teams', 'club_id') && $team->club_id) {
+                    $associationId = DB::table('clubs')
+                        ->where('id', $team->club_id)
+                        ->value('association_id');
                 }
-            }
-        }
-    }
 
-    private function createStakeholders(): void
-    {
-        $this->command->info('Creating comprehensive stakeholders...');
+                $competition = $competitions->first(
+                    fn ($item) =>
+                        $associationId !== null
+                        && property_exists($item, 'association_id')
+                        && (int) $item->association_id === (int) $associationId
+                ) ?? $competitions->first();
 
-        // Referees
-        $referees = [
-            ['name' => 'Michael Oliver', 'email' => 'michael.oliver@fifa.com', 'role' => 'referee'],
-            ['name' => 'Anthony Taylor', 'email' => 'anthony.taylor@fifa.com', 'role' => 'referee'],
-            ['name' => 'Martin Atkinson', 'email' => 'martin.atkinson@fifa.com', 'role' => 'referee'],
-            ['name' => 'Craig Pawson', 'email' => 'craig.pawson@fifa.com', 'role' => 'referee'],
-            ['name' => 'Paul Tierney', 'email' => 'paul.tierney@fifa.com', 'role' => 'referee'],
-            ['name' => 'Stuart Attwell', 'email' => 'stuart.attwell@fifa.com', 'role' => 'referee'],
-            ['name' => 'David Coote', 'email' => 'david.coote@fifa.com', 'role' => 'referee'],
-            ['name' => 'Chris Kavanagh', 'email' => 'chris.kavanagh@fifa.com', 'role' => 'referee'],
-            ['name' => 'Darren England', 'email' => 'darren.england@fifa.com', 'role' => 'referee'],
-            ['name' => 'Jarred Gillett', 'email' => 'jarred.gillett@fifa.com', 'role' => 'referee'],
-        ];
-
-        foreach ($referees as $referee) {
-            if (!User::where('email', $referee['email'])->exists()) {
-                User::create([
-                    'name' => $referee['name'],
-                    'email' => $referee['email'],
-                    'password' => Hash::make('password123'),
-                    'role' => $referee['role'],
-                    'permissions' => ['match_sheet_management', 'referee_access'],
-                    'status' => 'active',
-                    'fifa_connect_id' => FifaConnectId::where('entity_type', 'referee')->inRandomOrder()->first()->id,
-                ]);
-            }
-        }
-
-        // Match Officials
-        $officials = [
-            ['name' => 'Simon Bennett', 'email' => 'simon.bennett@fifa.com', 'role' => 'match_official'],
-            ['name' => 'Gary Beswick', 'email' => 'gary.beswick@fifa.com', 'role' => 'match_official'],
-            ['name' => 'Adam Nunn', 'email' => 'adam.nunn@fifa.com', 'role' => 'match_official'],
-            ['name' => 'Lee Betts', 'email' => 'lee.betts@fifa.com', 'role' => 'match_official'],
-            ['name' => 'Constantine Hatzidakis', 'email' => 'constantine.hatzidakis@fifa.com', 'role' => 'match_official'],
-            ['name' => 'Harry Lennard', 'email' => 'harry.lennard@fifa.com', 'role' => 'match_official'],
-            ['name' => 'Sian Massey-Ellis', 'email' => 'sian.massey-ellis@fifa.com', 'role' => 'match_official'],
-            ['name' => 'Natalie Aspinall', 'email' => 'natalie.aspinall@fifa.com', 'role' => 'match_official'],
-        ];
-
-        foreach ($officials as $official) {
-            if (!User::where('email', $official['email'])->exists()) {
-                User::create([
-                    'name' => $official['name'],
-                    'email' => $official['email'],
-                    'password' => Hash::make('password123'),
-                    'role' => $official['role'],
-                    'permissions' => ['match_sheet_management'],
-                    'status' => 'active',
-                    'fifa_connect_id' => FifaConnectId::where('entity_type', 'official')->inRandomOrder()->first()->id,
-                ]);
-            }
-        }
-    }
-
-    private function createAdditionalClubs(): void
-    {
-        $this->command->info('Creating additional clubs...');
-
-        $additionalClubs = [
-            ['name' => 'Leicester City', 'city' => 'Leicester', 'country' => 'England'],
-            ['name' => 'West Ham United', 'city' => 'London', 'country' => 'England'],
-            ['name' => 'Brighton & Hove Albion', 'city' => 'Brighton', 'country' => 'England'],
-            ['name' => 'Crystal Palace', 'city' => 'London', 'country' => 'England'],
-            ['name' => 'Aston Villa', 'city' => 'Birmingham', 'country' => 'England'],
-            ['name' => 'Wolverhampton Wanderers', 'city' => 'Wolverhampton', 'country' => 'England'],
-            ['name' => 'Newcastle United', 'city' => 'Newcastle', 'country' => 'England'],
-            ['name' => 'Southampton', 'city' => 'Southampton', 'country' => 'England'],
-            ['name' => 'Burnley', 'city' => 'Burnley', 'country' => 'England'],
-            ['name' => 'Watford', 'city' => 'Watford', 'country' => 'England'],
-        ];
-
-        $association = Association::first();
-
-        foreach ($additionalClubs as $clubData) {
-            $club = Club::firstOrCreate(
-                ['name' => $clubData['name']],
-                [
-                    'name' => $clubData['name'],
-                    'city' => $clubData['city'],
-                    'country' => $clubData['country'],
-                    'association_id' => $association->id,
-                    'founded_year' => rand(1880, 1920),
-                    'stadium_name' => $clubData['name'] . ' Stadium',
-                    'stadium_capacity' => rand(20000, 60000),
-                    'logo_url' => '/images/defaults/club-logo.png',
-                    'status' => 'active',
-                    'fifa_connect_id' => FifaConnectId::where('entity_type', 'club')->inRandomOrder()->first()->id,
-                ]
-            );
-
-            // Create team for each club
-            Team::firstOrCreate(
-                ['club_id' => $club->id, 'name' => $club->name . ' First Team'],
-                [
-                    'club_id' => $club->id,
-                    'name' => $club->name . ' First Team',
-                    'type' => 'first_team',
-                    'season' => '2024/25',
-                    'status' => 'active',
-                ]
-            );
-        }
-    }
-
-    private function createDivisionsAndLeagues(): void
-    {
-        $this->command->info('Creating divisions and leagues...');
-
-        $competitions = [
-            [
-                'name' => 'Premier League',
-                'type' => 'league',
-                'country' => 'England',
-                'season' => '2024/25',
-                'level' => 1,
-                'description' => 'Top tier of English football'
-            ],
-            [
-                'name' => 'Championship',
-                'type' => 'league',
-                'country' => 'England',
-                'season' => '2024/25',
-                'level' => 2,
-                'description' => 'Second tier of English football'
-            ],
-            [
-                'name' => 'League One',
-                'type' => 'league',
-                'country' => 'England',
-                'season' => '2024/25',
-                'level' => 3,
-                'description' => 'Third tier of English football'
-            ],
-            [
-                'name' => 'League Two',
-                'type' => 'league',
-                'country' => 'England',
-                'season' => '2024/25',
-                'level' => 4,
-                'description' => 'Fourth tier of English football'
-            ],
-            [
-                'name' => 'FA Cup',
-                'type' => 'cup',
-                'country' => 'England',
-                'season' => '2024/25',
-                'level' => 1,
-                'description' => 'Premier domestic cup competition'
-            ],
-            [
-                'name' => 'Carabao Cup',
-                'type' => 'cup',
-                'country' => 'England',
-                'season' => '2024/25',
-                'level' => 2,
-                'description' => 'League Cup competition'
-            ],
-            [
-                'name' => 'UEFA Champions League',
-                'type' => 'international',
-                'country' => 'Europe',
-                'season' => '2024/25',
-                'level' => 1,
-                'description' => 'Premier European club competition'
-            ],
-            [
-                'name' => 'UEFA Europa League',
-                'type' => 'international',
-                'country' => 'Europe',
-                'season' => '2024/25',
-                'level' => 2,
-                'description' => 'Secondary European club competition'
-            ],
-        ];
-
-        foreach ($competitions as $compData) {
-            Competition::firstOrCreate(
-                ['name' => $compData['name'], 'season' => $compData['season']],
-                [
-                    'name' => $compData['name'],
-                    'type' => $compData['type'],
-                    'country' => $compData['country'],
-                    'season' => $compData['season'],
-                    'level' => $compData['level'],
-                    'description' => $compData['description'],
-                    'status' => 'active',
-                    'require_federation_license' => true,
-                ]
-            );
-        }
-    }
-
-    private function createMatchOfficials(): void
-    {
-        $this->command->info('Creating match officials...');
-
-        $officialRoles = [
-            'referee' => ['match_sheet_management', 'referee_access'],
-            'assistant_referee' => ['match_sheet_management'],
-            'fourth_official' => ['match_sheet_management'],
-            'var_official' => ['match_sheet_management'],
-            'match_commissioner' => ['match_sheet_management', 'competition_management_access'],
-        ];
-
-        $officialNames = [
-            'John Smith', 'David Johnson', 'Robert Williams', 'Michael Brown',
-            'James Davis', 'Richard Miller', 'Thomas Wilson', 'Christopher Moore',
-            'Daniel Taylor', 'Matthew Anderson', 'Anthony Thomas', 'Mark Jackson',
-            'Donald White', 'Steven Harris', 'Paul Martin', 'Andrew Thompson',
-            'Joshua Garcia', 'Kenneth Martinez', 'Kevin Robinson', 'Brian Clark',
-        ];
-
-        foreach ($officialNames as $index => $name) {
-            $role = array_keys($officialRoles)[$index % count($officialRoles)];
-            $email = strtolower(str_replace(' ', '.', $name)) . '@fifa.com';
-            
-            User::firstOrCreate(
-                ['email' => $email],
-                [
-                    'name' => $name,
-                    'password' => Hash::make('password123'),
-                    'role' => $role,
-                    'permissions' => $officialRoles[$role],
-                    'status' => 'active',
-                    'fifa_connect_id' => FifaConnectId::where('entity_type', 'official')->inRandomOrder()->first()->id,
-                ]
-            );
-        }
-    }
-
-    private function createMedicalStaff(): void
-    {
-        $this->command->info('Creating medical staff...');
-
-        $medicalRoles = [
-            'club_medical' => ['healthcare_access', 'health_record_management'],
-            'association_medical' => ['healthcare_access', 'health_record_management', 'medical_prediction_access'],
-            'team_doctor' => ['healthcare_access', 'health_record_management'],
-            'physiotherapist' => ['healthcare_access'],
-            'sports_scientist' => ['healthcare_access'],
-        ];
-
-        $medicalNames = [
-            'Dr. Sarah Johnson', 'Dr. Michael Chen', 'Dr. Emily Rodriguez', 'Dr. James Wilson',
-            'Dr. Lisa Thompson', 'Dr. Robert Garcia', 'Dr. Jennifer Lee', 'Dr. David Brown',
-            'Dr. Amanda Davis', 'Dr. Christopher Miller', 'Dr. Rachel White', 'Dr. Kevin Martinez',
-            'Dr. Nicole Anderson', 'Dr. Steven Taylor', 'Dr. Michelle Clark', 'Dr. Brian Harris',
-            'Dr. Jessica Moore', 'Dr. Daniel Jackson', 'Dr. Ashley Thomas', 'Dr. Matthew Robinson',
-        ];
-
-        $clubs = Club::all();
-        $associations = Association::all();
-
-        foreach ($medicalNames as $index => $name) {
-            $role = array_keys($medicalRoles)[$index % count($medicalRoles)];
-            $email = strtolower(str_replace(' ', '.', $name)) . '@medpredictor.com';
-            
-            $userData = [
-                'name' => $name,
-                'password' => Hash::make('password123'),
-                'role' => $role,
-                'permissions' => $medicalRoles[$role],
-                'status' => 'active',
-                'fifa_connect_id' => FifaConnectId::where('entity_type', 'medical')->inRandomOrder()->first()->id,
-            ];
-
-            // Assign to club or association based on role
-            if (str_contains($role, 'club')) {
-                $userData['club_id'] = $clubs->random()->id;
-            } elseif (str_contains($role, 'association')) {
-                $userData['association_id'] = $associations->random()->id;
-            }
-
-            User::firstOrCreate(['email' => $email], $userData);
-        }
-    }
-
-    private function createAdditionalPlayers(): void
-    {
-        $this->command->info('Creating additional players for all teams...');
-
-        $teams = Team::with('club')->get();
-        $nationalities = $this->getNationalitiesList();
-        $positions = ['ST', 'RW', 'LW', 'CAM', 'CM', 'CDM', 'CB', 'RB', 'LB', 'GK'];
-
-        // Get all used FIFA Connect IDs for players
-        $usedFifaIds = Player::pluck('fifa_connect_id')->toArray();
-        $availableFifaIds = FifaConnectId::where('entity_type', 'player')
-            ->whereNotIn('id', $usedFifaIds)
-            ->pluck('id')
-            ->toArray();
-        $fifaIdIndex = 0;
-
-        foreach ($teams as $team) {
-            // Create 25 additional players per team (total 30 per team)
-            for ($i = 6; $i <= 30; $i++) {
-                if ($fifaIdIndex >= count($availableFifaIds)) {
-                    $this->command->warn('No more available FIFA Connect IDs for players!');
+                if (!$competition) {
                     return;
                 }
-                $firstName = $this->generateFirstName();
-                $lastName = $this->generateLastName();
-                $nationality = $nationalities[array_rand($nationalities)];
-                $position = $positions[array_rand($positions)];
 
-                $player = Player::create([
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
-                    'date_of_birth' => $this->generateDateOfBirth(),
-                    'nationality' => $nationality,
-                    'position' => $position,
-                    'jersey_number' => $i,
-                    'height' => rand(165, 195),
-                    'weight' => rand(65, 85),
-                    'overall_rating' => rand(60, 85),
-                    'potential_rating' => rand(65, 90),
-                    'club_id' => $team->club_id,
-                    'fifa_connect_id' => $availableFifaIds[$fifaIdIndex++],
-                    'status' => 'active',
+                $this->put('competition_team', [
+                    'competition_id' => (int) $competition->id,
+                    'team_id' => (int) $team->id,
+                ], [
+                    'joined_at' => self::REFERENCE_DATE . ' 00:00:00',
+                    'season_id' => DB::table('seasons')->orderBy('id')->value('id'),
                 ]);
+            });
+    }
 
-                // Create player license
-                PlayerLicense::create([
-                    'player_id' => $player->id,
-                    'license_number' => 'LIC-' . strtoupper($nationality) . '-' . str_pad($player->id, 6, '0', STR_PAD_LEFT),
-                    'type' => 'federation',
-                    'status' => 'approved',
-                    'issued_date' => now()->subDays(rand(30, 365)),
-                    'expiry_date' => now()->addYears(2),
-                    'issued_by' => 'FA',
+    private function seedPlayerScopedData(object $player): void
+    {
+        $id = (int) $player->id;
+        $athlete = DB::table('athletes')
+            ->where('player_id', $id)
+            ->first();
+
+        if (!$athlete) {
+            throw new \RuntimeException("Missing athlete for player {$id}.");
+        }
+
+        $teamId = $this->value($player, 'team_id');
+        $clubId = $this->value($player, 'club_id');
+
+        if ($teamId && Schema::hasTable('team_players')) {
+            $this->put('team_players', [
+                'team_id' => (int) $teamId,
+                'player_id' => $id,
+            ], [
+                'role' => $id % 3 === 0 ? 'starter' : 'substitute',
+                'squad_number' => null,
+                'joined_date' => '2026-07-01',
+                'contract_end_date' => '2027-06-30',
+                'position_preference' => $this->value($player, 'position'),
+                'notes' => 'synthetic_demo team membership',
+                'status' => 'active',
+            ]);
+        }
+
+        $this->seedAppointments($id, (int) $athlete->id);
+        $this->seedHealthExtensions($id, (int) $athlete->id);
+        $this->seedPerformanceExtensions($player);
+        $this->seedContract($id, $clubId);
+    }
+
+    private function seedAppointments(int $playerId, int $athleteId): void
+    {
+        if (!Schema::hasTable('appointments')) {
+            return;
+        }
+
+        $day = 1 + ($playerId % 20);
+        $date = sprintf('2026-10-%02d 10:00:00', $day);
+
+        $this->put('appointments', [
+            'athlete_id' => $athleteId,
+            'appointment_date' => $date,
+            'appointment_type' => 'routine_checkup',
+        ], [
+            'doctor_id' => $this->userId,
+            'created_by' => $this->userId,
+            'duration_minutes' => 30,
+            'status' => 'Planifié',
+            'reason' => 'Synthetic demo routine check-up',
+            'notes' => 'synthetic_demo; not a clinical appointment',
+            'reminder_settings' => $this->json([
+                'synthetic_demo' => true,
+                'email_reminder' => false,
+                'sms_reminder' => false,
+            ]),
+        ]);
+    }
+
+    private function seedHealthExtensions(
+        int $playerId,
+        int $athleteId
+    ): void {
+        if (Schema::hasTable('health_scores')) {
+            $this->put('health_scores', [
+                'athlete_id' => $athleteId,
+                'calculated_date' => self::REFERENCE_DATE,
+            ], [
+                'score' => 74 + ($playerId % 18),
+                'trend' => 'stable',
+                'contributing_factors' => $this->json([
+                    'synthetic_demo' => true,
+                    'source' => 'portal_baseline',
+                ]),
+                'metrics' => $this->json([
+                    'readiness' => 72 + ($playerId % 18),
+                ]),
+                'ai_analysis' =>
+                    'Synthetic demo score; not a clinical assessment.',
+            ]);
+        }
+
+        if (Schema::hasTable('immunisations')) {
+            $this->put('immunisations', [
+                'athlete_id' => $athleteId,
+                'vaccine_code' => 'SYNTH-DEMO',
+                'date_administered' => '2026-01-15 09:00:00',
+            ], [
+                'vaccine_name' => 'Synthetic Demo Immunisation Record',
+                'dose_number' => 1,
+                'total_doses' => 1,
+                'route' => 'IM',
+                'site' => 'LA',
+                'status' => 'active',
+                'notes' =>
+                    'synthetic_demo; not an actual vaccination record',
+                'administered_by' => $this->userId,
+                'verified_by' => null,
+                'source' => 'manual',
+                'sync_status' => 'pending',
+            ]);
+        }
+
+        if (Schema::hasTable('postural_assessments')) {
+            $this->put('postural_assessments', [
+                'player_id' => $playerId,
+                'assessment_date' => self::REFERENCE_DATE . ' 09:00:00',
+                'view' => 'anterior',
+            ], [
+                'user_id' => $this->userId,
+                'assessment_type' => 'routine',
+                'angles' => $this->json([
+                    'synthetic_demo' => true,
+                    'shoulder_alignment' => 88 + ($playerId % 8),
+                ]),
+                'clinical_notes' =>
+                    'Synthetic demo postural assessment.',
+                'recommendations' =>
+                    'Synthetic demo mobility routine.',
+                'status' => 'active',
+            ]);
+        }
+
+        if (Schema::hasTable('scat_assessments')) {
+            $this->put('scat_assessments', [
+                'athlete_id' => $athleteId,
+                'assessment_date' => self::REFERENCE_DATE . ' 09:30:00',
+                'assessment_type' => 'baseline',
+            ], [
+                'assessor_id' => $this->userId,
+                'data_json' => $this->json([
+                    'synthetic_demo' => true,
+                    'symptom_count' => 0,
+                ]),
+                'result' => 'normal',
+                'concussion_confirmed' => false,
+                'scat_score' => 90 + ($playerId % 8),
+                'recommendations' =>
+                    'Synthetic baseline only; no clinical conclusion.',
+            ]);
+        }
+
+        if (
+            Schema::hasTable('tue_requests')
+            && $playerId % 25 === 0
+        ) {
+            $this->put('tue_requests', [
+                'athlete_id' => $athleteId,
+                'request_date' => self::REFERENCE_DATE,
+                'medication' => 'Synthetic demo medication',
+            ], [
+                'reason' =>
+                    'Synthetic demo only; not a medical claim.',
+                'physician_id' => $this->userId,
+                'status' => 'pending',
+                'supporting_documents' => $this->json([
+                    'synthetic_demo' => true,
+                ]),
+            ]);
+        }
+    }
+
+    private function seedPerformanceExtensions(object $player): void
+    {
+        $id = (int) $player->id;
+
+        if (Schema::hasTable('performance_recommendations')) {
+            $this->put('performance_recommendations', [
+                'player_id' => $id,
+                'type' => 'recovery',
+                'title' => 'Synthetic demo recovery plan',
+            ], [
+                'description' =>
+                    'Synthetic recommendation for interface testing only.',
+                'priority' => 'medium',
+                'status' => 'pending',
+                'target_date' => '2026-10-15',
+                'ai_analysis_data' => $this->json([
+                    'synthetic_demo' => true,
+                ]),
+            ]);
+        }
+
+        if (Schema::hasTable('training_sessions')) {
+            $day = 1 + ($id % 20);
+
+            $this->put('training_sessions', [
+                'player_id' => $id,
+                'session_date' => sprintf('2026-10-%02d', $day),
+                'title' => 'Synthetic demo training session',
+            ], [
+                'description' =>
+                    'Synthetic training session for feature testing.',
+                'start_time' => '10:00:00',
+                'end_time' => '11:00:00',
+                'priority' => 'medium',
+                'type' => 'physical',
+                'location' => 'Synthetic Demo Training Center',
+                'coach' => 'Synthetic Demo Coach',
+                'is_mandatory' => false,
+            ]);
+        }
+
+        if (!Schema::hasTable('match_performances')) {
+            return;
+        }
+
+        $position = (string) (
+            $this->value($player, 'position') ?: 'MID'
+        );
+        $result = ['W', 'D', 'L'][$id % 3];
+
+        $this->put('match_performances', [
+            'player_id' => $id,
+            'match_date' => '2026-08-24',
+            'opponent' => 'Synthetic Demo Opponent',
+        ], [
+            'result' => $result,
+            'competition' => 'Synthetic Demo Match',
+            'venue' => 'Synthetic Demo Venue',
+            'goals_scored' => $position === 'GK' ? 0 : $id % 3,
+            'assists' => $position === 'GK' ? 0 : ($id + 1) % 3,
+            'rating' => round(6.4 + (($id % 25) / 10), 1),
+            'minutes_played' => 70 + ($id % 21),
+            'notes' => 'synthetic_demo; not an official match',
+        ]);
+
+        $performance = DB::table('match_performances')
+            ->where('player_id', $id)
+            ->where('match_date', '2026-08-24')
+            ->where('opponent', 'Synthetic Demo Opponent')
+            ->first();
+
+        if (!$performance || !Schema::hasTable('match_metrics')) {
+            return;
+        }
+
+        $shotsOnTarget = $position === 'GK' ? 0 : 1 + ($id % 4);
+        $totalShots = $shotsOnTarget + ($id % 3);
+
+        $this->put('match_metrics', [
+            'match_performance_id' => (int) $performance->id,
+        ], [
+            'shots_on_target' => $shotsOnTarget,
+            'total_shots' => $totalShots,
+            'shot_accuracy' => $totalShots > 0
+                ? round(($shotsOnTarget / $totalShots) * 100, 1)
+                : 0,
+            'key_passes' => $id % 5,
+            'successful_crosses' => $id % 4,
+            'successful_dribbles' => 2 + ($id % 5),
+            'distance' => round(8.5 + (($id % 35) / 10), 1),
+            'max_speed' => round(27 + (($id % 60) / 10), 1),
+            'avg_speed' => round(7 + (($id % 30) / 10), 1),
+            'sprints' => 12 + ($id % 14),
+            'accelerations' => 18 + ($id % 16),
+            'decelerations' => 14 + ($id % 12),
+            'direction_changes' => 25 + ($id % 20),
+            'jumps' => 4 + ($id % 8),
+            'pass_accuracy' => 72 + ($id % 22),
+            'long_passes' => 2 + ($id % 5),
+            'crosses' => $id % 5,
+            'tackles' => $position === 'GK' ? 0 : 1 + ($id % 6),
+            'interceptions' => $position === 'FWD' ? $id % 2 : 1 + ($id % 5),
+            'clearances' => in_array($position, ['DEF', 'CB', 'LB', 'RB'], true)
+                ? 2 + ($id % 6)
+                : $id % 2,
+        ]);
+    }
+
+    private function seedContract(int $playerId, mixed $clubId): void
+    {
+        if (!$clubId || !Schema::hasTable('contracts')) {
+            return;
+        }
+
+        $this->put('contracts', [
+            'player_id' => $playerId,
+            'club_id' => (int) $clubId,
+            'start_date' => '2026-07-01',
+        ], [
+            'contract_type' => 'permanent',
+            'end_date' => '2027-06-30',
+            'is_active' => true,
+            'salary' => 2500 + (($playerId % 30) * 100),
+            'bonus' => 250 + (($playerId % 10) * 25),
+            'currency' => 'EUR',
+            'payment_frequency' => 'monthly',
+            'clauses' => $this->json([
+                'synthetic_demo' => true,
+            ]),
+            'special_conditions' =>
+                'Synthetic demo contract; not an official agreement.',
+            'fifa_contract_id' => null,
+            'fifa_contract_data' => null,
+            'created_by' => $this->userId,
+            'updated_by' => $this->userId,
+        ]);
+
+        if (Schema::hasTable('player_trophies')) {
+            $this->put('player_trophies', [
+                'player_id' => $playerId,
+                'trophy_name' => 'Synthetic Demo Recognition',
+                'year' => 2026,
+            ], [
+                'trophy_type' => 'demo',
+                'competition' => 'Synthetic Demo Competition',
+                'club' => DB::table('clubs')
+                    ->where('id', $clubId)
+                    ->value('name'),
+                'description' =>
+                    'Synthetic demo achievement; not a real sporting result.',
+            ]);
+        }
+    }
+
+    private function seedTransfers(): void
+    {
+        if (!Schema::hasTable('transfers')) {
+            return;
+        }
+
+        $clubs = DB::table('clubs')->orderBy('id')->pluck('id')->values();
+        if ($clubs->count() < 2) {
+            return;
+        }
+
+        DB::table('players')
+            ->whereNotNull('club_id')
+            ->orderBy('id')
+            ->limit(24)
+            ->get()
+            ->each(function ($player, $index) use ($clubs): void {
+                $origin = (int) $player->club_id;
+                $destination = (int) $clubs[($index + 1) % $clubs->count()];
+
+                if ($destination === $origin) {
+                    $destination = (int) $clubs[($index + 2) % $clubs->count()];
+                }
+
+                $this->put('transfers', [
+                    'player_id' => (int) $player->id,
+                    'transfer_date' => '2026-09-15',
+                    'transfer_type' => 'permanent',
+                ], [
+                    'club_origin_id' => $origin,
+                    'club_destination_id' => $destination,
+                    'transfer_status' => 'draft',
+                    'itc_status' => 'not_requested',
+                    'transfer_window_start' => '2026-09-01',
+                    'transfer_window_end' => '2026-10-31',
+                    'contract_start_date' => '2026-11-01',
+                    'contract_end_date' => '2027-10-31',
+                    'transfer_fee' => 100000 + ((int) $player->id * 100),
+                    'currency' => 'EUR',
+                    'payment_status' => 'pending',
+                    'fifa_transfer_id' => null,
+                    'fifa_itc_id' => null,
+                    'fifa_payload' => null,
+                    'fifa_response' => null,
+                    'is_minor_transfer' => false,
+                    'is_international' => false,
+                    'special_conditions' =>
+                        'Synthetic demo transfer; no official clearance.',
+                    'notes' => 'synthetic_demo',
+                    'created_by' => $this->userId,
+                    'updated_by' => $this->userId,
+                ]);
+            });
+    }
+
+    private function seedCompetitionStandings(): void
+    {
+        if (
+            !Schema::hasTable('standings')
+            || !Schema::hasTable('competition_team')
+        ) {
+            return;
+        }
+
+        $seasonId = Schema::hasTable('seasons')
+            ? DB::table('seasons')->orderBy('id')->value('id')
+            : null;
+
+        DB::table('competition_team')
+            ->orderBy('competition_id')
+            ->orderBy('team_id')
+            ->get()
+            ->groupBy('competition_id')
+            ->each(function ($rows, $competitionId) use ($seasonId): void {
+                foreach ($rows->values() as $index => $row) {
+                    $played = 8;
+                    $won = 2 + ((int) $row->team_id % 4);
+                    $drawn = (int) $row->team_id % 3;
+                    $lost = max(0, $played - $won - $drawn);
+                    $goalsFor = 8 + ((int) $row->team_id % 10);
+                    $goalsAgainst = 5 + ((int) $row->team_id % 8);
+
+                    $this->put('standings', [
+                        'competition_id' => (int) $competitionId,
+                        'team_id' => (int) $row->team_id,
+                    ], [
+                        'season_id' => $seasonId,
+                        'played' => $played,
+                        'won' => $won,
+                        'drawn' => $drawn,
+                        'lost' => $lost,
+                        'goals_for' => $goalsFor,
+                        'goals_against' => $goalsAgainst,
+                        'goal_difference' => $goalsFor - $goalsAgainst,
+                        'points' => ($won * 3) + $drawn,
+                        'position' => $index + 1,
+                        'form' => 'DEMO',
+                        'last_updated' => self::REFERENCE_DATE . ' 12:00:00',
+                    ]);
+                }
+
+                if (Schema::hasTable('competition_rankings')) {
+                    $this->put('competition_rankings', [
+                        'competition_id' => (int) $competitionId,
+                        'round' => 1,
+                    ], [
+                        'standings' => $this->json([
+                            'synthetic_demo' => true,
+                            'generated_from' => 'standings',
+                            'team_count' => $rows->count(),
+                        ]),
+                    ]);
+                }
+            });
+    }
+
+    private function seedWorkflowData(): void
+    {
+        if (Schema::hasTable('registration_requests')) {
+            for ($i = 1; $i <= 6; $i++) {
+                $this->put('registration_requests', [
+                    'email' => "synthetic.demo+{$i}@example.invalid",
+                ], [
+                    'association' => 'Synthetic Demo Association',
+                    'profile_type' => 'player',
+                    'organization' => 'Synthetic Demo Club',
+                    'first_name' => 'Synthetic',
+                    'last_name' => "Demo {$i}",
+                    'phone' => null,
+                    'reason' =>
+                        'Synthetic demo registration request for UI testing.',
+                    'status' => ['pending', 'approved', 'rejected'][$i % 3],
+                    'admin_notes' => 'synthetic_demo',
+                    'reviewed_at' => $i % 3 === 0
+                        ? self::REFERENCE_DATE . ' 12:00:00'
+                        : null,
+                    'reviewed_by' => $i % 3 === 0
+                        ? $this->userId
+                        : null,
+                ]);
+            }
+        }
+
+        if (Schema::hasTable('system_settings')) {
+            $settings = [
+                ['demo_data_enabled', 'Synthetic demo data enabled', 'true', 'boolean'],
+                ['demo_reference_date', 'Synthetic demo reference date', self::REFERENCE_DATE, 'string'],
+                ['demo_notice', 'Synthetic data notice', 'Data marked synthetic_demo is not official, clinical, FIFA or WADA data.', 'string'],
+            ];
+
+            foreach ($settings as [$key, $name, $value, $type]) {
+                $this->put('system_settings', ['key' => $key], [
+                    'name' => $name,
+                    'description' => 'Synthetic demo environment setting.',
+                    'value' => $value,
+                    'type' => $type,
+                    'group' => 'demo',
+                    'is_public' => true,
+                    'is_editable' => true,
+                    'is_required' => false,
+                    'default_value' => $value,
+                    'updated_by' => $this->userId,
+                ]);
+            }
+        }
+
+        if (Schema::hasTable('audit_trails')) {
+            for ($i = 1; $i <= 12; $i++) {
+                $requestId = sprintf('SYNTH-DEMO-%03d', $i);
+
+                $this->put('audit_trails', [
+                    'request_id' => $requestId,
+                ], [
+                    'user_id' => $this->userId,
+                    'action' => $i % 2 === 0 ? 'view' : 'update',
+                    'model_type' => 'Player',
+                    'model_id' => $i,
+                    'table_name' => 'players',
+                    'event_type' => 'user_action',
+                    'severity' => 'info',
+                    'description' =>
+                        'Synthetic demo audit event; not a real user action.',
+                    'metadata' => $this->json([
+                        'synthetic_demo' => true,
+                    ]),
+                    'ip_address' => '192.0.2.' . $i,
+                    'user_agent' => 'SyntheticDemo/1.0',
+                    'session_id' => 'synthetic-demo',
+                    'request_method' => 'GET',
+                    'request_url' => '/synthetic-demo/player/' . $i,
+                    'occurred_at' => self::REFERENCE_DATE . ' 12:00:00',
                 ]);
             }
         }
     }
 
-    private function generateFirstName(): string
+    private function seedRefereeReports(): void
     {
-        $firstNames = [
-            'James', 'John', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Joseph',
-            'Thomas', 'Christopher', 'Charles', 'Daniel', 'Matthew', 'Anthony', 'Mark',
-            'Donald', 'Steven', 'Paul', 'Andrew', 'Joshua', 'Kenneth', 'Kevin', 'Brian',
-            'George', 'Timothy', 'Ronald', 'Jason', 'Edward', 'Jeffrey', 'Ryan', 'Jacob',
-            'Gary', 'Nicholas', 'Eric', 'Jonathan', 'Stephen', 'Larry', 'Justin', 'Scott',
-            'Brandon', 'Benjamin', 'Samuel', 'Frank', 'Gregory', 'Raymond', 'Alexander',
-            'Patrick', 'Jack', 'Dennis', 'Jerry', 'Tyler', 'Aaron', 'Jose', 'Adam',
-            'Nathan', 'Henry', 'Douglas', 'Zachary', 'Peter', 'Kyle', 'Walter', 'Ethan',
-            'Jeremy', 'Harold', 'Carl', 'Keith', 'Roger', 'Gerald', 'Christian', 'Terry',
-            'Sean', 'Arthur', 'Austin', 'Noah', 'Lawrence', 'Jesse', 'Joe', 'Bryan',
-            'Billy', 'Jordan', 'Albert', 'Dylan', 'Bruce', 'Willie', 'Gabriel', 'Alan',
-            'Juan', 'Logan', 'Wayne', 'Roy', 'Ralph', 'Randy', 'Eugene', 'Vincent',
-            'Russell', 'Elijah', 'Louis', 'Bobby', 'Philip', 'Johnny'
-        ];
+        if (
+            !Schema::hasTable('referee_reports')
+            || !Schema::hasTable('matches')
+        ) {
+            return;
+        }
 
-        return $firstNames[array_rand($firstNames)];
+        DB::table('matches')
+            ->orderBy('id')
+            ->limit(5)
+            ->get()
+            ->each(function ($match, $index): void {
+                $this->put('referee_reports', [
+                    'match_id' => (int) $match->id,
+                    'referee_id' => $this->userId,
+                ], [
+                    'competition_name' => 'Synthetic Demo Competition',
+                    'home_team' => 'Synthetic Demo Home',
+                    'away_team' => 'Synthetic Demo Away',
+                    'match_date' => '2026-08-' . sprintf('%02d', 10 + $index),
+                    'kickoff_time' => '15:00:00',
+                    'venue' => 'Synthetic Demo Venue',
+                    'attendance' => 1000 + ($index * 250),
+                    'weather' => 'Synthetic demo conditions',
+                    'pitch_condition' => 'good',
+                    'main_referee' => 'Synthetic Demo Referee',
+                    'assistant_referee_1' => 'Synthetic Demo Assistant 1',
+                    'assistant_referee_2' => 'Synthetic Demo Assistant 2',
+                    'fourth_official' => 'Synthetic Demo Fourth Official',
+                    'final_score' => '1-1',
+                    'half_time_score' => '0-0',
+                    'extra_time_minutes' => 0,
+                    'penalty_shootout' => false,
+                    'goals' => $this->json(['synthetic_demo' => true]),
+                    'yellow_cards' => $this->json([]),
+                    'red_cards' => $this->json([]),
+                    'substitutions' => $this->json([]),
+                    'injuries' => $this->json([]),
+                    'general_comments' =>
+                        'Synthetic demo draft report; not an official referee report.',
+                    'match_quality_assessment' =>
+                        'Synthetic demo assessment.',
+                    'match_rating' => 7,
+                    'status' => 'draft',
+                    'electronic_signature' => null,
+                ]);
+            });
     }
 
-    private function generateLastName(): string
-    {
-        $lastNames = [
-            'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
-            'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson',
-            'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson',
-            'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker',
-            'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill',
-            'Flores', 'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell',
-            'Mitchell', 'Carter', 'Roberts', 'Gomez', 'Phillips', 'Evans', 'Turner',
-            'Diaz', 'Parker', 'Cruz', 'Edwards', 'Collins', 'Reyes', 'Stewart', 'Morris',
-            'Morales', 'Murphy', 'Cook', 'Rogers', 'Gutierrez', 'Ortiz', 'Morgan', 'Cooper',
-            'Peterson', 'Bailey', 'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim', 'Cox',
-            'Ward', 'Richardson', 'Watson', 'Brooks', 'Chavez', 'Wood', 'James', 'Bennett',
-            'Gray', 'Mendoza', 'Ruiz', 'Hughes', 'Price', 'Alvarez', 'Castillo', 'Sanders',
-            'Patel', 'Myers', 'Long', 'Ross', 'Foster', 'Jimenez'
-        ];
+    private function put(
+        string $table,
+        array $where,
+        array $values
+    ): void {
+        if (!Schema::hasTable($table)) {
+            return;
+        }
 
-        return $lastNames[array_rand($lastNames)];
+        $safeWhere = $this->filter($table, $where);
+
+        if (count($safeWhere) !== count($where)) {
+            $missing = array_diff(
+                array_keys($where),
+                array_keys($safeWhere)
+            );
+
+            throw new \RuntimeException(
+                $table . ': missing key column(s): '
+                . implode(', ', $missing)
+            );
+        }
+
+        $safeValues = $this->filter($table, $values);
+
+        if ($this->hasColumn($table, 'updated_at')) {
+            $safeValues['updated_at'] = now();
+        }
+
+        $exists = DB::table($table)
+            ->where($safeWhere)
+            ->exists();
+
+        if (!$exists && $this->hasColumn($table, 'created_at')) {
+            $safeValues['created_at'] = now();
+        }
+
+        DB::table($table)->updateOrInsert(
+            $safeWhere,
+            $safeValues
+        );
     }
 
-    private function generateDateOfBirth(): string
+    private function filter(string $table, array $data): array
     {
-        $start = strtotime('1985-01-01');
-        $end = strtotime('2005-12-31');
-        $timestamp = rand($start, $end);
-        return date('Y-m-d', $timestamp);
+        $columns = $this->columns($table);
+
+        return array_filter(
+            $data,
+            static fn ($value, $key) =>
+                in_array($key, $columns, true),
+            ARRAY_FILTER_USE_BOTH
+        );
     }
 
-    private function getNationalitiesList(): array
+    private function columns(string $table): array
     {
-        return [
-            'England', 'Scotland', 'Wales', 'Northern Ireland', 'Republic of Ireland',
-            'France', 'Germany', 'Spain', 'Italy', 'Portugal', 'Netherlands', 'Belgium',
-            'Switzerland', 'Austria', 'Sweden', 'Norway', 'Denmark', 'Finland', 'Poland',
-            'Czech Republic', 'Slovakia', 'Hungary', 'Romania', 'Bulgaria', 'Croatia',
-            'Serbia', 'Slovenia', 'Bosnia and Herzegovina', 'Montenegro', 'Albania',
-            'Greece', 'Turkey', 'Ukraine', 'Russia', 'Belarus', 'Lithuania', 'Latvia',
-            'Estonia', 'Moldova', 'Georgia', 'Armenia', 'Azerbaijan', 'Kazakhstan',
-            'Brazil', 'Argentina', 'Uruguay', 'Paraguay', 'Chile', 'Peru', 'Colombia',
-            'Venezuela', 'Ecuador', 'Bolivia', 'Mexico', 'United States', 'Canada',
-            'Costa Rica', 'Panama', 'Honduras', 'El Salvador', 'Guatemala', 'Nicaragua',
-            'Jamaica', 'Trinidad and Tobago', 'Haiti', 'Dominican Republic', 'Cuba',
-            'Morocco', 'Algeria', 'Tunisia', 'Libya', 'Egypt', 'Sudan', 'South Sudan',
-            'Ethiopia', 'Eritrea', 'Djibouti', 'Somalia', 'Kenya', 'Uganda', 'Tanzania',
-            'Rwanda', 'Burundi', 'Democratic Republic of the Congo', 'Republic of the Congo',
-            'Central African Republic', 'Chad', 'Cameroon', 'Nigeria', 'Niger', 'Mali',
-            'Burkina Faso', 'Senegal', 'Gambia', 'Guinea-Bissau', 'Guinea', 'Sierra Leone',
-            'Liberia', 'Ivory Coast', 'Ghana', 'Togo', 'Benin', 'South Africa', 'Namibia',
-            'Botswana', 'Zimbabwe', 'Zambia', 'Malawi', 'Mozambique', 'Madagascar',
-            'Mauritius', 'Seychelles', 'Comoros', 'Mayotte', 'Reunion', 'China', 'Japan',
-            'South Korea', 'North Korea', 'Mongolia', 'Taiwan', 'Hong Kong', 'Macau',
-            'Vietnam', 'Laos', 'Cambodia', 'Thailand', 'Myanmar', 'Malaysia', 'Singapore',
-            'Brunei', 'Indonesia', 'Philippines', 'East Timor', 'Papua New Guinea',
-            'Australia', 'New Zealand', 'Fiji', 'Vanuatu', 'New Caledonia', 'Solomon Islands',
-            'Samoa', 'Tonga', 'Tuvalu', 'Kiribati', 'Marshall Islands', 'Micronesia',
-            'Palau', 'Nauru', 'India', 'Pakistan', 'Bangladesh', 'Sri Lanka', 'Nepal',
-            'Bhutan', 'Maldives', 'Afghanistan', 'Iran', 'Iraq', 'Syria', 'Lebanon',
-            'Jordan', 'Israel', 'Palestine', 'Saudi Arabia', 'Yemen', 'Oman', 'United Arab Emirates',
-            'Qatar', 'Bahrain', 'Kuwait', 'Iceland', 'Faroe Islands', 'Greenland'
-        ];
+        return $this->columnCache[$table]
+            ??= Schema::getColumnListing($table);
     }
-} 
+
+    private function hasColumn(
+        string $table,
+        string $column
+    ): bool {
+        return in_array(
+            $column,
+            $this->columns($table),
+            true
+        );
+    }
+
+    private function value(
+        object $row,
+        string $property,
+        mixed $default = null
+    ): mixed {
+        return property_exists($row, $property)
+            && $row->{$property} !== null
+                ? $row->{$property}
+                : $default;
+    }
+
+    private function json(mixed $value): string
+    {
+        return json_encode(
+            $value,
+            JSON_UNESCAPED_UNICODE
+            | JSON_UNESCAPED_SLASHES
+        );
+    }
+}

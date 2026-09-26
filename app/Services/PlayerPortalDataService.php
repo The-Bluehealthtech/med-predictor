@@ -413,8 +413,7 @@ class PlayerPortalDataService
         $playerVitalSigns = null;
 
         if ($latestRealtime) {
-            $weight = $latestRealtime->weight_kg
-                ?? $player->weight;
+            $weight = $latestRealtime->weight_kg;
 
             $musclePercentage = null;
 
@@ -451,13 +450,13 @@ class PlayerPortalDataService
                 'oxygen_saturation' =>
                     $latestRealtime->oxygen_saturation,
 
-                'body_weight' => $weight,
+                'body_weight' => $latestRealtime->weight_kg,
 
-                'body_height' =>
-                    $player->height,
+                'body_height' => $player->height,
 
-                'bmi' =>
-                    $latestRealtime->bmi,
+                'measurement_time' => $latestRealtime->measurement_time,
+
+                'bmi' => $latestRealtime->bmi,
 
                 'body_fat_percentage' =>
                     $latestRealtime->body_fat_percentage,

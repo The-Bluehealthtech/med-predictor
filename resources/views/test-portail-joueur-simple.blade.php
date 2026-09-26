@@ -1540,13 +1540,14 @@
                     <h4>📊 Biométrie Avancée</h4>
                     <div class="fifa-medical-stat">
                         @if($playerVitalSigns)
+                            <p class="text-xs text-gray-400">Mesure du {{ \Carbon\Carbon::parse($playerVitalSigns->measurement_time)->format('d/m/Y') }}.</p>
                             <div class="fifa-stat-header">
-                                <span>Poids Corporel</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->body_weight }} kg</span>
+                                <span>Poids mesuré</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->body_weight !== null ? $playerVitalSigns->body_weight.' kg' : 'Données non disponibles' }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Taille</span>
-                                <span class="fifa-stat-value">{{ $playerVitalSigns->body_height }} cm</span>
+                                <span>Taille du profil</span>
+                                <span class="fifa-stat-value">{{ $playerVitalSigns->body_height ?? 'Données non disponibles' }}{{ $playerVitalSigns->body_height !== null ? ' cm' : '' }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>IMC</span>

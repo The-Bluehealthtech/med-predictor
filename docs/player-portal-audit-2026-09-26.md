@@ -18,6 +18,16 @@
 | Statut médical | PCMA signé uniquement | `null` si aucun PCMA signé : la couverture des dossiers PCMA ne suffit pas à prouver la présence d'un statut médical. Ne pas signer artificiellement une évaluation clinique de test. |
 | Identifiant FIFA | `players.fifa_connect_id`, puis `passport.fifa_connect_id` | Deux sources possibles ; la fixture ne fabrique pas d'identifiants FIFA. |
 
+## Écarts supplémentaires relevés
+
+| Affichage ou route | Source actuelle | Problème |
+| --- | --- | --- |
+| Licence club en haut du portail | Requête `DB::table('player_licenses')` directement dans le Blade | Sélection indépendante de `playerLicenses` fourni par le service ; `N/A` si aucune licence active ou si `license_number` est vide. |
+| Club et association dans le tableau des licences | Requêtes `clubs` et `associations` directement dans le Blade | La vue effectue elle-même une résolution de source, hors du service de données du portail. |
+| Statut de conformité PCMA | `pcmas.status`, sans condition sur `is_signed` | Peut afficher « APTE » depuis une évaluation non signée, alors que l'aptitude médicale du même portail exige une signature. Incohérence fonctionnelle vérifiée dans le code. |
+| Approbation WADA d'une AUT | `health_records.aut_status`, identique à l'approbation FIFA | Une seule colonne est affichée sous deux autorités distinctes, sans preuve d'une approbation WADA. |
+| `/performances/analytics` | Moyennes des lignes `player_performances` | Route et calcul indépendants du snapshot FIT du portail. Les cinq libellés d'axes sont les mêmes mais désignent des évaluations de performance distinctes. La couverture FIT ne garantit pas que les valeurs de cette route sont complètes. |
+
 ## Vérifications encore nécessaires
 
 1. Inventorier chaque champ visible de chaque Blade et chaque route visée, y compris les sections conditionnelles et les intégrations.

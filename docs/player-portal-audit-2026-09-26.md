@@ -64,3 +64,7 @@ Le Blade lit aussi `player.passport.passport_number` dans la carte identité. Ce
 ## Passeports de test
 
 Le second contrôle trouve les trois champs de `player_passports` absents pour 844/844 joueurs. `PlayerPassportTestFixtureSeeder` ajoute un passeport temporaire `SYNTH-PASSPORT-{player_id}` aux dossiers qui n'en ont pas, avec statut `pending_validation`, émetteur fictif et métadonnées `official=false`. La vue le nomme explicitement « Passeport de test (non validé) ». Il ne crée aucun identifiant FIFA. La fixture préserve les documents existants et ne complète que les champs absents.
+
+## Extension aux affichages non couverts
+
+L'inventaire statique du Blade a relevé d'autres objets visibles : blessures, alertes de performance, prédictions médicales, contrôles antidopage, les unités des analyses biologiques et les aptitudes détaillées. Le script d'audit inclut désormais les champs correspondants ; en particulier, `medical_predictions.recommendations` peut rendre le texte d'une notification vide. Les résultats du précédent contrôle ne portaient pas sur ces champs supplémentaires.

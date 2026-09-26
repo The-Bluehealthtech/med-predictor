@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+fwrite(STDERR, "Initialisation Laravel…\n");
+fflush(STDERR);
 require dirname(__DIR__) . '/vendor/autoload.php';
 $app = require dirname(__DIR__) . '/bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
@@ -11,10 +13,15 @@ use App\Services\PlayerPortalDataService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+fwrite(STDERR, "Connexion à PostgreSQL…\n");
+fflush(STDERR);
 if (DB::getDriverName() !== 'pgsql') {
     throw new RuntimeException('Audit réservé à PostgreSQL.');
 }
 
+DB::statement('SET statement_timeout = 30000');
+fwrite(STDERR, "Chargement des identifiants des joueurs…\n");
+fflush(STDERR);
 $ids = DB::table('player_real_time_health')->where('notes', 'like', 'synthetic_demo%')
     ->distinct()->orderBy('player_id')->pluck('player_id');
 $limit = isset($argv[1]) ? filter_var($argv[1], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : null;
@@ -45,8 +52,13 @@ $errors = [];
 $start = microtime(true);
 $total = $ids->count();
 printf("Rendu du portail : %d joueurs, lecture seule.\n", $total);
+fflush(STDOUT);
 foreach ($ids as $index => $id) {
     try {
+        if ($index === 0 || (($index + 1) % 10) === 0) {
+            fprintf(STDERR, "Début du rendu joueur %d/%d (ID %d)…\n", $index + 1, $total, $id);
+            fflush(STDERR);
+        }
         $user->player_id = (int) $id;
         $player = Player::withoutGlobalScopes()
             ->with(['club', 'association', 'passport'])
@@ -73,6 +85,7 @@ foreach ($ids as $index => $id) {
     }
     if ((($index + 1) % 50) === 0 || ($index + 1) === $total) {
         printf("Rendus : %d/%d (%.0f s).\n", $index + 1, $total, microtime(true) - $start);
+        fflush(STDOUT);
     }
 }
 if (!$errors) {

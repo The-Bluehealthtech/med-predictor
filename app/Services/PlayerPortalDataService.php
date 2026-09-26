@@ -70,7 +70,9 @@ class PlayerPortalDataService
         $latestFitAttempt = $fitSnapshotData['latest_attempt'];
         $fitMissingAxes = $fitSnapshotData['missing_axes'];
         $fitEvolution = $fitSnapshotData['evolution'];
-        $fitDiagnosis = $this->fitScoreService->diagnose($player, 30);
+        $fitDiagnosis = $latestFitSnapshot || $latestFitAttempt
+            ? []
+            : $this->fitScoreService->diagnose($player, 30);
 
         $medicalRecords = DB::table('medical_records')
             ->where('player_id', $playerId)

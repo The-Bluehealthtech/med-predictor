@@ -28,9 +28,14 @@ $limit = isset($argv[1]) ? filter_var($argv[1], FILTER_VALIDATE_INT, ['options' 
 if (isset($argv[1]) && $limit === false) {
     throw new InvalidArgumentException('Limite attendue : entier positif.');
 }
-if ($limit !== null) {
-    $ids = $ids->take($limit);
+$offset = isset($argv[2]) ? filter_var($argv[2], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]) : 0;
+if ($offset === false) {
+    throw new InvalidArgumentException('Décalage attendu : entier positif ou zéro.');
 }
+if ($limit !== null) {
+    $ids = $ids->slice($offset, $limit)->values();
+}
+
 if ($ids->isEmpty()) {
     throw new RuntimeException('Aucun joueur de test trouvé.');
 }
@@ -51,7 +56,7 @@ $examples = [];
 $errors = [];
 $start = microtime(true);
 $total = $ids->count();
-printf("Rendu du portail : %d joueurs, lecture seule.\n", $total);
+printf("Rendu du portail : %d joueurs (décalage %d), lecture seule.\n", $total, $offset);
 fflush(STDOUT);
 foreach ($ids as $index => $id) {
     try {
@@ -92,7 +97,7 @@ foreach ($ids as $index => $id) {
         fflush(STDOUT);
     }
 }
-if (!$errors) {
+if (!$errors && $offset === 0) {
     try {
         $html = $app->make(\App\Http\Controllers\PerformanceAnalyticsController::class)->index()->render();
         $visible = preg_replace('~<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>~si', ' ', $html);

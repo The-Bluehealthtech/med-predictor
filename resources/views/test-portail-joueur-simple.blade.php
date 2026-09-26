@@ -469,10 +469,7 @@
                             <span class="text-orange-200 text-sm">Licence Club:</span>
                             <span class="text-white font-medium">
                                 @php
-                                    $activeLicense = \DB::table('player_licenses')
-                                        ->where('player_id', $player->id)
-                                        ->where('status', 'active')
-                                        ->first();
+                                    $activeLicense = $playerLicenses->firstWhere('status', 'active');
                                 @endphp
                                 @if($activeLicense)
                                     {{ $activeLicense->license_number }}
@@ -484,9 +481,7 @@
                         <div class="flex justify-between">
                             <span class="text-orange-200 text-sm">FIT CONNECT ID:</span>
                             <span class="text-white font-medium">
-                                {{ $player->fifa_connect_id
-                                    ?? $player->passport?->fifa_connect_id
-                                    ?? 'Données non disponibles' }}
+                                {{ $player->fifa_connect_id ?? 'Données non disponibles' }}
                             </span>
                         </div>
                         <div class="flex justify-between">

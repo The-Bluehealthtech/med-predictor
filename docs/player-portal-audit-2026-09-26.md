@@ -25,7 +25,7 @@
 | Licence club en haut du portail | Requête `DB::table('player_licenses')` directement dans le Blade | Sélection indépendante de `playerLicenses` fourni par le service ; `N/A` si aucune licence active ou si `license_number` est vide. |
 | Club et association dans le tableau des licences | Requêtes `clubs` et `associations` directement dans le Blade | La vue effectue elle-même une résolution de source, hors du service de données du portail. |
 | Statut de conformité PCMA | `pcmas.status`, sans condition sur `is_signed` | Peut afficher « APTE » depuis une évaluation non signée, alors que l'aptitude médicale du même portail exige une signature. Incohérence fonctionnelle vérifiée dans le code. |
-| Approbation WADA d'une AUT | `health_records.aut_status`, identique à l'approbation FIFA | Une seule colonne est affichée sous deux autorités distinctes, sans preuve d'une approbation WADA. |
+| Approbation WADA d'une AUT | `health_records.aut_status`, identique à l'approbation FIFA | Une seule colonne est affichée sous deux autorités distinctes, sans preuve d'une approbation WADA ; le Blade affiche en plus « WADA ✅ » pour toute valeur non vide, y compris un éventuel statut en attente. |
 | `/performances/analytics` | Moyennes des lignes `player_performances` | Route et calcul indépendants du snapshot FIT du portail. Les cinq libellés d'axes sont les mêmes mais désignent des évaluations de performance distinctes. La couverture FIT ne garantit pas que les valeurs de cette route sont complètes. |
 
 ## Vérifications encore nécessaires

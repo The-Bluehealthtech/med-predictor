@@ -51,7 +51,7 @@ for audit_worker in 0 1 2 3; do
     audit_done=$((audit_done + audit_part))
 done
 printf 'Total rendus vérifiés : %d/844\n' "$audit_done"
-grep -hE '^(AFFICHAGE|ERREUR|Route /performances/analytics|Erreurs de rendu)' "$audit_log_dir"/worker-*.log || true
+grep -hE '^(AFFICHAGE|CONTEXTE|ERREUR|Route /performances/analytics|Erreurs de rendu)' "$audit_log_dir"/worker-*.log || true
 if [[ $audit_done -ne 844 && $audit_failed -eq 0 ]]; then
     audit_failed=2
 fi

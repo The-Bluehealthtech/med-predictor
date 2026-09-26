@@ -88,6 +88,19 @@ foreach ($ids as $index => $id) {
             $count = substr_count($visible, $marker);
             if ($count > 0) {
                 $playerMarkers[] = $marker . '=' . $count;
+                if ($offset === 0 && $index === 0) {
+                    $searchAt = 0;
+                    for ($shown = 0; $shown < min($count, 8); $shown++) {
+                        $position = strpos($visible, $marker, $searchAt);
+                        if ($position === false) {
+                            break;
+                        }
+                        $snippet = substr($visible, max(0, $position - 100), strlen($marker) + 45);
+                        printf("CONTEXTE joueur %d [%s] : %s\n", $id, $marker,
+                            trim((string) preg_replace('/\s+/', ' ', $snippet)));
+                        $searchAt = $position + strlen($marker);
+                    }
+                }
                 $counts[$marker] = ($counts[$marker] ?? 0) + $count;
                 $examples[$marker] ??= [];
                 if (count($examples[$marker]) < 8) {

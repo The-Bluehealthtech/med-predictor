@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class FitPortalViewContractTest extends TestCase
 {
-    public function test_fit_axes_use_latest_attempt_while_global_fit_uses_complete_snapshot(): void
+    public function test_fit_cards_and_radar_use_the_same_complete_snapshot(): void
     {
         $viewPath = dirname(__DIR__, 3)
             . '/resources/views/test-portail-joueur-simple.blade.php';
@@ -28,12 +28,12 @@ class FitPortalViewContractTest extends TestCase
             'social_score',
         ] as $field) {
             $this->assertStringContainsString(
-                "'value' => \$latestFitAttempt?->{$field}",
+                "'value' => \$latestFitSnapshot?->{$field}",
                 $view
             );
 
             $this->assertStringContainsString(
-                "'{$field}' => \$latestFitAttempt->{$field}",
+                "'{$field}' => \$latestFitSnapshot->{$field}",
                 $view
             );
         }

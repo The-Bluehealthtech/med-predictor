@@ -152,15 +152,14 @@ class PlayerPortalDataService
         }
 
         /*
-         * Predictions de performance dérivées des tendances enregistrées.
+         * Évolution mesurée, directement tirée des tendances enregistrées.
          */
         $performancePredictions = $performanceTrends
             ->take(6)
             ->map(function ($trend) {
                 $current = (float) $trend->final_value;
-
-                $delta = (float) $trend->final_value
-                    - (float) $trend->initial_value;
+                $initial = (float) $trend->initial_value;
+                $delta = $current - $initial;
 
                 $confidence = (float) ($trend->confidence_level ?? 0);
                 $confidencePercent = $confidence <= 1
@@ -170,9 +169,13 @@ class PlayerPortalDataService
                 return (object) [
                     'prediction_type' => 'performance',
                     'prediction_period' => $trend->trend_period,
+                    'initial_score' => round($initial, 1),
                     'current_score' => round($current, 1),
-                    'predicted_score_3months' =>
-                        round($this->clamp($current + $delta, 0, 100), 1),
+                    'observed_change' => round($delta, 1),
+                    'observed_change_percentage' =>
+                        $trend->change_percentage !== null
+                            ? round((float) $trend->change_percentage, 1)
+                            : null,
                     'trend_direction' => $trend->trend_direction,
                     'confidence_percent' =>
                         round($this->clamp($confidencePercent, 0, 100), 1),
@@ -223,24 +226,24 @@ class PlayerPortalDataService
             ->flatMap(function ($record) {
                 $items = $this->jsonList($record->medications ?? null);
 
-                return collect($items)->map(function ($item) use ($record) {
-                    if (!is_array($item)) {
-                        $item = ['name' => (string) $item];
-                    }
-
-                    return (object) [
+                return collect($items)
+                    ->filter(fn ($item) =>
+                        is_array($item)
+                        && ($item['status'] ?? null) === 'active'
+                    )
+                    ->map(fn ($item) => (object) [
                         'medication_type' =>
                             $item['type']
                             ?? $item['name']
-                            ?? 'Médicament',
-
+                            ?? 'Traitement',
                         'start_date' =>
                             $item['start_date']
                             ?? $record->visit_date
                             ?? $record->record_date
                             ?? null,
-                    ];
-                });
+                        'synthetic_test' =>
+                            ($item['source'] ?? null) === 'synthetic_demo',
+                    ]);
             })
             ->values();
 
@@ -284,17 +287,13 @@ class PlayerPortalDataService
          */
         $playerHealthWellbeing = null;
 
-        if ($latestRealtime || $player->fitness_score !== null) {
+        if ($latestRealtime || $latestFitness) {
             $playerHealthWellbeing = (object) [
-                'fitness_score' =>
-                    $player->fitness_score
-                    ?? $latestRealtime->readiness_score
-                    ?? null,
+                'fitness_score' => $latestRealtime?->readiness_score,
 
                 'energy_level' =>
-                    $latestRealtime->energy_level
-                    ?? $latestFitness->energy_level
-                    ?? null,
+                    $latestRealtime?->energy_level
+                    ?? $latestFitness?->energy_level,
 
                 'sleep_quality' =>
                     $latestRealtime && $latestRealtime->sleep_quality_score !== null
@@ -329,26 +328,28 @@ class PlayerPortalDataService
         /*
          * Récupération.
          */
-        $playerRecovery = $latestRealtime
+        $playerRecovery = ($latestRealtime || $latestFitness)
             ? (object) [
                 'sleep_hours' =>
-                    $latestRealtime->sleep_duration_hours,
+                    $latestRealtime?->sleep_duration_hours
+                    ?? $latestFitness?->sleep_hours,
 
                 'sleep_quality_score' =>
-                    $latestRealtime->sleep_quality_score !== null
+                    $latestRealtime?->sleep_quality_score !== null
                         ? round(((float) $latestRealtime->sleep_quality_score) / 10, 1)
-                        : null,
+                        : ($latestFitness?->sleep_quality_score !== null
+                            ? round(((float) $latestFitness->sleep_quality_score) / 10, 1)
+                            : null),
 
-                'muscle_soreness' =>
-                    $latestRealtime->muscle_fatigue,
+                'muscle_soreness' => $latestFitness?->muscle_soreness,
 
                 'fatigue_level' =>
-                    $latestFitness->fatigue_level
-                    ?? $latestRealtime->central_fatigue
-                    ?? null,
+                    $latestFitness?->fatigue_level
+                    ?? $latestRealtime?->central_fatigue,
 
                 'stretching_minutes' =>
-                    data_get($realtimeMetadata, 'recovery.stretching_minutes'),
+                    $latestFitness?->stretching_minutes
+                    ?? data_get($realtimeMetadata, 'recovery.stretching_minutes'),
             ]
             : null;
 
@@ -361,8 +362,6 @@ class PlayerPortalDataService
             $healthRisk = $latestHealth?->risk_score;
             $healthRiskPercent = null;
 
-            // health_records.risk_score peut être stocké comme ratio
-            // (0.09 = 9 %) ou, pour d'anciennes données, en pourcentage.
             if ($healthRisk !== null) {
                 $healthRisk = (float) $healthRisk;
                 $healthRiskPercent = $healthRisk <= 1
@@ -370,40 +369,29 @@ class PlayerPortalDataService
                     : $healthRisk;
             }
 
-            $healthScore = $player->fitness_score;
-
-            if ($healthScore === null && $healthRiskPercent !== null) {
-                $healthScore = 100 - $healthRiskPercent;
-            }
+            // Une évaluation non signée ne constitue pas une aptitude médicale.
+            $signedStatus = $latestPcma && $latestPcma->is_signed
+                ? $latestPcma->status
+                : null;
 
             $playerMedicalAptitude = (object) [
-                'overall_health_score' =>
-                    $healthScore !== null
-                        ? round(
-                            $this->clamp((float) $healthScore, 0, 100),
-                            1
-                        )
+                'health_risk_percent' =>
+                    $healthRiskPercent !== null
+                        ? round($this->clamp($healthRiskPercent, 0, 100), 1)
                         : null,
-
-                // La disponibilité pour un match ne constitue pas
-                // une aptitude médicale.
-                'medical_status' => null,
-
-                'fitness_level' =>
-                    $healthScore !== null
-                        ? $this->fitnessLevel((float) $healthScore)
-                        : null,
-
+                'medical_status' => match ($signedStatus) {
+                    'cleared', 'approved' => 'fit',
+                    'not_cleared', 'failed', 'rejected' => 'unfit',
+                    default => null,
+                },
                 'assessment_date' =>
                     $latestPcma?->assessment_date
                     ?? $latestHealth?->visit_date
                     ?? $latestHealth?->record_date
                     ?? null,
-
-                'treating_doctor' =>
-                    $latestHealth?->aut_authorizing_physician
-                    ?? $latestHealth?->doctor_name
-                    ?? null,
+                'latest_clinician' =>
+                    $medicalRecords->first()?->doctor_name
+                    ?? $latestHealth?->doctor_name,
             ];
         }
 
@@ -496,6 +484,8 @@ class PlayerPortalDataService
 
             $playerPcma = (object) [
                 'pcma_status' => $status,
+                'is_signed' => (bool) $latestPcma->is_signed,
+                'synthetic_test' => (bool) data_get($pcmaResults, 'synthetic_demo'),
 
                 'pcma_score' =>
                     data_get($pcmaResults, 'pcma_score')
@@ -1077,16 +1067,6 @@ class PlayerPortalDataService
             'master' => 'Master',
             'doctorate' => 'Doctorat',
             default => $level,
-        };
-    }
-
-    private function fitnessLevel(float $score): string
-    {
-        return match (true) {
-            $score >= 90 => 'excellent',
-            $score >= 75 => 'good',
-            $score >= 60 => 'moderate',
-            default => 'low',
         };
     }
 

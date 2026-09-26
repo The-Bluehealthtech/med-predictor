@@ -589,7 +589,6 @@
             <button class="fifa-sub-tab-button active" onclick="showFIFASubTab('overview')">Vue d'ensemble</button>
             <button class="fifa-sub-tab-button" onclick="showFIFASubTab('advanced-stats')">Statistiques avancées</button>
             <button class="fifa-sub-tab-button" onclick="showFIFASubTab('match-stats')">Statistiques de match</button>
-            <button class="fifa-sub-tab-button" onclick="showFIFASubTab('comparison')">Analyse comparative</button>
         </div>
         
         <!-- Contenu des sous-onglets Performances -->
@@ -714,70 +713,6 @@
             </div>
         </div>
 
-        <div id="comparison-sub-tab" class="fifa-sub-tab-content">
-            <h3>Analyse comparative</h3>
-            <div id="comparison-content">
-                <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
-                <div class="fifa-medical-grid">
-                    <!-- Carte Comparaison avec la Ligue -->
-                    <div class="fifa-medical-card">
-                        <h4>📈 Comparaison avec la Ligue</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Position dans le classement</span>
-                                <span class="fifa-stat-value highlight">{{ $player->league_position ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Moyenne de la ligue</span>
-                                <span class="fifa-stat-value">{{ $player->league_average ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Écart avec la moyenne</span>
-                                <span class="fifa-stat-value">{{ $player->performance_gap ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Carte Comparaison avec les Joueurs Similaires -->
-                    <div class="fifa-medical-card">
-                        <h4>👥 Comparaison avec les Joueurs Similaires</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Rang dans la position</span>
-                                <span class="fifa-stat-value highlight">{{ $player->position_rank ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Top 10% de la position</span>
-                                <span class="fifa-stat-value">{{ $player->top_percentile ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Potentiel d'amélioration</span>
-                                <span class="fifa-stat-value">{{ $player->improvement_potential ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Carte Évolution Temporelle -->
-                    <div class="fifa-medical-card">
-                        <h4>📊 Évolution Temporelle</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Tendance sur 6 mois</span>
-                                <span class="fifa-stat-value highlight">{{ $player->trend_6months ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Progression annuelle</span>
-                                <span class="fifa-stat-value">{{ $player->annual_progress ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Objectifs atteints</span>
-                                <span class="fifa-stat-value">{{ $player->goals_achieved ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="trends-tab" class="fifa-tab-content">

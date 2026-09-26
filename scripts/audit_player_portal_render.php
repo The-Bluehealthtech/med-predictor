@@ -68,9 +68,11 @@ foreach ($ids as $index => $id) {
         ))->render();
         $visible = preg_replace('~<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>~si', ' ', $html);
         $visible = html_entity_decode(strip_tags((string) $visible), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $playerMarkers = [];
         foreach (['Données non disponibles', 'N/A', 'Non renseigné'] as $marker) {
             $count = substr_count($visible, $marker);
             if ($count > 0) {
+                $playerMarkers[] = $marker . '=' . $count;
                 $counts[$marker] = ($counts[$marker] ?? 0) + $count;
                 $examples[$marker] ??= [];
                 if (count($examples[$marker]) < 8) {
@@ -78,6 +80,8 @@ foreach ($ids as $index => $id) {
                 }
             }
         }
+        printf("Joueur %d : %s\n", $id, $playerMarkers ? implode(', ', $playerMarkers) : 'aucun marqueur de valeur absente');
+        fflush(STDOUT);
     } catch (Throwable $error) {
         $errors[(int) $id] = get_class($error) . ': ' . $error->getMessage();
         printf("ERREUR rendu joueur %d : %s\n", $id, $errors[(int) $id]);

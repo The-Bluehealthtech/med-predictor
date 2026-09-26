@@ -9,4 +9,4 @@ if [[ -z "$DATABASE_URL" ]]; then
     echo 'URL absente.' >&2
     exit 1
 fi
-DB_CONNECTION=pgsql DATABASE_URL="$DATABASE_URL" php scripts/audit_player_portal_render.php "${1:-844}"
+DB_CONNECTION=pgsql DATABASE_URL="$DATABASE_URL" php scripts/audit_player_portal_render.php "${1:-3}"

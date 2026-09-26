@@ -697,23 +697,8 @@ class PlayerPortalDataService
         /*
          * Suivi mental depuis SDOH.
          */
-        $mentalHealthApps = $latestSdoh
-            ? collect([
-                (object) [
-                    'app_name' => 'Suivi bien-être mental (SDOH)',
-                    'app_type' => 'sdoh',
-                    'api_endpoint' => null,
-                    'last_session_date' => $latestSdoh->assessment_date,
-                    'session_duration' => null,
-                    'mood_score' =>
-                        $latestSdoh->mental_wellbeing_score !== null
-                            ? round(((float) $latestSdoh->mental_wellbeing_score) / 10, 1)
-                            : null,
-                    'wellness_score' =>
-                        $latestSdoh->mental_wellbeing_score,
-                ],
-            ])
-            : collect();
+        // Le questionnaire SDOH n'est pas une application connectée.
+        $mentalHealthApps = collect();
 
         /*
          * Intégrations / sources de données connectées.
@@ -790,8 +775,6 @@ class PlayerPortalDataService
                     $record->aut_authorizing_physician
                     ?? $record->doctor_name,
 
-                'doctor_license' => null,
-
                 'exemption_start_date' =>
                     $record->aut_start_date
                     ?? $record->aut_approval_date,
@@ -800,11 +783,7 @@ class PlayerPortalDataService
                     $record->aut_end_date
                     ?? $record->aut_expiry_date,
 
-                'fifa_approval' =>
-                    $record->aut_status,
-
-                'wada_approval' =>
-                    $record->aut_status,
+                'aut_status' => $record->aut_status,
 
                 'approval_notes' =>
                     $record->aut_notes
@@ -861,7 +840,9 @@ class PlayerPortalDataService
         }
 
         if ($latestPcma) {
-            $pcmaStatus = $latestPcma->status;
+            $pcmaStatus = $latestPcma->is_signed
+                ? $latestPcma->status
+                : 'pending';
 
             $complianceStatus->push((object) [
                 'compliance_type' => 'pcma',
@@ -870,7 +851,9 @@ class PlayerPortalDataService
                 'summary' => match ($pcmaStatus) {
                     'cleared' => 'Aptitude médicale : APTE',
                     'not_cleared' => 'Aptitude médicale : NON APTE',
-                    'pending' => 'Évaluation en attente',
+                    'pending' => $latestPcma->is_signed
+                        ? 'Évaluation en attente'
+                        : 'Évaluation non signée (test non officiel)',
                     'failed' => 'Évaluation non aboutie',
                     'completed' => 'Évaluation terminée',
                     default => ucfirst(str_replace('_', ' ', $pcmaStatus)),

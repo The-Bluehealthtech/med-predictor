@@ -1880,7 +1880,9 @@
                                             </span>
                                         </div>
                                         <div class="text-sm text-gray-600 mb-2">{{ $device->brand }} {{ $device->model }}</div>
-                                        <div class="text-xs text-gray-500 mb-2">API: {{ $device->api_endpoint }}</div>
+                                        @if($device->api_endpoint)
+                                            <div class="text-xs text-gray-500 mb-2">API: {{ $device->api_endpoint }}</div>
+                                        @endif
                                         <div class="flex justify-between text-xs">
                                             <span>Batterie: {{ $device->battery_level }}%</span>
                                             <span>Sync: {{ \Carbon\Carbon::parse($device->last_sync)->diffForHumans() }}</span>
@@ -1948,7 +1950,9 @@
                                                 <div class="text-xs text-gray-500">Dernière: {{ \Carbon\Carbon::parse($center->last_session_date)->format('d M Y') }}</div>
                                             </div>
                                         </div>
-                                        <div class="text-xs text-gray-500 mb-2">API: {{ $center->api_endpoint }}</div>
+                                        @if($center->api_endpoint)
+                                            <div class="text-xs text-gray-500 mb-2">API: {{ $center->api_endpoint }}</div>
+                                        @endif
                                         <div class="text-sm text-gray-700 mb-2">
                                             <strong>Plan de traitement:</strong> 
                                             @php $plan = json_decode($center->treatment_plan, true); @endphp
@@ -2204,7 +2208,9 @@
                                                 @endif
                                             </span>
                                         </div>
-                                        <div class="text-xs text-gray-500 mb-2">Code WADA: {{ $substance->wada_code }}</div>
+                                        @if($substance->wada_code)
+                                            <div class="text-xs text-gray-500 mb-2">Code WADA: {{ $substance->wada_code }}</div>
+                                        @endif
                                         <div class="text-sm text-gray-700 mb-2">{{ $substance->notes }}</div>
                                         @if($substance->detection_count > 0)
                                             <div class="text-xs text-red-600">
@@ -2240,28 +2246,28 @@
                                         <div class="flex justify-between items-start mb-3">
                                             <div>
                                                 <div class="font-semibold text-gray-800">{{ $tue->substance_name }}</div>
-                                                <div class="text-sm text-gray-600">{{ $tue->medical_condition }}</div>
+                                                <div class="text-sm text-gray-600">{{ $tue->medical_condition ?? 'Non renseignée' }}</div>
                                             </div>
                                             <div class="text-right">
-                                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                                                    ✅ Approuvé
+                                                <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                                                    Statut : {{ $tue->aut_status ?? 'Non renseigné' }}
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="text-sm text-gray-700 mb-2">
-                                            <strong>Médecin:</strong> {{ $tue->prescribing_doctor }} ({{ $tue->doctor_license }})
+                                            <strong>Médecin:</strong> {{ $tue->prescribing_doctor ?? 'Non renseigné' }}
                                         </div>
                                         <div class="text-sm text-gray-700 mb-2">
                                             <strong>Période:</strong> 
-                                            {{ \Carbon\Carbon::parse($tue->exemption_start_date)->format('d M Y') }} - 
-                                            {{ \Carbon\Carbon::parse($tue->exemption_end_date)->format('d M Y') }}
+                                            {{ $tue->exemption_start_date ? \Carbon\Carbon::parse($tue->exemption_start_date)->format('d M Y') : 'Non renseignée' }} -
+                                            {{ $tue->exemption_end_date ? \Carbon\Carbon::parse($tue->exemption_end_date)->format('d M Y') : 'Non renseignée' }}
                                         </div>
                                         <div class="text-sm text-gray-700 mb-2">
-                                            <strong>Approbations:</strong>
-                                            @if($tue->wada_approval) <span class="text-green-600">WADA ✅</span> @endif
-                                            @if($tue->fifa_approval) <span class="text-blue-600">FIFA ✅</span> @endif
+                                            <strong>Autorité d'approbation:</strong> Non vérifiée
                                         </div>
+                                        @if($tue->approval_notes)
                                         <div class="text-xs text-gray-600">{{ $tue->approval_notes }}</div>
+                                        @endif
                                     </div>
                                 @endforeach
                             </div>

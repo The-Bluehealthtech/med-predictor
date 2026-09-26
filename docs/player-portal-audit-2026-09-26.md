@@ -78,3 +78,7 @@ Après insertion de 844 recommandations médicales fictives, le contrôle étend
 La carte « Alertes Blessures » lisait `players.injury_risk_score`, hors du jeu de données contrôlé, bien qu'une prédiction `medical_predictions.prediction_type=injury_risk` soit enregistrée. Elle lit désormais le risque et son libellé dans cette prédiction ; le champ de zone est explicitement renommé « Dernière zone blessée » et provient de l'historique `injuries.body_zone`. Le risque général de `health_records` n'est pas traité comme un risque de blessure.
 
 Le tableau des licences exécutait encore des requêtes `clubs` et `associations` dans le Blade. Le service joint désormais ces noms à la collection canonique `playerLicenses`; l'audit contrôle également `player_licenses.club_id` pour détecter une licence sans club. Les indicateurs de source unique restent conditionnels aux relations effectivement présentes dans la base.
+
+## Contrôle réexécuté après capteurs de démonstration
+
+Résultat transmis par l'utilisateur : 844 capteurs de démonstration complétés ; les autres catégories de la fixture étaient déjà à jour (0 ligne modifiée). L'audit étendu sur 844 joueurs ne signale plus qu'un champ absent, `players.fifa_connect_id` pour 844/844. Les colonnes des sources répertoriées dans `scripts/audit_player_portal_fields.php` sont donc couvertes, sous réserve des champs hors inventaire et des branches d'affichage conditionnelles. Ce résultat n'est pas une preuve de rendu sans blanc sur toutes les routes.

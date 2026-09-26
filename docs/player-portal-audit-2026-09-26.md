@@ -82,3 +82,7 @@ Le tableau des licences exécutait encore des requêtes `clubs` et `associations
 ## Contrôle réexécuté après capteurs de démonstration
 
 Résultat transmis par l'utilisateur : 844 capteurs de démonstration complétés ; les autres catégories de la fixture étaient déjà à jour (0 ligne modifiée). L'audit étendu sur 844 joueurs ne signale plus qu'un champ absent, `players.fifa_connect_id` pour 844/844. Les colonnes des sources répertoriées dans `scripts/audit_player_portal_fields.php` sont donc couvertes, sous réserve des champs hors inventaire et des branches d'affichage conditionnelles. Ce résultat n'est pas une preuve de rendu sans blanc sur toutes les routes.
+
+## Vérification du rendu de la vue
+
+`scripts/run_player_portal_render_audit.sh` effectue une lecture seule : il construit réellement le Blade `test-portail-joueur-simple` pour chacun des 844 joueurs en utilisant `PlayerPortalDataService`, puis compte les textes visibles « Données non disponibles », « N/A » et « Non renseigné ». Une erreur de rendu interrompt le contrôle. Le script affiche sa progression tous les 50 joueurs ; `bash scripts/run_player_portal_render_audit.sh 1` permet de vérifier un seul joueur si nécessaire. Il ne couvre pas les contrôles d'accès HTTP ni les autres routes du projet.

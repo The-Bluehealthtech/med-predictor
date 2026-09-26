@@ -58,3 +58,5 @@ La licence active affichée en en-tête provient désormais de `playerLicenses` 
 ## Résultat de l'exécution du complément (844 joueurs)
 
 Après le complément de données, le contrôle des champs suivis dans les 14 sources n'indique plus de valeur manquante à l'exception de `players.fifa_connect_id` : 844/844 absents. Les sept mises à jour groupées ont chacune complété 844 lignes. Ce constat ne prouve pas que toutes les relations (`passport`, club, association) ou toutes les routes ont été rendues sans champ vide ; le contrôle reste limité aux champs explicitement répertoriés par `scripts/audit_player_portal_fields.php`.
+
+Le Blade lit aussi `player.passport.passport_number` dans la carte identité. Cette relation n'était pas incluse dans la première série des 14 sources ; `player_passports` a été ajouté au contrôle suivant. Le résultat 14/14 ne prouve donc pas que le document d'identité est disponible.

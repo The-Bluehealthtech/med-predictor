@@ -22,6 +22,7 @@ if (!$ids) {
 // JSON : préfixer le chemin par @ pour inspecter la valeur JSON de la colonne.
 $sources = [
     'players' => [null, ['first_name', 'last_name', 'date_of_birth', 'position', 'nationality', 'height', 'weight', 'preferred_foot', 'fifa_connect_id', 'club_id', 'association_id']],
+    'player_passports' => ['issue_date', ['passport_number', 'status', 'issuing_authority']],
     'player_real_time_health' => ['measurement_time', [
         'readiness_score', 'energy_level', 'sleep_quality_score', 'sleep_duration_hours',
         'hydration_level', 'resting_heart_rate', 'max_heart_rate', 'blood_pressure_systolic',

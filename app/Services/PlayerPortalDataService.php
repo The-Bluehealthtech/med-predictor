@@ -135,8 +135,8 @@ class PlayerPortalDataService
                 'financial_status_score' =>
                     $latestSdoh->financial_situation_score,
 
-                'education_score' =>
-                    $this->educationScore($latestSdoh->education_level),
+                'education_level' =>
+                    $this->educationLabel($latestSdoh->education_level),
             ];
         }
 
@@ -1051,20 +1051,20 @@ class PlayerPortalDataService
             : [$decoded];
     }
 
-    private function educationScore(?string $level): ?int
+    private function educationLabel(?string $level): ?string
     {
         if (!$level) {
             return null;
         }
 
         return match (strtolower(trim($level))) {
-            'primary', 'primaire' => 40,
-            'secondary', 'secondaire', 'high_school' => 60,
-            'college', 'technical', 'vocational' => 70,
-            'university', 'bachelor', 'licence' => 80,
-            'master' => 90,
-            'doctorate', 'phd' => 100,
-            default => 65,
+            'none' => 'Aucun',
+            'primary' => 'Primaire',
+            'secondary' => 'Secondaire',
+            'bachelor' => 'Licence',
+            'master' => 'Master',
+            'doctorate' => 'Doctorat',
+            default => $level,
         };
     }
 

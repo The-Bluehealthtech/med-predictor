@@ -825,8 +825,7 @@
                         <div class="w-full space-y-4">
                             <p class="text-gray-700 mb-4">
                                 Cet indicateur <strong>SDOH</strong> (Social Determinants of Health) donne une vision
-                                à {{ $player->date_of_birth ? \Carbon\Carbon::parse($player->date_of_birth)->age : "N/A" }}° de l'état de bien-être global du joueur, en intégrant les
-                                facteurs sociaux, environnementaux et comportementaux.
+                                des facteurs sociaux, environnementaux et comportementaux du joueur.
                             </p>
                             
                             <!-- SDOH Factors breakdown -->
@@ -882,7 +881,7 @@
                                             <span class="font-medium text-gray-800">Éducation & Formation</span>
                                         </div>
                                         <div class="text-right">
-                                            <div class="font-bold text-purple-600">{{ $sdohFactors->education_score }}/100</div>
+                                            <div class="font-bold text-purple-600">{{ $sdohFactors->education_level ?? 'Données non disponibles' }}</div>
                                             <div class="text-xs text-gray-600">Niveau académique, compétences</div>
                                         </div>
                                     </div>
@@ -3087,15 +3086,14 @@
                                  new Chart(sdohCtx, {
                                      type: 'radar',
                                      data: {
-                                         labels: ['Environnement', 'Soutien Social', 'Accès Soins', 'Situation Financière', 'Éducation'],
+                                         labels: ['Environnement', 'Soutien Social', 'Accès Soins', 'Situation Financière'],
                                          datasets: [{
                                              label: 'Score SDOH',
                                              data: [
                                                  sdohData.environment_score,
                                                  sdohData.social_support_score,
                                                  sdohData.healthcare_access_score,
-                                                 sdohData.financial_status_score,
-                                                 sdohData.education_score
+                                                 sdohData.financial_status_score
                                              ],
                                              borderColor: '#14b8a6',
                                              backgroundColor: 'rgba(20, 184, 166, 0.2)',

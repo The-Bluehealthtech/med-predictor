@@ -18,7 +18,8 @@ audit_fields_code=$?
 DB_CONNECTION=pgsql DATABASE_URL="$DATABASE_URL" php scripts/audit_player_portal_render.php 1
 audit_render_code=$?
 set -e
-if [[ $audit_fields_code -eq 2 || $audit_render_code -eq 2 ]]; then
+if [[ $audit_fields_code -gt 1 || $audit_render_code -gt 1 ]]; then
+    printf 'Échec du contrôle : champs=%d, rendu=%d.\n' "$audit_fields_code" "$audit_render_code" >&2
     exit 2
 fi
 printf 'Contrôles achevés. Code champs=%d, rendu=%d (1 attendu pour FIT CONNECT absent).\n' \

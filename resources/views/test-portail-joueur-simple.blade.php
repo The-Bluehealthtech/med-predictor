@@ -648,16 +648,43 @@
         </div>
 
         <div id="advanced-stats-sub-tab" class="fifa-sub-tab-content">
-            <h3>Statistiques avancées</h3>
+            <h3>Évaluation des performances</h3>
             <div id="advanced-stats-content" class="fifa-medical-card">
-                <p>
-                    Les aptitudes techniques détaillées (passe, dribble, vitesse, agilité et autres)
-                    ne sont pas enregistrées dans la source canonique de ce portail.
-                </p>
-                <p>
-                    Les cinq axes du Score FIT et les tests physiques disponibles figurent
-                    dans leurs sections dédiées.
-                </p>
+                @php
+                    $assessmentNotes = json_decode($latestPerformance?->notes ?? '{}', true) ?: [];
+                    $assessmentScores = [
+                        'Physique' => $latestPerformance?->physical_score,
+                        'Technique' => $latestPerformance?->technical_score,
+                        'Tactique' => $latestPerformance?->tactical_score,
+                        'Mental' => $latestPerformance?->mental_score,
+                        'Social' => $latestPerformance?->social_score,
+                        'Endurance' => $latestPerformance?->endurance_score,
+                        'Force' => $latestPerformance?->strength_score,
+                        'Vitesse évaluée' => $latestPerformance?->speed_score,
+                        'Agilité' => $latestPerformance?->agility_score,
+                        'Précision des passes' => $latestPerformance?->passing_accuracy,
+                    ];
+                    $hasAssessment = collect($assessmentScores)->contains(
+                        fn ($score) => $score !== null
+                    );
+                @endphp
+                @if($hasAssessment)
+                    @if(($assessmentNotes['source'] ?? null) === 'synthetic_demo')
+                        <p>Données synthétiques de test — évaluation non officielle.</p>
+                    @endif
+                    <div class="fifa-medical-stat">
+                        @foreach($assessmentScores as $label => $score)
+                            @if($score !== null)
+                                <div class="fifa-stat-header">
+                                    <span>{{ $label }}</span>
+                                    <span class="fifa-stat-value">{{ $score }}/100</span>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                @else
+                    <p>Aucune évaluation de performance enregistrée.</p>
+                @endif
             </div>
         </div>
 

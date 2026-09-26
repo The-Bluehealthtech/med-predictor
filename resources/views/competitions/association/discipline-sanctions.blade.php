@@ -447,18 +447,26 @@
 
 <script>
 // Fonction pour valider une sanction
+// NOTE (audit factice -> reel, 2026-09) : ce bouton affichait auparavant un
+// faux message de succes ("validee avec succes") sans jamais rien
+// enregistrer (le commentaire d'origine l'admettait : "Ici vous pourriez
+// faire un appel AJAX pour valider"). Les sanctions de cette page sont
+// calculees a la volee a partir des rapports d'arbitres (cartons), il n'y a
+// pas de table "sanctions" ni de statut reel a modifier : on informe donc
+// honnetement l'utilisateur plutot que de simuler un succes.
 function validateSanction(sanctionId) {
     if (confirm('Voulez-vous valider cette sanction ?')) {
-        alert('Sanction #' + sanctionId + ' validée avec succès !');
-        // Ici vous pourriez faire un appel AJAX pour valider
+        alert("La validation des sanctions n'est pas encore disponible : ces sanctions sont calculées automatiquement à partir des rapports d'arbitres et ne peuvent pas encore être modifiées ou validées individuellement.");
     }
 }
 
 // Fonction pour rejeter une sanction
+// NOTE (audit factice -> reel, 2026-09) : meme constat que validateSanction()
+// ci-dessus, ce bouton affichait un faux message de succes sans rien
+// enregistrer.
 function rejectSanction(sanctionId) {
     if (confirm('Voulez-vous rejeter cette sanction ?')) {
-        alert('Sanction #' + sanctionId + ' rejetée !');
-        // Ici vous pourriez faire un appel AJAX pour rejeter
+        alert("Le rejet des sanctions n'est pas encore disponible : ces sanctions sont calculées automatiquement à partir des rapports d'arbitres et ne peuvent pas encore être modifiées ou rejetées individuellement.");
     }
 }
 
@@ -521,30 +529,27 @@ function closeEditModal() {
 }
 
 // Fonction pour sauvegarder les modifications
+// NOTE (audit factice -> reel, 2026-09) : cette fonction affichait
+// auparavant un faux message de succes ("Sanction modifiee avec succes !")
+// puis rechargeait la page, alors qu'aucune donnee n'etait reellement
+// enregistree (voir "Simulation de sauvegarde" ci-dessous, seulement logue
+// dans la console). Les sanctions affichees ici sont calculees a la volee a
+// partir des rapports d'arbitres : il n'existe pas de table "sanctions"
+// reelle dans laquelle enregistrer une modification individuelle. On
+// informe donc honnetement l'utilisateur plutot que de simuler un succes
+// puis recharger une page qui n'aurait de toute facon pas change.
 function saveSanctionChanges() {
-    const sanctionId = document.getElementById('editSanctionId').value;
     const amende = document.getElementById('editAmende').value;
     const suspension = document.getElementById('editSuspension').value;
-    const motif = document.getElementById('editMotif').value;
-    
+
     // Validation
     if (amende < 0 || suspension < 0) {
         alert('Les valeurs ne peuvent pas être négatives');
         return;
     }
-    
-    // Simulation de sauvegarde
-    console.log('Sauvegarde de la sanction #' + sanctionId, {
-        amende: amende + ' TND',
-        suspension: suspension + ' jours',
-        motif: motif
-    });
-    
-    alert('Sanction modifiée avec succès !');
+
+    alert("La modification des sanctions n'est pas encore disponible : ces sanctions sont calculées automatiquement à partir des rapports d'arbitres et ne peuvent pas encore être modifiées individuellement.");
     closeEditModal();
-    
-    // Recharger la page pour voir les changements
-    location.reload();
 }
 
 // Fonction pour exporter les sanctions
@@ -586,6 +591,27 @@ function exportSanctions() {
 function addNewSanction() {
     // Ouvrir le modal d'ajout
     document.getElementById('addSanctionModal').classList.remove('hidden');
+}
+
+// Fonction pour fermer le modal d'ajout
+// NOTE (audit factice -> reel, 2026-09) : manquait dans le fichier d'origine,
+// alors que le modal d'ajout ("Nouvelle Sanction") l'appelait deja via
+// onclick="closeAddModal()" — les boutons "Annuler"/la croix ne faisaient
+// donc rien.
+function closeAddModal() {
+    document.getElementById('addSanctionModal').classList.add('hidden');
+}
+
+// Fonction pour enregistrer une nouvelle sanction
+// NOTE (audit factice -> reel, 2026-09) : le bouton "Enregistrer" du modal
+// d'ajout appelait onclick="saveNewSanction()" mais cette fonction n'existait
+// nulle part dans le fichier — cliquer sur ce bouton ne faisait donc
+// litteralement rien (erreur JS silencieuse). Il n'existe pas de table
+// "sanctions" reelle dans laquelle creer une sanction manuelle : on informe
+// donc honnetement l'utilisateur plutot que de laisser le bouton casse.
+function saveNewSanction() {
+    alert("L'ajout manuel d'une sanction n'est pas encore disponible : les sanctions de cette page sont calculées automatiquement à partir des rapports d'arbitres (cartons) et il n'existe pas encore de module de saisie manuelle.");
+    closeAddModal();
 }
 </script>
 @endsection

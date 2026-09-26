@@ -238,89 +238,62 @@
 </div>
 
 <script>
+// NOTE (audit factice -> reel, 2026-09) : les rapports listes ci-dessus
+// ($rapports, cote serveur) sont reels (bases sur les vraies competitions
+// et le nombre reel de matchs termines). En revanche, cette page ne
+// generait jamais de vrai fichier PDF/Excel : "downloadReport" creait un
+// fichier .txt de remplissage ("Ceci est un exemple de rapport genere...")
+// et affichait un faux message de succes, et "generateReport" simulait une
+// generation avec un simple delai. Aucune route ni service de generation
+// PDF/Excel n'existe pour ces rapports d'association (le package
+// barryvdh/laravel-dompdf est installe et utilise ailleurs dans
+// l'application pour les PCMA, mais aucun template n'a ete cree pour les
+// rapports de classement/statistiques/discipline/financier). Plutot que de
+// continuer a fabriquer un faux fichier et un faux succes, ces actions
+// informent desormais honnetement l'utilisateur ; la vraie generation
+// PDF/Excel reste a construire comme fonctionnalite a part.
+const RAPPORTS_DATA = @json($rapports->keyBy('id'));
+
 // Fonction pour télécharger un rapport
 function downloadReport(reportId, format) {
-    // Simulation d'un téléchargement
-    const button = event.target.closest('button');
-    const originalText = button.innerHTML;
-    
-    // Animation de chargement
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Téléchargement...';
-    button.disabled = true;
-    
-    // Simulation du téléchargement
-    setTimeout(() => {
-        // Créer un fichier de test pour le téléchargement
-        const content = `Rapport #${reportId} - Format ${format}\n\nCeci est un exemple de rapport généré le ${new Date().toLocaleDateString('fr-FR')}.\n\nContenu du rapport:\n- Statistiques des matchs\n- Classements des équipes\n- Données des joueurs\n- Analyses des performances`;
-        
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `rapport_${reportId}_${format.toLowerCase()}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-        
-        // Restaurer le bouton
-        button.innerHTML = originalText;
-        button.disabled = false;
-        
-        // Afficher un message de succès
-        showNotification('Rapport téléchargé avec succès!', 'success');
-    }, 2000);
+    showNotification("La génération de fichiers PDF/Excel n'est pas encore disponible pour ces rapports.", 'info');
 }
 
 // Fonction pour générer un rapport
+// NOTE (audit factice -> reel, 2026-09) : simulait une generation (delai +
+// changement de statut a l'ecran) sans jamais generer de vrai fichier.
 function generateReport(reportId) {
-    if (confirm('Voulez-vous générer ce rapport ?')) {
-        const button = event.target.closest('button');
-        const originalText = button.innerHTML;
-        
-        // Animation de génération
-        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Génération...';
-        button.disabled = true;
-        
-        // Simulation de la génération
-        setTimeout(() => {
-            // Mettre à jour le statut du rapport dans l'interface
-            const row = button.closest('tr');
-            const statusCell = row.querySelector('.status-badge');
-            if (statusCell) {
-                statusCell.innerHTML = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Disponible</span>';
-            }
-            
-            // Ajouter les boutons de téléchargement
-            const actionsCell = row.querySelector('.actions-cell');
-            if (actionsCell) {
-                actionsCell.innerHTML = `
-                    <div class="flex space-x-2" onclick="event.stopPropagation()">
-                        <button onclick="downloadReport(${reportId}, 'PDF')" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" title="Télécharger PDF">
-                            <i class="fas fa-file-pdf mr-1"></i>PDF
-                        </button>
-                        <button onclick="downloadReport(${reportId}, 'Excel')" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" title="Télécharger Excel">
-                            <i class="fas fa-file-excel mr-1"></i>Excel
-                        </button>
-                        <button onclick="viewReport(${reportId})" class="inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" title="Voir détails">
-                            <i class="fas fa-eye mr-1"></i>Détails
-                        </button>
-                    </div>
-                `;
-            }
-            
-            // Restaurer le bouton
-            button.innerHTML = originalText;
-            button.disabled = false;
-            
-            // Afficher un message de succès
-            showNotification('Rapport généré avec succès!', 'success');
-        }, 3000);
-    }
+    showNotification("La génération de rapports PDF/Excel n'est pas encore disponible : aucun service de génération n'est connecté pour ce type de rapport.", 'info');
 }
 
 // Fonction pour voir les détails d'un rapport
+// NOTE (audit factice -> reel, 2026-09) : affichait auparavant des valeurs
+// codees en dur identiques pour n'importe quel rapport clique ("Rapport de
+// statistiques", "Championnat Regional U19", statut toujours "Disponible").
+// Les vraies donnees de chaque rapport (nom, type, competition, date,
+// statut, formats) sont maintenant lues depuis RAPPORTS_DATA, alimente
+// cote serveur par la vraie liste $rapports.
 function viewReport(reportId) {
+    const rapport = RAPPORTS_DATA[reportId];
+    if (!rapport) {
+        showNotification("Rapport introuvable.", 'error');
+        return;
+    }
+
+    const statutBadge = rapport.statut === 'Disponible'
+        ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Disponible</span>'
+        : rapport.statut === 'En cours'
+            ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">En cours</span>'
+            : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">${rapport.statut}</span>`;
+
+    const formatsBadges = (rapport.formats || []).map(f => {
+        return f === 'PDF'
+            ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">PDF</span>'
+            : f === 'Excel'
+                ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Excel</span>'
+                : '';
+    }).join('');
+
     // Créer un modal de détails
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
@@ -336,38 +309,38 @@ function viewReport(reportId) {
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Nom du rapport</label>
-                        <p class="mt-1 text-sm text-gray-900">Rapport détaillé #${reportId}</p>
+                        <p class="mt-1 text-sm text-gray-900">${rapport.nom}</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Type</label>
-                        <p class="mt-1 text-sm text-gray-900">Rapport de statistiques</p>
+                        <p class="mt-1 text-sm text-gray-900">${rapport.type}</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Compétition</label>
-                        <p class="mt-1 text-sm text-gray-900">Championnat Régional U19</p>
+                        <p class="mt-1 text-sm text-gray-900">${rapport.competition}</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Date de génération</label>
-                        <p class="mt-1 text-sm text-gray-900">${new Date().toLocaleDateString('fr-FR')}</p>
+                        <p class="mt-1 text-sm text-gray-900">${rapport.date_generation}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Détails</label>
+                        <p class="mt-1 text-sm text-gray-900">${rapport.details ?? ''}</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Statut</label>
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Disponible</span>
+                        ${statutBadge}
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Formats disponibles</label>
                         <div class="mt-1 flex space-x-2">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">PDF</span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Excel</span>
+                            ${formatsBadges}
                         </div>
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
                         Fermer
-                    </button>
-                    <button onclick="downloadReport(${reportId}, 'PDF'); closeModal();" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        Télécharger PDF
                     </button>
                 </div>
             </div>
@@ -450,9 +423,12 @@ function createNewReport() {
 }
 
 // Fonction pour créer le rapport
+// NOTE (audit factice -> reel, 2026-09) : affichait un faux succes sans
+// jamais rien creer (le commentaire d'origine l'admettait : "Ici vous
+// pourriez ajouter le nouveau rapport a la liste"). Il n'existe pas de
+// module de creation manuelle de rapport dans l'application.
 function createReport() {
-    showNotification('Rapport créé avec succès!', 'success');
-    // Ici vous pourriez ajouter le nouveau rapport à la liste
+    showNotification("La création manuelle de rapports n'est pas encore disponible.", 'info');
 }
 
 // Fonction pour programmer un rapport
@@ -515,8 +491,11 @@ function scheduleReport() {
 }
 
 // Fonction pour confirmer la programmation
+// NOTE (audit factice -> reel, 2026-09) : affichait un faux succes sans
+// jamais programmer quoi que ce soit. Il n'existe pas de module de
+// programmation de rapports (pas de tache planifiee/cron correspondante).
 function scheduleReportConfirm() {
-    showNotification('Rapport programmé avec succès!', 'success');
+    showNotification("La programmation automatique de rapports n'est pas encore disponible.", 'info');
 }
 
 // Fonction pour gérer les modèles
@@ -572,13 +551,17 @@ function manageTemplates() {
 }
 
 // Fonction pour éditer un modèle
+// NOTE (audit factice -> reel, 2026-09) : les 4 "modeles" (Classement,
+// Statistiques, Discipline, Financier) affiches dans cette fenetre sont des
+// libelles fixes ; il n'existe pas de module reel de modeles de rapport
+// personnalisables dans l'application.
 function editTemplate(type) {
-    showNotification(`Ouverture de l'éditeur pour le modèle ${type}`, 'info');
+    showNotification("La gestion de modèles de rapport n'est pas encore disponible.", 'info');
 }
 
 // Fonction pour créer un nouveau modèle
 function createNewTemplate() {
-    showNotification('Création d\'un nouveau modèle...', 'info');
+    showNotification("La création de modèles de rapport n'est pas encore disponible.", 'info');
 }
 
 // Fonction pour afficher des notifications

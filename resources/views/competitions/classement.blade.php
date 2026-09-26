@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Classements des Compétitions')
+@section('title', __('competitions.ranking.page_title'))
 
 @section('content')
 <div class="min-h-screen bg-gray-50 py-8">
@@ -9,17 +9,17 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Classements des Compétitions</h1>
-                    <p class="mt-2 text-gray-600">Suivez les performances de tous les clubs tunisiens</p>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ __('competitions.ranking.heading') }}</h1>
+                    <p class="mt-2 text-gray-600">{{ __('competitions.ranking.subtitle') }}</p>
                 </div>
                 <div class="flex space-x-3">
                     <button onclick="exportClassement()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <i class="fas fa-download mr-2"></i>
-                        Exporter
+                        {{ __('competitions.actions.export') }}
                     </button>
                     <button onclick="refreshClassement()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <i class="fas fa-sync-alt mr-2"></i>
-                        Actualiser
+                        {{ __('competitions.ranking.refresh') }}
                     </button>
                 </div>
             </div>
@@ -29,34 +29,34 @@
         <div class="bg-white rounded-lg shadow p-6 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Compétition</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.competition') }}</label>
                     <select id="competitionFilter" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Toutes les compétitions</option>
+                        <option value="">{{ __('competitions.ranking.all_competitions') }}</option>
                         @foreach($competitions as $competition)
-                            <option value="{{ $competition->id }}">{{ $competition->name ?? 'Championnat Tunisien U19' }}</option>
+                            <option value="{{ $competition->id }}">{{ $competition->name ?? __('competitions.ranking.default_competition_name') }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Saison</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.form.season') }}</label>
                     <select id="seasonFilter" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         <option value="2024-2025">2024-2025</option>
                         <option value="2023-2024">2023-2024</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tri par</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.ranking.sort_by') }}</label>
                     <select id="sortFilter" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         <option value="points">Points</option>
-                        <option value="victoires">Victoires</option>
-                        <option value="difference">Différence de buts</option>
-                        <option value="buts_pour">Buts pour</option>
+                        <option value="victoires">{{ __('competitions.ranking.wins_option') }}</option>
+                        <option value="difference">{{ __('competitions.ranking.goal_difference_option') }}</option>
+                        <option value="buts_pour">{{ __('competitions.ranking.goals_for_option') }}</option>
                     </select>
                 </div>
                 <div class="flex items-end">
                     <button onclick="applyFilters()" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         <i class="fas fa-filter mr-2"></i>
-                        Appliquer
+                        {{ __('competitions.ranking.apply') }}
                     </button>
                 </div>
             </div>
@@ -69,16 +69,16 @@
                 <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h2 class="text-xl font-semibold text-gray-900">{{ $competition->name ?? 'Championnat Tunisien U19' }}</h2>
-                            <p class="text-sm text-gray-600">{{ $competition->season ?? '2024-2025' }} - {{ $competition->association->name ?? 'FTF - Fédération Tunisienne de Football' }}</p>
+                            <h2 class="text-xl font-semibold text-gray-900">{{ $competition->name ?? __('competitions.ranking.default_competition_name') }}</h2>
+                            <p class="text-sm text-gray-600">{{ $competition->season ?? 'N/A' }} - {{ $competition->association->name ?? __('competitions.ranking.association_unspecified') }}</p>
                         </div>
                         <div class="flex items-center space-x-4">
                             <div class="text-right">
-                                <div class="text-sm text-gray-500">Journée</div>
-                                <div class="text-lg font-semibold text-gray-900">{{ rand(15, 25) }}/30</div>
+                                <div class="text-sm text-gray-500">{{ __('competitions.ranking.matches_played') }}</div>
+                                <div class="text-lg font-semibold text-gray-900">{{ $matchsInfo[$competition->id]['joues'] ?? 0 }}/{{ $matchsInfo[$competition->id]['total'] ?? 0 }}</div>
                             </div>
                             <div class="text-right">
-                                <div class="text-sm text-gray-500">Dernière mise à jour</div>
+                                <div class="text-sm text-gray-500">{{ __('competitions.ranking.last_update') }}</div>
                                 <div class="text-sm text-gray-900">{{ now()->format('d/m/Y H:i') }}</div>
                             </div>
                         </div>
@@ -90,18 +90,18 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pos</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Club</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">MJ</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">V</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">N</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">D</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">BP</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">BC</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Diff</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Pts</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Forme</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Évolution</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_pos') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_club') }}</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_mj') }}</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_v') }}</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_n') }}</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_d') }}</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_bp') }}</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_bc') }}</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_diff') }}</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_pts') }}</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_forme') }}</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.ranking.col_evolution') }}</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -128,8 +128,8 @@
                                                 <span class="text-blue-600 font-bold text-sm">{{ substr($equipe['club']->name ?? $equipe['club']->short_name ?? 'CLUB', 0, 2) }}</span>
                                             </div>
                                             <div>
-                                                <div class="text-sm font-medium text-gray-900">{{ $equipe['club']->name ?? 'Club Inconnu' }}</div>
-                                                <div class="text-sm text-gray-500">{{ $equipe['club']->short_name ?? 'CI' }}</div>
+                                                <div class="text-sm font-medium text-gray-900">{{ $equipe['club']->name ?? __('competitions.ranking.unknown_club') }}</div>
+                                                <div class="text-sm text-gray-500">{{ $equipe['club']->short_name ?? __('competitions.ranking.unknown_club_short') }}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -228,19 +228,19 @@
                         <div class="flex items-center space-x-6">
                             <div class="flex items-center">
                                 <div class="w-4 h-4 bg-yellow-100 rounded mr-2"></div>
-                                <span>Championnat d'Afrique (Top 3)</span>
+                                <span>{{ __('competitions.ranking.legend_continental') }}</span>
                             </div>
                             <div class="flex items-center">
                                 <div class="w-4 h-4 bg-blue-100 rounded mr-2"></div>
-                                <span>Ligue des Champions (Top 4)</span>
+                                <span>{{ __('competitions.ranking.legend_champions_league') }}</span>
                             </div>
                             <div class="flex items-center">
                                 <div class="w-4 h-4 bg-red-100 rounded mr-2"></div>
-                                <span>Relégation (Bottom 2)</span>
+                                <span>{{ __('competitions.ranking.legend_relegation') }}</span>
                             </div>
                         </div>
                         <div class="text-xs text-gray-500">
-                            * V = Victoire, N = Nul, D = Défaite
+                            {{ __('competitions.ranking.legend_note') }}
                         </div>
                     </div>
                 </div>
@@ -255,7 +255,7 @@
                         <i class="fas fa-trophy text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-medium text-gray-900">Leader</h3>
+                        <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.ranking.leader') }}</h3>
                         <p class="text-sm text-gray-500">{{ $classements[1][0]['club']->name ?? 'Espérance Sportive de Tunis' }}</p>
                     </div>
                 </div>
@@ -267,8 +267,8 @@
                         <i class="fas fa-chart-line text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-medium text-gray-900">Meilleure Attaque</h3>
-                        <p class="text-sm text-gray-500">{{ collect($classements[1])->max('buts_pour') }} buts</p>
+                        <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.ranking.best_attack') }}</h3>
+                        <p class="text-sm text-gray-500">{{ collect($classements[1])->max('buts_pour') }} {{ __('competitions.ranking.goals_suffix') }}</p>
                     </div>
                 </div>
             </div>
@@ -279,8 +279,8 @@
                         <i class="fas fa-shield-alt text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-medium text-gray-900">Meilleure Défense</h3>
-                        <p class="text-sm text-gray-500">{{ collect($classements[1])->min('buts_contre') }} buts encaissés</p>
+                        <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.ranking.best_defense') }}</h3>
+                        <p class="text-sm text-gray-500">{{ collect($classements[1])->min('buts_contre') }} {{ __('competitions.ranking.goals_conceded_suffix') }}</p>
                     </div>
                 </div>
             </div>
@@ -291,7 +291,7 @@
                         <i class="fas fa-percentage text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-medium text-gray-900">Taux de Victoire</h3>
+                        <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.ranking.win_rate') }}</h3>
                         <p class="text-sm text-gray-500">{{ number_format((collect($classements[1])->max('victoires') / collect($classements[1])->max('matchs_joues')) * 100, 1) }}%</p>
                     </div>
                 </div>
@@ -344,7 +344,7 @@ function exportClassement() {
     link.click();
     document.body.removeChild(link);
     
-    showNotification('Classement exporté avec succès!', 'success');
+    showNotification(@json(__('competitions.ranking.export_success')), 'success');
 }
 
 // Fonction pour actualiser le classement
@@ -352,7 +352,7 @@ function refreshClassement() {
     const button = event.target.closest('button');
     const originalText = button.innerHTML;
     
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Actualisation...';
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>' + @json(__('competitions.ranking.refreshing'));
     button.disabled = true;
     
     setTimeout(() => {
@@ -390,7 +390,7 @@ function applyFilters() {
         rows.forEach(row => tbody.appendChild(row));
     });
     
-    showNotification('Filtres appliqués!', 'success');
+    showNotification(@json(__('competitions.ranking.filters_applied')), 'success');
 }
 
 // Fonction pour obtenir la valeur de tri
@@ -446,7 +446,7 @@ function showNotification(message, type = 'info') {
 setInterval(() => {
     const lastUpdate = document.querySelector('.text-sm.text-gray-900');
     if (lastUpdate) {
-        lastUpdate.textContent = new Date().toLocaleString('fr-FR');
+        lastUpdate.textContent = new Date().toLocaleString(@json(__('competitions.ranking.locale_code')));
     }
 }, 300000);
 </script>

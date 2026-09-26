@@ -24,6 +24,7 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-6">Your Assignments</h2>
+                @if($assignments->isEmpty())
                 <div class="text-center py-12 text-gray-500">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -31,6 +32,31 @@
                     <h3 class="mt-2 text-sm font-medium text-gray-900">No assignments found</h3>
                     <p class="mt-1 text-sm text-gray-500">Your match assignments will appear here when available.</p>
                 </div>
+                @else
+                <div class="space-y-3">
+                    @foreach($assignments as $match)
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">
+                                {{ $match->homeTeam?->club?->name ?? $match->homeTeam?->name ?? '—' }}
+                                vs
+                                {{ $match->awayTeam?->club?->name ?? $match->awayTeam?->name ?? '—' }}
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                {{ $match->competition?->name ?? '—' }} ·
+                                {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('d/m/Y') : '—' }}
+                            </p>
+                        </div>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {{ $match->status }}
+                        </span>
+                    </div>
+                    @endforeach
+                </div>
+                <div class="mt-4">
+                    {{ $assignments->links() }}
+                </div>
+                @endif
             </div>
         </div>
     </div>

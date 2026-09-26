@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Secrétariat Médical') - Med Predictor</title>
+    <title>@yield('title', __('secretary.page_title')) - Med Predictor</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <!-- Styles -->
@@ -30,7 +30,7 @@
                     <div class="flex-shrink-0">
                         <h1 class="text-xl font-bold text-gray-900">
                             <i class="fas fa-user-md text-blue-600 mr-2"></i>
-                            Secrétariat Médical
+                            {{ __('secretary.page_title') }}
                         </h1>
                     </div>
                 </div>
@@ -38,7 +38,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="text-sm text-gray-700">
                         <i class="fas fa-user-circle mr-1"></i>
-                        {{ auth()->user()->name ?? 'Utilisateur Test' }}
+                        {{ auth()->user()->name ?? __('secretary.test_user_fallback') }}
                     </div>
                     @if(auth()->check())
                     <form method="POST" action="{{ route('logout') }}">
@@ -61,31 +61,31 @@
                 <a href="{{ route('secretary.dashboard') }}" 
                    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('secretary.dashboard') ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                     <i class="fas fa-tachometer-alt mr-3"></i>
-                    Dashboard
+                    {{ __('secretary.nav_dashboard') }}
                 </a>
                 
                 <a href="{{ route('secretary.appointments.index') }}" 
                    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('secretary.appointments.*') ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                     <i class="fas fa-calendar-alt mr-3"></i>
-                    Rendez-vous
+                    {{ __('secretary.nav_appointments') }}
                 </a>
                 
                 <a href="{{ route('secretary.documents.index') }}" 
                    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('secretary.documents.*') ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                     <i class="fas fa-file-medical mr-3"></i>
-                    Documents
+                    {{ __('secretary.nav_documents') }}
                 </a>
                 
                 <a href="{{ route('secretary.athletes.search') }}" 
                    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('secretary.athletes.*') ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                     <i class="fas fa-users mr-3"></i>
-                    Athlètes
+                    {{ __('secretary.nav_athletes') }}
                 </a>
                 
                 <a href="{{ route('secretary.stats') }}" 
                    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('secretary.stats') ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                     <i class="fas fa-chart-bar mr-3"></i>
-                    Statistiques
+                    {{ __('secretary.nav_stats') }}
                 </a>
             </nav>
         </div>
@@ -137,7 +137,7 @@
 
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.message || 'Une erreur est survenue');
+                throw new Error(error.message || @json(__('secretary.generic_error')));
             }
 
             return response.json();

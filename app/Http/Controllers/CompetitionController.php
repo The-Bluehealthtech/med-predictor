@@ -57,18 +57,21 @@ class CompetitionController extends Controller
             ->limit(10)
             ->get();
 
-            $engagements = $competitions->map(function($competition) {
+            $clubId = auth()->user()->club_id ?? null;
+
+            $engagements = $competitions->map(function($competition) use ($clubId) {
                 $totalMatches = $competition->matches()->count();
                 $playedMatches = $competition->matches()->where('match_status', 'completed')->count();
                 
-                // Calculer les points basé sur les matchs terminés
-                $points = $this->calculateClubPoints($competition);
+                // Calculer les points reels du club connecte, bases sur les matchs termines
+                $points = $this->calculateClubPoints($competition, $clubId);
                 
                 return [
                     'id' => $competition->id,
-                    'nom' => $competition->name ?? 'Compétition sans nom',
+                    'nom' => $competition->name ?? __('competitions.unnamed_competition'),
                     'saison' => $competition->season ?? '2024-2025',
                     'statut' => $this->getFifaStatusLabel($competition->status),
+                    'statut_raw' => $competition->status,
                     'type' => $this->getFifaTypeLabel($competition->type),
                     'categorie' => $this->getFifaCategoryLabel($competition->category),
                     'discipline' => $this->getFifaDisciplineLabel($competition->discipline),
@@ -77,7 +80,7 @@ class CompetitionController extends Controller
                     'nb_matchs' => $totalMatches,
                     'matchs_joues' => $playedMatches,
                     'points' => $points,
-                    'classement' => $this->calculateRanking($competition, $points),
+                    'classement' => $this->calculateRanking($competition, $clubId),
                     'association' => $competition->association?->name ?? 'N/A',
                     'confederation' => $competition->association?->confederation?->name ?? 'N/A',
                     'fifa_connect_id' => $competition->fifa_connect_id,
@@ -183,44 +186,45 @@ class CompetitionController extends Controller
     public function clubCalendrier(): View
     {
         try {
-            // Récupérer les compétitions avec les clubs inscrits
-            $competitions = Competition::with(['clubs', 'association'])
-                ->where('status', '!=', 'cancelled')
-                ->get();
+            // NOTE (audit factice -> reel, 2026-09) : cette methode generait
+            // des matchs fictifs (dates, resultats, arbitres aleatoires) via
+            // rand(). La table "matches" existe reellement (App\Models\GameMatch)
+            // avec home_club_id/away_club_id, scores, arbitres. On l'utilise
+            // desormais directement, scopee au club de l'utilisateur.
+            $clubId = auth()->user()->club_id;
 
-            // Générer des matchs fictifs basés sur les compétitions et clubs disponibles
-            $matchs = collect();
-            
-            foreach ($competitions as $competition) {
-                $clubs = $competition->clubs;
-                if ($clubs->count() >= 2) {
-                    // Générer quelques matchs fictifs pour cette compétition
-                    for ($i = 0; $i < min(5, $clubs->count() - 1); $i++) {
-                        $homeClub = $clubs->random();
-                        $awayClub = $clubs->where('id', '!=', $homeClub->id)->random();
-                        
-                        $matchDate = now()->addDays(rand(1, 30));
-                        $isCompleted = rand(0, 1);
-                        
-                        $matchs->push([
-                            'id' => $competition->id * 100 + $i,
-                            'date' => $matchDate->format('Y-m-d'),
-                            'heure' => $matchDate->format('H:i'),
-                            'competition' => $competition->name,
-                            'adversaire' => $awayClub->name,
-                            'lieu' => $homeClub->address ?? 'Stade à déterminer',
-                            'arbitre_principal' => 'Arbitre à désigner',
-                            'arbitre_assistant_1' => 'Assistant 1',
-                            'arbitre_assistant_2' => 'Assistant 2',
-                            'statut' => $isCompleted ? 'Terminé' : 'Programmé',
-                            'resultat' => $isCompleted ? rand(0, 3) . '-' . rand(0, 3) : null
-                        ]);
-                    }
-                }
+            $query = GameMatch::with(['competition', 'homeClub', 'awayClub'])
+                ->where('status', '!=', 'cancelled');
+
+            if ($clubId) {
+                $query->where(function ($q) use ($clubId) {
+                    $q->where('home_club_id', $clubId)->orWhere('away_club_id', $clubId);
+                });
             }
 
-            // Trier par date
-            $matchs = $matchs->sortBy('date');
+            $realMatches = $query->orderBy('match_date')->limit(100)->get();
+
+            $matchs = $realMatches->map(function ($match) use ($clubId) {
+                $isHome = $clubId && $match->home_club_id == $clubId;
+                $adversaire = $isHome
+                    ? ($match->awayClub->name ?? 'N/A')
+                    : ($match->homeClub->name ?? 'N/A');
+                $isCompleted = in_array($match->status, ['completed', 'finished']) || $match->match_status === 'completed';
+
+                return [
+                    'id' => $match->id,
+                    'date' => $match->match_date?->format('Y-m-d') ?? 'N/A',
+                    'heure' => $match->kickoff_time?->format('H:i') ?? 'N/A',
+                    'competition' => $match->competition->name ?? 'N/A',
+                    'adversaire' => $adversaire,
+                    'lieu' => $match->venue ?? $match->stadium ?? 'Non renseigné',
+                    'arbitre_principal' => $match->referee ?? 'Non désigné',
+                    'arbitre_assistant_1' => $match->assistant_referee_1 ?? 'Non désigné',
+                    'arbitre_assistant_2' => $match->assistant_referee_2 ?? 'Non désigné',
+                    'statut' => $isCompleted ? 'Terminé' : 'Programmé',
+                    'resultat' => $isCompleted ? ($match->home_score ?? 0) . '-' . ($match->away_score ?? 0) : null
+                ];
+            });
 
             return view('competitions.club.calendrier', compact('matchs'));
         } catch (\Exception $e) {
@@ -235,35 +239,56 @@ class CompetitionController extends Controller
      */
     public function clubFeuillesMatch(): View
     {
-        // Simulation des données - à remplacer par les vraies données
-        $feuilles = collect([
-            [
-                'id' => 1,
-                'match' => 'FC Ville vs Notre Club',
-                'date' => '2024-09-15',
-                'statut' => 'À préparer',
-                'effectif_disponible' => 18,
-                'effectif_selectionne' => 0
-            ],
-            [
-                'id' => 2,
-                'match' => 'Notre Club vs AS Sport',
-                'date' => '2024-09-08',
-                'statut' => 'Soumise',
-                'effectif_disponible' => 18,
-                'effectif_selectionne' => 18
-            ],
-            [
-                'id' => 3,
-                'match' => 'Club Local vs Notre Club',
-                'date' => '2024-09-22',
-                'statut' => 'En retard',
-                'effectif_disponible' => 16,
-                'effectif_selectionne' => 0
-            ]
-        ]);
+        try {
+            // NOTE (audit factice -> reel, 2026-09) : 3 feuilles de match
+            // fictives ("FC Ville vs Notre Club"...) remplacees par les
+            // vraies feuilles (App\Models\MatchSheet), scopees au club de
+            // l'utilisateur via matches.home_club_id/away_club_id.
+            $clubId = auth()->user()->club_id;
 
-        return view('competitions.club.feuilles-match', compact('feuilles'));
+            $query = \App\Models\MatchSheet::with(['match.homeTeam', 'match.awayTeam']);
+
+            if ($clubId) {
+                $query->whereHas('match', function ($q) use ($clubId) {
+                    $q->where('home_club_id', $clubId)->orWhere('away_club_id', $clubId);
+                });
+            }
+
+            $sheets = $query->orderByDesc('created_at')->limit(50)->get();
+
+            $feuilles = $sheets->map(function ($sheet) {
+                $match = $sheet->match;
+                $homeName = $match?->homeTeam->name ?? 'N/A';
+                $awayName = $match?->awayTeam->name ?? 'N/A';
+
+                $statutLabels = [
+                    'draft' => 'À préparer',
+                    'submitted' => 'Soumise',
+                    'validated' => 'Validée',
+                    'rejected' => 'Rejetée',
+                ];
+                $statut = $statutLabels[$sheet->status] ?? ucfirst($sheet->status ?? 'N/A');
+                if (($sheet->status ?? 'draft') === 'draft' && $match?->match_date && $match->match_date->isPast()) {
+                    $statut = 'En retard';
+                }
+
+                $rosterCount = is_array($sheet->home_team_roster) ? count($sheet->home_team_roster) : 0;
+
+                return [
+                    'id' => $sheet->id,
+                    'match' => "{$homeName} vs {$awayName}",
+                    'date' => $match?->match_date?->format('Y-m-d') ?? 'N/A',
+                    'statut' => $statut,
+                    'effectif_disponible' => $rosterCount,
+                    'effectif_selectionne' => ($sheet->status ?? 'draft') !== 'draft' ? $rosterCount : 0
+                ];
+            });
+
+            return view('competitions.club.feuilles-match', compact('feuilles'));
+        } catch (\Exception $e) {
+            $feuilles = collect([]);
+            return view('competitions.club.feuilles-match', compact('feuilles'));
+        }
     }
 
     /**
@@ -271,41 +296,78 @@ class CompetitionController extends Controller
      */
     public function clubDiscipline(): View
     {
-        // Simulation des données - à remplacer par les vraies données
-        $sanctions = collect([
-            [
-                'id' => 1,
-                'joueur' => 'Jean Dupont',
-                'match' => 'Notre Club vs AS Sport',
-                'date' => '2024-09-08',
-                'type' => 'Carton Jaune',
-                'motif' => 'Comportement antisportif',
-                'statut' => 'Validé',
-                'amende' => 0
-            ],
-            [
-                'id' => 2,
-                'joueur' => 'Pierre Martin',
-                'match' => 'FC Ville vs Notre Club',
-                'date' => '2024-08-25',
-                'type' => 'Carton Rouge',
-                'motif' => 'Violence',
-                'statut' => 'Suspendu 3 matchs',
-                'amende' => 150
-            ],
-            [
-                'id' => 3,
-                'joueur' => 'Ahmed Ben Ali',
-                'match' => 'Club Local vs Notre Club',
-                'date' => '2024-09-01',
-                'type' => 'Carton Jaune',
-                'motif' => 'Retard de jeu',
-                'statut' => 'Validé',
-                'amende' => 0
-            ]
-        ]);
+        try {
+            // NOTE (audit factice -> reel, 2026-09) : 3 sanctions fictives
+            // ("Jean Dupont", "Pierre Martin", "Ahmed Ben Ali") remplacees par
+            // les vraies sanctions issues des rapports d'arbitres
+            // (referee_reports), meme source que
+            // associationDisciplineSanctions(), filtree sur les equipes du
+            // club de l'utilisateur.
+            $clubId = auth()->user()->club_id;
+            $teamNames = $clubId
+                ? \App\Models\Team::where('club_id', $clubId)->pluck('name')->all()
+                : [];
 
-        return view('competitions.club.discipline', compact('sanctions'));
+            $sanctions = collect();
+
+            $reportsQuery = \DB::table('referee_reports')->orderBy('match_date', 'desc');
+            if ($clubId) {
+                $reportsQuery->where(function ($q) use ($teamNames) {
+                    $q->whereIn('home_team', $teamNames)->orWhereIn('away_team', $teamNames);
+                });
+            }
+            $refereeReports = $reportsQuery->get();
+
+            $sanctionId = 1;
+
+            foreach ($refereeReports as $report) {
+                if ($report->yellow_cards) {
+                    $yellowCards = json_decode($report->yellow_cards, true);
+                    if (is_array($yellowCards)) {
+                        foreach ($yellowCards as $card) {
+                            $sanctions->push([
+                                'id' => $sanctionId++,
+                                'joueur' => $card['player'] ?? __('competitions.discipline_page.unknown_player'),
+                                'match' => trim(($report->home_team ?? '') . ' vs ' . ($report->away_team ?? '')),
+                                'date' => $report->match_date ? \Carbon\Carbon::parse($report->match_date)->format('Y-m-d') : date('Y-m-d'),
+                                'type' => 'Carton Jaune',
+                                'motif' => $card['reason'] ?? __('competitions.discipline_page.unspecified'),
+                                'statut' => 'Validé',
+                                'statut_code' => 'validated',
+                                'suspension_days' => 0,
+                                'amende' => $this->getFineAmountByType('Carton Jaune')
+                            ]);
+                        }
+                    }
+                }
+
+                if ($report->red_cards) {
+                    $redCards = json_decode($report->red_cards, true);
+                    if (is_array($redCards)) {
+                        foreach ($redCards as $card) {
+                            $suspensionDays = $this->getSuspensionDaysByType('Carton Rouge');
+                            $sanctions->push([
+                                'id' => $sanctionId++,
+                                'joueur' => $card['player'] ?? __('competitions.discipline_page.unknown_player'),
+                                'match' => trim(($report->home_team ?? '') . ' vs ' . ($report->away_team ?? '')),
+                                'date' => $report->match_date ? \Carbon\Carbon::parse($report->match_date)->format('Y-m-d') : date('Y-m-d'),
+                                'type' => 'Carton Rouge',
+                                'motif' => $card['reason'] ?? __('competitions.discipline_page.unspecified'),
+                                'statut' => $suspensionDays > 0 ? "Suspendu {$suspensionDays} matchs" : 'Validé',
+                                'statut_code' => $suspensionDays > 0 ? 'suspended' : 'validated',
+                                'suspension_days' => $suspensionDays,
+                                'amende' => $this->getFineAmountByType('Carton Rouge')
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            return view('competitions.club.discipline', compact('sanctions'));
+        } catch (\Exception $e) {
+            $sanctions = collect([]);
+            return view('competitions.club.discipline', compact('sanctions'));
+        }
     }
 
     // ========================================
@@ -318,45 +380,50 @@ class CompetitionController extends Controller
     public function associationSupervision(): View
     {
         try {
-            // Récupérer les vraies données tunisiennes
-            $tunisianAssociation = Association::where('name', 'like', '%Tunis%')->first();
-            
-            if (!$tunisianAssociation) {
-                throw new \Exception('Association tunisienne non trouvée');
+            // NOTE (audit factice -> reel, 2026-09) : cette methode ignorait
+            // l'utilisateur connecte et affichait toujours l'association
+            // tunisienne codee en dur ("%Tunis%"), avec des matchs joues et
+            // une prochaine journee tirees au hasard (rand()). Corrige pour
+            // utiliser la vraie association de l'utilisateur et les vrais
+            // matchs (App\Models\GameMatch).
+            $user = auth()->user();
+            $associationId = $user->association_id;
+
+            $association = $associationId ? Association::find($associationId) : null;
+
+            if (!$association) {
+                throw new \Exception('Association non trouvée pour cet utilisateur');
             }
 
-            // Récupérer les compétitions de l'association tunisienne
-            $competitionsData = Competition::where('association_id', $tunisianAssociation->id)
+            $competitionsData = Competition::where('association_id', $association->id)
                 ->where('status', '!=', 'cancelled')
                 ->with(['association'])
                 ->orderBy('start_date', 'desc')
                 ->get();
 
-            // Récupérer les clubs tunisiens pour calculer les statistiques
-            $tunisianClubs = Club::where('association_id', $tunisianAssociation->id)->get();
+            $associationClubs = Club::where('association_id', $association->id)->get();
 
-            $competitions = $competitionsData->map(function($competition) use ($tunisianClubs) {
-                // Calculer les statistiques basées sur les vrais clubs
-                $nbClubs = $tunisianClubs->count();
-                
-                // Générer des matchs fictifs basés sur le nombre de clubs
-                $totalMatches = $nbClubs > 0 ? ($nbClubs * ($nbClubs - 1)) : 0; // Chaque club joue contre tous les autres
-                $playedMatches = rand(0, $totalMatches);
-                
-                // Prochaine journée basée sur la date de début de la compétition
-                $nextMatchDate = $competition->start_date ? 
-                    $competition->start_date->addDays(rand(1, 14)) : 
-                    now()->addDays(rand(1, 14));
+            $competitions = $competitionsData->map(function ($competition) use ($associationClubs) {
+                $nbClubs = $associationClubs->count();
+                $totalMatches = GameMatch::where('competition_id', $competition->id)->count();
+                $playedMatches = GameMatch::where('competition_id', $competition->id)
+                    ->whereIn('status', ['completed', 'finished'])
+                    ->count();
+
+                $nextMatch = GameMatch::where('competition_id', $competition->id)
+                    ->where('match_date', '>=', now())
+                    ->orderBy('match_date')
+                    ->first();
 
                 return [
                     'id' => $competition->id,
                     'nom' => $competition->name,
-                    'saison' => $competition->season ?? '2024-2025',
+                    'saison' => $competition->season ?? 'N/A',
                     'statut' => $competition->status ?? 'Inconnu',
                     'nb_clubs' => $nbClubs,
                     'nb_matchs' => $totalMatches,
                     'matchs_joues' => $playedMatches,
-                    'prochaine_journee' => $nextMatchDate->format('Y-m-d'),
+                    'prochaine_journee' => $nextMatch?->match_date?->format('Y-m-d') ?? 'Non programmée',
                     'association' => $competition->association,
                     'start_date' => $competition->start_date,
                     'end_date' => $competition->end_date,
@@ -364,28 +431,16 @@ class CompetitionController extends Controller
                 ];
             });
 
-            return view('competitions.association.supervision', compact('competitions', 'tunisianAssociation'));
-            
-        } catch (\Exception $e) {
-            // En cas d'erreur, retourner des données de démonstration
-            $competitions = collect([
-                [
-                    'id' => 1,
-                    'nom' => 'Championnat Tunisien U19',
-                    'saison' => '2024-2025',
-                    'statut' => 'active',
-                    'nb_clubs' => 20,
-                    'nb_matchs' => 380,
-                    'matchs_joues' => 150,
-                    'prochaine_journee' => now()->addDays(7)->format('Y-m-d'),
-                    'association' => (object)['name' => 'FTF - Fédération Tunisienne de Football'],
-                    'start_date' => now()->subMonths(2),
-                    'end_date' => now()->addMonths(4),
-                    'type' => 'Championnat'
-                ]
-            ]);
+            $tunisianAssociation = $association;
 
-            $tunisianAssociation = (object)['name' => 'FTF - Fédération Tunisienne de Football'];
+            return view('competitions.association.supervision', compact('competitions', 'tunisianAssociation'));
+
+        } catch (\Exception $e) {
+            // NOTE (audit factice -> reel, 2026-09) : le repli affichait une
+            // fausse competition "Championnat Tunisien U19" avec 380 matchs.
+            // Repli honnete : liste vide plutot que donnees inventees.
+            $competitions = collect([]);
+            $tunisianAssociation = $user->association ?? null;
 
             return view('competitions.association.supervision', compact('competitions', 'tunisianAssociation'));
         }
@@ -842,14 +897,11 @@ class CompetitionController extends Controller
             // En cas d'erreur, retourner un club générique
         }
         
-        // Fallback basé sur la compétition
-        if (strpos($report->competition_name ?? '', 'Ligue') !== false) {
-            return 'Club Tunisien';
-        } elseif (strpos($report->competition_name ?? '', 'Coupe') !== false) {
-            return 'Club Tunisien';
-        } else {
-            return 'Club Tunisien';
-        }
+        // NOTE (audit factice -> reel, 2026-09) : ce fallback retournait
+        // toujours "Club Tunisien" en dur, quelle que soit la competition.
+        // On retourne desormais un etat honnete quand le club reel n'a pas
+        // pu etre resolu.
+        return 'Club non identifié';
     }
     
     /**
@@ -1087,7 +1139,7 @@ class CompetitionController extends Controller
                     'id' => $competition->id,
                     'nom' => $competition->name,
                     'saison' => $competition->season ?? '2024-2025',
-                    'statut' => $this->getStatusLabel($competition->status),
+                    'statut' => $this->getFifaStatusLabel($competition->status),
                     'association' => $competition->association?->name ?? 'N/A',
                     'fifa_connect_id' => $competition->fifa_connect_id
                 ];
@@ -1130,20 +1182,26 @@ class CompetitionController extends Controller
      */
     public function apiClassements($competitionId): JsonResponse
     {
-        // Récupérer les standings depuis la table standings
-        $standings = Standing::with(['club', 'competition'])
+        // Récupérer les standings depuis la table standings.
+        // NOTE (audit factice -> reel, 2026-09) : Standing::club et les
+        // attributs matches_played/wins/draws/losses n'existent pas
+        // (le modèle Standing expose team()/played/won/drawn/lost) ; ces
+        // champs se résolvaient donc toujours à null. Corrigé pour
+        // utiliser la vraie relation (Standing -> Team -> Club) et les
+        // vraies colonnes.
+        $standings = Standing::with(['team.club', 'competition'])
             ->where('competition_id', $competitionId)
             ->orderBy('position', 'asc')
             ->get()
             ->map(function($standing) {
                 return [
                     'position' => $standing->position,
-                    'nom' => $standing->club?->name ?? 'N/A',
+                    'nom' => $standing->team?->club?->name ?? $standing->team?->name ?? 'N/A',
                     'points' => $standing->points,
-                    'matchs' => $standing->matches_played,
-                    'victoires' => $standing->wins,
-                    'nuls' => $standing->draws,
-                    'defaites' => $standing->losses,
+                    'matchs' => $standing->played,
+                    'victoires' => $standing->won,
+                    'nuls' => $standing->drawn,
+                    'defaites' => $standing->lost,
                     'buts_pour' => $standing->goals_for,
                     'buts_contre' => $standing->goals_against,
                     'difference' => $standing->goal_difference
@@ -1204,14 +1262,8 @@ class CompetitionController extends Controller
      */
     private function getFifaStatusLabel($status): string
     {
-        return match($status) {
-            Competition::STATUS_DRAFT => 'Brouillon',
-            Competition::STATUS_SUBMITTED => 'Soumis à la Fédération',
-            Competition::STATUS_VALIDATED => 'Validé par la Fédération',
-            Competition::STATUS_PUBLISHED => 'Publié',
-            Competition::STATUS_CANCELLED => 'Annulé',
-            default => ucfirst($status ?? 'Inconnu')
-        };
+        $labels = __('competitions.fifa_status');
+        return $labels[$status] ?? ucfirst($status ?? __('competitions.unknown'));
     }
 
     /**
@@ -1219,14 +1271,8 @@ class CompetitionController extends Controller
      */
     private function getFifaTypeLabel($type): string
     {
-        return match($type) {
-            Competition::TYPE_CHAMPIONSHIP => 'Championnat',
-            Competition::TYPE_CUP => 'Coupe',
-            Competition::TYPE_TOURNAMENT => 'Tournoi',
-            Competition::TYPE_FRIENDLY => 'Match Amical',
-            Competition::TYPE_INTERNATIONAL => 'International',
-            default => ucfirst($type ?? 'Inconnu')
-        };
+        $labels = __('competitions.fifa_type');
+        return $labels[$type] ?? ucfirst($type ?? __('competitions.unknown'));
     }
 
     /**
@@ -1234,33 +1280,8 @@ class CompetitionController extends Controller
      */
     private function getFifaCategoryLabel($category): string
     {
-        return match($category) {
-            // Catégories d'âge FIFA officielles
-            Competition::CATEGORY_U13 => 'U-13',
-            Competition::CATEGORY_U15 => 'U-15',
-            Competition::CATEGORY_U17 => 'U-17',
-            Competition::CATEGORY_U20 => 'U-20',
-            Competition::CATEGORY_U23 => 'U-23',
-            Competition::CATEGORY_SENIOR => 'Senior',
-            
-            // Catégories par genre FIFA
-            Competition::CATEGORY_MEN => 'Masculin',
-            Competition::CATEGORY_WOMEN => 'Féminin',
-            
-            // Disciplines FIFA
-            Competition::CATEGORY_FUTSAL => 'Futsal',
-            Competition::CATEGORY_BEACH => 'Beach Soccer',
-            
-            // Catégories locales (associations nationales)
-            Competition::CATEGORY_U12 => 'U-12',
-            Competition::CATEGORY_U14 => 'U-14',
-            Competition::CATEGORY_U16 => 'U-16',
-            Competition::CATEGORY_U18 => 'U-18',
-            Competition::CATEGORY_U19 => 'U-19',
-            Competition::CATEGORY_U21 => 'U-21 (Espoirs)',
-            
-            default => ucfirst($category ?? 'Inconnu')
-        };
+        $labels = __('competitions.fifa_category');
+        return $labels[$category] ?? ucfirst($category ?? __('competitions.unknown'));
     }
 
     /**
@@ -1268,12 +1289,8 @@ class CompetitionController extends Controller
      */
     private function getFifaDisciplineLabel($discipline): string
     {
-        return match($discipline) {
-            Competition::DISCIPLINE_FOOTBALL => 'Football',
-            Competition::DISCIPLINE_FUTSAL => 'Futsal',
-            Competition::DISCIPLINE_BEACH_SOCCER => 'Beach Soccer',
-            default => ucfirst($discipline ?? 'Inconnu')
-        };
+        $labels = __('competitions.fifa_discipline');
+        return $labels[$discipline] ?? ucfirst($discipline ?? __('competitions.unknown'));
     }
 
     /**
@@ -1281,25 +1298,28 @@ class CompetitionController extends Controller
      */
     private function getMatchStatusLabel($status): string
     {
-        return match($status) {
-            'scheduled' => 'Programmé',
-            'live' => 'En cours',
-            'completed' => 'Terminé',
-            'postponed' => 'Reporté',
-            'cancelled' => 'Annulé',
-            default => ucfirst($status ?? 'Inconnu')
-        };
+        $labels = __('competitions.match_status_label');
+        return $labels[$status] ?? ucfirst($status ?? __('competitions.unknown'));
     }
 
     /**
-     * Calculer les points d'un club dans une compétition
+     * Calculer les points d'un club dans une compétition, à partir des vrais
+     * matchs terminés de la compétition (colonnes home_club_id/away_club_id,
+     * home_score/away_score).
+     *
+     * NOTE (audit factice -> reel, 2026-09) : $clubId était auparavant
+     * codé en dur à 1 ("à adapter selon l'ID du club"), ce qui affichait
+     * systématiquement les points du club n°1 pour tout le monde. Le club
+     * réellement concerné (celui de l'utilisateur connecté) est désormais
+     * passé en paramètre.
      */
-    private function calculateClubPoints($competition): int
+    private function calculateClubPoints($competition, ?int $clubId): int
     {
+        if (!$clubId) {
+            return 0;
+        }
+
         try {
-            // Récupérer les matchs terminés du club (simplifié - à adapter selon l'ID du club)
-            $clubId = 1; // Remplacer par l'ID du club de l'utilisateur connecté
-            
             $matches = $competition->matches()
                 ->where('match_status', 'completed')
                 ->where(function($query) use ($clubId) {
@@ -1326,89 +1346,48 @@ class CompetitionController extends Controller
     }
 
     /**
-     * Calculer le classement (simplifié)
+     * Calculer le classement réel d'un club dans une compétition : les
+     * points de chaque club inscrit sont calculés à partir des vrais
+     * matchs terminés, puis triés pour situer le club demandé.
+     *
+     * NOTE (audit factice -> reel, 2026-09) : l'ancienne version ne
+     * dépendait pas des vraies données ("Logique simplifiée") et
+     * dérivait un rang arbitraire à partir du seul nombre de points du
+     * club (totalClubs - points / 3), sans comparer aux autres clubs.
      */
-    private function calculateRanking($competition, $points): int
+    private function calculateRanking($competition, ?int $clubId): int
     {
         try {
-            // Logique simplifiée - à améliorer avec les vraies données de classement
-            $totalClubs = $competition->clubs()->count();
-            if ($totalClubs === 0) return 1;
-            
-            // Calcul basique basé sur les points
-            $rank = max(1, $totalClubs - intval($points / 3));
-            return min($rank, $totalClubs);
+            $clubs = $competition->clubs;
+            $totalClubs = $clubs->count();
+            if ($totalClubs === 0 || !$clubId) {
+                return $totalClubs > 0 ? $totalClubs : 1;
+            }
+
+            $pointsByClub = $clubs->mapWithKeys(function ($club) use ($competition) {
+                return [$club->id => $this->calculateClubPoints($competition, $club->id)];
+            });
+
+            $sorted = $pointsByClub->sortDesc()->keys()->values();
+            $position = $sorted->search($clubId);
+
+            if ($position === false) {
+                return $totalClubs;
+            }
+
+            return $position + 1;
         } catch (\Exception $e) {
             return 1;
         }
     }
 
-    // ========================================
-    // ACTIONS
-    // ========================================
-
-    /**
-     * Soumettre une feuille de match
-     */
-    public function soumettreFeuilleMatch(Request $request, $matchId)
-    {
-        // Logique de soumission de feuille de match
-        return response()->json(['success' => true, 'message' => 'Feuille de match soumise avec succès']);
-    }
-
-    /**
-     * Vérifier l'effectif
-     */
-    public function verifierEffectif(Request $request)
-    {
-        // Logique de vérification de l'effectif
-        return response()->json(['success' => true, 'message' => 'Effectif vérifié']);
-    }
-
-    /**
-     * Valider une feuille de match
-     */
-    public function validerFeuilleMatch(Request $request, $feuilleId)
-    {
-        // Logique de validation de feuille de match
-        return response()->json(['success' => true, 'message' => 'Feuille de match validée']);
-    }
-
-    /**
-     * Reprogrammer un match
-     */
-    public function reprogrammerMatch(Request $request, $matchId)
-    {
-        // Logique de reprogrammation de match
-        return response()->json(['success' => true, 'message' => 'Match reprogrammé']);
-    }
-
-    /**
-     * Mettre à jour un résultat
-     */
-    public function mettreAJourResultat(Request $request, $matchId)
-    {
-        // Logique de mise à jour de résultat
-        return response()->json(['success' => true, 'message' => 'Résultat mis à jour']);
-    }
-
-    /**
-     * Ajouter une sanction
-     */
-    public function ajouterSanction(Request $request)
-    {
-        // Logique d'ajout de sanction
-        return response()->json(['success' => true, 'message' => 'Sanction ajoutée']);
-    }
-
-    /**
-     * Exporter un rapport
-     */
-    public function exportRapport(Request $request, $type)
-    {
-        // Logique d'export de rapport
-        return response()->json(['success' => true, 'message' => 'Rapport exporté']);
-    }
+    // NOTE (audit factice -> reel, 2026-09) : le bloc "ACTIONS" (7 methodes :
+    // soumettreFeuilleMatch, verifierEffectif, validerFeuilleMatch,
+    // reprogrammerMatch, mettreAJourResultat, ajouterSanction, exportRapport)
+    // a ete supprime. Chacune se limitait a un commentaire "// Logique de ..."
+    // suivi d'un retour JSON de succes fixe, sans aucune logique reelle, et
+    // aucune n'etait reliee a une route ni appelee depuis nulle part dans
+    // l'application (verifie par recherche exhaustive).
 
     /**
      * Déterminer le type de licence FIFA Connect d'un joueur
@@ -1428,19 +1407,19 @@ class CompetitionController extends Controller
 
         // Si pas de licence active, déterminer selon l'âge et le statut
         $age = $player->age ?? 0;
-        
+
         if ($age < 13) {
-            return 'Non éligible (moins de 13 ans)';
+            return __('competitions.license_age_labels.not_eligible');
         } elseif ($age < 15) {
-            return 'Licence Amateur U-13';
+            return __('competitions.license_age_labels.u13');
         } elseif ($age < 17) {
-            return 'Licence Amateur U-15';
+            return __('competitions.license_age_labels.u15');
         } elseif ($age < 20) {
-            return 'Licence Amateur U-17';
+            return __('competitions.license_age_labels.u17');
         } elseif ($age < 23) {
-            return 'Licence Amateur U-20';
+            return __('competitions.license_age_labels.u20');
         } else {
-            return 'Licence Amateur Senior';
+            return __('competitions.license_age_labels.senior');
         }
     }
 
@@ -1449,164 +1428,143 @@ class CompetitionController extends Controller
      */
     private function getFifaLicenseTypeLabel($type): string
     {
-        return match($type) {
-            // Types de licences FIFA officiels
-            'professional' => 'Licence Professionnelle',
-            'amateur' => 'Licence Amateur',
-            'youth' => 'Licence Jeunesse',
-            'international' => 'Licence Internationale',
-            'futsal' => 'Licence Futsal',
-            'beach_soccer' => 'Licence Beach Soccer',
-            
-            // Types d'officiels techniques
-            'coach_fifa' => 'Entraîneur FIFA/Confédération',
-            'coach_national' => 'Entraîneur National',
-            'medical_staff' => 'Staff Médical',
-            'physio' => 'Kinésithérapeute',
-            'doctor' => 'Médecin d\'équipe',
-            
-            // Types d'arbitres
-            'referee_fifa' => 'Arbitre International FIFA',
-            'referee_national' => 'Arbitre National',
-            'assistant_referee' => 'Assistant Arbitre',
-            'fourth_official' => '4ème Arbitre',
-            'var_official' => 'Officiel VAR',
-            
-            // Types de dirigeants
-            'club_president' => 'Président de Club',
-            'club_secretary' => 'Secrétaire de Club',
-            'club_treasurer' => 'Trésorier de Club',
-            'association_official' => 'Dirigeant d\'Association',
-            'match_delegate' => 'Délégué de Match',
-            'security_official' => 'Responsable de Sécurité',
-            
-            default => ucfirst($type ?? 'Inconnu')
-        };
+        $labels = __('competitions.fifa_license_type');
+        return $labels[$type] ?? ucfirst($type ?? __('competitions.unknown'));
     }
 
     /**
      * Classement des compétitions - Accessible aux clubs et associations
+     *
+     * NOTE (audit factice -> reel, 2026-09) : cette méthode ciblait en dur
+     * une "association tunisienne" (Association::where('name', 'like',
+     * '%Tunis%')) pour tout le monde, avec un classement calculé par
+     * rand() (victoires, buts, forme, évolution) même dans le "chemin
+     * normal" (generateClassementDataFromRealClubs n'était pas plus
+     * réel que le générateur de démonstration), et un jeu de 20 clubs
+     * tunisiens fictifs + une compétition fictive en cas d'erreur.
+     * Remplacé par les compétitions réelles (celles de l'association de
+     * l'utilisateur connecté, ou toutes les compétitions actives si
+     * l'utilisateur n'est pas rattaché à une association) et un
+     * classement calculé à partir des vrais matchs terminés.
      */
     public function classement(): View
     {
         try {
-            // Récupérer les vraies données tunisiennes
-            $tunisianAssociation = Association::where('name', 'like', '%Tunis%')->first();
-            
-            if (!$tunisianAssociation) {
-                throw new \Exception('Association tunisienne non trouvée');
+            $user = auth()->user();
+
+            $query = Competition::with(['association', 'clubs'])
+                ->whereIn('status', ['published', 'active']);
+
+            if ($user && $user->association_id) {
+                $query->where('association_id', $user->association_id);
             }
 
-            $competitions = Competition::where('association_id', $tunisianAssociation->id)->get();
-            $tunisianClubs = Club::where('association_id', $tunisianAssociation->id)->get();
+            $competitions = $query->orderBy('start_date', 'desc')->get();
 
-            if ($competitions->isEmpty()) {
-                throw new \Exception('Aucune compétition tunisienne trouvée');
-            }
-
-            if ($tunisianClubs->isEmpty()) {
-                throw new \Exception('Aucun club tunisien trouvé');
-            }
-
-            // Générer des matchs fictifs et calculer le classement avec les vraies données
             $classements = [];
-            
+            $matchsInfo = [];
+
             foreach ($competitions as $competition) {
-                $classements[$competition->id] = $this->generateClassementDataFromRealClubs($competition, $tunisianClubs);
+                $classements[$competition->id] = $this->generateClassementDataFromMatches($competition, $competition->clubs);
+                $matchsInfo[$competition->id] = [
+                    'joues' => $competition->matches()->where('match_status', 'completed')->count(),
+                    'total' => $competition->matches()->count(),
+                ];
             }
 
-            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation'));
-            
+            $tunisianClubs = $competitions->flatMap(function ($competition) {
+                return $competition->clubs;
+            })->unique('id')->values();
+
+            $tunisianAssociation = $user->association ?? null;
+
+            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation', 'matchsInfo'));
+
         } catch (\Exception $e) {
-            // En cas d'erreur, retourner des données de démonstration
-            $competitions = collect([
-                (object)[
-                    'id' => 1,
-                    'name' => 'Championnat Tunisien U19',
-                    'season' => '2024-2025',
-                    'association' => (object)['name' => 'FTF - Fédération Tunisienne de Football'],
-                    'clubs' => collect()
-                ]
-            ]);
-            
-            $tunisianClubs = collect([
-                (object)['id' => 1, 'name' => 'Espérance Sportive de Tunis', 'short_name' => 'EST'],
-                (object)['id' => 2, 'name' => 'Club Africain', 'short_name' => 'CA'],
-                (object)['id' => 3, 'name' => 'Étoile Sportive du Sahel', 'short_name' => 'ESS'],
-                (object)['id' => 4, 'name' => 'Union Sportive Monastirienne', 'short_name' => 'USM'],
-                (object)['id' => 5, 'name' => 'Club Sportif Sfaxien', 'short_name' => 'CSS'],
-                (object)['id' => 6, 'name' => 'Stade Tunisien', 'short_name' => 'ST'],
-                (object)['id' => 7, 'name' => 'Club Athlétique Bizertin', 'short_name' => 'CAB'],
-                (object)['id' => 8, 'name' => 'Avenir Sportif de La Marsa', 'short_name' => 'ASM'],
-                (object)['id' => 9, 'name' => 'Club Olympique de Médenine', 'short_name' => 'COM'],
-                (object)['id' => 10, 'name' => 'Union Sportive de Ben Guerdane', 'short_name' => 'USBG'],
-                (object)['id' => 11, 'name' => 'Club Sportif de Hammam-Lif', 'short_name' => 'CSHL'],
-                (object)['id' => 12, 'name' => 'Club Olympique de Kairouan', 'short_name' => 'COK'],
-                (object)['id' => 13, 'name' => 'Union Sportive de Tataouine', 'short_name' => 'UST'],
-                (object)['id' => 14, 'name' => 'Club Sportif de Jendouba', 'short_name' => 'CSJ'],
-                (object)['id' => 15, 'name' => 'Union Sportive de Siliana', 'short_name' => 'USS'],
-                (object)['id' => 16, 'name' => 'Club Sportif de Kasserine', 'short_name' => 'CSK'],
-                (object)['id' => 17, 'name' => 'Union Sportive de Béja', 'short_name' => 'USB'],
-                (object)['id' => 18, 'name' => 'Club Sportif de Gafsa', 'short_name' => 'CSG'],
-                (object)['id' => 19, 'name' => 'Union Sportive de Tozeur', 'short_name' => 'UST'],
-                (object)['id' => 20, 'name' => 'Club Sportif de Kebili', 'short_name' => 'CSK']
-            ]);
-
+            // Etat honnete en cas d'erreur : listes vides, plus de
+            // donnees de demonstration fictives.
+            $competitions = collect();
             $classements = [];
-            foreach ($competitions as $competition) {
-                $classements[$competition->id] = $this->generateClassementData($competition, $tunisianClubs);
-            }
+            $tunisianClubs = collect();
+            $tunisianAssociation = null;
+            $matchsInfo = [];
 
-            $tunisianAssociation = (object)['name' => 'FTF - Fédération Tunisienne de Football'];
-
-            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation'));
+            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation', 'matchsInfo'));
         }
     }
 
     /**
-     * Génère les données de classement pour une compétition
+     * Calcule le classement réel d'une compétition à partir des vrais
+     * matchs terminés (colonnes home_club_id/away_club_id, home_score/
+     * away_score). Remplace generateClassementData()/
+     * generateClassementDataFromRealClubs(), qui généraient entièrement
+     * ces statistiques avec rand().
      */
-    private function generateClassementData($competition, $clubs)
+    private function generateClassementDataFromMatches($competition, $clubs)
     {
         $classement = [];
-        
+
         foreach ($clubs as $club) {
-            // Générer des statistiques réalistes
-            $matchsJoues = rand(15, 25);
-            $victoires = rand(5, $matchsJoues - 5);
-            $nuls = rand(2, min(8, $matchsJoues - $victoires));
-            $defaites = $matchsJoues - $victoires - $nuls;
-            
-            // Générer des buts de manière réaliste
-            $butsPour = rand($victoires * 1, $victoires * 3) + rand(0, $nuls);
-            $butsContre = rand($defaites * 1, $defaites * 2) + rand(0, $nuls);
-            
-            // Calculer les points (3 points pour victoire, 1 pour nul)
-            $points = ($victoires * 3) + $nuls;
-            
-            // Générer la forme récente (5 derniers matchs)
-            $forme = [];
-            for ($i = 0; $i < 5; $i++) {
-                $resultat = rand(1, 3);
-                $forme[] = $resultat == 1 ? 'V' : ($resultat == 2 ? 'N' : 'D');
+            $matches = $competition->matches()
+                ->where('match_status', 'completed')
+                ->where(function ($query) use ($club) {
+                    $query->where('home_club_id', $club->id)
+                          ->orWhere('away_club_id', $club->id);
+                })
+                ->orderBy('match_date')
+                ->get();
+
+            $victoires = 0;
+            $nuls = 0;
+            $defaites = 0;
+            $butsPour = 0;
+            $butsContre = 0;
+
+            foreach ($matches as $match) {
+                $isHome = $match->home_club_id == $club->id;
+                $pour = (int) ($isHome ? $match->home_score : $match->away_score);
+                $contre = (int) ($isHome ? $match->away_score : $match->home_score);
+                $butsPour += $pour;
+                $butsContre += $contre;
+
+                if ($pour > $contre) {
+                    $victoires++;
+                } elseif ($pour == $contre) {
+                    $nuls++;
+                } else {
+                    $defaites++;
+                }
             }
-            
+
+            // Forme réelle : résultats des 5 derniers matchs terminés.
+            $forme = $matches->slice(-5)->map(function ($match) use ($club) {
+                $isHome = $match->home_club_id == $club->id;
+                $pour = (int) ($isHome ? $match->home_score : $match->away_score);
+                $contre = (int) ($isHome ? $match->away_score : $match->home_score);
+                if ($pour > $contre) return 'V';
+                if ($pour == $contre) return 'N';
+                return 'D';
+            })->values()->all();
+
             $classement[] = [
                 'club' => $club,
                 'position' => 0, // Sera calculé après tri
-                'matchs_joues' => $matchsJoues,
+                'matchs_joues' => $matches->count(),
                 'victoires' => $victoires,
                 'nuls' => $nuls,
                 'defaites' => $defaites,
                 'buts_pour' => $butsPour,
                 'buts_contre' => $butsContre,
                 'difference_buts' => $butsPour - $butsContre,
-                'points' => $points,
+                'points' => ($victoires * 3) + $nuls,
                 'forme' => $forme,
-                'evolution' => rand(-2, 3) // Évolution de position
+                // Aucune donnée historique de classement (pas de snapshot
+                // journée par journée) n'existe pour calculer une vraie
+                // évolution de position : état honnête = pas de variation.
+                'evolution' => 0,
             ];
         }
-        
+
         // Trier par points (décroissant), puis par différence de buts
         usort($classement, function($a, $b) {
             if ($a['points'] == $b['points']) {
@@ -1614,56 +1572,110 @@ class CompetitionController extends Controller
             }
             return $b['points'] - $a['points'];
         });
-        
+
         // Assigner les positions
         foreach ($classement as $index => &$equipe) {
             $equipe['position'] = $index + 1;
         }
-        
+
         return $classement;
     }
 
     /**
      * Fixtures du club - Tous les matchs de la saison
+     *
+     * NOTE (audit factice -> reel, 2026-09) : ciblait en dur une
+     * "association tunisienne" pour tout le monde, avec des fixtures
+     * entièrement générées par rand() aussi bien dans le "chemin normal"
+     * (generateFixturesFromRealData) que dans le fallback de démonstration
+     * (generateFixtures, méthode explicitement marquée "DÉPRÉCIÉE"), y
+     * compris pour 5 clubs tunisiens fictifs. Remplacé par les vrais
+     * matchs du club de l'utilisateur connecté.
      */
     public function clubFixtures(): View
     {
         try {
-            // Récupérer les vraies données tunisiennes
-            $tunisianAssociation = Association::where('name', 'like', '%Tunis%')->first();
-            
-            if (!$tunisianAssociation) {
-                throw new \Exception('Association tunisienne non trouvée');
+            $clubId = auth()->user()->club_id ?? null;
+            $club = $clubId ? Club::find($clubId) : null;
+
+            if (!$club) {
+                $fixtures = [];
+                $clubStats = ['victoires' => 0, 'points' => 0, 'prochain_match' => null];
+                return view('competitions.club.fixtures', compact('fixtures', 'clubStats'));
             }
 
-            $tunisianClubs = Club::where('association_id', $tunisianAssociation->id)->get();
-            $competitions = Competition::where('association_id', $tunisianAssociation->id)->get();
+            $competitions = Competition::whereHas('matches', function ($query) use ($clubId) {
+                $query->where('home_club_id', $clubId)->orWhere('away_club_id', $clubId);
+            })->get();
 
-            if ($tunisianClubs->isEmpty()) {
-                throw new \Exception('Aucun club tunisien trouvé');
-            }
+            $fixtures = $this->generateFixturesFromRealData(collect([$club]), $competitions);
+            $clubStats = $this->computeClubQuickStats($fixtures, $clubId);
 
-            // Générer les fixtures basées sur les vraies données
-            $fixtures = $this->generateFixturesFromRealData($tunisianClubs, $competitions);
-
-            return view('competitions.club.fixtures', compact('fixtures', 'tunisianClubs', 'competitions', 'tunisianAssociation'));
+            return view('competitions.club.fixtures', compact('fixtures', 'clubStats'));
             
         } catch (\Exception $e) {
-            // En cas d'erreur, retourner des données de démonstration
-            $tunisianClubs = collect([
-                (object)['id' => 1, 'name' => 'Espérance Sportive de Tunis', 'short_name' => 'EST'],
-                (object)['id' => 2, 'name' => 'Club Africain', 'short_name' => 'CA'],
-                (object)['id' => 3, 'name' => 'Étoile Sportive du Sahel', 'short_name' => 'ESS'],
-                (object)['id' => 4, 'name' => 'Union Sportive Monastirienne', 'short_name' => 'USM'],
-                (object)['id' => 5, 'name' => 'Club Sportif Sfaxien', 'short_name' => 'CSS']
-            ]);
-
-            $fixtures = $this->generateFixtures($tunisianClubs);
-            $competitions = collect([(object)['id' => 1, 'name' => 'Championnat Tunisien U19', 'season' => '2024-2025']]);
-            $tunisianAssociation = (object)['name' => 'FTF - Fédération Tunisienne de Football'];
-            
-            return view('competitions.club.fixtures', compact('fixtures', 'tunisianClubs', 'competitions', 'tunisianAssociation'));
+            $fixtures = [];
+            $clubStats = ['victoires' => 0, 'points' => 0, 'prochain_match' => null];
+            return view('competitions.club.fixtures', compact('fixtures', 'clubStats'));
         }
+    }
+
+    /**
+     * Calcule les statistiques rapides reelles d'un club (victoires, points,
+     * prochain match) a partir des fixtures deja generees (elles-memes
+     * basees sur les vrais matchs de GameMatch).
+     *
+     * NOTE (audit factice -> reel, 2026-09) : la vue competitions.club.
+     * fixtures.blade.php affichait auparavant "Victoires" et "Points" via
+     * rand(8, 15) / rand(25, 45), et "Prochain Match" via
+     * now()->addDays(7) (toujours exactement 7 jours plus tard, quel que
+     * soit le vrai calendrier) — des valeurs entierement fictives, sans
+     * rapport avec les matchs reels du club. Ces trois valeurs sont
+     * desormais calculees a partir des vrais matchs.
+     */
+    private function computeClubQuickStats(array $fixtures, int $clubId): array
+    {
+        $victoires = 0;
+        $points = 0;
+        $prochainMatch = null;
+
+        foreach ($fixtures as $competitionFixtures) {
+            foreach ($competitionFixtures as $journee) {
+                foreach ($journee['matchs'] as $match) {
+                    $isHome = $match['domicile'] && $match['domicile']->id == $clubId;
+                    $isAway = $match['exterieur'] && $match['exterieur']->id == $clubId;
+
+                    if (!$isHome && !$isAway) {
+                        continue;
+                    }
+
+                    if ($match['statut'] === 'Terminé') {
+                        $butsClub = $isHome ? $match['buts_domicile'] : $match['buts_exterieur'];
+                        $butsAdverse = $isHome ? $match['buts_exterieur'] : $match['buts_domicile'];
+
+                        if ($butsClub !== null && $butsAdverse !== null) {
+                            if ($butsClub > $butsAdverse) {
+                                $victoires++;
+                                $points += 3;
+                            } elseif ($butsClub == $butsAdverse) {
+                                $points += 1;
+                            }
+                        }
+                    } else {
+                        $matchDate = $match['date'];
+                        if ($matchDate && (!$prochainMatch || $matchDate->lt($prochainMatch))) {
+                            $prochainMatch = $matchDate;
+                        }
+                    }
+                }
+            }
+        }
+
+        return [
+            'victoires' => $victoires,
+            'points' => $points,
+            'prochain_match' => $prochainMatch,
+        ];
     }
 
     /**
@@ -1672,28 +1684,34 @@ class CompetitionController extends Controller
     public function associationFixtures(Request $request): View
     {
         try {
-            // Récupérer les données depuis la base de données FIFA
-            $tunisianAssociation = Association::where('name', 'Fédération Tunisienne de Football')->first();
-            
-            if (!$tunisianAssociation) {
+            // NOTE (audit factice -> reel, 2026-09) : cette méthode
+            // recherchait en dur Association::where('name', 'Fédération
+            // Tunisienne de Football'), ce qui affichait les fixtures de
+            // la FTF à tout utilisateur association quelle que soit son
+            // association réelle. Remplacé par l'association de
+            // l'utilisateur connecté.
+            $associationId = auth()->user()->association_id ?? null;
+            $association = $associationId ? Association::find($associationId) : null;
+
+            if (!$association) {
                 return view('errors.database', [
-                    'error' => 'Association tunisienne non trouvée',
-                    'message' => 'Impossible de trouver l\'association tunisienne dans la base de données.'
+                    'error' => 'Association non trouvée',
+                    'message' => 'Aucune association n\'est associée à votre compte.'
                 ]);
             }
             
-            // Récupérer les clubs tunisiens depuis la base de données
-            $clubs = Club::where('association_id', $tunisianAssociation->id)->get();
+            // Récupérer les clubs de l'association depuis la base de données
+            $clubs = Club::where('association_id', $association->id)->get();
 
             if ($clubs->isEmpty()) {
                 return view('errors.database', [
                     'error' => 'Aucun club trouvé',
-                    'message' => 'Aucun club tunisien trouvé dans la base de données.'
+                    'message' => 'Aucun club trouvé pour votre association dans la base de données.'
                 ]);
             }
 
             // Utiliser les données de la base de données au lieu de générer des fixtures
-            $allFixtures = $this->getFixturesFromDatabase($tunisianAssociation, $clubs);
+            $allFixtures = $this->getFixturesFromDatabase($association, $clubs);
             
             // Pagination par journée (5 journées par page)
             $perPage = 5;
@@ -1716,24 +1734,16 @@ class CompetitionController extends Controller
                 ]
             );
             
-            // Récupérer les vraies compétitions de la FTF
-            $tunisianAssociation = Association::where('name', 'Fédération Tunisienne de Football')->first();
-            if ($tunisianAssociation) {
-                $competitions = Competition::where('association_id', $tunisianAssociation->id)
-                    ->get()
-                    ->map(function($comp) {
-                        return (object)[
-                            'id' => $comp->id,
-                            'name' => $comp->name,
-                            'season' => $comp->season ?? 'Saison non définie'
-                        ];
-                    });
-            } else {
-                $competitions = collect([
-                    (object)['id' => 1, 'name' => 'Championnat Tunisien U19', 'season' => '2024-2025'],
-                    (object)['id' => 2, 'name' => 'Coupe de Tunisie', 'season' => '2024-2025']
-                ]);
-            }
+            // Récupérer les vraies compétitions de l'association connectée
+            $competitions = Competition::where('association_id', $association->id)
+                ->get()
+                ->map(function($comp) {
+                    return (object)[
+                        'id' => $comp->id,
+                        'name' => $comp->name,
+                        'season' => $comp->season ?? 'Saison non définie'
+                    ];
+                });
 
             return view('competitions.association.fixtures', compact('paginatedFixtures', 'clubs', 'competitions'));
             
@@ -1775,19 +1785,12 @@ class CompetitionController extends Controller
                 ->orderBy('match_date')
                 ->get();
 
-            // Récupérer les arbitres (avec gestion d'erreur)
-            $referees = collect();
-            try {
-                $referees = \App\Models\User::where('role', 'referee')->orderBy('name')->get();
-            } catch (\Exception $e) {
-                // Si pas d'arbitres, créer des données fictives
-                $referees = collect([
-                    (object)['id' => 1, 'name' => 'Arbitre Principal 1', 'email' => 'arbitre1@example.com'],
-                    (object)['id' => 2, 'name' => 'Arbitre Principal 2', 'email' => 'arbitre2@example.com'],
-                    (object)['id' => 3, 'name' => 'Assistant Arbitre 1', 'email' => 'assistant1@example.com'],
-                    (object)['id' => 4, 'name' => 'Assistant Arbitre 2', 'email' => 'assistant2@example.com'],
-                ]);
-            }
+            // NOTE (audit factice -> reel, 2026-09) : en l'absence
+            // d'arbitres réels (ou en cas d'erreur), 4 arbitres fictifs
+            // identiques ("Arbitre Principal 1"...@example.com) étaient
+            // affichés pour tout le monde. Remplacé par une vraie
+            // requête ; liste réellement vide si aucun arbitre n'existe.
+            $referees = \App\Models\User::where('role', 'referee')->orderBy('name')->get();
 
             // Variables pour les filtres
             $competitionId = request('competition_id');
@@ -1800,12 +1803,7 @@ class CompetitionController extends Controller
             // En cas d'erreur, retourner des données minimales
             $competitions = collect();
             $matches = collect();
-            $referees = collect([
-                (object)['id' => 1, 'name' => 'Arbitre Principal 1', 'email' => 'arbitre1@example.com'],
-                (object)['id' => 2, 'name' => 'Arbitre Principal 2', 'email' => 'arbitre2@example.com'],
-                (object)['id' => 3, 'name' => 'Assistant Arbitre 1', 'email' => 'assistant1@example.com'],
-                (object)['id' => 4, 'name' => 'Assistant Arbitre 2', 'email' => 'assistant2@example.com'],
-            ]);
+            $referees = collect();
             $competitionId = null;
             $dateFrom = \Carbon\Carbon::now()->subDays(30);
             $dateTo = \Carbon\Carbon::now()->addDays(90);
@@ -1879,9 +1877,18 @@ class CompetitionController extends Controller
         }
         
         // Récupérer les matchs depuis la base de données
+        //
+        // NOTE (audit factice -> reel, 2026-09) : orderBy('round') /
+        // groupBy('round') / $match->round et $match->match_time
+        // referencaient des colonnes qui n'existent pas sur la table
+        // matches (elle expose 'matchday' et 'kickoff_time', pas 'round'
+        // ni 'match_time') : orderBy('round') provoquait une
+        // QueryException a chaque appel, systematiquement rattrapee par
+        // le catch de associationFixtures() qui affichait une page
+        // d'erreur generique. Corrige pour utiliser les vraies colonnes.
         $matches = GameMatch::with(['homeTeam.club', 'awayTeam.club'])
             ->whereIn('competition_id', $competitions->pluck('id'))
-            ->orderBy('round')
+            ->orderBy('matchday')
             ->orderBy('match_date')
             ->get();
         
@@ -1891,7 +1898,7 @@ class CompetitionController extends Controller
         
         // Organiser les matchs par journée
         $fixtures = [];
-        $matchesByRound = $matches->groupBy('round');
+        $matchesByRound = $matches->groupBy('matchday');
         
         foreach ($matchesByRound as $round => $roundMatches) {
             $matchsJournee = [];
@@ -1904,12 +1911,12 @@ class CompetitionController extends Controller
                     'domicile' => $match->homeTeam->club->short_name ?? $match->homeTeam->club->name ?? 'Club inconnu',
                     'exterieur' => $match->awayTeam->club->short_name ?? $match->awayTeam->club->name ?? 'Club inconnu',
                     'date' => $match->match_date,
-                    'heure' => $match->match_time,
+                    'heure' => $match->kickoff_time,
                     'stade' => $match->venue,
                     'buts_domicile' => $match->home_score,
                     'buts_exterieur' => $match->away_score,
                     'statut' => $statut,
-                    'journee' => $match->round,
+                    'journee' => $match->matchday,
                     'arbitre_principal' => $match->referee ?? 'À désigner',
                     'arbitre_assistant_1' => $match->assistant_referee_1 ?? 'À désigner',
                     'arbitre_assistant_2' => $match->assistant_referee_2 ?? 'À désigner',
@@ -1935,34 +1942,40 @@ class CompetitionController extends Controller
     public function moduleDashboard(Request $request): View
     {
         try {
-            // Récupérer les données depuis la base de données FIFA
-            $tunisianAssociation = Association::where('name', 'Fédération Tunisienne de Football')->first();
-            
-            if (!$tunisianAssociation) {
-                return view('errors.database', [
-                    'error' => 'Association tunisienne non trouvée',
-                    'message' => 'Impossible de trouver l\'association tunisienne dans la base de données.'
-                ]);
+            // NOTE (audit factice -> reel, 2026-09) : cette méthode
+            // recherchait en dur Association::where('name', 'Fédération
+            // Tunisienne de Football'), affichant les mêmes compétitions
+            // à tout utilisateur quelle que soit son association ou son
+            // club réels. Remplacé par une portée réelle : le club ou
+            // l'association de l'utilisateur connecté, ou toutes les
+            // compétitions actives pour un administrateur système.
+            $user = auth()->user();
+
+            $competitionsQuery = Competition::where('status', 'active');
+
+            if ($user && $user->club_id) {
+                $competitionsQuery->whereHas('clubs', function ($q) use ($user) {
+                    $q->where('clubs.id', $user->club_id);
+                });
+            } elseif ($user && $user->association_id) {
+                $competitionsQuery->where('association_id', $user->association_id);
             }
-            
-            // Récupérer les clubs tunisiens
-            $clubs = Club::where('association_id', $tunisianAssociation->id)->get();
-            
-            // Récupérer les compétitions actives
-            $competitions = Competition::where('association_id', $tunisianAssociation->id)
-                ->where('status', 'active')
-                ->get();
+            // Sinon (administrateur système, ou utilisateur sans club/association) :
+            // vue globale sur toutes les compétitions actives.
+
+            $competitions = $competitionsQuery->get();
+            $competitionIds = $competitions->pluck('id');
             
             // Récupérer les statistiques des matchs
-            $totalMatches = GameMatch::whereIn('competition_id', $competitions->pluck('id'))->count();
-            $completedMatches = GameMatch::whereIn('competition_id', $competitions->pluck('id'))
+            $totalMatches = GameMatch::whereIn('competition_id', $competitionIds)->count();
+            $completedMatches = GameMatch::whereIn('competition_id', $competitionIds)
                 ->where('status', 'completed')->count();
-            $upcomingMatches = GameMatch::whereIn('competition_id', $competitions->pluck('id'))
+            $upcomingMatches = GameMatch::whereIn('competition_id', $competitionIds)
                 ->where('status', 'scheduled')->count();
             
             // Récupérer les prochains matchs
             $nextMatches = GameMatch::with(['homeTeam.club', 'awayTeam.club', 'competition'])
-                ->whereIn('competition_id', $competitions->pluck('id'))
+                ->whereIn('competition_id', $competitionIds)
                 ->where('status', 'scheduled')
                 ->orderBy('match_date')
                 ->limit(5)
@@ -1970,33 +1983,19 @@ class CompetitionController extends Controller
             
             // Récupérer les derniers résultats
             $recentResults = GameMatch::with(['homeTeam.club', 'awayTeam.club', 'competition'])
-                ->whereIn('competition_id', $competitions->pluck('id'))
+                ->whereIn('competition_id', $competitionIds)
                 ->where('status', 'completed')
                 ->orderBy('match_date', 'desc')
                 ->limit(5)
                 ->get();
             
-            // Statistiques par compétition
-            $competitionStats = $competitions->map(function($comp) {
-                $matches = GameMatch::where('competition_id', $comp->id);
-                return [
-                    'competition' => $comp,
-                    'total_matches' => $matches->count(),
-                    'completed_matches' => $matches->where('status', 'completed')->count(),
-                    'upcoming_matches' => $matches->where('status', 'scheduled')->count(),
-                ];
-            });
-            
             return view('modules.competitions.index', compact(
-                'tunisianAssociation',
-                'clubs',
                 'competitions',
                 'totalMatches',
                 'completedMatches',
                 'upcomingMatches',
                 'nextMatches',
-                'recentResults',
-                'competitionStats'
+                'recentResults'
             ));
             
         } catch (\Exception $e) {
@@ -2105,14 +2104,17 @@ class CompetitionController extends Controller
     public function validateAllEngagements(Request $request)
     {
         try {
-            // Ici on pourrait ajouter une logique de validation en base
-            // Pour l'instant, on simule la validation
-            
+            // NOTE (audit factice -> reel, 2026-09) : cette action
+            // renvoyait toujours success:true avec 'validated_count' => 0
+            // en dur ("À remplacer par le vrai nombre") sans valider quoi
+            // que ce soit réellement en base. En l'absence d'une logique
+            // métier définie pour "valider un engagement" (quelle ligne
+            // de competition_club, quel statut cible), on renvoie
+            // désormais un état honnête plutôt qu'un faux succès.
             return response()->json([
-                'success' => true,
-                'message' => 'Tous les engagements ont été validés avec succès',
-                'validated_count' => 0 // À remplacer par le vrai nombre
-            ]);
+                'success' => false,
+                'error' => "La validation groupée des engagements n'est pas encore disponible : aucune logique de validation n'est connectée à ce bouton."
+            ], 501);
             
         } catch (\Exception $e) {
             return response()->json(['error' => 'Erreur lors de la validation: ' . $e->getMessage()], 500);
@@ -2231,12 +2233,17 @@ class CompetitionController extends Controller
         $statut = $match->status === 'completed' ? 'Terminé' : 'À venir';
         
         // Retourner les données de la feuille de match
+        //
+        // NOTE (audit factice -> reel, 2026-09) : $match->round /
+        // $match->match_time referencaient des colonnes inexistantes
+        // (matchday / kickoff_time) et 'Compétition Tunisienne' etait un
+        // nom d'affichage fixe pour toute competition sans nom. Corrige.
         return [
             'id' => $match->id,
-            'competition' => $match->competition ? $match->competition->name : 'Compétition Tunisienne',
-            'journee' => $match->round,
+            'competition' => $match->competition ? $match->competition->name : 'N/A',
+            'journee' => $match->matchday,
             'date' => $match->match_date,
-            'heure' => $match->match_time,
+            'heure' => $match->kickoff_time,
             'stade' => $match->venue,
             'domicile' => $match->homeTeam,
             'exterieur' => $match->awayTeam,
@@ -2256,579 +2263,68 @@ class CompetitionController extends Controller
     }
 
     /**
-     * Génère les fixtures pour une saison (MÉTHODE DÉPRÉCIÉE - NE PLUS UTILISER)
-     */
-    private function generateFixtures($clubs)
-    {
-        $fixtures = [];
-        $journees = 30; // 30 journées pour un championnat
-        
-        // Sauvegarder le seed original
-        $originalSeed = mt_rand();
-        
-        for ($journee = 1; $journee <= $journees; $journee++) {
-            $matchsJournee = [];
-            
-            // Générer les matchs pour cette journée avec un seed fixe pour la cohérence
-            mt_srand(12345 + $journee * 1000); // Seed fixe par journée
-            $clubsShuffled = $clubs->shuffle();
-            for ($i = 0; $i < count($clubsShuffled); $i += 2) {
-                if ($i + 1 < count($clubsShuffled)) {
-                    $domicile = $clubsShuffled[$i];
-                    $exterieur = $clubsShuffled[$i + 1];
-                    
-                    // Générer une date déterministe dans la saison (date de base fixe)
-                    $daysOffset = ($journee - 1) * 7 + ($i % 7); // Utiliser $i au lieu de rand() pour la cohérence
-                    $baseDate = \Carbon\Carbon::create(2025, 8, 15); // Date de base fixe pour la saison
-                    $dateMatch = $baseDate->copy()->addDays($daysOffset);
-                    
-                    // Déterminer si le match est terminé ou à venir
-                    $isMatchFinished = $dateMatch < now();
-                    
-                    // Générer un résultat seulement si le match est terminé
-                    $butsDomicile = null;
-                    $butsExterieur = null;
-                    if ($isMatchFinished) {
-                        // Utiliser l'ID du match comme seed pour la cohérence
-                        $matchId = $journee * 100 + $i;
-                        mt_srand($matchId);
-                        $resultat = mt_rand(1, 3);
-                        $butsDomicile = $resultat == 1 ? mt_rand(1, 4) : ($resultat == 2 ? mt_rand(0, 2) : mt_rand(0, 1));
-                        $butsExterieur = $resultat == 1 ? mt_rand(0, 1) : ($resultat == 2 ? mt_rand(0, 2) : mt_rand(1, 4));
-                    }
-                    
-                    $arbitres = $this->getConsistentArbitresForMatch($matchId);
-                    
-                    $matchsJournee[] = [
-                        'id' => $matchId,
-                        'domicile' => $domicile,
-                        'exterieur' => $exterieur,
-                        'date' => $dateMatch,
-                        'heure' => '15:00',
-                        'stade' => $domicile->address ?? 'Stade Municipal',
-                        'buts_domicile' => $butsDomicile,
-                        'buts_exterieur' => $butsExterieur,
-                        'statut' => $isMatchFinished ? 'Terminé' : 'À venir',
-                        'arbitre_principal' => $arbitres['principal'],
-                        'arbitre_assistant_1' => $arbitres['assistant_1'],
-                        'arbitre_assistant_2' => $arbitres['assistant_2'],
-                        'arbitre_var' => $arbitres['var']
-                    ];
-                }
-            }
-            
-            $fixtures[] = [
-                'journee' => $journee,
-                'date' => $dateMatch,
-                'matchs' => $matchsJournee
-            ];
-        }
-        
-        // Restaurer le seed original
-        mt_srand($originalSeed);
-        
-        return $fixtures;
-    }
-
-    /**
-     * Génère une feuille de match détaillée en récupérant les données depuis les fixtures
-     */
-    private function generateFeuilleMatchFromFixtures($id)
-    {
-        // Récupérer les vrais clubs tunisiens
-        $tunisianAssociation = Association::where('name', 'Fédération Tunisienne de Football')->first();
-        if (!$tunisianAssociation) {
-            throw new \Exception('Association tunisienne non trouvée');
-        }
-        
-        $clubs = Club::where('association_id', $tunisianAssociation->id)->get();
-        if ($clubs->isEmpty()) {
-            throw new \Exception('Aucun club tunisien trouvé');
-        }
-
-        // Générer les fixtures pour récupérer les données du match
-        // (la méthode generateFixtures utilise déjà des seeds fixes)
-        $fixtures = $this->generateFixtures($clubs);
-        
-        // Chercher le match dans les fixtures
-        $matchData = null;
-        foreach ($fixtures as $journee) {
-            foreach ($journee['matchs'] as $match) {
-                if ($match['id'] == $id) {
-                    $matchData = $match;
-                    break 2;
-                }
-            }
-        }
-        
-        if (!$matchData) {
-            throw new \Exception('Match non trouvé dans les fixtures');
-        }
-
-        // Récupérer la vraie compétition
-        $competition = Competition::where('association_id', $tunisianAssociation->id)->first();
-        
-        // Pour les matchs à venir, ne pas générer d'informations détaillées
-        if ($matchData['statut'] === 'À venir') {
-            return [
-                'id' => $id,
-                'competition' => $competition ? $competition->name : 'Compétition Tunisienne',
-                'journee' => intval($id / 100),
-                'date' => $matchData['date'],
-                'heure' => $matchData['heure'],
-                'stade' => $matchData['stade'],
-                'domicile' => $matchData['domicile'],
-                'exterieur' => $matchData['exterieur'],
-                'buts_domicile' => null,
-                'buts_exterieur' => null,
-                'statut' => $matchData['statut'],
-                'arbitre_principal' => 'À désigner',
-                'arbitre_assistant_1' => 'À désigner',
-                'arbitre_assistant_2' => 'À désigner',
-                'arbitre_var' => 'À désigner',
-                'delegue_match' => 'À désigner',
-                'observateur' => 'À désigner',
-                'joueurs_domicile' => [],
-                'joueurs_exterieur' => [],
-                'evenements' => []
-            ];
-        }
-        
-        // Pour les matchs terminés, générer toutes les informations
-        $arbitres = $this->getConsistentArbitresForMatch($id);
-        
-        return [
-            'id' => $id,
-            'competition' => $competition ? $competition->name : 'Compétition Tunisienne',
-            'journee' => intval($id / 100),
-            'date' => $matchData['date'],
-            'heure' => $matchData['heure'],
-            'stade' => $matchData['stade'],
-            'domicile' => $matchData['domicile'],
-            'exterieur' => $matchData['exterieur'],
-            'buts_domicile' => $matchData['buts_domicile'],
-            'buts_exterieur' => $matchData['buts_exterieur'],
-            'statut' => $matchData['statut'],
-            'arbitre_principal' => $arbitres['principal'],
-            'arbitre_assistant_1' => $arbitres['assistant_1'],
-            'arbitre_assistant_2' => $arbitres['assistant_2'],
-            'arbitre_var' => $arbitres['var'],
-            'delegue_match' => $arbitres['delegue'],
-            'observateur' => $arbitres['observateur'],
-            'joueurs_domicile' => $this->generateJoueursFromDatabase($matchData['domicile']),
-            'joueurs_exterieur' => $this->generateJoueursFromDatabase($matchData['exterieur']),
-            'evenements' => $this->generateEvenementsWithRealPlayers($matchData['domicile'], $matchData['exterieur'])
-        ];
-    }
-
-    /**
-     * Génère une feuille de match détaillée avec les vraies données
-     */
-    private function generateFeuilleMatch($id)
-    {
-        // Récupérer les vrais clubs tunisiens
-        $tunisianAssociation = Association::where('name', 'Fédération Tunisienne de Football')->first();
-        if (!$tunisianAssociation) {
-            throw new \Exception('Association tunisienne non trouvée');
-        }
-        
-        $clubs = Club::where('association_id', $tunisianAssociation->id)->get();
-        if ($clubs->isEmpty()) {
-            throw new \Exception('Aucun club tunisien trouvé');
-        }
-
-        $domicile = $clubs->random();
-        $exterieur = $clubs->where('id', '!=', $domicile->id)->random();
-
-        // Récupérer la vraie compétition
-        $competition = Competition::where('association_id', $tunisianAssociation->id)->first();
-        
-        return [
-            'id' => $id,
-            'competition' => $competition ? $competition->name : 'Compétition Tunisienne',
-            'journee' => rand(1, 30),
-            'date' => now()->addDays(rand(-30, 30)),
-            'heure' => '15:00',
-            'stade' => $domicile->address ?? 'Stade Municipal',
-            'domicile' => $domicile,
-            'exterieur' => $exterieur,
-            'buts_domicile' => rand(0, 4),
-            'buts_exterieur' => rand(0, 4),
-            'statut' => 'Terminé',
-            'arbitre_principal' => $this->getRandomArbitre('principal'),
-            'arbitre_assistant_1' => $this->getRandomArbitre('assistant'),
-            'arbitre_assistant_2' => $this->getRandomArbitre('assistant'),
-            'arbitre_var' => $this->getRandomArbitre('var'),
-            'delegue_match' => $this->getRandomArbitre('principal'),
-            'observateur' => $this->getRandomArbitre('principal'),
-            'joueurs_domicile' => $this->generateJoueursFromDatabase($domicile),
-            'joueurs_exterieur' => $this->generateJoueursFromDatabase($exterieur),
-            'evenements' => $this->generateEvenementsWithRealPlayers($domicile, $exterieur)
-        ];
-    }
-
-    /**
-     * Génère les joueurs d'une équipe depuis la base de données
-     */
-    private function generateJoueursFromDatabase($club)
-    {
-        // Récupérer les vrais joueurs du club depuis la base de données
-        $players = Player::where('club_id', $club->id)->get();
-        
-        if ($players->isEmpty()) {
-            // Si aucun joueur trouvé, générer des joueurs fictifs avec des noms tunisiens réalistes
-            $joueurs = [];
-            $nomsTunisiens = [
-                'Ahmed', 'Mohamed', 'Salah', 'Karim', 'Hassan', 'Ridha', 'Ali', 'Omar', 'Youssef', 'Nabil',
-                'Tarek', 'Walid', 'Adel', 'Bilel', 'Hamza', 'Ibrahim', 'Jamel', 'Khalil', 'Lamine', 'Mansour'
-            ];
-            $prenomsTunisiens = [
-                'Ben Ali', 'Trabelsi', 'Jebali', 'Mejri', 'Khelil', 'Ben Amor', 'Gharbi', 'Sassi', 'Bouazizi', 'Mansouri',
-                'Ben Salah', 'Dridi', 'Ferjani', 'Garbi', 'Hammami', 'Jebali', 'Khelifi', 'Laroussi', 'Mabrouk', 'Naceur'
-            ];
-            
-            for ($i = 1; $i <= 11; $i++) {
-                $nom = $nomsTunisiens[array_rand($nomsTunisiens)];
-                $prenom = $prenomsTunisiens[array_rand($prenomsTunisiens)];
-                
-                $joueurs[] = [
-                    'numero' => $i,
-                    'nom' => $nom . ' ' . $prenom,
-                    'position' => $this->getPosition($i),
-                    'titulaire' => true,
-                    'remplacant' => false,
-                    'carton_jaune' => rand(0, 1) ? rand(1, 90) : null,
-                    'carton_rouge' => rand(0, 10) == 0 ? rand(1, 90) : null,
-                    'buts' => rand(0, 2),
-                    'assists' => rand(0, 1)
-                ];
-            }
-            
-            // Ajouter les remplaçants
-            for ($i = 12; $i <= 18; $i++) {
-                $nom = $nomsTunisiens[array_rand($nomsTunisiens)];
-                $prenom = $prenomsTunisiens[array_rand($prenomsTunisiens)];
-                
-                $joueurs[] = [
-                    'numero' => $i,
-                    'nom' => $nom . ' ' . $prenom,
-                    'position' => $this->getPosition($i),
-                    'titulaire' => false,
-                    'remplacant' => true,
-                    'carton_jaune' => null,
-                    'carton_rouge' => null,
-                    'buts' => 0,
-                    'assists' => 0
-                ];
-            }
-            
-            return $joueurs;
-        }
-        
-        // Utiliser les vrais joueurs
-        $joueurs = [];
-        $titulaires = $players->take(11);
-        $remplacants = $players->slice(11, 7);
-        
-        // Titulaires
-        foreach ($titulaires as $index => $player) {
-            $joueurs[] = [
-                'numero' => $index + 1,
-                'nom' => $player->first_name . ' ' . $player->last_name,
-                'position' => $player->position ?? $this->getPosition($index + 1),
-                'titulaire' => true,
-                'remplacant' => false,
-                'carton_jaune' => rand(0, 1) ? rand(1, 90) : null,
-                'carton_rouge' => rand(0, 10) == 0 ? rand(1, 90) : null,
-                'buts' => rand(0, 2),
-                'assists' => rand(0, 1)
-            ];
-        }
-        
-        // Remplaçants
-        foreach ($remplacants as $index => $player) {
-            $joueurs[] = [
-                'numero' => $index + 12,
-                'nom' => $player->first_name . ' ' . $player->last_name,
-                'position' => $player->position ?? $this->getPosition($index + 12),
-                'titulaire' => false,
-                'remplacant' => true,
-                'carton_jaune' => null,
-                'carton_rouge' => null,
-                'buts' => 0,
-                'assists' => 0
-            ];
-        }
-        
-        return $joueurs;
-    }
-
-    /**
-     * Retourne la position d'un joueur selon son numéro
-     */
-    private function getPosition($numero)
-    {
-        $positions = [
-            1 => 'Gardien',
-            2 => 'Défenseur',
-            3 => 'Défenseur',
-            4 => 'Défenseur',
-            5 => 'Défenseur',
-            6 => 'Milieu',
-            7 => 'Milieu',
-            8 => 'Milieu',
-            9 => 'Attaquant',
-            10 => 'Milieu',
-            11 => 'Attaquant'
-        ];
-        
-        return $positions[$numero] ?? 'Remplaçant';
-    }
-
-    /**
-     * Génère les événements du match
-     */
-    private function generateEvenements()
-    {
-        $evenements = [];
-        
-        // Générer des événements réalistes avec des minutes cohérentes
-        $minutesPossibles = [5, 12, 18, 25, 32, 41, 43, 47, 52, 59, 63, 69, 72, 78, 85, 88, 90];
-        $types = ['But', 'Carton Jaune', 'Carton Rouge', 'Remplacement'];
-        
-        // Générer entre 5 et 12 événements
-        $nbEvenements = rand(5, 12);
-        $minutesUtilisees = [];
-        
-        for ($i = 0; $i < $nbEvenements; $i++) {
-            // Choisir une minute non utilisée
-            $minute = $minutesPossibles[array_rand($minutesPossibles)];
-            while (in_array($minute, $minutesUtilisees)) {
-                $minute = $minutesPossibles[array_rand($minutesPossibles)];
-            }
-            $minutesUtilisees[] = $minute;
-            
-            $type = $types[array_rand($types)];
-            $equipe = rand(0, 1) ? 'Domicile' : 'Exterieur';
-            
-            // Générer un numéro de joueur réaliste
-            $numeroJoueur = rand(1, 18);
-            
-            $evenements[] = [
-                'minute' => $minute,
-                'type' => $type,
-                'joueur' => 'Joueur ' . $numeroJoueur,
-                'equipe' => $equipe,
-                'description' => $this->getEventDescription($type, $numeroJoueur, $equipe)
-            ];
-        }
-        
-        // Trier par minute
-        usort($evenements, function($a, $b) {
-            return $a['minute'] - $b['minute'];
-        });
-        
-        return $evenements;
-    }
-    
-    /**
-     * Génère une description réaliste pour un événement
-     */
-    private function getEventDescription($type, $numeroJoueur, $equipe)
-    {
-        switch ($type) {
-            case 'But':
-                return "But marqué par le joueur $numeroJoueur ($equipe)";
-            case 'Carton Jaune':
-                return "Carton jaune pour le joueur $numeroJoueur ($equipe)";
-            case 'Carton Rouge':
-                return "Carton rouge pour le joueur $numeroJoueur ($equipe)";
-            case 'Remplacement':
-                return "Remplacement du joueur $numeroJoueur ($equipe)";
-            default:
-                return "Événement du match";
-        }
-    }
-    
-    /**
-     * Génère les événements du match avec les vrais noms des joueurs
-     */
-    private function generateEvenementsWithRealPlayers($domicile, $exterieur)
-    {
-        $evenements = [];
-        
-        // Récupérer les joueurs des deux équipes
-        $joueursDomicile = $this->generateJoueursFromDatabase($domicile);
-        $joueursExterieur = $this->generateJoueursFromDatabase($exterieur);
-        
-        // Générer des événements réalistes avec des minutes cohérentes
-        $minutesPossibles = [5, 12, 18, 25, 32, 41, 43, 47, 52, 59, 63, 69, 72, 78, 85, 88, 90];
-        $types = ['But', 'Carton Jaune', 'Carton Rouge', 'Remplacement'];
-        
-        // Générer entre 5 et 12 événements
-        $nbEvenements = rand(5, 12);
-        $minutesUtilisees = [];
-        
-        for ($i = 0; $i < $nbEvenements; $i++) {
-            // Choisir une minute non utilisée
-            $minute = $minutesPossibles[array_rand($minutesPossibles)];
-            while (in_array($minute, $minutesUtilisees)) {
-                $minute = $minutesPossibles[array_rand($minutesPossibles)];
-            }
-            $minutesUtilisees[] = $minute;
-            
-            $type = $types[array_rand($types)];
-            $equipe = rand(0, 1) ? 'Domicile' : 'Exterieur';
-            
-            // Choisir un joueur aléatoire de l'équipe
-            $joueurs = $equipe === 'Domicile' ? $joueursDomicile : $joueursExterieur;
-            $joueur = $joueurs[array_rand($joueurs)];
-            
-            $evenements[] = [
-                'minute' => $minute,
-                'type' => $type,
-                'joueur' => $joueur['nom'],
-                'equipe' => $equipe,
-                'description' => $this->getEventDescriptionWithPlayer($type, $joueur['nom'], $equipe)
-            ];
-        }
-        
-        // Trier par minute
-        usort($evenements, function($a, $b) {
-            return $a['minute'] - $b['minute'];
-        });
-        
-        return $evenements;
-    }
-    
-    /**
-     * Génère une description réaliste pour un événement avec le nom du joueur
-     */
-    private function getEventDescriptionWithPlayer($type, $nomJoueur, $equipe)
-    {
-        switch ($type) {
-            case 'But':
-                return "But marqué par $nomJoueur ($equipe)";
-            case 'Carton Jaune':
-                return "Carton jaune pour $nomJoueur ($equipe)";
-            case 'Carton Rouge':
-                return "Carton rouge pour $nomJoueur ($equipe)";
-            case 'Remplacement':
-                return "Remplacement de $nomJoueur ($equipe)";
-            default:
-                return "Événement du match";
-        }
-    }
-
-    /**
-     * Génère les matchs pour la désignation des arbitres
-     */
-    private function generateMatchsForArbitres($clubs)
-    {
-        $matchs = [];
-        
-        for ($i = 1; $i <= 20; $i++) {
-            $domicile = $clubs->random();
-            $exterieur = $clubs->where('id', '!=', $domicile->id)->random();
-            
-            $matchs[] = [
-                'id' => $i,
-                'domicile' => $domicile,
-                'exterieur' => $exterieur,
-                'date' => now()->addDays(rand(1, 30)),
-                'heure' => '15:00',
-                'stade' => $domicile->address ?? 'Stade Municipal',
-                'competition' => 'Championnat Tunisien U19',
-                'journee' => rand(1, 30),
-                'arbitre_principal' => null,
-                'arbitre_assistant_1' => null,
-                'arbitre_assistant_2' => null,
-                'arbitre_var' => null,
-                'statut_designation' => 'En attente'
-            ];
-        }
-        
-        return $matchs;
-    }
-
-    /**
-     * Génère la liste des arbitres
-     */
-    private function generateArbitres()
-    {
-        $arbitres = [];
-        $noms = ['Mohamed', 'Ahmed', 'Salah', 'Karim', 'Hassan', 'Ridha', 'Ali', 'Omar', 'Youssef', 'Nabil'];
-        $prenoms = ['Ben Ali', 'Trabelsi', 'Jebali', 'Mejri', 'Khelil', 'Ben Amor', 'Gharbi', 'Sassi', 'Bouazizi', 'Mansouri'];
-        
-        for ($i = 1; $i <= 30; $i++) {
-            $arbitres[] = [
-                'id' => $i,
-                'nom' => $noms[array_rand($noms)] . ' ' . $prenoms[array_rand($prenoms)],
-                'type' => $i <= 10 ? 'Arbitre Principal' : ($i <= 20 ? 'Assistant' : 'VAR'),
-                'experience' => rand(2, 15) . ' ans',
-                'matchs_arbitres' => rand(50, 300),
-                'disponible' => rand(0, 1) ? true : false,
-                'note' => rand(70, 100) . '/100'
-            ];
-        }
-        
-        return $arbitres;
-    }
-
-    /**
-     * Génère les fixtures à partir des vraies données de la base
+     * Génère les fixtures d\'un ou plusieurs clubs à partir des vrais
+     * matchs de la base de données (colonnes home_club_id/away_club_id,
+     * matchday, kickoff_time...).
+     *
+     * NOTE (audit factice -> reel, 2026-09) : générait auparavant 30
+     * "journées" par compétition avec des clubs tirés au hasard, des
+     * dates, des résultats et des noms d\'arbitres ("Arbitre 7",
+     * "Assistant 12"...) entièrement fabriqués par rand(), y compris les
+     * ID de match (jamais de vrais ID, donc le lien "Voir" vers la
+     * feuille de match réelle pointait vers un match inexistant).
      */
     private function generateFixturesFromRealData($clubs, $competitions)
     {
         $fixtures = [];
-        
+        $clubIds = $clubs->pluck('id');
+
         foreach ($competitions as $competition) {
+            $matches = GameMatch::with(['homeClub', 'awayClub'])
+                ->where('competition_id', $competition->id)
+                ->where(function ($query) use ($clubIds) {
+                    $query->whereIn('home_club_id', $clubIds)
+                          ->orWhereIn('away_club_id', $clubIds);
+                })
+                ->orderBy('matchday')
+                ->orderBy('match_date')
+                ->get();
+
+            if ($matches->isEmpty()) {
+                continue;
+            }
+
             $competitionFixtures = [];
-            $journees = 30; // 30 journées pour un championnat
-            
-            for ($journee = 1; $journee <= $journees; $journee++) {
-                $matchsJournee = [];
-                
-                // Générer les matchs pour cette journée avec les vrais clubs
-                $clubsShuffled = $clubs->shuffle();
-                for ($i = 0; $i < count($clubsShuffled); $i += 2) {
-                    if ($i + 1 < count($clubsShuffled)) {
-                        $domicile = $clubsShuffled[$i];
-                        $exterieur = $clubsShuffled[$i + 1];
-                        
-                        // Générer une date aléatoire dans la saison
-                        $dateMatch = now()->addDays(($journee - 1) * 7 + rand(0, 6));
-                        
-                        // Générer un résultat aléatoire
-                        $resultat = rand(1, 3);
-                        $butsDomicile = $resultat == 1 ? rand(1, 4) : ($resultat == 2 ? rand(0, 2) : rand(0, 1));
-                        $butsExterieur = $resultat == 1 ? rand(0, 1) : ($resultat == 2 ? rand(0, 2) : rand(1, 4));
-                        
-                        $matchsJournee[] = [
-                            'id' => $competition->id * 1000 + $journee * 100 + $i,
-                            'competition_id' => $competition->id,
-                            'competition_name' => $competition->name,
-                            'domicile' => $domicile,
-                            'exterieur' => $exterieur,
-                            'date' => $dateMatch,
-                            'heure' => '15:00',
-                            'stade' => $domicile->address ?? 'Stade Municipal',
-                            'buts_domicile' => $butsDomicile,
-                            'buts_exterieur' => $butsExterieur,
-                            'statut' => $dateMatch < now() ? 'Terminé' : 'À venir',
-                            'arbitre_principal' => 'Arbitre ' . rand(1, 20),
-                            'arbitre_assistant_1' => 'Assistant ' . rand(1, 20),
-                            'arbitre_assistant_2' => 'Assistant ' . rand(1, 20),
-                            'arbitre_var' => 'VAR ' . rand(1, 10)
-                        ];
-                    }
-                }
-                
+            $matchesByJournee = $matches->groupBy('matchday');
+
+            foreach ($matchesByJournee as $journee => $journeeMatches) {
+                $matchsJournee = $journeeMatches->map(function ($match) use ($competition) {
+                    $isCompleted = in_array($match->match_status, ['completed', 'finished']);
+
+                    return [
+                        'id' => $match->id,
+                        'competition_id' => $competition->id,
+                        'competition_name' => $competition->name,
+                        'domicile' => $match->homeClub,
+                        'exterieur' => $match->awayClub,
+                        'date' => $match->match_date,
+                        'heure' => $match->kickoff_time?->format('H:i') ?? 'N/A',
+                        'stade' => $match->venue ?? $match->stadium ?? 'Non renseigné',
+                        'buts_domicile' => $match->home_score,
+                        'buts_exterieur' => $match->away_score,
+                        'statut' => $isCompleted ? 'Terminé' : 'À venir',
+                        'arbitre_principal' => $match->referee ?? 'À désigner',
+                        'arbitre_assistant_1' => $match->assistant_referee_1 ?? 'À désigner',
+                        'arbitre_assistant_2' => $match->assistant_referee_2 ?? 'À désigner',
+                        'arbitre_var' => $match->var_referee ?? 'À désigner',
+                    ];
+                })->values()->all();
+
                 $competitionFixtures[] = [
                     'competition_id' => $competition->id,
                     'competition_name' => $competition->name,
                     'journee' => $journee,
-                    'date' => $dateMatch,
+                    'date' => $journeeMatches->first()->match_date,
                     'matchs' => $matchsJournee
                 ];
             }
@@ -2839,138 +2335,4 @@ class CompetitionController extends Controller
         return $fixtures;
     }
 
-    /**
-     * Récupère un arbitre aléatoire de la base de données
-     */
-    private function getRandomArbitre($type = 'principal')
-    {
-        // Récupérer les arbitres depuis la base de données
-        $arbitres = $this->generateArbitres();
-        
-        // Filtrer par type
-        $arbitresFiltres = collect($arbitres)->filter(function($arbitre) use ($type) {
-            switch($type) {
-                case 'principal':
-                    return strpos($arbitre['type'], 'Principal') !== false;
-                case 'assistant':
-                    return strpos($arbitre['type'], 'Assistant') !== false;
-                case 'var':
-                    return strpos($arbitre['type'], 'VAR') !== false;
-                default:
-                    return true;
-            }
-        });
-        
-        if ($arbitresFiltres->isEmpty()) {
-            return 'Arbitre à désigner';
-        }
-        
-        return $arbitresFiltres->random()['nom'];
-    }
-    
-    /**
-     * Génère des arbitres cohérents pour un match spécifique
-     */
-    private function getConsistentArbitresForMatch($matchId)
-    {
-        // Utiliser l'ID du match comme seed pour la génération aléatoire
-        // Cela garantit que le même match aura toujours les mêmes arbitres
-        mt_srand($matchId);
-        
-        // Générer la liste des arbitres
-        $arbitres = $this->generateArbitres();
-        
-        // Filtrer par type
-        $arbitresPrincipaux = collect($arbitres)->filter(function($arbitre) {
-            return strpos($arbitre['type'], 'Principal') !== false;
-        });
-        
-        $arbitresAssistants = collect($arbitres)->filter(function($arbitre) {
-            return strpos($arbitre['type'], 'Assistant') !== false;
-        });
-        
-        $arbitresVAR = collect($arbitres)->filter(function($arbitre) {
-            return strpos($arbitre['type'], 'VAR') !== false;
-        });
-        
-        // Sélectionner des arbitres cohérents
-        $arbitrePrincipal = $arbitresPrincipaux->isNotEmpty() ? $arbitresPrincipaux->random()['nom'] : 'Arbitre à désigner';
-        $assistant1 = $arbitresAssistants->isNotEmpty() ? $arbitresAssistants->random()['nom'] : 'Assistant à désigner';
-        $assistant2 = $arbitresAssistants->isNotEmpty() ? $arbitresAssistants->random()['nom'] : 'Assistant à désigner';
-        $var = $arbitresVAR->isNotEmpty() ? $arbitresVAR->random()['nom'] : 'VAR à désigner';
-        $delegue = $arbitresPrincipaux->isNotEmpty() ? $arbitresPrincipaux->random()['nom'] : 'Délégué à désigner';
-        $observateur = $arbitresPrincipaux->isNotEmpty() ? $arbitresPrincipaux->random()['nom'] : 'Observateur à désigner';
-        
-        // Restaurer le seed aléatoire
-        mt_srand();
-        
-        return [
-            'principal' => $arbitrePrincipal,
-            'assistant_1' => $assistant1,
-            'assistant_2' => $assistant2,
-            'var' => $var,
-            'delegue' => $delegue,
-            'observateur' => $observateur
-        ];
-    }
-
-    /**
-     * Génère les données de classement avec les vrais clubs tunisiens
-     */
-    private function generateClassementDataFromRealClubs($competition, $clubs)
-    {
-        $classement = [];
-        
-        foreach ($clubs as $club) {
-            // Générer des statistiques réalistes
-            $matchsJoues = rand(15, 25);
-            $victoires = rand(5, $matchsJoues - 5);
-            $nuls = rand(2, min(8, $matchsJoues - $victoires));
-            $defaites = $matchsJoues - $victoires - $nuls;
-            
-            // Générer des buts de manière réaliste
-            $butsPour = rand($victoires * 1, $victoires * 3) + rand(0, $nuls);
-            $butsContre = rand($defaites * 1, $defaites * 2) + rand(0, $nuls);
-            
-            // Calculer les points (3 points pour victoire, 1 pour nul)
-            $points = ($victoires * 3) + $nuls;
-            
-            // Générer la forme récente (5 derniers matchs)
-            $forme = [];
-            for ($i = 0; $i < 5; $i++) {
-                $resultat = rand(1, 3);
-                $forme[] = $resultat == 1 ? 'V' : ($resultat == 2 ? 'N' : 'D');
-            }
-            
-            $classement[] = [
-                'club' => $club,
-                'position' => 0, // Sera calculé après tri
-                'matchs_joues' => $matchsJoues,
-                'victoires' => $victoires,
-                'nuls' => $nuls,
-                'defaites' => $defaites,
-                'buts_pour' => $butsPour,
-                'buts_contre' => $butsContre,
-                'difference_buts' => $butsPour - $butsContre,
-                'points' => $points,
-                'forme' => $forme,
-                'evolution' => rand(-2, 3) // Évolution de position
-            ];
-        }
-        
-        // Trier par points (décroissant), puis par différence de buts
-        usort($classement, function($a, $b) {
-            if ($a['points'] == $b['points']) {
-                return $b['difference_buts'] - $a['difference_buts'];
-            }
-            return $b['points'] - $a['points'];
-        });
-        
-        // Assigner les positions
-        foreach ($classement as $index => &$equipe) {
-            $equipe['position'] = $index + 1;
-        }
-        
-        return $classement;
-    }
 }

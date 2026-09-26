@@ -212,13 +212,41 @@ function createNewCompetition() {
     alert('Créer une nouvelle compétition - Fonctionnalité à implémenter');
 }
 
+// NOTE (audit factice -> reel, 2026-09) : cette fonction telechargeait un
+// CSV entierement invente ("Ligue 1 Tunisienne", "Coupe de Tunisie" avec des
+// chiffres fixes) quelles que soient les vraies competitions de
+// l'association connectee, puis affichait un faux succes. Le CSV est
+// desormais construit a partir des vraies lignes du tableau (donnees reelles
+// issues de CompetitionController::associationSupervision()).
 function exportData() {
-    alert('Export des données en cours...');
-    
-    const csvContent = "Compétition,Saison,Statut,Clubs,Matchs Joués,Matchs Total\n" +
-        "Ligue 1 Tunisienne,2024-2025,active,20,150,380\n" +
-        "Coupe de Tunisie,2024-2025,upcoming,20,0,40";
-    
+    const rows = document.querySelectorAll('table tbody tr');
+    if (!rows.length) {
+        showNotification("Aucune compétition à exporter.", 'error');
+        return;
+    }
+
+    let csvContent = "Compétition,Saison,Statut,Clubs,Matchs\n";
+    let rowCount = 0;
+
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 5) return;
+
+        const competition = cells[0].textContent.trim().replace(/\s+/g, ' ');
+        const saison = cells[1].textContent.trim().replace(/\s+/g, ' ');
+        const statut = cells[2].textContent.trim().replace(/\s+/g, ' ');
+        const clubs = cells[3].textContent.trim().replace(/\s+/g, ' ');
+        const matchs = cells[4].textContent.trim().replace(/\s+/g, ' ');
+
+        csvContent += `"${competition}","${saison}","${statut}","${clubs}","${matchs}"\n`;
+        rowCount++;
+    });
+
+    if (rowCount === 0) {
+        showNotification("Aucune compétition à exporter.", 'error');
+        return;
+    }
+
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -226,22 +254,19 @@ function exportData() {
     a.download = 'competitions_supervision.csv';
     a.click();
     window.URL.revokeObjectURL(url);
-    
+
     showNotification('Données exportées avec succès !', 'success');
 }
 
+// NOTE (audit factice -> reel, 2026-09) : affichait un faux message
+// "Donnees actualisees !" apres un simple delai, sans jamais recharger les
+// vraies donnees (le bouton retrouvait juste son etat initial). Recharge
+// desormais reellement la page pour obtenir les donnees a jour.
 function refreshData() {
     const button = event.target;
-    const originalText = button.innerHTML;
-    
     button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Actualisation...';
     button.disabled = true;
-    
-    setTimeout(() => {
-        button.innerHTML = originalText;
-        button.disabled = false;
-        showNotification('Données actualisées !', 'success');
-    }, 2000);
+    location.reload();
 }
 
 // Fonctions pour les modals

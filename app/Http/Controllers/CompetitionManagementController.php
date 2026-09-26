@@ -435,7 +435,7 @@ class CompetitionManagementController extends Controller
                         'kickoff_time' => $matchDate->copy()->setTime(15, 0),
                         'venue' => 'home',
                         'stadium' => $homeTeam->club->stadium,
-                        'capacity' => rand(40000, 75000),
+                        'capacity' => $homeTeam->club->stadium_capacity,
                         'weather_conditions' => 'Clear',
                         'pitch_condition' => 'Excellent',
                         'referee' => 'TBD',
@@ -495,7 +495,7 @@ class CompetitionManagementController extends Controller
                         'kickoff_time' => $matchDate->copy()->setTime(15, 0),
                         'venue' => 'home',
                         'stadium' => $homeTeam->club->stadium,
-                        'capacity' => rand(40000, 75000),
+                        'capacity' => $homeTeam->club->stadium_capacity,
                         'weather_conditions' => 'Clear',
                         'pitch_condition' => 'Excellent',
                         'referee' => 'TBD',
@@ -589,7 +589,7 @@ class CompetitionManagementController extends Controller
                         'kickoff_time' => $matchDate->copy()->setTime(15, 0),
                         'venue' => 'home',
                         'stadium' => $homeTeam->club->stadium,
-                        'capacity' => rand(40000, 75000),
+                        'capacity' => $homeTeam->club->stadium_capacity,
                         'weather_conditions' => 'Clear',
                         'pitch_condition' => 'Excellent',
                         'referee' => 'TBD',
@@ -649,7 +649,7 @@ class CompetitionManagementController extends Controller
                         'kickoff_time' => $matchDate->copy()->setTime(15, 0),
                         'venue' => 'home',
                         'stadium' => $homeTeam->club->stadium,
-                        'capacity' => rand(40000, 75000),
+                        'capacity' => $homeTeam->club->stadium_capacity,
                         'weather_conditions' => 'Clear',
                         'pitch_condition' => 'Excellent',
                         'referee' => 'TBD',
@@ -829,7 +829,7 @@ class CompetitionManagementController extends Controller
                     'kickoff_time' => $kickoffTime,
                     'venue' => 'home',
                     'stadium' => $homeTeam->club->stadium,
-                    'capacity' => rand(40000, 75000),
+                    'capacity' => $homeTeam->club->stadium_capacity,
                     'weather_conditions' => 'Clear',
                     'pitch_condition' => 'Excellent',
                     'referee' => $matchData['referee'] ?? 'TBD',
@@ -1221,23 +1221,30 @@ class CompetitionManagementController extends Controller
         // Check if user can assign referees
         $canAssignReferee = auth()->user()->role === 'association' || auth()->user()->role === 'admin';
         
-        // Get team officials (placeholder data)
+        // NOTE (audit factice -> reel, 2026-09) : ces champs affichaient
+        // auparavant "Coach Name" / "Manager Name" en dur pour toutes les
+        // equipes. Aucune colonne coach/manager n'existe sur Team ou Club
+        // pour ce flux de feuille de match (seul un modele FIFA Connect
+        // distinct, FifaConnect\TeamOfficial, existe, mais il est rattache
+        // au systeme canonique FIFA Connect via match_team_id, pas a ce
+        // MatchModel/Team classique) : etat honnete "Non renseigne" en
+        // attendant qu'une vraie source de donnees soit branchee.
         $homeTeamOfficials = [
-            'coach' => 'Coach Name',
-            'manager' => 'Manager Name'
+            'coach' => 'Non renseigné',
+            'manager' => 'Non renseigné'
         ];
         
         $awayTeamOfficials = [
-            'coach' => 'Coach Name',
-            'manager' => 'Manager Name'
+            'coach' => 'Non renseigné',
+            'manager' => 'Non renseigné'
         ];
         
         // Get venue information
         $venueInfo = [
-            'stadium' => $match->stadium ?? 'TBD',
-            'capacity' => $match->capacity ? number_format($match->capacity) . ' seats' : 'TBD',
-            'address' => $match->venue ?? 'TBD',
-            'city' => 'TBD' // This could be extracted from venue or added as a separate field
+            'stadium' => $match->stadium ?? 'Non renseigné',
+            'capacity' => $match->capacity ? number_format($match->capacity) . ' seats' : 'Non renseigné',
+            'address' => $match->venue ?? 'Non renseigné',
+            'city' => 'Non renseigné' // Aucun champ ville distinct n'existe encore sur le match/venue
         ];
         
         // Get team rosters

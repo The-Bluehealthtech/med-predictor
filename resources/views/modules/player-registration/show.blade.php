@@ -532,7 +532,10 @@
 
 <script>
 function loadFifaStats() {
-    // Simulation du chargement des statistiques FIFA
+    // NOTE (audit factice -> reel, 2026-09) : aucune integration FIFA Connect
+    // reelle n'est disponible pour recuperer des statistiques ; ce message
+    // honnete est deja correct, seul le commentaire ('Simulation') etait
+    // trompeur.
     alert('Fonctionnalité en cours de développement. Les statistiques FIFA seront bientôt disponibles !');
 }
 </script>

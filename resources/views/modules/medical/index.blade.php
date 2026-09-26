@@ -106,8 +106,7 @@
                         </div>
                         
                         <div id="playerRecordsList" class="divide-y divide-gray-200">
-                            @if(isset($players) && $players->count() > 0)
-                                @foreach($players as $player)
+                            @forelse($players as $player)
                                     <div class="p-4 hover:bg-gray-50 transition-colors">
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center space-x-4">
@@ -141,8 +140,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
-                            @else
+                            @empty
                             <div class="text-center py-8">
                                     <div class="text-gray-400 mb-4">
                                         <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -151,14 +149,17 @@
                                     </div>
                                     <h3 class="text-lg font-medium text-gray-900 mb-2">No players found</h3>
                                     <p class="text-gray-600 mb-4">No player records are available at the moment.</p>
-                                    <button onclick="loadDemoPlayers()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                                        Load Demo Players
-                                    </button>
                             </div>
-                            @endif
+                            @endforelse
                         </div>
                     </div>
                 </div>
+
+                @if($players->hasPages())
+                <div class="mt-4">
+                    {{ $players->links() }}
+                </div>
+                @endif
 
                 <!-- Athlete Selector Modal -->
                 <div id="athleteSelectorModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
@@ -198,49 +199,6 @@
                     });
                 });
 
-                function loadDemoPlayers() {
-                    const playerList = document.getElementById('playerRecordsList');
-                    const demoPlayers = [
-                        { id: 1, name: 'John Smith', team: { name: 'Team Alpha' }, fifa_id: 'FIFA001', updated_at: '2024-08-04' },
-                        { id: 2, name: 'Sarah Johnson', team: { name: 'Team Beta' }, fifa_id: 'FIFA002', updated_at: '2024-08-03' },
-                        { id: 3, name: 'Mike Wilson', team: { name: 'Team Gamma' }, fifa_id: 'FIFA003', updated_at: '2024-08-02' },
-                        { id: 4, name: 'Emma Davis', team: { name: 'Team Delta' }, fifa_id: 'FIFA004', updated_at: '2024-08-01' },
-                        { id: 5, name: 'Alex Brown', team: { name: 'Team Echo' }, fifa_id: 'FIFA005', updated_at: '2024-07-31' }
-                    ];
-                    
-                    playerList.innerHTML = '';
-                    
-                    demoPlayers.forEach(player => {
-                        const div = document.createElement('div');
-                        div.className = 'p-4 hover:bg-gray-50 transition-colors';
-                        div.innerHTML = `
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4">
-                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                        <span class="text-blue-600 font-bold text-lg">${player.name.charAt(0)}</span>
-                                    </div>
-                                    <div>
-                                        <div class="font-medium text-gray-900">${player.name}</div>
-                                        <div class="text-sm text-gray-500">${player.team.name} • FIFA ID: ${player.fifa_id}</div>
-                                        <div class="text-xs text-gray-400">Last updated: ${player.updated_at}</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <a href="/modules/medical/athlete/${player.id}" 
-                                       class="text-blue-600 hover:text-blue-900 px-3 py-1 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">
-                                        👁️ Voir
-                                    </a>
-                                    <a href="/modules/medical/athlete/${player.id}/edit" 
-                                       class="text-indigo-600 hover:text-indigo-900 px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-50 transition-colors">
-                                        ✏️ Modifier
-                                    </a>
-                                </div>
-                            </div>
-                        `;
-                        playerList.appendChild(div);
-                    });
-                }
-
                 function showAthleteSelector() {
                     document.getElementById('athleteSelectorModal').classList.remove('hidden');
                     loadAthletes();
@@ -253,68 +211,68 @@
                 function loadAthletes() {
                     const athleteList = document.getElementById('athleteList');
                     const searchInput = document.getElementById('athleteSearch');
-                    
-                    // Demo athletes for selector
-                    const demoAthletes = [
-                        { id: 1, name: 'John Smith', team: 'Team Alpha' },
-                        { id: 2, name: 'Sarah Johnson', team: 'Team Beta' },
-                        { id: 3, name: 'Mike Wilson', team: 'Team Gamma' },
-                        { id: 4, name: 'Emma Davis', team: 'Team Delta' },
-                        { id: 5, name: 'Alex Brown', team: 'Team Echo' }
-                    ];
-                    
-                    athleteList.innerHTML = '';
-                    
-                    demoAthletes.forEach(athlete => {
-                        const div = document.createElement('div');
-                        div.className = 'p-2 hover:bg-gray-100 cursor-pointer rounded';
-                        div.innerHTML = `
-                            <div class="flex justify-between items-center">
-                                <span class="font-medium">${athlete.name}</span>
-                                <span class="text-sm text-gray-500">${athlete.team}</span>
-                            </div>
-                        `;
-                        div.onclick = () => {
-                            window.location.href = `/modules/medical/athlete/${athlete.id}`;
-                        };
-                        athleteList.appendChild(div);
-                    });
-                    
-                    // Search functionality
-                    searchInput.addEventListener('input', function(e) {
-                        const searchTerm = e.target.value.toLowerCase();
-                        const athleteItems = athleteList.querySelectorAll('div');
-                        
-                        athleteItems.forEach(item => {
-                            const athleteName = item.textContent.toLowerCase();
-                            if (athleteName.includes(searchTerm)) {
-                                item.style.display = 'block';
-                            } else {
-                                item.style.display = 'none';
-                            }
+
+                    athleteList.innerHTML = '<p class="text-sm text-gray-500 p-2">Chargement...</p>';
+
+                    fetch('/api/players', { headers: { 'Accept': 'application/json' } })
+                        .then(res => res.json())
+                        .then(json => {
+                            const players = (json && json.success && Array.isArray(json.data)) ? json.data : [];
+                            renderAthletes(players);
+
+                            searchInput.oninput = function(e) {
+                                const term = e.target.value.toLowerCase();
+                                const filtered = players.filter(p => {
+                                    const name = (p.name || `${p.first_name || ''} ${p.last_name || ''}`).toLowerCase();
+                                    return name.includes(term);
+                                });
+                                renderAthletes(filtered);
+                            };
+                        })
+                        .catch(() => {
+                            athleteList.innerHTML = '<p class="text-sm text-red-500 p-2">Impossible de charger la liste des joueurs.</p>';
                         });
-                    });
+
+                    function renderAthletes(players) {
+                        athleteList.innerHTML = '';
+                        if (players.length === 0) {
+                            athleteList.innerHTML = '<p class="text-sm text-gray-500 p-2">Aucun joueur trouvé.</p>';
+                            return;
+                        }
+                        players.forEach(athlete => {
+                            const name = athlete.name || `${athlete.first_name || ''} ${athlete.last_name || ''}`.trim();
+                            const team = (athlete.club && athlete.club.name) ? athlete.club.name : '';
+                            const div = document.createElement('div');
+                            div.className = 'p-2 hover:bg-gray-100 cursor-pointer rounded';
+                            div.innerHTML = `
+                                <div class="flex justify-between items-center">
+                                    <span class="font-medium">${name}</span>
+                                    <span class="text-sm text-gray-500">${team}</span>
+                                </div>
+                            `;
+                            div.onclick = () => {
+                                window.location.href = `/modules/medical/athlete/${athlete.id}`;
+                            };
+                            athleteList.appendChild(div);
+                        });
+                    }
                 }
                 </script>
 
                 <div class="mt-8">
                     <h3 class="text-md font-medium text-gray-900 mb-4">Recent Medical Activities</h3>
                     <div class="space-y-3">
+                        @forelse($recentActivities as $activity)
                         <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <span class="text-sm text-gray-700">Medical clearance approved for John Smith</span>
-                            <span class="text-xs text-gray-500">2 hours ago</span>
+                            <div class="w-2 h-2 rounded-full {{ $activity->status === 'verified' ? 'bg-green-500' : ($activity->status === 'false_positive' ? 'bg-red-500' : 'bg-yellow-500') }}"></div>
+                            <span class="text-sm text-gray-700">
+                                Prédiction {{ $activity->status }} ({{ $activity->predicted_condition ?? 'évaluation' }}) pour {{ $activity->player?->full_name ?? 'joueur inconnu' }}
+                            </span>
+                            <span class="text-xs text-gray-500">{{ $activity->prediction_date?->diffForHumans() ?? '' }}</span>
                         </div>
-                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                            <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                            <span class="text-sm text-gray-700">Fitness assessment scheduled for Sarah Johnson</span>
-                            <span class="text-xs text-gray-500">4 hours ago</span>
-                        </div>
-                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                            <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-                            <span class="text-sm text-gray-700">Medical suspension issued for Mike Wilson</span>
-                            <span class="text-xs text-gray-500">1 day ago</span>
-                        </div>
+                        @empty
+                        <p class="text-sm text-gray-500">Aucune activité médicale récente.</p>
+                        @endforelse
                     </div>
                 </div>
             </div>

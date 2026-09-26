@@ -22,25 +22,32 @@ class FinanceController extends Controller
     {
         $user = Auth::user();
         $userType = $this->getUserType($user);
-        
+
+        // NOTE (audit factice -> reel, ' + '2026-09) :
+        // Aucun modele de comptabilite generale (recettes, depenses, budget,
+        // salaires) n'existe dans la base de donnees de cette application.
+        // Les chiffres qui s'affichaient auparavant ici (ex: revenu club
+        // toujours 295 000EUR, budget association toujours 1 000 000EUR) etaient
+        // codes en dur, identiques pour tout le monde. Ils ont ete retires.
+        // La seule donnee financiere reellement enregistree en base concerne
+        // les paiements de transferts de joueurs (App\Models\TransferPayment),
+        // utilisee ci-dessous. Une vraie gestion financiere (budgets, salaires,
+        // recettes de billetterie, sponsoring...) necessiterait de creer ce
+        // modele de donnees, ce qui depasse le cadre d'un nettoyage de donnees
+        // factices et devrait etre traite comme un projet a part.
+
         $financialData = $this->getFinancialData($user, $userType);
-        $revenueData = $this->getRevenueData($user, $userType);
-        $expenseData = $this->getExpenseData($user, $userType);
-        $budgetData = $this->getBudgetData($user, $userType);
         $transactionsData = $this->getTransactionsData($user, $userType);
-        
+
         return view('modules.finance.dashboard', compact(
             'financialData',
-            'revenueData',
-            'expenseData',
-            'budgetData',
             'transactionsData',
             'userType'
         ));
     }
 
     /**
-     * Détermine le type d'utilisateur (club ou association)
+     * Determine le type d'utilisateur (club ou association)
      */
     private function getUserType($user)
     {
@@ -53,314 +60,61 @@ class FinanceController extends Controller
     }
 
     /**
-     * Récupère les données financières principales
+     * Recupere les donnees financieres reelles disponibles.
+     * transfer_fees_received/paid viennent de TransferPayment (reel).
+     * Tout le reste (revenus, depenses, budget, salaires) n'a pas de
+     * modele de donnees reel dans l'application -> null ("non disponible"),
+     * plutot qu'un chiffre invente.
      */
     private function getFinancialData($user, $userType)
     {
-        try {
-            if ($userType === 'club') {
-                return [
-                    'total_revenue' => $this->getClubRevenue($user->club_id),
-                    'total_expenses' => $this->getClubExpenses($user->club_id),
-                    'net_profit' => $this->getClubRevenue($user->club_id) - $this->getClubExpenses($user->club_id),
-                    'budget_allocated' => $this->getClubBudget($user->club_id),
-                    'budget_remaining' => $this->getClubBudget($user->club_id) - $this->getClubExpenses($user->club_id),
-                    'player_salaries' => $this->getPlayerSalaries($user->club_id),
-                    'transfer_fees' => $this->getTransferFees($user->club_id),
-                    'match_revenue' => $this->getMatchRevenue($user->club_id)
-                ];
-            } elseif ($userType === 'association') {
-                return [
-                    'total_revenue' => $this->getAssociationRevenue($user->association_id),
-                    'total_expenses' => $this->getAssociationExpenses($user->association_id),
-                    'net_profit' => $this->getAssociationRevenue($user->association_id) - $this->getAssociationExpenses($user->association_id),
-                    'budget_allocated' => $this->getAssociationBudget($user->association_id),
-                    'budget_remaining' => $this->getAssociationBudget($user->association_id) - $this->getAssociationExpenses($user->association_id),
-                    'club_contributions' => $this->getClubContributions($user->association_id),
-                    'fifa_grants' => $this->getFifaGrants($user->association_id),
-                    'competition_revenue' => $this->getCompetitionRevenue($user->association_id)
-                ];
-            }
-        } catch (\Exception $e) {
-            // Données simulées en cas d'erreur
-            return $this->getSimulatedFinancialData($userType);
+        $data = [
+            'total_revenue' => null,
+            'total_expenses' => null,
+            'net_profit' => null,
+            'budget_allocated' => null,
+            'budget_remaining' => null,
+            'transfer_fees_received' => null,
+            'transfer_fees_paid' => null,
+        ];
+
+        if ($userType === 'club' && $user->club_id) {
+            $data['transfer_fees_received'] = (float) \App\Models\TransferPayment::where('payee_id', $user->club_id)
+                ->where('payment_status', 'completed')
+                ->sum('amount');
+            $data['transfer_fees_paid'] = (float) \App\Models\TransferPayment::where('payer_id', $user->club_id)
+                ->where('payment_status', 'completed')
+                ->sum('amount');
         }
-        
-        return $this->getSimulatedFinancialData($userType);
+
+        return $data;
     }
 
     /**
-     * Récupère les données de revenus
-     */
-    private function getRevenueData($user, $userType)
-    {
-        try {
-            if ($userType === 'club') {
-                return [
-                    'matchday_revenue' => 45000,
-                    'sponsorship' => 120000,
-                    'merchandising' => 25000,
-                    'player_transfers' => 80000,
-                    'prize_money' => 15000,
-                    'other_revenue' => 10000
-                ];
-            } elseif ($userType === 'association') {
-                return [
-                    'club_contributions' => 200000,
-                    'fifa_grants' => 150000,
-                    'competition_fees' => 75000,
-                    'sponsorship' => 100000,
-                    'broadcasting_rights' => 300000,
-                    'other_revenue' => 50000
-                ];
-            }
-        } catch (\Exception $e) {
-            return $this->getSimulatedRevenueData($userType);
-        }
-        
-        return $this->getSimulatedRevenueData($userType);
-    }
-
-    /**
-     * Récupère les données de dépenses
-     */
-    private function getExpenseData($user, $userType)
-    {
-        try {
-            if ($userType === 'club') {
-                return [
-                    'player_salaries' => 180000,
-                    'staff_salaries' => 45000,
-                    'facility_maintenance' => 25000,
-                    'travel_expenses' => 15000,
-                    'equipment' => 10000,
-                    'other_expenses' => 20000
-                ];
-            } elseif ($userType === 'association') {
-                return [
-                    'staff_salaries' => 120000,
-                    'competition_organization' => 80000,
-                    'facility_rental' => 40000,
-                    'travel_expenses' => 30000,
-                    'equipment' => 15000,
-                    'other_expenses' => 25000
-                ];
-            }
-        } catch (\Exception $e) {
-            return $this->getSimulatedExpenseData($userType);
-        }
-        
-        return $this->getSimulatedExpenseData($userType);
-    }
-
-    /**
-     * Récupère les données de budget
-     */
-    private function getBudgetData($user, $userType)
-    {
-        try {
-            if ($userType === 'club') {
-                return [
-                    'annual_budget' => 500000,
-                    'spent_amount' => 295000,
-                    'remaining_amount' => 205000,
-                    'budget_percentage' => 59.0,
-                    'quarterly_budget' => 125000,
-                    'quarterly_spent' => 75000,
-                    'quarterly_remaining' => 50000
-                ];
-            } elseif ($userType === 'association') {
-                return [
-                    'annual_budget' => 1000000,
-                    'spent_amount' => 310000,
-                    'remaining_amount' => 690000,
-                    'budget_percentage' => 31.0,
-                    'quarterly_budget' => 250000,
-                    'quarterly_spent' => 80000,
-                    'quarterly_remaining' => 170000
-                ];
-            }
-        } catch (\Exception $e) {
-            return $this->getSimulatedBudgetData($userType);
-        }
-        
-        return $this->getSimulatedBudgetData($userType);
-    }
-
-    /**
-     * Récupère les données de transactions récentes
+     * Recupere les transactions de transfert reelles (les seules
+     * transactions financieres enregistrees dans l'application).
      */
     private function getTransactionsData($user, $userType)
     {
-        try {
-            return [
-                'recent_transactions' => [
-                    (object)[
-                        'id' => 1,
-                        'type' => 'revenue',
-                        'description' => 'Sponsorship - Nike',
-                        'amount' => 50000,
-                        'date' => now()->subDays(2),
-                        'status' => 'completed'
-                    ],
-                    (object)[
-                        'id' => 2,
-                        'type' => 'expense',
-                        'description' => 'Player Salary - Jean Dupont',
-                        'amount' => -15000,
-                        'date' => now()->subDays(5),
-                        'status' => 'completed'
-                    ],
-                    (object)[
-                        'id' => 3,
-                        'type' => 'revenue',
-                        'description' => 'Matchday Revenue',
-                        'amount' => 25000,
-                        'date' => now()->subDays(7),
-                        'status' => 'completed'
-                    ],
-                    (object)[
-                        'id' => 4,
-                        'type' => 'expense',
-                        'description' => 'Facility Maintenance',
-                        'amount' => -8000,
-                        'date' => now()->subDays(10),
-                        'status' => 'pending'
-                    ],
-                    (object)[
-                        'id' => 5,
-                        'type' => 'revenue',
-                        'description' => 'Transfer Fee - Player Sale',
-                        'amount' => 100000,
-                        'date' => now()->subDays(15),
-                        'status' => 'completed'
-                    ]
-                ],
-                'pending_transactions' => 3,
-                'total_transactions_month' => 25
-            ];
-        } catch (\Exception $e) {
-            return [
-                'recent_transactions' => collect(),
-                'pending_transactions' => 0,
-                'total_transactions_month' => 0
-            ];
+        $query = \App\Models\TransferPayment::with(['payer', 'payee']);
+
+        if ($userType === 'club' && $user->club_id) {
+            $query->where(function ($q) use ($user) {
+                $q->where('payer_id', $user->club_id)->orWhere('payee_id', $user->club_id);
+            });
+        } elseif ($userType !== 'system') {
+            // Pas de club/association identifie : aucune transaction a montrer.
+            $query->whereRaw('1 = 0');
         }
+
+        $recent = $query->orderByDesc('payment_date')->limit(10)->get();
+
+        return [
+            'recent_transactions' => $recent,
+            'pending_transactions' => $recent->where('payment_status', 'pending')->count(),
+        ];
     }
 
-    // Méthodes pour récupérer les données réelles (à implémenter selon la structure de la DB)
-    private function getClubRevenue($clubId) { return 295000; }
-    private function getClubExpenses($clubId) { return 180000; }
-    private function getClubBudget($clubId) { return 500000; }
-    private function getPlayerSalaries($clubId) { return 120000; }
-    private function getTransferFees($clubId) { return 50000; }
-    private function getMatchRevenue($clubId) { return 45000; }
-
-    private function getAssociationRevenue($associationId) { return 875000; }
-    private function getAssociationExpenses($associationId) { return 310000; }
-    private function getAssociationBudget($associationId) { return 1000000; }
-    private function getClubContributions($associationId) { return 200000; }
-    private function getFifaGrants($associationId) { return 150000; }
-    private function getCompetitionRevenue($associationId) { return 300000; }
-
-    // Méthodes pour les données simulées
-    private function getSimulatedFinancialData($userType)
-    {
-        if ($userType === 'club') {
-            return [
-                'total_revenue' => 295000,
-                'total_expenses' => 180000,
-                'net_profit' => 115000,
-                'budget_allocated' => 500000,
-                'budget_remaining' => 320000,
-                'player_salaries' => 120000,
-                'transfer_fees' => 50000,
-                'match_revenue' => 45000
-            ];
-        } else {
-            return [
-                'total_revenue' => 875000,
-                'total_expenses' => 310000,
-                'net_profit' => 565000,
-                'budget_allocated' => 1000000,
-                'budget_remaining' => 690000,
-                'club_contributions' => 200000,
-                'fifa_grants' => 150000,
-                'competition_revenue' => 300000
-            ];
-        }
-    }
-
-    private function getSimulatedRevenueData($userType)
-    {
-        if ($userType === 'club') {
-            return [
-                'matchday_revenue' => 45000,
-                'sponsorship' => 120000,
-                'merchandising' => 25000,
-                'player_transfers' => 80000,
-                'prize_money' => 15000,
-                'other_revenue' => 10000
-            ];
-        } else {
-            return [
-                'club_contributions' => 200000,
-                'fifa_grants' => 150000,
-                'competition_fees' => 75000,
-                'sponsorship' => 100000,
-                'broadcasting_rights' => 300000,
-                'other_revenue' => 50000
-            ];
-        }
-    }
-
-    private function getSimulatedExpenseData($userType)
-    {
-        if ($userType === 'club') {
-            return [
-                'player_salaries' => 180000,
-                'staff_salaries' => 45000,
-                'facility_maintenance' => 25000,
-                'travel_expenses' => 15000,
-                'equipment' => 10000,
-                'other_expenses' => 20000
-            ];
-        } else {
-            return [
-                'staff_salaries' => 120000,
-                'competition_organization' => 80000,
-                'facility_rental' => 40000,
-                'travel_expenses' => 30000,
-                'equipment' => 15000,
-                'other_expenses' => 25000
-            ];
-        }
-    }
-
-    private function getSimulatedBudgetData($userType)
-    {
-        if ($userType === 'club') {
-            return [
-                'annual_budget' => 500000,
-                'spent_amount' => 295000,
-                'remaining_amount' => 205000,
-                'budget_percentage' => 59.0,
-                'quarterly_budget' => 125000,
-                'quarterly_spent' => 75000,
-                'quarterly_remaining' => 50000
-            ];
-        } else {
-            return [
-                'annual_budget' => 1000000,
-                'spent_amount' => 310000,
-                'remaining_amount' => 690000,
-                'budget_percentage' => 31.0,
-                'quarterly_budget' => 250000,
-                'quarterly_spent' => 80000,
-                'quarterly_remaining' => 170000
-            ];
-        }
-    }
 
     /**
      * Affiche les rapports financiers détaillés
@@ -384,62 +138,14 @@ class FinanceController extends Controller
         return view('modules.finance.budgets', compact('userType'));
     }
 
-    /**
-     * Affiche le formulaire d'édition de transaction
-     */
-    public function editTransaction($id = null)
-    {
-        $transaction = null;
-        if ($id && $id !== 'new') {
-            try {
-                // Simuler la récupération d'une transaction
-                $transaction = (object)[
-                    'id' => $id,
-                    'type' => 'revenue',
-                    'amount' => 50000,
-                    'description' => 'Sponsorship - Nike',
-                    'category' => 'sponsorship',
-                    'date' => now()->subDays(2)->format('Y-m-d'),
-                    'status' => 'completed',
-                    'notes' => 'Contrat annuel de sponsoring'
-                ];
-            } catch (\Exception $e) {
-                Log::error("Error loading transaction {$id}: " . $e->getMessage());
-            }
-        }
-        
-        return view('modules.finance.edit-transaction', compact('transaction'));
-    }
-
-    /**
-     * Met à jour une transaction
-     */
-    public function updateTransaction(Request $request, $id)
-    {
-        $request->validate([
-            'type' => 'required|in:revenue,expense,transfer',
-            'amount' => 'required|numeric|min:0',
-            'description' => 'required|string|max:255',
-            'category' => 'required|string',
-            'date' => 'required|date',
-            'status' => 'required|in:pending,completed,cancelled',
-            'notes' => 'nullable|string'
-        ]);
-
-        try {
-            // Simuler la sauvegarde de la transaction
-            Log::info("Transaction {$id} updated: " . json_encode($request->all()));
-            
-            return redirect()->route('modules.finance.dashboard')
-                           ->with('success', 'Transaction mise à jour avec succès');
-        } catch (\Exception $e) {
-            Log::error("Error updating transaction {$id}: " . $e->getMessage());
-            return redirect()->back()
-                           ->with('error', 'Erreur lors de la mise à jour de la transaction')
-                           ->withInput();
-        }
-    }
-
+    // NOTE (audit factice -> reel, 2026-09) : editTransaction()/updateTransaction()
+    // ont ete supprimees. editTransaction() fabriquait toujours la MEME
+    // transaction factice ("Sponsorship - Nike", 50000) quel que soit l'id
+    // demande, et updateTransaction() ne faisait que logger puis affichait
+    // "mise a jour avec succes" sans ecrire dans aucune base (aucune table
+    // "transactions" generique n'existe). Les deux methodes n'etaient
+    // appelees par aucune route (la route /modules/finance/transaction/edit/{id}
+    // est une closure independante qui affiche deja un message honnete).
     /**
      * Affiche la page des intégrations API
      */
@@ -451,9 +157,9 @@ class FinanceController extends Controller
             $errorCount = $this->getErrorCount();
         } catch (\Exception $e) {
             Log::error("Error loading integrations data: " . $e->getMessage());
-            $activeIntegrations = 2;
-            $syncCount = 156;
-            $errorCount = 3;
+            $activeIntegrations = 0;
+            $syncCount = 0;
+            $errorCount = 0;
         }
         
         return view('modules.finance.integrations', compact('activeIntegrations', 'syncCount', 'errorCount'));
@@ -524,8 +230,9 @@ class FinanceController extends Controller
      */
     private function getActiveIntegrations()
     {
-        // Simuler les intégrations actives
-        return 2; // Sage et QuickBooks
+        // Aucune configuration d'integration comptable n'est persistee en base :
+        // aucun logiciel externe n'est reellement connecte pour le moment.
+        return 0;
     }
 
     /**
@@ -533,8 +240,8 @@ class FinanceController extends Controller
      */
     private function getSyncCount()
     {
-        // Simuler le nombre de synchronisations
-        return 156;
+        // Aucune synchronisation reelle n'a eu lieu (aucune integration connectee).
+        return 0;
     }
 
     /**
@@ -542,44 +249,8 @@ class FinanceController extends Controller
      */
     private function getErrorCount()
     {
-        // Simuler le nombre d'erreurs
-        return 3;
-    }
-
-    /**
-     * Effectue la synchronisation avec un logiciel externe
-     */
-    private function performSync($software, $type, $data = [])
-    {
-        // Simuler la synchronisation
-        $result = [
-            'software' => $software,
-            'type' => $type,
-            'timestamp' => now()->toISOString(),
-            'items_processed' => rand(10, 100),
-            'status' => 'success'
-        ];
-
-        // Simuler différents types de synchronisation
-        switch ($software) {
-            case 'sage':
-                $result['api_endpoint'] = 'https://api.sage.com/v1/transactions';
-                $result['items_processed'] = rand(20, 50);
-                break;
-            case 'quickbooks':
-                $result['api_endpoint'] = 'https://sandbox-quickbooks.api.intuit.com/v3/company/1234567890/accounts';
-                $result['items_processed'] = rand(15, 40);
-                break;
-            case 'xero':
-                $result['api_endpoint'] = 'https://api.xero.com/api.xro/2.0/Contacts';
-                $result['items_processed'] = rand(10, 30);
-                break;
-            default:
-                $result['api_endpoint'] = 'custom_api_endpoint';
-                $result['items_processed'] = rand(5, 25);
-        }
-
-        return $result;
+        // Aucune synchronisation reelle -> aucune erreur reelle.
+        return 0;
     }
 
     /**
@@ -716,8 +387,8 @@ class FinanceController extends Controller
      */
     private function getConnectedBanks()
     {
-        // Simuler les banques connectées
-        return 3; // BNP Paribas, Crédit Agricole, Starling Bank
+        // Aucune banque n'est reellement connectee (pas de credentials configures).
+        return 0;
     }
 
     /**
@@ -725,8 +396,7 @@ class FinanceController extends Controller
      */
     private function getActiveAccounts()
     {
-        // Simuler les comptes actifs
-        return 8;
+        return 0;
     }
 
     /**
@@ -734,8 +404,7 @@ class FinanceController extends Controller
      */
     private function getBankSyncCount()
     {
-        // Simuler le nombre de synchronisations
-        return 1247;
+        return 0;
     }
 
     /**
@@ -743,8 +412,8 @@ class FinanceController extends Controller
      */
     private function getTotalBalance()
     {
-        // Simuler le solde total
-        return 1250000;
+        // Aucun compte bancaire reel connecte : pas de solde a afficher.
+        return null;
     }
 
     /**

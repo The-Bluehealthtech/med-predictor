@@ -357,13 +357,14 @@ function printFeuilleMatch() {
 }
 
 // Fonction pour exporter la feuille de match
+// NOTE (audit factice -> reel, 2026-09) : affichait un faux message de
+// succes ("exportee avec succes") apres un simple delai, sans jamais
+// generer ni telecharger de vrai fichier PDF. Aucun service d'export PDF
+// n'est connecte pour la feuille de match (la fonction printFeuilleMatch()
+// ci-dessus, qui utilise window.print(), reste la façon reelle d'obtenir
+// une version imprimable/PDF via le navigateur).
 function exportFeuilleMatch() {
-    // Simulation d'export PDF
-    showNotification('Export PDF en cours...', 'info');
-    
-    setTimeout(() => {
-        showNotification('Feuille de match exportée avec succès!', 'success');
-    }, 2000);
+    showNotification("L'export PDF direct n'est pas encore disponible : utilisez le bouton Imprimer, qui permet d'enregistrer en PDF depuis le navigateur.", 'info');
 }
 
 // Fonction pour afficher des notifications

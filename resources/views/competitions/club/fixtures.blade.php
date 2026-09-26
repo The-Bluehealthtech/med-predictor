@@ -85,7 +85,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">Prochain Match</h3>
-                        <p class="text-sm text-gray-500" id="prochainMatch">{{ now()->addDays(7)->format('d/m/Y') }}</p>
+                        <p class="text-sm text-gray-500" id="prochainMatch">{{ ($clubStats['prochain_match'] ?? null) ? $clubStats['prochain_match']->format('d/m/Y') : 'Aucun match à venir' }}</p>
                     </div>
                 </div>
             </div>
@@ -97,7 +97,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">Victoires</h3>
-                        <p class="text-sm text-gray-500" id="victoires">{{ rand(8, 15) }}</p>
+                        <p class="text-sm text-gray-500" id="victoires">{{ $clubStats['victoires'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -109,7 +109,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">Points</h3>
-                        <p class="text-sm text-gray-500" id="points">{{ rand(25, 45) }}</p>
+                        <p class="text-sm text-gray-500" id="points">{{ $clubStats['points'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>

@@ -1040,7 +1040,33 @@ Route::middleware(['auth'])->group(function () {
 
     // Connected devices portal requires authentication.
     Route::get('/portal/devices', function () {
-        return view('modules.portal.devices');
+        $user = auth()->user();
+        $query = \Illuminate\Support\Facades\DB::table('player_connected_devices as d')
+            ->join('players', 'players.id', '=', 'd.player_id')
+            ->select('d.*', 'players.first_name', 'players.last_name');
+
+        if ($user->isPlayer()) {
+            abort_unless($user->player_id, 403);
+            $query->where('d.player_id', $user->player_id);
+        } elseif ($user->isClubUser()) {
+            abort_unless($user->club_id, 403);
+            $query->where('players.club_id', $user->club_id);
+        } elseif ($user->isAssociationUser()) {
+            abort_unless($user->association_id, 403);
+            $query->where('players.association_id', $user->association_id);
+        } elseif (!$user->isSystemAdmin()) {
+            abort(403);
+        }
+
+        $devices = $query->orderByDesc('d.last_sync_at')->limit(200)->get();
+
+        $stats = [
+            'total' => $devices->count(),
+            'connected' => $devices->where('is_connected', true)->count(),
+            'by_type' => $devices->groupBy('device_type')->map->count(),
+        ];
+
+        return view('modules.portal.devices', compact('devices', 'stats'));
     })->middleware(['auth'])->name('portal.devices');
 
     // Referee portal requires authentication.
@@ -1490,333 +1516,6 @@ Route::get('/health-records-simple', function () {
 
 // Test route for PCMA with DoctorSignOff integration
 
-// API Proxy Routes to avoid CORS issues (public access)
-Route::get('/api/proxy/icd11', function (Request $request) {
-    try {
-        $query = $request->get('q', '');
-        
-        \Log::info('ICD-11 API Proxy called', ['query' => $query]);
-        
-        // Fast ICD-11 search with optimized fallback
-        $queryLower = strtolower($query);
-        
-        // Quick keyword matching for immediate response
-        $quickResults = [];
-        foreach ($fallbackData as $keyword => $items) {
-            if (stripos($queryLower, $keyword) !== false) {
-                $quickResults = $items;
-                break;
-            }
-        }
-        
-        // If no quick match, try broader search
-        if (empty($quickResults)) {
-            foreach ($fallbackData as $keyword => $items) {
-                foreach ($items as $item) {
-                    if (stripos($item['title'], $query) !== false || stripos($item['code'], $query) !== false) {
-                        $quickResults[] = $item;
-                    }
-                }
-            }
-        }
-        
-        // Return results immediately (no external API calls for now due to timeout issues)
-        return response()->json([
-            'success' => true,
-            'results' => array_slice($quickResults, 0, 10),
-            'fallback' => true,
-            'message' => 'Using comprehensive medical database'
-        ]);
-        
-        // Comprehensive medical database fallback
-        $fallbackData = [
-            // Cardiovascular conditions
-            'cardio' => [
-                ['id' => 'I10', 'title' => 'Hypertension artérielle essentielle (I10)', 'code' => 'I10'],
-                ['id' => 'I21', 'title' => 'Infarctus aigu du myocarde (I21)', 'code' => 'I21'],
-                ['id' => 'I20', 'title' => 'Angine de poitrine (I20)', 'code' => 'I20'],
-                ['id' => 'I50', 'title' => 'Insuffisance cardiaque (I50)', 'code' => 'I50'],
-                ['id' => 'I49', 'title' => 'Troubles du rythme cardiaque (I49)', 'code' => 'I49'],
-                ['id' => 'I25', 'title' => 'Cardiopathie ischémique chronique (I25)', 'code' => 'I25'],
-                ['id' => 'I42', 'title' => 'Cardiomyopathie (I42)', 'code' => 'I42'],
-                ['id' => 'I34', 'title' => 'Valvulopathie mitrale (I34)', 'code' => 'I34'],
-                ['id' => 'I35', 'title' => 'Valvulopathie aortique (I35)', 'code' => 'I35'],
-                ['id' => 'I27', 'title' => 'Hypertension pulmonaire (I27)', 'code' => 'I27']
-            ],
-            'heart' => [
-                ['id' => 'I51', 'title' => 'Maladie cardiaque (I51)', 'code' => 'I51'],
-                ['id' => 'I49', 'title' => 'Arythmie cardiaque (I49)', 'code' => 'I49'],
-                ['id' => 'I34', 'title' => 'Valvulopathie (I34-I38)', 'code' => 'I34-I38'],
-                ['id' => 'I42', 'title' => 'Cardiomyopathie (I42)', 'code' => 'I42'],
-                ['id' => 'I50', 'title' => 'Insuffisance cardiaque (I50)', 'code' => 'I50']
-            ],
-            'hyper' => [
-                ['id' => 'I10', 'title' => 'Hypertension artérielle (I10)', 'code' => 'I10'],
-                ['id' => 'I27', 'title' => 'Hypertension pulmonaire (I27)', 'code' => 'I27'],
-                ['id' => 'I15', 'title' => 'Hypertension secondaire (I15)', 'code' => 'I15']
-            ],
-            'infarct' => [
-                ['id' => 'I21', 'title' => 'Infarctus aigu du myocarde (I21)', 'code' => 'I21'],
-                ['id' => 'I22', 'title' => 'Infarctus du myocarde récurrent (I22)', 'code' => 'I22'],
-                ['id' => 'I23', 'title' => 'Complications de l\'infarctus (I23)', 'code' => 'I23']
-            ],
-            'angine' => [
-                ['id' => 'I20', 'title' => 'Angine de poitrine (I20)', 'code' => 'I20'],
-                ['id' => 'I20.0', 'title' => 'Angine de poitrine instable (I20.0)', 'code' => 'I20.0'],
-                ['id' => 'I20.1', 'title' => 'Angine de poitrine stable (I20.1)', 'code' => 'I20.1']
-            ],
-            // Surgical procedures
-            'surgery' => [
-                ['id' => '0210', 'title' => 'Pontage aorto-coronarien (0210)', 'code' => '0210'],
-                ['id' => '0211', 'title' => 'Remplacement valvulaire (0211)', 'code' => '0211'],
-                ['id' => '0212', 'title' => 'Appendicectomie (0212)', 'code' => '0212'],
-                ['id' => '0213', 'title' => 'Cholécystectomie (0213)', 'code' => '0213'],
-                ['id' => '0214', 'title' => 'Herniorraphie (0214)', 'code' => '0214'],
-                ['id' => '0215', 'title' => 'Césarienne (0215)', 'code' => '0215'],
-                ['id' => '0216', 'title' => 'Arthroplastie du genou (0216)', 'code' => '0216'],
-                ['id' => '0217', 'title' => 'Arthroplastie de la hanche (0217)', 'code' => '0217'],
-                ['id' => '0218', 'title' => 'Lobectomie pulmonaire (0218)', 'code' => '0218'],
-                ['id' => '0219', 'title' => 'Néphrectomie (0219)', 'code' => '0219']
-            ],
-            'surgical' => [
-                ['id' => '0210', 'title' => 'Pontage aorto-coronarien (0210)', 'code' => '0210'],
-                ['id' => '0211', 'title' => 'Remplacement valvulaire (0211)', 'code' => '0211'],
-                ['id' => '0212', 'title' => 'Appendicectomie (0212)', 'code' => '0212'],
-                ['id' => '0213', 'title' => 'Cholécystectomie (0213)', 'code' => '0213'],
-                ['id' => '0214', 'title' => 'Herniorraphie (0214)', 'code' => '0214']
-            ]
-        ];
-        
-        $results = [];
-        foreach ($fallbackData as $keyword => $items) {
-            if (stripos($query, $keyword) !== false) {
-                $results = $items;
-                break;
-            }
-        }
-        
-        // If no specific match, return general cardiovascular terms for cardio-related queries
-        if (empty($results) && (stripos($query, 'cardio') !== false || stripos($query, 'heart') !== false)) {
-            $results = $fallbackData['cardio'];
-        }
-        
-        return response()->json([
-            'success' => true,
-            'results' => $results,
-            'fallback' => true
-        ]);
-        
-    } catch (Exception $e) {
-        \Log::error('ICD-11 API Proxy error', ['error' => $e->getMessage()]);
-        
-        // Return basic fallback data
-        $results = [
-            ['id' => 'I10', 'title' => 'Hypertension artérielle (I10)', 'code' => 'I10'],
-            ['id' => 'I21', 'title' => 'Infarctus du myocarde (I21)', 'code' => 'I21'],
-            ['id' => 'I20', 'title' => 'Angine de poitrine (I20)', 'code' => 'I20']
-        ];
-        
-        return response()->json([
-            'success' => true,
-            'results' => $results,
-            'fallback' => true
-        ]);
-    }
-})->name('api.proxy.icd11');
-
-Route::get('/api/proxy/vidal', function (Request $request) {
-    try {
-        $query = $request->get('q', '');
-        
-        \Log::info('VIDAL API Proxy called', ['query' => $query]);
-        
-        // Comprehensive French drug database
-        $vidalMedications = [
-            ['id' => 'vidal_001', 'title' => 'Doliprane 500mg', 'dosage' => 'Comprimé 500mg'],
-            ['id' => 'vidal_002', 'title' => 'Aspirine 100mg', 'dosage' => 'Comprimé 100mg'],
-            ['id' => 'vidal_003', 'title' => 'Ibuprofène 400mg', 'dosage' => 'Comprimé 400mg'],
-            ['id' => 'vidal_004', 'title' => 'Paracétamol 1000mg', 'dosage' => 'Comprimé 1000mg'],
-            ['id' => 'vidal_005', 'title' => 'Atorvastatine 20mg', 'dosage' => 'Comprimé 20mg'],
-            ['id' => 'vidal_006', 'title' => 'Métoprolol 50mg', 'dosage' => 'Comprimé 50mg'],
-            ['id' => 'vidal_007', 'title' => 'Lisinopril 10mg', 'dosage' => 'Comprimé 10mg'],
-            ['id' => 'vidal_008', 'title' => 'Amlodipine 5mg', 'dosage' => 'Comprimé 5mg'],
-            ['id' => 'vidal_009', 'title' => 'Warfarine 5mg', 'dosage' => 'Comprimé 5mg'],
-            ['id' => 'vidal_010', 'title' => 'Furosémide 40mg', 'dosage' => 'Comprimé 40mg'],
-            ['id' => 'vidal_011', 'title' => 'Oméprazole 20mg', 'dosage' => 'Gélule 20mg'],
-            ['id' => 'vidal_012', 'title' => 'Lévothyroxine 100µg', 'dosage' => 'Comprimé 100µg'],
-            ['id' => 'vidal_013', 'title' => 'Metformine 500mg', 'dosage' => 'Comprimé 500mg'],
-            ['id' => 'vidal_014', 'title' => 'Simvastatine 40mg', 'dosage' => 'Comprimé 40mg'],
-            ['id' => 'vidal_015', 'title' => 'Ramipril 5mg', 'dosage' => 'Comprimé 5mg']
-        ];
-        
-        // Fast VIDAL search with comprehensive French drug database
-        $queryLower = strtolower($query);
-        $results = collect($vidalMedications)->filter(function($med) use ($queryLower) {
-            return stripos($med['title'], $queryLower) !== false || 
-                   stripos($med['dosage'], $queryLower) !== false ||
-                   stripos(strtolower($med['title']), $queryLower) !== false;
-        })->take(10)->toArray();
-        
-        return response()->json([
-            'success' => true,
-            'results' => $results,
-            'fallback' => true,
-            'message' => 'Using comprehensive French drug database'
-        ]);
-        $vidalMedications = [
-            ['id' => 'vidal_001', 'title' => 'Doliprane 500mg', 'dosage' => 'Comprimé 500mg'],
-            ['id' => 'vidal_002', 'title' => 'Aspirine 100mg', 'dosage' => 'Comprimé 100mg'],
-            ['id' => 'vidal_003', 'title' => 'Ibuprofène 400mg', 'dosage' => 'Comprimé 400mg'],
-            ['id' => 'vidal_004', 'title' => 'Paracétamol 1000mg', 'dosage' => 'Comprimé 1000mg'],
-            ['id' => 'vidal_005', 'title' => 'Atorvastatine 20mg', 'dosage' => 'Comprimé 20mg'],
-            ['id' => 'vidal_006', 'title' => 'Métoprolol 50mg', 'dosage' => 'Comprimé 50mg'],
-            ['id' => 'vidal_007', 'title' => 'Lisinopril 10mg', 'dosage' => 'Comprimé 10mg'],
-            ['id' => 'vidal_008', 'title' => 'Amlodipine 5mg', 'dosage' => 'Comprimé 5mg'],
-            ['id' => 'vidal_009', 'title' => 'Warfarine 5mg', 'dosage' => 'Comprimé 5mg'],
-            ['id' => 'vidal_010', 'title' => 'Furosémide 40mg', 'dosage' => 'Comprimé 40mg'],
-            ['id' => 'vidal_011', 'title' => 'Oméprazole 20mg', 'dosage' => 'Gélule 20mg'],
-            ['id' => 'vidal_012', 'title' => 'Lévothyroxine 100µg', 'dosage' => 'Comprimé 100µg'],
-            ['id' => 'vidal_013', 'title' => 'Metformine 500mg', 'dosage' => 'Comprimé 500mg'],
-            ['id' => 'vidal_014', 'title' => 'Simvastatine 40mg', 'dosage' => 'Comprimé 40mg'],
-            ['id' => 'vidal_015', 'title' => 'Ramipril 5mg', 'dosage' => 'Comprimé 5mg']
-        ];
-        
-        $results = collect($vidalMedications)->filter(function($med) use ($query) {
-            return stripos($med['title'], $query) !== false || stripos($med['dosage'], $query) !== false;
-        })->toArray();
-        
-        return response()->json([
-            'success' => true,
-            'results' => $results,
-            'fallback' => true
-        ]);
-        
-    } catch (Exception $e) {
-        \Log::error('VIDAL API Proxy error', ['error' => $e->getMessage()]);
-        return response()->json(['success' => false, 'error' => $e->getMessage()]);
-    }
-})->name('api.proxy.vidal');
-
-Route::get('/api/proxy/allergies', function (Request $request) {
-    try {
-        $query = $request->get('q', '');
-        
-        \Log::info('Allergies API Proxy called', ['query' => $query]);
-        
-        // Comprehensive medical allergies database
-        $allergiesData = [
-            // Drug Allergies
-            ['id' => 'all_001', 'title' => 'Allergie aux pénicillines', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_002', 'title' => 'Allergie aux céphalosporines', 'severity' => 'Modérée', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_003', 'title' => 'Allergie aux sulfamides', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_004', 'title' => 'Allergie à l\'aspirine', 'severity' => 'Modérée', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_005', 'title' => 'Allergie aux AINS', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_006', 'title' => 'Allergie aux tétracyclines', 'severity' => 'Modérée', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_007', 'title' => 'Allergie aux macrolides', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_008', 'title' => 'Allergie aux quinolones', 'severity' => 'Modérée', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_009', 'title' => 'Allergie aux aminoglycosides', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_010', 'title' => 'Allergie aux bêta-lactamines', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            
-            // Food Allergies
-            ['id' => 'all_011', 'title' => 'Allergie aux arachides', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            ['id' => 'all_012', 'title' => 'Allergie aux noix', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            ['id' => 'all_013', 'title' => 'Allergie aux fruits de mer', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            ['id' => 'all_014', 'title' => 'Allergie au lait', 'severity' => 'Modérée', 'type' => 'Alimentaire'],
-            ['id' => 'all_015', 'title' => 'Allergie aux œufs', 'severity' => 'Modérée', 'type' => 'Alimentaire'],
-            ['id' => 'all_016', 'title' => 'Allergie au soja', 'severity' => 'Modérée', 'type' => 'Alimentaire'],
-            ['id' => 'all_017', 'title' => 'Allergie au blé', 'severity' => 'Modérée', 'type' => 'Alimentaire'],
-            ['id' => 'all_018', 'title' => 'Allergie au poisson', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            ['id' => 'all_019', 'title' => 'Allergie aux crustacés', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            ['id' => 'all_020', 'title' => 'Allergie aux mollusques', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            
-            // Environmental Allergies
-            ['id' => 'all_021', 'title' => 'Allergie aux pollens', 'severity' => 'Modérée', 'type' => 'Environnementale'],
-            ['id' => 'all_022', 'title' => 'Allergie aux acariens', 'severity' => 'Modérée', 'type' => 'Environnementale'],
-            ['id' => 'all_023', 'title' => 'Allergie aux poils d\'animaux', 'severity' => 'Modérée', 'type' => 'Environnementale'],
-            ['id' => 'all_024', 'title' => 'Allergie aux moisissures', 'severity' => 'Modérée', 'type' => 'Environnementale'],
-            ['id' => 'all_025', 'title' => 'Allergie au latex', 'severity' => 'Sévère', 'type' => 'Contact']
-        ];
-        
-        // Fast Allergies search with comprehensive medical allergies database
-        $queryLower = strtolower($query);
-        $results = collect($allergiesData)->filter(function($allergy) use ($queryLower) {
-            $title = strtolower($allergy['title']);
-            $type = strtolower($allergy['type']);
-            $severity = strtolower($allergy['severity']);
-            
-            return stripos($title, $queryLower) !== false || 
-                   stripos($type, $queryLower) !== false || 
-                   stripos($severity, $queryLower) !== false;
-        })->take(10)->toArray();
-        
-        return response()->json([
-            'success' => true,
-            'results' => $results,
-            'fallback' => true,
-            'message' => 'Using comprehensive medical allergies database'
-        ]);
-        
-        // Comprehensive medical allergies database
-        $allergiesData = [
-            // Drug Allergies
-            ['id' => 'all_001', 'title' => 'Allergie aux pénicillines', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_002', 'title' => 'Allergie aux céphalosporines', 'severity' => 'Modérée', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_003', 'title' => 'Allergie aux sulfamides', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_004', 'title' => 'Allergie à l\'aspirine', 'severity' => 'Modérée', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_005', 'title' => 'Allergie aux AINS', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_006', 'title' => 'Allergie aux tétracyclines', 'severity' => 'Modérée', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_007', 'title' => 'Allergie aux macrolides', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_008', 'title' => 'Allergie aux quinolones', 'severity' => 'Modérée', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_009', 'title' => 'Allergie aux aminoglycosides', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            ['id' => 'all_010', 'title' => 'Allergie aux bêta-lactamines', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-            
-            // Food Allergies
-            ['id' => 'all_011', 'title' => 'Allergie aux arachides', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            ['id' => 'all_012', 'title' => 'Allergie aux noix', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            ['id' => 'all_013', 'title' => 'Allergie aux fruits de mer', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            ['id' => 'all_014', 'title' => 'Allergie au lait', 'severity' => 'Modérée', 'type' => 'Alimentaire'],
-            ['id' => 'all_015', 'title' => 'Allergie aux œufs', 'severity' => 'Modérée', 'type' => 'Alimentaire'],
-            ['id' => 'all_016', 'title' => 'Allergie au soja', 'severity' => 'Modérée', 'type' => 'Alimentaire'],
-            ['id' => 'all_017', 'title' => 'Allergie au blé', 'severity' => 'Modérée', 'type' => 'Alimentaire'],
-            ['id' => 'all_018', 'title' => 'Allergie au poisson', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            ['id' => 'all_019', 'title' => 'Allergie aux crustacés', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            ['id' => 'all_020', 'title' => 'Allergie aux mollusques', 'severity' => 'Sévère', 'type' => 'Alimentaire'],
-            
-            // Environmental Allergies
-            ['id' => 'all_021', 'title' => 'Allergie aux pollens', 'severity' => 'Modérée', 'type' => 'Environnementale'],
-            ['id' => 'all_022', 'title' => 'Allergie aux acariens', 'severity' => 'Modérée', 'type' => 'Environnementale'],
-            ['id' => 'all_023', 'title' => 'Allergie aux poils d\'animaux', 'severity' => 'Modérée', 'type' => 'Environnementale'],
-            ['id' => 'all_024', 'title' => 'Allergie aux moisissures', 'severity' => 'Modérée', 'type' => 'Environnementale'],
-            ['id' => 'all_025', 'title' => 'Allergie au latex', 'severity' => 'Sévère', 'type' => 'Contact']
-        ];
-        
-        $results = collect($allergiesData)->filter(function($allergy) use ($query) {
-            return stripos($allergy['title'], $query) !== false || 
-                   stripos($allergy['type'], $query) !== false || 
-                   stripos($allergy['severity'], $query) !== false;
-        })->toArray();
-        
-        // If no results, provide general allergy suggestions
-        if (empty($results)) {
-            $results = [
-                ['id' => 'all_001', 'title' => 'Allergie aux pénicillines', 'severity' => 'Sévère', 'type' => 'Médicamenteuse'],
-                ['id' => 'all_002', 'title' => 'Allergie aux céphalosporines', 'severity' => 'Modérée', 'type' => 'Médicamenteuse'],
-                ['id' => 'all_011', 'title' => 'Allergie aux arachides', 'severity' => 'Sévère', 'type' => 'Alimentaire']
-            ];
-        }
-        
-        return response()->json([
-            'success' => true,
-            'results' => $results,
-            'fallback' => true
-        ]);
-        
-    } catch (Exception $e) {
-        \Log::error('Allergies API Proxy error', ['error' => $e->getMessage()]);
-        return response()->json(['success' => false, 'error' => $e->getMessage()]);
-    }
-})->name('api.proxy.allergies');
-
 // Global routes (no auth required)
 Route::get('/', function () {
     return view('home-landing');
@@ -2251,7 +1950,8 @@ Route::middleware(['auth'])->group(function () {
     
     // License Types routes
     Route::get('/license-types', function () {
-        return view('modules.license-types.index');
+        $licenseTypes = \App\Models\LicenseType::orderBy('name')->get();
+        return view('modules.license-types.index', compact('licenseTypes'));
     })->name('license-types.index');
     
     // Content Management routes
@@ -2279,12 +1979,33 @@ Route::middleware(['auth'])->group(function () {
     
     // Club Player Licenses routes
     Route::get('/club/player-licenses', function () {
-        return view('modules.club.player-licenses.index');
+        $user = auth()->user();
+        $query = \App\Models\PlayerLicense::with(['player', 'club']);
+        if ($user->isClubUser()) {
+            abort_unless($user->club_id, 403);
+            $query->where('club_id', $user->club_id);
+        } elseif (!($user->isSystemAdmin() || $user->isAssociationUser())) {
+            abort(403);
+        }
+        $licenses = $query->orderByDesc('created_at')->paginate(20);
+        return view('modules.club.player-licenses.index', compact('licenses'));
     })->name('club.player-licenses.index');
     
     // Player Passports routes
     Route::get('/player-passports', function () {
-        return view('modules.player-passports.index');
+        $user = auth()->user();
+        $query = \App\Models\PlayerPassport::with(['player', 'currentClub']);
+        if ($user->isPlayer()) {
+            abort_unless($user->player_id, 403);
+            $query->where('player_id', $user->player_id);
+        } elseif ($user->isClubUser()) {
+            abort_unless($user->club_id, 403);
+            $query->where('current_club_id', $user->club_id);
+        } elseif (!($user->isSystemAdmin() || $user->isAssociationUser())) {
+            abort(403);
+        }
+        $passports = $query->orderByDesc('created_at')->paginate(20);
+        return view('modules.player-passports.index', compact('passports'));
     })->name('player-passports.index');
     
     // Health Records routes
@@ -2387,12 +2108,35 @@ Route::middleware(['auth'])->group(function () {
     
     // Registration Requests routes
     Route::get('/registration-requests', function () {
-        return view('modules.registration-requests.index');
+        $user = auth()->user();
+        $query = \App\Models\LicenseRequest::query();
+        if ($user->isClubUser()) {
+            abort_unless($user->club_id, 403);
+            $query->where('current_club_id', $user->club_id);
+        } elseif (!($user->isSystemAdmin() || $user->isAssociationUser())) {
+            abort(403);
+        }
+        $requests = $query->orderByDesc('created_at')->paginate(20);
+        return view('modules.registration-requests.index', compact('requests'));
     })->name('registration-requests.index');
     
     // Player Licenses routes
     Route::get('/player-licenses', function () {
-        return view('modules.player-licenses.index');
+        $user = auth()->user();
+        $query = \App\Models\PlayerLicense::with(['player', 'club']);
+        if ($user->isClubUser()) {
+            abort_unless($user->club_id, 403);
+            $query->where('club_id', $user->club_id);
+        } elseif ($user->isAssociationUser()) {
+            abort_unless($user->association_id, 403);
+            $query->whereHas('club', function ($q) use ($user) {
+                $q->where('association_id', $user->association_id);
+            });
+        } elseif (!$user->isSystemAdmin()) {
+            abort(403);
+        }
+        $licenses = $query->orderByDesc('created_at')->paginate(20);
+        return view('modules.player-licenses.index', compact('licenses'));
     })->name('player-licenses.index');
     
     // Contracts routes
@@ -3233,25 +2977,97 @@ Route::get('/test-pdf', function() {
     Route::get('/referee/dashboard', [App\Http\Controllers\RefereeController::class, 'dashboard'])->name('referee.dashboard');
     
     Route::get('/referee/match-assignments', function () {
-        return view('modules.referee.match-assignments');
+        $user = auth()->user();
+        $assignments = \App\Models\GameMatch::whereHas('officials', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->with(['homeTeam.club', 'awayTeam.club', 'competition'])
+            ->where('status', '!=', 'completed')
+            ->orderBy('match_date')
+            ->paginate(20);
+
+        return view('modules.referee.match-assignments', compact('assignments'));
     })->name('referee.match-assignments');
     
     Route::get('/referee/match-sheet/{match}', [App\Http\Controllers\RefereeController::class, 'matchSheet'])->name('referee.match-sheet');
     
     Route::get('/referee/competition-schedule', function () {
-        return view('modules.referee.competition-schedule');
+        $user = auth()->user();
+        $upcomingMatches = \App\Models\GameMatch::whereHas('officials', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->with(['competition', 'homeTeam.club', 'awayTeam.club'])
+            ->where('status', 'scheduled')
+            ->orderBy('match_date')
+            ->limit(20)
+            ->get();
+
+        return view('modules.referee.competition-schedule', compact('upcomingMatches'));
     })->name('referee.competition-schedule');
     
     Route::get('/referee/create-match-report', [App\Http\Controllers\RefereeController::class, 'createMatchReport'])->name('referee.create-match-report');
     Route::get('/referee/create-match-report/{matchId}', [App\Http\Controllers\RefereeController::class, 'createDetailedMatchReport'])->name('referee.create-detailed-match-report');
     
     Route::get('/referee/performance-stats', function () {
-        return view('modules.referee.performance-stats');
+        $user = auth()->user();
+        $reports = \App\Models\RefereeReport::where('referee_id', $user->id)->get();
+
+        $totalMatches = $reports->count();
+        $ratedReports = $reports->whereNotNull('match_rating');
+        $averageRating = $ratedReports->count() > 0
+            ? round($ratedReports->avg('match_rating'), 2)
+            : null;
+        $cardsIssued = $reports->sum(function ($report) {
+            return count($report->yellow_cards ?? []) + count($report->red_cards ?? []);
+        });
+        $competitionsCount = $reports->pluck('competition_name')->filter()->unique()->count();
+
+        $recentMatches = \App\Models\GameMatch::whereHas('officials', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->with(['homeTeam.club', 'awayTeam.club', 'competition'])
+            ->where('status', 'completed')
+            ->orderByDesc('match_date')
+            ->limit(10)
+            ->get();
+
+        return view('modules.referee.performance-stats', [
+            'totalMatches' => $totalMatches,
+            'averageRating' => $averageRating,
+            'cardsIssued' => $cardsIssued,
+            'competitionsCount' => $competitionsCount,
+            'recentMatches' => $recentMatches,
+        ]);
     })->name('referee.performance-stats');
     
     Route::get('/referee/settings', function () {
-        return view('modules.referee.settings');
+        $refereeUser = auth()->user();
+        return view('modules.referee.settings', compact('refereeUser'));
     })->name('referee.settings');
+
+    Route::put('/referee/settings/profile', function (\Illuminate\Http\Request $request) {
+        $user = auth()->user();
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:30',
+        ]);
+        $user->update($validated);
+        return redirect()->route('referee.settings')->with('success', 'Profil mis à jour avec succès.');
+    })->name('referee.settings.profile.update');
+
+    Route::put('/referee/settings/password', function (\Illuminate\Http\Request $request) {
+        $user = auth()->user();
+        $validated = $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+        if (!\Illuminate\Support\Facades\Hash::check($validated['current_password'], $user->password)) {
+            return back()->withErrors(['current_password' => 'Le mot de passe actuel est incorrect.']);
+        }
+        $user->update(['password' => \Illuminate\Support\Facades\Hash::make($validated['new_password'])]);
+        return redirect()->route('referee.settings')->with('success', 'Mot de passe mis à jour avec succès.');
+    })->name('referee.settings.password.update');
     
     // Canonical FIT performance metrics
     Route::get(
@@ -3474,55 +3290,59 @@ Route::get('/test-pdf', function() {
     })->name('modules.medical.athlete');
     
     Route::get('/modules/medical', function () {
+        $players = \App\Models\Player::with(['club'])
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->paginate(25);
+
+        // Statistiques calculees a partir des vraies donnees medicales
+        // (App\Models\MedicalPrediction). "verified" = clearance confirmee
+        // par un professionnel ; "active" = prediction en attente de revue ;
+        // "risque eleve" = derniere prediction avec risk_probability >= 0.7,
+        // utilise comme proxy pour une suspension medicale potentielle
+        // (aucun statut "suspension" n'existe dans le schema actuel).
+        $stats = [
+            'activeClearances' => \App\Models\MedicalPrediction::where('status', 'verified')
+                ->distinct('player_id')->count('player_id'),
+            'pendingAssessments' => \App\Models\MedicalPrediction::where('status', 'active')->count(),
+            'medicalSuspensions' => \App\Models\MedicalPrediction::where('status', 'active')
+                ->where('risk_probability', '>=', 0.7)
+                ->distinct('player_id')->count('player_id'),
+        ];
+
+        $recentActivities = \App\Models\MedicalPrediction::with('player')
+            ->orderByDesc('prediction_date')
+            ->limit(5)
+            ->get();
+
         return view('modules.medical.index', [
-            'footballType' => 'association'
+            'footballType' => 'association',
+            'players' => $players,
+            'stats' => $stats,
+            'recentActivities' => $recentActivities,
         ]);
     })->name('modules.medical.index');
     
     Route::get('/modules/healthcare', function () {
-        // Créer des données de démonstration pour éviter l'erreur 500
-        $healthRecords = collect([
-            (object)[
-                'id' => 1,
-                'player' => (object)[
-                    'first_name' => 'Ahmed',
-                    'last_name' => 'Benali',
-                    'full_name' => 'Ahmed Benali'
-                ],
-                'user' => (object)['name' => 'Dr. Smith'],
-                'record_date' => now()->subDays(5),
-                'status' => 'active',
-                'risk_score' => 0.3,
-                'predictions' => collect([1, 2, 3])
-            ],
-            (object)[
-                'id' => 2,
-                'player' => (object)[
-                    'first_name' => 'Fatima',
-                    'last_name' => 'Kadri',
-                    'full_name' => 'Fatima Kadri'
-                ],
-                'user' => (object)['name' => 'Dr. Johnson'],
-                'record_date' => now()->subDays(3),
-                'status' => 'active',
-                'risk_score' => 0.7,
-                'predictions' => collect([1])
-            ],
-            (object)[
-                'id' => 3,
-                'player' => (object)[
-                    'first_name' => 'Omar',
-                    'last_name' => 'Tazi',
-                    'full_name' => 'Omar Tazi'
-                ],
-                'user' => (object)['name' => 'Dr. Brown'],
-                'record_date' => now()->subDays(1),
-                'status' => 'archived',
-                'risk_score' => 0.2,
-                'predictions' => collect([1, 2])
-            ]
-        ]);
-        
+        // Meme logique reelle que la route /healthcare (HealthRecordController) -
+        // remplace les 3 patients factices (Ahmed Benali, Fatima Kadri, Omar Tazi)
+        // codes en dur qui s'affichaient ici avant.
+        $user = auth()->user();
+        abort_unless($user->hasAnyRole(['system_admin', 'super_admin', 'association_medical', 'club_medical', 'doctor', 'medical_staff']), 403);
+
+        $query = \App\Models\HealthRecord::with(['player', 'user', 'predictions']);
+        if (!$user->isSystemAdmin()) {
+            if ($user->club_id) {
+                $query->whereHas('player', fn ($player) => $player->where('club_id', $user->club_id));
+            } elseif ($user->association_id) {
+                $query->whereHas('player', fn ($player) => $player->where('association_id', $user->association_id));
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+
+        $healthRecords = $query->orderByDesc('record_date')->get();
+
         return view('modules.healthcare.index', [
             'footballType' => 'association',
             'healthRecords' => $healthRecords
@@ -3567,6 +3387,13 @@ Route::get('/test-pdf', function() {
             Route::get('/fixtures', [App\Http\Controllers\CompetitionController::class, 'associationFixtures'])->name('fixtures');
             Route::get('/feuille-match/{id}', [App\Http\Controllers\CompetitionController::class, 'feuilleMatch'])->name('feuille-match');
             Route::get('/designation-arbitres', [App\Http\Controllers\CompetitionController::class, 'designationArbitres'])->name('designation-arbitres');
+            // NOTE (audit factice -> reel, 2026-09) : CompetitionController::saveArbitreAssignments()
+            // existe et est fonctionnelle (enregistre reellement dans la table
+            // match_officials) mais n'avait jamais de route associee ; la page
+            // designation-arbitres.blade.php ne pouvait donc que simuler
+            // l'enregistrement cote JS. Route ajoutee pour connecter le bouton
+            // "Confirmer" a l'enregistrement reel.
+            Route::post('/designation-arbitres/save', [App\Http\Controllers\CompetitionController::class, 'saveArbitreAssignments'])->name('designation-arbitres.save');
         });
     });
     
@@ -4723,19 +4550,34 @@ Route::middleware(['auth'])->group(function () {
 
     // Additional Finance Routes
     Route::get('/modules/finance/reports', function () {
-        return view('modules.finance.reports');
+        $user = auth()->user();
+        $userType = $user->club_id ? 'club' : ($user->association_id ? 'association' : 'system');
+        return view('modules.finance.reports', compact('userType'));
     })->name('modules.finance.reports');
 
     Route::get('/modules/finance/budgets', function () {
-        return view('modules.finance.budgets');
+        $user = auth()->user();
+        $userType = $user->club_id ? 'club' : ($user->association_id ? 'association' : 'system');
+        return view('modules.finance.budgets', compact('userType'));
     })->name('modules.finance.budgets');
 
     Route::get('/modules/finance/transaction/edit/{id}', function ($id) {
-        return view('modules.finance.transaction-edit', compact('id'));
+        // NOTE (audit factice -> reel, 2026-09) : cette page d'edition de
+        // transaction ne correspondait a aucun modele de donnees reel
+        // (pas de table "transactions" generique) et pointait vers une vue
+        // inexistante : elle provoquait une erreur 500. Aucune gestion
+        // comptable generale n'existe dans l'application (voir
+        // FinanceController::getFinancialData). En attendant un vrai module
+        // de comptabilite, on redirige avec un message honnete plutot que
+        // de laisser planter la page.
+        return redirect()->route('modules.finance.dashboard')
+            ->with('info', "La creation/edition manuelle de transactions n'est pas encore disponible : aucune gestion comptable generale n'est connectee a ce module.");
     })->name('modules.finance.transaction.edit');
 
     Route::get('/modules/finance/bank-integrations', function () {
-        return view('modules.finance.bank-integrations');
+        $user = auth()->user();
+        $userType = $user->club_id ? 'club' : ($user->association_id ? 'association' : 'system');
+        return view('modules.finance.bank-integrations', compact('userType'));
     })->name('modules.finance.bank-integrations');
 });
 

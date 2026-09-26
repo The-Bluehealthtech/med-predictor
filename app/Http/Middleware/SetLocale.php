@@ -19,23 +19,20 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next)
     {
-        // Get locale from session, fallback to default
-        $sessionLocale = Session::get('locale');
-        $currentLocale = App::getLocale();
-        
-        // Debug logging
-        Log::info('SetLocale Middleware', [
-            'session_locale' => $sessionLocale,
-            'current_locale' => $currentLocale,
-            'request_url' => $request->url()
-        ]);
-        
-        // If session has a locale and it's different from current, set it
-        if ($sessionLocale && in_array($sessionLocale, ['fr', 'en'])) {
-            App::setLocale($sessionLocale);
-            Log::info('Locale set to: ' . $sessionLocale);
+        $requestedLocale = $request->query('lang');
+
+        if (in_array($requestedLocale, ['fr', 'en'], true)) {
+            Session::put('locale', $requestedLocale);
         }
-        
+
+        $locale = Session::get('locale', config('app.locale', 'fr'));
+
+        if (!in_array($locale, ['fr', 'en'], true)) {
+            $locale = 'fr';
+        }
+
+        App::setLocale($locale);
+
         return $next($request);
     }
 } 

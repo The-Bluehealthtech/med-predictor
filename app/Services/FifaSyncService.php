@@ -26,7 +26,7 @@ class FifaSyncService
         try {
             Log::info("Début de la synchronisation FIFA pour la confédération: {$confederation->name}");
 
-            // Simulation d'appel API FIFA
+            // Appel a l'API FIFA (voir callFifaApi() : aucune API FIFA n'est configuree pour le moment)
             $response = $this->callFifaApi("/confederations/{$confederation->short_name}");
 
             if ($response['success']) {
@@ -64,7 +64,7 @@ class FifaSyncService
         try {
             Log::info("Début de la synchronisation FIFA pour l'association: {$association->name}");
 
-            // Simulation d'appel API FIFA
+            // Appel a l'API FIFA (voir callFifaApi() : aucune API FIFA n'est configuree pour le moment)
             $response = $this->callFifaApi("/associations/{$association->short_name}");
 
             if ($response['success']) {
@@ -125,54 +125,28 @@ class FifaSyncService
     }
 
     /**
-     * Appel à l'API FIFA (simulation)
+     * Appel à l'API FIFA
+     *
+     * NOTE (audit factice -> reel, 2026-09) : cette méthode ne faisait
+     * jamais de vrai appel HTTP (malgré le "$url" calculé et la façade
+     * Http importée, jamais utilisée) : elle attendait 0.5s artificiel
+     * puis renvoyait un classement FIFA tiré au hasard (rand(1,6) /
+     * rand(1,200) / rand(1,100)), avec une "erreur de connexion" 1 fois
+     * sur 10 également tirée au hasard. Ces classements fictifs étaient
+     * ensuite enregistrés comme réels dans confederations.fifa_ranking /
+     * associations.fifa_ranking à chaque synchronisation. Aucune API
+     * FIFA n'est configurée dans cette application
+     * (services.fifa.api_key n'existe pas dans config/services.php) :
+     * on renvoie donc désormais un échec honnête plutôt qu'une fausse
+     * réussite avec des données inventées.
      */
     protected function callFifaApi($endpoint)
     {
-        // Simulation d'appel API FIFA
-        // En production, ce serait un vrai appel HTTP
-        
         $url = $this->baseUrl . $endpoint;
-        
-        // Simulation de délai réseau
-        usleep(500000); // 0.5 seconde
-
-        // Simulation de réponse selon le type d'entité
-        if (strpos($endpoint, 'confederations') !== false) {
-            return [
-                'success' => true,
-                'data' => [
-                    'ranking' => rand(1, 6),
-                    'version' => 'FIFA 24',
-                    'last_updated' => now()->toISOString(),
-                ]
-            ];
-        } elseif (strpos($endpoint, 'associations') !== false) {
-            return [
-                'success' => true,
-                'data' => [
-                    'ranking' => rand(1, 200),
-                    'version' => 'FIFA 24',
-                    'last_updated' => now()->toISOString(),
-                ]
-            ];
-        }
-
-        // Simulation d'erreur occasionnelle
-        if (rand(1, 10) === 1) {
-            return [
-                'success' => false,
-                'message' => 'Erreur de connexion à l\'API FIFA'
-            ];
-        }
 
         return [
-            'success' => true,
-            'data' => [
-                'ranking' => rand(1, 100),
-                'version' => 'FIFA 24',
-                'last_updated' => now()->toISOString(),
-            ]
+            'success' => false,
+            'message' => "Aucune API FIFA n'est configurée pour cette application (endpoint appelé : {$url})."
         ];
     }
 

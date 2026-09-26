@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Mes Engagements - Compétitions')
+@section('title', __('competitions.club_entries_page.page_title'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">Mes Engagements</h1>
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">{{ __('competitions.club_entries_page.heading') }}</h1>
     
     <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-semibold mb-4">Compétitions Inscrites</h2>
+        <h2 class="text-xl font-semibold mb-4">{{ __('competitions.club_entries_page.registered_competitions') }}</h2>
         
         @if($engagements->count() > 0)
             <div class="space-y-4">
@@ -30,8 +30,8 @@
                         </div>
                         <div class="text-right">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
-                                {{ $engagement['statut'] === 'Publié' ? 'bg-green-100 text-green-800' : 
-                                   ($engagement['statut'] === 'Validé par la Fédération' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                {{ $engagement['statut_raw'] === \App\Models\Competition::STATUS_PUBLISHED ? 'bg-green-100 text-green-800' :
+                                   ($engagement['statut_raw'] === \App\Models\Competition::STATUS_VALIDATED ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800') }}">
                                 {{ $engagement['statut'] }}
                             </span>
                         </div>
@@ -39,19 +39,19 @@
                     
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
-                            <span class="text-gray-500">Saison:</span>
+                            <span class="text-gray-500">{{ __('competitions.club_entries_page.season_label') }}</span>
                             <span class="font-medium">{{ $engagement['saison'] }}</span>
                         </div>
                         <div>
-                            <span class="text-gray-500">Classement:</span>
-                            <span class="font-medium">{{ $engagement['classement'] }}ème</span>
+                            <span class="text-gray-500">{{ __('competitions.club_entries_page.ranking_label') }}</span>
+                            <span class="font-medium">{{ $engagement['classement'] }}{{ __('competitions.club_entries_page.ranking_suffix') }}</span>
                         </div>
                         <div>
-                            <span class="text-gray-500">Points:</span>
+                            <span class="text-gray-500">{{ __('competitions.club_entries_page.points_label') }}</span>
                             <span class="font-medium">{{ $engagement['points'] }}</span>
                         </div>
                         <div>
-                            <span class="text-gray-500">Matchs:</span>
+                            <span class="text-gray-500">{{ __('competitions.club_entries_page.matches_label') }}</span>
                             <span class="font-medium">{{ $engagement['matchs_joues'] }}/{{ $engagement['nb_matchs'] }}</span>
                         </div>
                     </div>
@@ -59,11 +59,11 @@
                     <div class="mt-3 pt-3 border-t border-gray-200">
                         <div class="flex justify-between items-center text-sm text-gray-600">
                             <div>
-                                <span class="text-gray-500">Association:</span>
+                                <span class="text-gray-500">{{ __('competitions.club_entries_page.association_label') }}</span>
                                 <span class="font-medium">{{ $engagement['association'] }}</span>
                             </div>
                             <div>
-                                <span class="text-gray-500">Confédération:</span>
+                                <span class="text-gray-500">{{ __('competitions.club_entries_page.confederation_label') }}</span>
                                 <span class="font-medium">{{ $engagement['confederation'] }}</span>
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                             @if($engagement['fifa_sync_enabled'])
                             <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
                                 <i class="fas fa-sync-alt mr-1"></i>
-                                Sync Activé
+                                {{ __('competitions.club_entries_page.sync_enabled') }}
                             </span>
                             @endif
                         </div>
@@ -86,7 +86,7 @@
                 @endforeach
             </div>
         @else
-            <p class="text-gray-600">Aucune compétition trouvée.</p>
+            <p class="text-gray-600">{{ __('competitions.club_entries_page.no_competition_found') }}</p>
         @endif
     </div>
 </div>

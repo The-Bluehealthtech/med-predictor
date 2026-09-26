@@ -15,14 +15,14 @@
                     </div>
                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                         <h3 class="text-lg leading-6 font-medium text-gray-900">
-                            Rechercher un Athlète
+                            {{ __('secretary.search_athlete_modal_title') }}
                         </h3>
                         <div class="mt-2 space-y-4">
                             <!-- Barre de recherche -->
                             <div>
-                                <label for="athlete_search" class="block text-sm font-medium text-gray-700">Recherche</label>
+                                <label for="athlete_search" class="block text-sm font-medium text-gray-700">{{ __('secretary.label_search') }}</label>
                                 <div class="mt-1 relative">
-                                    <input type="text" id="athlete_search" x-model="searchTerm" @input.debounce.300ms="searchAthletes()" placeholder="Nom ou FIFA Connect ID..." class="block w-full pr-10 border-gray-300 rounded-md leading-5 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                    <input type="text" id="athlete_search" x-model="searchTerm" @input.debounce.300ms="searchAthletes()" placeholder="{{ __('secretary.search_name_or_fifa_id') }}" class="block w-full pr-10 border-gray-300 rounded-md leading-5 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                                         <i class="fas fa-search text-gray-400"></i>
                                     </div>
@@ -31,7 +31,7 @@
 
                             <!-- Résultats -->
                             <div x-show="athletes.length > 0" class="max-h-60 overflow-y-auto">
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">Résultats</h4>
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ __('secretary.results') }}</h4>
                                 <div class="space-y-2">
                                     <template x-for="athlete in athletes" :key="athlete.id">
                                         <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
@@ -47,7 +47,7 @@
                                                 </div>
                                             </div>
                                             <button type="button" @click="selectAthlete(athlete)" class="ml-2 inline-flex items-center px-3 py-1 border border-transparent text-xs leading-4 font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                                                Sélectionner
+                                                {{ __('secretary.select_button') }}
                                             </button>
                                         </div>
                                     </template>
@@ -57,13 +57,13 @@
                             <!-- Aucun résultat -->
                             <div x-show="searchTerm && athletes.length === 0" class="text-center py-4">
                                 <i class="fas fa-search text-gray-400 text-2xl mb-2"></i>
-                                <p class="text-sm text-gray-500">Aucun athlète trouvé</p>
+                                <p class="text-sm text-gray-500">{{ __('secretary.no_athlete_found') }}</p>
                             </div>
 
                             <!-- Instructions -->
                             <div x-show="!searchTerm" class="text-center py-4">
                                 <i class="fas fa-info-circle text-gray-400 text-2xl mb-2"></i>
-                                <p class="text-sm text-gray-500">Tapez un nom ou un FIFA Connect ID pour rechercher</p>
+                                <p class="text-sm text-gray-500">{{ __('secretary.search_instructions') }}</p>
                             </div>
                         </div>
                     </div>
@@ -71,7 +71,7 @@
             </div>
             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button type="button" @click="show = false" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm">
-                    Fermer
+                    {{ __('secretary.close') }}
                 </button>
             </div>
         </div>

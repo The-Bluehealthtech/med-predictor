@@ -377,30 +377,23 @@ class ClinicalWorkflowController extends Controller
      */
     private function analyzeSymptomsWithAI(array $symptoms, ?string $additionalInfo): array
     {
-        // Simulation de l'appel à l'IA externe
-        // Dans un vrai système, ceci appellerait OpenAI, Claude, etc.
-        
-        $symptomsText = implode(', ', $symptoms);
-        $prompt = "Analysez ces symptômes et fournissez des explications claires pour le patient: {$symptomsText}";
-        
-        if ($additionalInfo) {
-            $prompt .= " Informations supplémentaires: {$additionalInfo}";
-        }
-
-        // Simulation de la réponse IA
+        // NOTE (audit factice -> reel, 2026-09) : cette méthode renvoyait un
+        // texte d'analyse, des explications et des recommandations
+        // entièrement fixes ("Les symptômes décrits peuvent indiquer...",
+        // score de confiance 0.75 en dur), identiques pour tous les
+        // patients et tous les symptômes, sans jamais appeler de service
+        // IA externe (le prompt était construit puis jeté). Aucun
+        // fournisseur IA n'est configuré dans cette application
+        // (services.openai.api_key est vide et aucun appel HTTP réel
+        // n'est implémenté) : on renvoie donc un état honnête plutôt
+        // qu'une fausse analyse.
         return [
-            'analysis' => 'Analyse des symptômes générée par IA',
-            'explanations' => [
-                'Les symptômes décrits peuvent indiquer plusieurs conditions possibles.',
-                'Il est recommandé de consulter un professionnel de santé pour un diagnostic précis.',
-                'Certains symptômes peuvent nécessiter une attention médicale immédiate.'
-            ],
-            'recommendations' => [
-                'Prendre rendez-vous avec votre médecin généraliste',
-                'Surveiller l\'évolution des symptômes',
-                'Consulter en urgence si les symptômes s\'aggravent'
-            ],
-            'confidence_score' => 0.75,
+            'available' => false,
+            'analysis' => null,
+            'explanations' => [],
+            'recommendations' => [],
+            'confidence_score' => null,
+            'message' => "L'analyse IA des symptômes n'est pas disponible : aucun service d'intelligence artificielle n'est connecté à cette application.",
             'generated_at' => now()->toISOString()
         ];
     }
@@ -410,7 +403,12 @@ class ClinicalWorkflowController extends Controller
      */
     private function generateConsultationSummary(ClinicalConsultation $consultation): string
     {
-        // Simulation de la génération de résumé avec IA
+        // NOTE (audit factice -> reel, 2026-09) : le commentaire d'origine
+        // ("Simulation de la génération de résumé avec IA") était trompeur :
+        // ce résumé n'est pas généré par une IA, il est construit
+        // directement à partir des vrais champs de la consultation
+        // (motif, histoire de la maladie, évaluation, plan). Comportement
+        // inchangé, commentaire corrigé.
         $summary = "Résumé de la consultation du " . $consultation->created_at->format('d/m/Y') . ":\n\n";
         $summary .= "Motif de consultation: " . $consultation->chief_complaint . "\n\n";
         $summary .= "Histoire de la maladie: " . substr($consultation->history_present_illness, 0, 200) . "...\n\n";
@@ -431,21 +429,21 @@ class ClinicalWorkflowController extends Controller
      */
     private function getClinicalDecisionSupport(array $patientData): array
     {
-        // Simulation de l'appel au service IA externe
+        // NOTE (audit factice -> reel, 2026-09) : cette méthode renvoyait
+        // un résumé de preuves, des recommandations et des facteurs de
+        // risque entièrement fixes ("Facteurs de risque identifiés dans
+        // l'historique du patient"...), identiques quel que soit le
+        // patient ou sa question ($patientData n'était même pas utilisé).
+        // Aucun service IA externe n'est configuré ni appelé : état
+        // honnête plutôt qu'un faux support décisionnel.
         return [
-            'evidence_summary' => 'Résumé des preuves cliniques basé sur les données du patient',
-            'recommendations' => [
-                'Considérer les guidelines cliniques pertinentes',
-                'Évaluer les interactions médicamenteuses',
-                'Surveiller les paramètres vitaux'
-            ],
-            'clinical_trials' => [
-                'Aucun essai clinique pertinent trouvé pour ce patient'
-            ],
-            'risk_factors' => [
-                'Facteurs de risque identifiés dans l\'historique du patient'
-            ],
-            'confidence_level' => 'moderate',
+            'available' => false,
+            'evidence_summary' => null,
+            'recommendations' => [],
+            'clinical_trials' => [],
+            'risk_factors' => [],
+            'confidence_level' => null,
+            'message' => "Le support décisionnel clinique par IA n'est pas disponible : aucun service d'intelligence artificielle n'est connecté à cette application.",
             'generated_at' => now()->toISOString()
         ];
     }

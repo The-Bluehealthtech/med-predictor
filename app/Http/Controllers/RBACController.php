@@ -458,7 +458,8 @@ class RBACController extends Controller
             $currentPermissions[$roleKey] = [];
             foreach ($modules as $moduleKey => $module) {
                 foreach ($module['permissions'] as $permission) {
-                    // Simuler la vérification de permission pour chaque rôle
+                    // Verification reelle par rapport a la table de permissions par role
+                    // ci-dessous (checkPermissionForRole), elle-meme basee sur le GateServiceProvider.
                     $currentPermissions[$roleKey][$permission] = $this->checkPermissionForRole($roleKey, $permission);
                 }
             }

@@ -17,14 +17,14 @@
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                             <h3 class="text-lg leading-6 font-medium text-gray-900">
-                                Nouveau Rendez-vous
+                                {{ __('secretary.new_appointment') }}
                             </h3>
                             <div class="mt-2 space-y-4">
                                 <!-- Athlète -->
                                 <div>
-                                    <label for="athlete_id" class="block text-sm font-medium text-gray-700">Athlète</label>
+                                    <label for="athlete_id" class="block text-sm font-medium text-gray-700">{{ __('secretary.col_athlete') }}</label>
                                     <select id="athlete_id" name="athlete_id" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                        <option value="">Sélectionner un athlète</option>
+                                        <option value="">{{ __('secretary.select_athlete_placeholder') }}</option>
                                         @foreach($athletes ?? [] as $athlete)
                                             <option value="{{ $athlete->id }}">{{ $athlete->name }} ({{ $athlete->fifa_connect_id }})</option>
                                         @endforeach
@@ -34,37 +34,37 @@
                                 <!-- Date et Heure -->
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label for="appointment_date" class="block text-sm font-medium text-gray-700">Date</label>
+                                        <label for="appointment_date" class="block text-sm font-medium text-gray-700">{{ __('secretary.col_date') }}</label>
                                         <input type="date" id="appointment_date" name="appointment_date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                     </div>
                                     <div>
-                                        <label for="appointment_time" class="block text-sm font-medium text-gray-700">Heure</label>
+                                        <label for="appointment_time" class="block text-sm font-medium text-gray-700">{{ __('secretary.label_time') }}</label>
                                         <input type="time" id="appointment_time" name="appointment_time" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                     </div>
                                 </div>
 
                                 <!-- Type de Rendez-vous -->
                                 <div>
-                                    <label for="appointment_type" class="block text-sm font-medium text-gray-700">Type</label>
+                                    <label for="appointment_type" class="block text-sm font-medium text-gray-700">{{ __('secretary.col_type') }}</label>
                                     <select id="appointment_type" name="appointment_type" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                        <option value="">Sélectionner un type</option>
-                                        <option value="consultation">Consultation</option>
-                                        <option value="examen">Examen médical</option>
-                                        <option value="suivi">Suivi</option>
-                                        <option value="urgence">Urgence</option>
+                                        <option value="">{{ __('secretary.select_type_placeholder') }}</option>
+                                        <option value="consultation">{{ __('secretary.appt_type_consultation') }}</option>
+                                        <option value="examen">{{ __('secretary.appt_type_examen') }}</option>
+                                        <option value="suivi">{{ __('secretary.appt_type_suivi') }}</option>
+                                        <option value="urgence">{{ __('secretary.appt_type_urgence') }}</option>
                                     </select>
                                 </div>
 
                                 <!-- Médecin -->
                                 <div>
-                                    <label for="doctor_name" class="block text-sm font-medium text-gray-700">Médecin</label>
-                                    <input type="text" id="doctor_name" name="doctor_name" placeholder="Nom du médecin" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <label for="doctor_name" class="block text-sm font-medium text-gray-700">{{ __('secretary.label_doctor') }}</label>
+                                    <input type="text" id="doctor_name" name="doctor_name" placeholder="{{ __('secretary.doctor_name_placeholder') }}" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                 </div>
 
                                 <!-- Notes -->
                                 <div>
-                                    <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
-                                    <textarea id="notes" name="notes" rows="3" placeholder="Notes additionnelles..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                                    <label for="notes" class="block text-sm font-medium text-gray-700">{{ __('secretary.label_notes') }}</label>
+                                    <textarea id="notes" name="notes" rows="3" placeholder="{{ __('secretary.notes_placeholder') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -72,10 +72,10 @@
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                     <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        Créer le rendez-vous
+                        {{ __('secretary.create_appointment_button') }}
                     </button>
                     <button type="button" @click="show = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        Annuler
+                        {{ __('secretary.cancel') }}
                     </button>
                 </div>
             </form>

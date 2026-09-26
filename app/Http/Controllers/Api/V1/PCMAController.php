@@ -703,49 +703,6 @@ class PCMAController extends Controller
     }
 
     /**
-     * Generate mock data for AI fallback.
-     */
-    private function generateMockData(string $transcript, string $type): array
-    {
-        $mockData = [];
-
-        switch ($type) {
-            case 'cardio':
-                $mockData = [
-                    'blood_pressure_systolic' => 120,
-                    'blood_pressure_diastolic' => 80,
-                    'heart_rate' => 72,
-                    'ecg_result' => 'normal',
-                    'stress_test_result' => 'negative',
-                ];
-                break;
-            case 'bpma':
-                $mockData = [
-                    'height' => 175,
-                    'weight' => 70,
-                    'bmi' => 22.9,
-                    'blood_pressure' => '120/80',
-                    'heart_rate' => 72,
-                ];
-                break;
-            case 'dental':
-                $mockData = [
-                    'dental_examination' => 'normal',
-                    'oral_hygiene' => 'good',
-                    'no_cavities' => true,
-                ];
-                break;
-            default:
-                $mockData = [
-                    'general_health' => 'good',
-                    'no_abnormalities' => true,
-                ];
-        }
-
-        return $mockData;
-    }
-
-    /**
      * Analyze ECG using Med-Gemini AI.
      */
     public function aiAnalyzeEcg(Request $request): JsonResponse
@@ -992,86 +949,6 @@ class PCMAController extends Controller
     }
 
     /**
-     * Generate mock analysis data for fallback.
-     */
-    private function getMockAnalysis(string $analysisType): array
-    {
-        switch ($analysisType) {
-            case 'ecg_dicom':
-                return [
-                    'rhythm' => 'Sinus rhythm',
-                    'heart_rate' => '72 bpm',
-                    'abnormalities' => 'None detected',
-                    'recommendations' => 'Normal DICOM ECG - cleared for sports participation',
-                    'dicom_metadata' => [
-                        'modality' => 'ECG',
-                        'patient_id' => 'PCMA-' . time(),
-                        'study_date' => now()->format('Y-m-d'),
-                        'institution' => 'Centre Médical FIFA'
-                    ]
-                ];
-            
-            case 'ecg_image':
-                return [
-                    'rhythm' => 'Sinus rhythm',
-                    'heart_rate' => '72 bpm',
-                    'abnormalities' => 'None detected',
-                    'recommendations' => 'Normal ECG image - cleared for sports participation'
-                ];
-            
-            case 'mri_dicom_bone_age':
-                return [
-                    'bone_age' => '16.5 years',
-                    'chronological_age' => '16.0 years',
-                    'age_difference' => '+6 months',
-                    'skeletal_maturity' => 'Advanced',
-                    'abnormalities' => 'None detected',
-                    'recommendations' => 'Normal DICOM MRI bone age - cleared for sports participation',
-                    'dicom_metadata' => [
-                        'modality' => 'MRI',
-                        'patient_id' => 'PCMA-' . time(),
-                        'study_date' => now()->format('Y-m-d'),
-                        'institution' => 'Centre Médical FIFA'
-                    ]
-                ];
-            
-            case 'mri_image_bone_age':
-                return [
-                    'bone_age' => '16.5 years',
-                    'chronological_age' => '16.0 years',
-                    'age_difference' => '+6 months',
-                    'skeletal_maturity' => 'Advanced',
-                    'abnormalities' => 'None detected',
-                    'recommendations' => 'Normal MRI image bone age - cleared for sports participation'
-                ];
-            
-            case 'ecg':
-                return [
-                    'rhythm' => 'Sinus rhythm',
-                    'heart_rate' => '72 bpm',
-                    'abnormalities' => 'None detected',
-                    'recommendations' => 'Normal ECG - cleared for sports participation'
-                ];
-            
-            case 'mri_bone_age':
-                return [
-                    'bone_age' => '16.5 years',
-                    'chronological_age' => '16.0 years',
-                    'age_difference' => '+6 months',
-                    'skeletal_maturity' => 'Advanced',
-                    'abnormalities' => 'None detected',
-                    'recommendations' => 'Normal bone age - cleared for sports participation'
-                ];
-            
-            default:
-                return [
-                    'status' => 'Normal',
-                    'recommendations' => 'No abnormalities detected'
-                ];
-        }
-    }
-
-    /**
      * Generate overall assessment from individual analyses.
      */
     private function generateOverallAssessment(array $analyses): array
@@ -1180,15 +1057,23 @@ class PCMAController extends Controller
      */
     private function extractImageMetadata($file): array
     {
+        // NOTE (audit factice -> reel, 2026-09) : patient_name,
+        // patient_id, study_date, institution, physician et description
+        // étaient des valeurs fixes ("Patient PCMA", "Dr. Médecin",
+        // "Centre Médical FIFA"), identiques pour tout fichier, alors
+        // qu'aucune de ces informations n'est réellement extraite de
+        // l'image. La modalité (déjà réelle, déduite du nom de fichier)
+        // et les dimensions (déjà réelles, via getimagesize() ci-dessous)
+        // sont conservées ; le reste est explicitement "non disponible".
         $metadata = [
-            'patient_name' => 'Patient PCMA',
-            'patient_id' => 'PCMA-' . time(),
-            'study_date' => now()->format('Y-m-d'),
+            'patient_name' => null,
+            'patient_id' => null,
+            'study_date' => null,
             'modality' => $this->getModalityFromFilename($file->getClientOriginalName()),
-            'institution' => 'Centre Médical FIFA',
-            'physician' => 'Dr. Médecin',
-            'description' => 'Examen médical PCMA',
-            'image_dimensions' => 'En cours de chargement...'
+            'institution' => null,
+            'physician' => null,
+            'description' => null,
+            'image_dimensions' => null
         ];
 
         // Try to get image dimensions if it's an image file
@@ -1245,16 +1130,28 @@ class PCMAController extends Controller
                 ], 404);
             }
 
-            // Mock DICOM metadata for demonstration
+            // NOTE (audit factice -> reel, 2026-09) : ces métadonnées
+            // étaient entièrement fixes ("Patient PCMA", "Dr. Médecin",
+            // "Centre Médical FIFA", modalité toujours "CT", dimensions
+            // toujours "512 × 512 pixels"), identiques pour tout fichier,
+            // présentées comme si elles provenaient réellement du DICOM.
+            // Aucune bibliothèque DICOM (dcmtk/pydicom ou équivalent PHP)
+            // n'est installée dans cette application : les tags DICOM
+            // réels (nom patient, établissement, médecin...) ne peuvent
+            // donc pas être extraits. Seules les données réellement
+            // disponibles sont renseignées ; le reste est explicitement
+            // "non disponible" plutôt qu'inventé.
             $metadata = [
-                'patient_name' => 'Patient PCMA',
-                'patient_id' => 'PCMA-' . time(),
-                'study_date' => now()->format('Y-m-d'),
-                'modality' => 'CT',
-                'institution' => 'Centre Médical FIFA',
-                'physician' => 'Dr. Médecin',
-                'description' => 'Examen médical PCMA',
-                'image_dimensions' => '512 × 512 pixels',
+                'patient_name' => null,
+                'patient_id' => null,
+                'study_date' => null,
+                'modality' => $this->getModalityFromFilename($file),
+                'institution' => null,
+                'physician' => null,
+                'description' => null,
+                'image_dimensions' => null,
+                'dicom_tags_available' => false,
+                'note' => "Extraction des tags DICOM non disponible : aucune bibliothèque DICOM n'est installée sur ce serveur.",
                 'file_size' => Storage::disk('public')->size($filePath),
                 'uploaded_at' => now()->toISOString()
             ];
@@ -1280,18 +1177,25 @@ class PCMAController extends Controller
      */
     private function extractDicomMetadata($file): array
     {
-        // This is a simplified DICOM metadata extraction
-        // In a real implementation, you would use a DICOM library like dcmtk or pydicom
-        
+        // NOTE (audit factice -> reel, 2026-09) : ces métadonnées étaient
+        // entièrement fixes ("Patient PCMA", "Dr. Médecin", "Centre
+        // Médical FIFA", modalité toujours "CT", dimensions toujours
+        // "512 × 512 pixels"), identiques pour tout fichier. Aucune
+        // bibliothèque DICOM (dcmtk/pydicom ou équivalent PHP) n'est
+        // installée dans cette application : les tags DICOM réels ne
+        // peuvent donc pas être extraits. Seule la modalité est déduite
+        // (de façon réelle, à partir du nom de fichier) ; le reste est
+        // explicitement "non disponible" plutôt qu'inventé.
         $metadata = [
-            'patient_name' => 'Patient PCMA',
-            'patient_id' => 'PCMA-' . time(),
-            'study_date' => now()->format('Y-m-d'),
-            'modality' => 'CT',
-            'institution' => 'Centre Médical FIFA',
-            'physician' => 'Dr. Médecin',
-            'description' => 'Examen médical PCMA',
-            'image_dimensions' => '512 × 512 pixels'
+            'patient_name' => null,
+            'patient_id' => null,
+            'study_date' => null,
+            'modality' => $this->getModalityFromFilename($file->getClientOriginalName()),
+            'institution' => null,
+            'physician' => null,
+            'description' => null,
+            'image_dimensions' => null,
+            'dicom_tags_available' => false
         ];
 
         // Try to read DICOM header if possible

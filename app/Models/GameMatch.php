@@ -43,6 +43,16 @@ class GameMatch extends Model
         return $this->belongsTo(Team::class, 'away_team_id');
     }
 
+    public function homeClub()
+    {
+        return $this->belongsTo(Club::class, 'home_club_id');
+    }
+
+    public function awayClub()
+    {
+        return $this->belongsTo(Club::class, 'away_club_id');
+    }
+
     public function officials()
     {
         return $this->hasMany(MatchOfficial::class, 'match_id');

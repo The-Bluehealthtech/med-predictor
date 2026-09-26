@@ -224,6 +224,15 @@ function designerArbitres(matchId) {
 }
 
 // Fonction pour confirmer la désignation
+// NOTE (audit factice -> reel, 2026-09) : cette fonction simulait
+// l'enregistrement ("Simuler la sauvegarde (pour l'instant)") puis
+// affichait un faux succes avant de recharger la page, qui n'affichait
+// donc jamais de vrai changement. CompetitionController::
+// saveArbitreAssignments() existait deja, reellement fonctionnelle
+// (enregistre dans la table match_officials), mais n'avait pas de route :
+// une route POST a ete ajoutee (routes/web.php,
+// competitions.association.designation-arbitres.save) pour la connecter
+// reellement a ce bouton.
 function confirmerDesignation(matchId) {
     const arbitrePrincipal = document.getElementById('arbitrePrincipal').value;
     const assistant1 = document.getElementById('assistant1').value;
@@ -235,17 +244,39 @@ function confirmerDesignation(matchId) {
         return;
     }
     
-    // Simuler la sauvegarde (pour l'instant)
     showNotification('Désignation en cours...', 'info');
-    
-    setTimeout(() => {
-        closeModal();
-        showNotification('Arbitres désignés avec succès !', 'success');
-        // Mettre à jour l'interface
-        setTimeout(() => {
-            location.reload();
-        }, 1000);
-    }, 1500);
+
+    fetch('{{ route("competitions.association.designation-arbitres.save") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            match_id: matchId,
+            main_referee_id: arbitrePrincipal,
+            assistant_referee_1_id: assistant1,
+            assistant_referee_2_id: assistant2,
+            fourth_official_id: fourthOfficial || null
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            closeModal();
+            if (data.success) {
+                showNotification(data.message || 'Arbitres désignés avec succès !', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                showNotification(data.message || "Erreur lors de l'enregistrement des arbitres", 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors de la désignation des arbitres:', error);
+            closeModal();
+            showNotification("Erreur lors de l'enregistrement des arbitres", 'error');
+        });
 }
 
 // Fonction pour fermer le modal

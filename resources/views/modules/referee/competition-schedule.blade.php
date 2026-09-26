@@ -24,6 +24,7 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8">
             <div class="p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-6">Upcoming Competitions</h2>
+                @if($upcomingMatches->isEmpty())
                 <div class="text-center py-12 text-gray-500">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -31,6 +32,21 @@
                     <h3 class="mt-2 text-sm font-medium text-gray-900">No competitions scheduled</h3>
                     <p class="mt-1 text-sm text-gray-500">Competition schedules will appear here when available.</p>
                 </div>
+                @else
+                <div class="space-y-3">
+                    @foreach($upcomingMatches as $match)
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">{{ $match->competition?->name ?? 'Compétition' }}</p>
+                            <p class="text-sm text-gray-500">
+                                {{ $match->homeTeam?->club?->name ?? '—' }} vs {{ $match->awayTeam?->club?->name ?? '—' }}
+                                · {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('d/m/Y') : '—' }}
+                            </p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
             </div>
         </div>
 

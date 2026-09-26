@@ -78,8 +78,8 @@
                         </div>
                     </div>
                     <div class="mb-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            ✅ Connecté
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            ⚪ Non connecté
                         </span>
                     </div>
                     <p class="text-sm text-gray-600 mb-4">Synchronisation automatique des écritures comptables et des rapports financiers.</p>
@@ -105,8 +105,8 @@
                         </div>
                     </div>
                     <div class="mb-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            ✅ Connecté
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            ⚪ Non connecté
                         </span>
                     </div>
                     <p class="text-sm text-gray-600 mb-4">Import automatique des transactions et synchronisation des comptes.</p>
@@ -248,66 +248,8 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
-                                        <span class="text-blue-600 text-sm">📊</span>
-                                    </div>
-                                    <div class="text-sm font-medium text-gray-900">Sage</div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Import</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-01-15 14:30</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    ✅ Réussi
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">45 transactions</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button class="text-blue-600 hover:text-blue-900">Voir détails</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center mr-3">
-                                        <span class="text-green-600 text-sm">💼</span>
-                                    </div>
-                                    <div class="text-sm font-medium text-gray-900">QuickBooks</div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Export</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-01-15 12:15</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    ✅ Réussi
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">23 comptes</td>
-                            <td class="px-6 py-4 whitespace-4 text-sm font-medium">
-                                <button class="text-blue-600 hover:text-blue-900">Voir détails</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center mr-3">
-                                        <span class="text-purple-600 text-sm">☁️</span>
-                                    </div>
-                                    <div class="text-sm font-medium text-gray-900">Xero</div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Import</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024-01-14 16:45</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    ⚠️ Erreur
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">0 éléments</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button class="text-red-600 hover:text-red-900">Voir erreur</button>
+                            <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">
+                                Aucune synchronisation n'a encore eu lieu (aucun logiciel comptable n'est connecté).
                             </td>
                         </tr>
                     </tbody>

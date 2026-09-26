@@ -12,7 +12,7 @@
     </div>
     
     <div class="bg-white rounded-lg shadow p-6">
-        <p class="text-gray-600">Liste des documents médicaux...</p>
+        <p class="text-gray-600">{{ __('secretary.documents_placeholder') }}</p>
     </div>
 </div>
 @endsection

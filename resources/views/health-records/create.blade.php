@@ -1633,6 +1633,10 @@
 </div>
 
 <script>
+// Nom du professionnel de sante actuellement connecte (auteur reel du
+// rapport CDA genere plus bas), et non plus "Dr. Radiologue" code en dur.
+const CURRENT_CLINICIAN_NAME = @json(auth()->user()->name ?? null);
+
 // Attendre que le DOM soit chargé
 document.addEventListener('DOMContentLoaded', function() {
     // Vérifier que Vue.js est chargé
@@ -2358,70 +2362,34 @@ document.addEventListener('DOMContentLoaded', function() {
     function analyzeImagingWithAI() {
         const imagingFile = document.getElementById('imaging_file');
         const imagingFindings = document.getElementById('imaging_findings').value;
-        const imagingType = document.getElementById('imaging_type').value;
         
         if (!imagingFile.files[0] && !imagingFindings) {
             alert('Veuillez uploader une image ou saisir des résultats pour l\'analyse IA');
             return;
         }
 
-        const analyzeBtn = document.getElementById('analyze-imaging-btn');
         const aiResult = document.getElementById('ai-analysis-result');
         const aiContent = document.getElementById('ai-analysis-content');
-        
-        // Simuler l'analyse IA
-        analyzeBtn.textContent = '🔍 Analyse en cours...';
-        analyzeBtn.disabled = true;
-        
-        setTimeout(() => {
-            const analysis = generateAIAnalysis(imagingType, imagingFindings);
-            aiContent.innerHTML = analysis;
-            aiResult.classList.remove('hidden');
-            
-            analyzeBtn.textContent = '🔍 Analyser avec l\'IA';
-            analyzeBtn.disabled = false;
-        }, 2000);
-    }
 
-    function generateAIAnalysis(type, findings) {
-        const analysis = {
-            'xray_chest': {
-                'normal': 'Radiographie thoracique normale. Pas de signe de pathologie pulmonaire, cardiaque ou pleurale.',
-                'abnormal': 'Anomalies détectées sur la radiographie thoracique. Recommandations pour examens complémentaires.'
-            },
-            'ct_head': {
-                'normal': 'Scanner cérébral normal. Pas de lésion intracrânienne détectée.',
-                'abnormal': 'Anomalies détectées sur le scanner cérébral. Évaluation neurologique recommandée.'
-            },
-            'mri_brain': {
-                'normal': 'IRM cérébrale normale. Pas de lésion cérébrale détectée.',
-                'abnormal': 'Anomalies détectées sur l\'IRM cérébrale. Consultation neurologique recommandée.'
-            }
-        };
-
-        const typeAnalysis = analysis[type] || analysis['xray_chest'];
-        const isAbnormal = findings.toLowerCase().includes('anormal') || 
-                          findings.toLowerCase().includes('pathologique') ||
-                          findings.toLowerCase().includes('fracture') ||
-                          findings.toLowerCase().includes('lésion');
-
-        return `
-            <div class="space-y-2">
-                <div class="font-medium text-purple-800">Analyse IA - ${getImagingTypeDisplayName(type)}</div>
-                <div class="text-sm">
-                    <strong>Diagnostic IA :</strong> ${isAbnormal ? 'Anormal' : 'Normal'}
-                </div>
-                <div class="text-sm">
-                    <strong>Analyse détaillée :</strong> ${typeAnalysis[isAbnormal ? 'abnormal' : 'normal']}
-                </div>
-                <div class="text-sm">
-                    <strong>Confiance IA :</strong> ${isAbnormal ? '85%' : '92%'}
-                </div>
-                <div class="text-sm">
-                    <strong>Recommandations :</strong> ${isAbnormal ? 'Examens complémentaires recommandés' : 'Suivi standard'}
-                </div>
+        // NOTE (audit factice -> reel, 2026-09) : cette "analyse IA" ne
+        // regardait jamais l'image : elle cherchait simplement les mots
+        // "anormal"/"pathologique"/"fracture"/"lesion" dans le texte que le
+        // medecin venait lui-meme de saisir dans "imaging_findings", puis
+        // affichait ce mot-cle comme un "Diagnostic IA" avec un pourcentage
+        // de confiance invente (85%/92%, toujours les memes deux valeurs).
+        // Aucun service d'IA d'analyse d'imagerie medicale n'est reellement
+        // connecte a cette application.
+        aiContent.innerHTML = `
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <p class="text-yellow-800 font-semibold mb-1">⚠️ Analyse IA non disponible</p>
+                <p class="text-sm text-yellow-800">
+                    L'analyse automatique d'imagerie médicale n'est pas disponible : aucun service d'intelligence artificielle
+                    n'est connecté à cette application. Les résultats saisis restent enregistrés tels quels ;
+                    l'interprétation doit être faite par un professionnel de santé.
+                </p>
             </div>
         `;
+        aiResult.classList.remove('hidden');
     }
 
     function generateCDAReport() {
@@ -2432,8 +2400,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Simuler la génération du rapport CDA
-        const cdaReport = generateCDAXML(imagingRecords);
+        // NOTE (audit factice -> reel, 2026-09) : le nom du patient etait
+        // code en dur ("Patient Test") quel que soit le joueur reellement
+        // selectionne dans le formulaire ; recupere desormais le vrai nom
+        // depuis le select #player_id.
+        const playerSelectEl = document.getElementById('player_id');
+        const selectedOption = playerSelectEl ? playerSelectEl.options[playerSelectEl.selectedIndex] : null;
+        const patientName = (selectedOption && selectedOption.value) ? selectedOption.textContent.trim() : 'Patient non renseigné';
+
+        const cdaReport = generateCDAXML(imagingRecords, patientName);
         
         // Créer un blob et télécharger
         const blob = new Blob([cdaReport], { type: 'application/xml' });
@@ -2449,9 +2424,10 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Rapport CDA généré et téléchargé avec succès !');
     }
 
-    function generateCDAXML(records) {
+    function generateCDAXML(records, patientName) {
         const now = new Date().toISOString();
-        const patientName = 'Patient Test'; // À remplacer par les vraies données
+        patientName = patientName || 'Patient non renseigné';
+        const authorName = CURRENT_CLINICIAN_NAME || 'Médecin non renseigné';
         
         const xmlContent = 
             '<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
@@ -2482,7 +2458,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     '<id root="2.16.840.1.113883.19.5" extension="RADIOLOGIST"/>' +
                     '<assignedPerson>' +
                         '<name>' +
-                            '<given>Dr. Radiologue</given>' +
+                            '<given>' + authorName + '</given>' +
                         '</name>' +
                     '</assignedPerson>' +
                 '</assignedAuthor>' +
@@ -2666,58 +2642,22 @@ document.addEventListener('DOMContentLoaded', function() {
         return types[type] || type;
     }
 
+    // NOTE (audit factice -> reel, 2026-09) : meme constat que
+    // analyzeImagingWithAI() ci-dessus : cette "analyse IA" cherchait des
+    // mots-cles dans les notes saisies par le medecin lui-meme
+    // ("carie"/"anormal"/"lesion"/"probleme") et renvoyait un pourcentage
+    // de confiance invente (87%/94%). Aucun service d'IA n'est reellement
+    // connecte.
     function analyzeDentalImagingWithAI() {
         const dentalImagingFile = document.getElementById('dental_imaging_file');
         const dentalImagingType = document.getElementById('dental_imaging_type').value;
-        const dentalImagingNotes = document.getElementById('dental_imaging_notes').value;
         
         if (!dentalImagingFile.files[0] && !dentalImagingType) {
             alert('Veuillez uploader une image ou sélectionner un type d\'examen pour l\'analyse IA');
             return;
         }
 
-        const analyzeBtn = document.getElementById('analyze-dental-imaging-btn');
-        
-        // Simuler l'analyse IA
-        analyzeBtn.textContent = '🔍 Analyse en cours...';
-        analyzeBtn.disabled = true;
-        
-        setTimeout(() => {
-            const analysis = generateDentalAIAnalysis(dentalImagingType, dentalImagingNotes);
-            alert(`Analyse IA terminée :\n\n${analysis}`);
-            
-            analyzeBtn.textContent = '🔍 Analyser avec l\'IA';
-            analyzeBtn.disabled = false;
-        }, 2000);
-    }
-
-    function generateDentalAIAnalysis(type, notes) {
-        const analysis = {
-            'panoramic': {
-                'normal': 'Panoramique normale. Toutes les dents présentes et alignées. Pas de carie visible.',
-                'abnormal': 'Anomalies détectées sur le panoramique. Caries, dents manquantes ou malpositionnées observées.'
-            },
-            'bitewing': {
-                'normal': 'Bitewing normale. Pas de carie interproximale détectée.',
-                'abnormal': 'Caries interproximales détectées. Recommandations de traitement.'
-            },
-            'periapical': {
-                'normal': 'Périapicale normale. Racines saines, pas de lésion apicale.',
-                'abnormal': 'Lésion apicale détectée. Évaluation endodontique recommandée.'
-            }
-        };
-
-        const typeAnalysis = analysis[type] || analysis['panoramic'];
-        const isAbnormal = notes.toLowerCase().includes('carie') || 
-                          notes.toLowerCase().includes('anormal') ||
-                          notes.toLowerCase().includes('lésion') ||
-                          notes.toLowerCase().includes('problème');
-
-        return `Analyse IA - ${getDentalImagingTypeDisplayName(type)}\n\n` +
-               `Diagnostic IA : ${isAbnormal ? 'Anormal' : 'Normal'}\n` +
-               `Analyse détaillée : ${typeAnalysis[isAbnormal ? 'abnormal' : 'normal']}\n` +
-               `Confiance IA : ${isAbnormal ? '87%' : '94%'}\n` +
-               `Recommandations : ${isAbnormal ? 'Consultation dentaire recommandée' : 'Suivi standard'}`;
+        alert("L'analyse automatique d'imagerie dentaire par IA n'est pas disponible : aucun service d'intelligence artificielle n'est connecté à cette application.");
     }
 
     // Initialiser la gestion de l'imagerie dentaire

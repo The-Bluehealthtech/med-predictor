@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - FIT Platform</title>
+    <title>{{ __('auth.login_page_title') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Styles pour les messages de notification -->
@@ -63,7 +63,7 @@
                     <p class="text-sm text-blue-200 -mt-1">Football Intelligence & Tracking</p>
                 </div>
             </div>
-            <p class="text-blue-200">Connexion sécurisée</p>
+            <p class="text-blue-200">{{ __('auth.login_secure') }}</p>
         </div>
 
         @if ($errors->any())
@@ -81,20 +81,20 @@
             
             <div>
                 <label for="user_type" class="block text-sm font-medium text-blue-200 mb-2">
-                    Type d'utilisateur
+                    {{ __('auth.login_user_type') }}
                 </label>
                 <select name="user_type" id="user_type" required 
                         class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
-                    <option value="">Sélectionner...</option>
-                    <option value="player">Joueur</option>
-                    <option value="referee">Arbitre</option>
-                    <option value="club_admin">Administrateur Club</option>
-                    <option value="club_manager">Manager Club</option>
-                    <option value="club_medical">Médecin Club</option>
-                    <option value="association_admin">Administrateur Association</option>
-                    <option value="association_registrar">Enregistreur Association</option>
-                    <option value="association_medical">Médecin Association</option>
-                    <option value="system_admin">Administrateur Système</option>
+                    <option value="">{{ __('auth.login_select_placeholder') }}</option>
+                    <option value="player">{{ __('auth.role_player') }}</option>
+                    <option value="referee">{{ __('auth.role_referee') }}</option>
+                    <option value="club_admin">{{ __('auth.role_club_admin') }}</option>
+                    <option value="club_manager">{{ __('auth.role_club_manager') }}</option>
+                    <option value="club_medical">{{ __('auth.role_club_medical') }}</option>
+                    <option value="association_admin">{{ __('auth.role_association_admin') }}</option>
+                    <option value="association_registrar">{{ __('auth.role_association_registrar') }}</option>
+                    <option value="association_medical">{{ __('auth.role_association_medical') }}</option>
+                    <option value="system_admin">{{ __('auth.role_system_admin') }}</option>
                 </select>
             </div>
 
@@ -104,7 +104,7 @@
                 </label>
                 <input type="email" name="email" id="email" required 
                        class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                       placeholder="votre@email.com">
+                       placeholder="{{ __('auth.login_email_placeholder') }}">
             </div>
 
             <div>
@@ -118,30 +118,30 @@
 
             <button type="submit" 
                     class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 transform hover:scale-105">
-                Se connecter
+                {{ __('auth.sign_in') }}
             </button>
         </form>
 
         <div class="mt-8 text-center">
             <p class="text-blue-200 text-sm">
-                <strong>Joueurs :</strong> Accès au portail joueur<br>
-                <strong>Arbitres :</strong> Accès au portail arbitre<br>
-                <strong>Clubs :</strong> Gestion des équipes et joueurs<br>
-                <strong>Associations :</strong> Gestion des compétitions<br>
-                <strong>Système :</strong> Accès complet au système
+                <strong>{{ __('auth.role_summary_players_label') }}</strong> {{ __('auth.role_summary_players_desc') }}<br>
+                <strong>{{ __('auth.role_summary_referees_label') }}</strong> {{ __('auth.role_summary_referees_desc') }}<br>
+                <strong>{{ __('auth.role_summary_clubs_label') }}</strong> {{ __('auth.role_summary_clubs_desc') }}<br>
+                <strong>{{ __('auth.role_summary_associations_label') }}</strong> {{ __('auth.role_summary_associations_desc') }}<br>
+                <strong>{{ __('auth.role_summary_system_label') }}</strong> {{ __('auth.role_summary_system_desc') }}
             </p>
         </div>
 
         <div class="mt-6 text-center space-y-2">
             <a href="/" class="text-blue-300 hover:text-blue-200 text-sm underline block">
-                ← Retour à l'accueil
+                {{ __('auth.login_back_home') }}
             </a>
             <div class="flex justify-center space-x-4">
                 <a href="/joueur/7" class="text-blue-300 hover:text-blue-200 text-sm underline">
-                    Accès joueur (démo)
+                    {{ __('auth.login_demo_player_access') }}
                 </a>
                 <a href="/referee-dashboard-working" class="text-blue-300 hover:text-blue-200 text-sm underline">
-                    Portail arbitre
+                    {{ __('auth.login_referee_portal_link') }}
                 </a>
             </div>
         </div>

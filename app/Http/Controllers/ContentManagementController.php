@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ContentManagementController extends Controller
 {
@@ -16,11 +18,15 @@ class ContentManagementController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
         }
 
-        // Statistiques du contenu
+        // NOTE (audit factice -> reel, 2026-09) : cette application n'a pas de
+        // modele "Article"/"Page"/"Annonce"/"FAQ" reel (voir plus bas). Seuls
+        // les medias (logos, images, documents...) sont reellement stockes,
+        // dans la table content_management. Les autres compteurs restent a 0
+        // car aucun contenu reel de ce type n'existe.
         $stats = [
             'total_articles' => 0,
             'total_pages' => 0,
-            'total_media' => 0,
+            'total_media' => DB::table('content_management')->count(),
             'total_categories' => 0,
             'pending_reviews' => 0,
             'published_content' => 0
@@ -72,26 +78,13 @@ class ContentManagementController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
         }
 
-        $articles = collect([
-            [
-                'id' => 1,
-                'title' => 'Nouvelle saison de football lancée',
-                'excerpt' => 'La nouvelle saison de football débute avec de nombreuses équipes participantes...',
-                'status' => 'published',
-                'author' => 'Admin FIT',
-                'created_at' => now()->subDays(2),
-                'views' => 1250
-            ],
-            [
-                'id' => 2,
-                'title' => 'Règlement des compétitions 2024',
-                'excerpt' => 'Découvrez les nouveaux règlements pour les compétitions de cette année...',
-                'status' => 'draft',
-                'author' => 'Admin FIT',
-                'created_at' => now()->subDays(5),
-                'views' => 0
-            ]
-        ]);
+        // NOTE (audit factice -> reel, 2026-09) : aucun modele "Article" reel
+        // n'existe dans l'application. Les 2 articles precedemment affiches
+        // ici ("Nouvelle saison de football lancee", "Reglement des
+        // competitions 2024") etaient des exemples codes en dur, identiques
+        // pour tout le monde. Ils ont ete retires ; la liste est reellement
+        // vide en l'absence de module d'articles.
+        $articles = collect();
 
         return view('admin.content-management.articles', compact('articles'));
     }
@@ -186,30 +179,12 @@ class ContentManagementController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
         }
 
-        // Simulation de données de pages
-        $pages = collect([
-            [
-                'id' => 1,
-                'title' => 'À propos de la FIT',
-                'slug' => 'about',
-                'status' => 'published',
-                'updated_at' => now()->subDays(1)
-            ],
-            [
-                'id' => 2,
-                'title' => 'Contact',
-                'slug' => 'contact',
-                'status' => 'published',
-                'updated_at' => now()->subDays(3)
-            ],
-            [
-                'id' => 3,
-                'title' => 'Politique de confidentialité',
-                'slug' => 'privacy',
-                'status' => 'draft',
-                'updated_at' => now()->subWeek()
-            ]
-        ]);
+        // NOTE (audit factice -> reel, 2026-09) : aucun modele "Page" reel
+        // n'existe dans l'application. Les 3 pages precedemment affichees ici
+        // etaient des exemples codes en dur ("A propos de la FIT", "Contact",
+        // "Politique de confidentialite"). Ils ont ete retires ; la liste est
+        // reellement vide en l'absence de module de pages statiques.
+        $pages = collect();
 
         return view('admin.content-management.pages', compact('pages'));
     }
@@ -223,35 +198,50 @@ class ContentManagementController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
         }
 
-        // Simulation de données de médias
-        $media = collect([
-            [
-                'id' => 1,
-                'name' => 'logo-fit.png',
-                'type' => 'image',
-                'size' => '2.5 MB',
-                'uploaded_at' => now()->subDays(1),
-                'url' => '/storage/media/logo-fit.png'
-            ],
-            [
-                'id' => 2,
-                'name' => 'presentation-video.mp4',
-                'type' => 'video',
-                'size' => '45.2 MB',
-                'uploaded_at' => now()->subDays(3),
-                'url' => '/storage/media/presentation-video.mp4'
-            ],
-            [
-                'id' => 3,
-                'name' => 'reglement-2024.pdf',
-                'type' => 'document',
-                'size' => '1.8 MB',
-                'uploaded_at' => now()->subWeek(),
-                'url' => '/storage/media/reglement-2024.pdf'
-            ]
-        ]);
+        // Les medias sont la seule categorie de "Content Management" a avoir
+        // une vraie table (content_management). On l'utilise directement,
+        // sans modele Eloquent dedie.
+        $media = DB::table('content_management')
+            ->where('status', 'active')
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($row) {
+                $mime = $row->mime_type ?? '';
+                if (str_starts_with($mime, 'image/')) {
+                    $type = 'image';
+                } elseif (str_starts_with($mime, 'video/')) {
+                    $type = 'video';
+                } else {
+                    $type = 'document';
+                }
+
+                return [
+                    'id' => $row->id,
+                    'name' => $row->name,
+                    'type' => $type,
+                    'size' => $this->formatFileSize((int) $row->file_size),
+                    'uploaded_at' => Carbon::parse($row->created_at),
+                    'url' => $row->file_url,
+                ];
+            });
 
         return view('admin.content-management.media', compact('media'));
+    }
+
+    /**
+     * Formate une taille de fichier en octets vers une chaîne lisible.
+     */
+    private function formatFileSize(int $bytes): string
+    {
+        if ($bytes <= 0) {
+            return '0 B';
+        }
+
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $power = (int) floor(log($bytes, 1024));
+        $power = max(0, min($power, count($units) - 1));
+
+        return round($bytes / (1024 ** $power), 1) . ' ' . $units[$power];
     }
 
     /**
@@ -263,33 +253,11 @@ class ContentManagementController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
         }
 
-        // Simulation de données d'annonces
-        $announcements = collect([
-            [
-                'id' => 1,
-                'title' => 'Ouverture des inscriptions',
-                'content' => 'Les inscriptions pour la nouvelle saison sont maintenant ouvertes...',
-                'priority' => 'high',
-                'status' => 'active',
-                'created_at' => now()->subDays(1)
-            ],
-            [
-                'id' => 2,
-                'title' => 'Maintenance programmée',
-                'content' => 'Une maintenance du système est prévue ce weekend...',
-                'priority' => 'medium',
-                'status' => 'active',
-                'created_at' => now()->subDays(2)
-            ],
-            [
-                'id' => 3,
-                'title' => 'Nouveau règlement',
-                'content' => 'Le nouveau règlement des compétitions est disponible...',
-                'priority' => 'high',
-                'status' => 'expired',
-                'created_at' => now()->subWeek()
-            ]
-        ]);
+        // NOTE (audit factice -> reel, 2026-09) : aucun modele "Annonce" reel
+        // n'existe dans l'application. Les 3 annonces precedemment affichees
+        // ici etaient des exemples codes en dur. Ils ont ete retires ; la
+        // liste est reellement vide en l'absence de module d'annonces.
+        $announcements = collect();
 
         return view('admin.content-management.announcements', compact('announcements'));
     }
@@ -303,34 +271,89 @@ class ContentManagementController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
         }
 
-        // Simulation de données de FAQ
-        $faqs = collect([
-            [
-                'id' => 1,
-                'question' => 'Comment s\'inscrire à une compétition ?',
-                'answer' => 'Pour vous inscrire à une compétition, connectez-vous à votre compte et allez dans la section "Compétitions"...',
-                'category' => 'inscriptions',
-                'status' => 'published',
-                'updated_at' => now()->subDays(1)
-            ],
-            [
-                'id' => 2,
-                'question' => 'Quels sont les documents requis ?',
-                'answer' => 'Les documents requis incluent le certificat médical, la licence de joueur, et une pièce d\'identité...',
-                'category' => 'documents',
-                'status' => 'published',
-                'updated_at' => now()->subDays(3)
-            ],
-            [
-                'id' => 3,
-                'question' => 'Comment contacter le support ?',
-                'answer' => 'Vous pouvez contacter le support via email à support@fitplatform.com ou par téléphone...',
-                'category' => 'support',
-                'status' => 'draft',
-                'updated_at' => now()->subWeek()
-            ]
-        ]);
+        // NOTE (audit factice -> reel, 2026-09) : aucun modele "FAQ" reel
+        // n'existe dans l'application. Les 3 questions precedemment affichees
+        // ici etaient des exemples codes en dur. Ils ont ete retires ; la
+        // liste est reellement vide en l'absence de module de FAQ.
+        $faqs = collect();
 
         return view('admin.content-management.faq', compact('faqs'));
+    }
+
+    /**
+     * Formulaire de creation de contenu.
+     *
+     * NOTE (audit factice -> reel, 2026-09) : ces routes (create/store/edit/
+     * update/destroy) etaient enregistrees dans routes/web.php mais leurs
+     * methodes n'existaient pas du tout sur ce controleur : y acceder
+     * provoquait une erreur serveur (methode inexistante). Comme aucun
+     * module reel d'articles/pages/annonces/FAQ n'existe (voir ci-dessus),
+     * on redirige desormais avec un message honnete plutot que de laisser
+     * la page planter.
+     */
+    public function create(Request $request)
+    {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['super_admin', 'system_admin', 'content_manager'])) {
+            return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
+        }
+
+        $type = $request->query('type', 'contenu');
+
+        return redirect()->route('admin.content-management.index')
+            ->with('info', "La création de contenu (type : {$type}) n'est pas encore disponible : aucun module de gestion de ce type de contenu n'est connecté.");
+    }
+
+    /**
+     * Enregistrement de contenu (non disponible, voir create()).
+     */
+    public function store(Request $request)
+    {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['super_admin', 'system_admin', 'content_manager'])) {
+            return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
+        }
+
+        return redirect()->route('admin.content-management.index')
+            ->with('info', "L'enregistrement de contenu n'est pas encore disponible.");
+    }
+
+    /**
+     * Formulaire d'edition de contenu (non disponible, voir create()).
+     */
+    public function edit($id, Request $request)
+    {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['super_admin', 'system_admin', 'content_manager'])) {
+            return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
+        }
+
+        $type = $request->query('type', 'contenu');
+
+        return redirect()->route('admin.content-management.index')
+            ->with('info', "La modification de contenu (type : {$type}) n'est pas encore disponible.");
+    }
+
+    /**
+     * Mise a jour de contenu (non disponible, voir create()).
+     */
+    public function update($id, Request $request)
+    {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['super_admin', 'system_admin', 'content_manager'])) {
+            return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
+        }
+
+        return redirect()->route('admin.content-management.index')
+            ->with('info', "La mise à jour de contenu n'est pas encore disponible.");
+    }
+
+    /**
+     * Suppression de contenu (non disponible, voir create()).
+     */
+    public function destroy($id)
+    {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['super_admin', 'system_admin', 'content_manager'])) {
+            return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
+        }
+
+        return redirect()->route('admin.content-management.index')
+            ->with('info', "La suppression de contenu n'est pas encore disponible.");
     }
 }

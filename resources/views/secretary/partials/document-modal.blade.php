@@ -17,14 +17,14 @@
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                             <h3 class="text-lg leading-6 font-medium text-gray-900">
-                                Upload de Document
+                                {{ __('secretary.modal_upload_document_title') }}
                             </h3>
                             <div class="mt-2 space-y-4">
                                 <!-- Athlète -->
                                 <div>
-                                    <label for="document_athlete_id" class="block text-sm font-medium text-gray-700">Athlète</label>
+                                    <label for="document_athlete_id" class="block text-sm font-medium text-gray-700">{{ __('secretary.col_athlete') }}</label>
                                     <select id="document_athlete_id" name="athlete_id" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
-                                        <option value="">Sélectionner un athlète</option>
+                                        <option value="">{{ __('secretary.select_athlete_placeholder') }}</option>
                                         @foreach($athletes ?? [] as $athlete)
                                             <option value="{{ $athlete->id }}">{{ $athlete->name }} ({{ $athlete->fifa_connect_id }})</option>
                                         @endforeach
@@ -33,46 +33,46 @@
 
                                 <!-- Type de Document -->
                                 <div>
-                                    <label for="document_type" class="block text-sm font-medium text-gray-700">Type de Document</label>
+                                    <label for="document_type" class="block text-sm font-medium text-gray-700">{{ __('secretary.label_document_type') }}</label>
                                     <select id="document_type" name="document_type" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md">
-                                        <option value="">Sélectionner un type</option>
-                                        <option value="medical_record">Dossier médical</option>
-                                        <option value="radiology">Imagerie médicale</option>
-                                        <option value="laboratory">Résultats de laboratoire</option>
-                                        <option value="prescription">Ordonnance</option>
-                                        <option value="certificate">Certificat médical</option>
-                                        <option value="other">Autre</option>
+                                        <option value="">{{ __('secretary.select_type_placeholder') }}</option>
+                                        <option value="medical_record">{{ __('secretary.doc_type_medical_record') }}</option>
+                                        <option value="radiology">{{ __('secretary.doc_type_radiology') }}</option>
+                                        <option value="laboratory">{{ __('secretary.doc_type_laboratory') }}</option>
+                                        <option value="prescription">{{ __('secretary.doc_type_prescription') }}</option>
+                                        <option value="certificate">{{ __('secretary.doc_type_certificate') }}</option>
+                                        <option value="other">{{ __('secretary.doc_type_other') }}</option>
                                     </select>
                                 </div>
 
                                 <!-- Titre -->
                                 <div>
-                                    <label for="document_title" class="block text-sm font-medium text-gray-700">Titre du Document</label>
-                                    <input type="text" id="document_title" name="title" placeholder="Titre du document" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                    <label for="document_title" class="block text-sm font-medium text-gray-700">{{ __('secretary.label_document_title') }}</label>
+                                    <input type="text" id="document_title" name="title" placeholder="{{ __('secretary.document_title_placeholder') }}" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
                                 </div>
 
                                 <!-- Fichier -->
                                 <div>
-                                    <label for="document_file" class="block text-sm font-medium text-gray-700">Fichier</label>
+                                    <label for="document_file" class="block text-sm font-medium text-gray-700">{{ __('secretary.label_file') }}</label>
                                     <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                                         <div class="space-y-1 text-center">
                                             <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl"></i>
                                             <div class="flex text-sm text-gray-600">
                                                 <label for="document_file" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
-                                                    <span>Télécharger un fichier</span>
+                                                    <span>{{ __('secretary.upload_a_file') }}</span>
                                                     <input id="document_file" name="document_file" type="file" class="sr-only" required accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.dicom">
                                                 </label>
-                                                <p class="pl-1">ou glisser-déposer</p>
+                                                <p class="pl-1">{{ __('secretary.or_drag_and_drop') }}</p>
                                             </div>
-                                            <p class="text-xs text-gray-500">PDF, DOC, images jusqu'à 10MB</p>
+                                            <p class="text-xs text-gray-500">{{ __('secretary.file_size_hint') }}</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Description -->
                                 <div>
-                                    <label for="document_description" class="block text-sm font-medium text-gray-700">Description</label>
-                                    <textarea id="document_description" name="description" rows="3" placeholder="Description du document..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"></textarea>
+                                    <label for="document_description" class="block text-sm font-medium text-gray-700">{{ __('secretary.label_description') }}</label>
+                                    <textarea id="document_description" name="description" rows="3" placeholder="{{ __('secretary.document_description_placeholder') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -80,10 +80,10 @@
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                     <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        Uploader le document
+                        {{ __('secretary.upload_document_button') }}
                     </button>
                     <button type="button" @click="show = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        Annuler
+                        {{ __('secretary.cancel') }}
                     </button>
                 </div>
             </form>

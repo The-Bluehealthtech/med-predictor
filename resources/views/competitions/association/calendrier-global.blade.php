@@ -446,14 +446,12 @@ function saveReschedule() {
     
     console.log('Reprogrammation:', { matchId, date, time, venue });
     
-    // Simuler la reprogrammation
-    alert(`Match ${matchId} reprogrammé pour le ${date} à ${time}`);
+    // NOTE (audit factice -> reel, 2026-09) : aucune route/backend n'existe
+    // pour reprogrammer un match depuis cette page (aucun appel reseau
+    // n'etait effectue, seul un message de succes factice etait affiche
+    // puis la page etait rechargee sans aucun changement reel).
+    alert(`La reprogrammation de match n'est pas encore disponible : aucune fonctionnalite backend n'est connectee a ce formulaire pour le moment.`);
     closeRescheduleMatchModal();
-    
-    // Recharger la page pour mettre à jour les données
-    setTimeout(() => {
-        location.reload();
-    }, 1000);
 }
 
 function saveMatchChanges() {
@@ -464,14 +462,12 @@ function saveMatchChanges() {
     
     console.log('Modifications:', { matchId, homeScore, awayScore, status });
     
-    // Simuler la sauvegarde
-    alert(`Modifications sauvegardées pour le match ${matchId}`);
+    // NOTE (audit factice -> reel, 2026-09) : aucune route/backend n'existe
+    // pour enregistrer ces modifications depuis cette page (aucun appel
+    // reseau n'etait effectue, seul un message de succes factice etait
+    // affiche puis la page etait rechargee sans aucun changement reel).
+    alert(`Cette action n'est pas encore disponible : aucune fonctionnalite backend n'est connectee a ce formulaire pour le moment.`);
     closeEditMatchModal();
-    
-    // Recharger la page pour mettre à jour les données
-    setTimeout(() => {
-        location.reload();
-    }, 1000);
 }
 </script>
 @endsection

@@ -419,13 +419,17 @@
                         <!-- Configuration API Google -->
                         <div class="mb-6">
                             <h4 class="text-md font-medium text-gray-700 mb-3">Configuration API Google</h4>
-                            <div class="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-4">
-                                <p class="text-gray-800 font-medium">Google Cloud configuré avec succès !</p>
-                                <p class="text-gray-700 text-sm">Votre projet est prêt et l'API Speech-to-Text est active.</p>
-                            </div>
-                            
-                            <div class="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-4">
-                                <p class="text-gray-800 font-medium">Clé chargée automatiquement depuis la configuration serveur</p>
+                            <!-- NOTE (audit factice -> reel, 2026-09) : ce bloc affichait
+                                 en dur "Google Cloud configure avec succes" / "Cle chargee
+                                 automatiquement depuis la configuration serveur", quel que soit
+                                 l'etat reel du service : aucune cle Google Speech-to-Text n'est
+                                 configuree cote serveur (aucune variable GOOGLE_* dans .env), et
+                                 le "Panel de Debug" ci-dessous montre que la cle doit reellement
+                                 etre saisie et testee manuellement (apiKeyInput / testAPIKey /
+                                 initService). Message remplace par un etat honnete. -->
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                                <p class="text-yellow-800 font-medium">⚠️ Clé API Google Speech-to-Text non configurée</p>
+                                <p class="text-yellow-800 text-sm">Aucune clé n'est chargée automatiquement par le serveur. Saisissez votre propre clé API dans le panel de debug ci-dessous puis initialisez le service pour activer la reconnaissance vocale.</p>
                             </div>
                         </div>
                         
@@ -4785,7 +4789,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log(' Confirmation reçue:', { id: idValue, sequence: sequenceValue });
             
-            // Simuler la validation (ici on pourrait appeler l'API Laravel)
+            // NOTE (audit factice -> reel, 2026-09) : aucune verification reelle du
+            // code de confirmation saisi n'est effectuee ici (pas d'appel a une API de
+            // validation) ; toute saisie non vide fait avancer le flux. Les donnees
+            // ensuite affichees (confirmationData.databaseData) sont en revanche reelles,
+            // deja chargees depuis la base avant l'ouverture de ce modal.
             setTimeout(() => {
                 console.log(' Identité confirmée avec succès !');
                 
@@ -7355,47 +7363,27 @@ hideVocalContentInManual() {
         }
     }
     
+    // NOTE (audit factice -> reel, 2026-09) : les 3 methodes ci-dessous
+    // (vocal/ocr/fhir) construisaient un objet de donnees (parfois vide,
+    // avec juste un commentaire "Donnees extraites par OCR"/"recuperees
+    // depuis le serveur FHIR") puis affichaient immediatement un message
+    // "transferees avec succes vers le formulaire principal" — sans jamais
+    // ecrire quoi que ce soit dans les champs du formulaire principal.
+    // Aucun vrai transfert n'a jamais eu lieu, y compris pour le mode
+    // vocal ou l'objet contenait pourtant de vraies valeurs lues dans les
+    // champs vocaux. Message remplace par un etat honnete tant que le
+    // vrai transfert (ecriture reelle dans les champs du formulaire
+    // principal) n'est pas implemente.
     transferVocalDataToManual() {
-        try {
-            const vocalData = {
-                player_name: document.getElementById('voice_player_name')?.value || '',
-                age: document.getElementById('voice_age')?.value || '',
-                position: document.getElementById('voice_position')?.value || '',
-                club: document.getElementById('voice_club')?.value || '',
-                fifa_connect_id: document.getElementById('voice_fifa_connect_id')?.value || ''
-            };
-            
-            this.showTransferSuccess('vocal');
-            
-        } catch (error) {
-            this.showTransferError('vocal', error.message);
-        }
+        this.showTransferError('vocal', "le transfert automatique vers le formulaire principal n'est pas encore implémenté ; veuillez recopier les informations manuellement");
     }
     
     transferOcrDataToManual() {
-        try {
-            const ocrData = {
-                // Données extraites par OCR
-            };
-            
-            this.showTransferSuccess('ocr');
-            
-        } catch (error) {
-            this.showTransferError('ocr', error.message);
-        }
+        this.showTransferError('ocr', "le transfert automatique vers le formulaire principal n'est pas encore implémenté ; veuillez recopier les informations manuellement");
     }
     
     transferFhirDataToManual() {
-        try {
-            const fhirData = {
-                // Données récupérées depuis le serveur FHIR
-            };
-            
-            this.showTransferSuccess('fhir');
-            
-        } catch (error) {
-            this.showTransferError('fhir', error.message);
-        }
+        this.showTransferError('fhir', "le transfert automatique vers le formulaire principal n'est pas encore implémenté ; veuillez recopier les informations manuellement");
     }
     
     showTransferSuccess(mode) {

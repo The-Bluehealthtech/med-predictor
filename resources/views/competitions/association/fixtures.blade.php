@@ -200,14 +200,42 @@ function editMatch(matchId) {
     showMatchModal(matchId, 'edit');
 }
 
+// NOTE (audit factice -> reel, 2026-09) : cette fonction telechargeait un
+// CSV entierement invente ("Club A", "Club B", "Arbitre 1"...) quel que
+// soit le contenu reel de la page, puis affichait un faux succes. Le CSV
+// est desormais construit a partir des vraies lignes affichees a l'ecran
+// (memes tableaux que ceux rendus par le serveur depuis les fixtures reelles).
 function exportFixtures() {
-    alert('Export des fixtures en cours...');
-    
-    // Créer un fichier CSV fictif
-    const csvContent = "Journée,Date,Heure,Équipe Domicile,Équipe Extérieur,Stade,Résultat,Arbitre\n" +
-        "1,15/09/2024,15:00,Club A,Club B,Stade Municipal,2-1,Arbitre 1\n" +
-        "1,15/09/2024,17:00,Club C,Club D,Stade Olympique,1-0,Arbitre 2";
-    
+    const tables = document.querySelectorAll('table');
+    if (!tables.length) {
+        showNotification("Aucun match à exporter.", 'error');
+        return;
+    }
+
+    let csvContent = "Match,Heure,Stade,Résultat,Arbitre\n";
+    let rowCount = 0;
+
+    tables.forEach(table => {
+        table.querySelectorAll('tbody tr').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 5) return;
+
+            const heure = cells[0].textContent.trim().replace(/\s+/g, ' ');
+            const match = cells[1].textContent.trim().replace(/\s+/g, ' ');
+            const stade = cells[2].textContent.trim().replace(/\s+/g, ' ');
+            const resultat = cells[3].textContent.trim().replace(/\s+/g, ' ');
+            const arbitre = cells[4].textContent.trim().replace(/\s+/g, ' ');
+
+            csvContent += `"${match}","${heure}","${stade}","${resultat}","${arbitre}"\n`;
+            rowCount++;
+        });
+    });
+
+    if (rowCount === 0) {
+        showNotification("Aucun match à exporter.", 'error');
+        return;
+    }
+
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -215,7 +243,7 @@ function exportFixtures() {
     a.download = 'fixtures_competitions.csv';
     a.click();
     window.URL.revokeObjectURL(url);
-    
+
     showNotification('Fixtures exportées avec succès !', 'success');
 }
 
@@ -429,8 +457,14 @@ function closeModal(button) {
     }
 }
 
+// NOTE (audit factice -> reel, 2026-09) : le modal "Modifier le Match" (type
+// edit) affiche exactement les memes champs en lecture seule que le modal
+// "Details du Match" (aucun champ de formulaire reel n'est presente) ; le
+// bouton Sauvegarder affichait donc un faux succes sans qu'il y ait quoi que
+// ce soit a enregistrer. Aucune edition reelle des matchs n'est disponible
+// depuis cette page pour le moment.
 function saveMatch(matchId) {
-    showNotification('Match sauvegardé avec succès !', 'success');
+    showNotification("La modification des matchs n'est pas encore disponible depuis cette page.", 'error');
     closeModal(event.target.closest('.fixed'));
 }
 

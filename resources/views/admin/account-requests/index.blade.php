@@ -50,7 +50,7 @@
                 </label>
                 <select id="football-type-filter" class="w-full border border-gray-300 rounded-md px-3 py-2">
                     <option value="">{{ app()->getLocale() === 'fr' ? 'Tous les types' : 'All Types' }}</option>
-                    <option value="11-a-side">Football 11 à 11</option>
+                    <option value="11-a-side">{{ app()->getLocale() === 'fr' ? 'Football 11 à 11' : '11-a-side Football' }}</option>
                     <option value="futsal">Futsal</option>
                     <option value="women">{{ app()->getLocale() === 'fr' ? 'Football Féminin' : 'Women\'s Football' }}</option>
                     <option value="beach-soccer">Beach Soccer</option>

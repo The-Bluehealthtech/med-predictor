@@ -251,29 +251,30 @@
 
 @push('scripts')
 <script>
+// NOTE (audit factice -> reel, 2026-09) : ces 5 fonctions n'appelaient
+// aucune route/API reelle (aucun fetch) ; elles affichaient seulement un
+// message "en cours..." laissant croire qu'une action se produisait. Un
+// homonyme CompetitionController::verifierEffectif() existait cote
+// backend, mais restait non relie a aucune route et se limitait a un
+// succes fixe sans logique reelle ; il a ete supprime comme code mort.
 function verifierEffectif() {
-    // Simulation de la vérification
-    alert('Vérification de l\'effectif en cours...');
+    alert("La vérification automatique de l'effectif n'est pas encore disponible : aucune fonctionnalité backend n'est connectée à ce bouton pour le moment.");
 }
 
 function exporterEffectif() {
-    // Simulation de l'export
-    alert('Export de l\'effectif en cours...');
+    alert("L'export de l'effectif n'est pas encore disponible : aucune fonctionnalité backend n'est connectée à ce bouton pour le moment.");
 }
 
 function verifierJoueur(joueurId) {
-    // Simulation de la vérification d'un joueur
-    alert('Vérification du joueur ' + joueurId + ' en cours...');
+    alert('La vérification individuelle du joueur ' + joueurId + " n'est pas encore disponible.");
 }
 
 function voirDetails(joueurId) {
-    // Simulation de l'affichage des détails
-    alert('Affichage des détails du joueur ' + joueurId);
+    alert("L'affichage du détail du joueur " + joueurId + " n'est pas encore disponible.");
 }
 
 function corrigerProbleme(joueurId) {
-    // Simulation de la correction
-    alert('Correction du problème pour le joueur ' + joueurId);
+    alert('La correction automatique pour le joueur ' + joueurId + " n'est pas encore disponible.");
 }
 
 // Filtres

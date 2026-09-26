@@ -132,22 +132,25 @@ document.getElementById('icd11_search').addEventListener('input', function(e) {
     }, 300);
 });
 
+// NOTE (audit factice -> reel, 2026-09) : la route /api/v1/icd11/search
+// n'existe pas (le groupe de routes ICD-11 dans routes/api.php est vide),
+// donc ce fetch echoue toujours et retombait systematiquement sur
+// getFallbackICD11Results(), une liste fixe de 4 diagnostics — presentee a
+// l'ecran comme une vraie recherche ICD-11 alors qu'elle ne depend jamais
+// de ce que l'utilisateur tape. Une vraie integration ICD-11 (l'API de
+// l'OMS) est prevue en configuration (config/services.php: services.icd11)
+// mais aucune cle (ICD11_CLIENT_ID/SECRET) n'est renseignee et aucun
+// controleur ne l'utilise : ce n'est pas encore une fonctionnalite reelle.
+// On informe donc honnetement l'utilisateur plutot que de renvoyer une
+// fausse liste de resultats.
 function searchICD11(query) {
     const resultsDiv = document.getElementById('icd11_results');
-    
-    fetch(`/api/v1/icd11/search?query=${encodeURIComponent(query)}&language=fr&limit=10`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.data.length > 0) {
-                displayICD11Results(data.data);
-            } else {
-                displayICD11Results(getFallbackICD11Results(query));
-            }
-        })
-        .catch(error => {
-            console.error('Erreur lors de la recherche ICD-11:', error);
-            displayICD11Results(getFallbackICD11Results(query));
-        });
+    resultsDiv.innerHTML = `
+        <div class="p-3 text-sm text-gray-500">
+            La recherche ICD-11 n'est pas encore disponible : aucun service de recherche de diagnostics n'est connecté.
+        </div>
+    `;
+    resultsDiv.classList.remove('hidden');
 }
 
 function displayICD11Results(results) {
@@ -187,20 +190,19 @@ function hideICD11Results() {
     document.getElementById('icd11_results').classList.add('hidden');
 }
 
-function getFallbackICD11Results(query) {
-    // Résultats de fallback pour la démo
-    return [
-        { code: 'E11.9', label: 'Diabète sucré de type 2 sans complications' },
-        { code: 'I10', label: 'Hypertension essentielle (primitive)' },
-        { code: 'M79.3', label: 'Douleur dans les membres' },
-        { code: 'S93.4', label: 'Entorse de la cheville' }
-    ].filter(item => 
-        item.label.toLowerCase().includes(query.toLowerCase()) ||
-        item.code.toLowerCase().includes(query.toLowerCase())
-    );
-}
-
 // AI Analysis Functionality
+// NOTE (audit factice -> reel, 2026-09) : ce bouton lancait une "analyse IA"
+// entierement fictive : extractSymptoms()/identifyRiskFactors()/
+// generateRecommendations()/assessUrgency() se contentaient de chercher
+// quelques mots-cles fixes dans le texte saisi (ex: presence du mot
+// "douleur") et affichaient un resultat qui avait l'apparence d'une vraie
+// analyse medicale par IA, y compris un "niveau d'urgence" — alors qu'aucun
+// service d'IA n'est reellement connecte (voir ClinicalWorkflowController::
+// analyzeSymptomsWithAI(), deja corrige pour renvoyer un etat honnete cote
+// backend). Presenter une detection de mots-cles comme une analyse clinique
+// IA est trompeur et potentiellement dangereux dans un contexte medical :
+// on informe donc honnetement l'utilisateur plutot que d'inventer une
+// analyse.
 document.getElementById('ai-analyze-btn').addEventListener('click', function() {
     const clinicalNotes = document.getElementById('clinical_notes').value;
     
@@ -209,114 +211,25 @@ document.getElementById('ai-analyze-btn').addEventListener('click', function() {
         return;
     }
     
-    // Simulation de l'analyse IA
     analyzeWithAI(clinicalNotes);
 });
 
 function analyzeWithAI(notes) {
     const aiContent = document.getElementById('ai-content');
     const aiResults = document.getElementById('ai-results');
-    
-    // Simulation d'analyse IA
-    const analysis = {
-        symptoms: extractSymptoms(notes),
-        riskFactors: identifyRiskFactors(notes),
-        recommendations: generateRecommendations(notes),
-        urgency: assessUrgency(notes)
-    };
-    
+
     aiContent.innerHTML = `
-        <div class="space-y-4">
-            <div>
-                <h5 class="font-semibold text-gray-800 mb-2">🔍 Symptômes identifiés:</h5>
-                <ul class="list-disc list-inside text-gray-700">
-                    ${analysis.symptoms.map(s => `<li>${s}</li>`).join('')}
-                </ul>
-            </div>
-            
-            <div>
-                <h5 class="font-semibold text-gray-800 mb-2">⚠️ Facteurs de risque:</h5>
-                <ul class="list-disc list-inside text-gray-700">
-                    ${analysis.riskFactors.map(r => `<li>${r}</li>`).join('')}
-                </ul>
-            </div>
-            
-            <div>
-                <h5 class="font-semibold text-gray-800 mb-2">💡 Recommandations:</h5>
-                <ul class="list-disc list-inside text-gray-700">
-                    ${analysis.recommendations.map(r => `<li>${r}</li>`).join('')}
-                </ul>
-            </div>
-            
-            <div>
-                <h5 class="font-semibold text-gray-800 mb-2">🚨 Niveau d'urgence:</h5>
-                <span class="px-2 py-1 rounded text-sm ${analysis.urgency === 'high' ? 'bg-red-100 text-red-800' : analysis.urgency === 'medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
-                    ${analysis.urgency === 'high' ? 'Élevé' : analysis.urgency === 'medium' ? 'Modéré' : 'Faible'}
-                </span>
-            </div>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p class="text-yellow-800 font-semibold mb-1">⚠️ Analyse IA non disponible</p>
+            <p class="text-sm text-yellow-800">
+                L'analyse automatique des notes cliniques n'est pas disponible : aucun service d'intelligence artificielle
+                n'est connecté à cette application. Les notes cliniques restent enregistrées telles que saisies ;
+                l'analyse et l'interprétation doivent être faites par un professionnel de santé.
+            </p>
         </div>
     `;
-    
+
     aiResults.classList.remove('hidden');
-}
-
-function extractSymptoms(notes) {
-    const symptoms = [];
-    const keywords = ['douleur', 'fièvre', 'fatigue', 'essoufflement', 'vertiges', 'nausée', 'vomissements'];
-    
-    keywords.forEach(keyword => {
-        if (notes.toLowerCase().includes(keyword)) {
-            symptoms.push(keyword.charAt(0).toUpperCase() + keyword.slice(1));
-        }
-    });
-    
-    return symptoms.length > 0 ? symptoms : ['Aucun symptôme spécifique identifié'];
-}
-
-function identifyRiskFactors(notes) {
-    const riskFactors = [];
-    const keywords = ['hypertension', 'diabète', 'obésité', 'tabac', 'alcool', 'antécédents'];
-    
-    keywords.forEach(keyword => {
-        if (notes.toLowerCase().includes(keyword)) {
-            riskFactors.push(keyword.charAt(0).toUpperCase() + keyword.slice(1));
-        }
-    });
-    
-    return riskFactors.length > 0 ? riskFactors : ['Aucun facteur de risque identifié'];
-}
-
-function generateRecommendations(notes) {
-    const recommendations = ['Examen clinique complet', 'Analyses sanguines de routine'];
-    
-    if (notes.toLowerCase().includes('douleur')) {
-        recommendations.push('Évaluation de la douleur');
-    }
-    
-    if (notes.toLowerCase().includes('cardiaque') || notes.toLowerCase().includes('cœur')) {
-        recommendations.push('Électrocardiogramme');
-    }
-    
-    return recommendations;
-}
-
-function assessUrgency(notes) {
-    const urgentKeywords = ['douleur thoracique', 'essoufflement', 'perte de conscience', 'saignement'];
-    const mediumKeywords = ['fièvre', 'douleur', 'fatigue'];
-    
-    for (const keyword of urgentKeywords) {
-        if (notes.toLowerCase().includes(keyword)) {
-            return 'high';
-        }
-    }
-    
-    for (const keyword of mediumKeywords) {
-        if (notes.toLowerCase().includes(keyword)) {
-            return 'medium';
-        }
-    }
-    
-    return 'low';
 }
 
 // Clear notes functionality

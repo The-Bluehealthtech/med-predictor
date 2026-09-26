@@ -32,28 +32,6 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Welcome Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
-            <div class="p-6">
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">📋 Licences des Joueurs</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Gestion des licences et autorisations des joueurs
-                    </p>
-                    <div class="flex justify-center space-x-4">
-                        <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            Système opérationnel
-                        </div>
-                        <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            Gestion complète
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
@@ -76,9 +54,10 @@
         <!-- Licenses List -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">Liste des Licences</h2>
+                <h2 class="text-xl font-semibold text-gray-800">Liste des Licences ({{ $licenses->total() }})</h2>
             </div>
-            
+
+            @if($licenses->isEmpty())
             <div class="p-6">
                 <div class="text-center text-gray-500">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,7 +72,42 @@
                     </div>
                 </div>
             </div>
+            @else
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Joueur</th>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Club</th>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">N° Licence</th>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Expiration</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach($licenses as $license)
+                        <tr>
+                            <td class="p-3">{{ $license->player?->full_name ?? '—' }}</td>
+                            <td class="p-3">{{ $license->club?->name ?? '—' }}</td>
+                            <td class="p-3">{{ $license->license_number ?? '—' }}</td>
+                            <td class="p-3">{{ $license->license_type ?? '—' }}</td>
+                            <td class="p-3">
+                                <span class="px-2 py-1 text-xs rounded-full {{ $license->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                    {{ $license->status ?? 'inconnu' }}
+                                </span>
+                            </td>
+                            <td class="p-3">{{ $license->expiry_date?->format('d/m/Y') ?? '—' }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-4 border-t border-gray-200">
+                {{ $licenses->links() }}
+            </div>
+            @endif
         </div>
     </div>
 </div>
-@endsection 
+@endsection

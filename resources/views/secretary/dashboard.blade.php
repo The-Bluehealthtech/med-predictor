@@ -1,13 +1,13 @@
 @extends('layouts.secretary')
 
-@section('title', 'Dashboard - Secrétariat Médical')
+@section('title', __('secretary.dashboard_title'))
 
 @section('content')
 <div id="secretary-dashboard">
     <!-- En-tête -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Dashboard Secrétariat</h1>
-        <p class="text-gray-600 mt-2">Gestion des rendez-vous et documents médicaux</p>
+        <h1 class="text-3xl font-bold text-gray-900">{{ __('secretary.dashboard_heading') }}</h1>
+        <p class="text-gray-600 mt-2">{{ __('secretary.dashboard_subtitle') }}</p>
     </div>
 
     <!-- Statistiques -->
@@ -18,7 +18,7 @@
                     <i class="fas fa-calendar-alt text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Rendez-vous</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('secretary.stat_appointments') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_appointments'] }}</p>
                 </div>
             </div>
@@ -30,7 +30,7 @@
                     <i class="fas fa-clock text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">À venir</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('secretary.stat_upcoming') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $stats['upcoming_appointments'] }}</p>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                     <i class="fas fa-file-medical text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Documents</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('secretary.stat_documents') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_documents'] }}</p>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                     <i class="fas fa-hourglass-half text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">En attente</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('secretary.stat_pending') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $stats['pending_documents'] }}</p>
                 </div>
             </div>
@@ -66,23 +66,23 @@
         <div class="bg-white rounded-lg shadow p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">
                 <i class="fas fa-plus-circle text-blue-600 mr-2"></i>
-                Actions Rapides
+                {{ __('secretary.quick_actions') }}
             </h3>
             <div class="space-y-3">
                 <button @click="showAppointmentModal = true" 
                         class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
                     <i class="fas fa-calendar-plus mr-2"></i>
-                    Nouveau Rendez-vous
+                    {{ __('secretary.new_appointment') }}
                 </button>
                 <button @click="showDocumentModal = true" 
                         class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
                     <i class="fas fa-upload mr-2"></i>
-                    Upload Document
+                    {{ __('secretary.upload_document') }}
                 </button>
                 <button @click="showAthleteSearch = true" 
                         class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
                     <i class="fas fa-search mr-2"></i>
-                    Rechercher Athlète
+                    {{ __('secretary.search_athlete') }}
                 </button>
             </div>
         </div>
@@ -90,19 +90,19 @@
         <div class="bg-white rounded-lg shadow p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">
                 <i class="fas fa-chart-line text-green-600 mr-2"></i>
-                Aujourd'hui
+                {{ __('secretary.today') }}
             </h3>
             <div class="space-y-2">
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600">Rendez-vous aujourd'hui</span>
+                    <span class="text-sm text-gray-600">{{ __('secretary.appointments_today') }}</span>
                     <span class="text-sm font-medium text-gray-900">{{ $stats['upcoming_appointments'] }}</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600">Documents en attente</span>
+                    <span class="text-sm text-gray-600">{{ __('secretary.documents_pending') }}</span>
                     <span class="text-sm font-medium text-gray-900">{{ $stats['pending_documents'] }}</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600">Analyses IA</span>
+                    <span class="text-sm text-gray-600">{{ __('secretary.ai_analyses') }}</span>
                     <span class="text-sm font-medium text-gray-900">0</span>
                 </div>
             </div>
@@ -114,18 +114,18 @@
         <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900">
                 <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>
-                Rendez-vous Récents
+                {{ __('secretary.recent_appointments') }}
             </h3>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Athlète</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_athlete') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_date') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_type') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_status') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -139,13 +139,13 @@
                                     </div>
                                 </div>
                                 <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ $appointment->athlete->name ?? 'Joueur inconnu' }}</div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $appointment->athlete->name ?? __('secretary.unknown_player') }}</div>
                                     <div class="text-sm text-gray-500">{{ $appointment->athlete->fifa_id ?? 'N/A' }}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {{ $appointment->appointment_date ? $appointment->appointment_date->format('d/m/Y H:i') : 'Date non définie' }}
+                            {{ $appointment->appointment_date ? $appointment->appointment_date->format('d/m/Y H:i') : __('secretary.date_undefined') }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
@@ -153,7 +153,7 @@
                                    ($appointment->type === 'examination' ? 'bg-green-100 text-green-800' : 
                                    ($appointment->type === 'emergency' ? 'bg-red-100 text-red-800' : 
                                    ($appointment->type === 'follow_up' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'))) }}">
-                                {{ ucfirst($appointment->type ?? 'Non défini') }}
+                                {{ ucfirst($appointment->type ?? __('secretary.undefined')) }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -161,7 +161,7 @@
                                 {{ $appointment->status === 'confirmed' ? 'bg-green-100 text-green-800' : 
                                    ($appointment->status === 'scheduled' ? 'bg-yellow-100 text-yellow-800' : 
                                    ($appointment->status === 'cancelled' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')) }}">
-                                {{ ucfirst($appointment->status ?? 'Non défini') }}
+                                {{ ucfirst($appointment->status ?? __('secretary.undefined')) }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -176,7 +176,7 @@
                     @empty
                     <tr>
                         <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                            Aucun rendez-vous à venir
+                            {{ __('secretary.no_upcoming_appointments') }}
                         </td>
                     </tr>
                     @endforelse
@@ -190,18 +190,18 @@
         <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900">
                 <i class="fas fa-file-medical text-green-600 mr-2"></i>
-                Documents Récents
+                {{ __('secretary.recent_documents') }}
             </h3>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Athlète</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_document') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_athlete') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_type') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_status') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -215,8 +215,8 @@
                                     </div>
                                 </div>
                                 <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ $document->file_name ?? 'Document sans nom' }}</div>
-                                    <div class="text-sm text-gray-500">{{ $document->file_size ?? 'Taille inconnue' }}</div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $document->file_name ?? __('secretary.unnamed_document') }}</div>
+                                    <div class="text-sm text-gray-500">{{ $document->file_size ?? __('secretary.unknown_size') }}</div>
                                 </div>
                             </div>
                         </td>
@@ -226,14 +226,14 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                {{ ucfirst($document->medical_record_type ?? 'Type inconnu') }}
+                                {{ ucfirst($document->medical_record_type ?? __('secretary.unknown_type')) }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
                                 {{ $document->status === 'analyzed' ? 'bg-green-100 text-green-800' : 
                                    ($document->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
-                                {{ ucfirst($document->status ?? 'Non défini') }}
+                                {{ ucfirst($document->status ?? __('secretary.undefined')) }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -251,7 +251,7 @@
                     @empty
                     <tr>
                         <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                            Aucun document récent
+                            {{ __('secretary.no_recent_documents') }}
                         </td>
                     </tr>
                     @endforelse

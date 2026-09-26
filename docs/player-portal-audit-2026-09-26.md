@@ -42,3 +42,9 @@
 Exécuter `bash scripts/run_player_portal_field_audit.sh` avec l'URL PostgreSQL saisie sans écho. Le script ne modifie aucune donnée ; il affiche, pour les 844 joueurs de test, le nombre de valeurs absentes par colonne ou chemin JSON sur 14 sources consultées par le portail et des exemples d'identifiants de joueurs. Son code est dans `scripts/audit_player_portal_fields.php`.
 
 Cet audit de données ne prétend pas couvrir toutes les routes et toutes les branches conditionnelles. Un résultat sans absence sur ces champs ne lève pas les écarts de sources et les champs explicitement `null` documentés ci-dessus.
+
+## Suite au contrôle des 844 joueurs
+
+L'audit du 26 septembre a relevé 15 écarts : quatre colonnes demandées à `player_fitness_logs` absentes du schéma, dix champs de test complétables et 844 identifiants FIFA absents. La correction du service lit les valeurs de récupération dans les colonnes existantes et dans `player_real_time_health.metadata.recovery`. La fixture `PlayerPortalFieldCompletionSeeder` prépare uniquement les champs synthétiques complétables. Elle conserve les données existantes et n'attribue aucun identifiant FIFA ni signature médicale. Les URL `example.invalid` sont des marqueurs de test et ne désignent pas une API fonctionnelle.
+
+Un nouveau contrôle sur la base externe reste nécessaire pour mesurer le résultat après exécution.

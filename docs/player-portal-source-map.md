@@ -6,9 +6,9 @@ Chaque carte est assemblée par `PlayerPortalDataService::forPlayer`. Une valeur
 | --- | --- | --- |
 | Âge, taille du profil, poids du profil, pied | `players` | Profil du joueur ; les champs de test vides sont complétés sans écraser les valeurs existantes. |
 | Poids mesuré, paramètres vitaux, IMC | Dernière `player_real_time_health` | Mesure datée ; le poids du profil ne remplace pas un poids non mesuré. |
-| Préparation, énergie, qualité du sommeil | `player_real_time_health` ; énergie du journal si absente | La préparation utilise `readiness_score`, jamais `players.fitness_score`. |
+| Préparation, énergie, qualité du sommeil | `player_real_time_health` pour préparation, énergie et sommeil | La préparation utilise `readiness_score`, jamais `players.fitness_score`. |
 | Nutrition et hydratation | `player_real_time_health.metadata.nutrition` et `hydration_level` | Un champ absent affiche « Données non disponibles ». |
-| Fatigue, douleurs, étirements | Dernier `player_fitness_logs` | Le sommeil provient du dernier suivi disponible. |
+| Fatigue, douleurs, étirements | Dernier `player_fitness_logs` | La fatigue provient du journal ; douleurs et étirements viennent de `player_real_time_health.metadata.recovery`. Le sommeil vient de `player_real_time_health`. |
 | FIT global, cinq axes, radar | Dernier `fit_score_snapshots` complet (`fit_v1`) | Tous les emplacements affichent le même snapshot ; les métriques vérifiées alimentent son calcul. |
 | Évaluation technique complémentaire | Dernier `player_performances` | Les cinq axes sont lus dans le snapshot FIT ; les aptitudes complémentaires restent des évaluations distinctes. |
 | Matchs, buts, passes, minutes, cartons de saison | `player_season_stats` | La carte et le graphique lisent la même ligne. |

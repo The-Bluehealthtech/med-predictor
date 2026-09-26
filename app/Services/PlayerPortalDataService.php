@@ -291,9 +291,7 @@ class PlayerPortalDataService
             $playerHealthWellbeing = (object) [
                 'fitness_score' => $latestRealtime?->readiness_score,
 
-                'energy_level' =>
-                    $latestRealtime?->energy_level
-                    ?? $latestFitness?->energy_level,
+                'energy_level' => $latestRealtime?->energy_level,
 
                 'sleep_quality' =>
                     $latestRealtime && $latestRealtime->sleep_quality_score !== null
@@ -330,26 +328,16 @@ class PlayerPortalDataService
          */
         $playerRecovery = ($latestRealtime || $latestFitness)
             ? (object) [
-                'sleep_hours' =>
-                    $latestRealtime?->sleep_duration_hours
-                    ?? $latestFitness?->sleep_hours,
-
+                'sleep_hours' => $latestRealtime?->sleep_duration_hours,
                 'sleep_quality_score' =>
                     $latestRealtime?->sleep_quality_score !== null
                         ? round(((float) $latestRealtime->sleep_quality_score) / 10, 1)
-                        : ($latestFitness?->sleep_quality_score !== null
-                            ? round(((float) $latestFitness->sleep_quality_score) / 10, 1)
-                            : null),
-
-                'muscle_soreness' => $latestFitness?->muscle_soreness,
-
-                'fatigue_level' =>
-                    $latestFitness?->fatigue_level
-                    ?? $latestRealtime?->central_fatigue,
-
+                        : null,
+                'muscle_soreness' =>
+                    data_get($realtimeMetadata, 'recovery.muscle_soreness'),
+                'fatigue_level' => $latestFitness?->fatigue_level,
                 'stretching_minutes' =>
-                    $latestFitness?->stretching_minutes
-                    ?? data_get($realtimeMetadata, 'recovery.stretching_minutes'),
+                    data_get($realtimeMetadata, 'recovery.stretching_minutes'),
             ]
             : null;
 

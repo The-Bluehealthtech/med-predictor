@@ -54,3 +54,7 @@ Un nouveau contrôle sur la base externe reste nécessaire pour mesurer le résu
 Le portail ne présente plus le questionnaire SDOH comme une application connectée ; la carte reste présente et indique qu'aucune application n'est connectée. Une AUT n'est plus déclarée approuvée par FIFA ou WADA à partir de son seul `aut_status`. Le statut PCMA non signé est affiché comme évaluation non officielle dans la synthèse de conformité. Les lignes `API:` et `Code WADA:` sans source sont cachées ; la présentation des cartes est conservée.
 
 La licence active affichée en en-tête provient désormais de `playerLicenses` préparé par le service. L'identifiant FIT CONNECT affiché lit uniquement `players.fifa_connect_id` ; son absence sur 844 dossiers de test reste signalée, aucun identifiant officiel n'étant généré.
+
+## Résultat de l'exécution du complément (844 joueurs)
+
+Après le complément de données, le contrôle des champs suivis dans les 14 sources n'indique plus de valeur manquante à l'exception de `players.fifa_connect_id` : 844/844 absents. Les sept mises à jour groupées ont chacune complété 844 lignes. Ce constat ne prouve pas que toutes les relations (`passport`, club, association) ou toutes les routes ont été rendues sans champ vide ; le contrôle reste limité aux champs explicitement répertoriés par `scripts/audit_player_portal_fields.php`.

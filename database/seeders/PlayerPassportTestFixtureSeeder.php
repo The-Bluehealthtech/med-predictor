@@ -39,18 +39,20 @@ class PlayerPassportTestFixtureSeeder extends Seeder
                 issue_date, expiry_date, issuing_authority, issuing_country,
                 created_by, notes, created_at, updated_at
             )
-            SELECT DISTINCT rt.player_id,
-                'SYNTH-PASSPORT-' || rt.player_id::text,
+            SELECT cohort.player_id,
+                'SYNTH-PASSPORT-' || cohort.player_id::text,
                 'temporary', 'pending_validation',
                 DATE '2026-09-01', DATE '2027-09-01',
                 'Autorité fictive de test', 'TEST', ?,
                 '{"source":"synthetic_demo","official":false}'::json,
                 CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-            FROM player_real_time_health rt
-            WHERE rt.notes LIKE 'synthetic_demo%'
-              AND NOT EXISTS (
-                  SELECT 1 FROM player_passports p WHERE p.player_id = rt.player_id
-              )
+            FROM (
+                SELECT DISTINCT player_id FROM player_real_time_health
+                WHERE notes LIKE 'synthetic_demo%'
+            ) cohort
+            WHERE NOT EXISTS (
+                SELECT 1 FROM player_passports p WHERE p.player_id = cohort.player_id
+            )
         SQL, [(int) $creatorId]);
 
         $this->command?->info("Passeports synthétiques non validés : {$inserted} créés, {$updated} complétés.");

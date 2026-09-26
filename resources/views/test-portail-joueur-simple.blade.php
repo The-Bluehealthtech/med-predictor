@@ -735,12 +735,24 @@
                     <div class="fifa-health-card">
                         <h4>📊 Statistiques avancées</h4>
                         <div class="fifa-health-stat">
-                            <p>
-                                Les données détaillées telles que les tacles,
-                                interceptions, tirs cadrés et précisions de passes
-                                ne sont pas disponibles dans la source canonique actuelle.
-                            </p>
+                            @if($latestMatchPerformance)
+                                @php
+                                    $matchExtras = json_decode($latestMatchPerformance->additional_metrics ?? '{}', true) ?: [];
+                                @endphp
+                                @if(str_contains($latestMatchPerformance->notes ?? '', 'synthetic_demo'))
+                                    <p>Match fictif de test du {{ \Carbon\Carbon::parse($latestMatchPerformance->match_date)->format('d/m/Y') }}.</p>
+                                @endif
+                                <div class="fifa-stat-header"><span>Tacles gagnés</span><span class="fifa-stat-value">{{ $latestMatchPerformance->tackles_won }}</span></div>
+                                @if(isset($matchExtras['interceptions']))
+                                    <div class="fifa-stat-header"><span>Interceptions</span><span class="fifa-stat-value">{{ $matchExtras['interceptions'] }}</span></div>
+                                @endif
+                                <div class="fifa-stat-header"><span>Tirs cadrés</span><span class="fifa-stat-value">{{ $latestMatchPerformance->shots_on_target }}</span></div>
+                                <div class="fifa-stat-header"><span>Précision des passes</span><span class="fifa-stat-value">{{ $latestMatchPerformance->passes_attempted > 0 ? number_format(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1).'%' : 'Données non disponibles' }}</span></div>
+                            @else
+                                <p>Aucune statistique de match enregistrée.</p>
+                            @endif
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>

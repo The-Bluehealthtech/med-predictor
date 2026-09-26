@@ -53,6 +53,12 @@ class PlayerPortalDataService
             ->orderByDesc('performance_date')
             ->first();
 
+        $latestMatchPerformance = DB::table('performances')
+            ->where('player_id', $playerId)
+            ->orderByDesc('match_date')
+            ->orderByDesc('id')
+            ->first();
+
         $fitSnapshotData = $this->fitSnapshotService->latestForPlayer($player);
         $latestFitSnapshot = $fitSnapshotData['snapshot'];
         $previousFitSnapshot = $fitSnapshotData['previous_snapshot'];
@@ -981,6 +987,7 @@ class PlayerPortalDataService
             'healthRecords',
             'playerStats',
             'latestPerformance',
+            'latestMatchPerformance',
             'latestFitSnapshot',
             'previousFitSnapshot',
             'latestFitAttempt',

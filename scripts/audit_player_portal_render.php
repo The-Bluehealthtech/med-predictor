@@ -75,6 +75,24 @@ foreach ($ids as $index => $id) {
         printf("Rendus : %d/%d (%.0f s).\n", $index + 1, $total, microtime(true) - $start);
     }
 }
+if (!$errors) {
+    try {
+        $html = $app->make(\App\Http\Controllers\PerformanceAnalyticsController::class)->index()->render();
+        $visible = preg_replace('~<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>~si', ' ', $html);
+        $visible = html_entity_decode(strip_tags((string) $visible), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        foreach (['Données non disponibles', 'N/A', 'Aucune donnée historique disponible'] as $marker) {
+            $count = substr_count($visible, $marker);
+            if ($count > 0) {
+                $counts['analytics : ' . $marker] = $count;
+                $examples['analytics : ' . $marker] = ['route /performances/analytics' => $count];
+            }
+        }
+        echo "Route /performances/analytics : rendu réussi.\n";
+    } catch (Throwable $error) {
+        $errors['analytics'] = get_class($error) . ': ' . $error->getMessage();
+        printf("ERREUR route /performances/analytics : %s\n", $errors['analytics']);
+    }
+}
 foreach ($counts as $marker => $count) {
     printf("AFFICHAGE %s : %d occurrences (joueurs exemples : %s)\n", $marker, $count,
         implode(',', array_keys($examples[$marker] ?? [])));

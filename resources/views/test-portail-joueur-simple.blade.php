@@ -488,7 +488,7 @@
                             <span class="text-orange-200 text-sm">Document d'identité:</span>
                             <span class="text-white font-medium">
                                 @if($player->passport?->passport_number)
-                                    Passeport: {{ $player->passport->passport_number }}
+                                    {{ str_starts_with($player->passport->passport_number, 'SYNTH-PASSPORT-') ? 'Passeport de test (non validé)' : 'Passeport' }}: {{ $player->passport->passport_number }}
                                 @else
                                     Données non disponibles
                                 @endif

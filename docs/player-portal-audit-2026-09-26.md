@@ -92,3 +92,5 @@ Le rendu intégral s'est révélé trop lent : 50 joueurs en 1 359 secondes, soi
 ## Contrôle exhaustif du rendu
 
 La demande porte sur un diagnostic couvrant tous les joueurs. `scripts/run_player_portal_full_render_audit.sh` répartit les 844 joueurs en quatre lots de 211, affiche la progression et conserve les journaux par lot. Chaque joueur est rendu par le service et le Blade du portail ; la route analytics est rendue une fois. Un résultat de 844/844 sans erreurs prouve la réussite de ces rendus, tandis que les comptes de marqueurs montrent les valeurs explicitement absentes. La vérification des contrôles d'accès HTTP et des autres routes Laravel reste distincte. Le diagnostic FIT détaillé n'est calculé que lorsqu'aucun snapshot ni tentative n'existe, ce qui conserve la vue et évite des requêtes inutiles pour les joueurs déjà couverts.
+
+Les cinq tests HTTP `PlayerPortalSimpleAccessTest` passent avec SQLite en mémoire (7 assertions) : refus invité, absence de joueur lié, accès à un autre joueur, rôle non autorisé et protection de la liste/recherche. Ce test ne remplace pas un rendu authentifié de chaque joueur sur PostgreSQL.

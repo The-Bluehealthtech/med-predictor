@@ -74,6 +74,12 @@ class PlayerPortalFieldCompletionSeeder extends Seeder
             . "OR season IS NULL OR season = '' OR issuing_authority IS NULL OR issuing_authority = '') AND "
             . $exists('player_licenses')
         );
+        $updates['conseil médical de test'] = DB::affectingStatement(
+            "UPDATE medical_predictions SET recommendations = '[\"Conseil fictif de test, sans valeur médicale.\"]'::json, "
+            . "updated_at = CURRENT_TIMESTAMP WHERE (recommendations IS NULL "
+            . "OR recommendations::jsonb = '[]'::jsonb) AND "
+            . $exists('medical_predictions')
+        );
         foreach ($updates as $label => $count) {
             $this->command?->info("{$label} : {$count} lignes complétées.");
         }

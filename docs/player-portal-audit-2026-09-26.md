@@ -68,3 +68,5 @@ Le second contrôle trouve les trois champs de `player_passports` absents pour 8
 ## Extension aux affichages non couverts
 
 L'inventaire statique du Blade a relevé d'autres objets visibles : blessures, alertes de performance, prédictions médicales, contrôles antidopage, les unités des analyses biologiques et les aptitudes détaillées. Le script d'audit inclut désormais les champs correspondants ; en particulier, `medical_predictions.recommendations` peut rendre le texte d'une notification vide. Les résultats du précédent contrôle ne portaient pas sur ces champs supplémentaires.
+
+La fixture de complétion renseigne désormais uniquement les recommandations vides des prédictions médicales de test avec un texte explicitement fictif ; le contenu existant est conservé. Une réexécution de `scripts/run_player_portal_field_completion.sh` permet de mesurer en une fois l'ensemble des nouveaux champs contrôlés.

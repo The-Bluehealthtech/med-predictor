@@ -332,7 +332,7 @@ return [
         'unknown_player' => 'Unknown player',
         'unspecified' => 'Unspecified',
         'status_validated' => 'Validated',
-        'status_suspended' => 'Suspended :days matches',
+        'status_suspended' => '{1}Suspended :days match|[2,*]Suspended :days matches',
         'no_sanction' => 'No sanction',
         'no_sanction_desc' => 'No sanction is on record for your club.',
         'important_notifications' => 'Important Notifications',

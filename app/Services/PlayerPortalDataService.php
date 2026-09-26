@@ -33,6 +33,11 @@ class PlayerPortalDataService
             ->orderByDesc('measurement_time')
             ->first();
 
+        $profileSynthetic = str_contains(
+            $latestRealtime?->notes ?? '',
+            'synthetic_demo'
+        );
+
         $latestFitness = DB::table('player_fitness_logs')
             ->where('player_id', $playerId)
             ->orderByDesc('log_date')
@@ -1010,6 +1015,7 @@ class PlayerPortalDataService
             'playerPcma',
             'playerMedicalAptitude',
             'playerVitalSigns',
+            'profileSynthetic',
             'playerInjuriesDiseases',
             'sportsDevices',
             'behavioralData',

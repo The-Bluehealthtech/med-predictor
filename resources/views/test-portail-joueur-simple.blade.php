@@ -425,7 +425,10 @@
                         </div>
                         <h3 class="text-lg font-semibold text-white">Informations</h3>
                     </div>
-                    
+                    @if($profileSynthetic)
+                        <p class="text-xs text-yellow-300 mb-2">Profil fictif de test.</p>
+                    @endif
+
                     <div class="space-y-2">
                         <div class="flex justify-between">
                             <span class="text-purple-200 text-sm">Âge:</span>
@@ -447,7 +450,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-purple-200 text-sm">Pied:</span>
-                            <span class="text-white font-medium">{{ $player->preferred_foot ?? 'N/A' }}</span>
+                            <span class="text-white font-medium">{{ match (strtolower($player->preferred_foot ?? '')) { 'left' => 'Gauche', 'right' => 'Droit', 'both' => 'Ambidextre', default => $player->preferred_foot ?? 'N/A' } }}</span>
                         </div>
                     </div>
                 </div>

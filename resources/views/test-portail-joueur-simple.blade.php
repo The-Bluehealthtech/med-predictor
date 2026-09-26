@@ -607,10 +607,6 @@
                                 <span>Score de forme:</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ $player->form_percentage ?? 'Données non disponibles' }}</span>
                             </div>
-                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>État:</span>
-                                <span style="color: #87ceeb; font-weight: bold;">Données non disponibles</span>
-                            </div>
                         </div>
                     </div>
                     
@@ -629,20 +625,6 @@
                         </div>
                     </div>
                     
-                    <!-- Carte Statistiques Détaillées -->
-                    <div class="fifa-stat-card">
-                        <h3>📊 Statistiques Détaillées</h3>
-                        <div style="text-align: left; margin-top: 15px;">
-                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Vitesse:</span>
-                                <span style="color: #ffd700; font-weight: bold;">{{ $player->speed ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Tir:</span>
-                                <span style="color: #51cf66; font-weight: bold;">{{ $player->shooting ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 
                 <!-- Graphiques de performance -->
@@ -668,102 +650,15 @@
 
         <div id="advanced-stats-sub-tab" class="fifa-sub-tab-content">
             <h3>Statistiques avancées</h3>
-            <div id="advanced-stats-content">
-                <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
-                <div class="fifa-medical-grid">
-                    <!-- Carte Compétences Techniques -->
-                    <div class="fifa-medical-card">
-                        <h4>📊 Compétences Techniques</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Passe</span>
-                                <span class="fifa-stat-value highlight">{{ $player->passing ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Dribble</span>
-                                <span class="fifa-stat-value">{{ $player->dribbling ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Physique</span>
-                                <span class="fifa-stat-value">{{ $player->physical ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Défense</span>
-                                <span class="fifa-stat-value">{{ $player->defending ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Réactivité</span>
-                                <span class="fifa-stat-value">{{ $player->reactions ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Vision</span>
-                                <span class="fifa-stat-value">{{ $player->vision ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Carte Performance Physique -->
-                    <div class="fifa-medical-card">
-                        <h4>💪 Performance Physique</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Endurance</span>
-                                <span class="fifa-stat-value highlight">{{ $player->stamina ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Force</span>
-                                <span class="fifa-stat-value">{{ $player->strength ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Agilité</span>
-                                <span class="fifa-stat-value">{{ $player->agility ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Équilibre</span>
-                                <span class="fifa-stat-value">{{ $player->balance ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Accélération</span>
-                                <span class="fifa-stat-value">{{ $player->acceleration ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Vitesse de Sprint</span>
-                                <span class="fifa-stat-value">{{ $player->sprint_speed ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Carte Intelligence de Jeu -->
-                    <div class="fifa-medical-card">
-                        <h4>🧠 Intelligence de Jeu</h4>
-                        <div class="fifa-medical-stat">
-                            <div class="fifa-stat-header">
-                                <span>Positionnement</span>
-                                <span class="fifa-stat-value highlight">{{ $player->positioning ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Anticipation</span>
-                                <span class="fifa-stat-value">{{ $player->anticipation ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Composure</span>
-                                <span class="fifa-stat-value">{{ $player->composure ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Décisions</span>
-                                <span class="fifa-stat-value">{{ $player->decisions ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Leadership</span>
-                                <span class="fifa-stat-value">{{ $player->leadership ?? 'Données non disponibles' }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>Esprit d'équipe</span>
-                                <span class="fifa-stat-value">{{ $player->teamwork ?? 'Données non disponibles' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div id="advanced-stats-content" class="fifa-medical-card">
+                <p>
+                    Les aptitudes techniques détaillées (passe, dribble, vitesse, agilité et autres)
+                    ne sont pas enregistrées dans la source canonique de ce portail.
+                </p>
+                <p>
+                    Les cinq axes du Score FIT et les tests physiques disponibles figurent
+                    dans leurs sections dédiées.
+                </p>
             </div>
         </div>
 

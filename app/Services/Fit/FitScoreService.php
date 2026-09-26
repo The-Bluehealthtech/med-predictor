@@ -231,6 +231,11 @@ class FitScoreService
                     ? (float) $metric->confidence_score
                     : null,
                 'source' => $metric->data_source,
+                ...(
+                    data_get($metric->metadata, 'source') === 'synthetic_demo'
+                        ? ['synthetic_test' => true]
+                        : []
+                ),
                 'measurement_date' => $metric->measurement_date,
             ];
         }

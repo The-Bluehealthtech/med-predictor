@@ -251,6 +251,39 @@
                                 Score FIT {{ $latestFitSnapshot->calculation_version }}
                             </div>
 
+                            @php
+                                $fitAxes = [
+                                    'PHYSIQUE' => $latestFitSnapshot->physical_score,
+                                    'TECHNIQUE' => $latestFitSnapshot->technical_score,
+                                    'TACTIQUE' => $latestFitSnapshot->tactical_score,
+                                    'MENTAL' => $latestFitSnapshot->mental_score,
+                                    'SOCIAL' => $latestFitSnapshot->social_score,
+                                ];
+                                $fitSynthetic = collect(data_get(
+                                    $latestFitSnapshot->evidence, 'axes', []
+                                ))->flatMap(fn ($axis) => $axis['metrics'] ?? [])
+                                    ->contains(fn ($metric) =>
+                                        ($metric['synthetic_test'] ?? false) === true
+                                    );
+                            @endphp
+
+                            @if($fitSynthetic)
+                                <div class="text-xs text-yellow-300">
+                                    Score calculé à partir de métriques fictives de test.
+                                </div>
+                            @endif
+
+                            <div class="grid grid-cols-2 gap-2 pt-2">
+                                @foreach($fitAxes as $label => $value)
+                                    <div class="bg-white/10 rounded p-2">
+                                        <div class="text-white font-semibold">
+                                            {{ number_format((float) $value, 1) }}/100
+                                        </div>
+                                        <div class="text-xs text-gray-300">{{ $label }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
+
                             <div class="text-xs text-gray-300">
                                 Calculé le
                                 {{ \Carbon\Carbon::parse($latestFitSnapshot->snapshot_at)->format('d/m/Y H:i') }}
@@ -500,56 +533,6 @@
                 </div>
             </div>
             
-            <!-- Statistiques FIT canoniques -->
-            <div class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                <h3 class="text-lg font-semibold text-white mb-3">
-                    ⚽ Statistiques FIT
-                </h3>
-
-                @php
-                    $fitStatCards = [
-                        [
-                            'label' => 'FIT',
-                            'value' => $latestFitSnapshot?->fit_score,
-                        ],
-                        [
-                            'label' => 'PHYSIQUE',
-                            'value' => $latestFitAttempt?->physical_score,
-                        ],
-                        [
-                            'label' => 'TECHNIQUE',
-                            'value' => $latestFitAttempt?->technical_score,
-                        ],
-                        [
-                            'label' => 'TACTIQUE',
-                            'value' => $latestFitAttempt?->tactical_score,
-                        ],
-                        [
-                            'label' => 'MENTAL',
-                            'value' => $latestFitAttempt?->mental_score,
-                        ],
-                        [
-                            'label' => 'SOCIAL',
-                            'value' => $latestFitAttempt?->social_score,
-                        ],
-                    ];
-                @endphp
-
-                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-                    @foreach($fitStatCards as $fitStat)
-                        <div class="bg-white/10 rounded-lg p-3 text-center border border-white/10">
-                            <div class="text-white font-bold text-lg">
-                                {{ $fitStat['value'] !== null
-                                    ? number_format((float) $fitStat['value'], 1)
-                                    : 'N/A' }}
-                            </div>
-                            <div class="text-gray-300 text-xs">
-                                {{ $fitStat['label'] }}
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
         </div>
     </div>
     
@@ -587,7 +570,6 @@
         <!-- Sous-onglets Performances -->
         <div class="fifa-sub-tabs">
             <button class="fifa-sub-tab-button active" onclick="showFIFASubTab('overview')">Vue d'ensemble</button>
-            <button class="fifa-sub-tab-button" onclick="showFIFASubTab('advanced-stats')">Statistiques avancées</button>
             <button class="fifa-sub-tab-button" onclick="showFIFASubTab('match-stats')">Statistiques de match</button>
         </div>
         
@@ -644,47 +626,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div id="advanced-stats-sub-tab" class="fifa-sub-tab-content">
-            <h3>Évaluation des performances</h3>
-            <div id="advanced-stats-content" class="fifa-medical-card">
-                @php
-                    $assessmentNotes = json_decode($latestPerformance?->notes ?? '{}', true) ?: [];
-                    $assessmentScores = [
-                        'Physique' => $latestPerformance?->physical_score,
-                        'Technique' => $latestPerformance?->technical_score,
-                        'Tactique' => $latestPerformance?->tactical_score,
-                        'Mental' => $latestPerformance?->mental_score,
-                        'Social' => $latestPerformance?->social_score,
-                        'Endurance' => $latestPerformance?->endurance_score,
-                        'Force' => $latestPerformance?->strength_score,
-                        'Vitesse évaluée' => $latestPerformance?->speed_score,
-                        'Agilité' => $latestPerformance?->agility_score,
-                        'Précision des passes' => $latestPerformance?->passing_accuracy,
-                    ];
-                    $hasAssessment = collect($assessmentScores)->contains(
-                        fn ($score) => $score !== null
-                    );
-                @endphp
-                @if($hasAssessment)
-                    @if(($assessmentNotes['source'] ?? null) === 'synthetic_demo')
-                        <p>Données synthétiques de test — évaluation non officielle.</p>
-                    @endif
-                    <div class="fifa-medical-stat">
-                        @foreach($assessmentScores as $label => $score)
-                            @if($score !== null)
-                                <div class="fifa-stat-header">
-                                    <span>{{ $label }}</span>
-                                    <span class="fifa-stat-value">{{ $score }}/100</span>
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                @else
-                    <p>Aucune évaluation de performance enregistrée.</p>
-                @endif
             </div>
         </div>
 

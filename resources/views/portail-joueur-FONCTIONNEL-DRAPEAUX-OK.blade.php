@@ -13,9 +13,7 @@
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0">
             <!-- Navigation gauche -->
             <div class="flex items-center space-x-4">
-                <button id="btn-previous" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors" onclick="navigatePlayer('previous')">
-                    ← Précédent
-                </button>
+                <button id="btn-previous" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors" onclick="navigatePlayer('previous')">{{ __('← Précédent') }}</button>
                 <button id="btn-next" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors" onclick="navigatePlayer('next')">
                     Suivant →
                 </button>
@@ -79,9 +77,7 @@
                         <!-- Bouton Gérer qui apparaît au survol -->
                         <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <a href="/joueur/{{ $player->id }}/photo/upload" 
-                               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                📷 Gérer
-                            </a>
+                               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">{{ __('📷 Gérer') }}</a>
                         </div>
                     </div>
                     
@@ -136,9 +132,7 @@
                         <!-- Bouton Gérer qui apparaît au survol -->
                         <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <a href="/joueur/{{ $player->id }}/photo/upload?type=nationality" 
-                               class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                🏳️ Gérer
-                            </a>
+                               class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">{{ __('🏳️ Gérer') }}</a>
                         </div>
                     </div>
                 </div>
@@ -186,9 +180,7 @@
                         <!-- Bouton Gérer qui apparaît au survol -->
                         <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <a href="/joueur/{{ $player->id }}/photo/upload?type=club" 
-                               class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                🏟️ Gérer
-                            </a>
+                               class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">{{ __('🏟️ Gérer') }}</a>
                         </div>
                     </div>
                     
@@ -208,9 +200,7 @@
                         <!-- Bouton Gérer qui apparaît au survol -->
                         <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <a href="{{ route('associations.edit-logo', $player->association->id) }}" 
-                               class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                🏆 Gérer
-                            </a>
+                               class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">{{ __('🏆 Gérer') }}</a>
                         </div>
                     </div>
                     
@@ -265,9 +255,7 @@
                         <!-- Bouton Gérer qui apparaît au survol -->
                         <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <a href="/joueur/{{ $player->id }}/photo/upload?type=association_flag" 
-                               class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                🏴 Gérer
-                            </a>
+                               class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">{{ __('🏴 Gérer') }}</a>
                         </div>
                     </div>
                 </div>
@@ -366,7 +354,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             <!-- Section Palmarès - RÉDUITE -->
             <div class="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg p-2">
-                <h3 class="text-lg font-bold text-yellow-400 mb-3">🏆 Palmarès</h3>
+                <h3 class="text-lg font-bold text-yellow-400 mb-3">{{ __('🏆 Palmarès') }}</h3>
                 
                 <div class="grid grid-cols-3 gap-2">
                     <div class="bg-white rounded-lg p-2 border border-yellow-200 text-center">
@@ -422,7 +410,7 @@
                             </div>
                             
                 <div class="mt-2 text-center">
-                    <div class="text-xs text-blue-800">N/A% complétée</div>
+                    <div class="text-xs text-blue-800">{{ __('N/A% complétée') }}</div>
                     <div class="text-xs text-blue-800">N/A matchs restants</div>
                             </div>
                             </div>
@@ -432,7 +420,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             <!-- Section Performances Récentes - RÉDUITE -->
             <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4">
-                <h3 class="text-lg font-bold text-green-400 mb-3">Performances récentes</h3>
+                <h3 class="text-lg font-bold text-green-400 mb-3">{{ __('Performances récentes') }}</h3>
                 
                 <div class="mb-3">
                     <div class="text-sm text-green-800 mb-2">5 derniers matchs:</div>
@@ -452,7 +440,7 @@
                 
                 <div class="text-center">
                     <div class="text-2xl font-bold text-red-800 mb-1">15%</div>
-                    <div class="text-sm text-red-800 mb-2">MODÉRÉ</div>
+                    <div class="text-sm text-red-800 mb-2">{{ __('MODÉRÉ') }}</div>
                     
                     <div class="w-full bg-red-200 rounded-full h-2">
                         <div class="bg-red-500 h-2 rounded-full" style="width: 15%"></div>
@@ -475,10 +463,10 @@
 
             <!-- Section Disponibilité - RÉDUITE -->
             <div class="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg p-4">
-                <h3 class="text-lg font-bold text-blue-400 mb-3">Disponibilité</h3>
+                <h3 class="text-lg font-bold text-blue-400 mb-3">{{ __('Disponibilité') }}</h3>
                 
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-blue-800 mb-1">✅ LIMITÉ</div>
+                    <div class="text-2xl font-bold text-blue-800 mb-1">{{ __('✅ LIMITÉ') }}</div>
                     <div class="text-sm text-blue-800">Prochain: Sunday</div>
                                             </div>
                                         </div>
@@ -523,14 +511,12 @@
                         onclick="showTab('health')"
                         class="tab-button px-6 py-3 rounded-t-lg font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-700"
                     >
-                        <i class="fas fa-heartbeat mr-2"></i>❤️ Santé & Bien-être
-                    </button>
+                        <i class="fas fa-heartbeat mr-2"></i>{{ __('❤️ Santé & Bien-être') }}</button>
                     <button 
                         onclick="showTab('medical')"
                         class="tab-button px-6 py-3 rounded-t-lg font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-700"
                     >
-                        <i class="fas fa-user-md mr-2"></i>🏥 Médical
-                        <span class="ml-2 bg-blue-500 text-white px-2 py-1 rounded-full text-xs">4</span>
+                        <i class="fas fa-user-md mr-2"></i>{{ __('🏥 Médical') }}<span class="ml-2 bg-blue-500 text-white px-2 py-1 rounded-full text-xs">4</span>
                     </button>
                     <button 
                         onclick="showTab('devices')"
@@ -558,8 +544,7 @@
                     <!-- Graphique Performance -->
                     <div class="bg-gray-800 rounded-xl p-6">
                         <h3 class="text-xl font-bold mb-4 text-blue-300">
-                            <i class="fas fa-chart-line mr-2"></i>Évolution des Performances
-                        </h3>
+                            <i class="fas fa-chart-line mr-2"></i>{{ __('Évolution des Performances') }}</h3>
                         <div class="h-80">
                             <canvas id="performanceChart"></canvas>
                         </div>
@@ -579,8 +564,7 @@
                 <!-- Statistiques Détaillées -->
                 <div class="bg-gray-800 rounded-xl p-6">
                     <h3 class="text-xl font-bold mb-6 text-purple-300">
-                        <i class="fas fa-tachometer-alt mr-2"></i>Statistiques Détaillées
-                    </h3>
+                        <i class="fas fa-tachometer-alt mr-2"></i>{{ __('Statistiques Détaillées') }}</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div class="text-center">
                             <div class="text-3xl font-bold text-blue-400">{{ $player->overall_rating ?? '88' }}</div>
@@ -613,21 +597,21 @@
                             <i class="fas fa-info-circle text-blue-400 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">Nouveau Challenge</h4>
-                                <p class="text-sm text-gray-300">Défi de vitesse disponible - Améliorez votre sprint !</p>
+                                <p class="text-sm text-gray-300">{{ __('Défi de vitesse disponible - Améliorez votre sprint !') }}</p>
                             </div>
                         </div>
                         <div class="flex items-center p-4 bg-green-900/30 rounded-lg border-l-4 border-green-500">
                             <i class="fas fa-check-circle text-green-400 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">Objectif Atteint</h4>
-                                <p class="text-sm text-gray-300">Félicitations ! Vous avez amélioré votre endurance de 5 points.</p>
+                                <p class="text-sm text-gray-300">{{ __('Félicitations ! Vous avez amélioré votre endurance de 5 points.') }}</p>
                             </div>
                         </div>
                         <div class="flex items-center p-4 bg-orange-900/30 rounded-lg border-l-4 border-orange-500">
                             <i class="fas fa-exclamation-triangle text-orange-400 mr-3"></i>
                             <div>
-                                <h4 class="font-semibold">Rappel Entraînement</h4>
-                                <p class="text-sm text-gray-300">N'oubliez pas votre session d'entraînement technique aujourd'hui.</p>
+                                <h4 class="font-semibold">{{ __('Rappel Entraînement') }}</h4>
+                                <p class="text-sm text-gray-300">{{ __('N\'oubliez pas votre session d\'entraînement technique aujourd\'hui.') }}</p>
                             </div>
                         </div>
                     </div>
@@ -650,7 +634,7 @@
                                 <span class="text-green-400 font-bold">85%</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span>Énergie</span>
+                                <span>{{ __('Énergie') }}</span>
                                 <div class="w-32 bg-gray-700 rounded-full h-2">
                                     <div class="bg-blue-500 h-2 rounded-full" style="width: 72%"></div>
                                 </div>
@@ -668,8 +652,7 @@
 
                     <div class="bg-gray-800 rounded-xl p-6">
                         <h3 class="text-xl font-bold mb-4 text-purple-300">
-                            <i class="fas fa-dumbbell mr-2"></i>Répartition des Charges
-                        </h3>
+                            <i class="fas fa-dumbbell mr-2"></i>{{ __('Répartition des Charges') }}</h3>
                         <div class="space-y-4">
                             <div class="flex justify-between items-center">
                                 <span>Cardio</span>
@@ -718,15 +701,14 @@
             <div id="devices-tab" class="tab-content space-y-6" style="display: none;">
                 <div class="bg-gray-800 rounded-xl p-6">
                     <h3 class="text-xl font-bold mb-6 text-cyan-300">
-                        <i class="fas fa-mobile-alt mr-2"></i>Mes Devices Connectés
-                    </h3>
+                        <i class="fas fa-mobile-alt mr-2"></i>{{ __('Mes Devices Connectés') }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="p-4 bg-cyan-900/30 rounded-lg border border-cyan-500/30">
                             <div class="flex items-center space-x-3">
                                 <i class="fas fa-watch text-2xl text-cyan-400"></i>
                                 <div>
                                     <h4 class="font-semibold">Apple Watch Series 9</h4>
-                                    <p class="text-sm text-gray-300">Connecté • 85% batterie</p>
+                                    <p class="text-sm text-gray-300">{{ __('Connecté • 85% batterie') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -735,7 +717,7 @@
                                 <i class="fas fa-mobile-alt text-2xl text-purple-400"></i>
                                 <div>
                                     <h4 class="font-semibold">iPhone 15 Pro</h4>
-                                    <p class="text-sm text-gray-300">Connecté • 92% batterie</p>
+                                    <p class="text-sm text-gray-300">{{ __('Connecté • 92% batterie') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -747,21 +729,20 @@
             <div id="doping-tab" class="tab-content space-y-6" style="display: none;">
                 <div class="bg-gray-800 rounded-xl p-6">
                     <h3 class="text-xl font-bold mb-6 text-orange-300">
-                        <i class="fas fa-flask mr-2"></i>Contrôles Anti-Dopage
-                    </h3>
+                        <i class="fas fa-flask mr-2"></i>{{ __('Contrôles Anti-Dopage') }}</h3>
                     <div class="space-y-4">
                         <div class="flex items-center p-4 bg-green-900/30 rounded-lg border-l-4 border-green-500">
                             <i class="fas fa-check-circle text-green-400 mr-3"></i>
                             <div>
-                                <h4 class="font-semibold">Dernier Contrôle</h4>
-                                <p class="text-sm text-gray-300">15/01/2025 - Résultat : Négatif</p>
+                                <h4 class="font-semibold">{{ __('Dernier Contrôle') }}</h4>
+                                <p class="text-sm text-gray-300">{{ __('15/01/2025 - Résultat : Négatif') }}</p>
                             </div>
                         </div>
                         <div class="flex items-center p-4 bg-blue-900/30 rounded-lg border-l-4 border-blue-500">
                             <i class="fas fa-calendar text-blue-400 mr-3"></i>
                             <div>
-                                <h4 class="font-semibold">Prochain Contrôle</h4>
-                                <p class="text-sm text-gray-300">15/02/2025 - Contrôle programmé</p>
+                                <h4 class="font-semibold">{{ __('Prochain Contrôle') }}</h4>
+                                <p class="text-sm text-gray-300">{{ __('15/02/2025 - Contrôle programmé') }}</p>
                             </div>
                         </div>
                     </div>

@@ -16,15 +16,15 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Paramètres Système
+                                    {{ __('Paramètres Système') }}
                                 </h1>
-                                <p class="text-sm text-gray-600">Configurer les paramètres et constantes du système</p>
+                                <p class="text-sm text-gray-600">{{ __('Configurer les paramètres et constantes du système') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.administration.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour à l'Administration</a>
+                    <a href="{{ route('modules.administration.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour à l\'Administration') }}</a>
                 </div>
             </div>
         </div>
@@ -142,14 +142,10 @@
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Actions</h3>
                 <div class="flex space-x-4">
-                    <a href="{{ route('admin.system-settings.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        ➕ Nouveau Paramètre
-                    </a>
+                    <a href="{{ route('admin.system-settings.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('➕ Nouveau Paramètre') }}</a>
                     <form action="{{ route('admin.system-settings.initialize') }}" method="POST" class="inline">
                         @csrf
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                            ⚡ Initialiser les Paramètres
-                        </button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('⚡ Initialiser les Paramètres') }}</button>
                     </form>
                     <a href="{{ route('admin.system-settings.export', ['format' => 'csv', 'group' => $group ?? 'general']) }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
                         📤 Exporter CSV
@@ -164,7 +160,7 @@
         <!-- Navigation par groupes -->
         <div class="bg-white shadow rounded-lg mb-8">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Groupes de Paramètres</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('Groupes de Paramètres') }}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     @foreach($groups ?? ['general', 'security', 'database', 'email', 'fifa'] as $groupName)
                         @php
@@ -252,10 +248,10 @@
                                         <p class="text-sm text-gray-600 mb-3">{{ $setting->description ?? 'Description du paramètre' }}</p>
                                         
                                         <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                            <span><strong>Clé:</strong> <code class="bg-gray-100 px-2 py-1 rounded">{{ $setting->key ?? 'setting_' . $loop->iteration }}</code></span>
+                                            <span><strong>{{ __('Clé:') }}</strong> <code class="bg-gray-100 px-2 py-1 rounded">{{ $setting->key ?? 'setting_' . $loop->iteration }}</code></span>
                                             <span><strong>Type:</strong> {{ $setting->type ?? 'string' }}</span>
                                             @if($setting->default_value ?? false)
-                                                <span><strong>Défaut:</strong> {{ $setting->default_value }}</span>
+                                                <span><strong>{{ __('Défaut:') }}</strong> {{ $setting->default_value }}</span>
                                             @endif
                                         </div>
                                     </div>
@@ -323,9 +319,7 @@
                         <p class="text-gray-500 mb-4">Aucun paramètre trouvé pour le groupe "{{ $group ?? 'general' }}".</p>
                         <form action="{{ route('admin.system-settings.initialize') }}" method="POST" class="inline">
                             @csrf
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                                ⚡ Initialiser les Paramètres
-                            </button>
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('⚡ Initialiser les Paramètres') }}</button>
                         </form>
                     </div>
                 @endif

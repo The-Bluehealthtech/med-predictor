@@ -22,7 +22,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Prénom *
+                            {{ __('Prénom *') }}
                         </label>
                         <input type="text" name="first_name" id="first_name" 
                                value="{{ old('first_name', $player->first_name) }}" required
@@ -58,15 +58,15 @@
 
                     <div>
                         <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">
-                            Nationalité *
+                            {{ __('Nationalité *') }}
                         </label>
                         <select name="nationality" id="nationality" required
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Sélectionner une nationalité</option>
+                            <option value="">{{ __('Sélectionner une nationalité') }}</option>
                             <option value="Tunisie" {{ old('nationality', $player->nationality) == 'Tunisie' ? 'selected' : '' }}>Tunisie</option>
-                            <option value="Algérie" {{ old('nationality', $player->nationality) == 'Algérie' ? 'selected' : '' }}>Algérie</option>
+                            <option value="Algérie" {{ old('nationality', $player->nationality) == 'Algérie' ? 'selected' : '' }}>{{ __('Algérie') }}</option>
                             <option value="Maroc" {{ old('nationality', $player->last_name) == 'Maroc' ? 'selected' : '' }}>Maroc</option>
-                            <option value="Égypte" {{ old('nationality', $player->nationality) == 'Égypte' ? 'selected' : '' }}>Égypte</option>
+                            <option value="Égypte" {{ old('nationality', $player->nationality) == 'Égypte' ? 'selected' : '' }}>{{ __('Égypte') }}</option>
                             <option value="France" {{ old('nationality', $player->nationality) == 'France' ? 'selected' : '' }}>France</option>
                             <option value="Allemagne" {{ old('nationality', $player->nationality) == 'Allemagne' ? 'selected' : '' }}>Allemagne</option>
                             <option value="Espagne" {{ old('nationality', $player->nationality) == 'Espagne' ? 'selected' : '' }}>Espagne</option>
@@ -76,9 +76,9 @@
                             <option value="Belgique" {{ old('nationality', $player->nationality) == 'Belgique' ? 'selected' : '' }}>Belgique</option>
                             <option value="Suisse" {{ old('nationality', $player->nationality) == 'Suisse' ? 'selected' : '' }}>Suisse</option>
                             <option value="Royaume-Uni" {{ old('nationality', $player->nationality) == 'Royaume-Uni' ? 'selected' : '' }}>Royaume-Uni</option>
-                            <option value="États-Unis" {{ old('nationality', $player->nationality) == 'États-Unis' ? 'selected' : '' }}>États-Unis</option>
+                            <option value="États-Unis" {{ old('nationality', $player->nationality) == 'États-Unis' ? 'selected' : '' }}>{{ __('États-Unis') }}</option>
                             <option value="Canada" {{ old('nationality', $player->nationality) == 'Canada' ? 'selected' : '' }}>Canada</option>
-                            <option value="Brésil" {{ old('nationality', $player->nationality) == 'Brésil' ? 'selected' : '' }}>Brésil</option>
+                            <option value="Brésil" {{ old('nationality', $player->nationality) == 'Brésil' ? 'selected' : '' }}>{{ __('Brésil') }}</option>
                             <option value="Argentine" {{ old('nationality', $player->nationality) == 'Argentine' ? 'selected' : '' }}>Argentine</option>
                             <option value="Japon" {{ old('nationality', $player->nationality) == 'Japon' ? 'selected' : '' }}>Japon</option>
                             <option value="Chine" {{ old('nationality', $player->nationality) == 'Chine' ? 'selected' : '' }}>Chine</option>
@@ -96,16 +96,16 @@
                         </label>
                         <select name="position" id="position" required
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Sélectionner une position</option>
+                            <option value="">{{ __('Sélectionner une position') }}</option>
                             <option value="ST" {{ old('position', $player->position) == 'ST' ? 'selected' : '' }}>Attaquant (ST)</option>
                             <option value="RW" {{ old('position', $player->position) == 'RW' ? 'selected' : '' }}>Ailier droit (RW)</option>
                             <option value="LW" {{ old('position', $player->position) == 'LW' ? 'selected' : '' }}>Ailier gauche (LW)</option>
                             <option value="CAM" {{ old('position', $player->position) == 'CAM' ? 'selected' : '' }}>Milieu offensif (CAM)</option>
                             <option value="CM" {{ old('position', $player->position) == 'CM' ? 'selected' : '' }}>Milieu central (CM)</option>
-                            <option value="CDM" {{ old('position', $player->position) == 'CDM' ? 'selected' : '' }}>Milieu défensif (CDM)</option>
-                            <option value="CB" {{ old('position', $player->position) == 'CB' ? 'selected' : '' }}>Défenseur central (CB)</option>
-                            <option value="RB" {{ old('position', $player->position) == 'RB' ? 'selected' : '' }}>Arrière droit (RB)</option>
-                            <option value="LB" {{ old('position', $player->position) == 'LB' ? 'selected' : '' }}>Arrière gauche (LB)</option>
+                            <option value="CDM" {{ old('position', $player->position) == 'CDM' ? 'selected' : '' }}>{{ __('Milieu défensif (CDM)') }}</option>
+                            <option value="CB" {{ old('position', $player->position) == 'CB' ? 'selected' : '' }}>{{ __('Défenseur central (CB)') }}</option>
+                            <option value="RB" {{ old('position', $player->position) == 'RB' ? 'selected' : '' }}>{{ __('Arrière droit (RB)') }}</option>
+                            <option value="LB" {{ old('position', $player->position) == 'LB' ? 'selected' : '' }}>{{ __('Arrière gauche (LB)') }}</option>
                             <option value="GK" {{ old('position', $player->position) == 'GK' ? 'selected' : '' }}>Gardien (GK)</option>
                         </select>
                         @error('position')
@@ -175,16 +175,14 @@
                                    accept="image/*" 
                                    class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                    onchange="previewImage(this)">
-                            <p class="mt-1 text-sm text-gray-500">Formats acceptés: JPG, PNG, GIF. Taille max: 5MB</p>
+                            <p class="mt-1 text-sm text-gray-500">{{ __('Formats acceptés: JPG, PNG, GIF. Taille max: 5MB') }}</p>
                             @error('player_picture')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Photo actuelle / Aperçu
-                            </label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Photo actuelle / Aperçu') }}</label>
                             <div id="imagePreviewContainer" class="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 overflow-hidden">
                                 @if($player->player_picture)
                                     <img src="{{ asset('storage/' . $player->player_picture) }}" 
@@ -208,9 +206,7 @@
                         {{ __('clinical.cancel') }}
                     </a>
                     <button type="submit" 
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
-                        Mettre à jour
-                    </button>
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">{{ __('Mettre à jour') }}</button>
                 </div>
             </form>
         </div>
@@ -260,9 +256,7 @@ function removeImage() {
 </script>
 @endsection 
                     <div>
-                        <label for="preferred_foot" class="block text-sm font-medium text-gray-700 mb-2">
-                            Pied préféré
-                        </label>
+                        <label for="preferred_foot" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Pied préféré') }}</label>
                         <select name="preferred_foot" id="preferred_foot"
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                             <option value="">{{ __('clinical.select_button') }}</option>
@@ -299,9 +293,7 @@ function removeImage() {
                     </div>
 
                     <div>
-                        <label for="international_reputation" class="block text-sm font-medium text-gray-700 mb-2">
-                            Réputation internationale (1-5)
-                        </label>
+                        <label for="international_reputation" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Réputation internationale (1-5)') }}</label>
                         <input type="number" name="international_reputation" id="international_reputation" 
                                value="{{ old('international_reputation', $player->international_reputation) }}" min="1" max="5"
                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
@@ -341,9 +333,7 @@ function removeImage() {
                         {{ __('clinical.cancel') }}
                     </a>
                     <button type="submit" 
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
-                        Mettre à jour
-                    </button>
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">{{ __('Mettre à jour') }}</button>
                 </div>
             </form>
         </div>

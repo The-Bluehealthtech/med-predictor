@@ -31,7 +31,7 @@
                 </label>
             @endif
             @if($type === 'confederations')
-                <label class="block">Année de fondation
+                <label class="block">{{ __('Année de fondation') }}
                     <input type="number" name="founded_year" min="1800" max="{{ date('Y') }}" value="{{ old('founded_year', $record?->founded_year) }}" class="mt-1 block w-full border rounded p-2">
                 </label>
                 <label class="block">{{ __('clinical.table_status') }}

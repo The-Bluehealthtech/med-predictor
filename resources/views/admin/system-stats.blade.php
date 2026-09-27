@@ -34,8 +34,8 @@
                     </li>
                 </ol>
             </nav>
-            <h1 class="mt-4 text-3xl font-bold text-gray-900">🔧 Statistiques Système Techniques</h1>
-            <p class="mt-2 text-gray-600">Métriques avancées et monitoring technique du système FIT</p>
+            <h1 class="mt-4 text-3xl font-bold text-gray-900">{{ __('🔧 Statistiques Système Techniques') }}</h1>
+            <p class="mt-2 text-gray-600">{{ __('Métriques avancées et monitoring technique du système FIT') }}</p>
         </div>
 
         <!-- Overview Cards -->
@@ -70,7 +70,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Base de Données</dt>
+                                <dt class="text-sm font-medium text-gray-500 truncate">{{ __('Base de Données') }}</dt>
                                 <dd class="text-lg font-medium text-gray-900">{{ $databaseStats['connection_status'] }}</dd>
                             </dl>
                         </div>
@@ -137,13 +137,13 @@
                             <dd class="mt-1 text-sm text-gray-900">{{ number_format($userStats['recent_logins']) }}</dd>
                         </div>
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Total Rôles</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Total Rôles') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $userStats['total_roles'] ?? 0 }}</dd>
                         </div>
                     </dl>
                     <!-- Users by Role Chart -->
                     <div class="mt-4">
-                        <h4 class="text-sm font-medium text-gray-700 mb-2">Répartition par Rôle</h4>
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">{{ __('Répartition par Rôle') }}</h4>
                         <div class="space-y-2">
                             @foreach($userStats['users_by_role'] as $role => $count)
                             <div class="flex justify-between items-center">
@@ -164,7 +164,7 @@
             <!-- Database Statistics -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">💾 Base de Données</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('💾 Base de Données') }}</h3>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div class="sm:col-span-1">
                             <dt class="text-sm font-medium text-gray-500">Taille Total</dt>
@@ -175,7 +175,7 @@
                             <dd class="mt-1 text-sm text-gray-900">{{ $databaseStats['total_tables'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Requêtes Lentes</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Requêtes Lentes') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $databaseStats['slow_queries'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">
@@ -260,26 +260,26 @@
                     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">🚀 CI/CD & GitHub Actions</h3>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Dernier Déploiement</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Dernier Déploiement') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $cicdStats['last_deployment'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Taux de Réussite</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Taux de Réussite') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $cicdStats['pipeline_success_rate'] }}%</dd>
                         </div>
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Durée Moyenne</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Durée Moyenne') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $cicdStats['build_duration'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Builds Échoués</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Builds Échoués') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $cicdStats['failed_builds'] }}</dd>
                         </div>
                     </dl>
                     <!-- Pipeline Success Rate -->
                     <div class="mt-4">
                         <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-500">Taux de Réussite Pipeline</span>
+                            <span class="text-gray-500">{{ __('Taux de Réussite Pipeline') }}</span>
                             <span class="text-green-600 font-medium">{{ $cicdStats['pipeline_success_rate'] }}%</span>
                         </div>
                         <div class="mt-2 bg-gray-200 rounded-full h-2">
@@ -292,7 +292,7 @@
             <!-- System Information -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">⚙️ Informations Système</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('⚙️ Informations Système') }}</h3>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div class="sm:col-span-1">
                             <dt class="text-sm font-medium text-gray-500">PHP Version</dt>
@@ -303,11 +303,11 @@
                             <dd class="mt-1 text-sm text-gray-900">{{ $systemStats['laravel_version'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Mémoire Utilisée</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Mémoire Utilisée') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $systemStats['memory_usage'] }} MB</dd>
                         </div>
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Limite Mémoire</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Limite Mémoire') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $systemStats['memory_limit'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">
@@ -328,14 +328,14 @@
             <!-- Security Statistics -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">🔒 Sécurité</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('🔒 Sécurité') }}</h3>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Connexions Échouées</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Connexions Échouées') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $securityStats['failed_logins'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Activités Suspectes</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Activités Suspectes') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $securityStats['suspicious_activities'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">
@@ -361,7 +361,7 @@
             <!-- Logs Statistics -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">📋 Logs Système</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('📋 Logs Système') }}</h3>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div class="sm:col-span-1">
                             <dt class="text-sm font-medium text-gray-500">Erreurs (24h)</dt>
@@ -425,7 +425,7 @@
                     <!-- Database Health -->
                     <div class="relative">
                         <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-500">Santé Base de Données</span>
+                            <span class="text-gray-500">{{ __('Santé Base de Données') }}</span>
                             @php
                                 $dbHealth = 100;
                                 $dbStatus = 'Excellent';
@@ -456,7 +456,7 @@
                     <!-- System Load -->
                     <div class="relative">
                         <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-500">Charge Système</span>
+                            <span class="text-gray-500">{{ __('Charge Système') }}</span>
                             <span class="text-yellow-600 font-medium">{{ $systemStats['cpu_usage'] }}%</span>
                         </div>
                         <div class="mt-2 bg-gray-200 rounded-full h-2">
@@ -467,7 +467,7 @@
                     <!-- Memory Usage -->
                     <div class="relative">
                         <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-500">Utilisation Mémoire</span>
+                            <span class="text-gray-500">{{ __('Utilisation Mémoire') }}</span>
                             @php
                                 $memoryUsage = $systemStats['memory_usage'];
                                 $memoryLimit = (int)str_replace(['M', 'G'], ['', '000'], $systemStats['memory_limit']);

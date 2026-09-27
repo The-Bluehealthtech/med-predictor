@@ -117,7 +117,7 @@
                         <div class="flex items-center">
                             <span class="w-6 h-6 mr-3 text-green-600">🌍</span>
                             <div>
-                                <p class="text-sm text-gray-500">Confédération</p>
+                                <p class="text-sm text-gray-500">{{ __('Confédération') }}</p>
                                 <p class="font-medium">{{ $association->confederation->name ?? 'Non spécifiée' }}</p>
                             </div>
                         </div>
@@ -164,7 +164,7 @@
                                 </div>
                                 @if($association->fifa_sync_date)
                                 <div class="flex justify-between">
-                                    <span class="text-green-600">Dernière sync:</span>
+                                    <span class="text-green-600">{{ __('Dernière sync:') }}</span>
                                     <span class="font-medium">{{ $association->fifa_sync_date->format('d/m/Y H:i') }}</span>
                                 </div>
                                 @endif

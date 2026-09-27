@@ -35,7 +35,7 @@
                 </ol>
             </nav>
             <h1 class="mt-4 text-3xl font-bold text-gray-900">⚙️ Administration Management</h1>
-            <p class="mt-2 text-gray-600">Gestion administrative du système FIT</p>
+            <p class="mt-2 text-gray-600">{{ __('Gestion administrative du système FIT') }}</p>
         </div>
 
         <!-- Administration Cards -->
@@ -49,10 +49,8 @@
                         </div>
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Gestion des Utilisateurs</h3>
-                    <p class="text-gray-600 mb-4">Gérer les comptes utilisateurs, rôles et permissions</p>
-                    <a href="{{ route('user-management.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-                        Accéder →
-                    </a>
+                    <p class="text-gray-600 mb-4">{{ __('Gérer les comptes utilisateurs, rôles et permissions') }}</p>
+                    <a href="{{ route('user-management.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">{{ __('Accéder →') }}</a>
                 </div>
             </div>
 
@@ -64,11 +62,9 @@
                             <span class="text-2xl">📊</span>
                         </div>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Statistiques Système</h3>
-                    <p class="text-gray-600 mb-4">Consulter les statistiques et métriques du système</p>
-                    <a href="{{ route('admin.system.stats') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 transition-colors">
-                        Accéder →
-                    </a>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Statistiques Système') }}</h3>
+                    <p class="text-gray-600 mb-4">{{ __('Consulter les statistiques et métriques du système') }}</p>
+                    <a href="{{ route('admin.system.stats') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 transition-colors">{{ __('Accéder →') }}</a>
                 </div>
             </div>
 
@@ -81,10 +77,8 @@
                         </div>
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Demandes de Comptes</h3>
-                    <p class="text-gray-600 mb-4">Approuver ou rejeter les demandes de création de comptes</p>
-                    <a href="{{ route('admin.account-requests.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 transition-colors">
-                        Accéder →
-                    </a>
+                    <p class="text-gray-600 mb-4">{{ __('Approuver ou rejeter les demandes de création de comptes') }}</p>
+                    <a href="{{ route('admin.account-requests.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 transition-colors">{{ __('Accéder →') }}</a>
                 </div>
             </div>
 
@@ -97,10 +91,8 @@
                                 </div>
                             </div>
                             <h3 class="text-lg font-medium text-gray-900 mb-2">Gestion RBAC</h3>
-                            <p class="text-gray-600 mb-4">Gérer les rôles, permissions et contrôle d'accès</p>
-                            <a href="/admin/rbac" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors">
-                                Accéder →
-                            </a>
+                            <p class="text-gray-600 mb-4">{{ __('Gérer les rôles, permissions et contrôle d\'accès') }}</p>
+                            <a href="/admin/rbac" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors">{{ __('Accéder →') }}</a>
                         </div>
                     </div>
 
@@ -112,11 +104,9 @@
                             <span class="text-2xl">⚙️</span>
                         </div>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Paramètres Système</h3>
-                    <p class="text-gray-600 mb-4">Configurer les paramètres et constantes du système</p>
-                    <a href="{{ route('admin.system-settings.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 transition-colors">
-                        Accéder →
-                    </a>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Paramètres Système') }}</h3>
+                    <p class="text-gray-600 mb-4">{{ __('Configurer les paramètres et constantes du système') }}</p>
+                    <a href="{{ route('admin.system-settings.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 transition-colors">{{ __('Accéder →') }}</a>
                 </div>
             </div>
 
@@ -130,9 +120,7 @@
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Audit Trail</h3>
                     <p class="text-gray-600 mb-4">Consulter l'historique des actions et modifications</p>
-                    <a href="{{ route('admin.audit-trail.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
-                        Accéder →
-                    </a>
+                    <a href="{{ route('admin.audit-trail.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">{{ __('Accéder →') }}</a>
                 </div>
             </div>
 

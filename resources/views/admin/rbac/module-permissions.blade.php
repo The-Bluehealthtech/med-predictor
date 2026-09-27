@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Gestion des Permissions par Module
                                 </h1>
-                                <p class="text-sm text-gray-600">Configurez les accès aux modules pour chaque rôle</p>
+                                <p class="text-sm text-gray-600">{{ __('Configurez les accès aux modules pour chaque rôle') }}</p>
                             </div>
                         </div>
                     </div>
@@ -47,10 +47,7 @@
         <!-- Instructions -->
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
             <h3 class="text-lg font-medium text-blue-900 mb-2">Instructions</h3>
-            <p class="text-blue-800">
-                Utilisez les cases à cocher ci-dessous pour configurer les permissions d'accès aux modules pour chaque rôle. 
-                Les modifications seront appliquées immédiatement.
-            </p>
+            <p class="text-blue-800">{{ __('Utilisez les cases à cocher ci-dessous pour configurer les permissions d\'accès aux modules pour chaque rôle. Les modifications seront appliquées immédiatement.') }}</p>
         </div>
 
         <!-- Permissions Matrix -->
@@ -116,7 +113,7 @@
         <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Roles Legend -->
             <div class="bg-white shadow rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Légende des Rôles</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Légende des Rôles') }}</h3>
                 <div class="space-y-2">
                     @foreach($roles as $roleKey => $roleName)
                     <div class="flex items-center">
@@ -129,7 +126,7 @@
 
             <!-- Permissions Legend -->
             <div class="bg-white shadow rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Légende des Permissions</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Légende des Permissions') }}</h3>
                 <div class="space-y-2">
                     <div class="flex items-center">
                         <span class="text-sm font-medium text-gray-700 mr-2">View</span>
@@ -137,23 +134,23 @@
                     </div>
                     <div class="flex items-center">
                         <span class="text-sm font-medium text-gray-700 mr-2">Create</span>
-                        <span class="text-xs text-gray-500">Créer de nouveaux éléments</span>
+                        <span class="text-xs text-gray-500">{{ __('Créer de nouveaux éléments') }}</span>
                     </div>
                     <div class="flex items-center">
                         <span class="text-sm font-medium text-gray-700 mr-2">Edit</span>
-                        <span class="text-xs text-gray-500">Modifier les éléments existants</span>
+                        <span class="text-xs text-gray-500">{{ __('Modifier les éléments existants') }}</span>
                     </div>
                     <div class="flex items-center">
                         <span class="text-sm font-medium text-gray-700 mr-2">Delete</span>
-                        <span class="text-xs text-gray-500">Supprimer des éléments</span>
+                        <span class="text-xs text-gray-500">{{ __('Supprimer des éléments') }}</span>
                     </div>
                     <div class="flex items-center">
                         <span class="text-sm font-medium text-gray-700 mr-2">Export</span>
-                        <span class="text-xs text-gray-500">Exporter des données</span>
+                        <span class="text-xs text-gray-500">{{ __('Exporter des données') }}</span>
                     </div>
                     <div class="flex items-center">
                         <span class="text-sm font-medium text-gray-700 mr-2">Manage</span>
-                        <span class="text-xs text-gray-500">Gestion complète du module</span>
+                        <span class="text-xs text-gray-500">{{ __('Gestion complète du module') }}</span>
                     </div>
                 </div>
             </div>
@@ -166,12 +163,8 @@
                 <button onclick="activateAll()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
                     ✓ Tout Activer
                 </button>
-                <button onclick="deactivateAll()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    ✗ Tout Désactiver
-                </button>
-                <button onclick="resetPermissions()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    🔄 Réinitialiser
-                </button>
+                <button onclick="deactivateAll()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('✗ Tout Désactiver') }}</button>
+                <button onclick="resetPermissions()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('🔄 Réinitialiser') }}</button>
             </div>
         </div>
     </div>

@@ -15,10 +15,8 @@
                 <a href="/confederations-view" class="flex items-center text-purple-600 hover:text-purple-800 transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                    Retour aux confédérations
-                </a>
-                <h1 class="text-3xl font-bold text-gray-800">Détails de la Confédération</h1>
+                    </svg>{{ __('Retour aux confédérations') }}</a>
+                <h1 class="text-3xl font-bold text-gray-800">{{ __('Détails de la Confédération') }}</h1>
             </div>
             <div class="flex space-x-3">
                 @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations', $confederation))
@@ -89,7 +87,7 @@
                         <div class="flex items-center">
                             <span class="w-6 h-6 mr-3 text-purple-600">🏛️</span>
                             <div>
-                                <p class="text-sm text-gray-500">Associations affiliées</p>
+                                <p class="text-sm text-gray-500">{{ __('Associations affiliées') }}</p>
                                 <p class="font-medium">{{ $confederation->associations->count() }}</p>
                             </div>
                         </div>
@@ -97,7 +95,7 @@
                         <div class="flex items-center">
                             <span class="w-6 h-6 mr-3 text-purple-600">📅</span>
                             <div>
-                                <p class="text-sm text-gray-500">Année de fondation</p>
+                                <p class="text-sm text-gray-500">{{ __('Année de fondation') }}</p>
                                 <p class="font-medium">{{ $confederation->founded_year }}</p>
                             </div>
                         </div>
@@ -130,7 +128,7 @@
                                 @endif
                                 @if($confederation->fifa_sync_date)
                                 <div class="flex items-center justify-between">
-                                    <span class="text-sm text-purple-700">Dernière sync:</span>
+                                    <span class="text-sm text-purple-700">{{ __('Dernière sync:') }}</span>
                                     <span class="font-medium text-purple-800">{{ $confederation->fifa_sync_date->format('d/m/Y H:i') }}</span>
                                 </div>
                                 @endif
@@ -193,15 +191,13 @@
                         <div class="mt-4 text-center">
                             <a href="/associations-view?confederation_id={{ $confederation->id }}" 
                                class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                                <span class="mr-2">🏛️</span>
-                                Voir toutes les associations de cette confédération
-                            </a>
+                                <span class="mr-2">🏛️</span>{{ __('Voir toutes les associations de cette confédération') }}</a>
                         </div>
                     @else
                         <div class="text-center py-8">
                             <div class="text-4xl mb-4">🏛️</div>
-                            <h4 class="text-lg font-medium text-gray-600 mb-2">Aucune association affiliée</h4>
-                            <p class="text-gray-500">Cette confédération n'a pas encore d'associations affiliées.</p>
+                            <h4 class="text-lg font-medium text-gray-600 mb-2">{{ __('Aucune association affiliée') }}</h4>
+                            <p class="text-gray-500">{{ __('Cette confédération n\'a pas encore d\'associations affiliées.') }}</p>
                         </div>
                     @endif
                 </div>
@@ -233,17 +229,13 @@
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">⚡ Actions rapides</h3>
                     <div class="space-y-3">
                         <a href="/associations-view?confederation_id={{ $confederation->id }}" 
-                           class="block w-full px-4 py-2 bg-purple-600 text-white text-center rounded-lg hover:bg-purple-700 transition-colors">
-                            🏛️ Gérer les associations
-                        </a>
+                           class="block w-full px-4 py-2 bg-purple-600 text-white text-center rounded-lg hover:bg-purple-700 transition-colors">{{ __('🏛️ Gérer les associations') }}</a>
                         <a href="/clubs-view?confederation_id={{ $confederation->id }}" 
                            class="block w-full px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors">
                             🏟️ Voir tous les clubs
                         </a>
                         <a href="/modules/licenses?confederation_id={{ $confederation->id }}" 
-                           class="block w-full px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors">
-                            📋 Licences de la confédération
-                        </a>
+                           class="block w-full px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors">{{ __('📋 Licences de la confédération') }}</a>
                     </div>
                 </div>
             </div>

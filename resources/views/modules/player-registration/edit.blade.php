@@ -21,7 +21,7 @@
                 
                 <!-- Player Picture Upload Section -->
                 <div class="mb-8">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Photo du Joueur</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Photo du Joueur') }}</h3>
                     <div class="flex items-center space-x-6">
                         <div class="flex-shrink-0">
                             @if($player->has_picture)
@@ -51,7 +51,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Prénom *
+                            {{ __('Prénom *') }}
                         </label>
                         <input type="text" name="first_name" id="first_name" 
                                value="{{ old('first_name', $player->first_name) }}" required
@@ -87,7 +87,7 @@
 
                     <div>
                         <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">
-                            Nationalité *
+                            {{ __('Nationalité *') }}
                         </label>
                         <input type="text" name="nationality" id="nationality" 
                                value="{{ old('nationality', $player->nationality) }}" required
@@ -103,16 +103,16 @@
                         </label>
                         <select name="position" id="position" required
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Sélectionner une position</option>
+                            <option value="">{{ __('Sélectionner une position') }}</option>
                             <option value="ST" {{ old('position', $player->position) == 'ST' ? 'selected' : '' }}>Attaquant (ST)</option>
                             <option value="RW" {{ old('position', $player->position) == 'RW' ? 'selected' : '' }}>Ailier droit (RW)</option>
                             <option value="LW" {{ old('position', $player->position) == 'LW' ? 'selected' : '' }}>Ailier gauche (LW)</option>
                             <option value="CAM" {{ old('position', $player->position) == 'CAM' ? 'selected' : '' }}>Milieu offensif (CAM)</option>
                             <option value="CM" {{ old('position', $player->position) == 'CM' ? 'selected' : '' }}>Milieu central (CM)</option>
-                            <option value="CDM" {{ old('position', $player->position) == 'CDM' ? 'selected' : '' }}>Milieu défensif (CDM)</option>
-                            <option value="CB" {{ old('position', $player->position) == 'CB' ? 'selected' : '' }}>Défenseur central (CB)</option>
-                            <option value="RB" {{ old('position', $player->position) == 'RB' ? 'selected' : '' }}>Arrière droit (RB)</option>
-                            <option value="LB" {{ old('position', $player->position) == 'LB' ? 'selected' : '' }}>Arrière gauche (LB)</option>
+                            <option value="CDM" {{ old('position', $player->position) == 'CDM' ? 'selected' : '' }}>{{ __('Milieu défensif (CDM)') }}</option>
+                            <option value="CB" {{ old('position', $player->position) == 'CB' ? 'selected' : '' }}>{{ __('Défenseur central (CB)') }}</option>
+                            <option value="RB" {{ old('position', $player->position) == 'RB' ? 'selected' : '' }}>{{ __('Arrière droit (RB)') }}</option>
+                            <option value="LB" {{ old('position', $player->position) == 'LB' ? 'selected' : '' }}>{{ __('Arrière gauche (LB)') }}</option>
                             <option value="GK" {{ old('position', $player->position) == 'GK' ? 'selected' : '' }}>Gardien (GK)</option>
                         </select>
                         @error('position')
@@ -170,7 +170,7 @@
 
                     <div>
                         <label for="preferred_foot" class="block text-sm font-medium text-gray-700 mb-2">
-                            Pied préféré
+                            {{ __('Pied préféré') }}
                         </label>
                         <select name="preferred_foot" id="preferred_foot"
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
@@ -209,7 +209,7 @@
 
                     <div>
                         <label for="international_reputation" class="block text-sm font-medium text-gray-700 mb-2">
-                            Réputation internationale (1-5)
+                            {{ __('Réputation internationale (1-5)') }}
                         </label>
                         <input type="number" name="international_reputation" id="international_reputation" 
                                value="{{ old('international_reputation', $player->international_reputation) }}" min="1" max="5"
@@ -251,7 +251,7 @@
                     </a>
                     <button type="submit" 
                             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
-                        Mettre à jour
+                        {{ __('Mettre à jour') }}
                     </button>
                 </div>
             </form>

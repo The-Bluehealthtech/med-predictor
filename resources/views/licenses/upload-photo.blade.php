@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Photo Joueur - Système de Licences</title>
+    <title>{{ __('Upload Photo Joueur - Système de Licences') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-8">
     <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-8">📸 Upload Photo Joueur - Système de Licences</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">{{ __('📸 Upload Photo Joueur - Système de Licences') }}</h1>
         
         <!-- Formulaire d'Upload -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">📤 Upload de Photo</h2>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">{{ __('📤 Upload de Photo') }}</h2>
             
             <form action="{{ route('license.upload.photo') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
@@ -25,12 +25,12 @@
                             <select name="club_id" id="club_id" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" disabled>
                                 <option value="{{ $preSelectedClub->id }}" selected>{{ $preSelectedClub->name }}</option>
                             </select>
-                            <span class="text-sm text-green-600">✅ Pré-sélectionné</span>
+                            <span class="text-sm text-green-600">{{ __('✅ Pré-sélectionné') }}</span>
                         </div>
                         <input type="hidden" name="club_id" value="{{ $preSelectedClub->id }}">
                     @else
                         <select name="club_id" id="club_id" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Sélectionnez un club</option>
+                            <option value="">{{ __('Sélectionnez un club') }}</option>
                             @foreach($clubs as $club)
                                 <option value="{{ $club->id }}">{{ $club->name }}</option>
                             @endforeach
@@ -46,12 +46,12 @@
                             <select name="player_id" id="player_id" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" disabled>
                                 <option value="{{ $preSelectedPlayer->id }}" selected>{{ $preSelectedPlayer->first_name }} {{ $preSelectedPlayer->last_name }}</option>
                             </select>
-                            <span class="text-sm text-green-600">✅ Pré-sélectionné</span>
+                            <span class="text-sm text-green-600">{{ __('✅ Pré-sélectionné') }}</span>
                         </div>
                         <input type="hidden" name="player_id" value="{{ $preSelectedPlayer->id }}">
                     @else
                         <select name="player_id" id="player_id" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Sélectionnez d\'abord un club</option>
+                            <option value="">{{ __('Sélectionnez d\'abord un club') }}</option>
                         </select>
                     @endif
                 </div>
@@ -71,7 +71,7 @@
                                 </label>
                                 <p class="pl-1">{{ __('secretary.or_drag_and_drop') }}</p>
                             </div>
-                            <p class="text-xs text-gray-500">PNG, JPG, JPEG jusqu'à 5MB</p>
+                            <p class="text-xs text-gray-500">{{ __('PNG, JPG, JPEG jusqu\'à 5MB') }}</p>
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,7 @@
                 <div>
                     <label for="license_type" class="block text-sm font-medium text-gray-700 mb-2">🏆 Type de Licence</label>
                     <select name="license_type" id="license_type" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Sélectionnez le type de licence</option>
+                        <option value="">{{ __('Sélectionnez le type de licence') }}</option>
                         <option value="amateur">Amateur</option>
                         <option value="semi_pro">Semi-Professionnel</option>
                         <option value="professional">Professionnel</option>
@@ -90,23 +90,19 @@
                 
                 <!-- Note: Utilise l'ancien système de licences existant -->
                 <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
-                    <p class="text-sm text-blue-800">
-                        ℹ️ Cette licence sera créée dans le système de licences existant de FIT.
-                    </p>
+                    <p class="text-sm text-blue-800">{{ __('ℹ️ Cette licence sera créée dans le système de licences existant de FIT.') }}</p>
                 </div>
                 
                 <!-- Bouton Submit -->
                 <div class="flex justify-end">
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        📤 Uploader la Photo et Créer la Licence
-                    </button>
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ __('📤 Uploader la Photo et Créer la Licence') }}</button>
                 </div>
             </form>
         </div>
         
         <!-- Aperçu des Photos Uploadées -->
         <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">🖼️ Photos Uploadées Récemment</h2>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">{{ __('🖼️ Photos Uploadées Récemment') }}</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 @foreach($recentPhotos as $photo)
                 <div class="text-center">
@@ -145,7 +141,7 @@
                     
                     if (clubId) {
                         // Afficher un indicateur de chargement
-                        playerSelect.innerHTML = '<option value="">Chargement des joueurs...</option>';
+                        playerSelect.replaceChildren(new Option(@json(__("Chargement des joueurs...")), ''));
                         playerSelect.disabled = true;
                         
                         // Charger les joueurs du club sélectionné
@@ -162,7 +158,7 @@
                             })
                             .then(players => {
                                 console.log('👥 Joueurs reçus:', players);
-                                playerSelect.innerHTML = '<option value="">Sélectionnez un joueur</option>';
+                                playerSelect.replaceChildren(new Option(@json(__("Sélectionnez un joueur")), ''));
                                 
                                 if (players && players.length > 0) {
                                     players.forEach(player => {
@@ -173,7 +169,7 @@
                                     });
                                     console.log(`✅ ${players.length} joueurs chargés`);
                                 } else {
-                                    playerSelect.innerHTML = '<option value="">Aucun joueur trouvé dans ce club</option>';
+                                    playerSelect.replaceChildren(new Option(@json(__("Aucun joueur trouvé dans ce club")), ''));
                                     console.log('⚠️ Aucun joueur trouvé');
                                 }
                                 
@@ -181,11 +177,11 @@
                             })
                             .catch(error => {
                                 console.error('❌ Erreur lors du chargement des joueurs:', error);
-                                playerSelect.innerHTML = '<option value="">{{ __('pcma.loading_error') }}</option>';
+                                playerSelect.replaceChildren(new Option(@json(__('pcma.loading_error')), ''));
                                 playerSelect.disabled = false;
                             });
                     } else {
-                        playerSelect.innerHTML = '<option value="">Sélectionnez d\'abord un club</option>';
+                        playerSelect.replaceChildren(new Option(@json(__("Sélectionnez d'abord un club")), ''));
                         playerSelect.disabled = true;
                         console.log('🔄 Réinitialisation du sélecteur de joueur');
                     }

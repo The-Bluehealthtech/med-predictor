@@ -34,7 +34,7 @@
                         </span>
                     @elseif(($connectivity['status'] ?? null) === 'unconfigured')
                         <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                            Non configuré
+                            {{ __('Non configuré') }}
                         </span>
                     @elseif(($connectivity['status'] ?? null) === 'mock')
                         <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">

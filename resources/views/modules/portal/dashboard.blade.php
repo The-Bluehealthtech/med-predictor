@@ -41,7 +41,7 @@
                         </div>
                         <div class="ml-4">
                             <div class="text-2xl font-bold text-gray-900">12</div>
-                            <div class="text-sm text-gray-500">Dossiers Médicaux</div>
+                            <div class="text-sm text-gray-500">{{ __('Dossiers Médicaux') }}</div>
                         </div>
                     </div>
                 </div>

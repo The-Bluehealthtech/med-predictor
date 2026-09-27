@@ -441,7 +441,7 @@
                                         <span class="text-green-800 font-medium">{{ __('PCMA Validé ✓') }}</span>
                                     </div>
                                     <span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                                        Valide
+                                        {{ __('Valide') }}
                                     </span>
                                 </div>
                                 <p class="text-green-700 text-sm mt-2">

@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Dataset Analytics
                                 </h1>
-                                <p class="text-sm text-gray-600">Évaluation de la Valeur et Qualité des Données FIFA</p>
+                                <p class="text-sm text-gray-600">{{ __('Évaluation de la Valeur et Qualité des Données FIFA') }}</p>
                             </div>
                         </div>
                     </div>
@@ -36,10 +36,8 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
             <div class="p-6">
                 <div class="text-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Analytics des Données FIFA</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Évaluez la valeur et la qualité de votre dataset avec des métriques en temps réel
-                    </p>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ __('Analytics des Données FIFA') }}</h2>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Évaluez la valeur et la qualité de votre dataset avec des métriques en temps réel') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
@@ -50,9 +48,7 @@
                             Score de Valeur 8.7/10
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                            Qualité 87.3%
-                        </div>
+                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>{{ __('Qualité 87.3%') }}</div>
                     </div>
                 </div>
             </div>
@@ -73,9 +69,7 @@
                         onclick="changeTab('data-quality')"
                         class="px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200"
                         id="btn-data-quality"
-                    >
-                        🛡️ Qualité des Données
-                    </button>
+                    >{{ __('🛡️ Qualité des Données') }}</button>
                     <button 
                         onclick="changeTab('coverage')"
                         class="px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -94,9 +88,7 @@
                         onclick="changeTab('value-assessment')"
                         class="px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200"
                         id="btn-value-assessment"
-                    >
-                        ⭐ Évaluation de Valeur
-                    </button>
+                    >{{ __('⭐ Évaluation de Valeur') }}</button>
                 </div>
             </div>
         </div>
@@ -116,7 +108,7 @@
                             <div class="ml-4 flex-1">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('competitions.rapports_avances_page.stat_total_players') }}</h3>
                                 <div class="text-3xl font-bold text-blue-600 mb-2">{{ number_format($overviewData['totalPlayers']) }}</div>
-                                <div class="text-sm text-gray-600 mb-4">Joueurs enregistrés dans le système</div>
+                                <div class="text-sm text-gray-600 mb-4">{{ __('Joueurs enregistrés dans le système') }}</div>
                                 <div class="text-sm text-green-600 font-medium">
                                     📈 {{ $overviewData['playersGrowth'] }}% ce mois
                                 </div>
@@ -136,7 +128,7 @@
                             <div class="ml-4 flex-1">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-2">Total Enregistrements</h3>
                                 <div class="text-3xl font-bold text-green-600 mb-2">{{ number_format($overviewData['totalRecords']) }}</div>
-                                <div class="text-sm text-gray-600 mb-4">Données stockées dans la base</div>
+                                <div class="text-sm text-gray-600 mb-4">{{ __('Données stockées dans la base') }}</div>
                                 <div class="text-sm text-green-600 font-medium">
                                     📈 {{ $overviewData['recordsGrowth'] }}% ce mois
                                 </div>
@@ -156,7 +148,7 @@
                             <div class="ml-4 flex-1">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('fifa.data_quality') }}</h3>
                                 <div class="text-3xl font-bold text-yellow-600 mb-2">{{ $overviewData['avgDataQuality'] }}%</div>
-                                <div class="text-sm text-gray-600 mb-4">Score moyen de qualité</div>
+                                <div class="text-sm text-gray-600 mb-4">{{ __('Score moyen de qualité') }}</div>
                                 <div class="text-sm text-yellow-600 font-medium">
                                     📈 {{ $overviewData['qualityGrowth'] }}% ce mois
                                 </div>
@@ -190,9 +182,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                            📊 Répartition par Type de Données
-                        </h3>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">{{ __('📊 Répartition par Type de Données') }}</h3>
                         <div class="h-80">
                             <canvas id="dataTypeChart"></canvas>
                         </div>
@@ -201,9 +191,7 @@
 
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                            📈 Évolution de la Qualité
-                        </h3>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">{{ __('📈 Évolution de la Qualité') }}</h3>
                         <div class="h-80">
                             <canvas id="qualityEvolutionChart"></canvas>
                         </div>
@@ -217,12 +205,10 @@
             <!-- Score de Qualité Global -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div class="p-6">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                        🛡️ Score de Qualité Global
-                    </h3>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">{{ __('🛡️ Score de Qualité Global') }}</h3>
                     <div class="text-center mb-8">
                         <div class="text-6xl font-bold text-green-600 mb-4" id="global-quality-score">--</div>
-                        <div class="text-xl text-gray-600 mb-2">Qualité Globale des Données</div>
+                        <div class="text-xl text-gray-600 mb-2">{{ __('Qualité Globale des Données') }}</div>
                         <div class="text-lg text-green-600 font-semibold" id="global-quality-rating">--</div>
                     </div>
                     
@@ -235,15 +221,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="text-center">
                             <div class="text-3xl font-bold text-blue-600 mb-2" id="completeness-score">--</div>
-                            <div class="text-lg text-gray-700">Complétude</div>
+                            <div class="text-lg text-gray-700">{{ __('Complétude') }}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-3xl font-bold text-yellow-600 mb-2" id="accuracy-score">--</div>
-                            <div class="text-lg text-gray-700">Précision</div>
+                            <div class="text-lg text-gray-700">{{ __('Précision') }}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-3xl font-bold text-purple-600 mb-2" id="consistency-score">--</div>
-                            <div class="text-lg text-gray-700">Cohérence</div>
+                            <div class="text-lg text-gray-700">{{ __('Cohérence') }}</div>
                         </div>
                     </div>
                 </div>
@@ -252,13 +238,11 @@
             <!-- Analyse Détaillée par Table -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div class="p-6">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                        📋 Qualité par Table
-                    </h3>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">{{ __('📋 Qualité par Table') }}</h3>
                     <div class="space-y-4" id="tables-quality-container">
                         <!-- Les données des tables seront chargées dynamiquement ici -->
                         <div class="text-center py-8">
-                            <div class="text-gray-500">Chargement des données de qualité...</div>
+                            <div class="text-gray-500">{{ __('Chargement des données de qualité...') }}</div>
                         </div>
                     </div>
                 </div>
@@ -270,13 +254,11 @@
             <!-- Couverture Globale -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div class="p-6">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                        📈 Couverture des Données
-                    </h3>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">{{ __('📈 Couverture des Données') }}</h3>
                     <div class="text-center mb-8">
                         <div class="text-6xl font-bold text-green-600 mb-4">100%</div>
                         <div class="text-xl text-gray-600">Couverture Globale</div>
-                        <div class="text-lg text-green-600 font-semibold">Toutes les données affichées sont couvertes</div>
+                        <div class="text-lg text-green-600 font-semibold">{{ __('Toutes les données affichées sont couvertes') }}</div>
                     </div>
                 </div>
             </div>
@@ -340,9 +322,7 @@
 
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                            ❤️ Couverture Médicale
-                        </h3>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">{{ __('❤️ Couverture Médicale') }}</h3>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <span class="text-lg text-gray-700">Signaux Vitaux</span>
@@ -354,7 +334,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-lg text-gray-700">Métriques de Santé</span>
+                                <span class="text-lg text-gray-700">{{ __('Métriques de Santé') }}</span>
                                 <div class="flex items-center space-x-3">
                                     <div class="w-32 bg-gray-200 rounded-full h-2">
                                         <div class="bg-blue-500 h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
@@ -372,7 +352,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-lg text-gray-700">Stress & Bien-être</span>
+                                <span class="text-lg text-gray-700">{{ __('Stress & Bien-être') }}</span>
                                 <div class="flex items-center space-x-3">
                                     <div class="w-32 bg-gray-200 rounded-full h-2">
                                         <div class="bg-blue-500 h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
@@ -400,9 +380,7 @@
             <!-- Évolution Temporelle -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div class="p-6">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                        📈 Évolution des Données
-                    </h3>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">{{ __('📈 Évolution des Données') }}</h3>
                     <div class="h-80">
                         <canvas id="trendsChart"></canvas>
                     </div>
@@ -413,9 +391,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                            📊 Croissance des Données
-                        </h3>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">{{ __('📊 Croissance des Données') }}</h3>
                         <div class="space-y-6" id="trends-growth-container">
                             <!-- Les données de croissance seront chargées dynamiquement ici -->
                             <div class="text-center py-8">
@@ -427,13 +403,11 @@
 
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                            ⏰ Fréquence de Mise à Jour
-                        </h3>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">{{ __('⏰ Fréquence de Mise à Jour') }}</h3>
                         <div class="space-y-6" id="trends-updates-container">
                             <!-- Les données de mise à jour seront chargées dynamiquement ici -->
                             <div class="text-center py-8">
-                                <div class="text-gray-500">Chargement des fréquences...</div>
+                                <div class="text-gray-500">{{ __('Chargement des fréquences...') }}</div>
                             </div>
                         </div>
                     </div>
@@ -446,9 +420,7 @@
             <!-- Score de Valeur Global -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div class="p-6">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                        ⭐ Évaluation de la Valeur du Dataset
-                    </h3>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">{{ __('⭐ Évaluation de la Valeur du Dataset') }}</h3>
                     <div class="text-center mb-8">
                         <div class="text-6xl font-bold text-yellow-600 mb-4" id="value-overall-score">--</div>
                         <div class="text-xl text-gray-600 mb-2">Score Global de Valeur</div>
@@ -459,7 +431,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="value-criteria-container">
                         <!-- Les critères seront chargés dynamiquement ici -->
                         <div class="text-center py-8 col-span-3">
-                            <div class="text-gray-500">Chargement des critères...</div>
+                            <div class="text-gray-500">{{ __('Chargement des critères...') }}</div>
                         </div>
                     </div>
                 </div>
@@ -483,13 +455,11 @@
 
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                            💡 Points d'Amélioration
-                        </h3>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">{{ __('💡 Points d\'Amélioration') }}</h3>
                         <div class="space-y-4" id="value-improvements-container">
                             <!-- Les points d'amélioration seront chargés dynamiquement ici -->
                             <div class="text-center py-8">
-                                <div class="text-gray-500">Chargement des améliorations...</div>
+                                <div class="text-gray-500">{{ __('Chargement des améliorations...') }}</div>
                             </div>
                         </div>
                     </div>

@@ -41,7 +41,7 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('auth.role_player') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Club</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expiration</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Expiration') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('clinical.table_status') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>

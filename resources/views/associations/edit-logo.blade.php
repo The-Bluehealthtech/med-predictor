@@ -101,7 +101,7 @@
                                        accept="image/*"
                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                        required>
-                                <p class="text-xs text-gray-500 mt-1">Formats acceptés : JPEG, PNG, JPG, GIF (max 2MB)</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ __('Formats acceptés : JPEG, PNG, JPG, GIF (max 2MB)') }}</p>
                             </div>
                             <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors">
                                 💾 Sauvegarder le logo

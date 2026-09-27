@@ -16,7 +16,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                     </svg>
                     Retour aux clubs
                 </a>
-                <h1 class="text-3xl font-bold text-gray-800">Détails du Club</h1>
+                <h1 class="text-3xl font-bold text-gray-800">{{ __('Détails du Club') }}</h1>
             </div>
             <div class="flex space-x-3">
                 <a href="{{ route('clubs-view.edit', $club->id) }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
@@ -61,7 +61,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                     <!-- Nom abrégé du club -->
                     @if($club->short_name)
                     <div class="mb-3">
-                        <span class="text-sm text-gray-500">Nom abrégé :</span>
+                        <span class="text-sm text-gray-500">{{ __('Nom abrégé :') }}</span>
                         <span class="ml-2 text-lg font-semibold text-blue-700">{{ $club->short_name }}</span>
                     </div>
                     @endif
@@ -80,7 +80,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                         <div class="flex items-center">
                             <span class="w-6 h-6 mr-3 text-blue-600">📅</span>
                             <div>
-                                <p class="text-sm text-gray-500">Fondé en</p>
+                                <p class="text-sm text-gray-500">{{ __('Fondé en') }}</p>
                                 <p class="font-medium">{{ $club->founded_year }}</p>
                             </div>
                         </div>
@@ -108,7 +108,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                             <div class="flex items-center">
                                 <span class="w-5 h-5 mr-3 text-blue-600">🏆</span>
                                 <div>
-                                    <p class="text-sm text-gray-500">Confédération</p>
+                                    <p class="text-sm text-gray-500">{{ __('Confédération') }}</p>
                                     <p class="font-medium text-blue-700">{{ $club->confederation->name }}</p>
                                 </div>
                             </div>
@@ -179,9 +179,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                 @if($club->association)
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                        <span class="mr-2">🏛️</span>
-                        Association affiliée
-                    </h3>
+                        <span class="mr-2">🏛️</span>{{ __('Association affiliée') }}</h3>
                     
                     <div class="flex items-center space-x-4">
                         @if($club->association->association_logo_url)
@@ -238,12 +236,10 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                 <!-- Section des équipes -->
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-semibold text-gray-800">Équipes du club</h3>
+                        <h3 class="text-xl font-semibold text-gray-800">{{ __('Équipes du club') }}</h3>
                         <a href="/modules/teams/create?club_id={{ $club->id }}" 
                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            <i class="fas fa-plus mr-1"></i>
-                            Ajouter une équipe
-                        </a>
+                            <i class="fas fa-plus mr-1"></i>{{ __('Ajouter une équipe') }}</a>
                     </div>
                     
                     @if($club->teams && $club->teams->count() > 0)
@@ -272,9 +268,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                                         </div>
                                         <div class="flex items-center justify-between py-1">
                                             <span class="text-gray-600 flex items-center">
-                                                <i class="fas fa-calendar w-4 h-4 mr-2 text-blue-500"></i>
-                                                Catégorie:
-                                            </span>
+                                                <i class="fas fa-calendar w-4 h-4 mr-2 text-blue-500"></i>{{ __('Catégorie:') }}</span>
                                             <span class="font-medium text-gray-900">{{ $team->age_category ?? 'N/A' }}</span>
                                         </div>
                                         <div class="flex items-center justify-between py-1">
@@ -306,13 +300,11 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                             <div class="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-users text-3xl text-gray-400"></i>
                             </div>
-                            <p class="text-lg font-medium mb-2">Aucune équipe trouvée</p>
-                            <p class="text-sm mb-6">Ce club n'a pas encore d'équipes enregistrées.</p>
+                            <p class="text-lg font-medium mb-2">{{ __('Aucune équipe trouvée') }}</p>
+                            <p class="text-sm mb-6">{{ __('Ce club n\'a pas encore d\'équipes enregistrées.') }}</p>
                             <a href="/modules/teams/create?club_id={{ $club->id }}" 
                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors">
-                                <i class="fas fa-plus mr-2"></i>
-                                Créer la première équipe
-                            </a>
+                                <i class="fas fa-plus mr-2"></i>{{ __('Créer la première équipe') }}</a>
                         </div>
                     @endif
                 </div>

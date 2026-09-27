@@ -41,7 +41,7 @@
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            Système opérationnel
+                            {{ __('Système opérationnel') }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
@@ -136,7 +136,7 @@
             <!-- Players by Position -->
             <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Répartition par Position</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Répartition par Position') }}</h3>
                     <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                         <span class="text-blue-600 text-sm">📊</span>
                     </div>
@@ -210,7 +210,7 @@
                                 <span class="text-white text-lg">⚽</span>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-900">Matchs programmés</p>
+                                <p class="text-sm font-medium text-gray-900">{{ __('Matchs programmés') }}</p>
                                 <p class="text-xs text-gray-500">{{ __('common.this_month') }}</p>
                             </div>
                         </div>

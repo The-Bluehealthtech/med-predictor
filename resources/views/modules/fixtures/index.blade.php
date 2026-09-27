@@ -31,8 +31,8 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.competition') }}</label>
                 <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">{{ __('competitions.ranking.all_competitions') }}</option>
-                    <option value="championnat-u19">Championnat Régional U19</option>
-                    <option value="coupe-regionale">Coupe Régionale</option>
+                    <option value="championnat-u19">{{ __('Championnat Régional U19') }}</option>
+                    <option value="coupe-regionale">{{ __('Coupe Régionale') }}</option>
                     <option value="championnat-senior">Championnat Senior</option>
                 </select>
             </div>
@@ -127,7 +127,7 @@
                     <h3 class="text-lg font-medium text-gray-900">Semaine du 15-21 Septembre 2024</h3>
                     <div class="flex space-x-2">
                         <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                            <i class="fas fa-chevron-left mr-1"></i>Précédent
+                            <i class="fas fa-chevron-left mr-1"></i>{{ __('Précédent') }}
                         </button>
                         <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                             Suivant<i class="fas fa-chevron-right ml-1"></i>
@@ -153,7 +153,7 @@
                                     <div class="text-2xl font-bold text-gray-400">vs</div>
                                     <div class="text-left">
                                         <div class="font-medium text-gray-900">Notre Club</div>
-                                        <div class="text-sm text-gray-500">Extérieur</div>
+                                        <div class="text-sm text-gray-500">{{ __('Extérieur') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -188,13 +188,13 @@
                                     <div class="text-2xl font-bold text-gray-400">vs</div>
                                     <div class="text-left">
                                         <div class="font-medium text-gray-900">FC Athletic</div>
-                                        <div class="text-sm text-gray-500">Extérieur</div>
+                                        <div class="text-sm text-gray-500">{{ __('Extérieur') }}</div>
                                     </div>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-4">
                                 <div class="text-center">
-                                    <div class="text-sm font-medium text-gray-900">Coupe Régionale</div>
+                                    <div class="text-sm font-medium text-gray-900">{{ __('Coupe Régionale') }}</div>
                                     <div class="text-xs text-gray-500">Stade des Sports</div>
                                 </div>
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
@@ -217,13 +217,13 @@
                                 </div>
                                 <div class="flex items-center space-x-3">
                                     <div class="text-right">
-                                        <div class="font-medium text-gray-900">Équipe A</div>
+                                        <div class="font-medium text-gray-900">{{ __('Équipe A') }}</div>
                                         <div class="text-sm text-gray-500">Domicile</div>
                                     </div>
                                     <div class="text-2xl font-bold text-gray-400">vs</div>
                                     <div class="text-left">
-                                        <div class="font-medium text-gray-900">Équipe B</div>
-                                        <div class="text-sm text-gray-500">Extérieur</div>
+                                        <div class="font-medium text-gray-900">{{ __('Équipe B') }}</div>
+                                        <div class="text-sm text-gray-500">{{ __('Extérieur') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -311,19 +311,19 @@
 
     <!-- Légende -->
     <div class="mt-8 bg-white rounded-lg shadow p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Légende</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Légende') }}</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="flex items-center">
                 <div class="w-4 h-4 bg-blue-100 rounded-full mr-3"></div>
-                <span class="text-sm text-gray-600">Matchs programmés</span>
+                <span class="text-sm text-gray-600">{{ __('Matchs programmés') }}</span>
             </div>
             <div class="flex items-center">
                 <div class="w-4 h-4 bg-green-100 rounded-full mr-3"></div>
-                <span class="text-sm text-gray-600">Matchs terminés</span>
+                <span class="text-sm text-gray-600">{{ __('Matchs terminés') }}</span>
             </div>
             <div class="flex items-center">
                 <div class="w-4 h-4 bg-yellow-100 rounded-full mr-3"></div>
-                <span class="text-sm text-gray-600">Matchs reportés</span>
+                <span class="text-sm text-gray-600">{{ __('Matchs reportés') }}</span>
             </div>
             <div class="flex items-center">
                 <div class="w-4 h-4 bg-gray-100 rounded-full mr-3"></div>

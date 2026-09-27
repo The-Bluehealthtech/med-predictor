@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Team Portal
                                 </h1>
-                                <p class="text-sm text-gray-600">Dashboard technique pour staffs d'équipe</p>
+                                <p class="text-sm text-gray-600">{{ __('Dashboard technique pour staffs d\'équipe') }}</p>
                             </div>
                         </div>
                     </div>
@@ -37,22 +37,16 @@
             <div class="p-6">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">⚽ Team Portal Dashboard</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Outil professionnel de gestion et d'analyse des équipes pour les staffs techniques
-                    </p>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Outil professionnel de gestion et d\'analyse des équipes pour les staffs techniques') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            Système opérationnel
+                            {{ __('Système opérationnel') }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            Données temps réel
-                        </div>
+                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>{{ __('Données temps réel') }}</div>
                         <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                            Analytics avancées
-                        </div>
+                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>{{ __('Analytics avancées') }}</div>
                     </div>
                 </div>
             </div>
@@ -69,7 +63,7 @@
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Équipes Actives</p>
+                            <p class="text-sm font-medium text-gray-500">{{ __('Équipes Actives') }}</p>
                             <p class="text-2xl font-bold text-gray-900">{{ $teams['active_teams'] }}</p>
                         </div>
                     </div>
@@ -142,7 +136,7 @@
             <!-- Players by Position -->
             <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Répartition par Position</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Répartition par Position') }}</h3>
                     <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                         <span class="text-blue-600 text-sm">📊</span>
                     </div>
@@ -182,11 +176,11 @@
                         <span class="font-semibold text-gray-900">{{ $trainingData['training_sessions_week'] }}</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Taux de présence</span>
+                        <span class="text-sm text-gray-600">{{ __('Taux de présence') }}</span>
                         <span class="font-semibold text-green-600">{{ $trainingData['attendance_rate'] }}%</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Intensité moyenne</span>
+                        <span class="text-sm text-gray-600">{{ __('Intensité moyenne') }}</span>
                         <span class="font-semibold text-blue-600">{{ $trainingData['average_intensity'] }}/10</span>
                     </div>
                 </div>
@@ -195,7 +189,7 @@
             <!-- Fitness Status -->
             <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">État Physique</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('État Physique') }}</h3>
                     <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                         <span class="text-green-600 text-sm">💪</span>
                     </div>
@@ -206,7 +200,7 @@
                         <span class="font-semibold text-green-600">{{ $clubStats['fit_players'] }}</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Joueurs blessés</span>
+                        <span class="text-sm text-gray-600">{{ __('Joueurs blessés') }}</span>
                         <span class="font-semibold text-red-600">{{ $clubStats['injured_players'] }}</span>
                     </div>
                     <div class="flex justify-between items-center">
@@ -230,11 +224,11 @@
                         <span class="font-semibold text-gray-900">{{ $performanceMetrics['matches_this_month'] }}</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Buts marqués</span>
+                        <span class="text-sm text-gray-600">{{ __('Buts marqués') }}</span>
                         <span class="font-semibold text-green-600">{{ $performanceMetrics['goals_scored'] }}</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Buts encaissés</span>
+                        <span class="text-sm text-gray-600">{{ __('Buts encaissés') }}</span>
                         <span class="font-semibold text-red-600">{{ $performanceMetrics['goals_conceded'] }}</span>
                     </div>
                 </div>
@@ -314,7 +308,7 @@
         <div class="bg-white rounded-lg shadow-md border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-900">Équipes Récentes</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Équipes Récentes') }}</h3>
                     <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                         <span class="text-green-600 text-sm">⚽</span>
                     </div>

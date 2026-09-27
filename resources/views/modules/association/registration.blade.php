@@ -118,13 +118,13 @@
                             <option value="France" {{ old('country') == 'France' ? 'selected' : '' }}>France</option>
                             <option value="Tunisia" {{ old('country') == 'Tunisia' ? 'selected' : '' }}>Tunisie</option>
                             <option value="Morocco" {{ old('country') == 'Morocco' ? 'selected' : '' }}>Maroc</option>
-                            <option value="Algeria" {{ old('country') == 'Algeria' ? 'selected' : '' }}>Algérie</option>
-                            <option value="Senegal" {{ old('country') == 'Senegal' ? 'selected' : '' }}>Sénégal</option>
-                            <option value="Ivory Coast" {{ old('country') == 'Ivory Coast' ? 'selected' : '' }}>Côte d'Ivoire</option>
+                            <option value="Algeria" {{ old('country') == 'Algeria' ? 'selected' : '' }}>{{ __('Algérie') }}</option>
+                            <option value="Senegal" {{ old('country') == 'Senegal' ? 'selected' : '' }}>{{ __('Sénégal') }}</option>
+                            <option value="Ivory Coast" {{ old('country') == 'Ivory Coast' ? 'selected' : '' }}>{{ __('Côte d\'Ivoire') }}</option>
                             <option value="Cameroon" {{ old('country') == 'Cameroon' ? 'selected' : '' }}>Cameroun</option>
                             <option value="Nigeria" {{ old('country') == 'Nigeria' ? 'selected' : '' }}>Nigeria</option>
                             <option value="Ghana" {{ old('country') == 'Ghana' ? 'selected' : '' }}>Ghana</option>
-                            <option value="Egypt" {{ old('country') == 'Egypt' ? 'selected' : '' }}>Égypte</option>
+                            <option value="Egypt" {{ old('country') == 'Egypt' ? 'selected' : '' }}>{{ __('Égypte') }}</option>
                         </select>
                         @error('country')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.administration.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour à l'Administration</a>
+                    <a href="{{ route('modules.administration.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour à l\'Administration') }}</a>
                 </div>
             </div>
         </div>
@@ -214,7 +214,7 @@
                     <div class="flex items-center">
                         <span class="text-3xl mr-4">📚</span>
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-1">Guide Utilisateur</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-1">{{ __('Guide Utilisateur') }}</h3>
                             <p class="text-sm text-gray-600">Découvrez comment utiliser efficacement le Content Management avec des copies d'écran détaillées</p>
                         </div>
                     </div>

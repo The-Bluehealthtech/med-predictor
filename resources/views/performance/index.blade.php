@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Performance
                                 </h1>
-                                <p class="text-sm text-gray-600">Analyse des performances et métriques</p>
+                                <p class="text-sm text-gray-600">{{ __('Analyse des performances et métriques') }}</p>
                             </div>
                         </div>
                     </div>
@@ -37,18 +37,14 @@
             <div class="p-6">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">📊 Module Performance</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Analyse avancée des performances, métriques et suivi des athlètes
-                    </p>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Analyse avancée des performances, métriques et suivi des athlètes') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            Système opérationnel
+                            {{ __('Système opérationnel') }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                            Métriques en temps réel
-                        </div>
+                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>{{ __('Métriques en temps réel') }}</div>
                     </div>
                 </div>
             </div>
@@ -64,7 +60,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Métriques Globales</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('Métriques Globales') }}</p>
                         <p class="text-2xl font-bold text-gray-900">Analyser</p>
                     </div>
                 </div>
@@ -103,24 +99,20 @@
         <div class="bg-white rounded-lg shadow-md p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <button onclick="showGlobalMetrics()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    📊 Métriques Globales
-                </button>
+                <button onclick="showGlobalMetrics()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">{{ __('📊 Métriques Globales') }}</button>
                 <button onclick="showIndividualTracking()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     👤 Suivi Individuel
                 </button>
                 <button onclick="generateReports()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     📈 Rapports
                 </button>
-                <button onclick="showRealTimeData()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    ⚡ Temps Réel
-                </button>
+                <button onclick="showRealTimeData()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-center transition-colors">{{ __('⚡ Temps Réel') }}</button>
             </div>
         </div>
 
         <!-- Performance Analytics Section -->
         <div id="globalMetricsSection" class="bg-white rounded-lg shadow-md p-6 mt-8 hidden">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Métriques Globales</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('📊 Métriques Globales') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="text-center">
                     <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
@@ -159,7 +151,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <h4 class="font-medium text-gray-900">John Smith</h4>
-                            <p class="text-sm text-gray-600">Attaquant - Équipe A</p>
+                            <p class="text-sm text-gray-600">{{ __('Attaquant - Équipe A') }}</p>
                         </div>
                         <div class="text-right">
                             <p class="text-lg font-bold text-green-600">92%</p>
@@ -176,7 +168,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <h4 class="font-medium text-gray-900">Sarah Johnson</h4>
-                            <p class="text-sm text-gray-600">Milieu - Équipe B</p>
+                            <p class="text-sm text-gray-600">{{ __('Milieu - Équipe B') }}</p>
                         </div>
                         <div class="text-right">
                             <p class="text-lg font-bold text-blue-600">88%</p>
@@ -203,28 +195,28 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="border border-gray-200 rounded-lg p-4">
                     <h4 class="font-medium text-gray-900 mb-2">Rapport Mensuel</h4>
-                    <p class="text-sm text-gray-600 mb-3">Analyse complète des performances du mois</p>
+                    <p class="text-sm text-gray-600 mb-3">{{ __('Analyse complète des performances du mois') }}</p>
                     <button onclick="generateMonthlyReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
                         {{ __('competitions.rapports_statistiques_page.generate_title') }}
                     </button>
                 </div>
                 <div class="border border-gray-200 rounded-lg p-4">
                     <h4 class="font-medium text-gray-900 mb-2">Rapport Individuel</h4>
-                    <p class="text-sm text-gray-600 mb-3">Performance détaillée par athlète</p>
+                    <p class="text-sm text-gray-600 mb-3">{{ __('Performance détaillée par athlète') }}</p>
                     <button onclick="generateIndividualReport()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors">
                         {{ __('competitions.rapports_statistiques_page.generate_title') }}
                     </button>
                 </div>
                 <div class="border border-gray-200 rounded-lg p-4">
-                    <h4 class="font-medium text-gray-900 mb-2">Rapport d'Équipe</h4>
-                    <p class="text-sm text-gray-600 mb-3">Analyse comparative des équipes</p>
+                    <h4 class="font-medium text-gray-900 mb-2">{{ __('Rapport d\'Équipe') }}</h4>
+                    <p class="text-sm text-gray-600 mb-3">{{ __('Analyse comparative des équipes') }}</p>
                     <button onclick="generateTeamReport()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors">
                         {{ __('competitions.rapports_statistiques_page.generate_title') }}
                     </button>
                 </div>
                 <div class="border border-gray-200 rounded-lg p-4">
                     <h4 class="font-medium text-gray-900 mb-2">Rapport de Progression</h4>
-                    <p class="text-sm text-gray-600 mb-3">Évolution des performances dans le temps</p>
+                    <p class="text-sm text-gray-600 mb-3">{{ __('Évolution des performances dans le temps') }}</p>
                     <button onclick="generateProgressReport()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition-colors">
                         {{ __('competitions.rapports_statistiques_page.generate_title') }}
                     </button>

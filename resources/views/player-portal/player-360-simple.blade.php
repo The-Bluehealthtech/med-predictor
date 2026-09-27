@@ -141,7 +141,7 @@
                     <div class="text-center space-y-6">
                         <!-- Score de santé FIT -->
                         <div class="bg-white/20 rounded-2xl p-6 backdrop-blur-sm">
-                            <div class="text-sm font-bold opacity-75 mb-2">SCORE DE SANTÉ FIT</div>
+                            <div class="text-sm font-bold opacity-75 mb-2">{{ __('SCORE DE SANTÉ FIT') }}</div>
                             <div class="text-6xl font-black mb-2 text-green-400">
                                 {{ $player->ghs_overall_score ?? 85 }}
                             </div>
@@ -163,7 +163,7 @@
 
                         <!-- Valeur marchande -->
                         <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-4 text-black">
-                            <div class="text-xs font-bold mb-1">VALEUR ESTIMÉE</div>
+                            <div class="text-xs font-bold mb-1">{{ __('VALEUR ESTIMÉE') }}</div>
                             <div class="text-lg font-black">€{{ number_format(($player->value_eur ?? 1500000) / 1000000, 1) }}M</div>
                         </div>
                     </div>
@@ -180,16 +180,14 @@
                 </button>
                 <button class="px-6 py-3 rounded-xl font-medium transition-all duration-300 text-blue-900 hover:bg-white/80 bg-white/60" onclick="showTab('health')">
                     <i class="fas fa-heartbeat mr-2"></i>
-                    Santé & Bien-être
+                    {{ __('Santé & Bien-être') }}
                 </button>
                 <button class="px-6 py-3 rounded-xl font-medium transition-all duration-300 text-blue-900 hover:bg-white/80 bg-white/60" onclick="showTab('history')">
                     <i class="fas fa-history mr-2"></i>
                     Historique
                 </button>
                 <button class="px-6 py-3 rounded-xl font-medium transition-all duration-300 text-blue-900 hover:bg-white/80 bg-white/60" onclick="showTab('market')">
-                    <i class="fas fa-trending-up mr-2"></i>
-                    Marché & Tendances
-                </button>
+                    <i class="fas fa-trending-up mr-2"></i>{{ __('Marché & Tendances') }}</button>
             </div>
         </div>
 
@@ -197,12 +195,12 @@
         <div class="space-y-8">
             <!-- Onglet Performance -->
             <div data-tab="performance" class="space-y-6">
-                <h2 class="text-3xl font-bold text-blue-900 mb-6">Performance & Évolution</h2>
+                <h2 class="text-3xl font-bold text-blue-900 mb-6">{{ __('Performance & Évolution') }}</h2>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Graphique d'évolution des performances -->
                     <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
-                        <h3 class="text-lg font-semibold mb-3 text-gray-800">Évolution des Performances</h3>
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800">{{ __('Évolution des Performances') }}</h3>
                         <div class="h-64 w-full">
                             <canvas id="performanceChart"></canvas>
                         </div>
@@ -220,12 +218,12 @@
 
             <!-- Onglet Santé & Bien-être -->
             <div data-tab="health" class="space-y-6" style="display: none;">
-                <h2 class="text-3xl font-bold text-blue-900 mb-6">Santé & Bien-être</h2>
+                <h2 class="text-3xl font-bold text-blue-900 mb-6">{{ __('Santé & Bien-être') }}</h2>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Score de santé dans le temps -->
                     <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
-                        <h3 class="text-lg font-semibold mb-3 text-gray-800">Évolution du Score FIT</h3>
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800">{{ __('Évolution du Score FIT') }}</h3>
                         <div class="h-64 w-full">
                             <canvas id="healthScoreChart"></canvas>
                         </div>
@@ -233,7 +231,7 @@
 
                     <!-- Répartition des scores de santé -->
                     <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
-                        <h3 class="text-lg font-semibold mb-3 text-gray-800">Répartition Santé</h3>
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800">{{ __('Répartition Santé') }}</h3>
                         <div class="h-64 w-full">
                             <canvas id="healthBreakdownChart"></canvas>
                         </div>
@@ -246,7 +244,7 @@
                 <h2 class="text-3xl font-bold text-blue-900 mb-6">Historique</h2>
                 
                 <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
-                    <h3 class="text-lg font-semibold mb-4 text-gray-800">Timeline de Carrière</h3>
+                    <h3 class="text-lg font-semibold mb-4 text-gray-800">{{ __('Timeline de Carrière') }}</h3>
                     <div class="space-y-4">
                         <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
                             <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -277,12 +275,12 @@
 
             <!-- Onglet Marché & Tendances -->
             <div data-tab="market" class="space-y-6" style="display: none;">
-                <h2 class="text-3xl font-bold text-blue-900 mb-6">Marché & Tendances</h2>
+                <h2 class="text-3xl font-bold text-blue-900 mb-6">{{ __('Marché & Tendances') }}</h2>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Évolution de la valeur marchande -->
                     <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
-                        <h3 class="text-lg font-semibold mb-3 text-gray-800">Évolution Valeur Marchande</h3>
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800">{{ __('Évolution Valeur Marchande') }}</h3>
                         <div class="h-64 w-full">
                             <canvas id="marketValueChart"></canvas>
                         </div>
@@ -290,7 +288,7 @@
 
                     <!-- Prédictions futures -->
                     <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
-                        <h3 class="text-lg font-semibold mb-3 text-gray-800">Prédictions Futures</h3>
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800">{{ __('Prédictions Futures') }}</h3>
                         <div class="h-64 w-full">
                             <canvas id="predictionsChart"></canvas>
                         </div>
@@ -314,7 +312,7 @@
                         <span class="font-medium">{{ $player->date_of_birth ? $player->date_of_birth->format('d/m/Y') : 'Non définie' }}</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Pied préféré</span>
+                        <span class="text-gray-600">{{ __('Pied préféré') }}</span>
                         <span class="font-medium">{{ $player->preferred_foot ?? 'Non défini' }}</span>
                     </div>
                     <div class="flex justify-between items-center">
@@ -354,21 +352,21 @@
                 @else
                 <div class="text-center py-8 text-gray-500">
                     <i class="fas fa-info-circle text-3xl mb-2"></i>
-                    <p>Aucun club associé</p>
+                    <p>{{ __('Aucun club associé') }}</p>
                 </div>
                 @endif
             </div>
 
             <!-- Données de santé -->
             <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h2 class="text-2xl font-bold gradient-text mb-6">Données de Santé</h2>
+                <h2 class="text-2xl font-bold gradient-text mb-6">{{ __('Données de Santé') }}</h2>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Dossiers médicaux</span>
+                        <span class="text-gray-600">{{ __('Dossiers médicaux') }}</span>
                         <span class="font-bold text-blue-600">{{ $player->healthRecords->count() ?? 0 }}</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Évaluations PCMA</span>
+                        <span class="text-gray-600">{{ __('Évaluations PCMA') }}</span>
                         <span class="font-bold text-green-600">{{ $player->pcmas->count() ?? 0 }}</span>
                     </div>
                     <div class="flex justify-between items-center">
@@ -387,7 +385,7 @@
                 <h2 class="text-2xl font-bold gradient-text mb-6">Performances</h2>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Évaluations de performance</span>
+                        <span class="text-gray-600">{{ __('Évaluations de performance') }}</span>
                         <span class="font-bold text-orange-600">{{ $player->performances->count() ?? 0 }}</span>
                     </div>
                     @if($player->performances->count() > 0)
@@ -395,7 +393,7 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="text-center">
                                 <div class="text-xl font-bold text-blue-600">{{ $latestPerf->endurance_score ?? 'N/A' }}</div>
-                                <div class="text-sm text-gray-600">Endurance</div>
+                                <div class="text-sm text-gray-600">{{ __('Endurance') }}</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-xl font-bold text-green-600">{{ $latestPerf->technical_score ?? 'N/A' }}</div>
@@ -404,7 +402,7 @@
                         </div>
                     @else
                         <div class="text-center py-4 text-gray-500">
-                            <p>Aucune donnée de performance disponible</p>
+                            <p>{{ __('Aucune donnée de performance disponible') }}</p>
                         </div>
                     @endif
                 </div>
@@ -417,8 +415,7 @@
             <div class="flex items-center">
                 <i class="fas fa-exclamation-triangle mr-3"></i>
                 <div>
-                    <strong>Erreur d'accès :</strong> Aucun joueur associé à votre compte.
-                    <p class="text-sm mt-1">Contactez l'administrateur pour résoudre ce problème.</p>
+                    <strong>{{ __('Erreur d\'accès :') }}</strong>{{ __('Aucun joueur associé à votre compte.') }}<p class="text-sm mt-1">{{ __('Contactez l\'administrateur pour résoudre ce problème.') }}</p>
                 </div>
             </div>
         </div>

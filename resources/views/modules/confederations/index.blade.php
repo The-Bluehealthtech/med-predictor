@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confédérations FIFA - Plateforme FIT</title>
+    <title>{{ __('Confédérations FIFA - Plateforme FIT') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-purple-50 to-indigo-100 min-h-screen">
@@ -11,8 +11,8 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-8">
             <div>
-                <h1 class="text-4xl font-bold text-gray-800 mb-2">🌍 Confédérations FIFA</h1>
-                <p class="text-lg text-gray-600">Gestion des confédérations continentales et internationales</p>
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">{{ __('🌍 Confédérations FIFA') }}</h1>
+                <p class="text-lg text-gray-600">{{ __('Gestion des confédérations continentales et internationales') }}</p>
             </div>
             <a href="/modules" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center">
                 <span class="mr-2">🏠</span>
@@ -21,7 +21,7 @@
         </div>
 
         @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations'))
-            <div class="mb-6"><a href="{{ route('organization-cards.create', 'confederations') }}" class="inline-block px-4 py-2 bg-purple-700 text-white rounded">+ Ajouter une confédération</a></div>
+            <div class="mb-6"><a href="{{ route('organization-cards.create', 'confederations') }}" class="inline-block px-4 py-2 bg-purple-700 text-white rounded">{{ __('+ Ajouter une confédération') }}</a></div>
         @endif
 
         <!-- Informations -->
@@ -29,8 +29,7 @@
             <div class="flex items-center">
                 <span class="text-blue-600 mr-2">ℹ️</span>
                 <p class="text-blue-800">
-                    <strong>Hiérarchie FIFA :</strong> Confédération → Association → Club → Équipe → Joueur
-                </p>
+                    <strong>{{ __('Hiérarchie FIFA :') }}</strong>{{ __('Confédération → Association → Club → Équipe → Joueur') }}</p>
             </div>
         </div>
 
@@ -106,9 +105,7 @@
                     <!-- Actions -->
                     <div class="flex space-x-2">
                         <a href="/confederations-view/show?id={{ $confederation->id }}" 
-                           class="flex-1 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors">
-                            👁️ Voir détails
-                        </a>
+                           class="flex-1 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors">{{ __('👁️ Voir détails') }}</a>
                         @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations', $confederation))
                             <a href="{{ route('organization-cards.edit', ['confederations', $confederation->id]) }}" class="px-4 py-2 bg-yellow-600 text-white rounded">{{ __('pcma_extra.label_723bbbfede8a') }}</a>
                         @endif
@@ -128,7 +125,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="text-center">
                     <div class="text-2xl font-bold text-purple-600">{{ $confederations->count() }}</div>
-                    <div class="text-sm text-gray-600">Confédérations</div>
+                    <div class="text-sm text-gray-600">{{ __('Confédérations') }}</div>
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-blue-600">{{ $confederations->where('status', 'active')->count() }}</div>
@@ -136,7 +133,7 @@
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-green-600">{{ $confederations->where('fifa_sync_status', 'synced')->count() }}</div>
-                    <div class="text-sm text-gray-600">Synchronisées FIFA</div>
+                    <div class="text-sm text-gray-600">{{ __('Synchronisées FIFA') }}</div>
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-yellow-600">{{ $confederations->where('fifa_sync_status', 'pending')->count() }}</div>

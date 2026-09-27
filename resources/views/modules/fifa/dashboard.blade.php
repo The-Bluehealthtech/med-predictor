@@ -144,7 +144,7 @@
                 <div class="space-y-4">
                     <div class="flex items-center justify-between p-4 bg-indigo-50 rounded-lg">
                         <div>
-                            <p class="font-medium text-indigo-900">Confédérations</p>
+                            <p class="font-medium text-indigo-900">{{ __('Confédérations') }}</p>
                             <p class="text-sm text-indigo-700">{{ $fifaStats['confederations']['total'] }} confédérations</p>
                         </div>
                         <span class="text-indigo-600">{{ $fifaStats['confederations']['synced'] }}/{{ $fifaStats['confederations']['total'] }}</span>
@@ -180,7 +180,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div class="text-center">
                     <div class="text-2xl font-bold text-blue-600">{{ $fifaStats['confederations']['total'] }}</div>
-                    <div class="text-sm text-gray-600">Confédérations</div>
+                    <div class="text-sm text-gray-600">{{ __('Confédérations') }}</div>
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-green-600">{{ $fifaStats['associations']['total'] }}</div>

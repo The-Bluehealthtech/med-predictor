@@ -82,7 +82,7 @@
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">N° Passeport</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('fifa.fifa_connect_id') }}</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('clinical.table_status') }}</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Expiration</th>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Expiration') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">

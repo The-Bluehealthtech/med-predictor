@@ -89,7 +89,7 @@
                                 <option value="Milieu" @if(old('position', $license->position) == 'Milieu') selected @endif>{{ __('clinical.demo_position_midfielder') }}</option>
                                 <option value="Défenseur" @if(old('position', $license->position) == 'Défenseur') selected @endif>{{ __('pcma.position_defender_option') }}</option>
                                 <option value="Gardien" @if(old('position', $license->position) == 'Gardien') selected @endif>{{ __('pcma.position_goalkeeper_option') }}</option>
-                                <option value="Entraîneur" @if(old('position', $license->position) == 'Entraîneur') selected @endif>Entraîneur</option>
+                                <option value="Entraîneur" @if(old('position', $license->position) == 'Entraîneur') selected @endif>{{ __('Entraîneur') }}</option>
                                 <option value="Staff médical" @if(old('position', $license->position) == 'Staff médical') selected @endif>Staff médical</option>
                                 <option value="Arbitre" @if(old('position', $license->position) == 'Arbitre') selected @endif>{{ __('auth.role_referee') }}</option>
                             </select>
@@ -164,7 +164,7 @@
                                     </label>
                                     <p class="pl-1">{{ __('secretary.or_drag_and_drop') }}</p>
                                 </div>
-                                <p class="text-xs text-gray-500">PNG, JPG, JPEG jusqu'à 5MB</p>
+                                <p class="text-xs text-gray-500">{{ __('PNG, JPG, JPEG jusqu\'à 5MB') }}</p>
                             </div>
                         </div>
                     </div>
@@ -185,7 +185,7 @@
 </div>
 @endsection 
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-4">Modifier la licence</h1>
+    <h1 class="text-2xl font-bold mb-4">{{ __('Modifier la licence') }}</h1>
     <form method="POST" action="{{ route('licenses.update', $license) }}" class="max-w-lg space-y-4">
         @csrf
         @method('PUT')

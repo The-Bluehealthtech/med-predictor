@@ -16,7 +16,7 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Gestion des Rôles
+                                    {{ __('Gestion des Rôles') }}
                                 </h1>
                                 <p class="text-sm text-gray-600">Créer et gérer les rôles du système</p>
                             </div>

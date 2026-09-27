@@ -350,7 +350,7 @@
                             <div class="space-y-2">
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
-                                        <span class="text-purple-800 font-semibold">Complétude</span>
+                                        <span class="text-purple-800 font-semibold">{{ __('Complétude') }}</span>
                                         <span class="font-bold text-purple-800">92.1%</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">
@@ -359,7 +359,7 @@
                                 </div>
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
-                                        <span class="text-purple-800 font-semibold">Précision</span>
+                                        <span class="text-purple-800 font-semibold">{{ __('Précision') }}</span>
                                         <span class="font-bold text-purple-800">89.7%</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">
@@ -368,7 +368,7 @@
                                 </div>
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
-                                        <span class="text-purple-800 font-semibold">Cohérence</span>
+                                        <span class="text-purple-800 font-semibold">{{ __('Cohérence') }}</span>
                                         <span class="font-bold text-purple-800">80.1%</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">

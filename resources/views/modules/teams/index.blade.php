@@ -146,7 +146,7 @@
                 <select id="statusFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">Tous les statuts</option>
                     <option value="active">{{ __('healthcare.status_active') }}</option>
-                    <option value="inactive">Inactif</option>
+                    <option value="inactive">{{ __('Inactif') }}</option>
                     <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
                 </select>
             </div>
@@ -172,7 +172,7 @@
                             {{ __('health_records_create.posture_level') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Catégorie
+                            {{ __('Catégorie') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Discipline
@@ -273,7 +273,7 @@
                     @empty
                         <tr>
                             <td colspan="7" class="px-6 py-4 text-center text-gray-500">
-                                Aucune équipe trouvée
+                                {{ __('Aucune équipe trouvée') }}
                             </td>
                         </tr>
                     @endforelse
@@ -307,7 +307,7 @@ function openBulkCreateModal() {
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Club</label>
                     <select id="bulkClubId" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Sélectionner un club</option>
+                        <option value="">{{ __('Sélectionner un club') }}</option>
                         @foreach($clubs as $club)
                             <option value="{{ $club->id }}">{{ $club->name }} ({{ $club->association->name ?? 'N/A' }})</option>
                         @endforeach
@@ -341,7 +341,7 @@ function openBulkCreateModal() {
                     <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                     <select id="bulkStatus" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="active">{{ __('healthcare.status_active') }}</option>
-                        <option value="inactive">Inactif</option>
+                        <option value="inactive">{{ __('Inactif') }}</option>
                         <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
                     </select>
                 </div>

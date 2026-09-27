@@ -37,13 +37,11 @@
             <div class="p-6">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">🏛️ Association Dashboard</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Gestion de l'Association, validation et détection de fraude
-                    </p>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Gestion de l\'Association, validation et détection de fraude') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            Système opérationnel
+                            {{ __('Système opérationnel') }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
@@ -79,7 +77,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Fraud Detection</p>
-                        <p class="text-2xl font-bold text-gray-900">Détecter</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ __('Détecter') }}</p>
                     </div>
                 </div>
             </div>
@@ -113,11 +111,11 @@
                 </div>
                 <div class="text-center p-4 bg-green-50 rounded-lg">
                     <div class="text-2xl font-bold text-green-600">156</div>
-                    <div class="text-sm text-gray-600">Cas Résolus</div>
+                    <div class="text-sm text-gray-600">{{ __('Cas Résolus') }}</div>
                 </div>
                 <div class="text-center p-4 bg-blue-50 rounded-lg">
                     <div class="text-2xl font-bold text-blue-600">98.5%</div>
-                    <div class="text-sm text-gray-600">Taux de Détection</div>
+                    <div class="text-sm text-gray-600">{{ __('Taux de Détection') }}</div>
                 </div>
             </div>
         </div>
@@ -133,7 +131,7 @@
                             <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
                             <div>
                                 <p class="font-medium text-blue-900">Licences en Attente</p>
-                                <p class="text-sm text-blue-700">23 licences à valider</p>
+                                <p class="text-sm text-blue-700">{{ __('23 licences à valider') }}</p>
                             </div>
                         </div>
                         <span class="text-blue-600">23</span>
@@ -142,8 +140,8 @@
                         <div class="flex items-center">
                             <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
                             <div>
-                                <p class="font-medium text-green-900">Licences Validées</p>
-                                <p class="text-sm text-green-700">156 licences approuvées</p>
+                                <p class="font-medium text-green-900">{{ __('Licences Validées') }}</p>
+                                <p class="text-sm text-green-700">{{ __('156 licences approuvées') }}</p>
                             </div>
                         </div>
                         <span class="text-green-600">156</span>
@@ -152,8 +150,8 @@
                         <div class="flex items-center">
                             <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
                             <div>
-                                <p class="font-medium text-red-900">Licences Rejetées</p>
-                                <p class="text-sm text-red-700">8 licences rejetées</p>
+                                <p class="font-medium text-red-900">{{ __('Licences Rejetées') }}</p>
+                                <p class="text-sm text-red-700">{{ __('8 licences rejetées') }}</p>
                             </div>
                         </div>
                         <span class="text-red-600">8</span>
@@ -229,7 +227,7 @@
                 <a href="{{ route('licenses.validation') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     ✅ Validation
                 </a>
-                <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-center" aria-disabled="true">🛡️ Détection de fraude indisponible</span>
+                <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-center" aria-disabled="true">{{ __('🛡️ Détection de fraude indisponible') }}</span>
                 <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-center" aria-disabled="true">🚨 Alertes indisponibles</span>
                 <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-center" aria-disabled="true">📊 Rapports indisponibles</span>
             </div>

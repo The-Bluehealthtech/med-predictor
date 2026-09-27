@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Clinical Data Support
                                 </h1>
-                                <p class="text-sm text-gray-600">Système de support clinique basé sur Google Gemini</p>
+                                <p class="text-sm text-gray-600">{{ __('Système de support clinique basé sur Google Gemini') }}</p>
                             </div>
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Visites Médicales</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('Visites Médicales') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $insights['total_visits'] }}</p>
                     </div>
                 </div>
@@ -125,7 +125,7 @@
 
             <div id="geminiAnalysisResults" class="hidden">
                 <div class="bg-white border border-gray-200 rounded-md p-4">
-                    <h4 class="text-sm font-medium text-gray-900 mb-2">Résultats de l'Analyse Clinique IA</h4>
+                    <h4 class="text-sm font-medium text-gray-900 mb-2">{{ __('Résultats de l\'Analyse Clinique IA') }}</h4>
                     <div id="geminiAnalysisContent" class="text-sm text-gray-700"></div>
                 </div>
             </div>
@@ -175,7 +175,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune alerte clinique</h3>
-                        <p class="mt-1 text-sm text-gray-500">Tous les paramètres cliniques sont normaux.</p>
+                        <p class="mt-1 text-sm text-gray-500">{{ __('Tous les paramètres cliniques sont normaux.') }}</p>
                     </div>
                 </div>
             @endif
@@ -183,7 +183,7 @@
 
         <!-- Recent PCMA with Clinical Analysis -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 PCMA Récents avec Analyse Clinique</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('📊 PCMA Récents avec Analyse Clinique') }}</h3>
             
             @if(count($insights['recent_pcma']) > 0)
                 <div class="overflow-x-auto">
@@ -258,9 +258,7 @@
                                             🔍 Analyser
                                         </button>
                                         <button onclick="viewPCMADetails({{ $pCMA->id }})" 
-                                                class="text-green-600 hover:text-green-900">
-                                            📋 Détails
-                                        </button>
+                                                class="text-green-600 hover:text-green-900">{{ __('📋 Détails') }}</button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -273,8 +271,8 @@
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun PCMA récent</h3>
-                        <p class="mt-1 text-sm text-gray-500">Aucun PCMA n'a été effectué récemment.</p>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('Aucun PCMA récent') }}</h3>
+                        <p class="mt-1 text-sm text-gray-500">{{ __('Aucun PCMA n\'a été effectué récemment.') }}</p>
                     </div>
                 </div>
             @endif
@@ -282,7 +280,7 @@
 
         <!-- Recent Visits with Clinical Analysis -->
         <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">🏥 Visites Médicales Récentes</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('🏥 Visites Médicales Récentes') }}</h3>
             
             @if(count($insights['recent_visits']) > 0)
                 <div class="space-y-4">
@@ -312,9 +310,7 @@
                                     🔍 Analyser
                                 </button>
                                 <button onclick="viewVisitDetails({{ $visit->id }})" 
-                                        class="text-green-600 hover:text-green-900 text-sm">
-                                    📋 Détails
-                                </button>
+                                        class="text-green-600 hover:text-green-900 text-sm">{{ __('📋 Détails') }}</button>
                             </div>
                         </div>
                     @endforeach
@@ -325,8 +321,8 @@
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune visite récente</h3>
-                        <p class="mt-1 text-sm text-gray-500">Aucune visite médicale n'a été enregistrée récemment.</p>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('Aucune visite récente') }}</h3>
+                        <p class="mt-1 text-sm text-gray-500">{{ __('Aucune visite médicale n\'a été enregistrée récemment.') }}</p>
                     </div>
                 </div>
             @endif

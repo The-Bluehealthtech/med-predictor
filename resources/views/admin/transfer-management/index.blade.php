@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.administration.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour à l'Administration</a>
+                    <a href="{{ route('modules.administration.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour à l\'Administration') }}</a>
                 </div>
             </div>
         </div>
@@ -56,7 +56,7 @@
                         @if($fifaTmsStatus['status'] === 'unconfigured')
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                                 <span class="w-2 h-2 bg-yellow-400 rounded-full mr-2"></span>
-                                Non configuré
+                                {{ __('Non configuré') }}
                             </span>
                         @elseif($fifaTmsStatus['status'] === 'configured')
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">

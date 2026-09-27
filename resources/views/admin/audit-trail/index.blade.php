@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.administration.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour à l'Administration</a>
+                    <a href="{{ route('modules.administration.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour à l\'Administration') }}</a>
                 </div>
             </div>
         </div>
@@ -140,7 +140,7 @@
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('competitions.designation_arbitres_page.filters_heading') }}</h3>
                 <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Type d'événement</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Type d\'événement') }}</label>
                         <select name="event_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">{{ __('competitions.squad_page.all') }}</option>
                             @foreach($filterData['event_types'] as $type)

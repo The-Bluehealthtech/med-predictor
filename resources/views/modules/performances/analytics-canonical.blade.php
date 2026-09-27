@@ -63,7 +63,7 @@
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="p-5 border-b">
-            <h2 class="font-semibold text-gray-900">Performances récentes</h2>
+            <h2 class="font-semibold text-gray-900">{{ __('Performances récentes') }}</h2>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
@@ -72,7 +72,7 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('auth.role_player') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Global</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Physique</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Physique') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Technique</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tactique</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mental</th>

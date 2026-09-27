@@ -29,6 +29,9 @@ mapping = {}
 for french, options in candidates.items():
     if len({english for english, _ in options}) == 1:
         mapping[french] = options[0][1]
+for french, english in json.loads((ROOT / 'resources/lang/en.json').read_text()).items():
+    if isinstance(english, str) and french != english and french not in mapping:
+        mapping[french] = french
 
 
 blocked = re.compile(r'(?is)(<script\\b.*?</script>|<style\\b.*?</style>|<!--.*?-->|@php\\b.*?@endphp)')
@@ -45,7 +48,7 @@ def translate(match, filename, attribute_name=None):
     key = mapping.get(value)
     if key is None:
         return match.group(0)
-    expression = "{{ __('" + key + "') }}"
+    expression = "{{ __('" + key.replace("'", "\\'") + "') }}"
     counts[filename] += 1
     if attribute_name is None:
         return '>' + raw.replace(value, expression, 1) + '<'

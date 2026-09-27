@@ -11,7 +11,7 @@
                         🔗
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Intégrations API</h1>
+                        <h1 class="text-3xl font-bold text-gray-900">{{ __('Intégrations API') }}</h1>
                         <p class="text-gray-600 mt-1">Connectez vos logiciels comptables professionnels</p>
                     </div>
                 </div>
@@ -30,7 +30,7 @@
                         <span class="text-green-600 text-xl">✅</span>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Intégrations Actives</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">{{ __('Intégrations Actives') }}</h3>
                         <p class="text-2xl font-bold text-green-600">{{ $activeIntegrations ?? 2 }}</p>
                     </div>
                 </div>
@@ -74,15 +74,13 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900">Sage</h3>
-                            <p class="text-sm text-gray-600">Comptabilité professionnelle</p>
+                            <p class="text-sm text-gray-600">{{ __('Comptabilité professionnelle') }}</p>
                         </div>
                     </div>
                     <div class="mb-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            ⚪ Non connecté
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{{ __('⚪ Non connecté') }}</span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Synchronisation automatique des écritures comptables et des rapports financiers.</p>
+                    <p class="text-sm text-gray-600 mb-4">{{ __('Synchronisation automatique des écritures comptables et des rapports financiers.') }}</p>
                     <div class="flex space-x-2">
                         <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors">
                             Configurer
@@ -101,13 +99,11 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900">QuickBooks</h3>
-                            <p class="text-sm text-gray-600">Gestion financière</p>
+                            <p class="text-sm text-gray-600">{{ __('Gestion financière') }}</p>
                         </div>
                     </div>
                     <div class="mb-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            ⚪ Non connecté
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{{ __('⚪ Non connecté') }}</span>
                     </div>
                     <p class="text-sm text-gray-600 mb-4">Import automatique des transactions et synchronisation des comptes.</p>
                     <div class="flex space-x-2">
@@ -128,15 +124,13 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900">Xero</h3>
-                            <p class="text-sm text-gray-600">Comptabilité cloud</p>
+                            <p class="text-sm text-gray-600">{{ __('Comptabilité cloud') }}</p>
                         </div>
                     </div>
                     <div class="mb-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            ⚪ Non connecté
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{{ __('⚪ Non connecté') }}</span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Intégration cloud pour la synchronisation en temps réel.</p>
+                    <p class="text-sm text-gray-600 mb-4">{{ __('Intégration cloud pour la synchronisation en temps réel.') }}</p>
                     <div class="flex space-x-2">
                         <button class="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition-colors">
                             Connecter
@@ -159,11 +153,9 @@
                         </div>
                     </div>
                     <div class="mb-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            ⚪ Non connecté
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{{ __('⚪ Non connecté') }}</span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Intégration avec les solutions comptables françaises.</p>
+                    <p class="text-sm text-gray-600 mb-4">{{ __('Intégration avec les solutions comptables françaises.') }}</p>
                     <div class="flex space-x-2">
                         <button class="px-3 py-1 bg-orange-600 text-white text-sm rounded hover:bg-orange-700 transition-colors">
                             Connecter
@@ -190,7 +182,7 @@
                             ✅ Disponible
                         </span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Import et export de données via fichiers Excel et CSV.</p>
+                    <p class="text-sm text-gray-600 mb-4">{{ __('Import et export de données via fichiers Excel et CSV.') }}</p>
                     <div class="flex space-x-2">
                         <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors">
                             {{ __('common.import') }}
@@ -208,16 +200,14 @@
                             <span class="text-indigo-600 text-2xl">⚙️</span>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900">API Personnalisée</h3>
-                            <p class="text-sm text-gray-600">Intégration sur mesure</p>
+                            <h3 class="text-lg font-semibold text-gray-900">{{ __('API Personnalisée') }}</h3>
+                            <p class="text-sm text-gray-600">{{ __('Intégration sur mesure') }}</p>
                         </div>
                     </div>
                     <div class="mb-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            ⚪ Non configuré
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{{ __('⚪ Non configuré') }}</span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Connectez votre propre système via API REST.</p>
+                    <p class="text-sm text-gray-600 mb-4">{{ __('Connectez votre propre système via API REST.') }}</p>
                     <div class="flex space-x-2">
                         <button class="px-3 py-1 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition-colors">
                             Configurer
@@ -242,15 +232,13 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.table_status') }}</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Éléments</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Éléments') }}</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <tr>
-                            <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">
-                                Aucune synchronisation n'a encore eu lieu (aucun logiciel comptable n'est connecté).
-                            </td>
+                            <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">{{ __('Aucune synchronisation n\'a encore eu lieu (aucun logiciel comptable n\'est connecté).') }}</td>
                         </tr>
                     </tbody>
                 </table>

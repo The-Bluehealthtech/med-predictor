@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('admin.audit-trail.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour à l'Audit Trail</a>
+                    <a href="{{ route('admin.audit-trail.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour à l\'Audit Trail') }}</a>
                 </div>
             </div>
         </div>
@@ -47,7 +47,7 @@
                             <dd class="mt-1 text-sm text-gray-900">{{ $log->created_at->format('d/m/Y H:i:s') }}</dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500">Type d'événement</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Type d\'événement') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">
                                 <span class="inline-flex items-center">
                                     {{ $log->event_type_icon }} {{ ucfirst($log->event_type) }}
@@ -102,7 +102,7 @@
                             </div>
                         </dl>
                     @else
-                        <p class="text-gray-500">Aucun utilisateur associé (action système)</p>
+                        <p class="text-gray-500">{{ __('Aucun utilisateur associé (action système)') }}</p>
                     @endif
                 </div>
             </div>
@@ -110,14 +110,14 @@
             <!-- Informations réseau -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Informations Réseau</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('Informations Réseau') }}</h3>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Adresse IP</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $log->ip_address ?? 'N/A' }}</dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500">Méthode HTTP</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Méthode HTTP') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $log->method ?? 'N/A' }}</dd>
                         </div>
                         <div class="sm:col-span-2">
@@ -135,18 +135,18 @@
             <!-- Informations modèle -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Informations Modèle</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('Informations Modèle') }}</h3>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div>
-                            <dt class="text-sm font-medium text-gray-500">Type de Modèle</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Type de Modèle') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $log->model_type ?? 'N/A' }}</dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500">ID du Modèle</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('ID du Modèle') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $log->model_id ?? 'N/A' }}</dd>
                         </div>
                         <div class="sm:col-span-2">
-                            <dt class="text-sm font-medium text-gray-500">Nom du Modèle</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Nom du Modèle') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $log->model_name ?? 'N/A' }}</dd>
                         </div>
                     </dl>

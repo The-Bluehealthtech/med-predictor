@@ -49,7 +49,7 @@
                         @if($player->association)
                             <a href="{{ route('associations.edit-logo', $player->association->id) }}" 
                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                🏆 Gérer
+                                {{ __('🏆 Gérer') }}
                             </a>
                         @else
                             <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm font-medium">
@@ -91,7 +91,7 @@
                         @if($player->association)
                             <a href="{{ route('associations.edit-logo', $player->association->id) }}" 
                                class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                🏴 Gérer
+                                {{ __('🏴 Gérer') }}
                             </a>
                         @else
                             <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm font-medium">

@@ -15,9 +15,7 @@
                                 <span class="text-white font-bold text-lg">💰</span>
                             </div>
                             <div class="ml-3">
-                                <h1 class="text-2xl font-bold text-gray-900">
-                                    Comptabilité & Finances
-                                </h1>
+                                <h1 class="text-2xl font-bold text-gray-900">{{ __('Comptabilité & Finances') }}</h1>
                                 <p class="text-sm text-gray-600">Dashboard financier {{ ucfirst($userType) }}</p>
                             </div>
                         </div>
@@ -54,9 +52,7 @@
         <!-- Avis : pas de comptabilite generale -->
         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">
             <p class="text-sm text-yellow-800">
-                ⚠️ <strong>Comptabilité générale non disponible.</strong> Cette application n'a pas de module de comptabilité générale
-                (revenus, dépenses, budgets, salaires) : aucun logiciel comptable ou compte bancaire n'y est connecté.
-                Les seules données financières réellement enregistrées ci-dessous concernent les <strong>paiements de transferts de joueurs</strong>.
+                ⚠️ <strong>{{ __('Comptabilité générale non disponible.') }}</strong>{{ __('Cette application n\'a pas de module de comptabilité générale (revenus, dépenses, budgets, salaires) : aucun logiciel comptable ou compte bancaire n\'y est connecté. Les seules données financières réellement enregistrées ci-dessous concernent les') }}<strong>paiements de transferts de joueurs</strong>.
             </p>
         </div>
 
@@ -84,7 +80,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Dépenses Totales</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('Dépenses Totales') }}</p>
                         <p class="text-2xl font-bold text-gray-400">Non disponible</p>
                     </div>
                 </div>
@@ -98,7 +94,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Frais de transfert reçus</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('Frais de transfert reçus') }}</p>
                         <p class="text-2xl font-bold text-gray-900">
                             @if($financialData['transfer_fees_received'] !== null)
                                 {{ number_format($financialData['transfer_fees_received'], 0, ',', ' ') }} €
@@ -118,7 +114,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Frais de transfert payés</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('Frais de transfert payés') }}</p>
                         <p class="text-2xl font-bold text-gray-900">
                             @if($financialData['transfer_fees_paid'] !== null)
                                 {{ number_format($financialData['transfer_fees_paid'], 0, ',', ' ') }} €
@@ -135,7 +131,7 @@
         <div class="bg-white rounded-lg shadow-md border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-900">Paiements de Transferts Récents</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Paiements de Transferts Récents') }}</h3>
                     <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                         <span class="text-purple-600 text-sm">💳</span>
                     </div>
@@ -143,7 +139,7 @@
             </div>
             <div class="p-6">
                 @if($transactionsData['recent_transactions']->isEmpty())
-                <p class="text-sm text-gray-500 text-center py-6">Aucun paiement de transfert enregistré pour le moment.</p>
+                <p class="text-sm text-gray-500 text-center py-6">{{ __('Aucun paiement de transfert enregistré pour le moment.') }}</p>
                 @else
                 <div class="space-y-4">
                     @foreach($transactionsData['recent_transactions'] as $transaction)
@@ -197,7 +193,7 @@
                     </div>
                     <div>
                         <h3 class="font-semibold text-gray-900">{{ __('common.reports') }}</h3>
-                        <p class="text-sm text-gray-600">Voir les rapports détaillés</p>
+                        <p class="text-sm text-gray-600">{{ __('Voir les rapports détaillés') }}</p>
                     </div>
                 </a>
 
@@ -208,7 +204,7 @@
                     </div>
                     <div>
                         <h3 class="font-semibold text-gray-900">Budgets</h3>
-                        <p class="text-sm text-gray-600">Gérer les budgets</p>
+                        <p class="text-sm text-gray-600">{{ __('Gérer les budgets') }}</p>
                     </div>
                 </a>
 
@@ -218,7 +214,7 @@
                         <span class="text-purple-600 text-xl">🔗</span>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-gray-900">Intégrations</h3>
+                        <h3 class="font-semibold text-gray-900">{{ __('Intégrations') }}</h3>
                         <p class="text-sm text-gray-600">Connecter des logiciels</p>
                     </div>
                 </a>
@@ -227,7 +223,7 @@
 
         <!-- Actions Bancaires -->
         <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Intégrations Bancaires</h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Intégrations Bancaires') }}</h2>
             <div class="grid grid-cols-1 gap-4">
                 <a href="{{ route('modules.finance.bank-integrations') }}"
                    class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">

@@ -47,7 +47,7 @@
                     @error('contract_start_date')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Expiration</label>
+                    <label class="block text-sm font-medium text-gray-700">{{ __('Expiration') }}</label>
                     <input type="date" name="expiry_date" value="{{ old('expiry_date') }}" required class="mt-1 w-full rounded border-gray-300">
                     @error('expiry_date')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
                 </div>

@@ -6,12 +6,8 @@
 <div class="min-h-screen bg-gray-50">
     <div class="bg-white border-b shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <h1 class="text-3xl font-bold text-gray-900">
-                Métriques FIT canoniques
-            </h1>
-            <p class="mt-1 text-sm text-gray-600">
-                Données traçables utilisées par le calcul du Score FIT.
-            </p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('Métriques FIT canoniques') }}</h1>
+            <p class="mt-1 text-sm text-gray-600">{{ __('Données traçables utilisées par le calcul du Score FIT.') }}</p>
         </div>
     </div>
 
@@ -53,16 +49,12 @@
                 </select>
 
                 <button type="submit"
-                        class="mt-4 px-4 py-2 rounded-md bg-blue-600 text-white">
-                    Afficher les métriques
-                </button>
+                        class="mt-4 px-4 py-2 rounded-md bg-blue-600 text-white">{{ __('Afficher les métriques') }}</button>
             </form>
         </div>
 
         <div class="bg-white shadow rounded-lg p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">
-                Catalogue FIT accepté
-            </h2>
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Catalogue FIT accepté') }}</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($catalog as $axis => $definitions)
@@ -85,7 +77,7 @@
                                         @elseif(($config['scale'] ?? null) === 'score_10')
                                             score 0–10
                                         @else
-                                            % ou échelle explicite
+                                            {{ __('% ou échelle explicite') }}
                                         @endif
                                     </span>
                                 </li>
@@ -98,26 +90,19 @@
 
         @if($selectedPlayer)
             <div class="bg-white shadow rounded-lg p-6">
-                <h2 class="text-lg font-semibold text-gray-900">
-                    Enregistrer une métrique FIT
-                </h2>
+                <h2 class="text-lg font-semibold text-gray-900">{{ __('Enregistrer une métrique FIT') }}</h2>
 
-                <p class="mt-1 text-sm text-gray-500">
-                    Saisie manuelle. Toute nouvelle métrique reste non vérifiée
-                    jusqu'à une vérification séparée.
-                </p>
+                <p class="mt-1 text-sm text-gray-500">{{ __('Saisie manuelle. Toute nouvelle métrique reste non vérifiée jusqu\'à une vérification séparée.') }}</p>
 
                 <form id="fit-metric-recording-form"
                       class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label for="fit_metric_type"
-                               class="block text-sm font-medium text-gray-700">
-                            Axe FIT
-                        </label>
+                               class="block text-sm font-medium text-gray-700">{{ __('Axe FIT') }}</label>
                         <select id="fit_metric_type"
                                 required
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            <option value="">Sélectionner un axe</option>
+                            <option value="">{{ __('Sélectionner un axe') }}</option>
                             @foreach($catalog as $axis => $definitions)
                                 <option value="{{ $axis }}">{{ $axis }}</option>
                             @endforeach
@@ -126,14 +111,12 @@
 
                     <div>
                         <label for="fit_metric_name"
-                               class="block text-sm font-medium text-gray-700">
-                            Métrique
-                        </label>
+                               class="block text-sm font-medium text-gray-700">{{ __('Métrique') }}</label>
                         <select id="fit_metric_name"
                                 required
                                 disabled
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            <option value="">Sélectionner d'abord un axe</option>
+                            <option value="">{{ __('Sélectionner d\'abord un axe') }}</option>
                         </select>
                     </div>
 
@@ -165,23 +148,19 @@
                     <div id="fit_social_mode_container"
                          class="hidden">
                         <label for="fit_social_mode"
-                               class="block text-sm font-medium text-gray-700">
-                            Mode de mesure sociale
-                        </label>
+                               class="block text-sm font-medium text-gray-700">{{ __('Mode de mesure sociale') }}</label>
                         <select id="fit_social_mode"
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            <option value="">Sélectionner un mode</option>
-                            <option value="percentage">Pourcentage (%)</option>
-                            <option value="explicit">Échelle explicite</option>
+                            <option value="">{{ __('Sélectionner un mode') }}</option>
+                            <option value="percentage">{{ __('Pourcentage (%)') }}</option>
+                            <option value="explicit">{{ __('Échelle explicite') }}</option>
                         </select>
                     </div>
 
                     <div id="fit_scale_min_container"
                          class="hidden">
                         <label for="fit_scale_min"
-                               class="block text-sm font-medium text-gray-700">
-                            Minimum de l'échelle
-                        </label>
+                               class="block text-sm font-medium text-gray-700">{{ __('Minimum de l\'échelle') }}</label>
                         <input id="fit_scale_min"
                                type="number"
                                step="any"
@@ -191,9 +170,7 @@
                     <div id="fit_scale_max_container"
                          class="hidden">
                         <label for="fit_scale_max"
-                               class="block text-sm font-medium text-gray-700">
-                            Maximum de l'échelle
-                        </label>
+                               class="block text-sm font-medium text-gray-700">{{ __('Maximum de l\'échelle') }}</label>
                         <input id="fit_scale_max"
                                type="number"
                                step="any"
@@ -202,9 +179,7 @@
 
                     <div>
                         <label for="fit_measurement_date"
-                               class="block text-sm font-medium text-gray-700">
-                            Date et heure de mesure
-                        </label>
+                               class="block text-sm font-medium text-gray-700">{{ __('Date et heure de mesure') }}</label>
                         <input id="fit_measurement_date"
                                type="datetime-local"
                                required
@@ -213,9 +188,7 @@
 
                     <div>
                         <label for="fit_confidence_score"
-                               class="block text-sm font-medium text-gray-700">
-                            Niveau de confiance (0 à 1)
-                        </label>
+                               class="block text-sm font-medium text-gray-700">{{ __('Niveau de confiance (0 à 1)') }}</label>
                         <input id="fit_confidence_score"
                                type="number"
                                min="0"
@@ -227,18 +200,13 @@
 
                     <div class="md:col-span-2">
                         <label for="fit_notes"
-                               class="block text-sm font-medium text-gray-700">
-                            Notes
-                        </label>
+                               class="block text-sm font-medium text-gray-700">{{ __('Notes') }}</label>
                         <textarea id="fit_notes"
                                   rows="3"
                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                     </div>
 
-                    <div class="md:col-span-2 text-sm text-gray-500">
-                        Source : <span class="font-medium">manual</span>
-                        (saisie humaine)
-                    </div>
+                    <div class="md:col-span-2 text-sm text-gray-500">{{ __('Source :') }}<span class="font-medium">manual</span>{{ __('(saisie humaine)') }}</div>
 
                     <div id="fit_metric_form_message"
                          class="hidden md:col-span-2 p-3 rounded-md text-sm whitespace-pre-line"
@@ -247,9 +215,7 @@
                     <div class="md:col-span-2">
                         <button id="fit_metric_submit"
                                 type="submit"
-                                class="px-4 py-2 rounded-md bg-blue-600 text-white disabled:opacity-50">
-                            Enregistrer la métrique
-                        </button>
+                                class="px-4 py-2 rounded-md bg-blue-600 text-white disabled:opacity-50">{{ __('Enregistrer la métrique') }}</button>
                     </div>
                 </form>
             </div>
@@ -573,9 +539,7 @@
 
             <div class="bg-white shadow rounded-lg overflow-hidden">
                 <div class="px-6 py-4 border-b">
-                    <h2 class="text-lg font-semibold text-gray-900">
-                        Historique des métriques
-                    </h2>
+                    <h2 class="text-lg font-semibold text-gray-900">{{ __('Historique des métriques') }}</h2>
 
                     <p class="text-sm text-gray-500 mt-1">
                         Vérification autorisée :
@@ -587,27 +551,15 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                                    Date
-                                </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                                    Axe
-                                </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                                    Métrique
-                                </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                                    Valeur
-                                </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                                    Source
-                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">{{ __('Date') }}</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">{{ __('Axe') }}</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">{{ __('Métrique') }}</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">{{ __('Valeur') }}</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">{{ __('Source') }}</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">
                                     FIT
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">
-                                    Vérification
-                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">{{ __('Vérification') }}</th>
                             </tr>
                         </thead>
 
@@ -636,12 +588,12 @@
                                     </td>
 
                                     <td class="px-4 py-3 text-sm">
-                                        {{ $metric->fit_eligible ? 'Acceptée' : 'Non éligible' }}
+                                        {{ $metric->fit_eligible ? __('Acceptée') : __('Non éligible') }}
                                     </td>
 
                                     <td class="px-4 py-3 text-sm">
                                         @if($metric->is_verified)
-                                            <span>Vérifiée</span>
+                                            <span>{{ __('Vérifiée') }}</span>
                                         @else
                                             <span>{{ __('competition_management.statuses.pending') }}</span>
 
@@ -657,9 +609,7 @@
                                                         ],
                                                         false
                                                     ) }}"
-                                                >
-                                                    Vérifier
-                                                </button>
+                                                >{{ __('Vérifier') }}</button>
 
                                                 <span
                                                     class="fit-verify-message ml-2 text-xs"
@@ -672,9 +622,7 @@
                             @empty
                                 <tr>
                                     <td colspan="7"
-                                        class="px-4 py-8 text-center text-sm text-gray-500">
-                                        Aucune métrique enregistrée pour ce joueur.
-                                    </td>
+                                        class="px-4 py-8 text-center text-sm text-gray-500">{{ __('Aucune métrique enregistrée pour ce joueur.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

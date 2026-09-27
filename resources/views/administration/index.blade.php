@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Administration
                                 </h1>
-                                <p class="text-sm text-gray-600">Gestion système, utilisateurs et configurations</p>
+                                <p class="text-sm text-gray-600">{{ __('Gestion système, utilisateurs et configurations') }}</p>
                             </div>
                         </div>
                     </div>
@@ -37,18 +37,12 @@
             <div class="p-6">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">Panneau d'Administration</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Gestion complète du système FIT
-                    </p>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Gestion complète du système FIT') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            Système opérationnel
-                        </div>
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>{{ __('Système opérationnel') }}</div>
                         <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            Accès administrateur
-                        </div>
+                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>{{ __('Accès administrateur') }}</div>
                     </div>
                 </div>
             </div>
@@ -67,10 +61,8 @@
                         </div>
                         <div class="ml-4 flex-1">
                             <h3 class="text-lg font-semibold text-gray-900 mb-2">Gestion des Utilisateurs</h3>
-                            <p class="text-sm text-gray-600 mb-4">Créer, modifier et gérer les comptes utilisateurs</p>
-                            <a href="{{ route('user-management.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200">
-                                Accéder
-                                <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <p class="text-sm text-gray-600 mb-4">{{ __('Créer, modifier et gérer les comptes utilisateurs') }}</p>
+                            <a href="{{ route('user-management.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200">{{ __('Accéder') }}<svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
                             </a>
@@ -89,8 +81,8 @@
                             </div>
                         </div>
                         <div class="ml-4 flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Gestion des Rôles</h3>
-                            <p class="text-sm text-gray-600 mb-4">Configurer les permissions et rôles utilisateurs</p>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Gestion des Rôles') }}</h3>
+                            <p class="text-sm text-gray-600 mb-4">{{ __('Configurer les permissions et rôles utilisateurs') }}</p>
                             <div class="space-y-2">
                                 <a href="{{ route('admin.rbac.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors duration-200">
                                     RBAC Dashboard
@@ -117,11 +109,9 @@
                             </div>
                         </div>
                         <div class="ml-4 flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Configuration Système</h3>
-                            <p class="text-sm text-gray-600 mb-4">Paramètres généraux et configurations avancées</p>
-                            <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 transition-colors duration-200">
-                                Accéder
-                                <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Configuration Système') }}</h3>
+                            <p class="text-sm text-gray-600 mb-4">{{ __('Paramètres généraux et configurations avancées') }}</p>
+                            <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 transition-colors duration-200">{{ __('Accéder') }}<svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
                             </a>
@@ -141,10 +131,8 @@
                         </div>
                         <div class="ml-4 flex-1">
                             <h3 class="text-lg font-semibold text-gray-900 mb-2">Logs et Audit</h3>
-                            <p class="text-sm text-gray-600 mb-4">Suivi des activités et logs système</p>
-                            <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 transition-colors duration-200">
-                                Accéder
-                                <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <p class="text-sm text-gray-600 mb-4">{{ __('Suivi des activités et logs système') }}</p>
+                            <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 transition-colors duration-200">{{ __('Accéder') }}<svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
                             </a>
@@ -164,10 +152,8 @@
                         </div>
                         <div class="ml-4 flex-1">
                             <h3 class="text-lg font-semibold text-gray-900 mb-2">Sauvegarde et Restauration</h3>
-                            <p class="text-sm text-gray-600 mb-4">Gestion des sauvegardes et restauration des données</p>
-                            <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 transition-colors duration-200">
-                                Accéder
-                                <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <p class="text-sm text-gray-600 mb-4">{{ __('Gestion des sauvegardes et restauration des données') }}</p>
+                            <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 transition-colors duration-200">{{ __('Accéder') }}<svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
                             </a>
@@ -186,11 +172,9 @@
                             </div>
                         </div>
                         <div class="ml-4 flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">API et Intégrations</h3>
-                            <p class="text-sm text-gray-600 mb-4">Gestion des APIs et intégrations externes</p>
-                            <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200">
-                                Accéder
-                                <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('API et Intégrations') }}</h3>
+                            <p class="text-sm text-gray-600 mb-4">{{ __('Gestion des APIs et intégrations externes') }}</p>
+                            <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200">{{ __('Accéder') }}<svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
                             </a>
@@ -210,7 +194,7 @@
                         </div>
                         <div class="ml-4 flex-1">
                             <h3 class="text-lg font-semibold text-gray-900 mb-2">Demandes de Compte</h3>
-                            <p class="text-sm text-gray-600 mb-4">Formulaire pour demander un accès à la plateforme FIT</p>
+                            <p class="text-sm text-gray-600 mb-4">{{ __('Formulaire pour demander un accès à la plateforme FIT') }}</p>
                             <a href="{{ route('account-request.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 transition-colors duration-200">
                                 {{ __('landing.hero.request_account') }}
                                 <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,10 +217,8 @@
                         </div>
                         <div class="ml-4 flex-1">
                             <h3 class="text-lg font-semibold text-gray-900 mb-2">Gestion des Demandes</h3>
-                            <p class="text-sm text-gray-600 mb-4">Approuver, rejeter et gérer les demandes de compte</p>
-                            <a href="{{ route('admin.account-requests.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 transition-colors duration-200">
-                                Gérer les Demandes
-                                <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <p class="text-sm text-gray-600 mb-4">{{ __('Approuver, rejeter et gérer les demandes de compte') }}</p>
+                            <a href="{{ route('admin.account-requests.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 transition-colors duration-200">{{ __('Gérer les Demandes') }}<svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
                             </a>
@@ -266,7 +248,7 @@
                         <span class="text-green-600">🔐</span>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-500">Rôles configurés</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('Rôles configurés') }}</p>
                         <p class="text-2xl font-bold text-gray-900">12</p>
                     </div>
                 </div>

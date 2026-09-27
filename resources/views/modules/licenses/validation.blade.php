@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validation des Licences (Côté Association) - Plateforme FIT</title>
+    <title>{{ __('Validation des Licences (Côté Association) - Plateforme FIT') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -13,7 +13,7 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-8">
             <div>
-                <h1 class="text-4xl font-bold text-gray-800 mb-2">📋 Validation des Licences (Côté Association)</h1>
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">{{ __('📋 Validation des Licences (Côté Association)') }}</h1>
                 <p class="text-lg text-gray-600">Validation et gestion des demandes de licences FIFA Connect soumises par les clubs</p>
             </div>
             <div class="flex space-x-3">
@@ -40,7 +40,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                     <select v-model="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Tous les statuts</option>
-                        <option value="valid">Valide</option>
+                        <option value="valid">{{ __('Valide') }}</option>
                         <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
                         <option value="expired">{{ __('health_records_edit.expired') }}</option>
                         <option value="suspended">Suspendue</option>
@@ -52,7 +52,7 @@
                     <select v-model="typeFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Tous les types</option>
                         <option value="player">{{ __('auth.role_player') }}</option>
-                        <option value="coach">Entraîneur</option>
+                        <option value="coach">{{ __('Entraîneur') }}</option>
                         <option value="referee">{{ __('auth.role_referee') }}</option>
                         <option value="medical">{{ __('health_records.show_page.tab_medical') }}</option>
                         <option value="administrative">Administrative</option>
@@ -62,7 +62,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">FIFA Connect</label>
                     <select v-model="fifaFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">{{ __('competitions.squad_page.all') }}</option>
-                        <option value="synced">Synchronisées</option>
+                        <option value="synced">{{ __('Synchronisées') }}</option>
                         <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
                         <option value="error">{{ __('common.error') }}</option>
                     </select>
@@ -71,8 +71,8 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Date d'expiration</label>
                     <select v-model="expirationFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">{{ __('competitions.squad_page.all_fem') }}</option>
-                        <option value="expired">Expirées</option>
-                        <option value="expiring_soon">Expirent bientôt</option>
+                        <option value="expired">{{ __('Expirées') }}</option>
+                        <option value="expiring_soon">{{ __('Expirent bientôt') }}</option>
                         <option value="valid">Valides</option>
                     </select>
                 </div>
@@ -111,7 +111,7 @@
                         <span class="text-2xl text-red-600">❌</span>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Expirées/Suspendues</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('Expirées/Suspendues') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ ($licenseStats['expired'] ?? 0) + ($licenseStats['suspended'] ?? 0) }}</p>
                     </div>
                 </div>
@@ -134,8 +134,8 @@
         @if(isset($players) && $players->count() > 0)
         <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800">Joueurs reçus de la page /players</h3>
-                <p class="text-sm text-gray-600">Données synchronisées depuis la gestion des licences</p>
+                <h3 class="text-lg font-semibold text-gray-800">{{ __('Joueurs reçus de la page /players') }}</h3>
+                <p class="text-sm text-gray-600">{{ __('Données synchronisées depuis la gestion des licences') }}</p>
             </div>
             
             <div class="overflow-x-auto">
@@ -248,7 +248,7 @@
         <!-- Liste des licences -->
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800">Licences à valider</h3>
+                <h3 class="text-lg font-semibold text-gray-800">{{ __('Licences à valider') }}</h3>
             </div>
             
             <div class="overflow-x-auto">
@@ -271,7 +271,7 @@
                                 FIFA Connect
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Expiration
+                                {{ __('Expiration') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Actions
@@ -312,7 +312,7 @@
                                     <span v-if="license.fifaConnectId" class="text-sm font-medium text-green-600">
                                         [[ license.fifaConnectId ]]
                                     </span>
-                                    <span v-else class="text-sm text-gray-400">Non configuré</span>
+                                    <span v-else class="text-sm text-gray-400">{{ __('Non configuré') }}</span>
                                 </div>
                                 <div v-if="license.fifaSyncStatus" class="text-xs text-gray-500">
                                     Sync: [[ license.fifaSyncStatus ]]
@@ -320,9 +320,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">[[ license.expirationDate ]]</div>
-                                <div v-if="isExpiringSoon(license.expirationDate)" class="text-xs text-yellow-600">
-                                    Expire bientôt
-                                </div>
+                                <div v-if="isExpiringSoon(license.expirationDate)" class="text-xs text-yellow-600">{{ __('Expire bientôt') }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
@@ -349,8 +347,8 @@
         <!-- Message si aucune licence -->
         <div v-if="filteredLicenses.length === 0" class="text-center py-12">
             <div class="text-6xl mb-4">📋</div>
-            <h3 class="text-xl font-semibold text-gray-600 mb-2">Aucune licence trouvée</h3>
-            <p class="text-gray-500">Aucune licence ne correspond aux critères de recherche.</p>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">{{ __('Aucune licence trouvée') }}</h3>
+            <p class="text-gray-500">{{ __('Aucune licence ne correspond aux critères de recherche.') }}</p>
         </div>
 
         <!-- Modal Validation en lot -->
@@ -361,7 +359,7 @@
                     
                     <div class="space-y-4">
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <h4 class="font-medium text-blue-800 mb-2">Licences sélectionnées pour validation</h4>
+                            <h4 class="font-medium text-blue-800 mb-2">{{ __('Licences sélectionnées pour validation') }}</h4>
                             <p class="text-sm text-blue-600">[[ selectedLicenses.length ]] licences en attente de validation</p>
                         </div>
                         
@@ -378,9 +376,7 @@
                         </div>
                         
                         <div class="flex space-x-3 pt-4">
-                            <button @click="validateBatch" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                                ✅ Valider toutes les licences sélectionnées
-                            </button>
+                            <button @click="validateBatch" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">{{ __('✅ Valider toutes les licences sélectionnées') }}</button>
                             <button @click="showBatchValidationModal = false" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
                                 {{ __('clinical.cancel') }}
                             </button>
@@ -395,14 +391,14 @@
             <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 <div class="p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4">
-                        [[ showEditLicenseModal ? 'Modifier la licence' : 'Créer une nouvelle licence' ]]
+                        [[ showEditLicenseModal ? @json(__('Modifier la licence')) : @json(__('Créer une nouvelle licence')) ]]
                     </h3>
                     
                     <form @submit.prevent="saveLicense" class="space-y-4">
                         <!-- Informations de base -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Numéro de licence *</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Numéro de licence *') }}</label>
                                 <input v-model="licenseForm.licenseNumber" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                             </div>
                             
@@ -411,7 +407,7 @@
                                 <select v-model="licenseForm.type" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                                     <option value="">{{ __('health_records_create.select_type_placeholder') }}</option>
                                     <option value="player">{{ __('auth.role_player') }}</option>
-                                    <option value="coach">Entraîneur</option>
+                                    <option value="coach">{{ __('Entraîneur') }}</option>
                                     <option value="referee">{{ __('auth.role_referee') }}</option>
                                     <option value="medical">{{ __('health_records.show_page.tab_medical') }}</option>
                                     <option value="administrative">Administrative</option>
@@ -447,7 +443,7 @@
                                     <label class="block text-sm font-medium text-blue-700 mb-2">{{ __('competition_management.sync_status') }}</label>
                                     <select v-model="licenseForm.fifaSyncStatus" class="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                                         <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
-                                        <option value="synced">Synchronisée</option>
+                                        <option value="synced">{{ __('Synchronisée') }}</option>
                                         <option value="error">{{ __('common.error') }}</option>
                                     </select>
                                 </div>
@@ -457,7 +453,7 @@
                         <!-- Informations supplémentaires -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Catégorie') }}</label>
                                 <input v-model="licenseForm.category" type="text" placeholder="ex: Professionnel, Amateur, Jeune" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                             </div>
                             
@@ -469,7 +465,7 @@
                         
                         <div class="flex space-x-3 pt-4">
                             <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                [[ showEditLicenseModal ? 'Modifier' : 'Créer' ]]
+                                [[ showEditLicenseModal ? @json(__('Modifier')) : @json(__('Créer')) ]]
                             </button>
                             <button type="button" @click="closeModal" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
                                 {{ __('clinical.cancel') }}

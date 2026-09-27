@@ -15,16 +15,14 @@
                                 <span class="text-white font-bold text-lg">➕</span>
                             </div>
                             <div class="ml-3">
-                                <h1 class="text-2xl font-bold text-gray-900">
-                                    Nouveau Paramètre
-                                </h1>
-                                <p class="text-sm text-gray-600">Créer un nouveau paramètre système</p>
+                                <h1 class="text-2xl font-bold text-gray-900">{{ __('Nouveau Paramètre') }}</h1>
+                                <p class="text-sm text-gray-600">{{ __('Créer un nouveau paramètre système') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('admin.system-settings.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Paramètres</a>
+                    <a href="{{ route('admin.system-settings.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Paramètres') }}</a>
                 </div>
             </div>
         </div>
@@ -52,23 +50,21 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="key" class="block text-sm font-medium text-gray-700 mb-2">
-                                Clé du paramètre <span class="text-red-500">*</span>
+                            <label for="key" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Clé du paramètre') }}<span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="key" id="key" value="{{ old('key') }}" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                    placeholder="ex: new_feature_enabled" required>
-                            <p class="mt-1 text-sm text-gray-500">Identifiant unique du paramètre (en anglais, sans espaces)</p>
+                            <p class="mt-1 text-sm text-gray-500">{{ __('Identifiant unique du paramètre (en anglais, sans espaces)') }}</p>
                         </div>
 
                         <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                                Nom du paramètre <span class="text-red-500">*</span>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Nom du paramètre') }}<span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="name" id="name" value="{{ old('name') }}" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                    placeholder="ex: Nouvelle fonctionnalité activée" required>
-                            <p class="mt-1 text-sm text-gray-500">Nom affiché dans l'interface</p>
+                            <p class="mt-1 text-sm text-gray-500">{{ __('Nom affiché dans l\'interface') }}</p>
                         </div>
                     </div>
 
@@ -95,7 +91,7 @@
                             </label>
                             <select name="group" id="group" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                                <option value="">Sélectionner un groupe</option>
+                                <option value="">{{ __('Sélectionner un groupe') }}</option>
                                 @foreach($groups as $groupKey => $groupDescription)
                                     <option value="{{ $groupKey }}" {{ old('group') === $groupKey ? 'selected' : '' }}>
                                         {{ ucfirst($groupKey) }} - {{ $groupDescription }}
@@ -122,7 +118,7 @@
 
                     <div class="mt-6">
                         <label for="value" class="block text-sm font-medium text-gray-700 mb-2">
-                            Valeur <span class="text-red-500">*</span>
+                            {{ __('Valeur') }} <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="value" id="value" value="{{ old('value') }}" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -130,22 +126,18 @@
                     </div>
 
                     <div class="mt-6">
-                        <label for="default_value" class="block text-sm font-medium text-gray-700 mb-2">
-                            Valeur par défaut
-                        </label>
+                        <label for="default_value" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Valeur par défaut') }}</label>
                         <input type="text" name="default_value" id="default_value" value="{{ old('default_value') }}" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                placeholder="Valeur par défaut (optionnel)">
                     </div>
 
                     <div class="mt-6">
-                        <label for="validation_rules" class="block text-sm font-medium text-gray-700 mb-2">
-                            Règles de validation
-                        </label>
+                        <label for="validation_rules" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Règles de validation') }}</label>
                         <input type="text" name="validation_rules" id="validation_rules" value="{{ old('validation_rules') }}" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                placeholder="ex: min:1|max:100">
-                        <p class="mt-1 text-sm text-gray-500">Règles Laravel (ex: min:1|max:100|required)</p>
+                        <p class="mt-1 text-sm text-gray-500">{{ __('Règles Laravel (ex: min:1|max:100|required)') }}</p>
                     </div>
                 </div>
             </div>
@@ -160,10 +152,8 @@
                             <input type="checkbox" name="is_public" id="is_public" value="1" 
                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" 
                                    {{ old('is_public') ? 'checked' : '' }}>
-                            <label for="is_public" class="ml-2 block text-sm text-gray-900">
-                                Paramètre public
-                            </label>
-                            <p class="ml-2 text-sm text-gray-500">Peut être consulté sans authentification</p>
+                            <label for="is_public" class="ml-2 block text-sm text-gray-900">{{ __('Paramètre public') }}</label>
+                            <p class="ml-2 text-sm text-gray-500">{{ __('Peut être consulté sans authentification') }}</p>
                         </div>
 
                         <div class="flex items-center">
@@ -173,17 +163,15 @@
                             <label for="is_editable" class="ml-2 block text-sm text-gray-900">
                                 Modifiable
                             </label>
-                            <p class="ml-2 text-sm text-gray-500">Peut être modifié par les administrateurs</p>
+                            <p class="ml-2 text-sm text-gray-500">{{ __('Peut être modifié par les administrateurs') }}</p>
                         </div>
 
                         <div class="flex items-center">
                             <input type="checkbox" name="is_required" id="is_required" value="1" 
                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" 
                                    {{ old('is_required') ? 'checked' : '' }}>
-                            <label for="is_required" class="ml-2 block text-sm text-gray-900">
-                                Paramètre requis
-                            </label>
-                            <p class="ml-2 text-sm text-gray-500">Doit avoir une valeur pour le fonctionnement du système</p>
+                            <label for="is_required" class="ml-2 block text-sm text-gray-900">{{ __('Paramètre requis') }}</label>
+                            <p class="ml-2 text-sm text-gray-500">{{ __('Doit avoir une valeur pour le fonctionnement du système') }}</p>
                         </div>
                     </div>
                 </div>
@@ -196,9 +184,7 @@
                     {{ __('clinical.cancel') }}
                 </a>
                 <button type="submit" 
-                        class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
-                    Créer le Paramètre
-                </button>
+                        class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">{{ __('Créer le Paramètre') }}</button>
             </div>
         </form>
     </div>

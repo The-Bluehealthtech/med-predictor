@@ -67,7 +67,7 @@
                     <div class="flex justify-between items-center">
                         <button onclick="viewRoleDetails('{{ $roleKey }}')" 
                                 class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                            👁️ Voir détails
+                            {{ __('👁️ Voir détails') }}
                         </button>
                         <button onclick="applyRoleToUsers('{{ $roleKey }}')" 
                                 class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">

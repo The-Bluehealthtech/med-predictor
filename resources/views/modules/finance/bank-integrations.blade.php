@@ -11,7 +11,7 @@
                         🏦
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Intégrations Bancaires</h1>
+                        <h1 class="text-3xl font-bold text-gray-900">{{ __('Intégrations Bancaires') }}</h1>
                         <p class="text-gray-600 mt-1">Connexion de comptes bancaires</p>
                     </div>
                 </div>

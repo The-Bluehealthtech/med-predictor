@@ -51,7 +51,7 @@
                             name="club_id" 
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('club_id') border-red-500 @enderror"
                             required>
-                        <option value="">Sélectionner un club</option>
+                        <option value="">{{ __('Sélectionner un club') }}</option>
                         @foreach($clubs as $club)
                             <option value="{{ $club->id }}" 
                                     {{ old('club_id', $team->club_id) == $club->id ? 'selected' : '' }}>
@@ -163,7 +163,7 @@
                             {{ __('healthcare.status_active') }}
                         </option>
                         <option value="inactive" {{ old('status', $team->status) == 'inactive' ? 'selected' : '' }}>
-                            Inactif
+                            {{ __('Inactif') }}
                         </option>
                         <option value="pending" {{ old('status', $team->status) == 'pending' ? 'selected' : '' }}>
                             {{ __('competition_management.statuses.pending') }}
@@ -184,7 +184,7 @@
                 <button type="submit" 
                         class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
                     <i class="fas fa-save mr-2"></i>
-                    Mettre à jour
+                    {{ __('Mettre à jour') }}
                 </button>
             </div>
         </form>

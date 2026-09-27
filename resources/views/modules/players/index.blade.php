@@ -46,7 +46,7 @@
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            Système opérationnel
+                            {{ __('Système opérationnel') }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>

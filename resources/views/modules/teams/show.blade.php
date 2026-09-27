@@ -109,7 +109,7 @@
                             <p class="text-gray-900">{{ $team->club->stadium ?? 'N/A' }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-500">Année de fondation</label>
+                            <label class="block text-sm font-medium text-gray-500">{{ __('Année de fondation') }}</label>
                             <p class="text-gray-900">{{ $team->club->founded_year ?? 'N/A' }}</p>
                         </div>
                         <div>

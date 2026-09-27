@@ -181,7 +181,7 @@
                         </svg>
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('healthcare.no_records') }}</h3>
-                    <p class="text-gray-500 mb-6">Ce joueur n'a pas encore de dossier médical enregistré.</p>
+                    <p class="text-gray-500 mb-6">{{ __('Ce joueur n\'a pas encore de dossier médical enregistré.') }}</p>
                     <a href="{{ route('health-records.create', ['player_id' => $player->id]) }}" 
                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                         {{ __('healthcare.create_first_record') }}

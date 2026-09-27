@@ -6,8 +6,8 @@
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">⚽ Nouveau Joueur</h1>
-            <p class="text-gray-600 mt-2">Créer un nouveau joueur manuellement</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('⚽ Nouveau Joueur') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('Créer un nouveau joueur manuellement') }}</p>
         </div>
 
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -21,7 +21,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Prénom *
+                            {{ __('Prénom *') }}
                         </label>
                         <input type="text" name="first_name" id="first_name" 
                                value="{{ old('first_name') }}" required
@@ -57,21 +57,21 @@
 
                     <div>
                         <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">
-                            Nationalité *
+                            {{ __('Nationalité *') }}
                         </label>
                         <select name="nationality" id="nationality" required
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Sélectionner une nationalité</option>
+                            <option value="">{{ __('Sélectionner une nationalité') }}</option>
                             <option value="Tunisie" {{ old('nationality') == 'Tunisie' ? 'selected' : '' }}>Tunisie</option>
                             <option value="France" {{ old('nationality') == 'France' ? 'selected' : '' }}>France</option>
-                            <option value="Algérie" {{ old('nationality') == 'Algérie' ? 'selected' : '' }}>Algérie</option>
+                            <option value="Algérie" {{ old('nationality') == 'Algérie' ? 'selected' : '' }}>{{ __('Algérie') }}</option>
                             <option value="Maroc" {{ old('nationality') == 'Maroc' ? 'selected' : '' }}>Maroc</option>
-                            <option value="Sénégal" {{ old('nationality') == 'Sénégal' ? 'selected' : '' }}>Sénégal</option>
-                            <option value="Côte d'Ivoire" {{ old('nationality') == 'Côte d\'Ivoire' ? 'selected' : '' }}>Côte d'Ivoire</option>
+                            <option value="Sénégal" {{ old('nationality') == 'Sénégal' ? 'selected' : '' }}>{{ __('Sénégal') }}</option>
+                            <option value="Côte d'Ivoire" {{ old('nationality') == 'Côte d\'Ivoire' ? 'selected' : '' }}>{{ __('Côte d\'Ivoire') }}</option>
                             <option value="Nigeria" {{ old('nationality') == 'Nigeria' ? 'selected' : '' }}>Nigeria</option>
                             <option value="Ghana" {{ old('nationality') == 'Ghana' ? 'selected' : '' }}>Ghana</option>
                             <option value="Cameroun" {{ old('nationality') == 'Cameroun' ? 'selected' : '' }}>Cameroun</option>
-                            <option value="Égypte" {{ old('nationality') == 'Égypte' ? 'selected' : '' }}>Égypte</option>
+                            <option value="Égypte" {{ old('nationality') == 'Égypte' ? 'selected' : '' }}>{{ __('Égypte') }}</option>
                             <option value="Autre" {{ old('nationality') == 'Autre' ? 'selected' : '' }}>{{ __('health_records_edit.other') }}</option>
                         </select>
                         @error('nationality')
@@ -85,16 +85,16 @@
                         </label>
                         <select name="position" id="position" required
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Sélectionner une position</option>
+                            <option value="">{{ __('Sélectionner une position') }}</option>
                             <option value="ST" {{ old('position') == 'ST' ? 'selected' : '' }}>Attaquant (ST)</option>
                             <option value="RW" {{ old('position') == 'RW' ? 'selected' : '' }}>Ailier droit (RW)</option>
                             <option value="LW" {{ old('position') == 'LW' ? 'selected' : '' }}>Ailier gauche (LW)</option>
                             <option value="CAM" {{ old('position') == 'CAM' ? 'selected' : '' }}>Milieu offensif (CAM)</option>
                             <option value="CM" {{ old('position') == 'CM' ? 'selected' : '' }}>Milieu central (CM)</option>
-                            <option value="CDM" {{ old('position') == 'CDM' ? 'selected' : '' }}>Milieu défensif (CDM)</option>
-                            <option value="CB" {{ old('position') == 'CB' ? 'selected' : '' }}>Défenseur central (CB)</option>
-                            <option value="RB" {{ old('position') == 'RB' ? 'selected' : '' }}>Arrière droit (RB)</option>
-                            <option value="LB" {{ old('position') == 'LB' ? 'selected' : '' }}>Arrière gauche (LB)</option>
+                            <option value="CDM" {{ old('position') == 'CDM' ? 'selected' : '' }}>{{ __('Milieu défensif (CDM)') }}</option>
+                            <option value="CB" {{ old('position') == 'CB' ? 'selected' : '' }}>{{ __('Défenseur central (CB)') }}</option>
+                            <option value="RB" {{ old('position') == 'RB' ? 'selected' : '' }}>{{ __('Arrière droit (RB)') }}</option>
+                            <option value="LB" {{ old('position') == 'LB' ? 'selected' : '' }}>{{ __('Arrière gauche (LB)') }}</option>
                             <option value="GK" {{ old('position') == 'GK' ? 'selected' : '' }}>Gardien (GK)</option>
                         </select>
                         @error('position')
@@ -164,16 +164,14 @@
                                    accept="image/*" 
                                    class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                    onchange="previewImage(this)">
-                            <p class="mt-1 text-sm text-gray-500">Formats acceptés: JPG, PNG, GIF. Taille max: 5MB</p>
+                            <p class="mt-1 text-sm text-gray-500">{{ __('Formats acceptés: JPG, PNG, GIF. Taille max: 5MB') }}</p>
                             @error('player_picture')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Aperçu de la photo
-                            </label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Aperçu de la photo') }}</label>
                             <div id="imagePreviewContainer" class="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
                                 <span class="text-gray-400 text-4xl">?</span>
                             </div>
@@ -192,7 +190,7 @@
                     </a>
                     <button type="submit" 
                             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
-                        Créer le joueur
+                        {{ __('Créer le joueur') }}
                     </button>
                 </div>
             </form>

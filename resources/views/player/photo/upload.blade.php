@@ -30,7 +30,7 @@
                              class="w-24 h-24 object-contain rounded-lg border-2 border-gray-200">
                         <div>
                             <p class="text-sm text-gray-600">
-                                <strong>Source :</strong> 
+                                <strong>{{ __('Source :') }}</strong>
                                 @if(filter_var($currentImageUrl, FILTER_VALIDATE_URL))
                                     URL externe
                                 @else
@@ -113,7 +113,7 @@
                             </label>
                             <input type="file" name="photo" accept="image/*" required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <p class="text-sm text-gray-500 mt-1">Formats acceptés : JPEG, PNG, JPG, GIF (max 2MB)</p>
+                            <p class="text-sm text-gray-500 mt-1">{{ __('Formats acceptés : JPEG, PNG, JPG, GIF (max 2MB)') }}</p>
                         </div>
                         
                         <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">

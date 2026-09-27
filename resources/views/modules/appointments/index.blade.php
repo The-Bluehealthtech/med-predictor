@@ -211,7 +211,7 @@
                         Affichage de <span class="font-medium">1</span> {{ __('clinical.at_time_connector') }} <span class="font-medium">3</span> sur <span class="font-medium">12</span> résultats
                     </div>
                     <div class="flex space-x-2">
-                        <button class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50" disabled>Précédent</button>
+                        <button class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50" disabled>{{ __('Précédent') }}</button>
                         <button class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 bg-blue-50 text-blue-600">1</button>
                         <button class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">2</button>
                         <button class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">3</button>

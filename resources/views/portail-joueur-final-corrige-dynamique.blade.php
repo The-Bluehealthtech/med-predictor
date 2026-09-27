@@ -18,9 +18,7 @@
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0">
             <!-- Navigation gauche -->
             <div class="flex items-center space-x-4">
-                <button id="btn-previous" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors" onclick="navigatePlayer('previous')">
-                    ← Précédent
-                </button>
+                <button id="btn-previous" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors" onclick="navigatePlayer('previous')">{{ __('← Précédent') }}</button>
                 <button id="btn-next" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors" onclick="navigatePlayer('next')">
                     Suivant →
                 </button>
@@ -84,9 +82,7 @@
                         <!-- Bouton Gérer qui apparaît au survol -->
                         <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <a href="/joueur/{{ $player->id }}/photo/upload" 
-                               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                📷 Gérer
-                            </a>
+                               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">{{ __('📷 Gérer') }}</a>
                         </div>
                     </div>
                     
@@ -141,9 +137,7 @@
                         <!-- Bouton Gérer qui apparaît au survol -->
                         <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <a href="/joueur/{{ $player->id }}/photo/upload?type=nationality" 
-                               class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                🏳️ Gérer
-                            </a>
+                               class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">{{ __('🏳️ Gérer') }}</a>
                         </div>
                     </div>
                 </div>
@@ -208,9 +202,7 @@
                         <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             @if($player->club)
                                 <a href="/joueur/{{ $player->id }}/photo/upload?type=club" 
-                                   class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                    🏟️ Gérer
-                                </a>
+                                   class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">{{ __('🏟️ Gérer') }}</a>
                             @else
                                 <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm font-medium">
                                     ❌ Pas de club
@@ -239,9 +231,7 @@
                         <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             @if($player->association)
                                 <a href="{{ route('associations.edit-logo', $player->association->id) }}" 
-                                   class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                    🏆 Gérer
-                                </a>
+                                   class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">{{ __('🏆 Gérer') }}</a>
                             @else
                                 <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm font-medium">
                                     ❌ Pas d'association
@@ -302,9 +292,7 @@
                         <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             @if($player->association)
                                 <a href="{{ route('associations.edit-logo', $player->association->id) }}" 
-                                   class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                    🏴 Gérer
-                                </a>
+                                   class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">{{ __('🏴 Gérer') }}</a>
                             @else
                                 <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm font-medium">
                                     ❌ Pas d'association
@@ -408,7 +396,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             <!-- Section Palmarès - RÉDUITE -->
             <div class="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg p-2">
-                <h3 class="text-lg font-bold text-yellow-400 mb-3">🏆 Palmarès</h3>
+                <h3 class="text-lg font-bold text-yellow-400 mb-3">{{ __('🏆 Palmarès') }}</h3>
                 
                 <div class="grid grid-cols-3 gap-2">
                     <div class="bg-white rounded-lg p-2 border border-yellow-200 text-center">
@@ -464,7 +452,7 @@
                             </div>
                             
                 <div class="mt-2 text-center">
-                    <div class="text-xs text-blue-800">N/A% complétée</div>
+                    <div class="text-xs text-blue-800">{{ __('N/A% complétée') }}</div>
                     <div class="text-xs text-blue-800">N/A matchs restants</div>
                             </div>
                             </div>
@@ -474,7 +462,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             <!-- Section Performances Récentes - RÉDUITE -->
             <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4">
-                <h3 class="text-lg font-bold text-green-400 mb-3">Performances récentes</h3>
+                <h3 class="text-lg font-bold text-green-400 mb-3">{{ __('Performances récentes') }}</h3>
                 
                 <div class="mb-3">
                     <div class="text-sm text-green-800 mb-2">5 derniers matchs:</div>
@@ -494,7 +482,7 @@
                 
                 <div class="text-center">
                     <div class="text-2xl font-bold text-red-800 mb-1">15%</div>
-                    <div class="text-sm text-red-800 mb-2">MODÉRÉ</div>
+                    <div class="text-sm text-red-800 mb-2">{{ __('MODÉRÉ') }}</div>
                     
                     <div class="w-full bg-red-200 rounded-full h-2">
                         <div class="bg-red-500 h-2 rounded-full" style="width: 15%"></div>
@@ -517,10 +505,10 @@
 
             <!-- Section Disponibilité - RÉDUITE -->
             <div class="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg p-4">
-                <h3 class="text-lg font-bold text-blue-400 mb-3">Disponibilité</h3>
+                <h3 class="text-lg font-bold text-blue-400 mb-3">{{ __('Disponibilité') }}</h3>
                 
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-blue-800 mb-1">✅ LIMITÉ</div>
+                    <div class="text-2xl font-bold text-blue-800 mb-1">{{ __('✅ LIMITÉ') }}</div>
                     <div class="text-sm text-blue-800">Prochain: Sunday</div>
                                             </div>
                                         </div>
@@ -564,14 +552,12 @@
                         onclick="showTab('health')"
                         class="tab-button px-6 py-3 rounded-t-lg font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-700"
                     >
-                        <i class="fas fa-heartbeat mr-2"></i>❤️ Santé & Bien-être
-                    </button>
+                        <i class="fas fa-heartbeat mr-2"></i>{{ __('❤️ Santé & Bien-être') }}</button>
                     <button 
                         onclick="showTab('medical')"
                         class="tab-button px-6 py-3 rounded-t-lg font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-700"
                     >
-                        <i class="fas fa-user-md mr-2"></i>🏥 Médical
-                        <span class="ml-2 bg-blue-500 text-white px-2 py-1 rounded-full text-xs">4</span>
+                        <i class="fas fa-user-md mr-2"></i>{{ __('🏥 Médical') }}<span class="ml-2 bg-blue-500 text-white px-2 py-1 rounded-full text-xs">4</span>
                     </button>
                     <button 
                         onclick="showTab('devices')"
@@ -604,25 +590,25 @@
                                 onclick="changePerformanceTab('overview')"
                                 class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 bg-blue-600 text-white shadow-lg"
                             >
-                                <i class="fas fa-chart-line mr-2"></i>Vue d'ensemble
+                                <i class="fas fa-chart-line mr-2"></i>{{ __('Vue d\'ensemble') }}
                             </button>
                             <button 
                                 onclick="changePerformanceTab('advanced')"
                                 class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-gray-400 hover:text-gray-200 hover:bg-gray-700"
                             >
-                                <i class="fas fa-chart-bar mr-2"></i>Statistiques avancées
+                                <i class="fas fa-chart-bar mr-2"></i>{{ __('Statistiques avancées') }}
                             </button>
                             <button 
                                 onclick="changePerformanceTab('match')"
                                 class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-gray-400 hover:text-gray-200 hover:bg-gray-700"
                             >
-                                <i class="fas fa-futbol mr-2"></i>Statistiques de match
+                                <i class="fas fa-futbol mr-2"></i>{{ __('Statistiques de match') }}
                             </button>
                             <button 
                                 onclick="changePerformanceTab('comparison')"
                                 class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-gray-400 hover:text-gray-200 hover:bg-gray-700"
                             >
-                                <i class="fas fa-balance-scale mr-2"></i>Analyse comparative
+                                <i class="fas fa-balance-scale mr-2"></i>{{ __('Analyse comparative') }}
                             </button>
                             <button 
                                 onclick="changePerformanceTab('trends')"
@@ -644,7 +630,7 @@
                                         <h2 class="text-2xl font-bold text-white mb-2">
                                             <i class="fas fa-chart-line mr-3"></i>Centre de Performances FIFA Connect
                                         </h2>
-                                        <p class="text-blue-200">Données dynamiques basées sur vos vraies statistiques FIFA</p>
+                                        <p class="text-blue-200">{{ __('Données dynamiques basées sur vos vraies statistiques FIFA') }}</p>
                                     </div>
                                     <div class="text-right">
                                         <div class="text-4xl font-bold text-yellow-400" id="dynamic-overall-rating">{{ $player->overall_rating ?? '88' }}</div>
@@ -674,19 +660,19 @@
                                     </h3>
                                     <div class="space-y-4">
                                         <div class="flex justify-between items-center">
-                                            <span class="text-gray-300">Buts marqués</span>
+                                            <span class="text-gray-300">{{ __('Buts marqués') }}</span>
                                             <span class="text-2xl font-bold text-red-400" id="dynamic-goals">-</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-gray-300">Passes décisives</span>
+                                            <span class="text-gray-300">{{ __('Passes décisives') }}</span>
                                             <span class="text-2xl font-bold text-blue-400" id="dynamic-assists">-</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-gray-300">Tirs cadrés</span>
+                                            <span class="text-gray-300">{{ __('Tirs cadrés') }}</span>
                                             <span class="text-2xl font-bold text-yellow-400" id="dynamic-shots-on-target">-</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-gray-300">Précision des tirs</span>
+                                            <span class="text-gray-300">{{ __('Précision des tirs') }}</span>
                                             <span class="text-2xl font-bold text-green-400" id="dynamic-shot-accuracy">-</span>
                                         </div>
                                     </div>
@@ -695,11 +681,10 @@
                                 <!-- Statistiques Défensives -->
                                 <div class="bg-gray-800 rounded-xl p-6">
                                     <h3 class="text-lg font-bold mb-4 text-blue-400">
-                                        <i class="fas fa-shield-alt mr-2"></i>Statistiques Défensives
-                                    </h3>
+                                        <i class="fas fa-shield-alt mr-2"></i>{{ __('Statistiques Défensives') }}</h3>
                                     <div class="space-y-4">
                                         <div class="flex justify-between items-center">
-                                            <span class="text-gray-300">Tacles réussis</span>
+                                            <span class="text-gray-300">{{ __('Tacles réussis') }}</span>
                                             <span class="text-2xl font-bold text-blue-400" id="dynamic-tackles-won">-</span>
                                         </div>
                                         <div class="flex justify-between items-center">
@@ -707,11 +692,11 @@
                                             <span class="text-2xl font-bold text-green-400" id="dynamic-interceptions">-</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-gray-300">Dégagements</span>
+                                            <span class="text-gray-300">{{ __('Dégagements') }}</span>
                                             <span class="text-2xl font-bold text-yellow-400" id="dynamic-clearances">-</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-gray-300">Duels gagnés</span>
+                                            <span class="text-gray-300">{{ __('Duels gagnés') }}</span>
                                             <span class="text-2xl font-bold text-purple-400" id="dynamic-duels-won">-</span>
                                         </div>
                                     </div>
@@ -736,7 +721,7 @@
                                             <span class="text-2xl font-bold text-red-400" id="dynamic-sprints">-</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-gray-300">Endurance</span>
+                                            <span class="text-gray-300">{{ __('Endurance') }}</span>
                                             <span class="text-2xl font-bold text-blue-400" id="dynamic-fitness">-</span>
                                         </div>
                                     </div>
@@ -748,8 +733,7 @@
                                 <!-- Évolution des performances -->
                                 <div class="bg-gray-800 rounded-xl p-6">
                                     <h3 class="text-lg font-bold mb-4 text-blue-300">
-                                        <i class="fas fa-chart-line mr-2"></i>Évolution des Performances
-                                    </h3>
+                                        <i class="fas fa-chart-line mr-2"></i>{{ __('Évolution des Performances') }}</h3>
                                     <div class="h-64">
                                         <canvas id="performanceChart"></canvas>
                                     </div>
@@ -758,8 +742,7 @@
                                 <!-- Radar des compétences -->
                                 <div class="bg-gray-800 rounded-xl p-6">
                                     <h3 class="text-lg font-bold mb-4 text-green-300">
-                                        <i class="fas fa-radar-chart mr-2"></i>Radar des Compétences
-                                    </h3>
+                                        <i class="fas fa-radar-chart mr-2"></i>{{ __('Radar des Compétences') }}</h3>
                                     <div class="h-64">
                                         <canvas id="skillsRadar"></canvas>
                                     </div>
@@ -769,14 +752,13 @@
                             <!-- Statistiques détaillées par match -->
                             <div class="bg-gray-800 rounded-xl p-6">
                                 <h3 class="text-lg font-bold mb-4 text-purple-300">
-                                    <i class="fas fa-list-alt mr-2"></i>Performances par Match (Données FIFA)
-                                </h3>
+                                    <i class="fas fa-list-alt mr-2"></i>{{ __('Performances par Match (Données FIFA)') }}</h3>
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-sm">
                                         <thead>
                                             <tr class="border-b border-gray-700">
-                                                <th class="text-left py-2 text-gray-300">Métrique</th>
-                                                <th class="text-center py-2 text-gray-300">Valeur</th>
+                                                <th class="text-left py-2 text-gray-300">{{ __('Métrique') }}</th>
+                                                <th class="text-center py-2 text-gray-300">{{ __('Valeur') }}</th>
                                                 <th class="text-center py-2 text-gray-300">Par Match</th>
                                                 <th class="text-center py-2 text-gray-300">{{ __('competitions.ranking.csv_title_prefix') }}</th>
                                             </tr>
@@ -791,7 +773,7 @@
                                                 </td>
                                             </tr>
                                             <tr class="border-b border-gray-700/50">
-                                                <td class="py-2 text-gray-300">Minutes jouées</td>
+                                                <td class="py-2 text-gray-300">{{ __('Minutes jouées') }}</td>
                                                 <td class="text-center py-2 text-green-400 font-bold" id="dynamic-minutes-played">-</td>
                                                 <td class="text-center py-2 text-gray-300">-</td>
                                                 <td class="text-center py-2">
@@ -799,7 +781,7 @@
                                                 </td>
                                             </tr>
                                             <tr class="border-b border-gray-700/50">
-                                                <td class="py-2 text-gray-300">Passes réussies</td>
+                                                <td class="py-2 text-gray-300">{{ __('Passes réussies') }}</td>
                                                 <td class="text-center py-2 text-yellow-400 font-bold" id="dynamic-passes-completed">-</td>
                                                 <td class="text-center py-2 text-gray-300">-</td>
                                                 <td class="text-center py-2">
@@ -816,9 +798,8 @@
                         <div id="advanced-tab" class="space-y-6" style="display: none;">
                             <div class="bg-gray-800 rounded-xl p-6">
                                 <h3 class="text-lg font-bold mb-4 text-blue-300">
-                                    <i class="fas fa-chart-bar mr-2"></i>Statistiques Avancées
-                                </h3>
-                                <p class="text-gray-300">Module en cours de développement - Intégration des composants Vue.js en cours</p>
+                                    <i class="fas fa-chart-bar mr-2"></i>{{ __('Statistiques Avancées') }}</h3>
+                                <p class="text-gray-300">{{ __('Module en cours de développement - Intégration des composants Vue.js en cours') }}</p>
                             </div>
                         </div>
 
@@ -828,7 +809,7 @@
                                 <h3 class="text-lg font-bold mb-4 text-green-300">
                                     <i class="fas fa-futbol mr-2"></i>Statistiques de Match
                                 </h3>
-                                <p class="text-gray-300">Module en cours de développement - Intégration des composants Vue.js en cours</p>
+                                <p class="text-gray-300">{{ __('Module en cours de développement - Intégration des composants Vue.js en cours') }}</p>
                             </div>
                         </div>
 
@@ -838,7 +819,7 @@
                                 <h3 class="text-lg font-bold mb-4 text-purple-300">
                                     <i class="fas fa-balance-scale mr-2"></i>Analyse Comparative
                                 </h3>
-                                <p class="text-gray-300">Module en cours de développement - Intégration des composants Vue.js en cours</p>
+                                <p class="text-gray-300">{{ __('Module en cours de développement - Intégration des composants Vue.js en cours') }}</p>
                             </div>
                         </div>
 
@@ -848,7 +829,7 @@
                                 <h3 class="text-lg font-bold mb-4 text-orange-300">
                                     <i class="fas fa-trending-up mr-2"></i>Analyse des Tendances
                                 </h3>
-                                <p class="text-gray-300">Module en cours de développement - Intégration des composants Vue.js en cours</p>
+                                <p class="text-gray-300">{{ __('Module en cours de développement - Intégration des composants Vue.js en cours') }}</p>
                             </div>
                         </div>
                     </div>
@@ -887,21 +868,21 @@
                             <i class="fas fa-info-circle text-blue-400 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">Nouveau Challenge</h4>
-                                <p class="text-sm text-gray-300">Défi de vitesse disponible - Améliorez votre sprint !</p>
+                                <p class="text-sm text-gray-300">{{ __('Défi de vitesse disponible - Améliorez votre sprint !') }}</p>
                             </div>
                         </div>
                         <div class="flex items-center p-4 bg-green-900/30 rounded-lg border-l-4 border-green-500">
                             <i class="fas fa-check-circle text-green-400 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">Objectif Atteint</h4>
-                                <p class="text-sm text-gray-300">Félicitations ! Vous avez amélioré votre endurance de 5 points.</p>
+                                <p class="text-sm text-gray-300">{{ __('Félicitations ! Vous avez amélioré votre endurance de 5 points.') }}</p>
                             </div>
                         </div>
                         <div class="flex items-center p-4 bg-orange-900/30 rounded-lg border-l-4 border-orange-500">
                             <i class="fas fa-exclamation-triangle text-orange-400 mr-3"></i>
                             <div>
-                                <h4 class="font-semibold">Rappel Entraînement</h4>
-                                <p class="text-sm text-gray-300">N'oubliez pas votre session d'entraînement technique aujourd'hui.</p>
+                                <h4 class="font-semibold">{{ __('Rappel Entraînement') }}</h4>
+                                <p class="text-sm text-gray-300">{{ __('N\'oubliez pas votre session d\'entraînement technique aujourd\'hui.') }}</p>
                             </div>
                         </div>
                     </div>
@@ -921,14 +902,14 @@
                                 <div class="w-32 bg-gray-700 rounded-full h-2">
                                     <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
                                 </div>
-                                <span class="text-gray-400">Non renseigné</span>
+                                <span class="text-gray-400">{{ __('Non renseigné') }}</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span>Énergie</span>
+                                <span>{{ __('Énergie') }}</span>
                                 <div class="w-32 bg-gray-700 rounded-full h-2">
                                     <div class="bg-blue-500 h-2 rounded-full" style="width: 72%"></div>
                                 </div>
-                                <span class="text-gray-400">Non renseigné</span>
+                                <span class="text-gray-400">{{ __('Non renseigné') }}</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span>Hydratation</span>
@@ -942,8 +923,7 @@
 
                     <div class="bg-gray-800 rounded-xl p-6">
                         <h3 class="text-xl font-bold mb-4 text-purple-300">
-                            <i class="fas fa-dumbbell mr-2"></i>Répartition des Charges
-                        </h3>
+                            <i class="fas fa-dumbbell mr-2"></i>{{ __('Répartition des Charges') }}</h3>
                         <div class="space-y-4">
                             <div class="flex justify-between items-center">
                                 <span>Cardio</span>
@@ -992,15 +972,14 @@
             <div id="devices-tab" class="tab-content space-y-6" style="display: none;">
                 <div class="bg-gray-800 rounded-xl p-6">
                     <h3 class="text-xl font-bold mb-6 text-cyan-300">
-                        <i class="fas fa-mobile-alt mr-2"></i>Mes Devices Connectés
-                    </h3>
+                        <i class="fas fa-mobile-alt mr-2"></i>{{ __('Mes Devices Connectés') }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="p-4 bg-cyan-900/30 rounded-lg border border-cyan-500/30">
                             <div class="flex items-center space-x-3">
                                 <i class="fas fa-watch text-2xl text-cyan-400"></i>
                                 <div>
-                                    <h4 class="font-semibold">Appareil non renseigné</h4>
-                                    <p class="text-sm text-gray-300">État de connexion indisponible</p>
+                                    <h4 class="font-semibold">{{ __('Appareil non renseigné') }}</h4>
+                                    <p class="text-sm text-gray-300">{{ __('État de connexion indisponible') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -1009,7 +988,7 @@
                                 <i class="fas fa-mobile-alt text-2xl text-purple-400"></i>
                                 <div>
                                     <h4 class="font-semibold">iPhone 15 Pro</h4>
-                                    <p class="text-sm text-gray-400">État de connexion et batterie indisponibles</p>
+                                    <p class="text-sm text-gray-400">{{ __('État de connexion et batterie indisponibles') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -1021,21 +1000,20 @@
             <div id="doping-tab" class="tab-content space-y-6" style="display: none;">
                 <div class="bg-gray-800 rounded-xl p-6">
                     <h3 class="text-xl font-bold mb-6 text-orange-300">
-                        <i class="fas fa-flask mr-2"></i>Contrôles Anti-Dopage
-                    </h3>
+                        <i class="fas fa-flask mr-2"></i>{{ __('Contrôles Anti-Dopage') }}</h3>
                     <div class="space-y-4">
                         <div class="flex items-center p-4 bg-green-900/30 rounded-lg border-l-4 border-green-500">
                             <i class="fas fa-check-circle text-green-400 mr-3"></i>
                             <div>
-                                <h4 class="font-semibold">Dernier Contrôle</h4>
-                                <p class="text-sm text-gray-300">15/01/2025 - Résultat : Négatif</p>
+                                <h4 class="font-semibold">{{ __('Dernier Contrôle') }}</h4>
+                                <p class="text-sm text-gray-300">{{ __('15/01/2025 - Résultat : Négatif') }}</p>
                             </div>
                         </div>
                         <div class="flex items-center p-4 bg-blue-900/30 rounded-lg border-l-4 border-blue-500">
                             <i class="fas fa-calendar text-blue-400 mr-3"></i>
                             <div>
-                                <h4 class="font-semibold">Prochain Contrôle</h4>
-                                <p class="text-sm text-gray-300">15/02/2025 - Contrôle programmé</p>
+                                <h4 class="font-semibold">{{ __('Prochain Contrôle') }}</h4>
+                                <p class="text-sm text-gray-300">{{ __('15/02/2025 - Contrôle programmé') }}</p>
                             </div>
                         </div>
                     </div>

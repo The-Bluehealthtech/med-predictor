@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+"""Localize reviewed static labels in four administrative screens."""
+import json
+import pathlib
+import re
+
+root = pathlib.Path(__file__).resolve().parents[1]
+translations = {
+"Évaluation de la Valeur et Qualité des Données FIFA": "FIFA Data Value and Quality Assessment",
+"Analytics des Données FIFA": "FIFA Data Analytics",
+"Évaluez la valeur et la qualité de votre dataset avec des métriques en temps réel": "Assess the value and quality of your dataset with real-time metrics",
+"Qualité 87.3%": "Quality 87.3%",
+"🛡️ Qualité des Données": "🛡️ Data Quality",
+"⭐ Évaluation de Valeur": "⭐ Value Assessment",
+"Joueurs enregistrés dans le système": "Players registered in the system",
+"Données stockées dans la base": "Data stored in the database",
+"Score moyen de qualité": "Average quality score",
+"📊 Répartition par Type de Données": "📊 Breakdown by Data Type",
+"📈 Évolution de la Qualité": "📈 Quality Trend",
+"🛡️ Score de Qualité Global": "🛡️ Overall Quality Score",
+"Qualité Globale des Données": "Overall Data Quality",
+"Complétude": "Completeness",
+"Précision": "Accuracy",
+"Cohérence": "Consistency",
+"📋 Qualité par Table": "📋 Quality by Table",
+"Chargement des données de qualité...": "Loading quality data...",
+"📈 Couverture des Données": "📈 Data Coverage",
+"Toutes les données affichées sont couvertes": "All displayed data is covered",
+"❤️ Couverture Médicale": "❤️ Medical Coverage",
+"Métriques de Santé": "Health Metrics",
+"Stress & Bien-être": "Stress & Well-being",
+"📈 Évolution des Données": "📈 Data Trends",
+"📊 Croissance des Données": "📊 Data Growth",
+"⏰ Fréquence de Mise à Jour": "⏰ Update Frequency",
+"Chargement des fréquences...": "Loading frequencies...",
+"⭐ Évaluation de la Valeur du Dataset": "⭐ Dataset Value Assessment",
+"Chargement des critères...": "Loading criteria...",
+"💡 Points d'Amélioration": "💡 Areas for Improvement",
+"Chargement des améliorations...": "Loading improvements...",
+"Dossiers Médicaux": "Medical Records",
+"Caractéristiques Physiques": "Physical Attributes",
+"Pied préféré": "Preferred Foot",
+"Clause de libération": "Release Clause",
+"Réputation internationale": "International Reputation",
+"Statistiques de Compétition": "Competition Statistics",
+"Équipe Actuelle": "Current Team",
+"Informations d'équipe non disponibles": "Team information unavailable",
+"Le modèle Player actuel ne contient pas ces données": "The current Player model does not include this data",
+"Modèle Player actuel": "Current Player model",
+"Événements Récents": "Recent Events",
+"Événements de match non disponibles": "Match events unavailable",
+"Dossiers Médicaux Récents": "Recent Medical Records",
+"Ce joueur n'a pas encore de dossier médical enregistré.": "This player has no medical records yet.",
+"Ce joueur n'est actuellement affilié à aucun club.": "This player is not currently affiliated with a club.",
+"Nouveau dossier médical": "New medical record",
+"Générer prédiction": "Generate prediction",
+"Validation des Licences (Côté Association) - Plateforme FIT": "Licence Validation (Association) - FIT Platform",
+"📋 Validation des Licences (Côté Association)": "📋 Licence Validation (Association)",
+"Entraîneur": "Coach",
+"Synchronisées": "Synchronized",
+"Expirées": "Expired",
+"Expirent bientôt": "Expiring Soon",
+"Expirées/Suspendues": "Expired/Suspended",
+"Joueurs reçus de la page /players": "Players received from the /players page",
+"Données synchronisées depuis la gestion des licences": "Data synchronized from licence management",
+"Licences à valider": "Licences to Validate",
+"Non configuré": "Not configured",
+"Expire bientôt": "Expires soon",
+"Aucune licence trouvée": "No licences found",
+"Aucune licence ne correspond aux critères de recherche.": "No licences match the search criteria.",
+"Licences sélectionnées pour validation": "Licences selected for validation",
+"✅ Valider toutes les licences sélectionnées": "✅ Validate all selected licences",
+"Numéro de licence *": "Licence Number *",
+"Synchronisée": "Synchronized",
+"Catégorie": "Category",
+"Gestion système, utilisateurs et configurations": "System, user and configuration management",
+"Gestion complète du système FIT": "Complete FIT system management",
+"Système opérationnel": "System operational",
+"Accès administrateur": "Administrator access",
+"Créer, modifier et gérer les comptes utilisateurs": "Create, edit and manage user accounts",
+"Accéder": "Open",
+"Gestion des Rôles": "Role Management",
+"Configurer les permissions et rôles utilisateurs": "Configure user permissions and roles",
+"Configuration Système": "System Configuration",
+"Paramètres généraux et configurations avancées": "General settings and advanced configuration",
+"Suivi des activités et logs système": "Activity monitoring and system logs",
+"Gestion des sauvegardes et restauration des données": "Backup management and data restoration",
+"API et Intégrations": "APIs and Integrations",
+"Gestion des APIs et intégrations externes": "Manage APIs and external integrations",
+"Formulaire pour demander un accès à la plateforme FIT": "Form to request access to the FIT Platform",
+"Approuver, rejeter et gérer les demandes de compte": "Approve, reject and manage account requests",
+"Gérer les Demandes": "Manage Requests",
+"Rôles configurés": "Configured roles",
+"🔧 Statistiques Système Techniques": "🔧 Technical System Statistics",
+"Métriques avancées et monitoring technique du système FIT": "Advanced metrics and technical monitoring for the FIT system",
+"Base de Données": "Database",
+"Total Rôles": "Total Roles",
+"Répartition par Rôle": "Breakdown by Role",
+"💾 Base de Données": "💾 Database",
+"Requêtes Lentes": "Slow Queries",
+"Dernier Déploiement": "Last Deployment",
+"Taux de Réussite": "Success Rate",
+"Durée Moyenne": "Average Duration",
+"Builds Échoués": "Failed Builds",
+"Taux de Réussite Pipeline": "Pipeline Success Rate",
+"⚙️ Informations Système": "⚙️ System Information",
+"Mémoire Utilisée": "Memory Used",
+"Limite Mémoire": "Memory Limit",
+"🔒 Sécurité": "🔒 Security",
+"Connexions Échouées": "Failed Sign-ins",
+"Activités Suspectes": "Suspicious Activity",
+"📋 Logs Système": "📋 System Logs",
+"Santé Base de Données": "Database Health",
+"Charge Système": "System Load",
+"Utilisation Mémoire": "Memory Usage",
+"Métriques FIT canoniques": "Canonical FIT Metrics",
+"Données traçables utilisées par le calcul du Score FIT.": "Traceable data used to calculate the FIT Score.",
+"Afficher les métriques": "Show Metrics",
+"Catalogue FIT accepté": "Accepted FIT Catalogue",
+"Enregistrer une métrique FIT": "Record a FIT Metric",
+"Saisie manuelle. Toute nouvelle métrique reste non vérifiée jusqu'à une vérification séparée.": "Manual entry. Each new metric remains unverified until it is checked separately.",
+"Sélectionner un axe": "Select a Dimension",
+"Métrique": "Metric",
+"Sélectionner d'abord un axe": "Select a Dimension First",
+"Sélectionner un mode": "Select a Mode",
+"Échelle explicite": "Explicit Scale",
+"Minimum de l'échelle": "Scale Minimum",
+"Maximum de l'échelle": "Scale Maximum",
+"Niveau de confiance (0 à 1)": "Confidence Level (0 to 1)",
+"Enregistrer la métrique": "Save Metric",
+"Historique des métriques": "Metric History",
+"Vérification": "Verification",
+"Vérifiée": "Verified",
+"Vérifier": "Verify",
+"Aucune métrique enregistrée pour ce joueur.": "No metrics recorded for this player.",
+"Axe FIT": "FIT Dimension",
+"Mode de mesure sociale": "Social Measurement Mode",
+"Pourcentage (%)": "Percentage (%)",
+"Date et heure de mesure": "Measurement Date and Time",
+"Notes": "Notes",
+"Source :": "Source:",
+"(saisie humaine)": "(manual entry)",
+"Date": "Date",
+"Axe": "Dimension",
+"Valeur": "Value",
+"Source": "Source",
+"Acceptée": "Accepted",
+"Non éligible": "Not eligible",
+"% ou échelle explicite": "% or explicit scale",
+}
+paths = (
+'dataset-analytics.blade.php',
+'modules/player-registration/show.blade.php',
+'modules/licenses/validation.blade.php',
+'administration/index.blade.php',
+'admin/system-stats.blade.php',
+'performances/fit-metrics.blade.php',
+)
+en_file = root / 'resources/lang/en.json'
+old = en_file.read_text()
+known = json.loads(old)
+new = {}
+for name in paths:
+    file = root / 'resources/views' / name
+    original = file.read_text()
+    changes = [0]
+    def replace(match):
+        text = match.group(1)
+        label = ' '.join(text.split())
+        if label not in translations or '{{' in text or '@' in text or '[[' in text:
+            return match.group(0)
+        changes[0] += 1
+        new[label] = translations[label]
+        return '>' + "{{ __('" + label.replace("'", "\\'") + "') }}" + '<'
+    file.write_text(re.sub(r'>([^<>]+)<', replace, original))
+    print(name, changes[0])
+missing = {key: value for key, value in new.items() if key not in known}
+if missing:
+    items = ',\n'.join('  ' + json.dumps(key, ensure_ascii=False) + ': ' + json.dumps(value, ensure_ascii=False) for key, value in missing.items())
+    pos = old.rfind('}')
+    en_file.write_text(old[:pos].rstrip() + ',\n' + items + '\n' + old[pos:])
+print('New translations:', len(missing))

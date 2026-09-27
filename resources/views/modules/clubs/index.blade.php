@@ -192,7 +192,7 @@
                             <div class="flex space-x-2">
                                 <a href="{{ route('clubs-view.show') }}?id={{ $club->id }}" 
                                    class="flex-1 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                                    👁️ Voir détails
+                                    {{ __('👁️ Voir détails') }}
                                 </a>
                                 @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs', $club))
                                 <a href="{{ route('organization-cards.edit', ['clubs', $club->id]) }}"

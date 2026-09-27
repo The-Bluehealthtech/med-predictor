@@ -179,7 +179,7 @@
                     </div>
                     <div class="mb-4">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            ✅ Disponible
+                            {{ __("✅ Disponible") }}
                         </span>
                     </div>
                     <p class="text-sm text-gray-600 mb-4">{{ __('Import et export de données via fichiers Excel et CSV.') }}</p>
@@ -274,7 +274,7 @@ async function testConnection(software) {
         
         if (result.success) {
             // Succès
-            button.textContent = '✅ Connecté';
+            button.textContent = @json(__('✅ Connecté'));
             button.classList.remove('border-gray-300', 'text-gray-700');
             button.classList.add('border-green-500', 'text-green-700', 'bg-green-50');
             
@@ -361,7 +361,7 @@ async function syncData(software, type) {
         const result = await response.json();
         
         if (result.success) {
-            button.textContent = '✅ Terminé';
+            button.textContent = @json(__('✅ Terminé'));
             button.classList.remove('border-gray-300', 'text-gray-700');
             button.classList.add('border-green-500', 'text-green-700', 'bg-green-50');
             

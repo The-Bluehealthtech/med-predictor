@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Comptabilité & Finances - Dashboard')
+@section('title', __('Comptabilité & Finances - Dashboard'))
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
@@ -41,9 +41,9 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
             <div class="p-6">
                 <div class="text-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">💰 Dashboard Financier</h2>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">💰 {{ __("Dashboard Financier") }}</h2>
                     <p class="text-lg text-gray-600 mb-2">
-                        Gestion de la comptabilité et des finances pour {{ $userType === 'club' ? 'votre club' : 'votre association' }}
+                        {{ __("Gestion de la comptabilité et des finances pour") }} {{ $userType === 'club' ? 'votre club' : 'votre association' }}
                     </p>
                 </div>
             </div>
@@ -162,7 +162,7 @@
                                     — {{ $transaction->payer->name ?? '—' }} → {{ $transaction->payee->name ?? '—' }}
                                 </p>
                                 <p class="text-xs text-gray-500">
-                                    {{ $transaction->payment_date ? $transaction->payment_date->format('d/m/Y') : 'Date non renseignée' }}
+                                    {{ $transaction->payment_date ? $transaction->payment_date->format('d/m/Y') : __('Date non renseignée') }}
                                 </p>
                             </div>
                         </div>

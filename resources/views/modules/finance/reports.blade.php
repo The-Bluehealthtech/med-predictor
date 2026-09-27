@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     {{ __('Rapports Financiers') }}
                                 </h1>
-                                <p class="text-sm text-gray-600">Analyse détaillée des finances {{ ucfirst($userType) }}</p>
+                                <p class="text-sm text-gray-600">{{ __("Analyse détaillée des finances") }} {{ ucfirst($userType) }}</p>
                             </div>
                         </div>
                     </div>

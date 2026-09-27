@@ -40,7 +40,7 @@
 
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mt-8 p-6 text-center">
             <p class="text-sm text-gray-500">
-                En attendant, les seules données financières réelles disponibles pour {{ $userType === 'club' ? 'votre club' : 'votre association' }}
+                {{ __("En attendant, les seules données financières réelles disponibles pour") }} {{ $userType === 'club' ? 'votre club' : 'votre association' }}
                 sont les paiements de transferts de joueurs, visibles depuis le
                 <a href="{{ route('modules.finance.dashboard') }}" class="text-blue-600 hover:text-blue-800 font-medium">Dashboard Financier</a>.
             </p>

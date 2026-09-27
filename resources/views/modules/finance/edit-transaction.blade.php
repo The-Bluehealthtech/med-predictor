@@ -72,7 +72,7 @@
                                 <option value="player_transfers" {{ ($transaction->category ?? '') == 'player_transfers' ? 'selected' : '' }}>{{ __('Transferts joueurs') }}</option>
                                 <option value="prize_money" {{ ($transaction->category ?? '') == 'prize_money' ? 'selected' : '' }}>Prix et primes</option>
                             </optgroup>
-                            <optgroup label="Dépenses">
+                            <optgroup label="{{ __("Dépenses") }}">
                                 <option value="player_salaries" {{ ($transaction->category ?? '') == 'player_salaries' ? 'selected' : '' }}>{{ __('Salaires joueurs') }}</option>
                                 <option value="staff_salaries" {{ ($transaction->category ?? '') == 'staff_salaries' ? 'selected' : '' }}>Salaires staff</option>
                                 <option value="facility_maintenance" {{ ($transaction->category ?? '') == 'facility_maintenance' ? 'selected' : '' }}>Maintenance installations</option>
@@ -118,7 +118,7 @@
                     </a>
                     <button type="submit" 
                             class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
-                        {{ isset($transaction) ? 'Mettre à jour' : 'Créer' }} Transaction
+                        {{ isset($transaction) ? __('Mettre à jour') : __('Créer') }} {{ __('Transaction') }}
                     </button>
                 </div>
             </form>

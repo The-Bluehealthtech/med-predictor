@@ -118,7 +118,7 @@
                             <span class="w-6 h-6 mr-3 text-green-600">🌍</span>
                             <div>
                                 <p class="text-sm text-gray-500">{{ __('Confédération') }}</p>
-                                <p class="font-medium">{{ $association->confederation->name ?? __('Non spécifiée') }}</p>
+                                <p class="font-medium">{{ \App\Models\Confederation::where('short_name', $association->confederation)->value('name') ?? $association->confederation ?? __('Non spécifiée') }}</p>
                             </div>
                         </div>
                         <div class="flex items-center">

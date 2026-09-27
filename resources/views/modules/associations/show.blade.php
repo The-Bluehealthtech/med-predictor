@@ -132,7 +132,7 @@
                         <div class="flex items-center">
                             <span class="w-6 h-6 mr-3 text-green-600">🏟️</span>
                             <div>
-                                <p class="text-sm text-gray-500">{{ __('{{ __("Clubs affiliés") }}') }}</p>
+                                <p class="text-sm text-gray-500">{{ __("Clubs affiliés") }}</p>
                                 <p class="font-medium">{{ $association->clubs ? $association->clubs->count() : 0 }}</p>
                             </div>
                         </div>
@@ -265,7 +265,7 @@
                     <div class="space-y-4">
                         <div class="text-center">
                             <div class="text-3xl font-bold text-green-600">{{ $association->clubs ? $association->clubs->count() : 0 }}</div>
-                            <div class="text-sm text-gray-600">{{ __('{{ __("Clubs affiliés") }}') }}</div>
+                            <div class="text-sm text-gray-600">{{ __("Clubs affiliés") }}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-3xl font-bold text-blue-600">{{ $association->players ? $association->players->count() : 0 }}</div>

@@ -11,6 +11,19 @@
                 <div class="p-6 bg-white border-b border-gray-200">
                     <form action="{{ route('competitions.store') }}" method="POST" class="space-y-6">
                         @csrf
+
+                        @if(auth()->user()->association_id === null && isset($associations))
+                            <div>
+                                <x-input-label for="association_id" :value="__('Association')" />
+                                <select name="association_id" id="association_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                                    <option value="">{{ __('Sélectionner une association') }}</option>
+                                    @foreach($associations as $association)
+                                        <option value="{{ $association->id }}" {{ old('association_id') == $association->id ? 'selected' : '' }}>{{ $association->name }}</option>
+                                    @endforeach
+                                </select>
+                                <x-input-error :messages="$errors->get('association_id')" class="mt-2" />
+                            </div>
+                        @endif
                         
                         <!-- Informations de base -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

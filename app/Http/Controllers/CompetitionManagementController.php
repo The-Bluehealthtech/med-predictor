@@ -72,7 +72,9 @@ class CompetitionManagementController extends Controller
                 ->get();
         }
 
-        return view('competition-management.create', compact('clubs'));
+        $associations = Association::orderBy('name')->get();
+
+        return view('competition-management.create', compact('clubs', 'associations'));
     }
 
     public function store(Request $request)
@@ -81,6 +83,7 @@ class CompetitionManagementController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'association_id' => 'nullable|exists:associations,id',
             'short_name' => 'nullable|string|max:100',
             'type' => 'required|in:league,cup,friendly,international,tournament,playoff,exhibition',
             'season' => 'required|string|max:50',
@@ -122,7 +125,9 @@ class CompetitionManagementController extends Controller
                 'rules' => $validated['rules'],
                 'entry_fee' => $validated['entry_fee'],
                 'prize_pool' => $validated['prize_pool'],
-                'association_id' => in_array($user->role, ['system_admin', 'admin']) ? null : $user->association_id,
+                'association_id' => in_array($user->role, ['system_admin', 'admin'])
+                    ? ($validated['association_id'] ?? $user->association_id)
+                    : $user->association_id,
                 'fifa_connect_id' => null,
                 'require_federation_license' => $request->has('require_federation_license'),
             ]);
@@ -134,7 +139,7 @@ class CompetitionManagementController extends Controller
                 $message .= ' avec l\'ID FIFA Connect: ' . $fifaConnectId->fifa_id;
             }
 
-            return redirect()->route('competition-management.index')
+            return redirect()->route('competitions.index')
                 ->with('success', $message);
 
         } catch (\Exception $e) {

@@ -432,8 +432,8 @@ function initializePosturalAssessment() {
         
         if (markersCount) markersCount.textContent = posturalState.markers.length;
         if (anglesCount) anglesCount.textContent = posturalState.angles.length;
-        if (currentView) currentView.textContent = posturalState.currentView === 'anterior' ? 'Antérieure' : posturalState.currentView === 'posterior' ? 'Postérieure' : 'Latérale';
-        if (status) status.textContent = posturalState.markers.length > 0 || posturalState.angles.length > 0 ? 'Complété' : 'En cours';
+        if (currentView) currentView.textContent = posturalState.currentView === 'anterior' ? @json(__('Antérieure')) : posturalState.currentView === 'posterior' ? @json(__('Postérieure')) : @json(__('Latérale'));
+        if (status) status.textContent = posturalState.markers.length > 0 || posturalState.angles.length > 0 ? @json(__('Complété')) : @json(__('En cours'));
         
         // Update markers list
         const markersList = document.getElementById('postural-markers-list');

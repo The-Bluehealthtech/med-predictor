@@ -1967,5 +1967,9 @@
   "Permissions qui seront appliquées :": "Permissions that will be applied:",
   "Appliquer le rôle:": "Apply role:",
   "Module Compétitions - FIT": "Competitions module - FIT",
-  "Classements": "Standings"
+  "Classements": "Standings",
+  "Antérieure": "Anterior",
+  "Postérieure": "Posterior",
+  "Latérale": "Lateral",
+  "En cours": "In progress"
 }

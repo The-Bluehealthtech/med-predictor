@@ -11,7 +11,7 @@ if [[ -z "$DATABASE_URL" ]]; then
     exit 1
 fi
 
-for fixture in PlayerProfileTestFixtureSeeder PortalNutritionTestFixtureSeeder MedicationTestFixtureSeeder AllPlayersFitTestFixtureSeeder; do
+for fixture in PlayerProfileTestFixtureSeeder PortalNutritionTestFixtureSeeder MedicationTestFixtureSeeder AllPlayersFitTestFixtureSeeder PlayerHierarchyTestFixtureSeeder; do
     DB_CONNECTION=pgsql DATABASE_URL="$DATABASE_URL" \
         php artisan db:seed --class="Database\\Seeders\\$fixture" --force
 done

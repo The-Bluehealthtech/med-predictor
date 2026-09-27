@@ -558,7 +558,8 @@ class CompetitionController extends Controller
             if (Schema::hasTable('competition_club')) {
                 foreach (DB::table('competition_club')->join('competitions', 'competitions.id', '=', 'competition_club.competition_id')->get(['competition_club.club_id', 'competitions.*']) as $row) {
                     if ($clubsData->has($row->club_id)) {
-                        $clubsData[$row->club_id]['competitions']->push(Competition::newFromBuilder((array) $row));
+                        $competitionModel = new Competition();
+                        $clubsData[$row->club_id]['competitions']->push($competitionModel->newFromBuilder((array) $row));
                     }
                 }
             }

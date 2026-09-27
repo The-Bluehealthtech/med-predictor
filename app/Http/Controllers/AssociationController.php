@@ -13,7 +13,7 @@ class AssociationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Association::with(['confederation', 'clubs', 'players']);
+        $query = Association::with(['clubs', 'players']);
 
         // Filtrage par confédération
         if ($request->has('confederation_id') && $request->confederation_id) {
@@ -39,7 +39,7 @@ class AssociationController extends Controller
      */
     public function show($id)
     {
-        $association = Association::with(['confederation', 'clubs', 'players'])->findOrFail($id);
+        $association = Association::with(['clubs', 'players'])->findOrFail($id);
         return view('modules.associations.show', compact('association'));
     }
 

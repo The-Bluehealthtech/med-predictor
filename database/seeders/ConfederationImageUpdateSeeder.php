@@ -11,11 +11,11 @@ class ConfederationImageUpdateSeeder extends Seeder
     {
         $now = now();
         DB::table('confederations')->where('short_name', 'CAF')->update([
-            'confederation_logo_url' => 'https://www.cafonline.com/media/e5joy0ul/cafonline.jpg',
+            'confederation_logo_url' => 'https://upload.wikimedia.org/wikipedia/fr/8/8d/CAF-logo-2009.png',
             'updated_at' => $now,
         ]);
         DB::table('associations')->where('name', 'Fédération Tunisienne de Football')->update([
-            'association_logo_url' => 'https://www.ftf.org.tn/fr/wp-content/uploads/2014/12/LOGO-FTF_df84263d3942d7a318831d94f0873c4e.png',
+            'association_logo_url' => 'https://ftf.org.tn/fr/wp-content/uploads/2014/12/LOGO-FTF.png',
             'nation_flag_url' => 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Flag_of_Tunisia.svg',
             'updated_at' => $now,
         ]);

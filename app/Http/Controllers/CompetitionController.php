@@ -493,10 +493,20 @@ class CompetitionController extends Controller
             // Extraire tous les clubs uniques des matchs
             $clubsData = collect();
             
+            // Inclure les engagements enregistrés même sans match joué.
+            if (Schema::hasTable('competition_club')) {
+                $engagedClubIds = DB::table('competition_club')->pluck('club_id')->unique();
+                foreach (Club::whereIn('id', $engagedClubIds)->get() as $club) {
+                    if (!$clubsData->has($club->id)) {
+                        $clubsData->put($club->id, ['club' => $club, 'matches' => collect(), 'competitions' => collect()]);
+                    }
+                }
+            }
+
             // Traiter les équipes domicile
             $homeClubs = $matches->pluck('homeTeam.club')->filter()->unique('id');
             foreach ($homeClubs as $club) {
-                if ($club) {
+                if ($club && !$clubsData->has($club->id)) {
                     $clubsData->put($club->id, [
                         'club' => $club,
                         'matches' => collect(),
@@ -544,6 +554,15 @@ class CompetitionController extends Controller
                 }
             }
             
+            // Ajouter les compétitions réellement rattachées via le pivot d'engagement.
+            if (Schema::hasTable('competition_club')) {
+                foreach (DB::table('competition_club')->join('competitions', 'competitions.id', '=', 'competition_club.competition_id')->get(['competition_club.club_id', 'competitions.*']) as $row) {
+                    if ($clubsData->has($row->club_id)) {
+                        $clubsData[$row->club_id]['competitions']->push(Competition::newFromBuilder((array) $row));
+                    }
+                }
+            }
+
             // Transformer en format final
             $clubs = $clubsData->map(function($data) use ($engagementLabels) {
                 $club = $data['club'];

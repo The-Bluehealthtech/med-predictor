@@ -34,7 +34,7 @@ class Confederation extends Model
      */
     public function associations(): HasMany
     {
-        return $this->hasMany(Association::class);
+        return $this->hasMany(Association::class, 'confederation', 'short_name');
     }
 
     /**

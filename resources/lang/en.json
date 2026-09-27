@@ -1987,5 +1987,8 @@
   "Alimentation déclarée à surveiller": "Reported diet requires monitoring",
   "Données nutritionnelles non disponibles": "Nutrition data unavailable",
   "Aucune aptitude signée": "No signed clearance",
-  "Passeport de test (non validé)": "Test passport (not validated)"
+  "Passeport de test (non validé)": "Test passport (not validated)",
+  "✅ Réussi": "✅ Successful",
+  "Cas à Risque Élevé:": "High-risk cases:",
+  "Visites Préventives:": "Preventive visits:"
 }

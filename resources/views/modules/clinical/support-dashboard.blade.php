@@ -362,14 +362,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
                             <span class="font-medium">Test Gemini:</span>
-                            <span class="text-green-600">✅ Réussi</span>
+                            <span class="text-green-600">{{ __("✅ Réussi") }}</span>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="font-medium">{{ __('clinical.status_label') }}</span>
                             <span class="text-blue-600">${result.message}</span>
                         </div>
                         <div class="mt-3">
-                            <span class="font-medium">Réponse:</span>
+                            <span class="font-medium">{{ __("Réponse:") }}</span>
                             <p class="mt-1 text-gray-600">${result.response}</p>
                         </div>
                     </div>
@@ -414,11 +414,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 geminiAnalysisContent.innerHTML = `
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
-                            <span class="font-medium">Total Analysé:</span>
+                            <span class="font-medium">{{ __("Total Analysé:") }}</span>
                             <span class="text-blue-600">${result.summary.total_analyzed}</span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-medium">Cas Approuvés:</span>
+                            <span class="font-medium">{{ __("Cas Approuvés:") }}</span>
                             <span class="text-green-600">${result.summary.cleared_cases}</span>
                         </div>
                         <div class="flex items-center justify-between">
@@ -426,7 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="text-yellow-600">${result.summary.restricted_cases}</span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-medium">Cas à Risque Élevé:</span>
+                            <span class="font-medium">{{ __("Cas à Risque Élevé:") }}</span>
                             <span class="text-red-600">${result.summary.high_risk_cases}</span>
                         </div>
                     </div>
@@ -471,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 geminiAnalysisContent.innerHTML = `
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
-                            <span class="font-medium">Total Analysé:</span>
+                            <span class="font-medium">{{ __("Total Analysé:") }}</span>
                             <span class="text-blue-600">${result.summary.total_analyzed}</span>
                         </div>
                         <div class="flex items-center justify-between">
@@ -483,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="text-yellow-600">${result.summary.illness_cases}</span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-medium">Visites Préventives:</span>
+                            <span class="font-medium">{{ __("Visites Préventives:") }}</span>
                             <span class="text-green-600">${result.summary.preventive_cases}</span>
                         </div>
                     </div>

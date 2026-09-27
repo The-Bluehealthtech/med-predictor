@@ -2273,7 +2273,7 @@ class CompetitionController extends Controller
     public function clubDetails($clubId)
     {
         try {
-            $club = Club::with(['teams.matches', 'teams.competitions'])->find($clubId);
+            $club = Club::with(['teams.competitions'])->find($clubId);
             
             if (!$club) {
                 return response()->json(['error' => 'Club non trouvé'], 404);
@@ -2295,7 +2295,7 @@ class CompetitionController extends Controller
     public function exportClubData(Request $request, $clubId)
     {
         try {
-            $club = Club::with(['teams.matches', 'teams.competitions'])->find($clubId);
+            $club = Club::with(['teams.competitions'])->find($clubId);
             
             if (!$club) {
                 return response()->json(['error' => 'Club non trouvé'], 404);
@@ -2307,12 +2307,14 @@ class CompetitionController extends Controller
                 $engagementLabels['csv_col_club'] => $club->name,
                 $engagementLabels['csv_col_teams'] => $club->teams->count(),
                 $engagementLabels['csv_col_competitions_count'] => $club->teams->flatMap->competitions->unique('id')->count(),
-                $engagementLabels['csv_col_total_matches'] => $club->teams->sum(function($team) {
-                    return $team->matches->count();
-                }),
-                $engagementLabels['csv_col_completed_matches'] => $club->teams->sum(function($team) {
-                    return $team->matches->where('status', 'completed')->count();
-                })
+                $engagementLabels['csv_col_total_matches'] => GameMatch::where(function ($query) use ($club) {
+                    $query->whereIn('home_team_id', $club->teams->pluck('id'))
+                          ->orWhereIn('away_team_id', $club->teams->pluck('id'));
+                })->count(),
+                $engagementLabels['csv_col_completed_matches'] => GameMatch::where('status', 'completed')->where(function ($query) use ($club) {
+                    $query->whereIn('home_team_id', $club->teams->pluck('id'))
+                          ->orWhereIn('away_team_id', $club->teams->pluck('id'));
+                })->count()
             ];
             
             $filename = 'club_' . $club->name . '_' . date('Y-m-d_H-i-s') . '.json';

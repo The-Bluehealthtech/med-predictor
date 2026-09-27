@@ -2910,7 +2910,7 @@
                             new Chart(ratingsCtx, {
                                 type: 'radar',
                                 data: {
-                                    labels: [@json(__(@json(__('Physique')))), @json(__(@json(__('Technique')))), @json(__(@json(__('Tactique')))), @json(__(@json(__('Mental')))), @json(__(@json(__('Social'))))],
+                                    labels: [@json(__('Physique')), @json(__('Technique')), @json(__('Tactique')), @json(__('Mental')), @json(__('Social'))],
                                     datasets: [{
                                         label: 'Performance FIT v1',
                                         data: ratingsValues.map(
@@ -2971,10 +2971,10 @@
                             new Chart(statsCtx, {
                                 type: 'bar',
                                 data: {
-                                    labels: [@json(__(@json(__('Matchs')))), @json(__(@json(__('Minutes')))), @json(__(@json(__('Buts')))), @json(__(@json(__('Passes')))), @json(__(@json(__('Jaunes')))), @json(__(@json(__('Rouges'))))],
+                                    labels: [@json(__('Matchs')), @json(__('Minutes')), @json(__('Buts')), @json(__('Passes')), @json(__('Jaunes')), @json(__('Rouges'))],
                                     datasets: [
                                         {
-                                            label: @json(__(@json(__('Statistiques de saison')))),
+                                            label: @json(__('Statistiques de saison')),
                                             data: seasonStats ? [
                                                 nullableNumber(seasonStats.matches_played),
                                                 null,
@@ -2986,7 +2986,7 @@
                                             yAxisID: 'y'
                                         },
                                         {
-                                            label: @json(__(@json(__('Minutes jouées')))),
+                                            label: @json(__('Minutes jouées')),
                                             data: seasonStats ? [
                                                 null,
                                                 nullableNumber(seasonStats.minutes_played),
@@ -3044,7 +3044,7 @@
                                             },
                                             title: {
                                                 display: true,
-                                                text: @json(__(@json(__('Minutes')))),
+                                                text: @json(__('Minutes')),
                                                 color: '#f3f4f6'
                                             },
                                             grid: {
@@ -3127,7 +3127,7 @@
                                  new Chart(sdohCtx, {
                                      type: 'radar',
                                      data: {
-                                         labels: [@json(__(@json(__('Environnement')))), @json(__(@json(__('Soutien Social')))), @json(__(@json(__('Accès Soins')))), @json(__(@json(__('Situation Financière'))))],
+                                         labels: [@json(__('Environnement')), @json(__('Soutien Social')), @json(__('Accès Soins')), @json(__('Situation Financière'))],
                                          datasets: [{
                                              label: 'Score SDOH',
                                              data: [
@@ -3198,7 +3198,7 @@
                                  });
                                  
                                  const typeLabels = Object.keys(typeCounts).map(type => {
-                                     const labels = { 'injury': @json(__(@json(__('Blessures')))), 'disease': @json(__(@json(__('Maladies')))), 'surgery': @json(__(@json(__('Chirurgies')))), 'rehabilitation': @json(__(@json(__('Rééducation')))) };
+                                     const labels = { 'injury': @json(__('Blessures')), 'disease': @json(__('Maladies')), 'surgery': @json(__('Chirurgies')), 'rehabilitation': @json(__('Rééducation')) };
                                      return labels[type] || type;
                                  });
                                  const typeData = Object.values(typeCounts);
@@ -3254,7 +3254,7 @@
                                  });
                                  
                                  const severityLabels = Object.keys(severityCounts).map(severity => {
-                                     const labels = { 'mild': @json(__(@json(__('Légère')))), 'moderate': @json(__(@json(__('Modérée')))), 'severe': @json(__(@json(__('Grave')))), 'critical': @json(__(@json(__('Critique')))) };
+                                     const labels = { 'mild': @json(__('Légère')), 'moderate': @json(__('Modérée')), 'severe': @json(__('Grave')), 'critical': @json(__('Critique')) };
                                      return labels[severity] || severity;
                                  });
                                  const severityData = Object.values(severityCounts);

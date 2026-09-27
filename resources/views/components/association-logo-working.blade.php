@@ -25,7 +25,9 @@
     
     // Priorité 1: Logo uploadé dans la base de données
     if ($association && $association->association_logo_url) {
-        $logoUrl = asset('storage/' . $association->association_logo_url) . '?v=' . time();
+        $logoUrl = \Illuminate\Support\Str::startsWith($association->association_logo_url, ['http://', 'https://'])
+            ? $association->association_logo_url
+            : asset('storage/' . $association->association_logo_url) . '?v=' . time();
         $logoAlt = ($association->name ?? $association->country) . ' Association Logo';
     }
     // Priorité 2: Logo uploadé via logo_path

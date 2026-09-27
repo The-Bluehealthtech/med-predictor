@@ -41,7 +41,9 @@ RUN composer install \
 # Copy compiled Laravel Mix assets from frontend stage
 COPY --from=frontend /app/public /var/www/html/public
 
-RUN chown -R www-data:www-data storage bootstrap/cache \
+# Never ship stale compiled Blade output from the build context.
+RUN rm -rf storage/framework/views/* \
+    && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 RUN a2enmod rewrite

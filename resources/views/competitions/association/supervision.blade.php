@@ -376,25 +376,25 @@ function showManagementModal(competitionId) {
     // existent deja comme pages dediees, liees depuis le tableau).
     const row = document.querySelector(`tr[data-competition-id="${competitionId}"]`);
     const data = row ? row.dataset : {};
-    const labels = @json([
-        'title' => __('competitions.supervision_page.js_competition_management'),
-        'id_prefix' => __('competitions.supervision_page.js_competition_id_prefix'),
-        'matches_management' => __('competitions.supervision_page.js_matches_management'),
-        'schedule_matches' => __('competitions.supervision_page.js_schedule_matches'),
-        'edit_calendar' => __('competitions.supervision_page.js_edit_calendar'),
-        'manage_referees' => __('competitions.supervision_page.js_manage_referees'),
-        'clubs_management' => __('competitions.supervision_page.js_clubs_management'),
-        'club_entries' => __('competitions.supervision_page.js_club_entries'),
-        'discipline_sanctions' => __('competitions.supervision_page.js_discipline_sanctions'),
-        'generate_reports' => __('competitions.supervision_page.js_generate_reports'),
-        'close' => __('competitions.supervision_page.js_close'),
-        'schedule_matches_unavailable' => __('competitions.supervision_page.js_schedule_matches_unavailable'),
-        'edit_calendar_unavailable' => __('competitions.supervision_page.js_edit_calendar_unavailable'),
-        'manage_referees_unavailable' => __('competitions.supervision_page.js_manage_referees_unavailable'),
-        'club_entries_unavailable' => __('competitions.supervision_page.js_club_entries_unavailable'),
-        'discipline_unavailable' => __('competitions.supervision_page.js_discipline_unavailable'),
-        'reports_unavailable' => __('competitions.supervision_page.js_reports_unavailable'),
-    ]);
+    const labels = {
+        title: 'Competition management',
+        id_prefix: 'ID: ',
+        matches_management: 'Matches management',
+        schedule_matches: 'Schedule matches',
+        edit_calendar: 'Edit calendar',
+        manage_referees: 'Manage referees',
+        clubs_management: 'Clubs management',
+        club_entries: 'Club entries',
+        discipline_sanctions: 'Discipline and sanctions',
+        generate_reports: 'Generate reports',
+        close: 'Close',
+        schedule_matches_unavailable: 'Scheduling unavailable',
+        edit_calendar_unavailable: 'Calendar editing unavailable',
+        manage_referees_unavailable: 'Referee management unavailable',
+        club_entries_unavailable: 'Club entries unavailable',
+        discipline_unavailable: 'Discipline unavailable',
+        reports_unavailable: 'Reports unavailable'
+    };
 
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';

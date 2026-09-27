@@ -627,16 +627,16 @@ class CompetitionController extends Controller
             }
         ])
         ->orderBy('match_date', 'asc')
-        ->orderBy('match_time', 'asc')
+        ->orderBy('kickoff_time', 'asc')
         ->get()
         ->map(function($match) {
             return [
                 'id' => $match->id,
                 'date' => $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('Y-m-d') : null,
-                'heure' => $match->match_time ? \Carbon\Carbon::parse($match->match_time)->format('H:i') : null,
-                'competition' => $match->competition->name ?? 'Compétition inconnue',
-                'domicile' => $match->homeTeam->club->short_name ?? $match->homeTeam->club->name ?? 'Club domicile',
-                'exterieur' => $match->awayTeam->club->short_name ?? $match->awayTeam->club->name ?? 'Club extérieur',
+                'heure' => $match->kickoff_time ? \Carbon\Carbon::parse($match->kickoff_time)->format('H:i') : null,
+                'competition' => $match->competition?->name ?? 'Compétition inconnue',
+                'domicile' => $match->homeTeam?->club?->short_name ?? $match->homeTeam?->club?->name ?? 'Club domicile',
+                'exterieur' => $match->awayTeam?->club?->short_name ?? $match->awayTeam?->club?->name ?? 'Club extérieur',
                 'lieu' => $match->venue ?? __('competitions.fixtures_page.not_specified'),
                 'arbitre_principal' => $match->officials->first() ? $match->officials->first()->name : __('competitions.fixtures_page.to_be_designated'),
                 'statut' => $this->getMatchStatus($match->status),

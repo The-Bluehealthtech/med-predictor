@@ -2026,5 +2026,8 @@
     "Évaluation fictive de test, non signée et non officielle.": "Synthetic test assessment, unsigned and unofficial.",
     "Évaluation non signée": "Unsigned assessment",
     "pcma.physician_label": "Physician",
-    "competition_management.season": "Season"
+    "competition_management.season": "Season",
+    "Axe physique actuel:": "Current physical axis:",
+    "Note actuelle:": "Current rating:",
+    "Meilleur axe actuel:": "Best current axis:"
 }

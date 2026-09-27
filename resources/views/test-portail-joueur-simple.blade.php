@@ -602,7 +602,7 @@
                         <h3>{{ __('🏃 Forme Physique') }}</h3>
                         <div style="text-align: left; margin-top: 15px;">
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Axe physique actuel:</span>
+                                <span>{{ __("Axe physique actuel:") }}:</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) $latestFitSnapshot->physical_score, 1).'/100' : __('Données non disponibles') }}</span>
                             </div>
                         </div>
@@ -613,11 +613,11 @@
                         <h3>{{ __('⚽ Note Globale FIT') }}</h3>
                         <div style="text-align: left; margin-top: 15px;">
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Note actuelle:</span>
+                                <span>{{ __("Note actuelle:") }}:</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) $latestFitSnapshot->fit_score, 1).'/100' : __('Données non disponibles') }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Meilleur axe actuel:</span>
+                                <span>{{ __("Meilleur axe actuel:") }}:</span>
                                 <span style="color: #51cf66; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) max($latestFitSnapshot->physical_score, $latestFitSnapshot->technical_score, $latestFitSnapshot->tactical_score, $latestFitSnapshot->mental_score, $latestFitSnapshot->social_score), 1).'/100' : __('Données non disponibles') }}</span>
                             </div>
                         </div>

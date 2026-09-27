@@ -1895,7 +1895,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                                 <div class="text-center p-3 bg-blue-50 rounded-lg">
                                     <div class="text-2xl font-bold text-blue-600">{{ $behavioralData->sleep_hours }}h</div>
-                                    <div class="text-sm text-blue-700">Sommeil</div>
+                                    <div class="text-sm text-blue-700">{{ __("Sommeil") }}</div>
                                 </div>
                                 <div class="text-center p-3 bg-green-50 rounded-lg">
                                     <div class="text-2xl font-bold text-green-600">{{ number_format($behavioralData->steps_count) }}</div>
@@ -1907,10 +1907,10 @@
                                 </div>
                                 <div class="text-center p-3 bg-purple-50 rounded-lg">
                                     <div class="text-2xl font-bold text-purple-600">{{ $behavioralData->mood_score }}/10</div>
-                                    <div class="text-sm text-purple-700">Humeur</div>
+                                    <div class="text-sm text-purple-700">{{ __("Humeur") }}</div>
                                 </div>
                             </div>
-                            <div class="text-xs text-gray-500 text-center">Source: {{ $behavioralData->device_source }} | Dernière mise à jour: {{ \Carbon\Carbon::parse($behavioralData->created_at)->format('d M Y H:i') }}</div>
+                            <div class="text-xs text-gray-500 text-center">{{ __("Source") }}: {{ $behavioralData->device_source }} | {{ __("Dernière mise à jour") }}: {{ \Carbon\Carbon::parse($behavioralData->created_at)->format('d M Y H:i') }}</div>
                         @else
                             <div class="text-center text-gray-500 py-8">
                                 <i class="fas fa-info-circle text-2xl mb-2"></i>
@@ -1986,7 +1986,7 @@
                                                                                     <div class="grid grid-cols-2 gap-2 mb-3">
                                                 <div class="text-center p-2 bg-purple-50 rounded">
                                                     <div class="text-lg font-bold text-purple-600">{{ $app->mood_score }}/10</div>
-                                                    <div class="text-xs text-purple-700">Humeur</div>
+                                                    <div class="text-xs text-purple-700">{{ __("Humeur") }}</div>
                                                 </div>
                                             <div class="text-center p-2 bg-green-50 rounded">
                                                 <div class="text-lg font-bold text-green-600">{{ $app->wellness_score }}/10</div>

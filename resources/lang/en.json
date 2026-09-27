@@ -2029,5 +2029,8 @@
     "competition_management.season": "Season",
     "Axe physique actuel:": "Current physical axis:",
     "Note actuelle:": "Current rating:",
-    "Meilleur axe actuel:": "Best current axis:"
+    "Meilleur axe actuel:": "Best current axis:",
+    "Sommeil": "Sleep",
+    "Humeur": "Mood",
+    "Dernière mise à jour": "Last updated"
 }

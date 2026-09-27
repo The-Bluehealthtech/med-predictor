@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au Dashboard</a>
+                    <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('pcma.back_to_dashboard') }}</a>
                 </div>
             </div>
         </div>
@@ -212,7 +212,7 @@
                             <h3 class="text-lg font-semibold text-gray-900 mb-2">Demandes de Compte</h3>
                             <p class="text-sm text-gray-600 mb-4">Formulaire pour demander un accès à la plateforme FIT</p>
                             <a href="{{ route('account-request.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 transition-colors duration-200">
-                                Demander un Compte
+                                {{ __('landing.hero.request_account') }}
                                 <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
@@ -254,7 +254,7 @@
                         <span class="text-blue-600">👥</span>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-500">Utilisateurs actifs</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('user_management.active_users') }}</p>
                         <p class="text-2xl font-bold text-gray-900">1,234</p>
                     </div>
                 </div>

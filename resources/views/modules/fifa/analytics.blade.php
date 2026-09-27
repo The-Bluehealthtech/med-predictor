@@ -82,7 +82,7 @@
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Clubs Actifs</p>
+                            <p class="text-sm font-medium text-gray-500">{{ __('landing.hero.active_clubs') }}</p>
                             <p class="text-2xl font-bold text-gray-900">{{ \App\Models\Club::count() }}</p>
                         </div>
                     </div>
@@ -120,7 +120,7 @@
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Matchs</p>
+                            <p class="text-sm font-medium text-gray-500">{{ __('common.matches') }}</p>
                             <p class="text-2xl font-bold text-gray-900">{{ \App\Models\GameMatch::count() }}</p>
                         </div>
                     </div>
@@ -164,7 +164,7 @@
         <div class="bg-white rounded-lg shadow-md border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-900">Activité Récente</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('clinical.recent_activity_heading') }}</h3>
                     <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                         <span class="text-purple-600 text-sm">📈</span>
                     </div>
@@ -179,7 +179,7 @@
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-900">Nouveaux joueurs ajoutés</p>
-                                <p class="text-xs text-gray-500">Cette semaine</p>
+                                <p class="text-xs text-gray-500">{{ __('common.this_week') }}</p>
                             </div>
                         </div>
                         <div class="text-right">
@@ -211,12 +211,12 @@
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-900">Matchs programmés</p>
-                                <p class="text-xs text-gray-500">Ce mois</p>
+                                <p class="text-xs text-gray-500">{{ __('common.this_month') }}</p>
                             </div>
                         </div>
                         <div class="text-right">
                             <span class="text-lg font-bold text-purple-600">{{ \App\Models\GameMatch::where('match_date', '>=', now()->startOfMonth())->count() }}</span>
-                            <p class="text-xs text-gray-400">Matchs</p>
+                            <p class="text-xs text-gray-400">{{ __('common.matches') }}</p>
                         </div>
                     </div>
                 </div>

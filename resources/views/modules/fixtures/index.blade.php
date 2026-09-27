@@ -15,49 +15,49 @@
         </div>
         <div class="flex space-x-4">
             <a href="{{ route('modules.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i>Retour aux Modules
+                <i class="fas fa-arrow-left mr-2"></i>{{ __('competition_management.back_modules') }}
             </a>
             <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                <i class="fas fa-download mr-2"></i>Exporter
+                <i class="fas fa-download mr-2"></i>{{ __('common.export') }}
             </button>
         </div>
     </div>
 
     <!-- Filtres -->
     <div class="bg-white rounded-lg shadow p-6 mb-8">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtres</h2>
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ __('competitions.designation_arbitres_page.filters_heading') }}</h2>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Compétition</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.competition') }}</label>
                 <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Toutes les compétitions</option>
+                    <option value="">{{ __('competitions.ranking.all_competitions') }}</option>
                     <option value="championnat-u19">Championnat Régional U19</option>
                     <option value="coupe-regionale">Coupe Régionale</option>
                     <option value="championnat-senior">Championnat Senior</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Période</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.fixtures_page.period_label') }}</label>
                 <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="semaine">Cette semaine</option>
-                    <option value="mois">Ce mois</option>
-                    <option value="trimestre">Ce trimestre</option>
-                    <option value="saison">Toute la saison</option>
+                    <option value="semaine">{{ __('common.this_week') }}</option>
+                    <option value="mois">{{ __('common.this_month') }}</option>
+                    <option value="trimestre">{{ __('competitions.calendrier_global_page.this_quarter') }}</option>
+                    <option value="saison">{{ __('competitions.fixtures_page.whole_season') }}</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                 <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">Tous les statuts</option>
-                    <option value="programme">Programmé</option>
+                    <option value="programme">{{ __('competitions.match_status_label.scheduled') }}</option>
                     <option value="en-cours">En cours</option>
-                    <option value="termine">Terminé</option>
-                    <option value="reporte">Reporté</option>
+                    <option value="termine">{{ __('clinical.status_completed') }}</option>
+                    <option value="reporte">{{ __('competitions.match_status_label.postponed') }}</option>
                 </select>
             </div>
             <div class="flex items-end">
                 <button class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                    <i class="fas fa-search mr-2"></i>Filtrer
+                    <i class="fas fa-search mr-2"></i>{{ __('common.filter') }}
                 </button>
             </div>
         </div>
@@ -71,7 +71,7 @@
                     <i class="fas fa-calendar text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Matchs Programmés</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.calendrier_global_page.scheduled_matches') }}</p>
                     <p class="text-2xl font-bold text-gray-900">24</p>
                 </div>
             </div>
@@ -83,7 +83,7 @@
                     <i class="fas fa-check text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Matchs Terminés</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.calendrier_global_page.completed_matches') }}</p>
                     <p class="text-2xl font-bold text-gray-900">18</p>
                 </div>
             </div>
@@ -107,7 +107,7 @@
                     <i class="fas fa-exclamation-triangle text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Reportés</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.calendar_page.stat_postponed') }}</p>
                     <p class="text-2xl font-bold text-gray-900">4</p>
                 </div>
             </div>
@@ -163,7 +163,7 @@
                                     <div class="text-xs text-gray-500">Stade Municipal</div>
                                 </div>
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                    Programmé
+                                    {{ __('competitions.match_status_label.scheduled') }}
                                 </span>
                                 <button class="text-blue-600 hover:text-blue-900">
                                     <i class="fas fa-eye"></i>
@@ -198,7 +198,7 @@
                                     <div class="text-xs text-gray-500">Stade des Sports</div>
                                 </div>
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                    Reporté
+                                    {{ __('competitions.match_status_label.postponed') }}
                                 </span>
                                 <button class="text-blue-600 hover:text-blue-900">
                                     <i class="fas fa-eye"></i>
@@ -233,7 +233,7 @@
                                     <div class="text-xs text-gray-500">Stade Principal</div>
                                 </div>
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                    Terminé
+                                    {{ __('clinical.status_completed') }}
                                 </span>
                                 <button class="text-blue-600 hover:text-blue-900">
                                     <i class="fas fa-eye"></i>

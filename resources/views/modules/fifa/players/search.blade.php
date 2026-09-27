@@ -8,7 +8,7 @@
     <form action="{{ route('fifa.players.search') }}" method="GET" class="flex gap-3 mb-6">
         <label for="q" class="sr-only">Nom ou identifiant FIFA Connect</label>
         <input id="q" name="q" value="{{ $query }}" maxlength="100" placeholder="Nom ou identifiant FIFA Connect" class="border rounded px-3 py-2 flex-1">
-        <button type="submit" class="bg-blue-700 text-white px-4 py-2 rounded">Rechercher</button>
+        <button type="submit" class="bg-blue-700 text-white px-4 py-2 rounded">{{ __('common.search') }}</button>
     </form>
     @if($query !== '')
         <p class="mb-4">{{ $players->count() }} résultat(s), 25 maximum.</p>

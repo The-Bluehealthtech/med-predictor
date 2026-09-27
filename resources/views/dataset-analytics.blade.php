@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au Dashboard</a>
+                    <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('pcma.back_to_dashboard') }}</a>
                 </div>
             </div>
         </div>
@@ -114,7 +114,7 @@
                                 </div>
                             </div>
                             <div class="ml-4 flex-1">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Total Joueurs</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('competitions.rapports_avances_page.stat_total_players') }}</h3>
                                 <div class="text-3xl font-bold text-blue-600 mb-2">{{ number_format($overviewData['totalPlayers']) }}</div>
                                 <div class="text-sm text-gray-600 mb-4">Joueurs enregistrés dans le système</div>
                                 <div class="text-sm text-green-600 font-medium">
@@ -154,7 +154,7 @@
                                 </div>
                             </div>
                             <div class="ml-4 flex-1">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Qualité des Données</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('fifa.data_quality') }}</h3>
                                 <div class="text-3xl font-bold text-yellow-600 mb-2">{{ $overviewData['avgDataQuality'] }}%</div>
                                 <div class="text-sm text-gray-600 mb-4">Score moyen de qualité</div>
                                 <div class="text-sm text-yellow-600 font-medium">
@@ -381,7 +381,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-lg text-gray-700">Récupération</span>
+                                <span class="text-lg text-gray-700">{{ __('medical_predictions.dashboard_type_recovery_short') }}</span>
                                 <div class="flex items-center space-x-3">
                                     <div class="w-32 bg-gray-200 rounded-full h-2">
                                         <div class="bg-blue-500 h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
@@ -500,7 +500,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div class="p-6">
                     <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                        💡 Recommandations
+                        {{ __('health_records_extra.label_c9a44610a2d6') }}
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="value-recommendations-container">
                         <!-- Les recommandations seront chargées dynamiquement ici -->

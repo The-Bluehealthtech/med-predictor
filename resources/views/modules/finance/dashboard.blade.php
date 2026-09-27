@@ -188,7 +188,7 @@
 
         <!-- Actions rapides -->
         <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Actions Rapides</h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <a href="{{ route('modules.finance.reports') }}"
                    class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
@@ -196,7 +196,7 @@
                         <span class="text-blue-600 text-xl">📊</span>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-gray-900">Rapports</h3>
+                        <h3 class="font-semibold text-gray-900">{{ __('common.reports') }}</h3>
                         <p class="text-sm text-gray-600">Voir les rapports détaillés</p>
                     </div>
                 </a>

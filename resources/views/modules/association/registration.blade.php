@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('association.dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au Dashboard</a>
+                    <a href="{{ route('association.dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('pcma.back_to_dashboard') }}</a>
                 </div>
             </div>
         </div>
@@ -62,7 +62,7 @@
                         </label>
                         <select name="association_type" id="association_type" required
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Sélectionner un type</option>
+                            <option value="">{{ __('health_records_create.select_type_placeholder') }}</option>
                             <option value="National Association" {{ old('association_type') == 'National Association' ? 'selected' : '' }}>Association Nationale</option>
                             <option value="Regional Association" {{ old('association_type') == 'Regional Association' ? 'selected' : '' }}>Association Régionale</option>
                             <option value="League Administrator" {{ old('association_type') == 'League Administrator' ? 'selected' : '' }}>Administrateur de Ligue</option>
@@ -226,7 +226,7 @@
                         </button>
                         <button type="button" onclick="window.history.back()"
                                 class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md text-sm font-medium transition-colors">
-                            Annuler
+                            {{ __('clinical.cancel') }}
                         </button>
                     </div>
                     
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-medium">Statut:</span>
+                            <span class="font-medium">{{ __('clinical.status_label') }}</span>
                             <span class="px-2 py-1 rounded-full text-xs font-medium ${result.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
                                 ${result.status === 'approved' ? '✅ Approuvé' : '❌ Rejeté'}
                             </span>
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         ${result.recommendations ? `
                         <div class="mt-3">
-                            <span class="font-medium">Recommandations:</span>
+                            <span class="font-medium">{{ __('health_records_edit.recommendations') }}</span>
                             <p class="mt-1 text-gray-600">${result.recommendations}</p>
                         </div>
                         ` : ''}

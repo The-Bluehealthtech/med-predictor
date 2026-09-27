@@ -17,7 +17,7 @@
                 </div>
                 <a href="{{ route('modules.finance.dashboard') }}" 
                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    ← Retour au Dashboard
+                    {{ __('pcma.back_to_dashboard') }}
                 </a>
             </div>
         </div>
@@ -193,10 +193,10 @@
                     <p class="text-sm text-gray-600 mb-4">Import et export de données via fichiers Excel et CSV.</p>
                     <div class="flex space-x-2">
                         <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors">
-                            Importer
+                            {{ __('common.import') }}
                         </button>
                         <button class="px-3 py-1 border border-gray-300 text-gray-700 text-sm rounded hover:bg-gray-50 transition-colors">
-                            Exporter
+                            {{ __('common.export') }}
                         </button>
                     </div>
                 </div>
@@ -241,7 +241,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logiciel</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.table_status') }}</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Éléments</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>

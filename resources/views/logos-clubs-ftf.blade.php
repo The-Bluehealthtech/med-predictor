@@ -244,7 +244,7 @@
                 </div>
                 <div class="bg-purple-50 rounded-lg p-4">
                     <div class="text-4xl font-bold text-purple-600 mb-2">100%</div>
-                    <p class="text-purple-700 font-semibold">Succès</p>
+                    <p class="text-purple-700 font-semibold">{{ __('common.success') }}</p>
                     <p class="text-sm text-purple-600">Taux</p>
                 </div>
             </div>

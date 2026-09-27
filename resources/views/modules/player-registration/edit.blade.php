@@ -12,7 +12,7 @@
 
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">Informations du Joueur</h2>
+                <h2 class="text-xl font-semibold text-gray-800">{{ __('medical_predictions.show_player_info_header') }}</h2>
             </div>
             
             <form action="{{ route('player-registration.update', $player) }}" method="POST" class="p-6" enctype="multipart/form-data">
@@ -122,7 +122,7 @@
 
                     <div>
                         <label for="height" class="block text-sm font-medium text-gray-700 mb-2">
-                            Taille (cm)
+                            {{ __('health_records.show_page.height_label') }}
                         </label>
                         <input type="number" name="height" id="height" 
                                value="{{ old('height', $player->height) }}" min="150" max="220"
@@ -134,7 +134,7 @@
 
                     <div>
                         <label for="weight" class="block text-sm font-medium text-gray-700 mb-2">
-                            Poids (kg)
+                            {{ __('health_records.show_page.weight_label') }}
                         </label>
                         <input type="number" name="weight" id="weight" 
                                value="{{ old('weight', $player->weight) }}" min="40" max="120"
@@ -174,7 +174,7 @@
                         </label>
                         <select name="preferred_foot" id="preferred_foot"
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Sélectionner</option>
+                            <option value="">{{ __('clinical.select_button') }}</option>
                             <option value="Right" {{ old('preferred_foot', $player->preferred_foot) == 'Right' ? 'selected' : '' }}>Droit</option>
                             <option value="Left" {{ old('preferred_foot', $player->preferred_foot) == 'Left' ? 'selected' : '' }}>Gauche</option>
                         </select>
@@ -247,7 +247,7 @@
                 <div class="mt-8 flex justify-end space-x-4">
                                     <a href="{{ route('player-registration.show', $player) }}" 
                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
-                        Annuler
+                        {{ __('clinical.cancel') }}
                     </a>
                     <button type="submit" 
                             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">

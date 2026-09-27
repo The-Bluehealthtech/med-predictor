@@ -249,7 +249,7 @@ createApp({
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Erreur de chargement</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('pcma.loading_error') }}</h3>
                 <p class="text-gray-600 mb-4">@{{ error }}</p>
                 <button @click="loadSignedPcmas" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                     Réessayer
@@ -276,13 +276,13 @@ createApp({
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                                 <div>
                                     <p><strong>Type:</strong> @{{ pcma.type ? pcma.type.charAt(0).toUpperCase() + pcma.type.slice(1) : 'Standard' }}</p>
-                                    <p v-if="pcma.assessor"><strong>Assesseur:</strong> @{{ pcma.assessor.name }}</p>
-                                    <p><strong>Date d'évaluation:</strong> @{{ pcma.assessment_date ? formatDate(pcma.assessment_date) : 'Non spécifiée' }}</p>
+                                    <p v-if="pcma.assessor"><strong>{{ __('pcma_extra.assessor_short') }}</strong> @{{ pcma.assessor.name }}</p>
+                                    <p><strong>{{ __('pcma.report_assessment_date_label') }}</strong> @{{ pcma.assessment_date ? formatDate(pcma.assessment_date) : 'Non spécifiée' }}</p>
                                 </div>
                                 <div>
-                                    <p><strong>Signé par:</strong> @{{ pcma.signed_by || 'Non spécifié' }}</p>
-                                    <p><strong>Licence:</strong> @{{ pcma.license_number || 'Non spécifiée' }}</p>
-                                    <p><strong>Date de signature:</strong> @{{ pcma.signed_at ? formatDate(pcma.signed_at) : 'Non spécifiée' }}</p>
+                                    <p><strong>{{ __('pcma.report_signed_by_label') }}</strong> @{{ pcma.signed_by || 'Non spécifié' }}</p>
+                                    <p><strong>{{ __('pcma_extra.label_38aec7f0fe5a') }}</strong> @{{ pcma.license_number || 'Non spécifiée' }}</p>
+                                    <p><strong>{{ __('pcma.report_signature_date_label') }}</strong> @{{ pcma.signed_at ? formatDate(pcma.signed_at) : 'Non spécifiée' }}</p>
                                 </div>
                             </div>
                             
@@ -299,7 +299,7 @@ createApp({
                             </button>
                             <button @click="printPcma(pcma.id)" 
                                     class="text-green-600 hover:text-green-800 text-sm font-medium">
-                                🖨️ Imprimer
+                                {{ __('pcma_extra.label_26d5eac2bb68') }}
                             </button>
                         </div>
                     </div>

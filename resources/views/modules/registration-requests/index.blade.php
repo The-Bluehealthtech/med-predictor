@@ -38,7 +38,7 @@
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Club</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Type de demande</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Type de licence</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('clinical.table_status') }}</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Soumise le</th>
                         </tr>
                     </thead>

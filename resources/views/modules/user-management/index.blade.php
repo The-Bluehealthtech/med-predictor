@@ -75,7 +75,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Arbitres</dt>
+                                <dt class="text-sm font-medium text-gray-500 truncate">{{ __('common.referees') }}</dt>
                             </dl>
                         </div>
                     </div>
@@ -103,7 +103,7 @@
         <!-- Liste des utilisateurs -->
         <div class="bg-white shadow overflow-hidden sm:rounded-md">
             <div class="px-4 py-5 sm:px-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">Utilisateurs</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">{{ __('user_management.users') }}</h3>
                 <p class="mt-1 max-w-2xl text-sm text-gray-500">Liste de tous les utilisateurs du système</p>
             </div>
             <ul class="divide-y divide-gray-200">
@@ -141,7 +141,7 @@
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
-                                Modifier
+                                {{ __('common.edit') }}
                             </a>
                             <form method="POST" action="{{ route('user-management.destroy', $user) }}" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
                                 @csrf
@@ -150,7 +150,7 @@
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                     </svg>
-                                    Supprimer
+                                    {{ __('common.delete') }}
                                 </button>
                             </form>
                         </div>

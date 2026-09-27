@@ -58,7 +58,7 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joueur</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('auth.role_player') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Global</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Physique</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Technique</th>

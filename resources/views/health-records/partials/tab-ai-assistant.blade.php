@@ -220,7 +220,7 @@ function analyzeWithAI(notes) {
 
     aiContent.innerHTML = `
         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <p class="text-yellow-800 font-semibold mb-1">⚠️ Analyse IA non disponible</p>
+            <p class="text-yellow-800 font-semibold mb-1">{{ __('health_records_create.js_ai_not_available_heading') }}</p>
             <p class="text-sm text-yellow-800">
                 L'analyse automatique des notes cliniques n'est pas disponible : aucun service d'intelligence artificielle
                 n'est connecté à cette application. Les notes cliniques restent enregistrées telles que saisies ;

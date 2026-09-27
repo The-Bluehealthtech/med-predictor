@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('team-portal.dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au Dashboard</a>
+                    <a href="{{ route('team-portal.dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('pcma.back_to_dashboard') }}</a>
                 </div>
             </div>
         </div>
@@ -43,7 +43,7 @@
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Joueurs</p>
+                            <p class="text-sm font-medium text-gray-500">{{ __('common.players') }}</p>
                             <p class="text-2xl font-bold text-gray-900">{{ $teamStats['total_players'] }}</p>
                         </div>
                     </div>
@@ -59,7 +59,7 @@
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Taux de Victoire</p>
+                            <p class="text-sm font-medium text-gray-500">{{ __('competitions.ranking.win_rate') }}</p>
                             <p class="text-2xl font-bold text-gray-900">{{ $teamStats['win_rate'] }}%</p>
                         </div>
                     </div>
@@ -159,7 +159,7 @@
                         </div>
                         <div class="text-right">
                             <span class="text-sm font-medium text-gray-900">{{ $match->result ?? 'N/A' }}</span>
-                            <p class="text-xs text-gray-400">Résultat</p>
+                            <p class="text-xs text-gray-400">{{ __('competitions.calendar_page.col_result') }}</p>
                         </div>
                     </div>
                     @endforeach

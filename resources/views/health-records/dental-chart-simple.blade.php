@@ -400,7 +400,7 @@ function updateToothInfo(toothId) {
         <h6>Dent ${toothId}</h6>
         <p><strong>Type:</strong> ${getToothType(toothId)}</p>
         <p><strong>Quadrant:</strong> ${getQuadrant(toothId)}</p>
-        <p><strong>Statut:</strong> <span class="badge bg-primary">Normal</span></p>
+        <p><strong>{{ __('clinical.status_label') }}</strong> <span class="badge bg-primary">Normal</span></p>
     `;
 }
 

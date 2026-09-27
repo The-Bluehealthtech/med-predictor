@@ -34,11 +34,11 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Joueur</th>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('auth.role_player') }}</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Club</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">N° Licence</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('clinical.table_status') }}</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Expiration</th>
                         </tr>
                     </thead>

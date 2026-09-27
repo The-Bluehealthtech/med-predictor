@@ -17,7 +17,7 @@
                 </div>
                 <a href="{{ route('modules.finance.dashboard') }}"
                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    ← Retour au Dashboard
+                    {{ __('pcma.back_to_dashboard') }}
                 </a>
             </div>
         </div>

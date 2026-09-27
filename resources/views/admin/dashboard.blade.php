@@ -39,7 +39,7 @@
                     </a>
                     <a href="{{ route('logout') }}" 
                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
-                        Déconnexion
+                        {{ __('auth.logout') }}
                     </a>
                 </div>
             </div>
@@ -55,7 +55,7 @@
                         <i class="fas fa-users text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-300">Total Joueurs</p>
+                        <p class="text-sm font-medium text-gray-300">{{ __('competitions.rapports_avances_page.stat_total_players') }}</p>
                         <p class="text-2xl font-bold text-white">{{ $players->total() }}</p>
                     </div>
                 </div>
@@ -116,13 +116,13 @@
                 <div class="flex gap-2">
                     <select name="position" class="px-3 py-2 border border-white/20 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Toutes les positions</option>
-                        <option value="Gardien" {{ request('position') == 'Gardien' ? 'selected' : '' }}>Gardien</option>
-                        <option value="Défenseur" {{ request('position') == 'Défenseur' ? 'selected' : '' }}>Défenseur</option>
-                        <option value="Milieu" {{ request('position') == 'Milieu' ? 'selected' : '' }}>Milieu</option>
-                        <option value="Attaquant" {{ request('position') == 'Attaquant' ? 'selected' : '' }}>Attaquant</option>
+                        <option value="Gardien" {{ request('position') == 'Gardien' ? 'selected' : '' }}>{{ __('pcma.position_goalkeeper_option') }}</option>
+                        <option value="Défenseur" {{ request('position') == 'Défenseur' ? 'selected' : '' }}>{{ __('pcma.position_defender_option') }}</option>
+                        <option value="Milieu" {{ request('position') == 'Milieu' ? 'selected' : '' }}>{{ __('clinical.demo_position_midfielder') }}</option>
+                        <option value="Attaquant" {{ request('position') == 'Attaquant' ? 'selected' : '' }}>{{ __('clinical.demo_position_forward') }}</option>
                     </select>
                     <select name="club" class="px-3 py-2 border border-white/20 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Tous les clubs</option>
+                        <option value="">{{ __('competitions.rapports_avances_page.all_clubs_option') }}</option>
                         @php
                             $clubs = \App\Models\Club::orderBy('name')->get();
                         @endphp
@@ -134,11 +134,11 @@
                     </select>
                     <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                         <i class="fas fa-search mr-1"></i>
-                        Rechercher
+                        {{ __('common.search') }}
                     </button>
                     <a href="{{ route('players.list') }}" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
                         <i class="fas fa-times mr-1"></i>
-                        Effacer
+                        {{ __('competitions.association_fixtures_page.clear_filters_button') }}
                     </a>
                 </div>
             </form>
@@ -162,7 +162,7 @@
                 <table class="w-full">
                     <thead class="bg-white/5">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Joueur</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">{{ __('auth.role_player') }}</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Position</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Stats FIFA</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Club</th>
@@ -302,7 +302,7 @@
                 <h3 class="text-lg font-semibold text-white mb-4">Actions rapides</h3>
                 <div class="space-y-3">
                     <button class="block w-full bg-purple-600 hover:bg-purple-700 text-white text-center py-2 px-4 rounded-lg transition-colors duration-200">
-                        Exporter les données
+                        {{ __('navigation.export_data') }}
                     </button>
                 </div>
             </div>

@@ -36,7 +36,7 @@
             <!-- Informations générales -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Informations Générales</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('health_records_create.tab_general') }}</h3>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div>
                             <dt class="text-sm font-medium text-gray-500">ID du Log</dt>
@@ -63,7 +63,7 @@
                             </dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500">Sévérité</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('clinical.severity_label') }}</dt>
                             <dd class="mt-1">
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-{{ $log->severity_color }}-100 text-{{ $log->severity_color }}-800">
                                     {{ ucfirst($log->severity) }}
@@ -81,7 +81,7 @@
             <!-- Informations utilisateur -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Utilisateur</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('navigation.user') }}</h3>
                     @if($log->user)
                         <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                             <div>
@@ -93,7 +93,7 @@
                                 <dd class="mt-1 text-sm text-gray-900">{{ $log->user->email ?? 'N/A' }}</dd>
                             </div>
                             <div>
-                                <dt class="text-sm font-medium text-gray-500">Rôle</dt>
+                                <dt class="text-sm font-medium text-gray-500">{{ __('user_management.role') }}</dt>
                                 <dd class="mt-1 text-sm text-gray-900">{{ ucfirst(str_replace('_', ' ', $log->user->role ?? 'N/A')) }}</dd>
                             </div>
                             <div>
@@ -204,7 +204,7 @@
             @if($log->metadata && count($log->metadata) > 0)
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Métadonnées</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('health_records_edit.metadata') }}</h3>
                     <pre class="bg-gray-100 p-4 rounded-lg text-sm overflow-x-auto">{{ json_encode($log->metadata, JSON_PRETTY_PRINT) }}</pre>
                 </div>
             </div>

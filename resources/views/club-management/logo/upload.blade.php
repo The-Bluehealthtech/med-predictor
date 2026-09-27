@@ -79,7 +79,7 @@
                         
                         <a href="{{ route('joueur.portal', request()->query('player_id', 1)) }}" 
                            class="text-gray-600 hover:text-gray-800">
-                            Annuler
+                            {{ __('clinical.cancel') }}
                         </a>
                     </div>
                 </form>

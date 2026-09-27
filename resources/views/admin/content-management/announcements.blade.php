@@ -58,11 +58,11 @@
                                                 </span>
                                             @elseif($announcement['status'] === 'expired')
                                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                    Expirée
+                                                    {{ __('health_records_edit.expired') }}
                                                 </span>
                                             @else
                                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                    En attente
+                                                    {{ __('competition_management.statuses.pending') }}
                                                 </span>
                                             @endif
                                             
@@ -92,13 +92,13 @@
                                         <div class="flex space-x-2">
                                             <a href="{{ route('admin.content-management.edit', ['id' => $announcement['id'], 'type' => 'announcement']) }}" 
                                                class="text-orange-600 hover:text-orange-900 text-sm">
-                                                Modifier
+                                                {{ __('common.edit') }}
                                             </a>
                                             <form action="{{ route('admin.content-management.destroy', $announcement['id']) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-900 text-sm">
-                                                    Supprimer
+                                                    {{ __('common.delete') }}
                                                 </button>
                                             </form>
                                         </div>

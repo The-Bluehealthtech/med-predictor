@@ -96,9 +96,9 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
                                         <a href="{{ route('healthcare.records.show', ['record' => $record->id ?? 1]) }}" 
-                                           class="text-blue-600 hover:text-blue-900">Voir</a>
+                                           class="text-blue-600 hover:text-blue-900">{{ __('clinical.view_button') }}</a>
                                         <a href="{{ route('healthcare.records.edit', ['record' => $record->id ?? 1]) }}" 
-                                           class="text-indigo-600 hover:text-indigo-900">Modifier</a>
+                                           class="text-indigo-600 hover:text-indigo-900">{{ __('common.edit') }}</a>
                                     </div>
                                 </td>
                             </tr>

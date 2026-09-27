@@ -20,7 +20,7 @@
                     @endif
                 </div>
                 <a href="{{ url()->previous() }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    ← Retour
+                    {{ __('errors.generic_back') }}
                 </a>
             </div>
         </div>
@@ -130,7 +130,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                     <p><strong>ID Association :</strong> {{ $association->id }}</p>
-                    <p><strong>Nom :</strong> {{ $association->name }}</p>
+                    <p><strong>{{ __('clinical.name_label') }}</strong> {{ $association->name }}</p>
                     <p><strong>Pays :</strong> {{ $association->country }}</p>
                     <p><strong>Code pays ISO :</strong> {{ $countryCode ?? 'Non défini' }}</p>
                 </div>

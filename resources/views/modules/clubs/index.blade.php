@@ -67,7 +67,7 @@
                 </a>
             @else
                 <a href="/" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    ← Retour à l'accueil
+                    {{ __('auth.login_back_home') }}
                 </a>
             @endif
             
@@ -197,7 +197,7 @@
                                 @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs', $club))
                                 <a href="{{ route('organization-cards.edit', ['clubs', $club->id]) }}"
                                    class="flex-1 px-4 py-2 bg-yellow-600 text-white text-center rounded-lg hover:bg-yellow-700 transition-colors text-sm">
-                                    ✏️ Modifier
+                                    {{ __('pcma_extra.label_723bbbfede8a') }}
                                 </a>
                                 @endif
                             </div>
@@ -275,11 +275,11 @@
                     <div class="flex space-x-3">
                         <button onclick="closeDeleteModal()" 
                                 class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
-                            Annuler
+                            {{ __('clinical.cancel') }}
                         </button>
                         <button id="confirmDeleteBtn" 
                                 class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                            Supprimer
+                            {{ __('common.delete') }}
                         </button>
                     </div>
                 </div>
@@ -310,7 +310,7 @@
                 <div class="flex space-x-3">
                     <button onclick="closeMergeModal()" 
                             class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
-                        Annuler
+                        {{ __('clinical.cancel') }}
                     </button>
                 </div>
             </div>

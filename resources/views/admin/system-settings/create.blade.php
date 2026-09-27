@@ -48,7 +48,7 @@
             <!-- Informations de base -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Informations de base</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('pcma_extra.label_1466efa7b745') }}</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -110,7 +110,7 @@
                             </label>
                             <select name="type" id="type" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                                <option value="">Sélectionner un type</option>
+                                <option value="">{{ __('health_records_create.select_type_placeholder') }}</option>
                                 @foreach($types as $type)
                                     <option value="{{ $type }}" {{ old('type') === $type ? 'selected' : '' }}>
                                         {{ ucfirst($type) }}
@@ -193,7 +193,7 @@
             <div class="flex justify-end space-x-4">
                 <a href="{{ route('admin.system-settings.index') }}" 
                    class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
-                    Annuler
+                    {{ __('clinical.cancel') }}
                 </a>
                 <button type="submit" 
                         class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">

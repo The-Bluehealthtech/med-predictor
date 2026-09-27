@@ -142,7 +142,7 @@
                 <!-- Player Stats -->
                 <div class="grid grid-cols-2 gap-4 text-sm">
                     <div class="text-center">
-                        <p class="text-white/60 text-xs">Nationalité</p>
+                        <p class="text-white/60 text-xs">{{ __('health_records.show_page.nationality_label') }}</p>
                         <p class="font-semibold">{{ $player->nationality ?? 'N/A' }}</p>
                     </div>
                     <div class="text-center">
@@ -165,7 +165,7 @@
                         </a>
                         @else
                         <button class="flex-1 bg-white/20 hover:bg-white/30 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors">
-                            ✏️ Modifier
+                            {{ __('pcma_extra.label_723bbbfede8a') }}
                         </button>
                         @endif
                     </div>

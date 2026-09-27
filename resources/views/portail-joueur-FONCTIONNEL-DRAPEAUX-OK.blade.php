@@ -19,7 +19,7 @@
                 <button id="btn-next" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors" onclick="navigatePlayer('next')">
                     Suivant →
                 </button>
-                <span class="text-gray-300 font-medium" id="player-counter">Chargement...</span>
+                <span class="text-gray-300 font-medium" id="player-counter">{{ __('common.loading') }}</span>
             </div>
                     
             <!-- Barre de recherche centrale -->
@@ -43,13 +43,13 @@
             <!-- Navigation droite -->
             <div class="flex items-center space-x-4">
                 <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    Joueur
+                    {{ __('auth.role_player') }}
                     </button>
                 <a href="/players/list" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors no-underline">
-                    ← Retour à la liste
+                    {{ __('health_records_edit.back_to_list') }}
                 </a>
                 <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    Déconnexion
+                    {{ __('auth.logout') }}
                 </button>
             </div>
         </div>
@@ -298,7 +298,7 @@
                     <div class="bg-white rounded-lg p-1 border border-green-200">
                         <div class="flex items-center mb-1">
                             <div class="text-green-600 text-xs mr-1">📞</div>
-                            <h4 class="font-semibold text-green-800 text-xs">Téléphone</h4>
+                            <h4 class="font-semibold text-green-800 text-xs">{{ __('welcome.phone') }}</h4>
                                                     </div>
                         <p class="text-gray-800 text-xs">{{ $player->agent_phone ?? 'Non renseigné' }}</p>
                                             </div>
@@ -339,7 +339,7 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div class="bg-white rounded-lg p-1 border border-gray-200 text-center">
                         <div class="text-lg font-bold text-gray-800 mb-1">{{ $player->date_of_birth ? $player->date_of_birth->diffInYears(now()) : '31' }}</div>
-                        <div class="text-xs text-gray-600">Âge</div>
+                        <div class="text-xs text-gray-600">{{ __('clinical.table_age') }}</div>
                     </div>
 
                     <div class="bg-white rounded-lg p-1 border border-gray-200 text-center">
@@ -349,7 +349,7 @@
                     
                     <div class="bg-white rounded-lg p-1 border border-gray-200 text-center">
                         <div class="text-lg font-bold text-gray-800 mb-1">{{ $player->weight ?? '80' }}kg</div>
-                        <div class="text-xs text-gray-600">Poids</div>
+                        <div class="text-xs text-gray-600">{{ __('pcma.weight_label') }}</div>
                                         </div>
                     
                     <div class="bg-white rounded-lg p-1 border border-gray-200 text-center">
@@ -417,7 +417,7 @@
                             
                     <div class="bg-white rounded-lg p-2 border border-blue-200">
                         <div class="text-xl font-bold text-blue-800">0</div>
-                        <div class="text-xs text-gray-800">Matchs</div>
+                        <div class="text-xs text-gray-800">{{ __('common.matches') }}</div>
                             </div>
                             </div>
                             
@@ -439,7 +439,7 @@
                     <div class="flex space-x-1">
                         <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">W</span>
                         <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">W</span>
-                        <span class="w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-xs font-bold">D</span>
+                        <span class="w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-xs font-bold">{{ __('competitions.ranking.col_d') }}</span>
                         <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">W</span>
                         <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">W</span>
                             </div>
@@ -639,11 +639,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-gray-800 rounded-xl p-6">
                         <h3 class="text-xl font-bold mb-4 text-green-300">
-                            <i class="fas fa-heartbeat mr-2"></i>État de Santé
+                            <i class="fas fa-heartbeat mr-2"></i>{{ __('medical_predictions.show_type_health') }}
                         </h3>
                         <div class="space-y-4">
                             <div class="flex justify-between items-center">
-                                <span>Récupération</span>
+                                <span>{{ __('medical_predictions.dashboard_type_recovery_short') }}</span>
                                 <div class="w-32 bg-gray-700 rounded-full h-2">
                                     <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
                                 </div>
@@ -673,11 +673,11 @@
                         <div class="space-y-4">
                             <div class="flex justify-between items-center">
                                 <span>Cardio</span>
-                                <span class="text-red-400 font-bold">Élevée</span>
+                                <span class="text-red-400 font-bold">{{ __('pcma.confidence_high') }}</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span>Musculation</span>
-                                <span class="text-yellow-400 font-bold">Modérée</span>
+                                <span class="text-yellow-400 font-bold">{{ __('clinical.severity_moderate') }}</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span>Technique</span>
@@ -692,18 +692,18 @@
             <div id="medical-tab" class="tab-content space-y-6" style="display: none;">
                 <div class="bg-gray-800 rounded-xl p-6">
                     <h3 class="text-xl font-bold mb-6 text-red-300">
-                        <i class="fas fa-user-md mr-2"></i>Suivi Médical
+                        <i class="fas fa-user-md mr-2"></i>{{ __('landing.features.medical_monitoring') }}
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="text-center p-4 bg-red-900/30 rounded-lg">
                             <i class="fas fa-thermometer-half text-3xl text-red-400 mb-2"></i>
                             <div class="text-2xl font-bold text-red-400">36.8°C</div>
-                            <div class="text-sm text-gray-400">Température</div>
+                            <div class="text-sm text-gray-400">{{ __('pcma.temperature_label') }}</div>
                         </div>
                         <div class="text-center p-4 bg-blue-900/30 rounded-lg">
                             <i class="fas fa-heartbeat text-3xl text-blue-400 mb-2"></i>
                             <div class="text-2xl font-bold text-blue-400">68 BPM</div>
-                            <div class="text-sm text-gray-400">Fréquence Cardiaque</div>
+                            <div class="text-sm text-gray-400">{{ __('pcma.heart_rate_label') }}</div>
                         </div>
                         <div class="text-center p-4 bg-green-900/30 rounded-lg">
                             <i class="fas fa-lungs text-3xl text-green-400 mb-2"></i>

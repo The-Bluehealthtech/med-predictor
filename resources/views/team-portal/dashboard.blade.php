@@ -88,7 +88,7 @@
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Joueurs Actifs</p>
+                            <p class="text-sm font-medium text-gray-500">{{ __('dashboard.active_players') }}</p>
                             <p class="text-2xl font-bold text-gray-900">{{ $clubStats['active_players'] }}</p>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Taux de Victoire</p>
+                            <p class="text-sm font-medium text-gray-500">{{ __('competitions.ranking.win_rate') }}</p>
                             <p class="text-2xl font-bold text-gray-900">{{ $performanceMetrics['win_rate'] }}%</p>
                         </div>
                     </div>
@@ -171,7 +171,7 @@
             <!-- Training Metrics -->
             <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Entraînement</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('health_records_edit.training') }}</h3>
                     <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
                         <span class="text-orange-600 text-sm">🏃</span>
                     </div>
@@ -335,7 +335,7 @@
                         </div>
                         <div class="text-right">
                             <span class="text-sm font-medium text-gray-900">{{ $team->status ?? 'N/A' }}</span>
-                            <p class="text-xs text-gray-400">Statut</p>
+                            <p class="text-xs text-gray-400">{{ __('clinical.table_status') }}</p>
                         </div>
                     </div>
                     @endforeach

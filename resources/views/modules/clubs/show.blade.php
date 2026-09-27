@@ -20,7 +20,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
             </div>
             <div class="flex space-x-3">
                 <a href="{{ route('clubs-view.edit', $club->id) }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
-                    ✏️ Modifier
+                    {{ __('pcma_extra.label_723bbbfede8a') }}
                 </a>
                 <a href="/modules" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
                     📋 Retour aux modules
@@ -90,7 +90,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                         <div class="flex items-center">
                             <span class="w-6 h-6 mr-3 text-blue-600">👥</span>
                             <div>
-                                <p class="text-sm text-gray-500">Joueurs</p>
+                                <p class="text-sm text-gray-500">{{ __('common.players') }}</p>
                                 <p class="font-medium">{{ $club->players->count() }}</p>
                             </div>
                         </div>
@@ -152,7 +152,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                         
                         @if($club->phone)
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                            <h4 class="font-medium text-gray-800 mb-3">Téléphone</h4>
+                            <h4 class="font-medium text-gray-800 mb-3">{{ __('welcome.phone') }}</h4>
                             <p class="text-gray-600">{{ $club->phone }}</p>
                         </div>
                         @endif
@@ -166,7 +166,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                         
                         @if($club->website)
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                            <h4 class="font-medium text-gray-800 mb-3">Site web</h4>
+                            <h4 class="font-medium text-gray-800 mb-3">{{ __('competitions.details.website') }}</h4>
                             <a href="{{ $club->website }}" target="_blank" class="text-blue-600 hover:text-blue-800">
                                 {{ $club->website }}
                             </a>
@@ -224,7 +224,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                                     <div class="text-sm font-medium {{ $club->association->fifa_sync_status === 'synced' ? 'text-green-600' : ($club->association->fifa_sync_status === 'failed' ? 'text-red-600' : 'text-yellow-600') }}">
                                         {{ $club->association->fifa_sync_status }}
                                     </div>
-                                    <div class="text-xs text-gray-500">Statut FIFA</div>
+                                    <div class="text-xs text-gray-500">{{ __('pcma_extra.label_4c0b0e79677c') }}</div>
                                 </div>
                                 @endif
                             </div>
@@ -290,12 +290,12 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                                         <a href="/modules/teams/{{ $team->id }}" 
                                            class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-2 rounded text-sm text-center transition-colors">
                                             <i class="fas fa-eye mr-1"></i>
-                                            Voir
+                                            {{ __('clinical.view_button') }}
                                         </a>
                                         <a href="/modules/teams/{{ $team->id }}/edit" 
                                            class="flex-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-3 py-2 rounded text-sm text-center transition-colors">
                                             <i class="fas fa-edit mr-1"></i>
-                                            Modifier
+                                            {{ __('common.edit') }}
                                         </a>
                                     </div>
                                 </div>

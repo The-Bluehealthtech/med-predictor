@@ -41,7 +41,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                        Clubs Actifs
+                        {{ __('landing.hero.active_clubs') }}
                     </p>
                     <p class="text-2xl font-bold text-gray-900">
                         {{ $clubs->where('status', 'active')->count() }}
@@ -73,7 +73,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                        En Attente
+                        {{ __('competitions.rapports_statistiques_page.pending') }}
                     </p>
                     <p class="text-2xl font-bold text-gray-900">
                         {{ $teams->where('status', 'pending')->count() }}
@@ -112,42 +112,42 @@
             </button>
             <button onclick="exportTeams()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-download mr-2"></i>
-                Exporter
+                {{ __('common.export') }}
             </button>
         </div>
     </div>
 
     <!-- Filtres -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtres</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('competitions.designation_arbitres_page.filters_heading') }}</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Club</label>
                 <select id="clubFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Tous les clubs</option>
+                    <option value="">{{ __('competitions.rapports_avances_page.all_clubs_option') }}</option>
                     @foreach($clubs as $club)
                         <option value="{{ $club->id }}">{{ $club->name }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records_create.posture_level') }}</label>
                 <select id="levelFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">Tous les niveaux</option>
                     <option value="professional">Professionnel</option>
                     <option value="semi-professional">Semi-Professionnel</option>
                     <option value="amateur">Amateur</option>
                     <option value="youth">Jeunes</option>
-                    <option value="academy">Académie</option>
+                    <option value="academy">{{ __('welcome.academy') }}</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                 <select id="statusFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">Tous les statuts</option>
-                    <option value="active">Actif</option>
+                    <option value="active">{{ __('healthcare.status_active') }}</option>
                     <option value="inactive">Inactif</option>
-                    <option value="pending">En attente</option>
+                    <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
                 </select>
             </div>
         </div>
@@ -163,13 +163,13 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Équipe
+                            {{ __('competitions.resultats_classements_page.col_team') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Club
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Niveau
+                            {{ __('health_records_create.posture_level') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Catégorie
@@ -178,7 +178,7 @@
                             Discipline
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Statut
+                            {{ __('clinical.table_status') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Actions
@@ -253,19 +253,19 @@
                                             class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200"
                                             title="Modifier l'équipe">
                                         <i class="fas fa-edit mr-1"></i>
-                                        Modifier
+                                        {{ __('common.edit') }}
                                     </button>
                                     <button onclick="viewTeam({{ $team->id }})" 
                                             class="bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200"
                                             title="Voir les détails">
                                         <i class="fas fa-eye mr-1"></i>
-                                        Voir
+                                        {{ __('clinical.view_button') }}
                                     </button>
                                     <button onclick="deleteTeam({{ $team->id }})" 
                                             class="bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200"
                                             title="Supprimer l'équipe">
                                         <i class="fas fa-trash mr-1"></i>
-                                        Supprimer
+                                        {{ __('common.delete') }}
                                     </button>
                                 </div>
                             </td>
@@ -315,14 +315,14 @@ function openBulkCreateModal() {
                 </div>
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records_create.posture_level') }}</label>
                     <select id="bulkLevel" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Sélectionner un niveau</option>
                         <option value="professional">Professionnel</option>
                         <option value="semi-professional">Semi-Professionnel</option>
                         <option value="amateur">Amateur</option>
                         <option value="youth">Jeunes</option>
-                        <option value="academy">Académie</option>
+                        <option value="academy">{{ __('welcome.academy') }}</option>
                     </select>
                 </div>
                 
@@ -333,16 +333,16 @@ function openBulkCreateModal() {
                         <option value="football">Football</option>
                         <option value="futsal">Futsal</option>
                         <option value="beach_soccer">Beach Soccer</option>
-                        <option value="women_football">Football Féminin</option>
+                        <option value="women_football">{{ __('welcome.women_football') }}</option>
                     </select>
                 </div>
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                     <select id="bulkStatus" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="active">Actif</option>
+                        <option value="active">{{ __('healthcare.status_active') }}</option>
                         <option value="inactive">Inactif</option>
-                        <option value="pending">En attente</option>
+                        <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
                     </select>
                 </div>
                 
@@ -356,7 +356,7 @@ function openBulkCreateModal() {
                 
                 <div class="flex justify-end space-x-3">
                     <button onclick="closeBulkCreateModal()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
-                        Annuler
+                        {{ __('clinical.cancel') }}
                     </button>
                     <button onclick="submitBulkCreate()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
                         <i class="fas fa-plus mr-2"></i>

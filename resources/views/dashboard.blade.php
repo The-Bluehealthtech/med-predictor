@@ -346,7 +346,7 @@
                         
                         <!-- Dataset Quality Chart -->
                         <div class="bg-white bg-opacity-10 rounded-lg p-3">
-                            <div class="text-sm font-semibold mb-2">Qualité des Données</div>
+                            <div class="text-sm font-semibold mb-2">{{ __('fifa.data_quality') }}</div>
                             <div class="space-y-2">
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">

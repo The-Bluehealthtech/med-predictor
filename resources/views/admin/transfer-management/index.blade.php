@@ -117,7 +117,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">En Attente</dt>
+                                <dt class="text-sm font-medium text-gray-500 truncate">{{ __('competitions.rapports_statistiques_page.pending') }}</dt>
                                 <dd class="flex items-baseline">
                                     <div class="text-2xl font-semibold text-yellow-600">{{ $stats['pending_transfers'] }}</div>
                                 </dd>

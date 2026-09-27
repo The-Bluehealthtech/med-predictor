@@ -10,7 +10,7 @@
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900">Rendez-vous</h3>
+            <h3 class="text-lg font-semibold text-gray-900">{{ __('navigation.appointments') }}</h3>
             <p class="text-3xl font-bold text-blue-600">25</p>
         </div>
         
@@ -25,7 +25,7 @@
         </div>
         
         <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900">Visites</h3>
+            <h3 class="text-lg font-semibold text-gray-900">{{ __('navigation.visits') }}</h3>
             <p class="text-3xl font-bold text-orange-600">342</p>
         </div>
     </div>

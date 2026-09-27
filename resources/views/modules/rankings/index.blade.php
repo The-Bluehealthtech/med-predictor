@@ -18,17 +18,17 @@
             <!-- Placeholder pour les rankings -->
             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h3 class="font-semibold text-gray-700 mb-2">Classement 1</h3>
-                <p class="text-gray-600 text-sm">À venir</p>
+                <p class="text-gray-600 text-sm">{{ __('competition_management.upcoming') }}</p>
             </div>
             
             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h3 class="font-semibold text-gray-700 mb-2">Classement 2</h3>
-                <p class="text-gray-600 text-sm">À venir</p>
+                <p class="text-gray-600 text-sm">{{ __('competition_management.upcoming') }}</p>
             </div>
             
             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h3 class="font-semibold text-gray-700 mb-2">Classement 3</h3>
-                <p class="text-gray-600 text-sm">À venir</p>
+                <p class="text-gray-600 text-sm">{{ __('competition_management.upcoming') }}</p>
             </div>
         </div>
         

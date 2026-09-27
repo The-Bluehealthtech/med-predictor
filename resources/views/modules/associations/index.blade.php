@@ -113,7 +113,7 @@
                             @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association))
                             <a href="{{ route('organization-cards.edit', ['associations', $association->id]) }}"
                                class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                ✏️ Modifier
+                                {{ __('pcma_extra.label_723bbbfede8a') }}
                             </a>
                             @endif
                         </div>

@@ -30,14 +30,14 @@
                         'assistant_referee_2' => 'Assistant 2'] as $field => $label)
                         <label class="text-sm">{{ $label }}
                             <select name="{{ $field }}" required class="mt-1 block w-full rounded border-gray-300">
-                                <option value="">Sélectionner</option>
+                                <option value="">{{ __('clinical.select_button') }}</option>
                                 @foreach($referees as $referee)
                                     <option value="{{ $referee->id }}">{{ $referee->name }}</option>
                                 @endforeach
                             </select>
                         </label>
                     @endforeach
-                    <button class="self-end rounded bg-blue-700 px-4 py-2 text-white">Enregistrer</button>
+                    <button class="self-end rounded bg-blue-700 px-4 py-2 text-white">{{ __('clinical.save') }}</button>
                 </form>
             @else
                 <p class="mt-3 text-sm text-gray-600">Trois arbitres enregistrés sont requis.</p>

@@ -52,7 +52,7 @@
                     <h3 class="text-lg font-medium text-gray-900 mb-4">👤 Informations du Demandeur</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="applicant_name" class="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
+                            <label for="applicant_name" class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.full_name_label') }}</label>
                             <input type="text" name="applicant_name" id="applicant_name" 
                                    value="{{ old('applicant_name', $license->applicant_name) }}" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
@@ -64,19 +64,19 @@
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         </div>
                         <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">{{ __('welcome.phone') }}</label>
                             <input type="tel" name="phone" id="phone" 
                                    value="{{ old('phone', $license->phone) }}" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         </div>
                         <div>
-                            <label for="date_of_birth" class="block text-sm font-medium text-gray-700 mb-2">Date de naissance</label>
+                            <label for="date_of_birth" class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records_extra.label_8851f385b271') }}</label>
                             <input type="date" name="date_of_birth" id="date_of_birth" 
                                    value="{{ old('date_of_birth', $license->date_of_birth ? $license->date_of_birth->format('Y-m-d') : '') }}" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         </div>
                         <div>
-                            <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">Nationalité</label>
+                            <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records.show_page.nationality_label') }}</label>
                             <input type="text" name="nationality" id="nationality" 
                                    value="{{ old('nationality', $license->nationality) }}" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
@@ -85,13 +85,13 @@
                             <label for="position" class="block text-sm font-medium text-gray-700 mb-2">Poste</label>
                             <select name="position" id="position" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                                 <option value="">Sélectionnez un poste</option>
-                                <option value="Attaquant" @if(old('position', $license->position) == 'Attaquant') selected @endif>Attaquant</option>
-                                <option value="Milieu" @if(old('position', $license->position) == 'Milieu') selected @endif>Milieu</option>
-                                <option value="Défenseur" @if(old('position', $license->position) == 'Défenseur') selected @endif>Défenseur</option>
-                                <option value="Gardien" @if(old('position', $license->position) == 'Gardien') selected @endif>Gardien</option>
+                                <option value="Attaquant" @if(old('position', $license->position) == 'Attaquant') selected @endif>{{ __('clinical.demo_position_forward') }}</option>
+                                <option value="Milieu" @if(old('position', $license->position) == 'Milieu') selected @endif>{{ __('clinical.demo_position_midfielder') }}</option>
+                                <option value="Défenseur" @if(old('position', $license->position) == 'Défenseur') selected @endif>{{ __('pcma.position_defender_option') }}</option>
+                                <option value="Gardien" @if(old('position', $license->position) == 'Gardien') selected @endif>{{ __('pcma.position_goalkeeper_option') }}</option>
                                 <option value="Entraîneur" @if(old('position', $license->position) == 'Entraîneur') selected @endif>Entraîneur</option>
                                 <option value="Staff médical" @if(old('position', $license->position) == 'Staff médical') selected @endif>Staff médical</option>
-                                <option value="Arbitre" @if(old('position', $license->position) == 'Arbitre') selected @endif>Arbitre</option>
+                                <option value="Arbitre" @if(old('position', $license->position) == 'Arbitre') selected @endif>{{ __('auth.role_referee') }}</option>
                             </select>
                         </div>
                     </div>
@@ -159,10 +159,10 @@
                                 </svg>
                                 <div class="flex text-sm text-gray-600">
                                     <label for="player_photo" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                                        <span>Télécharger un fichier</span>
+                                        <span>{{ __('secretary.upload_a_file') }}</span>
                                         <input id="player_photo" name="player_photo" type="file" class="sr-only" accept="image/*">
                                     </label>
-                                    <p class="pl-1">ou glisser-déposer</p>
+                                    <p class="pl-1">{{ __('secretary.or_drag_and_drop') }}</p>
                                 </div>
                                 <p class="text-xs text-gray-500">PNG, JPG, JPEG jusqu'à 5MB</p>
                             </div>
@@ -173,7 +173,7 @@
                 <!-- Boutons d'action -->
                 <div class="flex justify-end space-x-4">
                     <a href="{{ route('licenses.index') }}" class="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition-colors">
-                        Annuler
+                        {{ __('clinical.cancel') }}
                     </a>
                     <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
                         💾 Enregistrer les modifications
@@ -196,20 +196,20 @@
         <div>
             <label for="type" class="block text-sm font-medium">Type</label>
             <select name="type" id="type" class="border border-gray-300 rounded px-3 py-2 w-full" required>
-                <option value="Joueur" @if(old('type', $license->type)=='Joueur') selected @endif>Joueur</option>
+                <option value="Joueur" @if(old('type', $license->type)=='Joueur') selected @endif>{{ __('auth.role_player') }}</option>
                 <option value="Staff" @if(old('type', $license->type)=='Staff') selected @endif>Staff</option>
-                <option value="Médical" @if(old('type', $license->type)=='Médical') selected @endif>Médical</option>
+                <option value="Médical" @if(old('type', $license->type)=='Médical') selected @endif>{{ __('health_records.show_page.tab_medical') }}</option>
             </select>
         </div>
         <div>
-            <label for="status" class="block text-sm font-medium">Statut</label>
+            <label for="status" class="block text-sm font-medium">{{ __('clinical.table_status') }}</label>
             <select name="status" id="status" class="border border-gray-300 rounded px-3 py-2 w-full" required>
                 <option value="Active" @if(old('status', $license->status)=='Active') selected @endif>Active</option>
                 <option value="Inactive" @if(old('status', $license->status)=='Inactive') selected @endif>Inactive</option>
             </select>
         </div>
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enregistrer</button>
-        <a href="{{ route('licenses.index') }}" class="ml-4 text-gray-600 hover:underline">Annuler</a>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">{{ __('clinical.save') }}</button>
+        <a href="{{ route('licenses.index') }}" class="ml-4 text-gray-600 hover:underline">{{ __('clinical.cancel') }}</a>
     </form>
 </div>
 @endsection 

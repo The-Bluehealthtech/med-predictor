@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Guide Utilisateur - Content Management')
+@section('title', __('Guide Utilisateur') . ' - Content Management')
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
@@ -16,15 +16,15 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Guide Utilisateur
+                                    {{ __('Guide Utilisateur') }}
                                 </h1>
-                                <p class="text-sm text-gray-600">Guide complet pour utiliser le Content Management</p>
+                                <p class="text-sm text-gray-600">{{ __('Guide complet pour utiliser le Content Management') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('admin.content-management.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au Content Management</a>
+                    <a href="{{ route('admin.content-management.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour au Content Management') }}</a>
                 </div>
             </div>
         </div>
@@ -35,7 +35,7 @@
         <!-- Table des matières -->
         <div class="bg-white shadow rounded-lg mb-8">
             <div class="px-4 py-5 sm:p-6">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Table des Matières</h2>
+                <h2 class="text-lg font-medium text-gray-900 mb-4">{{ __('Table des Matières') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($guideSections as $key => $section)
                         <a href="#{{ $key }}" class="block p-4 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all">

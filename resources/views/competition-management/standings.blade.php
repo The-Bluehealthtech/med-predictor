@@ -186,7 +186,7 @@
                         <div class="flex items-center">
                             <div class="flex space-x-1 mr-2">
                                 <span class="w-3 h-3 bg-green-500 rounded-full text-xs text-white flex items-center justify-center">W</span>
-                                <span class="w-3 h-3 bg-yellow-500 rounded-full text-xs text-white flex items-center justify-center">D</span>
+                                <span class="w-3 h-3 bg-yellow-500 rounded-full text-xs text-white flex items-center justify-center">{{ __('competitions.ranking.col_d') }}</span>
                                 <span class="w-3 h-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">L</span>
                             </div>
                             <span class="text-sm text-gray-600">{{ __('Last 5 matches') }}</span>

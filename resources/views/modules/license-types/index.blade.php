@@ -38,7 +38,7 @@
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Durée de validité</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Frais</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('clinical.table_status') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">

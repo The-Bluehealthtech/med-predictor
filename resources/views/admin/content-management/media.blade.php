@@ -69,13 +69,13 @@
                                 <div class="flex space-x-2">
                                     <a href="{{ $file['url'] }}" target="_blank" 
                                        class="text-purple-600 hover:text-purple-900 text-xs">
-                                        Voir
+                                        {{ __('clinical.view_button') }}
                                     </a>
                                     <button class="text-gray-600 hover:text-gray-900 text-xs">
-                                        Modifier
+                                        {{ __('common.edit') }}
                                     </button>
                                     <button class="text-red-600 hover:text-red-900 text-xs">
-                                        Supprimer
+                                        {{ __('common.delete') }}
                                     </button>
                                 </div>
                             </div>

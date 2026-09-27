@@ -12,7 +12,7 @@
 
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">Informations du Joueur</h2>
+                <h2 class="text-xl font-semibold text-gray-800">{{ __('medical_predictions.show_player_info_header') }}</h2>
             </div>
             
             <form action="{{ route('players.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
@@ -72,7 +72,7 @@
                             <option value="Ghana" {{ old('nationality') == 'Ghana' ? 'selected' : '' }}>Ghana</option>
                             <option value="Cameroun" {{ old('nationality') == 'Cameroun' ? 'selected' : '' }}>Cameroun</option>
                             <option value="Égypte" {{ old('nationality') == 'Égypte' ? 'selected' : '' }}>Égypte</option>
-                            <option value="Autre" {{ old('nationality') == 'Autre' ? 'selected' : '' }}>Autre</option>
+                            <option value="Autre" {{ old('nationality') == 'Autre' ? 'selected' : '' }}>{{ __('health_records_edit.other') }}</option>
                         </select>
                         @error('nationality')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -104,7 +104,7 @@
 
                     <div>
                         <label for="height" class="block text-sm font-medium text-gray-700 mb-2">
-                            Taille (cm)
+                            {{ __('health_records.show_page.height_label') }}
                         </label>
                         <input type="number" name="height" id="height" 
                                value="{{ old('height') }}" min="150" max="220"
@@ -116,7 +116,7 @@
 
                     <div>
                         <label for="weight" class="block text-sm font-medium text-gray-700 mb-2">
-                            Poids (kg)
+                            {{ __('health_records.show_page.weight_label') }}
                         </label>
                         <input type="number" name="weight" id="weight" 
                                value="{{ old('weight') }}" min="40" max="120"
@@ -188,7 +188,7 @@
                 <div class="mt-8 flex justify-end space-x-4">
                     <a href="{{ route('players.index') }}" 
                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
-                        Annuler
+                        {{ __('clinical.cancel') }}
                     </a>
                     <button type="submit" 
                             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">

@@ -22,7 +22,7 @@
             <div class="flex space-x-3">
                 @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association))
                 <a href="{{ route('organization-cards.edit', ['associations', $association->id]) }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
-                    ✏️ Modifier
+                    {{ __('pcma_extra.label_723bbbfede8a') }}
                 </a>
                 @endif
                 <a href="/modules" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
@@ -138,7 +138,7 @@
                         <div class="flex items-center">
                             <span class="w-6 h-6 mr-3 text-green-600">👥</span>
                             <div>
-                                <p class="text-sm text-gray-500">Joueurs</p>
+                                <p class="text-sm text-gray-500">{{ __('common.players') }}</p>
                                 <p class="font-medium">{{ $association->players ? $association->players->count() : 0 }}</p>
                             </div>
                         </div>
@@ -154,10 +154,10 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <h4 class="font-medium text-green-800 mb-3">Statut de synchronisation</h4>
+                            <h4 class="font-medium text-green-800 mb-3">{{ __('competition_management.sync_status') }}</h4>
                             <div class="space-y-2">
                                 <div class="flex justify-between">
-                                    <span class="text-green-600">Statut:</span>
+                                    <span class="text-green-600">{{ __('clinical.status_label') }}</span>
                                     <span class="font-medium {{ $association->fifa_sync_status === 'synced' ? 'text-green-600' : ($association->fifa_sync_status === 'failed' ? 'text-red-600' : 'text-yellow-600') }}">
                                         {{ $association->fifa_sync_status ?? 'pending' }}
                                     </span>
@@ -239,7 +239,7 @@
                                 </div>
                                 <a href="{{ route('modules.clubs.show', $club->id) }}" 
                                    class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors">
-                                    Voir
+                                    {{ __('clinical.view_button') }}
                                 </a>
                             </div>
                         </div>

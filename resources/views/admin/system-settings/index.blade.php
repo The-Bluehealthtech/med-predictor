@@ -264,19 +264,19 @@
                                         <div class="flex space-x-2">
                                             @if($setting->is_editable ?? true)
                                                 <a href="{{ route('admin.system-settings.edit', $setting->id ?? $loop->iteration) }}" class="text-indigo-600 hover:text-indigo-900 text-sm">
-                                                    Modifier
+                                                    {{ __('common.edit') }}
                                                 </a>
                                                 @if($setting->default_value ?? false)
                                                     <form action="{{ route('admin.system-settings.reset', $setting->id ?? $loop->iteration) }}" method="POST" class="inline">
                                                         @csrf
                                                         <button type="submit" class="text-yellow-600 hover:text-yellow-900 text-sm">
-                                                            Réinitialiser
+                                                            {{ __('common.reset') }}
                                                         </button>
                                                     </form>
                                                 @endif
                                             @endif
                                             <a href="{{ route('admin.system-settings.show', $setting->id ?? $loop->iteration) }}" class="text-gray-600 hover:text-gray-900 text-sm">
-                                                Détails
+                                                {{ __('competitions.calendar_page.details') }}
                                             </a>
                                         </div>
                                     </div>
@@ -287,8 +287,8 @@
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Valeur actuelle</label>
                                         @if(($setting->type ?? 'string') === 'boolean')
                                             <select name="settings[{{ $setting->key ?? 'setting_' . $loop->iteration }}]" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                                <option value="1" {{ ($setting->value ?? '1') == '1' ? 'selected' : '' }}>Oui</option>
-                                                <option value="0" {{ ($setting->value ?? '1') == '0' ? 'selected' : '' }}>Non</option>
+                                                <option value="1" {{ ($setting->value ?? '1') == '1' ? 'selected' : '' }}>{{ __('common.yes') }}</option>
+                                                <option value="0" {{ ($setting->value ?? '1') == '0' ? 'selected' : '' }}>{{ __('common.no') }}</option>
                                             </select>
                                         @elseif(($setting->type ?? 'string') === 'integer')
                                             <input type="number" name="settings[{{ $setting->key ?? 'setting_' . $loop->iteration }}]" value="{{ $setting->value ?? '100' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">

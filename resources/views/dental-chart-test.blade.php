@@ -171,8 +171,8 @@
     
     <div class="feedback" id="feedback">
         <h4>✅ Feedback Interactif</h4>
-        <p><strong>Dent sélectionnée :</strong> <span id="selected-tooth">Aucune</span></p>
-        <p><strong>Statut :</strong> <span id="tooth-status">En attente de sélection</span></p>
+        <p><strong>Dent sélectionnée :</strong> <span id="selected-tooth">{{ __('competitions.engagements_clubs_page.csv_no_competition') }}</span></p>
+        <p><strong>{{ __('competitions.discipline_sanctions_page.view_status_label') }}</strong> <span id="tooth-status">En attente de sélection</span></p>
     </div>
     
     <div class="dental-controls" id="dental-controls" style="display: none;">
@@ -180,22 +180,22 @@
         <div>
             <label><strong>État de la dent :</strong></label>
             <select id="tooth-status-select">
-                <option value="healthy">Sain</option>
+                <option value="healthy">{{ __('health_records_create.tooth_status_healthy') }}</option>
                 <option value="cavity">Carie</option>
-                <option value="filling">Obturation</option>
-                <option value="crown">Couronne</option>
-                <option value="missing">Manquante</option>
+                <option value="filling">{{ __('health_records_create.tooth_status_filling') }}</option>
+                <option value="crown">{{ __('health_records_create.tooth_status_crown') }}</option>
+                <option value="missing">{{ __('health_records_create.tooth_status_missing') }}</option>
                 <option value="implant">Implant</option>
-                <option value="treatment">En traitement</option>
+                <option value="treatment">{{ __('health_records_create.tooth_status_treatment') }}</option>
             </select>
         </div>
         <div>
-            <label><strong>Notes :</strong></label>
+            <label><strong>{{ __('dental_chart.modal_notes_label') }}</strong></label>
             <textarea id="tooth-notes" rows="2" placeholder="Notes sur cette dent..."></textarea>
         </div>
         <div>
-            <button onclick="saveToothData()">💾 Sauvegarder</button>
-            <button onclick="clearSelection()">🗑️ Effacer</button>
+            <button onclick="saveToothData()">{{ __('health_records_create.save_button') }}</button>
+            <button onclick="clearSelection()">{{ __('health_records_extra.label_532d7801baef') }}</button>
         </div>
     </div>
     

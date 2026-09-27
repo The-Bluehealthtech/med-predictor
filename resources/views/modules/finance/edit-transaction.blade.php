@@ -17,7 +17,7 @@
                 </div>
                 <a href="{{ route('modules.finance.dashboard') }}" 
                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    ← Retour au Dashboard
+                    {{ __('pcma.back_to_dashboard') }}
                 </a>
             </div>
         </div>
@@ -93,11 +93,11 @@
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                         <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <option value="pending" {{ ($transaction->status ?? '') == 'pending' ? 'selected' : '' }}>En attente</option>
-                            <option value="completed" {{ ($transaction->status ?? '') == 'completed' ? 'selected' : '' }}>Terminé</option>
-                            <option value="cancelled" {{ ($transaction->status ?? '') == 'cancelled' ? 'selected' : '' }}>Annulé</option>
+                            <option value="pending" {{ ($transaction->status ?? '') == 'pending' ? 'selected' : '' }}>{{ __('competition_management.statuses.pending') }}</option>
+                            <option value="completed" {{ ($transaction->status ?? '') == 'completed' ? 'selected' : '' }}>{{ __('clinical.status_completed') }}</option>
+                            <option value="cancelled" {{ ($transaction->status ?? '') == 'cancelled' ? 'selected' : '' }}>{{ __('competitions.fifa_status.cancelled') }}</option>
                         </select>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                 <div class="flex justify-end space-x-4 pt-6 border-t">
                     <a href="{{ route('modules.finance.dashboard') }}" 
                        class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                        Annuler
+                        {{ __('clinical.cancel') }}
                     </a>
                     <button type="submit" 
                             class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">

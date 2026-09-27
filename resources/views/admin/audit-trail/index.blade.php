@@ -72,7 +72,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Aujourd'hui</dt>
+                                <dt class="text-sm font-medium text-gray-500 truncate">{{ __('common.today') }}</dt>
                                 <dd class="flex items-baseline">
                                     <div class="text-2xl font-semibold text-gray-900">{{ number_format($stats['today_logs']) }}</div>
                                 </dd>
@@ -108,7 +108,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Sécurité</dt>
+                                <dt class="text-sm font-medium text-gray-500 truncate">{{ __('landing.footer.security') }}</dt>
                                 <dd class="flex items-baseline">
                                     <div class="text-2xl font-semibold text-orange-600">{{ number_format($stats['security_logs']) }}</div>
                                 </dd>
@@ -137,12 +137,12 @@
         <!-- Filtres -->
         <div class="bg-white shadow rounded-lg mb-8">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Filtres</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('competitions.designation_arbitres_page.filters_heading') }}</h3>
                 <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Type d'événement</label>
                         <select name="event_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Tous</option>
+                            <option value="">{{ __('competitions.squad_page.all') }}</option>
                             @foreach($filterData['event_types'] as $type)
                                 <option value="{{ $type }}" {{ $filters['event_type'] == $type ? 'selected' : '' }}>
                                     {{ ucfirst($type) }}
@@ -154,7 +154,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Action</label>
                         <select name="action" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Toutes</option>
+                            <option value="">{{ __('competitions.squad_page.all_fem') }}</option>
                             @foreach($filterData['actions'] as $action)
                                 <option value="{{ $action }}" {{ $filters['action'] == $action ? 'selected' : '' }}>
                                     {{ ucfirst($action) }}
@@ -164,9 +164,9 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Sévérité</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.severity_label') }}</label>
                         <select name="severity" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Toutes</option>
+                            <option value="">{{ __('competitions.squad_page.all_fem') }}</option>
                             @foreach($filterData['severities'] as $severity)
                                 <option value="{{ $severity }}" {{ $filters['severity'] == $severity ? 'selected' : '' }}>
                                     {{ ucfirst($severity) }}
@@ -178,7 +178,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Module</label>
                         <select name="module" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Tous</option>
+                            <option value="">{{ __('competitions.squad_page.all') }}</option>
                             @foreach($filterData['modules'] as $module)
                                 <option value="{{ $module }}" {{ $filters['module'] == $module ? 'selected' : '' }}>
                                     {{ ucfirst($module) }}
@@ -188,9 +188,9 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Utilisateur</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('navigation.user') }}</label>
                         <select name="user_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Tous</option>
+                            <option value="">{{ __('competitions.squad_page.all') }}</option>
                             @foreach($filterData['users'] as $user)
                                 <option value="{{ $user->id }}" {{ $filters['user_id'] == $user->id ? 'selected' : '' }}>
                                     {{ $user->name }} ({{ $user->email }})
@@ -210,7 +210,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Recherche</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('secretary.label_search') }}</label>
                         <input type="text" name="search" value="{{ $filters['search'] }}" placeholder="Rechercher..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
@@ -235,9 +235,9 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('navigation.user') }}</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sévérité</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.severity_label') }}</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
@@ -262,7 +262,7 @@
                                             <div>{{ $log->user_name }}</div>
                                             <div class="text-xs text-gray-400">{{ $log->user_email }}</div>
                                         @else
-                                            <span class="text-gray-400">Système</span>
+                                            <span class="text-gray-400">{{ __('dashboard.system') }}</span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-500">
@@ -275,7 +275,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <a href="{{ route('admin.audit-trail.show', $log->id) }}" class="text-indigo-600 hover:text-indigo-900">
-                                            Voir détails
+                                            {{ __('competitions.discipline_page.view_details_title') }}
                                         </a>
                                     </td>
                                 </tr>
@@ -316,7 +316,7 @@
                     </select>
                 </div>
                 <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="closeCleanupModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Annuler</button>
+                    <button type="button" onclick="closeCleanupModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">{{ __('clinical.cancel') }}</button>
                     <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Nettoyer</button>
                 </div>
             </form>

@@ -62,10 +62,10 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('user_management.role') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Permissions</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.table_status') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -102,8 +102,8 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     @if(!$role->is_system_role)
-                                        <button onclick="editRole({{ $role->id }})" class="text-indigo-600 hover:text-indigo-900 mr-3">Modifier</button>
-                                        <button onclick="deleteRole({{ $role->id }})" class="text-red-600 hover:text-red-900">Supprimer</button>
+                                        <button onclick="editRole({{ $role->id }})" class="text-indigo-600 hover:text-indigo-900 mr-3">{{ __('common.edit') }}</button>
+                                        <button onclick="deleteRole({{ $role->id }})" class="text-red-600 hover:text-red-900">{{ __('common.delete') }}</button>
                                     @else
                                         <span class="text-gray-400">Rôle système</span>
                                     @endif
@@ -138,8 +138,8 @@
                     <textarea name="description" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
                 <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="closeCreateRoleModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Annuler</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Créer</button>
+                    <button type="button" onclick="closeCreateRoleModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">{{ __('clinical.cancel') }}</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">{{ __('common.create') }}</button>
                 </div>
             </form>
         </div>

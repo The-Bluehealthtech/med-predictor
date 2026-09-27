@@ -22,9 +22,9 @@
 
     <form method="GET" action="{{ route('analytics.digital-twin') }}" class="bg-white rounded-lg shadow p-5 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
         <div>
-            <label class="block text-sm font-medium text-gray-700">Joueur</label>
+            <label class="block text-sm font-medium text-gray-700">{{ __('auth.role_player') }}</label>
             <select name="player_id" required class="mt-1 w-full rounded border-gray-300">
-                <option value="">Sélectionner</option>
+                <option value="">{{ __('clinical.select_button') }}</option>
                 @foreach($players as $player)
                     <option value="{{ $player->id }}" @selected($selectedPlayer?->id === $player->id)>
                         {{ trim(($player->first_name ?? '') . ' ' . ($player->last_name ?? '')) ?: ('Joueur #' . $player->id) }}

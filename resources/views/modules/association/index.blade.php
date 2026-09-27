@@ -65,7 +65,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Validation</p>
-                        <p class="text-2xl font-bold text-gray-900">Valider</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ __('competitions.discipline_sanctions_page.validate_button') }}</p>
                     </div>
                 </div>
             </div>
@@ -92,8 +92,8 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Rapports</p>
-                        <p class="text-2xl font-bold text-gray-900">Générer</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('common.reports') }}</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ __('competitions.rapports_statistiques_page.generate_title') }}</p>
                     </div>
                 </div>
             </div>
@@ -221,7 +221,7 @@
 
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <a href="{{ route('association.registration.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     🏛️ Nouvelle Association

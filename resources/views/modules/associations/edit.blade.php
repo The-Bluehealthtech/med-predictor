@@ -58,7 +58,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Confédération *</label>
                         <select name="confederation_id" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
-                            <option value="">Sélectionner...</option>
+                            <option value="">{{ __('auth.login_select_placeholder') }}</option>
                             @foreach($confederations as $confederation)
                                 <option value="{{ $confederation->id }}" {{ $association->confederation_id == $confederation->id ? 'selected' : '' }}>
                                     {{ $confederation->name }}
@@ -74,7 +74,7 @@
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Statut *</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('pcma.status_label') }}</label>
                         <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
                             <option value="active" {{ $association->status == 'active' ? 'selected' : '' }}>Active</option>
                             <option value="inactive" {{ $association->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
@@ -119,10 +119,10 @@
 
                 <div class="flex justify-end space-x-4 pt-6 border-t">
                     <a href="/associations-view" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
-                        Annuler
+                        {{ __('clinical.cancel') }}
                     </a>
                     <button type="submit" class="px-8 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                        💾 Sauvegarder
+                        {{ __('health_records_create.save_button') }}
                     </button>
                 </div>
             </form>

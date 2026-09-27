@@ -65,7 +65,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Connected Devices</p>
-                        <p class="text-2xl font-bold text-gray-900">Gérer</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ __('competitions.actions.manage') }}</p>
                     </div>
                 </div>
             </div>
@@ -79,7 +79,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Data Sync</p>
-                        <p class="text-2xl font-bold text-gray-900">Synchroniser</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ __('competitions.actions.sync') }}</p>
                     </div>
                 </div>
             </div>
@@ -209,7 +209,7 @@
 
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     🔗 Add Device

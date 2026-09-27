@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.finance.dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au Dashboard</a>
+                    <a href="{{ route('modules.finance.dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('pcma.back_to_dashboard') }}</a>
                 </div>
             </div>
         </div>

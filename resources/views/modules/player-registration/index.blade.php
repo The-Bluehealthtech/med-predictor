@@ -19,7 +19,7 @@
                     </a>
                     <a href="{{ route('dashboard') }}" 
                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors">
-                        ← Retour
+                        {{ __('errors.generic_back') }}
                     </a>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                     <table class="w-full">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joueur</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('auth.role_player') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Club</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Association</th>

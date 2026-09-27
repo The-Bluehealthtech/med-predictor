@@ -134,7 +134,7 @@
                     <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
                         <div>
                             <p class="font-medium text-purple-900">Injury Prediction</p>
-                            <p class="text-sm text-purple-700">Prédiction des blessures</p>
+                            <p class="text-sm text-purple-700">{{ __('landing.injury_prediction') }}</p>
                         </div>
                         <span class="text-purple-600">→</span>
                     </div>
@@ -172,7 +172,7 @@
 
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     🔄 Create Twin

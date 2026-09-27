@@ -24,7 +24,7 @@
                 <h2 class="text-xl font-semibold mb-4">🔍 Filtres</h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nationalité</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records.show_page.nationality_label') }}</label>
                         <select id="nationality-filter" class="w-full border border-gray-300 rounded-md px-3 py-2">
                             <option value="">Toutes les nationalités</option>
                             @foreach($nationalities as $nationality)
@@ -45,14 +45,14 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Club</label>
                         <select id="club-filter" class="w-full border border-gray-300 rounded-md px-3 py-2">
-                            <option value="">Tous les clubs</option>
+                            <option value="">{{ __('competitions.rapports_avances_page.all_clubs_option') }}</option>
                             @foreach($clubs as $club)
                                 <option value="{{ $club->name }}">{{ $club->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Recherche</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('secretary.label_search') }}</label>
                         <input type="text" id="search-filter" placeholder="Nom du joueur..." class="w-full border border-gray-300 rounded-md px-3 py-2">
                     </div>
                 </div>
@@ -68,10 +68,10 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joueur</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('auth.role_player') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Club</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nationalité</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('health_records.show_page.nationality_label') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score FIFA</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>

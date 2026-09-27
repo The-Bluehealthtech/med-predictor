@@ -577,7 +577,7 @@ function updateDopingSummary() {
         } else if (expiredAUTs.length > 0) {
             alerts.innerHTML = `<span class="text-yellow-600">⚠️ ${expiredAUTs.length} AUT expirée(s)</span>`;
         } else {
-            alerts.innerHTML = `<span class="text-green-600">Aucune alerte</span>`;
+            alerts.innerHTML = `<span class="text-green-600">{{ __('health_records_extra.label_5792b61b625f') }}</span>`;
         }
     }
 }

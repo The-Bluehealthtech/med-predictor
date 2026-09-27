@@ -110,7 +110,7 @@
                             👁️ Voir détails
                         </a>
                         @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations', $confederation))
-                            <a href="{{ route('organization-cards.edit', ['confederations', $confederation->id]) }}" class="px-4 py-2 bg-yellow-600 text-white rounded">✏️ Modifier</a>
+                            <a href="{{ route('organization-cards.edit', ['confederations', $confederation->id]) }}" class="px-4 py-2 bg-yellow-600 text-white rounded">{{ __('pcma_extra.label_723bbbfede8a') }}</a>
                         @endif
                         <a href="/associations-view?confederation_id={{ $confederation->id }}" 
                            class="flex-1 px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors">
@@ -132,7 +132,7 @@
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-blue-600">{{ $confederations->where('status', 'active')->count() }}</div>
-                    <div class="text-sm text-gray-600">Actives</div>
+                    <div class="text-sm text-gray-600">{{ __('competition_management.active') }}</div>
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-green-600">{{ $confederations->where('fifa_sync_status', 'synced')->count() }}</div>
@@ -140,7 +140,7 @@
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-yellow-600">{{ $confederations->where('fifa_sync_status', 'pending')->count() }}</div>
-                    <div class="text-sm text-gray-600">En attente</div>
+                    <div class="text-sm text-gray-600">{{ __('competition_management.statuses.pending') }}</div>
                 </div>
             </div>
         </div>

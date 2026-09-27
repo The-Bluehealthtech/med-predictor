@@ -66,10 +66,10 @@
                             </svg>
                             <div class="flex text-sm text-gray-600">
                                 <label for="player_photo" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                                    <span>Télécharger un fichier</span>
+                                    <span>{{ __('secretary.upload_a_file') }}</span>
                                     <input id="player_photo" name="player_photo" type="file" class="sr-only" accept="image/*" required>
                                 </label>
-                                <p class="pl-1">ou glisser-déposer</p>
+                                <p class="pl-1">{{ __('secretary.or_drag_and_drop') }}</p>
                             </div>
                             <p class="text-xs text-gray-500">PNG, JPG, JPEG jusqu'à 5MB</p>
                         </div>
@@ -181,7 +181,7 @@
                             })
                             .catch(error => {
                                 console.error('❌ Erreur lors du chargement des joueurs:', error);
-                                playerSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+                                playerSelect.innerHTML = '<option value="">{{ __('pcma.loading_error') }}</option>';
                                 playerSelect.disabled = false;
                             });
                     } else {

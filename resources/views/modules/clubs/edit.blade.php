@@ -72,13 +72,13 @@
                     <!-- Localisation -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Pays</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.details.country') }}</label>
                             <input type="text" name="country" value="Tunisie" readonly 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Ville</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('welcome.city') }}</label>
                             <input type="text" name="city" value="{{ $club->city ?? 'N/A' }}" readonly 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600">
                         </div>
@@ -94,7 +94,7 @@
                         
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('welcome.phone') }}</label>
                                 <input type="tel" name="phone" value="{{ $club->phone }}" 
                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             </div>
@@ -110,7 +110,7 @@
                     <!-- Informations supplémentaires -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Site web</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.details.website') }}</label>
                             <input type="url" name="website" value="{{ $club->website }}" 
                                    placeholder="https://..." 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -126,11 +126,11 @@
                     
                     <!-- Statut -->
                     <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                         <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="active" {{ $club->status === 'active' ? 'selected' : '' }}>Actif</option>
+                            <option value="active" {{ $club->status === 'active' ? 'selected' : '' }}>{{ __('healthcare.status_active') }}</option>
                             <option value="inactive" {{ $club->status === 'inactive' ? 'selected' : '' }}>Inactif</option>
-                            <option value="pending" {{ $club->status === 'pending' ? 'selected' : '' }}>En attente</option>
+                            <option value="pending" {{ $club->status === 'pending' ? 'selected' : '' }}>{{ __('competition_management.statuses.pending') }}</option>
                         </select>
                     </div>
                     

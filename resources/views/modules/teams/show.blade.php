@@ -17,12 +17,12 @@
             <a href="{{ route('modules.teams.edit', $team) }}" 
                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-edit mr-2"></i>
-                Modifier
+                {{ __('common.edit') }}
             </a>
             <a href="{{ route('modules.teams.index') }}" 
                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-arrow-left mr-2"></i>
-                Retour à la liste
+                {{ __('competition_management.back_list') }}
             </a>
         </div>
     </div>
@@ -32,10 +32,10 @@
         <!-- Carte principale -->
         <div class="lg:col-span-2">
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Informations générales</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('competition_management.basic') }}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-500">Nom de l'équipe</label>
+                        <label class="block text-sm font-medium text-gray-500">{{ __('pcma.team_name_label') }}</label>
                         <p class="text-lg font-semibold text-gray-900">{{ $team->name }}</p>
                     </div>
                     <div>
@@ -47,7 +47,7 @@
                         <p class="text-lg font-semibold text-gray-900">{{ $team->club->association->name ?? 'N/A' }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500">Niveau</label>
+                        <label class="block text-sm font-medium text-gray-500">{{ __('health_records_create.posture_level') }}</label>
                         <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full
                             @if($team->level === 'professional') bg-purple-100 text-purple-800
                             @elseif($team->level === 'semi-professional') bg-blue-100 text-blue-800
@@ -68,7 +68,7 @@
                         <p class="text-lg font-semibold text-gray-900">{{ ucfirst($team->discipline ?? 'N/A') }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500">Statut</label>
+                        <label class="block text-sm font-medium text-gray-500">{{ __('clinical.table_status') }}</label>
                         <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full
                             @if($team->status === 'active') bg-green-100 text-green-800
                             @elseif($team->status === 'inactive') bg-red-100 text-red-800
@@ -93,19 +93,19 @@
                 @if($team->club)
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-sm font-medium text-gray-500">Nom du club</label>
+                            <label class="block text-sm font-medium text-gray-500">{{ __('pcma_extra.label_aa40e08a0d95') }}</label>
                             <p class="text-lg font-semibold text-gray-900">{{ $team->club->name }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-500">Ville</label>
+                            <label class="block text-sm font-medium text-gray-500">{{ __('welcome.city') }}</label>
                             <p class="text-gray-900">{{ $team->club->city ?? 'N/A' }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-500">Pays</label>
+                            <label class="block text-sm font-medium text-gray-500">{{ __('competitions.details.country') }}</label>
                             <p class="text-gray-900">{{ $team->club->country ?? 'N/A' }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-500">Stade</label>
+                            <label class="block text-sm font-medium text-gray-500">{{ __('competitions.fixtures_page.stadium') }}</label>
                             <p class="text-gray-900">{{ $team->club->stadium ?? 'N/A' }}</p>
                         </div>
                         <div>
@@ -140,15 +140,15 @@
             </button>
             <button onclick="viewMatches()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-futbol mr-2"></i>
-                Voir les matchs
+                {{ __('competitions.supervision_page.view_matches_title') }}
             </button>
             <button onclick="viewStatistics()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-chart-bar mr-2"></i>
-                Statistiques
+                {{ __('competitions.rapports_statistiques_page.type_statistics') }}
             </button>
             <button onclick="exportTeam()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-download mr-2"></i>
-                Exporter
+                {{ __('common.export') }}
             </button>
         </div>
     </div>

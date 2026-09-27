@@ -19,7 +19,7 @@
                     </a>
                     <a href="{{ route('health-records.create', ['player_id' => $player->id]) }}" 
                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                        + Nouveau dossier
+                        {{ __('healthcare.new_record_button') }}
                     </a>
                 </div>
             </div>
@@ -113,13 +113,13 @@
                                     Date
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Diagnostic
+                                    {{ __('health_records.show_page.diagnosis_label') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Gravité
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Médecin
+                                    {{ __('health_records.show_page.doctor_label') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Actions
@@ -151,15 +151,15 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
                                             <a href="{{ route('health-records.show', $record) }}" 
-                                               class="text-blue-600 hover:text-blue-900">Voir</a>
+                                               class="text-blue-600 hover:text-blue-900">{{ __('clinical.view_button') }}</a>
                                             <a href="{{ route('health-records.edit', $record) }}" 
-                                               class="text-indigo-600 hover:text-indigo-900">Modifier</a>
+                                               class="text-indigo-600 hover:text-indigo-900">{{ __('common.edit') }}</a>
                                             <form action="{{ route('health-records.destroy', $record) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-900" 
                                                         onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')">
-                                                    Supprimer
+                                                    {{ __('common.delete') }}
                                                 </button>
                                             </form>
                                         </div>
@@ -180,11 +180,11 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun dossier médical</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('healthcare.no_records') }}</h3>
                     <p class="text-gray-500 mb-6">Ce joueur n'a pas encore de dossier médical enregistré.</p>
                     <a href="{{ route('health-records.create', ['player_id' => $player->id]) }}" 
                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                        Créer le premier dossier
+                        {{ __('healthcare.create_first_record') }}
                     </a>
                 </div>
             @endif
@@ -194,7 +194,7 @@
         @if($player->medicalPredictions->count() > 0)
             <div class="bg-white rounded-lg shadow-md overflow-hidden mt-8">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800">Prédictions Médicales</h2>
+                    <h2 class="text-xl font-semibold text-gray-800">{{ __('healthcare.medical_predictions') }}</h2>
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">

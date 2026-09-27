@@ -373,7 +373,7 @@ function updateImagingSummary() {
         if (types.length > 0) {
             typesElement.innerHTML = `<span class="text-green-600">${types.length}</span> type(s) d'examen`;
         } else {
-            typesElement.innerHTML = `<span class="text-green-600">Aucun</span>`;
+            typesElement.innerHTML = `<span class="text-green-600">{{ __('health_records_create.none_label') }}</span>`;
         }
     }
     

@@ -541,19 +541,19 @@ function initializePosturalAssessment() {
             anterior: `<svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg">
                 <!-- Anterior view content -->
                 <rect width="600" height="800" fill="#f0f0f0"/>
-                <text x="300" y="50" text-anchor="middle" font-size="20" fill="#333">Vue Antérieure</text>
+                <text x="300" y="50" text-anchor="middle" font-size="20" fill="#333">{{ __('health_records_edit.anterior_view') }}</text>
                 <!-- Add more SVG content for anterior view -->
             </svg>`,
             posterior: `<svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg">
                 <!-- Posterior view content -->
                 <rect width="600" height="800" fill="#f0f0f0"/>
-                <text x="300" y="50" text-anchor="middle" font-size="20" fill="#333">Vue Postérieure</text>
+                <text x="300" y="50" text-anchor="middle" font-size="20" fill="#333">{{ __('health_records_edit.posterior_view') }}</text>
                 <!-- Add more SVG content for posterior view -->
             </svg>`,
             lateral: `<svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg">
                 <!-- Lateral view content -->
                 <rect width="600" height="800" fill="#f0f0f0"/>
-                <text x="300" y="50" text-anchor="middle" font-size="20" fill="#333">Vue Latérale</text>
+                <text x="300" y="50" text-anchor="middle" font-size="20" fill="#333">{{ __('health_records_edit.lateral_view') }}</text>
                 <!-- Add more SVG content for lateral view -->
             </svg>`
         };

@@ -23,7 +23,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700">Type de licence</label>
                 <select name="license_type" required class="mt-1 w-full rounded border-gray-300">
-                    <option value="">Sélectionner</option>
+                    <option value="">{{ __('clinical.select_button') }}</option>
                     @foreach([
                         'amateur' => 'Amateur',
                         'professional' => 'Professionnelle',
@@ -63,7 +63,7 @@
                     Créer la demande
                 </button>
                 <a href="{{ route('modules.licenses.index') }}" class="px-4 py-2 rounded bg-gray-100 text-gray-700">
-                    Annuler
+                    {{ __('clinical.cancel') }}
                 </a>
             </div>
         </form>

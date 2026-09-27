@@ -109,7 +109,7 @@
 
             <div>
                 <label for="password" class="block text-sm font-medium text-blue-200 mb-2">
-                    Mot de passe
+                    {{ __('auth.password') }}
                 </label>
                 <input type="password" name="password" id="password" required 
                        class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"

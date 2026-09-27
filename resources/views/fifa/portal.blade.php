@@ -30,7 +30,7 @@
                 <div>
                     @if(($connectivity['status'] ?? null) === 'online')
                         <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            Connecté
+                            {{ __('fifa.connected') }}
                         </span>
                     @elseif(($connectivity['status'] ?? null) === 'unconfigured')
                         <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
@@ -50,7 +50,7 @@
 
             <dl class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                 <div>
-                    <dt class="text-gray-500">Statut</dt>
+                    <dt class="text-gray-500">{{ __('clinical.table_status') }}</dt>
                     <dd class="font-medium text-gray-900">{{ $connectivity['status'] ?? 'unknown' }}</dd>
                 </div>
                 <div>
@@ -69,7 +69,7 @@
 
             <form method="GET" action="{{ route('fifa.portal.integrated') }}" class="flex flex-col md:flex-row gap-3">
                 <select name="player_id" class="flex-1 rounded-md border-gray-300">
-                    <option value="">Sélectionner un joueur</option>
+                    <option value="">{{ __('competitions.discipline_sanctions_page.select_player_placeholder') }}</option>
                     @foreach($players as $player)
                         <option value="{{ $player->id }}" @selected($selectedPlayer?->id === $player->id)>
                             {{ trim(($player->first_name ?? '') . ' ' . ($player->last_name ?? '')) ?: ($player->name ?? ('Joueur #' . $player->id)) }}
@@ -114,7 +114,7 @@
                         <dd class="font-medium text-gray-900">{{ $selectedPlayer->association?->name ?? 'N/A' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm text-gray-500">Nationalité</dt>
+                        <dt class="text-sm text-gray-500">{{ __('health_records.show_page.nationality_label') }}</dt>
                         <dd class="font-medium text-gray-900">{{ $selectedPlayer->nationality ?? 'N/A' }}</dd>
                     </div>
                     <div>
@@ -130,7 +130,7 @@
                         <dd class="font-medium text-gray-900">{{ $selectedPlayer->potential_rating ?? 'N/A' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm text-gray-500">Dernière mise à jour</dt>
+                        <dt class="text-sm text-gray-500">{{ __('competitions.ranking.last_update') }}</dt>
                         <dd class="font-medium text-gray-900">{{ $selectedPlayer->updated_at?->toISOString() ?? 'N/A' }}</dd>
                     </div>
                 </dl>

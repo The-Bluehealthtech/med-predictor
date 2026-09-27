@@ -59,7 +59,7 @@
                         </div>
                         <div class="ml-4">
                             <div class="text-2xl font-bold text-gray-900">3</div>
-                            <div class="text-sm text-gray-500">Rendez-vous</div>
+                            <div class="text-sm text-gray-500">{{ __('navigation.appointments') }}</div>
                         </div>
                     </div>
                 </div>
@@ -87,14 +87,14 @@
         <!-- Quick Actions -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8">
             <div class="p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <a href="{{ route('portal.medical-record') }}" class="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
                         <div class="flex items-center">
                             <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
-                            <span class="font-medium text-blue-900">Dossier Médical</span>
+                            <span class="font-medium text-blue-900">{{ __('health_records.show_page.heading') }}</span>
                         </div>
                     </a>
                     
@@ -122,7 +122,7 @@
         <!-- Recent Activity -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Activité Récente</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('clinical.recent_activity_heading') }}</h3>
                 <div class="space-y-4">
                     <div class="border border-gray-200 rounded-lg p-4">
                         <div class="flex items-center justify-between">
@@ -132,7 +132,7 @@
                             </div>
                             <div class="text-right">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    Complété
+                                    {{ __('pcma.status_completed') }}
                                 </span>
                             </div>
                         </div>
@@ -146,7 +146,7 @@
                             </div>
                             <div class="text-right">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    Confirmé
+                                    {{ __('clinical.status_confirmed') }}
                                 </span>
                             </div>
                         </div>

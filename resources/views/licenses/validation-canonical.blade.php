@@ -20,11 +20,11 @@
             <div class="text-2xl font-bold">{{ $totalCount }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4">
-            <div class="text-sm text-gray-500">En attente</div>
+            <div class="text-sm text-gray-500">{{ __('competition_management.statuses.pending') }}</div>
             <div class="text-2xl font-bold">{{ $pendingCount }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4">
-            <div class="text-sm text-gray-500">Actives</div>
+            <div class="text-sm text-gray-500">{{ __('competition_management.active') }}</div>
             <div class="text-2xl font-bold">{{ $approvedCount }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4">
@@ -38,11 +38,11 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joueur</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('auth.role_player') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Club</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expiration</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('clinical.table_status') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                 </thead>
@@ -63,7 +63,7 @@
                                             Approuver
                                         </button>
                                         <button type="button" onclick="rejectLicense({{ $license->id }})" class="text-red-700 hover:underline">
-                                            Rejeter
+                                            {{ __('competitions.discipline_sanctions_page.reject_button') }}
                                         </button>
                                     </div>
                                 @else

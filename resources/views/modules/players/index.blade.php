@@ -59,7 +59,7 @@
 
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                         <a href="{{ route('player-registration.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                             ➕ Nouveau Joueur
@@ -83,7 +83,7 @@
                     <h2 class="text-xl font-semibold text-gray-800">Liste des Joueurs</h2>
                     <div class="flex items-center space-x-4">
                         <div class="text-sm text-gray-600">
-                            Total: <span class="font-semibold">{{ $players->total() }}</span> joueurs
+                            Total: <span class="font-semibold">{{ $players->total() }}</span> {{ __('competitions.match_sheets_page.players_suffix') }}
                         </div>
                         <a href="{{ route('player-registration.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
                             + Ajouter
@@ -98,7 +98,7 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Joueur
+                                    {{ __('auth.role_player') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Club
@@ -164,7 +164,7 @@
                                             </span>
                                         @elseif($licenseStatus === 'pending')
                                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                ⏳ En Attente
+                                                {{ __('competitions.engagements_clubs_page.status_pending_badge') }}
                                             </span>
                                         @elseif($licenseStatus === 'rejected')
                                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
@@ -233,11 +233,11 @@
         <!-- Statistics -->
         @if($players->count() > 0)
             <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Statistiques</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('competitions.rapports_statistiques_page.type_statistics') }}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="text-center">
                         <div class="text-2xl font-bold text-blue-600">{{ $players->total() }}</div>
-                        <div class="text-sm text-gray-600">Total Joueurs</div>
+                        <div class="text-sm text-gray-600">{{ __('competitions.rapports_avances_page.stat_total_players') }}</div>
                     </div>
                     <div class="text-center">
                         <div class="text-2xl font-bold text-green-600">
@@ -253,7 +253,7 @@
                                 return $player->licenses->where('status', 'pending')->count() > 0; 
                             })->count() }}
                         </div>
-                        <div class="text-sm text-gray-600">En Attente</div>
+                        <div class="text-sm text-gray-600">{{ __('competitions.rapports_statistiques_page.pending') }}</div>
                     </div>
                     <div class="text-center">
                         <div class="text-2xl font-bold text-red-600">

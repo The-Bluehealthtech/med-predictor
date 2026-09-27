@@ -22,14 +22,14 @@
                   class="max-w-xl">
                 <label for="player_id"
                        class="block text-sm font-medium text-gray-700">
-                    Joueur
+                    {{ __('auth.role_player') }}
                 </label>
 
                 <select name="player_id"
                         id="player_id"
                         required
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    <option value="">Sélectionner un joueur</option>
+                    <option value="">{{ __('competitions.discipline_sanctions_page.select_player_placeholder') }}</option>
 
                     @foreach($players as $player)
                         <option value="{{ $player->id }}"
@@ -140,7 +140,7 @@
                     <div>
                         <label for="fit_metric_value"
                                class="block text-sm font-medium text-gray-700">
-                            Valeur mesurée
+                            {{ __('health_records_edit.measured_value') }}
                         </label>
                         <input id="fit_metric_value"
                                type="number"
@@ -152,7 +152,7 @@
                     <div>
                         <label for="fit_metric_unit"
                                class="block text-sm font-medium text-gray-700">
-                            Unité
+                            {{ __('health_records_edit.unit') }}
                         </label>
                         <input id="fit_metric_unit"
                                type="text"
@@ -643,7 +643,7 @@
                                         @if($metric->is_verified)
                                             <span>Vérifiée</span>
                                         @else
-                                            <span>En attente</span>
+                                            <span>{{ __('competition_management.statuses.pending') }}</span>
 
                                             @if($canVerify && $metric->fit_eligible)
                                                 <button

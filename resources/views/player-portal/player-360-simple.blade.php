@@ -267,7 +267,7 @@
                                 </div>
                                 <div>
                                     <div class="font-bold text-purple-600">25</div>
-                                    <div class="text-xs text-gray-500">Matchs</div>
+                                    <div class="text-xs text-gray-500">{{ __('common.matches') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -303,14 +303,14 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
             <!-- Informations générales -->
             <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h2 class="text-2xl font-bold gradient-text mb-6">Informations Générales</h2>
+                <h2 class="text-2xl font-bold gradient-text mb-6">{{ __('health_records_create.tab_general') }}</h2>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">FIFA Connect ID</span>
                         <span class="font-medium font-mono text-sm">{{ $player->fifa_connect_id ?? 'Non attribué' }}</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Date de naissance</span>
+                        <span class="text-gray-600">{{ __('health_records_extra.label_8851f385b271') }}</span>
                         <span class="font-medium">{{ $player->date_of_birth ? $player->date_of_birth->format('d/m/Y') : 'Non définie' }}</span>
                     </div>
                     <div class="flex justify-between items-center">
@@ -372,7 +372,7 @@
                         <span class="font-bold text-green-600">{{ $player->pcmas->count() ?? 0 }}</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Prédictions médicales</span>
+                        <span class="text-gray-600">{{ __('navigation.medical_predictions') }}</span>
                         <span class="font-bold text-purple-600">{{ $player->medicalPredictions->count() ?? 0 }}</span>
                     </div>
                     <div class="flex justify-between items-center">

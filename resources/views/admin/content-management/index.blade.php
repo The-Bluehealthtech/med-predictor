@@ -185,7 +185,7 @@
         <!-- Actions rapides -->
         <div class="bg-white shadow rounded-lg mb-8">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Actions Rapides</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
                 <div class="flex flex-wrap gap-4">
                     <a href="{{ route('admin.content-management.create', ['type' => 'article']) }}" 
                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">

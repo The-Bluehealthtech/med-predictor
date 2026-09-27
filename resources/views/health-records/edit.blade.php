@@ -1404,7 +1404,7 @@
                                     </p>
                                     <ul class="text-sm text-gray-600 space-y-1 mb-4">
                                         <li>• <strong>🎯 {{ __('health_records_edit.marker') }} :</strong> {{ __('health_records_edit.click_on_an_anatomical_point_to_add_an_a') }}</li>
-                                        <li>• <strong>📐 Angle :</strong> {{ __('health_records_edit.click_on_3_points_to_measure_an_angle') }}</li>
+                                        <li>• <strong>{{ __('health_records_extra.label_c603506c14c1') }}</strong> {{ __('health_records_edit.click_on_3_points_to_measure_an_angle') }}</li>
                                         <li>• <strong>📏 {{ __('health_records_edit.plumb_line') }} :</strong> {{ __('health_records_edit.displays_a_vertical_reference_line') }}</li>
                                         <li>• <strong>🗑️ {{ __('health_records_edit.clear') }} :</strong> {{ __('health_records_edit.removes_all_annotations') }}</li>
                                         <li>• <strong>💾 {{ __('health_records_edit.export') }} :</strong> {{ __('health_records_edit.downloads_the_assessment_data_as_json') }}</li>

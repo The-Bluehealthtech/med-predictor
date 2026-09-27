@@ -33,44 +33,44 @@
             <h2 class="text-lg font-semibold text-gray-800 mb-4">🔍 Filtres et recherche</h2>
             <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Rechercher</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('common.search') }}</label>
                     <input v-model="searchQuery" type="text" placeholder="Nom, ID, type..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                     <select v-model="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Tous les statuts</option>
                         <option value="valid">Valide</option>
-                        <option value="pending">En attente</option>
-                        <option value="expired">Expirée</option>
+                        <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
+                        <option value="expired">{{ __('health_records_edit.expired') }}</option>
                         <option value="suspended">Suspendue</option>
-                        <option value="revoked">Révoquée</option>
+                        <option value="revoked">{{ __('health_records_edit.revoked') }}</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
                     <select v-model="typeFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Tous les types</option>
-                        <option value="player">Joueur</option>
+                        <option value="player">{{ __('auth.role_player') }}</option>
                         <option value="coach">Entraîneur</option>
-                        <option value="referee">Arbitre</option>
-                        <option value="medical">Médical</option>
+                        <option value="referee">{{ __('auth.role_referee') }}</option>
+                        <option value="medical">{{ __('health_records.show_page.tab_medical') }}</option>
                         <option value="administrative">Administrative</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">FIFA Connect</label>
                     <select v-model="fifaFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">Tous</option>
+                        <option value="">{{ __('competitions.squad_page.all') }}</option>
                         <option value="synced">Synchronisées</option>
-                        <option value="pending">En attente</option>
-                        <option value="error">Erreur</option>
+                        <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
+                        <option value="error">{{ __('common.error') }}</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Date d'expiration</label>
                     <select v-model="expirationFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">Toutes</option>
+                        <option value="">{{ __('competitions.squad_page.all_fem') }}</option>
                         <option value="expired">Expirées</option>
                         <option value="expiring_soon">Expirent bientôt</option>
                         <option value="valid">Valides</option>
@@ -99,7 +99,7 @@
                         <span class="text-2xl text-yellow-600">⏳</span>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">En attente</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('competition_management.statuses.pending') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $licenseStats['pending_validation'] ?? 0 }}</p>
                     </div>
                 </div>
@@ -143,7 +143,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Joueur
+                                {{ __('auth.role_player') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Club
@@ -233,7 +233,7 @@
                                     </a>
                                     <a href="{{ route('player-registration.edit', $player->id) }}" 
                                        class="text-indigo-600 hover:text-indigo-900">
-                                        ✏️ Modifier
+                                        {{ __('pcma_extra.label_723bbbfede8a') }}
                                     </a>
                                 </div>
                             </td>
@@ -256,7 +256,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Licence
+                                {{ __('competitions.squad_page.license_option') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Titulaire
@@ -265,7 +265,7 @@
                                 Type
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Statut
+                                {{ __('clinical.table_status') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 FIFA Connect
@@ -336,7 +336,7 @@
                                         ❌ Rejeter
                                     </button>
                                     <button @click="editLicense(license)" class="text-yellow-600 hover:text-yellow-900">
-                                        ✏️ Modifier
+                                        {{ __('pcma_extra.label_723bbbfede8a') }}
                                     </button>
                                 </div>
                             </td>
@@ -382,7 +382,7 @@
                                 ✅ Valider toutes les licences sélectionnées
                             </button>
                             <button @click="showBatchValidationModal = false" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
-                                Annuler
+                                {{ __('clinical.cancel') }}
                             </button>
                         </div>
                     </div>
@@ -409,11 +409,11 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Type de licence *</label>
                                 <select v-model="licenseForm.type" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                    <option value="">Sélectionner un type</option>
-                                    <option value="player">Joueur</option>
+                                    <option value="">{{ __('health_records_create.select_type_placeholder') }}</option>
+                                    <option value="player">{{ __('auth.role_player') }}</option>
                                     <option value="coach">Entraîneur</option>
-                                    <option value="referee">Arbitre</option>
-                                    <option value="medical">Médical</option>
+                                    <option value="referee">{{ __('auth.role_referee') }}</option>
+                                    <option value="medical">{{ __('health_records.show_page.tab_medical') }}</option>
                                     <option value="administrative">Administrative</option>
                                 </select>
                             </div>
@@ -444,11 +444,11 @@
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-blue-700 mb-2">Statut de synchronisation</label>
+                                    <label class="block text-sm font-medium text-blue-700 mb-2">{{ __('competition_management.sync_status') }}</label>
                                     <select v-model="licenseForm.fifaSyncStatus" class="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                        <option value="pending">En attente</option>
+                                        <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
                                         <option value="synced">Synchronisée</option>
-                                        <option value="error">Erreur</option>
+                                        <option value="error">{{ __('common.error') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -472,7 +472,7 @@
                                 [[ showEditLicenseModal ? 'Modifier' : 'Créer' ]]
                             </button>
                             <button type="button" @click="closeModal" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
-                                Annuler
+                                {{ __('clinical.cancel') }}
                             </button>
                         </div>
                     </form>

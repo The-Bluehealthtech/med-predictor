@@ -92,8 +92,8 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Rapports</p>
-                        <p class="text-2xl font-bold text-gray-900">Générer</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('common.reports') }}</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ __('competitions.rapports_statistiques_page.generate_title') }}</p>
                     </div>
                 </div>
             </div>
@@ -101,7 +101,7 @@
 
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <button onclick="showGlobalMetrics()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     📊 Métriques Globales
@@ -146,7 +146,7 @@
             </div>
             <div class="mt-6">
                 <button onclick="hideGlobalMetrics()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    Fermer
+                    {{ __('clinical.close') }}
                 </button>
             </div>
         </div>
@@ -192,7 +192,7 @@
             </div>
             <div class="mt-6">
                 <button onclick="hideIndividualTracking()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    Fermer
+                    {{ __('clinical.close') }}
                 </button>
             </div>
         </div>
@@ -205,34 +205,34 @@
                     <h4 class="font-medium text-gray-900 mb-2">Rapport Mensuel</h4>
                     <p class="text-sm text-gray-600 mb-3">Analyse complète des performances du mois</p>
                     <button onclick="generateMonthlyReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                        Générer
+                        {{ __('competitions.rapports_statistiques_page.generate_title') }}
                     </button>
                 </div>
                 <div class="border border-gray-200 rounded-lg p-4">
                     <h4 class="font-medium text-gray-900 mb-2">Rapport Individuel</h4>
                     <p class="text-sm text-gray-600 mb-3">Performance détaillée par athlète</p>
                     <button onclick="generateIndividualReport()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                        Générer
+                        {{ __('competitions.rapports_statistiques_page.generate_title') }}
                     </button>
                 </div>
                 <div class="border border-gray-200 rounded-lg p-4">
                     <h4 class="font-medium text-gray-900 mb-2">Rapport d'Équipe</h4>
                     <p class="text-sm text-gray-600 mb-3">Analyse comparative des équipes</p>
                     <button onclick="generateTeamReport()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                        Générer
+                        {{ __('competitions.rapports_statistiques_page.generate_title') }}
                     </button>
                 </div>
                 <div class="border border-gray-200 rounded-lg p-4">
                     <h4 class="font-medium text-gray-900 mb-2">Rapport de Progression</h4>
                     <p class="text-sm text-gray-600 mb-3">Évolution des performances dans le temps</p>
                     <button onclick="generateProgressReport()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                        Générer
+                        {{ __('competitions.rapports_statistiques_page.generate_title') }}
                     </button>
                 </div>
             </div>
             <div class="mt-6">
                 <button onclick="hideReports()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    Fermer
+                    {{ __('clinical.close') }}
                 </button>
             </div>
         </div>

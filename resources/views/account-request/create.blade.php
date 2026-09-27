@@ -23,7 +23,7 @@
                         Retour à l'accueil
                     </a>
                     <a href="{{ route('login') }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all duration-200">
-                        Connexion
+                        {{ __('auth.login') }}
                     </a>
                 </div>
             </div>

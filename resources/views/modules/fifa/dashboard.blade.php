@@ -78,7 +78,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Synchronisation</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('navigation.sync_dashboard') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $fifaStats['confederations']['synced'] }}/{{ $fifaStats['confederations']['total'] }}</p>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Contrats</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('navigation.contracts') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $fifaStats['players']['total'] }}</p>
                     </div>
                 </div>
@@ -140,7 +140,7 @@
 
             <!-- FIFA Analytics -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Statistiques FIFA</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('fifa.fifa_statistics') }}</h3>
                 <div class="space-y-4">
                     <div class="flex items-center justify-between p-4 bg-indigo-50 rounded-lg">
                         <div>
@@ -165,7 +165,7 @@
                     </div>
                     <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
                         <div>
-                            <p class="font-medium text-purple-900">Joueurs</p>
+                            <p class="font-medium text-purple-900">{{ __('common.players') }}</p>
                             <p class="text-sm text-purple-700">{{ $fifaStats['players']['total'] }} joueurs</p>
                         </div>
                         <span class="text-purple-600">{{ $fifaStats['players']['synced'] }}/{{ $fifaStats['players']['total'] }}</span>
@@ -192,14 +192,14 @@
                 </div>
                 <div class="text-center">
                     <div class="text-2xl font-bold text-yellow-600">{{ $fifaStats['players']['total'] }}</div>
-                    <div class="text-sm text-gray-600">Joueurs</div>
+                    <div class="text-sm text-gray-600">{{ __('common.players') }}</div>
                 </div>
             </div>
         </div>
 
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <a href="/fifa/connectivity" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     🔗 Connectivité

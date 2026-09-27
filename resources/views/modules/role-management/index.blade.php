@@ -71,7 +71,7 @@
                         </button>
                         <button onclick="applyRoleToUsers('{{ $roleKey }}')" 
                                 class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
-                            Appliquer
+                            {{ __('competitions.ranking.apply') }}
                         </button>
                     </div>
                 </div>
@@ -113,7 +113,7 @@
             <div class="flex items-center justify-between mb-4">
                 <h3 id="roleDetailsTitle" class="text-lg font-medium text-gray-900">Détails du Rôle</h3>
                 <button onclick="closeRoleDetailsModal()" class="text-gray-400 hover:text-gray-600">
-                    <span class="sr-only">Fermer</span>
+                    <span class="sr-only">{{ __('clinical.close') }}</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -134,7 +134,7 @@
             <div class="flex items-center justify-between mb-4">
                 <h3 id="applyRoleTitle" class="text-lg font-medium text-gray-900">Appliquer le Rôle</h3>
                 <button onclick="closeApplyRoleModal()" class="text-gray-400 hover:text-gray-600">
-                    <span class="sr-only">Fermer</span>
+                    <span class="sr-only">{{ __('clinical.close') }}</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -174,7 +174,7 @@ function viewRoleDetails(roleKey) {
         
         <div class="flex justify-end">
             <button onclick="closeRoleDetailsModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">
-                Fermer
+                {{ __('clinical.close') }}
             </button>
         </div>
     `;
@@ -217,7 +217,7 @@ function applyRoleToUsers(roleKey) {
         
         <div class="flex justify-end space-x-3">
             <button onclick="closeApplyRoleModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">
-                Annuler
+                {{ __('clinical.cancel') }}
             </button>
             <button onclick="confirmApplyRole('${roleKey}')" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md">
                 Appliquer le Rôle

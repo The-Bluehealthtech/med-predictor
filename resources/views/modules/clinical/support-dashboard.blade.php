@@ -191,7 +191,7 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Joueur
+                                    {{ __('auth.role_player') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Date
@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="text-green-600">✅ Réussi</span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-medium">Statut:</span>
+                            <span class="font-medium">{{ __('clinical.status_label') }}</span>
                             <span class="text-blue-600">${result.message}</span>
                         </div>
                         <div class="mt-3">

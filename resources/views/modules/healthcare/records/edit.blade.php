@@ -14,10 +14,10 @@
                 </div>
                 <div class="flex space-x-4">
                     <a href="{{ route('modules.healthcare.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        ← Retour
+                        {{ __('errors.generic_back') }}
                     </a>
                     <button type="submit" form="edit-form" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        💾 Sauvegarder
+                        {{ __('health_records_create.save_button') }}
                     </button>
                 </div>
             </div>
@@ -30,7 +30,7 @@
             
             <!-- Patient Information -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Informations du Patient</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('health_records.show_page.patient_info_heading') }}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="patient_name" class="block text-sm font-medium text-gray-700 mb-2">Nom du Patient</label>
@@ -43,16 +43,16 @@
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                         <select id="status" name="status" 
                                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="active" selected>Actif</option>
-                            <option value="archived">Archivé</option>
-                            <option value="pending">En Attente</option>
+                            <option value="active" selected>{{ __('healthcare.status_active') }}</option>
+                            <option value="archived">{{ __('healthcare.status_archived') }}</option>
+                            <option value="pending">{{ __('competitions.rapports_statistiques_page.pending') }}</option>
                         </select>
                     </div>
                     <div>
-                        <label for="risk_score" class="block text-sm font-medium text-gray-700 mb-2">Score de Risque</label>
+                        <label for="risk_score" class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records.show_page.risk_score_heading') }}</label>
                         <input type="range" id="risk_score" name="risk_score" min="0" max="100" value="45" 
                                class="w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <div class="flex justify-between text-xs text-gray-500 mt-1">
@@ -66,10 +66,10 @@
 
             <!-- Medical Information -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Informations Médicales</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('health_records.show_page.medical_info_heading') }}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="medical_history" class="block text-sm font-medium text-gray-700 mb-2">Antécédents Médicaux</label>
+                        <label for="medical_history" class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records_edit.medical_history') }}</label>
                         <textarea id="medical_history" name="medical_history" rows="3" 
                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                   placeholder="Décrivez les antécédents médicaux...">Aucun antécédent médical significatif noté.</textarea>
@@ -81,7 +81,7 @@
                                   placeholder="Listez les allergies...">Aucune allergie connue.</textarea>
                     </div>
                     <div>
-                        <label for="current_medications" class="block text-sm font-medium text-gray-700 mb-2">Médicaments Actuels</label>
+                        <label for="current_medications" class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records_edit.current_medications_2') }}</label>
                         <textarea id="current_medications" name="current_medications" rows="3" 
                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                   placeholder="Listez les médicaments actuels...">Aucun médicament en cours.</textarea>
@@ -101,7 +101,7 @@
                 <div class="space-y-4">
                     <div class="border border-gray-200 rounded-lg p-4">
                         <div class="flex items-center justify-between mb-2">
-                            <h4 class="font-medium text-gray-900">Risque de Blessure</h4>
+                            <h4 class="font-medium text-gray-900">{{ __('medical_predictions.show_type_injury_risk') }}</h4>
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
                                 Modéré
                             </span>
@@ -110,9 +110,9 @@
                     </div>
                     <div class="border border-gray-200 rounded-lg p-4">
                         <div class="flex items-center justify-between mb-2">
-                            <h4 class="font-medium text-gray-900">Recommandations</h4>
+                            <h4 class="font-medium text-gray-900">{{ __('medical_predictions.shared_recommendations_label') }}</h4>
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                Actif
+                                {{ __('healthcare.status_active') }}
                             </span>
                         </div>
                         <p class="text-sm text-gray-600">Exercices de prévention recommandés</p>

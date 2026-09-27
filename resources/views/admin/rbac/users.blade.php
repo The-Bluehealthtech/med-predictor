@@ -52,10 +52,10 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('navigation.user') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle Actuel</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.table_status') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -113,7 +113,7 @@
             <form id="assignRoleForm" method="POST">
                 @csrf
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Utilisateur</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('navigation.user') }}</label>
                     <input type="text" id="userInfo" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
                 </div>
                 <div class="mb-4">
@@ -126,7 +126,7 @@
                     </select>
                 </div>
                 <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="closeAssignRoleModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Annuler</button>
+                    <button type="button" onclick="closeAssignRoleModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">{{ __('clinical.cancel') }}</button>
                     <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Assigner</button>
                 </div>
             </form>

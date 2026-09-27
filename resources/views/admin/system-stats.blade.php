@@ -179,7 +179,7 @@
                             <dd class="mt-1 text-sm text-gray-900">{{ $databaseStats['slow_queries'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Statut</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('clinical.table_status') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $databaseStats['connection_status'] === 'Connected' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                     {{ $databaseStats['connection_status'] }}
@@ -403,7 +403,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-600">Informations</span>
+                                <span class="text-sm text-gray-600">{{ __('dental_chart.info_heading') }}</span>
                                 <div class="flex items-center">
                                     <div class="w-20 bg-gray-200 rounded-full h-2 mr-2">
                                         <div class="bg-blue-500 h-2 rounded-full" style="width: {{ min(100, ($logStats['info_logs_24h'] / max(1, $logStats['error_logs_24h'] + $logStats['warning_logs_24h'] + $logStats['info_logs_24h'])) * 100) }}%"></div>

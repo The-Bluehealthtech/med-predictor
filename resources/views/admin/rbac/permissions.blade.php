@@ -156,8 +156,8 @@
                     <textarea name="description" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
                 </div>
                 <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="closeCreatePermissionModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Annuler</button>
-                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Créer</button>
+                    <button type="button" onclick="closeCreatePermissionModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">{{ __('clinical.cancel') }}</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">{{ __('common.create') }}</button>
                 </div>
             </form>
         </div>

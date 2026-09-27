@@ -41,7 +41,7 @@
                         <div class="flex space-x-4">
                             <a href="{{ route('players.edit', $player) }}" 
                                class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                Modifier
+                                {{ __('common.edit') }}
                             </a>
                             <a href="{{ route('players.health-records', $player) }}" 
                                class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
@@ -58,7 +58,7 @@
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">Informations Générales</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">{{ __('health_records_create.tab_general') }}</h2>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -66,19 +66,19 @@
                                 <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Informations Personnelles</h3>
                                 <dl class="space-y-3">
                                     <div>
-                                        <dt class="text-sm font-medium text-gray-500">Nom complet</dt>
+                                        <dt class="text-sm font-medium text-gray-500">{{ __('clinical.full_name_label') }}</dt>
                                         <dd class="text-sm text-gray-900">{{ $player->full_name }}</dd>
                                     </div>
                                     <div>
-                                        <dt class="text-sm font-medium text-gray-500">Date de naissance</dt>
+                                        <dt class="text-sm font-medium text-gray-500">{{ __('health_records_extra.label_8851f385b271') }}</dt>
                                         <dd class="text-sm text-gray-900">{{ $player->date_of_birth ? $player->date_of_birth->format('d/m/Y') : 'N/A' }}</dd>
                                     </div>
                                     <div>
-                                        <dt class="text-sm font-medium text-gray-500">Âge</dt>
+                                        <dt class="text-sm font-medium text-gray-500">{{ __('clinical.table_age') }}</dt>
                                         <dd class="text-sm text-gray-900">{{ $player->age }} ans</dd>
                                     </div>
                                     <div>
-                                        <dt class="text-sm font-medium text-gray-500">Nationalité</dt>
+                                        <dt class="text-sm font-medium text-gray-500">{{ __('health_records.show_page.nationality_label') }}</dt>
                                         <dd class="text-sm text-gray-900">{{ $player->nationality }}</dd>
                                     </div>
                                 </dl>
@@ -99,7 +99,7 @@
                                         <dd class="text-sm text-gray-900">{{ $player->height ? $player->height . ' cm' : 'N/A' }}</dd>
                                     </div>
                                     <div>
-                                        <dt class="text-sm font-medium text-gray-500">Poids</dt>
+                                        <dt class="text-sm font-medium text-gray-500">{{ __('pcma.weight_label') }}</dt>
                                         <dd class="text-sm text-gray-900">{{ $player->weight ? $player->weight . ' kg' : 'N/A' }}</dd>
                                     </div>
                                     <div>
@@ -115,7 +115,7 @@
                 <!-- Statistiques FIFA -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">Statistiques FIFA</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">{{ __('fifa.fifa_statistics') }}</h2>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -208,7 +208,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun dossier médical</h3>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('healthcare.no_records') }}</h3>
                                 <p class="text-gray-500 mb-4">Ce joueur n'a pas encore de dossier médical enregistré.</p>
                                 <button class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg cursor-not-allowed" disabled>
                                     Créer un dossier (fonctionnalité à venir)
@@ -257,7 +257,7 @@
                 <!-- Actions rapides -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">Actions Rapides</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">{{ __('dashboard.quick_actions') }}</h2>
                     </div>
                     <div class="p-6 space-y-4">
                         <button onclick="loadFifaStats()" 
@@ -279,7 +279,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
-                            Statistiques FIFA
+                            {{ __('fifa.fifa_statistics') }}
                         </button>
                     </div>
                 </div>
@@ -296,11 +296,11 @@
                                 <dd class="text-sm text-gray-900">{{ $player->fifa_version ?? 'N/A' }}</dd>
                             </div>
                             <div>
-                                <dt class="text-sm font-medium text-gray-500">Dernière mise à jour</dt>
+                                <dt class="text-sm font-medium text-gray-500">{{ __('competitions.ranking.last_update') }}</dt>
                                 <dd class="text-sm text-gray-900">{{ $player->last_updated ? $player->last_updated->format('d/m/Y H:i') : 'N/A' }}</dd>
                             </div>
                             <div>
-                                <dt class="text-sm font-medium text-gray-500">ID FIFA Connect</dt>
+                                <dt class="text-sm font-medium text-gray-500">{{ __('fifa.fifa_connect_id') }}</dt>
                                 <dd class="text-sm text-gray-900 font-mono">{{ $player->fifa_connect_id ?? 'N/A' }}</dd>
                             </div>
                         </dl>

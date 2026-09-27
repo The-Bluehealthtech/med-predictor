@@ -15,7 +15,7 @@
         </div>
         <a href="{{ route('modules.teams.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center">
             <i class="fas fa-arrow-left mr-2"></i>
-            Retour à la liste
+            {{ __('competition_management.back_list') }}
         </a>
     </div>
 
@@ -87,7 +87,7 @@
                             Jeunes
                         </option>
                         <option value="academy" {{ old('level', $team->level) == 'academy' ? 'selected' : '' }}>
-                            Académie
+                            {{ __('welcome.academy') }}
                         </option>
                     </select>
                     @error('level')
@@ -141,7 +141,7 @@
                             Beach Soccer
                         </option>
                         <option value="women_football" {{ old('discipline', $team->discipline) == 'women_football' ? 'selected' : '' }}>
-                            Football Féminin
+                            {{ __('welcome.women_football') }}
                         </option>
                     </select>
                     @error('discipline')
@@ -152,21 +152,21 @@
                 <!-- Statut -->
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
-                        Statut *
+                        {{ __('pcma.status_label') }}
                     </label>
                     <select id="status" 
                             name="status" 
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('status') border-red-500 @enderror"
                             required>
-                        <option value="">Sélectionner un statut</option>
+                        <option value="">{{ __('health_records_extra.label_552c0f1db1ef') }}</option>
                         <option value="active" {{ old('status', $team->status) == 'active' ? 'selected' : '' }}>
-                            Actif
+                            {{ __('healthcare.status_active') }}
                         </option>
                         <option value="inactive" {{ old('status', $team->status) == 'inactive' ? 'selected' : '' }}>
                             Inactif
                         </option>
                         <option value="pending" {{ old('status', $team->status) == 'pending' ? 'selected' : '' }}>
-                            En attente
+                            {{ __('competition_management.statuses.pending') }}
                         </option>
                     </select>
                     @error('status')
@@ -179,7 +179,7 @@
             <div class="flex justify-end space-x-4 mt-8">
                 <a href="{{ route('modules.teams.index') }}" 
                    class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg">
-                    Annuler
+                    {{ __('clinical.cancel') }}
                 </a>
                 <button type="submit" 
                         class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">

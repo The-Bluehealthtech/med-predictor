@@ -16,7 +16,7 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Transferts
+                                    {{ __('navigation.transfers') }}
                                 </h1>
                                 <p class="text-sm text-gray-600">Gérer les transferts de joueurs</p>
                             </div>
@@ -70,7 +70,7 @@
                                                 </span>
                                             @elseif($transfer['status'] === 'pending')
                                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                    En Attente
+                                                    {{ __('competitions.rapports_statistiques_page.pending') }}
                                                 </span>
                                             @elseif($transfer['status'] === 'rejected')
                                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">

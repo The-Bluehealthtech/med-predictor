@@ -139,7 +139,7 @@
                         <strong>Association:</strong> {{ $player->association->name }} | 
                         <strong>Pays:</strong> {{ $player->association->country }}
                     @else
-                        <strong>Association:</strong> <span class="text-red-500">Aucune</span>
+                        <strong>Association:</strong> <span class="text-red-500">{{ __('competitions.engagements_clubs_page.csv_no_competition') }}</span>
                     @endif
                 </p>
             </div>
@@ -153,10 +153,10 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-3">📝 Données personnelles</h3>
                     <div class="space-y-2 text-sm">
-                        <p><strong>Nom complet:</strong> {{ $player->first_name ?? 'N/A' }} {{ $player->last_name ?? 'N/A' }}</p>
+                        <p><strong>{{ __('health_records_create.full_name_label') }}</strong> {{ $player->first_name ?? 'N/A' }} {{ $player->last_name ?? 'N/A' }}</p>
                         <p><strong>Email:</strong> {{ $player->email ?? 'Non renseigné' }}</p>
                         <p><strong>Téléphone:</strong> {{ $player->phone ?? 'Non renseigné' }}</p>
-                        <p><strong>Date de naissance:</strong> {{ $player->birth_date ?? 'Non renseignée' }}</p>
+                        <p><strong>{{ __('health_records_create.birth_date_label') }}</strong> {{ $player->birth_date ?? 'Non renseignée' }}</p>
                     </div>
                 </div>
                 
@@ -166,7 +166,7 @@
                         <p><strong>Club:</strong> {{ $player->club->name ?? 'Aucun club' }}</p>
                         <p><strong>Position:</strong> {{ $player->position ?? 'Non définie' }}</p>
                         <p><strong>Numéro:</strong> {{ $player->jersey_number ?? 'Non défini' }}</p>
-                        <p><strong>Statut:</strong> {{ $player->status ?? 'Actif' }}</p>
+                        <p><strong>{{ __('clinical.status_label') }}</strong> {{ $player->status ?? 'Actif' }}</p>
                     </div>
                 </div>
             </div>

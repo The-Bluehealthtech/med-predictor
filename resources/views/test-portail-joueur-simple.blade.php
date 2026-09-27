@@ -438,7 +438,7 @@
 
                     <div class="space-y-2">
                         <div class="flex justify-between">
-                            <span class="text-purple-200 text-sm">Âge:</span>
+                            <span class="text-purple-200 text-sm">{{ __('competitions.squad_page.age_label') }}</span>
                             <span class="text-white font-medium">
                                 @if($player->date_of_birth)
                                     {{ \Carbon\Carbon::parse($player->date_of_birth)->age }} ans
@@ -448,7 +448,7 @@
                             </span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-purple-200 text-sm">Taille:</span>
+                            <span class="text-purple-200 text-sm">{{ __('health_records_edit.size') }}</span>
                             <span class="text-white font-medium">{{ $player->height ?? 'N/A' }} cm</span>
                         </div>
                         <div class="flex justify-between">
@@ -568,7 +568,7 @@
     <!-- Onglets Principaux -->
     <div class="fifa-tabs">
         <button class="fifa-tab-button active" onclick="showFIFATab('performances')">Performances</button>
-        <button class="fifa-tab-button" onclick="showFIFATab('trends')">Tendances</button>
+        <button class="fifa-tab-button" onclick="showFIFATab('trends')">{{ __('navigation.performance_trends') }}</button>
         
         <!-- Nouveaux onglets FIFA -->
         <button class="fifa-tab-button" onclick="showFIFATab('notifications')">
@@ -1018,7 +1018,7 @@
                                 <span style="color: #87ceeb; font-weight: bold;">{{ $injuryAlerts->body_part }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>État:</span>
+                                <span>{{ __('health_records_create.status_label') }}</span>
                                 @php
                                     $riskLevel = $injuryAlerts->risk_level;
                                     $riskColor = $riskLevel > 20 ? '#ff6b6b' : ($riskLevel > 10 ? '#ffd700' : '#51cf66');
@@ -1032,7 +1032,7 @@
                                 <span style="color: #ffd700; font-weight: bold;">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>État:</span>
+                                <span>{{ __('health_records_create.status_label') }}</span>
                                 <span style="color: #87ceeb; font-weight: bold;">{{ __('Données non disponibles') }}</span>
                             </div>
                         @endif
@@ -2255,7 +2255,7 @@
                                             </div>
                                         </div>
                                         <div class="text-sm text-gray-700 mb-2">
-                                            <strong>Médecin:</strong> {{ $tue->prescribing_doctor ?? 'Non renseigné' }}
+                                            <strong>{{ __('pcma.physician_label') }}</strong> {{ $tue->prescribing_doctor ?? 'Non renseigné' }}
                                         </div>
                                         <div class="text-sm text-gray-700 mb-2">
                                             <strong>Période:</strong> 
@@ -2455,7 +2455,7 @@
                 <table class="fifa-license-table">
                     <thead>
                         <tr>
-                            <th>Saison</th>
+                            <th>{{ __('competition_management.season') }}</th>
                             <th>Club</th>
                             <th>Association</th>
                             <th>{{ __('Type') }}</th>

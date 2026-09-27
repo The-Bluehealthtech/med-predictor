@@ -23,7 +23,7 @@
                 <div>
                     <label for="club_filter" class="block text-sm font-medium text-gray-700 mb-2">Club</label>
                     <select id="club_filter" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                        <option value="">Tous les clubs</option>
+                        <option value="">{{ __('competitions.rapports_avances_page.all_clubs_option') }}</option>
                         @foreach($clubs ?? [] as $club)
                             <option value="{{ $club->id }}">{{ $club->name }}</option>
                         @endforeach
@@ -40,17 +40,17 @@
                     </select>
                 </div>
                 <div>
-                    <label for="status_filter" class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                    <label for="status_filter" class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                     <select id="status_filter" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                         <option value="">Tous les statuts</option>
                         <option value="active">Active</option>
-                        <option value="expired">Expirée</option>
+                        <option value="expired">{{ __('health_records_edit.expired') }}</option>
                         <option value="suspended">Suspendue</option>
-                        <option value="revoked">Révoquée</option>
+                        <option value="revoked">{{ __('health_records_edit.revoked') }}</option>
                     </select>
                 </div>
                 <div>
-                    <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Recherche</label>
+                    <label for="search" class="block text-sm font-medium text-gray-700 mb-2">{{ __('secretary.label_search') }}</label>
                     <input type="text" id="search" placeholder="Nom du joueur..." 
                            class="w-full px-3 py-2 border border-gray-300 rounded-md">
                 </div>
@@ -67,7 +67,7 @@
                                 Photo
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Joueur
+                                {{ __('auth.role_player') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Club
@@ -76,7 +76,7 @@
                                 Type
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Statut
+                                {{ __('clinical.table_status') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Dates
@@ -132,7 +132,7 @@
                                     {{ $license->status_text }}
                                 </span>
                                 @if($license->is_expired)
-                                    <div class="text-xs text-red-600 mt-1">Expirée</div>
+                                    <div class="text-xs text-red-600 mt-1">{{ __('health_records_edit.expired') }}</div>
                                 @elseif($license->days_remaining <= 30)
                                     <div class="text-xs text-yellow-600 mt-1">{{ $license->days_remaining }} jours restants</div>
                                 @endif
@@ -147,7 +147,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
                                     <a href="{{ route('license.upload.photo.form') }}?player_id={{ $license->player_id }}&club_id={{ $license->club_id }}" 
-                                       class="text-blue-600 hover:text-blue-900">Modifier</a>
+                                       class="text-blue-600 hover:text-blue-900">{{ __('common.edit') }}</a>
                                     @if($license->photo)
                                         <form action="{{ route('license.photo.delete', $license->photo->id) }}" 
                                               method="POST" class="inline">
@@ -156,7 +156,7 @@
                                             <button type="submit" 
                                                     class="text-red-600 hover:text-red-900"
                                                     onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette photo ?')">
-                                                Supprimer
+                                                {{ __('common.delete') }}
                                             </button>
                                         </form>
                                     @endif
@@ -224,28 +224,28 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-bold">Licences</h1>
+        <h1 class="text-2xl font-bold">{{ __('common.licenses') }}</h1>
         <a href="{{ route('licenses.create') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Créer une licence</a>
     </div>
     <form method="GET" class="mb-4 flex flex-wrap gap-4 items-center">
         <div>
-            <label for="type" class="text-sm font-medium">Type :</label>
+            <label for="type" class="text-sm font-medium">{{ __('competitions.discipline_sanctions_page.view_type_label') }}</label>
             <select name="type" id="type" class="border border-gray-300 rounded px-2 py-1">
-                <option value="">Tous</option>
-                <option value="Joueur" @if(request('type')=='Joueur') selected @endif>Joueur</option>
+                <option value="">{{ __('competitions.squad_page.all') }}</option>
+                <option value="Joueur" @if(request('type')=='Joueur') selected @endif>{{ __('auth.role_player') }}</option>
                 <option value="Staff" @if(request('type')=='Staff') selected @endif>Staff</option>
-                <option value="Médical" @if(request('type')=='Médical') selected @endif>Médical</option>
+                <option value="Médical" @if(request('type')=='Médical') selected @endif>{{ __('health_records.show_page.tab_medical') }}</option>
             </select>
         </div>
         <div>
-            <label for="status" class="text-sm font-medium">Statut :</label>
+            <label for="status" class="text-sm font-medium">{{ __('competitions.discipline_sanctions_page.view_status_label') }}</label>
             <select name="status" id="status" class="border border-gray-300 rounded px-2 py-1">
-                <option value="">Tous</option>
+                <option value="">{{ __('competitions.squad_page.all') }}</option>
                 <option value="Active" @if(request('status')=='Active') selected @endif>Active</option>
                 <option value="Inactive" @if(request('status')=='Inactive') selected @endif>Inactive</option>
             </select>
         </div>
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Filtrer</button>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">{{ __('common.filter') }}</button>
     </form>
     <div>
         Total licences : {{ $licenses->total() }}
@@ -256,7 +256,7 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.table_status') }}</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
@@ -272,7 +272,7 @@
                         <form action="{{ route('licenses.destroy', $license) }}" method="POST" style="display:inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:underline" onclick="return confirm('Supprimer cette licence ?')">Supprimer</button>
+                            <button type="submit" class="text-red-600 hover:underline" onclick="return confirm('Supprimer cette licence ?')">{{ __('common.delete') }}</button>
                         </form>
                     </td>
                 </tr>

@@ -23,7 +23,7 @@
             <div class="flex space-x-3">
                 @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations', $confederation))
                 <a href="{{ route('organization-cards.edit', ['confederations', $confederation->id]) }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
-                    ✏️ Modifier
+                    {{ __('pcma_extra.label_723bbbfede8a') }}
                 </a>
                 @endif
                 <a href="/modules" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
@@ -114,10 +114,10 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                            <h4 class="font-medium text-purple-800 mb-3">Statut de synchronisation</h4>
+                            <h4 class="font-medium text-purple-800 mb-3">{{ __('competition_management.sync_status') }}</h4>
                             <div class="space-y-2">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-sm text-purple-700">Statut:</span>
+                                    <span class="text-sm text-purple-700">{{ __('clinical.status_label') }}</span>
                                     <span class="px-2 py-1 text-xs font-medium rounded-full {{ $confederation->fifa_sync_status === 'synced' ? 'bg-green-100 text-green-800' : ($confederation->fifa_sync_status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
                                         {{ $confederation->fifa_sync_status }}
                                     </span>

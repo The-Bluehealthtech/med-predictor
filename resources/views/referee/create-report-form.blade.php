@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rapport d'Arbitre - {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}</title>
+    <title>{{ __('Rapport d\'Arbitre') }} - {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -16,7 +16,7 @@
                 <div class="px-6 py-8 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h1 class="text-3xl font-bold">Rapport d'Arbitre</h1>
+                            <h1 class="text-3xl font-bold">{{ __('Rapport d\'Arbitre') }}</h1>
                             <p class="text-orange-100 mt-2">
                                 {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}
                             </p>
@@ -70,15 +70,15 @@
                         <!-- Match Summary -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Équipe Domicile</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('Équipe Domicile') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? 'TBD' }}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Équipe Extérieur</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('Équipe Extérieur') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? 'TBD' }}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Compétition</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('competitions.competition') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">{{ $match->competition->name ?? 'TBD' }}</p>
                             </div>
                         </div>
@@ -98,11 +98,11 @@
                                        placeholder="e.g., 1-0">
                             </div>
                             <div>
-                                <label for="weather" class="block text-sm font-medium text-gray-700">Météo</label>
+                                <label for="weather" class="block text-sm font-medium text-gray-700">{{ __('Météo') }}</label>
                                 <select v-model="formData.weather" name="weather" id="weather" 
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
-                                    <option value="">Sélectionner...</option>
-                                    <option value="Ensoleillé">Ensoleillé</option>
+                                    <option value="">{{ __('auth.login_select_placeholder') }}</option>
+                                    <option value="Ensoleillé">{{ __('Ensoleillé') }}</option>
                                     <option value="Nuageux">Nuageux</option>
                                     <option value="Pluvieux">Pluvieux</option>
                                     <option value="Venteux">Venteux</option>
@@ -110,15 +110,15 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="pitch_condition" class="block text-sm font-medium text-gray-700">État du Terrain</label>
+                                <label for="pitch_condition" class="block text-sm font-medium text-gray-700">{{ __('État du Terrain') }}</label>
                                 <select v-model="formData.pitch_condition" name="pitch_condition" id="pitch_condition" 
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
-                                    <option value="">Sélectionner...</option>
+                                    <option value="">{{ __('auth.login_select_placeholder') }}</option>
                                     <option value="Excellent">Excellent</option>
-                                    <option value="Bon">Bon</option>
-                                    <option value="Moyen">Moyen</option>
-                                    <option value="Mauvais">Mauvais</option>
-                                    <option value="Très mauvais">Très mauvais</option>
+                                    <option value="Bon">{{ __('health_records_edit.good') }}</option>
+                                    <option value="Moyen">{{ __('health_records_edit.average') }}</option>
+                                    <option value="Mauvais">{{ __('health_records_edit.poor') }}</option>
+                                    <option value="Très mauvais">{{ __('Très mauvais') }}</option>
                                 </select>
                             </div>
                         </div>
@@ -152,7 +152,7 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label for="main_referee" class="block text-sm font-medium text-gray-700">Arbitre Principal *</label>
+                                <label for="main_referee" class="block text-sm font-medium text-gray-700">{{ __('competitions.designation_arbitres_page.main_referee_required') }}</label>
                                 <input type="text" v-model="formData.main_referee" name="main_referee" id="main_referee" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                        placeholder="Nom de l'arbitre principal" required>
@@ -170,7 +170,7 @@
                                        placeholder="Nom de l'assistant 2" required>
                             </div>
                             <div>
-                                <label for="fourth_official" class="block text-sm font-medium text-gray-700">4ème Arbitre *</label>
+                                <label for="fourth_official" class="block text-sm font-medium text-gray-700">{{ __('4ème Arbitre *') }}</label>
                                 <input type="text" v-model="formData.fourth_official" name="fourth_official" id="fourth_official" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                        placeholder="Nom du 4ème arbitre" required>
@@ -194,7 +194,7 @@
                 <!-- Tab 3: Équipes -->
                 <div v-show="activeTab === 'teams'" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Équipes</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('competitions.table.teams') }}</h2>
                         
                         <!-- Home Team -->
                         <div class="mb-8">
@@ -263,11 +263,11 @@
                 <!-- Tab 4: Événements -->
                 <div v-show="activeTab === 'events'" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Événements</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Événements') }}</h2>
                         
                         <!-- Timeline des événements -->
                         <div class="mb-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Timeline des Événements</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Timeline des Événements') }}</h3>
                             <div class="space-y-3 max-h-96 overflow-y-auto">
                                 <div v-for="event in timelineEvents" :key="event.id" 
                                      :class="getEventClass(event.type)"
@@ -290,7 +290,7 @@
 
                         <!-- Ajouter un événement -->
                         <div class="border-t pt-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Ajouter un Événement</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Ajouter un Événement') }}</h3>
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Minute</label>
@@ -298,7 +298,7 @@
                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Joueur</label>
+                                    <label class="block text-sm font-medium text-gray-700">{{ __('auth.role_player') }}</label>
                                     <input type="text" v-model="newEvent.player" 
                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
                                 </div>
@@ -307,16 +307,16 @@
                                     <select v-model="newEvent.type" 
                                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
                                         <option value="goal">But</option>
-                                        <option value="yellow_card">Carton Jaune</option>
-                                        <option value="red_card">Carton Rouge</option>
+                                        <option value="yellow_card">{{ __('competitions.discipline_page.yellow_card_badge') }}</option>
+                                        <option value="red_card">{{ __('competitions.discipline_page.red_card_badge') }}</option>
                                         <option value="substitution">Remplacement</option>
-                                        <option value="injury">Blessure</option>
+                                        <option value="injury">{{ __('medical_predictions.dashboard_type_injury_short') }}</option>
                                     </select>
                                 </div>
                                 <div class="flex items-end">
                                     <button type="button" @click="addEvent" 
                                             class="w-full bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700">
-                                        Ajouter
+                                        {{ __('competitions.discipline_sanctions_page.add_submit_button') }}
                                     </button>
                                 </div>
                             </div>
@@ -327,7 +327,7 @@
                 <!-- Tab 5: Discipline & Santé -->
                 <div v-show="activeTab === 'discipline'" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Discipline & Santé</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Discipline & Santé') }}</h2>
                         
                         <div class="space-y-6">
                             <div>
@@ -345,7 +345,7 @@
                             </div>
                             
                             <div>
-                                <label for="safety_issues" class="block text-sm font-medium text-gray-700">Problèmes de Sécurité</label>
+                                <label for="safety_issues" class="block text-sm font-medium text-gray-700">{{ __('Problèmes de Sécurité') }}</label>
                                 <textarea v-model="formData.safety_issues" name="safety_issues" id="safety_issues" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                           placeholder="Décrivez les problèmes de sécurité..."></textarea>
@@ -361,14 +361,14 @@
                         
                         <div class="space-y-6">
                             <div>
-                                <label for="general_comments" class="block text-sm font-medium text-gray-700">Observations Générales *</label>
+                                <label for="general_comments" class="block text-sm font-medium text-gray-700">{{ __('Observations Générales *') }}</label>
                                 <textarea v-model="formData.general_comments" name="general_comments" id="general_comments" rows="6" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                           placeholder="Décrivez le déroulement général du match, l'ambiance, le comportement des équipes..." required></textarea>
                             </div>
                             
                             <div>
-                                <label for="match_quality_assessment" class="block text-sm font-medium text-gray-700">Évaluation de la Qualité du Match</label>
+                                <label for="match_quality_assessment" class="block text-sm font-medium text-gray-700">{{ __('Évaluation de la Qualité du Match') }}</label>
                                 <textarea v-model="formData.match_quality_assessment" name="match_quality_assessment" id="match_quality_assessment" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                           placeholder="Évaluez la qualité technique du match, le niveau de jeu..."></textarea>
@@ -378,7 +378,7 @@
                                 <label for="match_rating" class="block text-sm font-medium text-gray-700">Note du Match (1-10)</label>
                                 <select v-model="formData.match_rating" name="match_rating" id="match_rating" 
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
-                                    <option value="">Sélectionner...</option>
+                                    <option value="">{{ __('auth.login_select_placeholder') }}</option>
                                     <option v-for="i in 10" :key="i" :value="i">@{{ i }}</option>
                                 </select>
                             </div>
@@ -399,7 +399,7 @@
                                                 : 'bg-gray-600 hover:bg-gray-700',
                                             'text-white px-4 py-2 rounded-md'
                                         ]">
-                                    Précédent
+                                    {{ __('Précédent') }}
                                 </button>
                                 <button type="button" @click="nextTab" 
                                         :disabled="activeTab === 'observations'"
@@ -620,7 +620,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rapport d'Arbitre - {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}</title>
+    <title>{{ __('Rapport d\'Arbitre') }} - {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -633,7 +633,7 @@
                 <div class="px-6 py-8 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h1 class="text-3xl font-bold">Rapport d'Arbitre</h1>
+                            <h1 class="text-3xl font-bold">{{ __('Rapport d\'Arbitre') }}</h1>
                             <p class="text-orange-100 mt-2">
                                 {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}
                             </p>
@@ -687,15 +687,15 @@
                         <!-- Match Summary -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Équipe Domicile</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('Équipe Domicile') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? 'TBD' }}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Équipe Extérieur</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('Équipe Extérieur') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? 'TBD' }}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Compétition</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('competitions.competition') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">{{ $match->competition->name ?? 'TBD' }}</p>
                             </div>
                         </div>
@@ -715,11 +715,11 @@
                                        placeholder="e.g., 1-0">
                             </div>
                             <div>
-                                <label for="weather" class="block text-sm font-medium text-gray-700">Météo</label>
+                                <label for="weather" class="block text-sm font-medium text-gray-700">{{ __('Météo') }}</label>
                                 <select v-model="formData.weather" name="weather" id="weather" 
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
-                                    <option value="">Sélectionner...</option>
-                                    <option value="Ensoleillé">Ensoleillé</option>
+                                    <option value="">{{ __('auth.login_select_placeholder') }}</option>
+                                    <option value="Ensoleillé">{{ __('Ensoleillé') }}</option>
                                     <option value="Nuageux">Nuageux</option>
                                     <option value="Pluvieux">Pluvieux</option>
                                     <option value="Venteux">Venteux</option>
@@ -727,15 +727,15 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="pitch_condition" class="block text-sm font-medium text-gray-700">État du Terrain</label>
+                                <label for="pitch_condition" class="block text-sm font-medium text-gray-700">{{ __('État du Terrain') }}</label>
                                 <select v-model="formData.pitch_condition" name="pitch_condition" id="pitch_condition" 
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
-                                    <option value="">Sélectionner...</option>
+                                    <option value="">{{ __('auth.login_select_placeholder') }}</option>
                                     <option value="Excellent">Excellent</option>
-                                    <option value="Bon">Bon</option>
-                                    <option value="Moyen">Moyen</option>
-                                    <option value="Mauvais">Mauvais</option>
-                                    <option value="Très mauvais">Très mauvais</option>
+                                    <option value="Bon">{{ __('health_records_edit.good') }}</option>
+                                    <option value="Moyen">{{ __('health_records_edit.average') }}</option>
+                                    <option value="Mauvais">{{ __('health_records_edit.poor') }}</option>
+                                    <option value="Très mauvais">{{ __('Très mauvais') }}</option>
                                 </select>
                             </div>
                         </div>
@@ -769,7 +769,7 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label for="main_referee" class="block text-sm font-medium text-gray-700">Arbitre Principal *</label>
+                                <label for="main_referee" class="block text-sm font-medium text-gray-700">{{ __('competitions.designation_arbitres_page.main_referee_required') }}</label>
                                 <input type="text" v-model="formData.main_referee" name="main_referee" id="main_referee" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                        placeholder="Nom de l'arbitre principal" required>
@@ -787,7 +787,7 @@
                                        placeholder="Nom de l'assistant 2" required>
                             </div>
                             <div>
-                                <label for="fourth_official" class="block text-sm font-medium text-gray-700">4ème Arbitre *</label>
+                                <label for="fourth_official" class="block text-sm font-medium text-gray-700">{{ __('4ème Arbitre *') }}</label>
                                 <input type="text" v-model="formData.fourth_official" name="fourth_official" id="fourth_official" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                        placeholder="Nom du 4ème arbitre" required>
@@ -811,7 +811,7 @@
                 <!-- Tab 3: Équipes -->
                 <div v-show="activeTab === 'teams'" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Équipes</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('competitions.table.teams') }}</h2>
                         
                         <!-- Home Team -->
                         <div class="mb-8">
@@ -880,11 +880,11 @@
                 <!-- Tab 4: Événements -->
                 <div v-show="activeTab === 'events'" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Événements</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Événements') }}</h2>
                         
                         <!-- Timeline des événements -->
                         <div class="mb-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Timeline des Événements</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Timeline des Événements') }}</h3>
                             <div class="space-y-3 max-h-96 overflow-y-auto">
                                 <div v-for="event in timelineEvents" :key="event.id" 
                                      :class="getEventClass(event.type)"
@@ -907,7 +907,7 @@
 
                         <!-- Ajouter un événement -->
                         <div class="border-t pt-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Ajouter un Événement</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Ajouter un Événement') }}</h3>
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Minute</label>
@@ -915,7 +915,7 @@
                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Joueur</label>
+                                    <label class="block text-sm font-medium text-gray-700">{{ __('auth.role_player') }}</label>
                                     <input type="text" v-model="newEvent.player" 
                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
                                 </div>
@@ -924,16 +924,16 @@
                                     <select v-model="newEvent.type" 
                                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
                                         <option value="goal">But</option>
-                                        <option value="yellow_card">Carton Jaune</option>
-                                        <option value="red_card">Carton Rouge</option>
+                                        <option value="yellow_card">{{ __('competitions.discipline_page.yellow_card_badge') }}</option>
+                                        <option value="red_card">{{ __('competitions.discipline_page.red_card_badge') }}</option>
                                         <option value="substitution">Remplacement</option>
-                                        <option value="injury">Blessure</option>
+                                        <option value="injury">{{ __('medical_predictions.dashboard_type_injury_short') }}</option>
                                     </select>
                                 </div>
                                 <div class="flex items-end">
                                     <button type="button" @click="addEvent" 
                                             class="w-full bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700">
-                                        Ajouter
+                                        {{ __('competitions.discipline_sanctions_page.add_submit_button') }}
                                     </button>
                                 </div>
                             </div>
@@ -944,7 +944,7 @@
                 <!-- Tab 5: Discipline & Santé -->
                 <div v-show="activeTab === 'discipline'" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Discipline & Santé</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Discipline & Santé') }}</h2>
                         
                         <div class="space-y-6">
                             <div>
@@ -962,7 +962,7 @@
                             </div>
                             
                             <div>
-                                <label for="safety_issues" class="block text-sm font-medium text-gray-700">Problèmes de Sécurité</label>
+                                <label for="safety_issues" class="block text-sm font-medium text-gray-700">{{ __('Problèmes de Sécurité') }}</label>
                                 <textarea v-model="formData.safety_issues" name="safety_issues" id="safety_issues" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                           placeholder="Décrivez les problèmes de sécurité..."></textarea>
@@ -978,14 +978,14 @@
                         
                         <div class="space-y-6">
                             <div>
-                                <label for="general_comments" class="block text-sm font-medium text-gray-700">Observations Générales *</label>
+                                <label for="general_comments" class="block text-sm font-medium text-gray-700">{{ __('Observations Générales *') }}</label>
                                 <textarea v-model="formData.general_comments" name="general_comments" id="general_comments" rows="6" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                           placeholder="Décrivez le déroulement général du match, l'ambiance, le comportement des équipes..." required></textarea>
                             </div>
                             
                             <div>
-                                <label for="match_quality_assessment" class="block text-sm font-medium text-gray-700">Évaluation de la Qualité du Match</label>
+                                <label for="match_quality_assessment" class="block text-sm font-medium text-gray-700">{{ __('Évaluation de la Qualité du Match') }}</label>
                                 <textarea v-model="formData.match_quality_assessment" name="match_quality_assessment" id="match_quality_assessment" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                           placeholder="Évaluez la qualité technique du match, le niveau de jeu..."></textarea>
@@ -995,7 +995,7 @@
                                 <label for="match_rating" class="block text-sm font-medium text-gray-700">Note du Match (1-10)</label>
                                 <select v-model="formData.match_rating" name="match_rating" id="match_rating" 
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
-                                    <option value="">Sélectionner...</option>
+                                    <option value="">{{ __('auth.login_select_placeholder') }}</option>
                                     <option v-for="i in 10" :key="i" :value="i">@{{ i }}</option>
                                 </select>
                             </div>
@@ -1016,7 +1016,7 @@
                                                 : 'bg-gray-600 hover:bg-gray-700',
                                             'text-white px-4 py-2 rounded-md'
                                         ]">
-                                    Précédent
+                                    {{ __('Précédent') }}
                                 </button>
                                 <button type="button" @click="nextTab" 
                                         :disabled="activeTab === 'observations'"

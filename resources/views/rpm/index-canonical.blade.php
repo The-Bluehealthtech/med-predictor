@@ -20,7 +20,7 @@
             <div class="text-2xl font-bold">{{ $stats['measurements'] }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4">
-            <div class="text-sm text-gray-500">Joueurs</div>
+            <div class="text-sm text-gray-500">{{ __('common.players') }}</div>
             <div class="text-2xl font-bold">{{ $stats['players'] }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4">
@@ -47,12 +47,12 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mesure</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joueur</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('auth.role_player') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">FC</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">SpO₂</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Temp.</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hydratation</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Récupération</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('medical_predictions.dashboard_type_recovery_short') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Readiness</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Source</th>
                     </tr>

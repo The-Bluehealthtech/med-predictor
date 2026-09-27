@@ -40,7 +40,7 @@
                 <div class="md:w-64">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Club</label>
                     <select name="club_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Tous les clubs</option>
+                        <option value="">{{ __('competitions.rapports_avances_page.all_clubs_option') }}</option>
                         @foreach($clubs as $club)
                             <option value="{{ $club->id }}" {{ request('club_id') == $club->id ? 'selected' : '' }}>
                                 {{ $club->name }}
@@ -53,12 +53,12 @@
             <!-- Boutons d'action -->
             <div class="flex flex-col sm:flex-row gap-3">
                 <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                    <i class="fas fa-search mr-2"></i>Rechercher
+                    <i class="fas fa-search mr-2"></i>{{ __('common.search') }}
                 </button>
                 
                 <a href="{{ route('competitions.association.player-performance-report') }}" 
                    class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors text-center">
-                    <i class="fas fa-times mr-2"></i>Effacer
+                    <i class="fas fa-times mr-2"></i>{{ __('competitions.association_fixtures_page.clear_filters_button') }}
                 </a>
                 
                 <a href="{{ route('competitions.association.rapports-avances') }}" 
@@ -98,7 +98,7 @@
                     <i class="fas fa-users text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Joueurs</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.rapports_avances_page.stat_total_players') }}</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $players->count() }}</p>
                 </div>
             </div>
@@ -153,10 +153,10 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joueur</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('auth.role_player') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Club</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matchs</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('common.matches') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buts</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Passes</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cartons J</th>
@@ -250,7 +250,7 @@
         <div class="text-sm text-gray-700">
             Affichage de 
             <span class="font-medium">{{ $players->firstItem() }}</span>
-            à 
+            {{ __('clinical.at_time_connector') }}
             <span class="font-medium">{{ $players->lastItem() }}</span>
             sur 
             <span class="font-medium">{{ $players->total() }}</span>
@@ -266,7 +266,7 @@
     <!-- Actions -->
     <div class="mt-8 flex justify-end space-x-4">
         <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            <i class="fas fa-print mr-2"></i>Imprimer
+            <i class="fas fa-print mr-2"></i>{{ __('competitions.feuille_match_page.print') }}
         </button>
     </div>
 </div>
@@ -321,7 +321,7 @@
                 <div class="md:w-64">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Club</label>
                     <select name="club_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Tous les clubs</option>
+                        <option value="">{{ __('competitions.rapports_avances_page.all_clubs_option') }}</option>
                         @foreach($clubs as $club)
                             <option value="{{ $club->id }}" {{ request('club_id') == $club->id ? 'selected' : '' }}>
                                 {{ $club->name }}
@@ -334,12 +334,12 @@
             <!-- Boutons d'action -->
             <div class="flex flex-col sm:flex-row gap-3">
                 <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                    <i class="fas fa-search mr-2"></i>Rechercher
+                    <i class="fas fa-search mr-2"></i>{{ __('common.search') }}
                 </button>
                 
                 <a href="{{ route('competitions.association.player-performance-report') }}" 
                    class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors text-center">
-                    <i class="fas fa-times mr-2"></i>Effacer
+                    <i class="fas fa-times mr-2"></i>{{ __('competitions.association_fixtures_page.clear_filters_button') }}
                 </a>
                 
                 <a href="{{ route('competitions.association.rapports-avances') }}" 
@@ -379,7 +379,7 @@
                     <i class="fas fa-users text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Joueurs</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.rapports_avances_page.stat_total_players') }}</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $players->count() }}</p>
                 </div>
             </div>
@@ -434,10 +434,10 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joueur</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('auth.role_player') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Club</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matchs</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('common.matches') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buts</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Passes</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cartons J</th>
@@ -531,7 +531,7 @@
         <div class="text-sm text-gray-700">
             Affichage de 
             <span class="font-medium">{{ $players->firstItem() }}</span>
-            à 
+            {{ __('clinical.at_time_connector') }}
             <span class="font-medium">{{ $players->lastItem() }}</span>
             sur 
             <span class="font-medium">{{ $players->total() }}</span>
@@ -547,7 +547,7 @@
     <!-- Actions -->
     <div class="mt-8 flex justify-end space-x-4">
         <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            <i class="fas fa-print mr-2"></i>Imprimer
+            <i class="fas fa-print mr-2"></i>{{ __('competitions.feuille_match_page.print') }}
         </button>
     </div>
 </div>

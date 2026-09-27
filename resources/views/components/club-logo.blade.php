@@ -59,7 +59,7 @@
             ?
         </div>
         @if($showName)
-            <span class="text-sm text-gray-500">Club inconnu</span>
+            <span class="text-sm text-gray-500">{{ __('competitions.association_fixtures_page.unknown_club_fallback') }}</span>
         @endif
     @endif
 </div>

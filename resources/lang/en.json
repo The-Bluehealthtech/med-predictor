@@ -1938,5 +1938,14 @@
   "Détails du Log #": "Audit log #",
   "Date et Heure": "Date and time",
   "Adresse IP": "IP address",
-  "Erreurs": "Errors"
+  "Erreurs": "Errors",
+  "Confédération non spécifiée": "Confederation not specified",
+  "Téléphone non spécifié": "Phone not specified",
+  "Email non spécifié": "Email not specified",
+  "Site web non spécifié": "Website not specified",
+  "Détails du Club - Plateforme FIT": "Club details - FIT Platform",
+  "Adresse": "Address",
+  "Modifier l’équipe": "Edit team",
+  "Modification de l’équipe :": "Team being edited:",
+  "Détails de l’Équipe": "Team details"
 }

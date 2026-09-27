@@ -45,7 +45,7 @@
                     @endif
                     <div>
                         <h3 class="text-lg font-semibold text-blue-800">{{ $association->name }}</h3>
-                        <p class="text-sm text-blue-600">{{ $association->country }} - {{ $association->confederation ?? 'Confédération non spécifiée' }}</p>
+                        <p class="text-sm text-blue-600">{{ $association->country }} - {{ $association->confederation ?? __('Confédération non spécifiée') }}</p>
                     </div>
                 </div>
                 <a href="/clubs-view" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -128,15 +128,15 @@
                                 </div>
                                 <div class="flex items-center">
                                     <span class="text-gray-400 mr-2">📞</span>
-                                    <span>{{ $club->phone ?? 'Téléphone non spécifié' }}</span>
+                                    <span>{{ $club->phone ?? __('Téléphone non spécifié') }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <span class="text-gray-400 mr-2">📧</span>
-                                    <span>{{ $club->email ?? 'Email non spécifié' }}</span>
+                                    <span>{{ $club->email ?? __('Email non spécifié') }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <span class="text-gray-400 mr-2">🌐</span>
-                                    <span>{{ $club->website ?? 'Site web non spécifié' }}</span>
+                                    <span>{{ $club->website ?? __('Site web non spécifié') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -144,7 +144,7 @@
                         <!-- Année de fondation -->
                         @if($club->founded_year)
                         <div class="mb-4 p-2 bg-gray-50 rounded-lg text-center">
-                            <span class="text-sm text-gray-600">Fondé en {{ $club->founded_year }}</span>
+                            <span class="text-sm text-gray-600">{{ __("Fondé en") }} {{ $club->founded_year }}</span>
                         </div>
                         @endif
 

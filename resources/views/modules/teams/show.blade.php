@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Détails de l\'Équipe')
+@section('title', __('Détails de l’Équipe'))
 
 @section('content')
 <div class="container-fluid">
@@ -130,9 +130,9 @@
         </div>
     </div>
 
-    <!-- Actions rapides -->
+    <!-- {{ __("Actions rapides") }} -->
     <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __("Actions rapides") }}</h3>
         <div class="flex flex-wrap gap-4">
             <button onclick="viewPlayers()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-users mr-2"></i>

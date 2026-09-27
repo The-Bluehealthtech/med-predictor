@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier l\'Équipe')
+@section('title', __('Modifier l’Équipe'))
 
 @section('content')
 <div class="container-fluid">
@@ -9,7 +9,7 @@
         <div>
             <h1 class="text-3xl font-bold text-gray-900 flex items-center">
                 <i class="fas fa-edit text-blue-600 mr-3"></i>{{ __('Modifier l\'Équipe') }}</h1>
-            <p class="text-gray-600 mt-2">Modification de l'équipe : {{ $team->name }}</p>
+            <p class="text-gray-600 mt-2">{{ __('Modification de l’équipe :') }} {{ $team->name }}</p>
         </div>
         <a href="{{ route('modules.teams.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center">
             <i class="fas fa-arrow-left mr-2"></i>

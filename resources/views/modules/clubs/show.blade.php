@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
+page    <title>{{ $club->name }} - {{ __('Détails du Club - Plateforme FIT') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
@@ -145,7 +145,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         @if($club->address)
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                            <h4 class="font-medium text-gray-800 mb-3">Adresse</h4>
+                            <h4 class="font-medium text-gray-800 mb-3">{{ __("Adresse") }}</h4>
                             <p class="text-gray-600">{{ $club->address }}</p>
                         </div>
                         @endif
@@ -327,9 +327,9 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                     @endif
                 </div>
 
-                <!-- Actions rapides -->
+                <!-- {{ __("Actions rapides") }} -->
                 <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Actions rapides</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __("Actions rapides") }}</h3>
                     
                     <div class="space-y-3">
                         <a href="{{ route('clubs-view.edit', ['id' => $club->id]) }}" 

@@ -37,7 +37,7 @@
                     @foreach($upcomingMatches as $match)
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div>
-                            <p class="text-sm font-medium text-gray-900">{{ $match->competition?->name ?? 'Compétition' }}</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $match->competition?->name ?? __('Compétition') }}</p>
                             <p class="text-sm text-gray-500">
                                 {{ $match->homeTeam?->club?->name ?? '—' }} vs {{ $match->awayTeam?->club?->name ?? '—' }}
                                 · {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('d/m/Y') : '—' }}

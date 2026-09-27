@@ -93,7 +93,7 @@
                                 <p class="text-sm font-medium text-gray-900">{{ $device->device_name }} — {{ trim(($device->first_name ?? '').' '.($device->last_name ?? '')) }}</p>
                                 <p class="text-sm text-gray-500">
                                     {{ $device->manufacturer }} {{ $device->device_model }} ·
-                                    Dernière synchro : {{ $device->last_sync_at ? \Carbon\Carbon::parse($device->last_sync_at)->diffForHumans() : 'jamais' }}
+                                    Dernière synchro : {{ $device->last_sync_at ? \Carbon\Carbon::parse($device->last_sync_at)->diffForHumans() : __('jamais') }}
                                 </p>
                             </div>
                         </div>

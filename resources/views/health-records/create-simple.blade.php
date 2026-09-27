@@ -284,9 +284,9 @@
                 });
 
                 const tabs = [
-                    { id: 'general', name: '📋 Général' },
+                    { id: 'general', name: @json(__('📋 Général')) },
                     { id: 'dental', name: '🦷 Dossier Dentaire' },
-                    { id: 'other', name: '📄 Autres' }
+                    { id: 'other', name: @json(__('📄 Autres')) }
                 ];
 
                 // Méthodes pour le diagramme dentaire

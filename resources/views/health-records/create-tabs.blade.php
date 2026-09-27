@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Nouveau Dossier Médical - Med Predictor')
+@section('title', __('Nouveau Dossier Médical - Med Predictor'))
 
 @push('scripts')
 <!-- TabView Component -->
@@ -187,12 +187,12 @@
                         </div>
                         <div>
                             <span class="font-medium text-blue-800">{{ __('pcma.physician_label') }}</span>
-                            <span class="text-blue-700">{{ $visit->doctor->name ?? 'Non assigné' }}</span>
+                            <span class="text-blue-700">{{ $visit->doctor->name ?? __('Non assigné') }}</span>
                         </div>
                         @if($visit->administrative_data && isset($visit->administrative_data['complaint_data']))
                         <div class="md:col-span-2">
                             <span class="font-medium text-blue-800">{{ __('health_records_extra.label_a1709a5927d0') }}</span>
-                            <span class="text-blue-700">{{ $visit->administrative_data['complaint_data']['complaint'] ?? 'Non spécifié' }}</span>
+                            <span class="text-blue-700">{{ $visit->administrative_data['complaint_data']['complaint'] ?? __('Non spécifié') }}</span>
                         </div>
                         @endif
                     </div>

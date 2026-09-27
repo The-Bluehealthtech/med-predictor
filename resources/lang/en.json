@@ -1916,5 +1916,14 @@
   "Actions FIFA": "FIFA actions",
   "⚡ Actions rapides": "⚡ Quick actions",
   "Pays:": "Country:",
-  "⚙️ Actions Disponibles": "⚙️ Available actions"
+  "⚙️ Actions Disponibles": "⚙️ Available actions",
+  "Nouveau Dossier Médical - Med Predictor": "New Medical Record - Med Predictor",
+  "📋 Général": "📋 General",
+  "📄 Autres": "📄 Other",
+  "La recherche ICD-11 n’est pas encore disponible : aucun service de recherche de diagnostics n’est connecté.": "ICD-11 search is not yet available: no diagnostic search service is connected.",
+  "n’est connecté à cette application. Les notes cliniques restent enregistrées telles que saisies ;": "is not connected to this application. Clinical notes remain stored as entered;",
+  "l’analyse et l’interprétation doivent être faites par un professionnel de santé.": "analysis and interpretation must be performed by a healthcare professional.",
+  "Compétition": "Competition",
+  "Non attribué": "Unassigned",
+  "jamais": "never"
 }

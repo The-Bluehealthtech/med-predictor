@@ -24,7 +24,7 @@
                     <tr>
                         <td class="p-3">{{ $referee->name }}</td>
                         <td class="p-3">{{ $referee->email }}</td>
-                        <td class="p-3">{{ $referee->status ?: 'Non renseigné' }}</td>
+                        <td class="p-3">{{ $referee->status ?: __('Non renseigné') }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="3" class="p-4 text-gray-600">{{ __('Aucun arbitre enregistré.') }}</td></tr>

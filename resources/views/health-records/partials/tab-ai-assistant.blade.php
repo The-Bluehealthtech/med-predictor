@@ -147,7 +147,7 @@ function searchICD11(query) {
     const resultsDiv = document.getElementById('icd11_results');
     resultsDiv.innerHTML = `
         <div class="p-3 text-sm text-gray-500">
-            La recherche ICD-11 n'est pas encore disponible : aucun service de recherche de diagnostics n'est connecté.
+            {{ __('La recherche ICD-11 n’est pas encore disponible : aucun service de recherche de diagnostics n’est connecté.') }}
         </div>
     `;
     resultsDiv.classList.remove('hidden');
@@ -223,8 +223,8 @@ function analyzeWithAI(notes) {
             <p class="text-yellow-800 font-semibold mb-1">{{ __('health_records_create.js_ai_not_available_heading') }}</p>
             <p class="text-sm text-yellow-800">
                 L'analyse automatique des notes cliniques n'est pas disponible : aucun service d'intelligence artificielle
-                n'est connecté à cette application. Les notes cliniques restent enregistrées telles que saisies ;
-                l'analyse et l'interprétation doivent être faites par un professionnel de santé.
+                {{ __('n’est connecté à cette application. Les notes cliniques restent enregistrées telles que saisies ;') }}
+                {{ __('l’analyse et l’interprétation doivent être faites par un professionnel de santé.') }}
             </p>
         </div>
     `;

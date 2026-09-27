@@ -56,7 +56,7 @@
                         </div>
                         <div>
                             <label for="fifa_id" class="block text-sm font-medium text-gray-700">FIFA Connect ID</label>
-                            <input type="text" id="fifa_id" value="{{ $refereeUser->fifa_connect_id ?? 'Non attribué' }}" disabled
+                            <input type="text" id="fifa_id" value="{{ $refereeUser->fifa_connect_id ?? __('Non attribué') }}" disabled
                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm">
                         </div>
                         <div>

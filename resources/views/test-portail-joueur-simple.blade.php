@@ -569,10 +569,10 @@
             {{ __('Médical') }}
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('devices')">
-            Devices
+            {{ __("Appareils") }}
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('doping')">
-            Dopage historique
+            {{ __("Dopage historique") }}
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('licenses')">
             {{ __('Historique licences') }}

@@ -1925,5 +1925,18 @@
   "l’analyse et l’interprétation doivent être faites par un professionnel de santé.": "analysis and interpretation must be performed by a healthcare professional.",
   "Compétition": "Competition",
   "Non attribué": "Unassigned",
-  "jamais": "never"
+  "jamais": "never",
+  "Nombre Tables": "Number of tables",
+  "Erreurs (24h)": "Errors (24h)",
+  "Erreurs (7j)": "Errors (7d)",
+  "Paramètres Système - Administration": "System Settings - Administration",
+  "Paramètres ": "Settings ",
+  "Paramètres -": "Settings -",
+  "Aucun paramètre trouvé pour le groupe": "No settings found for group",
+  "Actions rapides": "Quick actions",
+  "Détails du Log - Audit Trail": "Audit log details",
+  "Détails du Log #": "Audit log #",
+  "Date et Heure": "Date and time",
+  "Adresse IP": "IP address",
+  "Erreurs": "Errors"
 }

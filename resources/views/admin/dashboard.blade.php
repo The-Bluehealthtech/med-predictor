@@ -295,10 +295,10 @@
             </div>
         </div>
 
-        <!-- Actions rapides -->
+        <!-- {{ __('Actions rapides') }} -->
         <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-                <h3 class="text-lg font-semibold text-white mb-4">Actions rapides</h3>
+                <h3 class="text-lg font-semibold text-white mb-4">{{ __('Actions rapides') }}</h3>
                 <div class="space-y-3">
                     <button class="block w-full bg-purple-600 hover:bg-purple-700 text-white text-center py-2 px-4 rounded-lg transition-colors duration-200">
                         {{ __('navigation.export_data') }}
@@ -339,7 +339,7 @@
             <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 mt-8 border border-white/20">
                 <div class="flex items-center justify-between">
                     <div class="text-sm text-gray-300">
-                        Affichage de {{ $players->firstItem() }} à {{ $players->lastItem() }} sur {{ $players->total() }} résultats
+                        {{ __('Affichage de') }} {{ $players->firstItem() }} à {{ $players->lastItem() }} sur {{ $players->total() }} résultats
                     </div>
                     <div class="flex items-center space-x-2">
                         {{ $players->links() }}

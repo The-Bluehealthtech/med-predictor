@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Paramètres Système - Administration')
+@section('title', __('Paramètres Système - Administration'))
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
@@ -179,7 +179,7 @@
                                 'fifa' => __('Paramètres FIFA Connect')
                             ];
                             $icon = $groupIcons[$groupName] ?? '⚙️';
-                            $description = $groupDescriptions[$groupName] ?? 'Paramètres ' . $groupName;
+                            $description = $groupDescriptions[$groupName] ?? __('Paramètres ') . $groupName;
                             $count = 5; // Placeholder count
                         @endphp
                         <a href="{{ route('admin.system-settings.index', ['group' => $groupName]) }}" 
@@ -213,7 +213,7 @@
                         $icon = $groupIcons[$group ?? 'general'] ?? '⚙️';
                     @endphp
                     <span class="text-2xl mr-2">{{ $icon }}</span>
-                    Paramètres - {{ ucfirst($group ?? 'general') }}
+                    {{ __('Paramètres -') }} {{ ucfirst($group ?? 'general') }}
                 </h3>
                 
                 @if(($settings ?? collect())->count() > 0)
@@ -316,7 +316,7 @@
                     </form>
                 @else
                     <div class="text-center py-8">
-                        <p class="text-gray-500 mb-4">Aucun paramètre trouvé pour le groupe "{{ $group ?? 'general' }}".</p>
+                        <p class="text-gray-500 mb-4">{{ __('Aucun paramètre trouvé pour le groupe') }} "{{ $group ?? 'general' }}".</p>
                         <form action="{{ route('admin.system-settings.initialize') }}" method="POST" class="inline">
                             @csrf
                             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('⚡ Initialiser les Paramètres') }}</button>

@@ -171,7 +171,7 @@
                             <dd class="mt-1 text-sm text-gray-900">{{ $databaseStats['database_size'] }} MB</dd>
                         </div>
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Nombre Tables</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Nombre Tables') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $databaseStats['total_tables'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">
@@ -364,11 +364,11 @@
                     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('📋 Logs Système') }}</h3>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Erreurs (24h)</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Erreurs (24h)') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $logStats['error_logs_24h'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">
-                            <dt class="text-sm font-medium text-gray-500">Erreurs (7j)</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Erreurs (7j)') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $logStats['error_logs_7d'] }}</dd>
                         </div>
                         <div class="sm:col-span-1">

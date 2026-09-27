@@ -90,7 +90,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Erreurs</dt>
+                                <dt class="text-sm font-medium text-gray-500 truncate">{{ __('Erreurs') }}</dt>
                                 <dd class="flex items-baseline">
                                     <div class="text-2xl font-semibold text-red-600">{{ number_format($stats['error_logs']) }}</div>
                                 </dd>

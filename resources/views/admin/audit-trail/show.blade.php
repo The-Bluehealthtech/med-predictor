@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Détails du Log - Audit Trail')
+@section('title', __('Détails du Log - Audit Trail'))
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
@@ -16,7 +16,7 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Détails du Log #{{ $log->id }}
+                                    {{ __('Détails du Log #') }}{{ $log->id }}
                                 </h1>
                                 <p class="text-sm text-gray-600">{{ $log->created_at->format('d/m/Y H:i:s') }}</p>
                             </div>
@@ -43,7 +43,7 @@
                             <dd class="mt-1 text-sm text-gray-900">{{ $log->id }}</dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500">Date et Heure</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Date et Heure') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $log->created_at->format('d/m/Y H:i:s') }}</dd>
                         </div>
                         <div>
@@ -113,7 +113,7 @@
                     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('Informations Réseau') }}</h3>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div>
-                            <dt class="text-sm font-medium text-gray-500">Adresse IP</dt>
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Adresse IP') }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $log->ip_address ?? 'N/A' }}</dd>
                         </div>
                         <div>

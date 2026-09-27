@@ -564,6 +564,20 @@ class CompetitionController extends Controller
                 }
             }
 
+            // Les engagements peuvent être enregistrés au niveau club ou équipe.
+            if (Schema::hasTable('competition_team')) {
+                $teamEngagements = DB::table('competition_team')->join('teams', 'teams.id', '=', 'competition_team.team_id')->join('competitions', 'competitions.id', '=', 'competition_team.competition_id')->get(['teams.club_id', 'competitions.*']);
+                foreach (Club::whereIn('id', $teamEngagements->pluck('club_id')->unique())->get() as $club) {
+                    if (!$clubsData->has($club->id)) $clubsData->put($club->id, ['club' => $club, 'matches' => collect(), 'competitions' => collect()]);
+                }
+                foreach ($teamEngagements as $row) {
+                    if ($clubsData->has($row->club_id)) {
+                        $competitionModel = new Competition();
+                        $clubsData[$row->club_id]['competitions']->push($competitionModel->newFromBuilder((array) $row));
+                    }
+                }
+            }
+
             // Transformer en format final
             $clubs = $clubsData->map(function($data) use ($engagementLabels) {
                 $club = $data['club'];

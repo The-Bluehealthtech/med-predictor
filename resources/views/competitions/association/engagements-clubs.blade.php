@@ -282,7 +282,7 @@ function viewClubDetails(clubId) {
                 const clubLabel = @json(__('competitions.engagements_clubs_page.js_view_details_club_label'));
                 const teamsLabel = @json(__('competitions.engagements_clubs_page.js_view_details_teams_label'));
                 const competitionsLabel = @json(__('competitions.engagements_clubs_page.js_view_details_competitions_label'));
-                alert(`${clubLabel} ${club.name}\n${teamsLabel} ${club.teams.length}\n${competitionsLabel} ${new Set([...(club.competitions || []), ...club.teams.flatMap(t => t.competitions || [])].map(c => c.id)).size}`);
+                alert(`${clubLabel} ${club.name}\n${teamsLabel} ${club.teams.length}\n${competitionsLabel} ${(data.competition_count ?? new Set([...(club.competitions || []), ...club.teams.flatMap(t => t.competitions || [])].map(c => c.id)).size)}`);
             } else {
                 alert(@json(__('competitions.engagements_clubs_page.js_error_prefix')) + data.error);
             }

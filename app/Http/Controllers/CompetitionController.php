@@ -2326,10 +2326,11 @@ class CompetitionController extends Controller
                 return response()->json(['error' => 'Club non trouvé'], 404);
             }
             
-            return response()->json([
-                'success' => true,
-                'club' => $club
-            ]);
+            $teamIds = $club->teams->pluck('id');
+            $directIds = Schema::hasTable('competition_club') ? DB::table('competition_club')->where('club_id', $club->id)->pluck('competition_id') : collect();
+            $teamCompetitionIds = Schema::hasTable('competition_team') ? DB::table('competition_team')->whereIn('team_id', $teamIds)->pluck('competition_id') : collect();
+            $competitionCount = $directIds->merge($teamCompetitionIds)->unique()->count();
+            return response()->json(['success' => true, 'club' => $club, 'competition_count' => $competitionCount]);
             
         } catch (\Exception $e) {
             return response()->json(['error' => 'Erreur lors de la récupération: ' . $e->getMessage()], 500);

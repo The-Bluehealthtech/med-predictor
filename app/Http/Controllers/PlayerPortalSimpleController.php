@@ -14,7 +14,7 @@ class PlayerPortalSimpleController extends Controller
     ) {
     }
 
-    public function show(Request $request): View
+    public function show(Request $request)
     {
         $user = $request->user();
 
@@ -63,11 +63,9 @@ class PlayerPortalSimpleController extends Controller
                 ->with(['club', 'association'])
                 ->findOrFail((int) $user->player_id);
         } else {
-            abort_unless(
-                $requestedPlayerId !== null,
-                404,
-                'Aucun joueur sélectionné.'
-            );
+            if ($requestedPlayerId === null) {
+                return redirect()->route('joueurs.selection');
+            }
 
             abort_unless(
                 $user->isSystemAdmin()

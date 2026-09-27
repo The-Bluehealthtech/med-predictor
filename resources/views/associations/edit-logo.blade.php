@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gérer le Logo - {{ $association->name }}</title>
+    <title>{{ __('Gérer le Logo') }} - {{ $association->name }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -13,10 +13,10 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-800">{{ __('🏆 Gérer le Logo') }}</h1>
-                    <p class="text-gray-600 mt-2">Association : <strong>{{ $association->name }}</strong></p>
-                    <p class="text-gray-600">Pays : <strong>{{ $association->country }}</strong></p>
+                    <p class="text-gray-600 mt-2">{{ __('Association :') }} <strong>{{ $association->name }}</strong></p>
+                    <p class="text-gray-600">{{ __('Pays :') }} <strong>{{ $association->country }}</strong></p>
                     @if($countryCode)
-                        <p class="text-gray-600">Code pays : <strong>{{ $countryCode }}</strong></p>
+                        <p class="text-gray-600">{{ __('Code pays :') }} <strong>{{ $countryCode }}</strong></p>
                     @endif
                 </div>
                 <a href="{{ url()->previous() }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
@@ -66,7 +66,7 @@
                                 <img src="{{ $nationalLogoUrl }}" 
                                      alt="Logo national {{ $association->name }}"
                                      class="w-32 h-32 object-contain mx-auto border-2 border-blue-200 rounded-lg">
-                                <p class="text-sm text-blue-600 mt-2">Logo national (API-Football)</p>
+                                <p class="text-sm text-blue-600 mt-2">{{ __('Logo national (API-Football)') }}</p>
                             </div>
                         @else
                             <div class="text-center">
@@ -125,16 +125,16 @@
             <h3 class="text-xl font-semibold mb-4">{{ __('🔍 Informations Techniques') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                    <p><strong>ID Association :</strong> {{ $association->id }}</p>
+                    <p><strong>{{ __('ID Association :') }}</strong> {{ $association->id }}</p>
                     <p><strong>{{ __('clinical.name_label') }}</strong> {{ $association->name }}</p>
-                    <p><strong>Pays :</strong> {{ $association->country }}</p>
-                    <p><strong>Code pays ISO :</strong> {{ $countryCode ?? 'Non défini' }}</p>
+                    <p><strong>{{ __('Pays :') }}</strong> {{ $association->country }}</p>
+                    <p><strong>{{ __('Code pays ISO :') }}</strong> {{ $countryCode ?? 'Non défini' }}</p>
                 </div>
                 <div>
                     <p><strong>{{ __('Logo personnalisé :') }}</strong> {{ $association->association_logo_url ? 'OUI' : 'NON' }}</p>
-                    <p><strong>Logo national disponible :</strong> {{ $nationalLogoExists ? 'OUI' : 'NON' }}</p>
+                    <p><strong>{{ __('Logo national disponible :') }}</strong> {{ $nationalLogoExists ? 'OUI' : 'NON' }}</p>
                     @if($nationalLogoExists)
-                        <p><strong>Chemin logo national :</strong> associations/{{ $countryCode }}.png</p>
+                        <p><strong>{{ __('Chemin logo national :') }}</strong> associations/{{ $countryCode }}.png</p>
                     @endif
                 </div>
             </div>

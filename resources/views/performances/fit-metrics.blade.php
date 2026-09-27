@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Métriques FIT canoniques')
+@section('title', __('Métriques FIT canoniques'))
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
@@ -675,7 +675,7 @@
                                         if (!response.ok) {
                                             message.textContent =
                                                 body.message
-                                                ?? 'Vérification refusée.';
+                                                ?? __('Vérification refusée.');
                                             message.classList.add(
                                                 'text-red-600'
                                             );

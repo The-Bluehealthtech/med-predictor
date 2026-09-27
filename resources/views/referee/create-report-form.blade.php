@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ __('Rapport d\'Arbitre') }} - {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}</title>
+    <title>{{ __('Rapport d\'Arbitre') }} - {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? __('TBD') }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? __('TBD') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -18,10 +18,10 @@
                         <div>
                             <h1 class="text-3xl font-bold">{{ __('Rapport d\'Arbitre') }}</h1>
                             <p class="text-orange-100 mt-2">
-                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}
+                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? __('TBD') }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? __('TBD') }}
                             </p>
                             <p class="text-orange-100 text-sm">
-                                {{ $match->competition->name ?? 'Competition' }} • {{ $match->match_date ?? 'N/A' }}
+                                {{ $match->competition->name ?? __('Competition') }} • {{ $match->match_date ?? __('N/A') }}
                             </p>
                         </div>
                         <div class="text-right">
@@ -70,16 +70,16 @@
                         <!-- Match Summary -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">{{ __('Équipe Domicile') }}</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? 'TBD' }}</p>
+                                <label class="block text-sm font-medium text-gray-700">{{ __(__('Équipe Domicile')) }}</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? __('TBD') }}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">{{ __('Équipe Extérieur') }}</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? 'TBD' }}</p>
+                                <label class="block text-sm font-medium text-gray-700">{{ __(__('Équipe Extérieur')) }}</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? __('TBD') }}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">{{ __('competitions.competition') }}</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ $match->competition->name ?? 'TBD' }}</p>
+                                <p class="mt-1 text-sm text-gray-900">{{ $match->competition->name ?? __('TBD') }}</p>
                             </div>
                         </div>
 
@@ -198,14 +198,14 @@
                         
                         <!-- Home Team -->
                         <div class="mb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'Équipe Domicile' }}</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? __('Équipe Domicile') }}</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($homeTeamPlayers as $player)
                                 <div class="border border-gray-200 rounded-lg p-3">
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <p class="font-medium text-gray-900">{{ $player->name }}</p>
-                                            <p class="text-sm text-gray-600">#{{ $player->jersey_number ?? 'N/A' }} - {{ $player->position ?? 'N/A' }}</p>
+                                            <p class="text-sm text-gray-600">#{{ $player->jersey_number ?? __('N/A') }} - {{ $player->position ?? __('N/A') }}</p>
                                         </div>
                                         <div class="flex space-x-2">
                                             <button type="button" @click="addGoal('home', '{{ $player->name }}')" 
@@ -229,14 +229,14 @@
 
                         <!-- Away Team -->
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'Équipe Extérieur' }}</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? __('Équipe Extérieur') }}</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($awayTeamPlayers as $player)
                                 <div class="border border-gray-200 rounded-lg p-3">
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <p class="font-medium text-gray-900">{{ $player->name }}</p>
-                                            <p class="text-sm text-gray-600">#{{ $player->jersey_number ?? 'N/A' }} - {{ $player->position ?? 'N/A' }}</p>
+                                            <p class="text-sm text-gray-600">#{{ $player->jersey_number ?? __('N/A') }} - {{ $player->position ?? __('N/A') }}</p>
                                         </div>
                                         <div class="flex space-x-2">
                                             <button type="button" @click="addGoal('away', '{{ $player->name }}')" 
@@ -263,7 +263,7 @@
                 <!-- Tab 4: Événements -->
                 <div v-show="activeTab === 'events'" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Événements') }}</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __(@json(__('Événements'))) }}</h2>
                         
                         <!-- Timeline des événements -->
                         <div class="mb-6">
@@ -455,8 +455,8 @@
                     tabs: [
                         { id: 'info', name: 'Infos Match' },
                         { id: 'officials', name: 'Officiels' },
-                        { id: 'teams', name: 'Équipes' },
-                        { id: 'events', name: 'Événements' },
+                        { id: 'teams', name: @json(__('Équipes')) },
+                        { id: 'events', name: @json(__('Événements')) },
                         { id: 'discipline', name: 'Discipline' },
                         { id: 'observations', name: 'Observations' }
                     ],
@@ -570,7 +570,7 @@
                         'substitution': 'Remplacement',
                         'injury': 'Blessure'
                     };
-                    return descriptions[type] || 'Événement';
+                    return descriptions[type] || @json(__('Événement'));
                 },
                 getEventClass(type) {
                     const classes = {
@@ -620,7 +620,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ __('Rapport d\'Arbitre') }} - {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}</title>
+    <title>{{ __('Rapport d\'Arbitre') }} - {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? __('TBD') }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? __('TBD') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -635,10 +635,10 @@
                         <div>
                             <h1 class="text-3xl font-bold">{{ __('Rapport d\'Arbitre') }}</h1>
                             <p class="text-orange-100 mt-2">
-                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? 'TBD' }}
+                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? __('TBD') }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? __('TBD') }}
                             </p>
                             <p class="text-orange-100 text-sm">
-                                {{ $match->competition->name ?? 'Competition' }} • {{ $match->match_date ?? 'N/A' }}
+                                {{ $match->competition->name ?? __('Competition') }} • {{ $match->match_date ?? __('N/A') }}
                             </p>
                         </div>
                         <div class="text-right">
@@ -687,16 +687,16 @@
                         <!-- Match Summary -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">{{ __('Équipe Domicile') }}</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? 'TBD' }}</p>
+                                <label class="block text-sm font-medium text-gray-700">{{ __(__('Équipe Domicile')) }}</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? __('TBD') }}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">{{ __('Équipe Extérieur') }}</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? 'TBD' }}</p>
+                                <label class="block text-sm font-medium text-gray-700">{{ __(__('Équipe Extérieur')) }}</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? __('TBD') }}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">{{ __('competitions.competition') }}</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ $match->competition->name ?? 'TBD' }}</p>
+                                <p class="mt-1 text-sm text-gray-900">{{ $match->competition->name ?? __('TBD') }}</p>
                             </div>
                         </div>
 
@@ -815,14 +815,14 @@
                         
                         <!-- Home Team -->
                         <div class="mb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->homeTeam)->club)->name ?? 'Équipe Domicile' }}</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->homeTeam)->club)->name ?? __('Équipe Domicile') }}</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($homeTeamPlayers as $player)
                                 <div class="border border-gray-200 rounded-lg p-3">
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <p class="font-medium text-gray-900">{{ $player->name }}</p>
-                                            <p class="text-sm text-gray-600">#{{ $player->jersey_number ?? 'N/A' }} - {{ $player->position ?? 'N/A' }}</p>
+                                            <p class="text-sm text-gray-600">#{{ $player->jersey_number ?? __('N/A') }} - {{ $player->position ?? __('N/A') }}</p>
                                         </div>
                                         <div class="flex space-x-2">
                                             <button type="button" @click="addGoal('home', '{{ $player->name }}')" 
@@ -846,14 +846,14 @@
 
                         <!-- Away Team -->
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->awayTeam)->club)->name ?? 'Équipe Extérieur' }}</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ optional(optional($match->awayTeam)->club)->name ?? __('Équipe Extérieur') }}</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($awayTeamPlayers as $player)
                                 <div class="border border-gray-200 rounded-lg p-3">
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <p class="font-medium text-gray-900">{{ $player->name }}</p>
-                                            <p class="text-sm text-gray-600">#{{ $player->jersey_number ?? 'N/A' }} - {{ $player->position ?? 'N/A' }}</p>
+                                            <p class="text-sm text-gray-600">#{{ $player->jersey_number ?? __('N/A') }} - {{ $player->position ?? __('N/A') }}</p>
                                         </div>
                                         <div class="flex space-x-2">
                                             <button type="button" @click="addGoal('away', '{{ $player->name }}')" 
@@ -880,7 +880,7 @@
                 <!-- Tab 4: Événements -->
                 <div v-show="activeTab === 'events'" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Événements') }}</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __(@json(__('Événements'))) }}</h2>
                         
                         <!-- Timeline des événements -->
                         <div class="mb-6">
@@ -1072,8 +1072,8 @@
                     tabs: [
                         { id: 'info', name: 'Infos Match' },
                         { id: 'officials', name: 'Officiels' },
-                        { id: 'teams', name: 'Équipes' },
-                        { id: 'events', name: 'Événements' },
+                        { id: 'teams', name: @json(__('Équipes')) },
+                        { id: 'events', name: @json(__('Événements')) },
                         { id: 'discipline', name: 'Discipline' },
                         { id: 'observations', name: 'Observations' }
                     ],
@@ -1187,7 +1187,7 @@
                         'substitution': 'Remplacement',
                         'injury': 'Blessure'
                     };
-                    return descriptions[type] || 'Événement';
+                    return descriptions[type] || @json(__('Événement'));
                 },
                 getEventClass(type) {
                     const classes = {

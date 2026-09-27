@@ -240,7 +240,7 @@
                     const controls = document.getElementById('dental-controls');
                     
                     selectedToothSpan.textContent = toothId;
-                    toothStatusSpan.textContent = 'Dent sélectionnée avec succès !';
+                    toothStatusSpan.textContent = @json(__('Dent sélectionnée avec succès !'));
                     feedback.classList.add('show');
                     controls.style.display = 'block';
                     
@@ -282,7 +282,7 @@
         // Mettre à jour la couleur de la dent
         updateToothColor(selectedTooth, status);
         
-        alert(`Données de la dent ${selectedTooth} sauvegardées avec succès !`);
+        alert(@json(__('Données de la dent sauvegardées avec succès !')));
     }
     
     // Fonction pour effacer la sélection

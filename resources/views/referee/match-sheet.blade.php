@@ -10,10 +10,10 @@
                     <div>
                         <h1 class="text-3xl font-bold">Match Sheet</h1>
                         <p class="text-orange-100 mt-2">
-                            {{ $match->homeTeam->club->short_name ?? $match->homeTeam->club->name ?? $match->homeTeam->name ?? 'TBD' }} vs {{ $match->awayTeam->club->short_name ?? $match->awayTeam->club->name ?? $match->awayTeam->name ?? 'TBD' }}
+                            {{ $match->homeTeam->club->short_name ?? $match->homeTeam->club->name ?? $match->homeTeam->name ?? __('TBD') }} vs {{ $match->awayTeam->club->short_name ?? $match->awayTeam->club->name ?? $match->awayTeam->name ?? __('TBD') }}
                         </p>
                         <p class="text-orange-100 text-sm">
-                            {{ $match->competition->name ?? 'Competition' }} • {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('D, M j, Y') : 'TBD' }}
+                            {{ $match->competition->name ?? __('Competition') }} • {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('D, M j, Y') : __('TBD') }}
                         </p>
                     </div>
                     <div class="text-right">
@@ -86,23 +86,23 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <h3 class="font-medium text-gray-900">Home Team</h3>
-                                <p class="text-gray-600">{{ optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? 'TBD' }}</p>
+                                <p class="text-gray-600">{{ optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? __('TBD') }}</p>
                             </div>
                             <div>
                                 <h3 class="font-medium text-gray-900">Away Team</h3>
-                                <p class="text-gray-600">{{ optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? 'TBD' }}</p>
+                                <p class="text-gray-600">{{ optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? __('TBD') }}</p>
                             </div>
                             <div>
                                 <h3 class="font-medium text-gray-900">Competition</h3>
-                                <p class="text-gray-600">{{ $match->competition->name ?? 'TBD' }}</p>
+                                <p class="text-gray-600">{{ $match->competition->name ?? __('TBD') }}</p>
                             </div>
                             <div>
                                 <h3 class="font-medium text-gray-900">Venue</h3>
-                                <p class="text-gray-600">{{ $match->venue ?? 'TBD' }}</p>
+                                <p class="text-gray-600">{{ $match->venue ?? __('TBD') }}</p>
                             </div>
                             <div>
                                 <h3 class="font-medium text-gray-900">Kickoff Time</h3>
-                                <p class="text-gray-600">{{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('D, M j, Y') : 'TBD' }}</p>
+                                <p class="text-gray-600">{{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('D, M j, Y') : __('TBD') }}</p>
                             </div>
                             <div>
                                 <h3 class="font-medium text-gray-900">Status</h3>

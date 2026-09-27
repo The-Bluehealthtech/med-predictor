@@ -112,15 +112,15 @@
                                         <p class="text-sm text-gray-600 mt-1">
                                             Type: <span class="font-medium">{{ ucfirst($pcma->type ?? 'standard') }}</span>
                                             @if($pcma->assessor)
-                                                • Assesseur: <span class="font-medium">{{ $pcma->assessor->name }}</span>
+                                                {{ __('• Assesseur:') }} <span class="font-medium">{{ $pcma->assessor->name }}</span>
                                             @endif
                                         </p>
                                         <p class="text-xs text-gray-500 mt-1">
                                             @if($pcma->created_at)
-                                                Créé le {{ $pcma->created_at->format('d/m/Y H:i') }}
+                                                {{ __('Créé le') }} {{ $pcma->created_at->format('d/m/Y H:i') }}
                                             @endif
                                             @if($pcma->completed_at)
-                                                • Complété le {{ $pcma->completed_at->format('d/m/Y H:i') }}
+                                                {{ __('• Complété le') }} {{ $pcma->completed_at->format('d/m/Y H:i') }}
                                             @endif
                                         </p>
                                     </div>
@@ -239,7 +239,7 @@ createApp({
             <!-- Loading State -->
             <div v-if="loading" class="text-center py-8">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p class="text-gray-600 mt-2">Chargement des PCMAs signés...</p>
+                <p class="text-gray-600 mt-2">{{ __('Chargement des PCMAs signés...') }}</p>
             </div>
 
             <!-- Error State -->
@@ -266,7 +266,7 @@ createApp({
                                     <span v-if="pcma.athlete?.name">@{{ pcma.athlete.name }}</span><span v-else>{{ __('pcma_extra.unknown_athlete') }}</span>
                                 </h3>
                                 <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                                    ✅ Signé
+                                    {{ __('✅ Signé') }}
                                 </span>
                                 <span :class="'px-2 py-1 text-xs rounded-full ' + getStatusBadge(pcma.status).class">
                                     @{{ getStatusBadge(pcma.status).text }}
@@ -287,15 +287,15 @@ createApp({
                             </div>
                             
                             <p class="text-xs text-gray-500 mt-2">
-                                Créé le @{{ formatDate(pcma.created_at) }}
-                                <span v-if="pcma.completed_at">• Complété le @{{ formatDate(pcma.completed_at) }}</span>
+                                {{ __('Créé le') }} @{{ formatDate(pcma.created_at) }}
+                                <span v-if="pcma.completed_at">{{ __('• Complété le') }} @{{ formatDate(pcma.completed_at) }}</span>
                             </p>
                         </div>
                         
                         <div class="flex space-x-2">
                             <button @click="viewPcma(pcma.id)" 
                                     class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                👁️ Voir
+                                {{ __('👁️ Voir') }}
                             </button>
                             <button @click="printPcma(pcma.id)" 
                                     class="text-green-600 hover:text-green-800 text-sm font-medium">
@@ -313,12 +313,12 @@ createApp({
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun PCMA signé trouvé</h3>
-                <p class="text-gray-600 mb-4">Aucun document médical signé n'est disponible pour le moment. Les PCMAs signés apparaîtront ici une fois qu'ils auront été complétés et signés.</p>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Aucun PCMA signé trouvé') }}</h3>
+                <p class="text-gray-600 mb-4">{{ __('Aucun document médical signé n’est disponible pour le moment. Les PCMAs signés apparaîtront ici une fois qu’ils auront été complétés et signés.') }}</p>
                 <div class="flex justify-center">
                     <button @click="loadSignedPcmas" 
                             class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                        🔄 Recharger la liste
+                        {{ __('🔄 Recharger la liste') }}
                     </button>
                 </div>
             </div>

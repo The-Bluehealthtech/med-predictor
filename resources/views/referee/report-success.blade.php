@@ -16,10 +16,10 @@
                         <div>
                             <h1 class="text-3xl font-bold">{{ __('Rapport Soumis avec Succès!') }}</h1>
                             <p class="text-green-100 mt-2">
-                                {{ $report->match->homeTeam->name ?? 'TBD' }} vs {{ $report->match->awayTeam->name ?? 'TBD' }}
+                                {{ $report->match->homeTeam->name ?? __('TBD') }} vs {{ $report->match->awayTeam->name ?? __('TBD') }}
                             </p>
                             <p class="text-green-100 text-sm">
-                                {{ $report->competition_name ?? 'Competition' }} • {{ $report->match_date ?? 'N/A' }}
+                                {{ $report->competition_name ?? __('Competition') }} • {{ $report->match_date ?? __('N/A') }}
                             </p>
                         </div>
                         <div class="text-right">
@@ -144,10 +144,10 @@
                         <div>
                             <h1 class="text-3xl font-bold">{{ __('Rapport Soumis avec Succès!') }}</h1>
                             <p class="text-green-100 mt-2">
-                                {{ $report->match->homeTeam->name ?? 'TBD' }} vs {{ $report->match->awayTeam->name ?? 'TBD' }}
+                                {{ $report->match->homeTeam->name ?? __('TBD') }} vs {{ $report->match->awayTeam->name ?? __('TBD') }}
                             </p>
                             <p class="text-green-100 text-sm">
-                                {{ $report->competition_name ?? 'Competition' }} • {{ $report->match_date ?? 'N/A' }}
+                                {{ $report->competition_name ?? __('Competition') }} • {{ $report->match_date ?? __('N/A') }}
                             </p>
                         </div>
                         <div class="text-right">

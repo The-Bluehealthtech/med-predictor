@@ -39,13 +39,13 @@
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <h4 class="font-semibold text-gray-900">
-                                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? 'TBD' }}
+                                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? __('TBD') }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? __('TBD') }}
                                             </h4>
                                             <p class="text-sm text-gray-600">
-                                                {{ $match->competition->name ?? 'Competition' }} • {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('M j, Y H:i') : 'N/A' }}
+                                                {{ $match->competition->name ?? __('Competition') }} • {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('M j, Y H:i') : __('N/A') }}
                                             </p>
                                             <p class="text-sm text-blue-600">
-                                                {{ $match->venue ?? 'TBD' }}
+                                                {{ $match->venue ?? __('TBD') }}
                                             </p>
                                         </div>
                                         <div>
@@ -70,10 +70,10 @@
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <h4 class="font-semibold text-gray-900">
-                                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? 'TBD' }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? 'TBD' }}
+                                                {{ optional(optional($match->homeTeam)->club)->short_name ?? optional(optional($match->homeTeam)->club)->name ?? optional($match->homeTeam)->name ?? __('TBD') }} vs {{ optional(optional($match->awayTeam)->club)->short_name ?? optional(optional($match->awayTeam)->club)->name ?? optional($match->awayTeam)->name ?? __('TBD') }}
                                             </h4>
                                             <p class="text-sm text-gray-600">
-                                                {{ $match->competition->name ?? 'Competition' }} • {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('M j, Y') : 'N/A' }}
+                                                {{ $match->competition->name ?? __('Competition') }} • {{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('M j, Y') : __('N/A') }}
                                             </p>
                                             <p class="text-sm text-gray-500">
                                                 Final Score: {{ $match->home_score ?? 0 }} - {{ $match->away_score ?? 0 }}

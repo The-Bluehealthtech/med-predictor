@@ -252,7 +252,7 @@ function saveImagingRecord() {
     };
     
     if (!formData.imaging_type || !formData.imaging_date || !formData.imaging_findings) {
-        alert('Veuillez remplir les champs obligatoires');
+        alert(@json(__('Veuillez remplir les champs obligatoires')));
         return;
     }
     

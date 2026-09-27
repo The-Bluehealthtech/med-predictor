@@ -188,7 +188,7 @@ function updatePermission(module, permission, role, isChecked) {
 
 function savePermissions() {
     if (!window.currentPermissions) {
-        alert('Aucune modification à sauvegarder');
+        alert(@json(__('Aucune modification à sauvegarder')));
         return;
     }
     
@@ -206,14 +206,14 @@ function savePermissions() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showSuccess('Permissions sauvegardées avec succès!');
+            showSuccess(@json(__('Permissions sauvegardées avec succès!')));
         } else {
-            alert('Erreur lors de la sauvegarde: ' + data.message);
+            alert(@json(__('Erreur lors de la sauvegarde: ')) + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Erreur lors de la sauvegarde des permissions');
+        alert(@json(__('Erreur lors de la sauvegarde des permissions')));
     });
 }
 
@@ -226,7 +226,7 @@ function activateAll() {
         const role = checkbox.dataset.role;
         updatePermission(module, permission, role, true);
     });
-    showSuccess('Toutes les permissions ont été activées');
+    showSuccess(@json(__('Toutes les permissions ont été activées')));
 }
 
 function deactivateAll() {
@@ -238,11 +238,11 @@ function deactivateAll() {
         const role = checkbox.dataset.role;
         updatePermission(module, permission, role, false);
     });
-    showSuccess('Toutes les permissions ont été désactivées');
+    showSuccess(@json(__('Toutes les permissions ont été désactivées')));
 }
 
 function resetPermissions() {
-    if (confirm('Êtes-vous sûr de vouloir réinitialiser toutes les permissions?')) {
+    if (confirm(@json(__('Êtes-vous sûr de vouloir réinitialiser toutes les permissions?')))) {
         // Reset to default permissions
         location.reload();
     }

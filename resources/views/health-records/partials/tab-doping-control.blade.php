@@ -344,7 +344,7 @@ function saveDopingTest() {
     };
     
     if (!formData.test_type || !formData.test_date || !formData.test_result) {
-        alert('Veuillez remplir les champs obligatoires');
+        alert(@json(__('Veuillez remplir les champs obligatoires')));
         return;
     }
     
@@ -407,7 +407,7 @@ function saveAUT() {
     };
     
     if (!formData.medication || !formData.diagnosis || !formData.start_date || !formData.end_date || !formData.status || !formData.justification) {
-        alert('Veuillez remplir les champs obligatoires');
+        alert(@json(__('Veuillez remplir les champs obligatoires')));
         return;
     }
     
@@ -512,7 +512,7 @@ function editDopingTest(index) {
 }
 
 function deleteDopingTest(index) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce test ?')) {
+    if (confirm(@json(__('Êtes-vous sûr de vouloir supprimer ce test ?')))) {
         dopingTests.splice(index, 1);
         updateDopingTestsList();
         updateDopingData();
@@ -536,7 +536,7 @@ function editAUT(index) {
 }
 
 function deleteAUT(index) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette AUT ?')) {
+    if (confirm(@json(__('Êtes-vous sûr de vouloir supprimer cette AUT ?')))) {
         auts.splice(index, 1);
         updateAUTList();
         updateDopingData();

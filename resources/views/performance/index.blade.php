@@ -274,12 +274,12 @@ function hideAllSections() {
 }
 
 function generateMonthlyReport() {
-    alert('📊 Rapport mensuel généré avec succès!');
+    alert(@json(__('📊 Rapport mensuel généré avec succès!')));
     console.log('Rapport mensuel généré');
 }
 
 function generateIndividualReport() {
-    alert('👤 Rapport individuel généré avec succès!');
+    alert(@json(__('👤 Rapport individuel généré avec succès!')));
     console.log('Rapport individuel généré');
 }
 
@@ -289,7 +289,7 @@ function generateTeamReport() {
 }
 
 function generateProgressReport() {
-    alert('📈 Rapport de progression généré avec succès!');
+    alert(@json(__('📈 Rapport de progression généré avec succès!')));
     console.log('Rapport de progression généré');
 }
 

@@ -2910,7 +2910,7 @@
                             new Chart(ratingsCtx, {
                                 type: 'radar',
                                 data: {
-                                    labels: ['Physique', 'Technique', 'Tactique', 'Mental', 'Social'],
+                                    labels: [@json(__('Physique')), @json(__('Technique')), @json(__('Tactique')), @json(__('Mental')), @json(__('Social'))],
                                     datasets: [{
                                         label: 'Performance FIT v1',
                                         data: ratingsValues.map(
@@ -2971,10 +2971,10 @@
                             new Chart(statsCtx, {
                                 type: 'bar',
                                 data: {
-                                    labels: ['Matchs', 'Minutes', 'Buts', 'Passes', 'Jaunes', 'Rouges'],
+                                    labels: [@json(__('Matchs')), @json(__('Minutes')), @json(__('Buts')), @json(__('Passes')), @json(__('Jaunes')), @json(__('Rouges'))],
                                     datasets: [
                                         {
-                                            label: 'Statistiques de saison',
+                                            label: @json(__('Statistiques de saison')),
                                             data: seasonStats ? [
                                                 nullableNumber(seasonStats.matches_played),
                                                 null,
@@ -2986,7 +2986,7 @@
                                             yAxisID: 'y'
                                         },
                                         {
-                                            label: 'Minutes jouées',
+                                            label: @json(__('Minutes jouées')),
                                             data: seasonStats ? [
                                                 null,
                                                 nullableNumber(seasonStats.minutes_played),
@@ -3044,7 +3044,7 @@
                                             },
                                             title: {
                                                 display: true,
-                                                text: 'Minutes',
+                                                text: @json(__('Minutes')),
                                                 color: '#f3f4f6'
                                             },
                                             grid: {
@@ -3127,7 +3127,7 @@
                                  new Chart(sdohCtx, {
                                      type: 'radar',
                                      data: {
-                                         labels: ['Environnement', 'Soutien Social', 'Accès Soins', 'Situation Financière'],
+                                         labels: [@json(__('Environnement')), @json(__('Soutien Social')), @json(__('Accès Soins')), @json(__('Situation Financière'))],
                                          datasets: [{
                                              label: 'Score SDOH',
                                              data: [
@@ -3198,7 +3198,7 @@
                                  });
                                  
                                  const typeLabels = Object.keys(typeCounts).map(type => {
-                                     const labels = { 'injury': 'Blessures', 'disease': 'Maladies', 'surgery': 'Chirurgies', 'rehabilitation': 'Rééducation' };
+                                     const labels = { 'injury': @json(__('Blessures')), 'disease': @json(__('Maladies')), 'surgery': @json(__('Chirurgies')), 'rehabilitation': @json(__('Rééducation')) };
                                      return labels[type] || type;
                                  });
                                  const typeData = Object.values(typeCounts);
@@ -3254,7 +3254,7 @@
                                  });
                                  
                                  const severityLabels = Object.keys(severityCounts).map(severity => {
-                                     const labels = { 'mild': 'Légère', 'moderate': 'Modérée', 'severe': 'Grave', 'critical': 'Critique' };
+                                     const labels = { 'mild': @json(__('Légère')), 'moderate': @json(__('Modérée')), 'severe': @json(__('Grave')), 'critical': @json(__('Critique')) };
                                      return labels[severity] || severity;
                                  });
                                  const severityData = Object.values(severityCounts);

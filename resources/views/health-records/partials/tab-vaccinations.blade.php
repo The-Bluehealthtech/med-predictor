@@ -319,7 +319,7 @@ function saveVaccination() {
     };
     
     if (!formData.vaccine_name || !formData.vaccine_date) {
-        alert('Veuillez remplir les champs obligatoires');
+        alert(@json(__('Veuillez remplir les champs obligatoires')));
         return;
     }
     
@@ -419,7 +419,7 @@ function editVaccination(index) {
 }
 
 function deleteVaccination(index) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette vaccination ?')) {
+    if (confirm(@json(__('Êtes-vous sûr de vouloir supprimer cette vaccination ?')))) {
         vaccinations.splice(index, 1);
         updateVaccinationList();
         updateVaccinationData();
@@ -432,7 +432,7 @@ function updateVaccinationData() {
 
 function generateVaccinationCertificate() {
     if (vaccinations.length === 0) {
-        alert('Aucune vaccination enregistrée pour générer un certificat');
+        alert(@json(__('Aucune vaccination enregistrée pour générer un certificat')));
         return;
     }
     
@@ -454,6 +454,6 @@ function generateVaccinationCertificate() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    alert('Certificat vaccinal généré avec succès !');
+    alert(@json(__('Certificat vaccinal généré avec succès !')));
 }
 </script> 

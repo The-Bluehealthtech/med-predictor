@@ -266,7 +266,7 @@
     // Fonction pour sauvegarder les données de la dent
     function saveToothData() {
         if (!selectedTooth) {
-            alert('Veuillez sélectionner une dent avant de sauvegarder');
+            alert(@json(__('Veuillez sélectionner une dent avant de sauvegarder')));
             return;
         }
         

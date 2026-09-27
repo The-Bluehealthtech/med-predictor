@@ -379,7 +379,7 @@ function submitBulkCreate() {
     const teamNames = document.getElementById('bulkTeamNames').value;
     
     if (!clubId || !level || !discipline || !teamNames.trim()) {
-        alert('Veuillez remplir tous les champs obligatoires');
+        alert(@json(__('Veuillez remplir tous les champs obligatoires')));
         return;
     }
     
@@ -434,7 +434,7 @@ function viewTeam(id) {
 }
 
 function deleteTeam(id) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette équipe ? Cette action est irréversible.')) {
+    if (confirm(@json(__('Êtes-vous sûr de vouloir supprimer cette équipe ? Cette action est irréversible.')))) {
         // Créer un formulaire pour la suppression
         const form = document.createElement('form');
         form.method = 'POST';

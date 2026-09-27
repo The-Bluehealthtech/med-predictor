@@ -315,7 +315,7 @@ function loadFifaStats() {
     // reelle n'est disponible pour recuperer des statistiques ; ce message
     // honnete est deja correct, seul le commentaire ('Simulation') etait
     // trompeur.
-    alert('Fonctionnalité en cours de développement. Les statistiques FIFA seront bientôt disponibles !');
+    alert(@json(__('Fonctionnalité en cours de développement. Les statistiques FIFA seront bientôt disponibles !')));
 }
 </script>
 @endsection 

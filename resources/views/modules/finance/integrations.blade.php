@@ -279,7 +279,7 @@ async function testConnection(software) {
             button.classList.add('border-green-500', 'text-green-700', 'bg-green-50');
             
             // Afficher une notification
-            showNotification('Connexion réussie avec ' + software, 'success');
+            showNotification(@json(__('Connexion réussie avec ')) + software, 'success');
         } else {
             // Erreur
             button.textContent = '❌ Erreur';
@@ -287,7 +287,7 @@ async function testConnection(software) {
             button.classList.add('border-red-500', 'text-red-700', 'bg-red-50');
             
             // Afficher une notification d'erreur
-            showNotification('Erreur de connexion avec ' + software + ': ' + result.message, 'error');
+            showNotification(@json(__('Erreur de connexion avec ')) + software + ': ' + result.message, 'error');
         }
         
     } catch (error) {
@@ -296,7 +296,7 @@ async function testConnection(software) {
         button.classList.remove('border-gray-300', 'text-gray-700');
         button.classList.add('border-red-500', 'text-red-700', 'bg-red-50');
         
-        showNotification('Erreur lors du test de connexion', 'error');
+        showNotification(@json(__('Erreur lors du test de connexion')), 'error');
     }
     
     // Réinitialiser le bouton après 3 secondes
@@ -371,7 +371,7 @@ async function syncData(software, type) {
             button.classList.remove('border-gray-300', 'text-gray-700');
             button.classList.add('border-red-500', 'text-red-700', 'bg-red-50');
             
-            showNotification('Erreur de synchronisation: ' + result.message, 'error');
+            showNotification(@json(__('Erreur de synchronisation: ')) + result.message, 'error');
         }
         
     } catch (error) {
@@ -380,7 +380,7 @@ async function syncData(software, type) {
         button.classList.remove('border-gray-300', 'text-gray-700');
         button.classList.add('border-red-500', 'text-red-700', 'bg-red-50');
         
-        showNotification('Erreur lors de la synchronisation', 'error');
+        showNotification(@json(__('Erreur lors de la synchronisation')), 'error');
     }
     
     // Réinitialiser le bouton après 3 secondes

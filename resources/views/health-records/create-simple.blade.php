@@ -330,7 +330,7 @@
                         };
                         
                         updateDentalStats();
-                        alert('✅ Données dentaires sauvegardées !');
+                        alert(@json(__('✅ Données dentaires sauvegardées !')));
                     } else {
                         alert('⚠️ Veuillez sélectionner une dent d\'abord.');
                     }

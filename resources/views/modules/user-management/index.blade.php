@@ -199,14 +199,14 @@ function updatePermission(userId, permission, isChecked) {
         if (data.success) {
             console.log('Permission mise à jour:', permission, isChecked);
         } else {
-            alert('Erreur lors de la mise à jour de la permission: ' + data.message);
+            alert(@json(__('Erreur lors de la mise à jour de la permission: ')) + data.message);
             // Revenir à l'état précédent
             event.target.checked = !isChecked;
         }
     })
     .catch(error => {
         console.error('Erreur:', error);
-        alert('Erreur lors de la mise à jour de la permission');
+        alert(@json(__('Erreur lors de la mise à jour de la permission')));
         // Revenir à l'état précédent
         event.target.checked = !isChecked;
     });

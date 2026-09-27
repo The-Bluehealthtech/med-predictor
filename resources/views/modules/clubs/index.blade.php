@@ -352,12 +352,12 @@
                     // Recharger la page pour mettre à jour la liste
                     window.location.reload();
                 } else {
-                    alert('Erreur lors de la suppression : ' + data.message);
+                    alert(@json(__('Erreur lors de la suppression : ')) + data.message);
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('Erreur lors de la suppression');
+                alert(@json(__('Erreur lors de la suppression')));
             })
             .finally(() => {
                 closeDeleteModal();
@@ -441,15 +441,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Fusion réussie !');
+                    alert(@json(__('Fusion réussie !')));
                     window.location.reload();
                 } else {
-                    alert('Erreur lors de la fusion : ' + data.message);
+                    alert(@json(__('Erreur lors de la fusion : ')) + data.message);
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('Erreur lors de la fusion');
+                alert(@json(__('Erreur lors de la fusion')));
             })
             .finally(() => {
                 closeMergeModal();

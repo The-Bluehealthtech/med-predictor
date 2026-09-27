@@ -599,7 +599,7 @@
                     if (file) {
                         // Vérifier le type de fichier
                         if (!file.type.startsWith('image/')) {
-                            alert('❌ Erreur : Le fichier doit être une image (JPG, PNG, JPEG)');
+                            alert(@json(__('❌ Erreur : Le fichier doit être une image (JPG, PNG, JPEG)')));
                             input.value = '';
                             return;
                         }

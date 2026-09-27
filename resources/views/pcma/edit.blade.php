@@ -676,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!isValid) {
             e.preventDefault();
-            alert('Veuillez remplir tous les champs obligatoires.');
+            alert(@json(__('Veuillez remplir tous les champs obligatoires.')));
         }
     });
     

@@ -452,7 +452,7 @@ function setupEventListeners() {
     
     // Réinitialiser les zones
     document.getElementById('resetZones').addEventListener('click', function() {
-        if (confirm('Êtes-vous sûr de vouloir réinitialiser toutes les zones ?')) {
+        if (confirm(@json(__('Êtes-vous sûr de vouloir réinitialiser toutes les zones ?')))) {
             location.reload();
         }
     });
@@ -477,7 +477,7 @@ function setupEventListeners() {
     
     // Sauvegarder notes
     document.getElementById('saveNotes').addEventListener('click', function() {
-        alert('Notes sauvegardées !');
+        alert(@json(__('Notes sauvegardées !')));
     });
     
     // Initialiser les stats

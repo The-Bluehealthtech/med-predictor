@@ -155,13 +155,13 @@ function closeCreateRoleModal() {
 
 function editRole(roleId) {
     // TODO: Implémenter l'édition de rôle
-    alert('Édition de rôle ' + roleId + ' - À implémenter');
+    alert(@json(__('Édition de rôle ')) + roleId + ' - À implémenter');
 }
 
 function deleteRole(roleId) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce rôle ?')) {
+    if (confirm(@json(__('Êtes-vous sûr de vouloir supprimer ce rôle ?')))) {
         // TODO: Implémenter la suppression de rôle
-        alert('Suppression de rôle ' + roleId + ' - À implémenter');
+        alert(@json(__('Suppression de rôle ')) + roleId + ' - À implémenter');
     }
 }
 </script>

@@ -208,14 +208,14 @@ function previewImage(input) {
         
         // Validation du type de fichier
         if (!file.type.startsWith('image/')) {
-            alert('❌ Veuillez sélectionner un fichier image valide (JPG, PNG, GIF)');
+            alert(@json(__('❌ Veuillez sélectionner un fichier image valide (JPG, PNG, GIF)')));
             input.value = '';
             return;
         }
         
         // Validation de la taille (5MB max)
         if (file.size > 5 * 1024 * 1024) {
-            alert('❌ La taille du fichier ne doit pas dépasser 5MB');
+            alert(@json(__('❌ La taille du fichier ne doit pas dépasser 5MB')));
             input.value = '';
             return;
         }

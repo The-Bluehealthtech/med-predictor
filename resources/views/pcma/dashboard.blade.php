@@ -198,11 +198,11 @@ createApp({
                 if (data.success) {
                     this.signedPcmas = data.pcmas;
                 } else {
-                    this.error = data.message || 'Erreur lors du chargement';
+                    this.error = data.message || @json(__('Erreur lors du chargement'));
                 }
             } catch (error) {
                 console.error('Error loading signed PCMAs:', error);
-                this.error = 'Erreur de connexion';
+                this.error = @json(__('Erreur de connexion'));
             } finally {
                 this.loading = false;
             }
@@ -218,11 +218,11 @@ createApp({
         },
         getStatusBadge(status) {
             const statusMap = {
-                'completed': { class: 'bg-green-100 text-green-800', text: 'Complété' },
+                'completed': { class: 'bg-green-100 text-green-800', text: @json(__('Complété')) },
                 'pending': { class: 'bg-yellow-100 text-yellow-800', text: 'En attente' },
-                'failed': { class: 'bg-red-100 text-red-800', text: 'Échoué' }
+                'failed': { class: 'bg-red-100 text-red-800', text: @json(__('Échoué')) }
             };
-            return statusMap[status] || { class: 'bg-gray-100 text-gray-800', text: 'Inconnu' };
+            return statusMap[status] || { class: 'bg-gray-100 text-gray-800', text: @json(__('Inconnu')) };
         },
         viewPcma(pcmaId) {
             window.location.href = `/pcma/${pcmaId}`;

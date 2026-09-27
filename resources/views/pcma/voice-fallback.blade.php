@@ -382,14 +382,14 @@
                         } else {
                             this.submissionResult = {
                                 success: false,
-                                message: response.data.message || 'Erreur lors de la soumission du formulaire.'
+                                message: response.data.message || @json(__('Erreur lors de la soumission du formulaire.'))
                             };
                         }
                     } catch (error) {
-                        console.error('Erreur de soumission:', error);
+                        console.error(@json(__('Erreur de soumission:')), error);
                         this.submissionResult = {
                             success: false,
-                            message: 'Erreur de connexion au serveur. Veuillez réessayer.'
+                            message: @json(__('Erreur de connexion au serveur. Veuillez réessayer.'))
                         };
                     } finally {
                         this.isSubmitting = false;

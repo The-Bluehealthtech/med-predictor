@@ -39,6 +39,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.calendrier_global_page.period_label') }}</label>
                 <select id="calendarPeriodFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Toutes les périodes</option>
                     <option value="semaine">{{ __('competitions.calendrier_global_page.this_week') }}</option>
                     <option value="mois">{{ __('competitions.calendrier_global_page.this_month') }}</option>
                     <option value="trimestre">{{ __('competitions.calendrier_global_page.this_quarter') }}</option>

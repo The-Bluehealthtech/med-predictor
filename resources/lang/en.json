@@ -1976,5 +1976,16 @@
   "Données vérifiées indisponibles pour ce graphique.": "Verified data unavailable for this chart.",
   "Joueur actuel non trouvé dans la liste": "Current player not found in list",
   "Vous êtes déjà au dernier joueur": "You are already at the last player",
-  "Vous êtes déjà au premier joueur": "You are already at the first player"
+  "Vous êtes déjà au premier joueur": "You are already at the first player",
+  "Calculé le": "Calculated on",
+  "Référence :": "Reference:",
+  "métrique(s) récente(s), mais aucune n’est vérifiée.": "recent metric(s), but none are verified.",
+  "Des métriques vérifiées existent hors fenêtre.": "Verified metrics exist outside the window.",
+  "Dernière vérification :": "Last verification:",
+  "Données de tendance non disponibles": "Trend data unavailable",
+  "Alimentation équilibrée déclarée": "Balanced diet reported",
+  "Alimentation déclarée à surveiller": "Reported diet requires monitoring",
+  "Données nutritionnelles non disponibles": "Nutrition data unavailable",
+  "Aucune aptitude signée": "No signed clearance",
+  "Passeport de test (non validé)": "Test passport (not validated)"
 }

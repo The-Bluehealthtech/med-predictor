@@ -259,7 +259,7 @@
                             </div>
 
                             <div class="text-xs text-gray-300">
-                                Calculé le
+                                {{ __('Calculé le') }}
                                 {{ \Carbon\Carbon::parse($latestFitSnapshot->snapshot_at)->format('d/m/Y H:i') }}
                             </div>
 
@@ -285,7 +285,7 @@
 
                                     @if($previousFitSnapshot)
                                         <div class="text-xs text-gray-400 mt-1">
-                                            Référence :
+                                            {{ __('Référence :') }}
                                             {{ \Carbon\Carbon::parse($previousFitSnapshot->snapshot_at)->format('d/m/Y H:i') }}
                                         </div>
                                     @endif
@@ -374,7 +374,7 @@
                                     @if($fitRecentMetricCount > 0)
                                         <div class="mt-2 text-xs text-yellow-300">
                                             {{ $fitRecentMetricCount }}
-                                            métrique(s) récente(s), mais aucune n'est vérifiée.
+                                            {{ __('métrique(s) récente(s), mais aucune n’est vérifiée.') }}
                                         </div>
                                     @else
                                         <div class="mt-2 text-xs text-yellow-300">{{ __('Aucune métrique de performance sur les 30 derniers jours.') }}</div>
@@ -382,8 +382,8 @@
 
                                     @if($fitVerifiedMetricCountAllTime > 0 && $fitLatestVerifiedMetricDate)
                                         <div class="mt-1 text-xs text-blue-200">
-                                            Des métriques vérifiées existent hors fenêtre.
-                                            Dernière vérification :
+                                            {{ __('Des métriques vérifiées existent hors fenêtre.') }}
+                                            {{ __('Dernière vérification :') }}
                                             {{ \Carbon\Carbon::parse($fitLatestVerifiedMetricDate)->format('d/m/Y H:i') }}
                                         </div>
                                     @elseif($fitVerifiedMetricCountAllTime === 0)
@@ -483,7 +483,7 @@
                             <span class="text-orange-200 text-sm">{{ __('Document d\'identité:') }}</span>
                             <span class="text-white font-medium">
                                 @if($player->passport?->passport_number)
-                                    {{ str_starts_with($player->passport->passport_number, 'SYNTH-PASSPORT-') ? 'Passeport de test (non validé)' : 'Passeport' }}: {{ $player->passport->passport_number }}
+                                    {{ str_starts_with($player->passport->passport_number, 'SYNTH-PASSPORT-') ? '__('Passeport de test (non validé)')' : 'Passeport' }}: {{ $player->passport->passport_number }}
                                 @else
                                     {{ __('Données non disponibles') }}
                                 @endif
@@ -798,7 +798,7 @@
                                     @endif
                                     sur la période
                                 @else
-                                    Données de tendance non disponibles
+                                    {{ __('Données de tendance non disponibles') }}
                                 @endif
                             </div>
                         </div>
@@ -807,11 +807,11 @@
                             <div class="font-medium text-yellow-800">{{ __('🥗 Nutrition') }}</div>
                             <div class="text-sm text-yellow-700">
                                 @if($trendIndicators->healthy_diet === true)
-                                    Alimentation équilibrée déclarée
+                                    {{ __('Alimentation équilibrée déclarée') }}
                                 @elseif($trendIndicators->healthy_diet === false)
-                                    Alimentation déclarée à surveiller
+                                    {{ __('Alimentation déclarée à surveiller') }}
                                 @else
-                                    Données nutritionnelles non disponibles
+                                    {{ __('Données nutritionnelles non disponibles') }}
                                 @endif
                             </div>
                         </div>
@@ -1421,7 +1421,7 @@
                                     'fit' => '🟢 APTE AU JEU',
                                     'temporarily_unfit' => '🟡 TEMPORAIREMENT INAPTE',
                                     'unfit' => '🔴 INAPTE',
-                                    null => __('Aucune aptitude signée'),
+                                    null => __('__('Aucune aptitude signée')'),
                                     default => 'ℹ️ STATUT INCONNU',
                                 };
                                 @endphp

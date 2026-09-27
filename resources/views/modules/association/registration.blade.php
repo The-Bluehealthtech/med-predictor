@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="flex items-center justify-between">
                             <span class="font-medium">{{ __('clinical.status_label') }}</span>
                             <span class="px-2 py-1 rounded-full text-xs font-medium ${result.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                ${result.status === 'approved' ? '✅ Approuvé' : '❌ Rejeté'}
+                                ${result.status === 'approved' ? @json(__('✅ Approuvé')) : @json(__('❌ Rejeté'))}
                             </span>
                         </div>
                         <div class="mt-3">
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 fraudAnalysisCompleted = true;
                 
                 // Update button
-                fraudDetectionBtn.textContent = '🔄 Réanalyser';
+                fraudDetectionBtn.textContent = @json(__('🔄 Réanalyser'));
                 fraudDetectionBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
                 fraudDetectionBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
                 

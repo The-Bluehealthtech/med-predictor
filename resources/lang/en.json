@@ -1990,5 +1990,8 @@
   "Passeport de test (non validé)": "Test passport (not validated)",
   "✅ Réussi": "✅ Successful",
   "Cas à Risque Élevé:": "High-risk cases:",
-  "Visites Préventives:": "Preventive visits:"
+  "Visites Préventives:": "Preventive visits:",
+  "✅ Approuvé": "✅ Approved",
+  "❌ Rejeté": "❌ Rejected",
+  "🔄 Réanalyser": "🔄 Reanalyze"
 }

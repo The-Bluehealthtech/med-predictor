@@ -259,15 +259,14 @@ function viewClubDetails(clubId) {
 }
 
 function validateEngagement(clubId) {
-    // NOTE (audit factice -> reel, 2026-09) : ce bouton appelait une route de
-    // test supprimee ("test-validate-engagement"), et la methode de
-    // controleur reelle derriere ce nom (CompetitionController::validateEngagement)
-    // renvoyait de toute facon un succes fictif sans logique de validation
-    // reelle. On informe donc honnetement l'utilisateur plutot que de
-    // brancher un faux succes.
-    if (confirm(@json(__('competitions.engagements_clubs_page.js_validate_engagement_confirm')))) {
-        alert(@json(__('competitions.engagements_clubs_page.js_validate_engagement_unavailable')));
-    }
+    if (!confirm(@json(__('competitions.engagements_clubs_page.js_validate_engagement_confirm')))) return;
+    fetch(`{{ url('/competitions/association/validate-engagement') }}/${clubId}`, {
+        method: 'POST',
+        headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json'}
+    }).then(r => r.json()).then(data => {
+        alert(data.message || data.error);
+        if (data.success) window.location.reload();
+    }).catch(() => alert(@json(__('competitions.engagements_clubs_page.js_validate_engagement_error'))));
 }
 
 function editEngagement(clubId) {

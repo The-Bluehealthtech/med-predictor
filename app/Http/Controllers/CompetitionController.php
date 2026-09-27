@@ -2236,8 +2236,14 @@ class CompetitionController extends Controller
     public function validateEngagement(Request $request, $clubId)
     {
         try {
-            // Ici on pourrait ajouter la logique de validation d'un club spécifique
-            
+            $updated = DB::table('competition_club')
+                ->where('club_id', $clubId)
+                ->update(['status' => 'validated', 'updated_at' => now()]);
+
+            if ($updated === 0) {
+                return response()->json(['success' => false, 'error' => 'Aucun engagement trouvé pour ce club.'], 404);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => "L'engagement du club {$clubId} a été validé avec succès"

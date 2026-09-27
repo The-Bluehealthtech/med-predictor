@@ -3394,6 +3394,7 @@ Route::get('/test-pdf', function() {
             Route::get('/engagements-clubs', [App\Http\Controllers\CompetitionController::class, 'associationEngagementsClubs'])->name('engagements-clubs');
             Route::post('/export-engagements', [App\Http\Controllers\CompetitionController::class, 'exportEngagements'])->name('export-engagements');
             Route::post('/validate-all-engagements', [App\Http\Controllers\CompetitionController::class, 'validateAllEngagements'])->name('validate-all-engagements');
+            Route::post('/validate-engagement/{clubId}', [App\Http\Controllers\CompetitionController::class, 'validateEngagement'])->name('validate-engagement');
             Route::get('/club-details/{clubId}', [App\Http\Controllers\CompetitionController::class, 'clubDetails'])->name('club-details');
             Route::post('/export-club-data/{clubId}', [App\Http\Controllers\CompetitionController::class, 'exportClubData'])->name('export-club-data');
             Route::get('/calendrier-global', [App\Http\Controllers\CompetitionController::class, 'associationCalendrierGlobal'])->name('calendrier-global');

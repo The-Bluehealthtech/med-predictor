@@ -18,7 +18,7 @@
         @endif
         <!-- Liste des associations -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-semibold mb-6 text-green-600">🏛️ Associations Disponibles</h2>
+            <h2 class="text-2xl font-semibold mb-6 text-green-600">🏛️ {{ __("Associations Disponibles") }}</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($associations as $association)
@@ -80,7 +80,7 @@
                     
                     <!-- Statistiques -->
                     <div class="mb-3 text-xs text-gray-600">
-                        <p>🏟️ {{ $association->clubs_count ?? 0 }} clubs</p>
+                        <p>🏟️ {{ $association->clubs_count ?? 0 }} {{ __("clubs") }}</p>
                         <p>👥 {{ $association->players_count ?? 0 }} joueurs</p>
                     </div>
                     

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $association->name }} - Détails de l'Association - Plateforme FIT</title>
+    <title>{{ $association->name }} - {{ __('Détails de l’association - Plateforme FIT') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen">
@@ -118,7 +118,7 @@
                             <span class="w-6 h-6 mr-3 text-green-600">🌍</span>
                             <div>
                                 <p class="text-sm text-gray-500">{{ __('Confédération') }}</p>
-                                <p class="font-medium">{{ $association->confederation->name ?? 'Non spécifiée' }}</p>
+                                <p class="font-medium">{{ $association->confederation->name ?? __('Non spécifiée') }}</p>
                             </div>
                         </div>
                         <div class="flex items-center">
@@ -131,7 +131,7 @@
                         <div class="flex items-center">
                             <span class="w-6 h-6 mr-3 text-green-600">🏟️</span>
                             <div>
-                                <p class="text-sm text-gray-500">{{ __('Clubs affiliés') }}</p>
+                                <p class="text-sm text-gray-500">{{ __('{{ __("Clubs affiliés") }}') }}</p>
                                 <p class="font-medium">{{ $association->clubs ? $association->clubs->count() : 0 }}</p>
                             </div>
                         </div>
@@ -188,7 +188,7 @@
                                 @endif
                                 @if($association->email)
                                 <div class="flex justify-between">
-                                    <span class="text-blue-600">📧 Email:</span>
+                                    <span class="text-blue-600">📧 {{ __("Email:") }}</span>
                                     <span class="font-medium">{{ $association->email }}</span>
                                 </div>
                                 @endif
@@ -200,7 +200,7 @@
                                 @endif
                                 @if($association->address)
                                 <div class="flex justify-between">
-                                    <span class="text-blue-600">🏟️ Adresse:</span>
+                                    <span class="text-blue-600">🏟️ {{ __("Adresse:") }}</span>
                                     <span class="font-medium">{{ $association->address }}</span>
                                 </div>
                                 @endif
@@ -209,12 +209,12 @@
                     </div>
                 </div>
 
-                <!-- Clubs affiliés -->
+                <!-- {{ __("Clubs affiliés") }} -->
                 @if($association->clubs && $association->clubs->count() > 0)
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <span class="mr-2">🏟️</span>
-                        Clubs affiliés ({{ $association->clubs->count() }})
+                        {{ __("Clubs affiliés") }} ({{ $association->clubs->count() }})
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -264,7 +264,7 @@
                     <div class="space-y-4">
                         <div class="text-center">
                             <div class="text-3xl font-bold text-green-600">{{ $association->clubs ? $association->clubs->count() : 0 }}</div>
-                            <div class="text-sm text-gray-600">{{ __('Clubs affiliés') }}</div>
+                            <div class="text-sm text-gray-600">{{ __('{{ __("Clubs affiliés") }}') }}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-3xl font-bold text-blue-600">{{ $association->players ? $association->players->count() : 0 }}</div>

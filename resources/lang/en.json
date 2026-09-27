@@ -1891,5 +1891,15 @@
   "Description du paramètre": "Setting description",
   "Équipe non renseignée": "Team not provided",
   "Compétition non renseignée": "Competition not provided",
-  "Date non renseignée": "Date not provided"
+  "Date non renseignée": "Date not provided",
+  "Pays non défini": "Country not specified",
+  "📤 Uploader le logo": "📤 Upload logo",
+  "💡 Instructions": "💡 Instructions",
+  "🛂 Passeports": "🛂 Passports",
+  "✅ Validation": "✅ Validation",
+  "Associations Disponibles": "Available associations",
+  "clubs": "clubs",
+  "Détails de l’association - Plateforme FIT": "Association details - FIT Platform",
+  "Email:": "Email:",
+  "Adresse:": "Address:"
 }

@@ -43,10 +43,10 @@
                     {{ __('👥 Joueurs') }}
                 </a>
                 <a href="{{ route('player-passports.index') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    🛂 Passeports
+                    {{ __("🛂 Passeports") }}
                 </a>
                 <a href="{{ route('licenses.validation') }}" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    ✅ Validation
+                    {{ __("✅ Validation") }}
                 </a>
             </div>
         </div>

@@ -15,7 +15,7 @@
             <!-- Club Info -->
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <h2 class="text-lg font-semibold text-blue-800 mb-2">{{ $club->name }}</h2>
-                <p class="text-blue-600">{{ $club->country ?? 'Pays non défini' }}</p>
+                <p class="text-blue-600">{{ $club->country ?? __('Pays non défini') }}</p>
                 
                 @if($club->logo_url)
                     <div class="mt-3">
@@ -70,7 +70,7 @@
                     <div class="flex items-center justify-between">
                         <button type="submit" 
                                 class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200">
-                            📤 Uploader le logo
+                            {{ __("📤 Uploader le logo") }}
                         </button>
                         
                         <a href="{{ route('joueur.portal', request()->query('player_id', 1)) }}" 
@@ -83,7 +83,7 @@
 
             <!-- Instructions -->
             <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h4 class="text-sm font-semibold text-yellow-800 mb-2">💡 Instructions</h4>
+                <h4 class="text-sm font-semibold text-yellow-800 mb-2">{{ __("💡 Instructions") }}</h4>
                 <ul class="text-sm text-yellow-700 space-y-1">
                     <li>{{ __('• Utilisez des images de haute qualité (recommandé : 200x200px minimum)') }}</li>
                     <li>{{ __('• Les formats SVG sont recommandés pour une meilleure qualité') }}</li>

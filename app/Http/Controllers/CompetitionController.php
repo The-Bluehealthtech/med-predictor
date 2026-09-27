@@ -389,20 +389,26 @@ class CompetitionController extends Controller
             // matchs (App\Models\GameMatch).
             $user = auth()->user();
             $associationId = $user->association_id;
+            $isGlobalAdmin = in_array($user->role, ['system_admin', 'super_admin', 'admin'], true);
 
             $association = $associationId ? Association::find($associationId) : null;
 
-            if (!$association) {
+            if (!$association && !$isGlobalAdmin) {
                 throw new \Exception('Association non trouvée pour cet utilisateur');
             }
 
-            $competitionsData = Competition::where('association_id', $association->id)
+            $competitionsQuery = Competition::query()
                 ->where('status', '!=', 'cancelled')
                 ->with(['association'])
-                ->orderBy('start_date', 'desc')
-                ->get();
+                ->orderBy('start_date', 'desc');
+            if (!$isGlobalAdmin) {
+                $competitionsQuery->where('association_id', $association->id);
+            }
+            $competitionsData = $competitionsQuery->get();
 
-            $associationClubs = Club::where('association_id', $association->id)->get();
+            $associationClubs = $association
+                ? Club::where('association_id', $association->id)->get()
+                : Club::all();
 
             $statusLabels = __('competitions.supervision_page.status_labels');
             $unknownStatus = __('competitions.supervision_page.unknown_status');

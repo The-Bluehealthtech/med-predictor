@@ -1965,5 +1965,7 @@
   "Échec": "Failed",
   "Sélectionnez les utilisateurs auxquels vous voulez appliquer ce rôle et ses permissions.": "Select the users to whom you want to apply this role and its permissions.",
   "Permissions qui seront appliquées :": "Permissions that will be applied:",
-  "Appliquer le rôle:": "Apply role:"
+  "Appliquer le rôle:": "Apply role:",
+  "Module Compétitions - FIT": "Competitions module - FIT",
+  "Classements": "Standings"
 }

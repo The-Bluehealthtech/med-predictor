@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Module Compétitions - FIT')
+@section('title', __('Module Compétitions - FIT'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -82,7 +82,7 @@
                                         {{ $match->homeTeam->club->name ?? 'TBD' }} vs {{ $match->awayTeam->club->name ?? 'TBD' }}
                                     </div>
                                     <div class="text-sm text-gray-600">
-                                        {{ $match->competition->name ?? 'Compétition' }} • {{ $match->match_date ?? 'N/A' }}
+                                        {{ $match->competition->name ?? __('Compétition') }} • {{ $match->match_date ?? 'N/A' }}
                                     </div>
                                 </div>
                                 <div class="text-right">
@@ -113,7 +113,7 @@
                                         {{ $match->homeTeam->club->name ?? 'TBD' }} {{ $match->home_score ?? 0 }} - {{ $match->away_score ?? 0 }} {{ $match->awayTeam->club->name ?? 'TBD' }}
                                     </div>
                                     <div class="text-sm text-gray-600">
-                                        {{ $match->competition->name ?? 'Compétition' }} • {{ $match->match_date ?? 'N/A' }}
+                                        {{ $match->competition->name ?? __('Compétition') }} • {{ $match->match_date ?? 'N/A' }}
                                     </div>
                                 </div>
                                 <div class="text-right">
@@ -171,7 +171,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-trophy text-yellow-600 mr-3"></i>
                                 <div>
-                                    <div class="font-medium text-gray-900">Classements</div>
+                                    <div class="font-medium text-gray-900">{{ __("Classements") }}</div>
                                     <div class="text-sm text-gray-600">{{ __('Suivi des performances et classements') }}</div>
                                 </div>
                             </div>

@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $record ? 'Modifier' : 'Créer' }} {{ $type }}</title>
+    <title>{{ $record ? __('Modifier') : __('Créer') }} {{ $type }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
     <main class="max-w-2xl mx-auto bg-white rounded-lg shadow p-8">
         <a href="{{ $type === 'confederations' ? route('modules.confederations.index') : ($type === 'associations' ? route('associations-view') : route('clubs-view')) }}" class="text-blue-700 underline">{{ __('health_records_edit.back_to_list') }}</a>
-        <h1 class="text-2xl font-bold my-6">{{ $record ? 'Modifier' : 'Créer' }} {{ ['confederations' => 'une confédération', 'associations' => 'une association', 'clubs' => 'un club'][$type] }}</h1>
+        <h1 class="text-2xl font-bold my-6">{{ $record ? __('Modifier') : __('Créer') }} {{ ['confederations' => __('une confédération'), 'associations' => __('une association'), 'clubs' => __('un club')][$type] }}</h1>
         @if(session('success')) <p class="bg-green-100 text-green-800 p-3 mb-4">{{ session('success') }}</p> @endif
         @if($errors->any())
             <ul class="bg-red-100 text-red-800 p-3 mb-4">

@@ -135,7 +135,7 @@
                     <strong>{{ __('Joueur ID:') }}</strong> {{ $player->id }} |
                     @if($player->association)
                         <strong>Association:</strong> {{ $player->association->name }} | 
-                        <strong>Pays:</strong> {{ $player->association->country }}
+                        <strong>{{ __('Pays:') }}</strong> {{ $player->association->country }}
                     @else
                         <strong>Association:</strong> <span class="text-red-500">{{ __('competitions.engagements_clubs_page.csv_no_competition') }}</span>
                     @endif
@@ -161,7 +161,7 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-3">{{ __('🏟️ Informations sportives') }}</h3>
                     <div class="space-y-2 text-sm">
-                        <p><strong>Club:</strong> {{ $player->club->name ?? 'Aucun club' }}</p>
+                        <p><strong>Club:</strong> {{ $player->club->name ?? __('Aucun club') }}</p>
                         <p><strong>Position:</strong> {{ $player->position ?? 'Non définie' }}</p>
                         <p><strong>{{ __('Numéro:') }}</strong> {{ $player->jersey_number ?? 'Non défini' }}</p>
                         <p><strong>{{ __('clinical.status_label') }}</strong> {{ $player->status ?? 'Actif' }}</p>
@@ -172,7 +172,7 @@
 
         <!-- Section Actions -->
         <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-semibold mb-6 text-purple-600">⚙️ Actions Disponibles</h2>
+            <h2 class="text-2xl font-semibold mb-6 text-purple-600">{{ __('⚙️ Actions Disponibles') }}</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 @if($player->association)

@@ -1901,5 +1901,20 @@
   "clubs": "clubs",
   "Détails de l’association - Plateforme FIT": "Association details - FIT Platform",
   "Email:": "Email:",
-  "Adresse:": "Address:"
+  "Adresse:": "Address:",
+  "Pays non spécifié": "Country not specified",
+  "Adresse non spécifiée": "Address not specified",
+  "Aucun club disponible pour la fusion": "No club available for merging",
+  "Erreur lors du chargement des options": "Error loading options",
+  "Création en Masse d’Équipes": "Bulk team creation",
+  "Équipes à créer (une par ligne)": "Teams to create (one per line)",
+  "une confédération": "a confederation",
+  "une association": "an association",
+  "un club": "a club",
+  "Plateforme FIT": "FIT Platform",
+  "Statut FIFA actuel": "Current FIFA status",
+  "Actions FIFA": "FIFA actions",
+  "⚡ Actions rapides": "⚡ Quick actions",
+  "Pays:": "Country:",
+  "⚙️ Actions Disponibles": "⚙️ Available actions"
 }

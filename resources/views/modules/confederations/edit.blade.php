@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier {{ $confederation->name }} - Plateforme FIT</title>
+    <title>{{ __('Modifier') }} {{ $confederation->name }} - {{ __('Plateforme FIT') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-purple-50 to-indigo-100 min-h-screen">
@@ -150,9 +150,9 @@
                             @enderror
                         </div>
 
-                        <!-- Statut FIFA actuel -->
+                        <!-- {{ __('Statut FIFA actuel') }} -->
                         <div class="bg-gray-50 rounded-lg p-4">
-                            <h3 class="text-sm font-medium text-gray-700 mb-2">Statut FIFA actuel</h3>
+                            <h3 class="text-sm font-medium text-gray-700 mb-2">{{ __('Statut FIFA actuel') }}</h3>
                             <div class="space-y-2">
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600">Synchronisation :</span>

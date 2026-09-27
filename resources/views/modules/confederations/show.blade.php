@@ -136,7 +136,7 @@
                         </div>
                         
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <h4 class="font-medium text-blue-800 mb-3">Actions FIFA</h4>
+                            <h4 class="font-medium text-blue-800 mb-3">{{ __('Actions FIFA') }}</h4>
                             <div class="space-y-2">
                                 <button onclick="syncWithFifa({{ $confederation->id }})" 
                                         class="w-full px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
@@ -226,7 +226,7 @@
 
                 <!-- Actions rapides -->
                 <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">⚡ Actions rapides</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('⚡ Actions rapides') }}</h3>
                     <div class="space-y-3">
                         <a href="/associations-view?confederation_id={{ $confederation->id }}" 
                            class="block w-full px-4 py-2 bg-purple-600 text-white text-center rounded-lg hover:bg-purple-700 transition-colors">{{ __('🏛️ Gérer les associations') }}</a>

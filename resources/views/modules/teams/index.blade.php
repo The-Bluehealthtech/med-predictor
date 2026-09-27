@@ -292,7 +292,7 @@ function openBulkCreateModal() {
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
             <div class="mt-3">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Création en Masse d'Équipes</h3>
+                    <h3 class="text-lg font-medium text-gray-900">{{ __('Création en Masse d’Équipes') }}</h3>
                     <button onclick="closeBulkCreateModal()" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -341,7 +341,7 @@ function openBulkCreateModal() {
                 </div>
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Équipes à créer (une par ligne)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Équipes à créer (une par ligne)') }}</label>
                     <textarea id="bulkTeamNames" 
                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                               rows="6" 

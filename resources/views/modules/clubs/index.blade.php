@@ -97,7 +97,7 @@
                                         </span>
                                     @endif
                                 </div>
-                                <p class="text-sm text-gray-600">{{ $club->city ?? 'N/A' }}, {{ $club->country ?? 'Pays non spécifié' }}</p>
+                                <p class="text-sm text-gray-600">{{ $club->city ?? 'N/A' }}, {{ $club->country ?? __('Pays non spécifié') }}</p>
                             </div>
                             <div class="flex space-x-2">
                                 <span class="px-2 py-1 text-xs font-medium rounded-full {{ $club->status === 'active' ? 'bg-green-100 text-green-800' : ($club->status === 'inactive' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
@@ -124,7 +124,7 @@
                             <div class="grid grid-cols-2 gap-2 text-sm text-gray-600">
                                 <div class="flex items-center">
                                     <span class="text-gray-400 mr-2">🏟️</span>
-                                    <span>{{ $club->address ?? 'Adresse non spécifiée' }}</span>
+                                    <span>{{ $club->address ?? __('Adresse non spécifiée') }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <span class="text-gray-400 mr-2">📞</span>
@@ -174,7 +174,7 @@
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-xs text-blue-600">{{ $club->association->country ?? 'Pays non spécifié' }}</span>
+                                    <span class="text-xs text-blue-600">{{ $club->association->country ?? __('Pays non spécifié') }}</span>
                                 </div>
                             </div>
                             <div class="mt-2 text-center">

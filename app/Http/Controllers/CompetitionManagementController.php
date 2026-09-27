@@ -873,7 +873,8 @@ class CompetitionManagementController extends Controller
 
     public function standings(Request $request, Competition $competition)
     {
-        $this->authorizeCompetitionAccess($competition);
+        try {
+            $this->authorizeCompetitionAccess($competition);
         
         // Get the latest rankings from the competition_rankings table
         $ranking = null;
@@ -1092,6 +1093,18 @@ class CompetitionManagementController extends Controller
             'nextMatchday', 
             'matchdayNumbers'
         ));
+        } catch (\Throwable $e) {
+            report($e);
+            return view('competition-management.standings', [
+                'competition' => $competition,
+                'standings' => collect(),
+                'recentMatches' => [],
+                'currentMatchday' => null,
+                'previousMatchday' => null,
+                'nextMatchday' => null,
+                'matchdayNumbers' => collect(),
+            ]);
+        }
     }
 
     /**

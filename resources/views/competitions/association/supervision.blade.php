@@ -158,27 +158,27 @@
                                         <i class="fas fa-futbol mr-2 text-green-300"></i>{{ $competition['matchs_joues'] }}/{{ $competition['nb_matchs'] }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div class="flex space-x-2">
-                                            <button onclick="viewCompetitionDetails({{ $competition['id'] }})" 
-                                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors" 
-                                                    title="{{ __('competitions.supervision_page.view_details_title') }}">
+                                        <div class="flex flex-wrap gap-2">
+                                            <a href="{{ route('competitions.show', $competition['id']) }}"
+                                               class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors"
+                                               title="{{ __('competitions.supervision_page.view_details_title') }}">
                                                 <i class="fas fa-eye mr-1"></i>{{ __('competitions.supervision_page.details') }}
-                                            </button>
-                                            <button onclick="manageCompetition({{ $competition['id'] }})" 
-                                                    class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors" 
-                                                    title="{{ __('competitions.supervision_page.manage_title') }}">
+                                            </a>
+                                            <a href="{{ route('competitions.edit', $competition['id']) }}"
+                                               class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors"
+                                               title="{{ __('competitions.supervision_page.manage_title') }}">
                                                 <i class="fas fa-cog mr-1"></i>{{ __('competitions.supervision_page.manage') }}
-                                            </button>
-                                            <button onclick="viewReports({{ $competition['id'] }})" 
-                                                    class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-xs transition-colors" 
-                                                    title="{{ __('competitions.supervision_page.reports_title') }}">
+                                            </a>
+                                            <a href="{{ route('competitions.association.rapports-statistiques', ['competition_id' => $competition['id']]) }}"
+                                               class="inline-flex items-center bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-xs transition-colors"
+                                               title="{{ __('competitions.supervision_page.reports_title') }}">
                                                 <i class="fas fa-chart-bar mr-1"></i>{{ __('competitions.supervision_page.reports') }}
-                                            </button>
-                                            <button onclick="viewFixtures({{ $competition['id'] }})" 
-                                                    class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-xs transition-colors" 
-                                                    title="{{ __('competitions.supervision_page.view_matches_title') }}">
+                                            </a>
+                                            <a href="{{ route('competitions.association.fixtures', ['competition_id' => $competition['id']]) }}"
+                                               class="inline-flex items-center bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-xs transition-colors"
+                                               title="{{ __('competitions.supervision_page.view_matches_title') }}">
                                                 <i class="fas fa-calendar mr-1"></i>{{ __('competitions.supervision_page.matches') }}
-                                            </button>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>

@@ -214,7 +214,7 @@
                         
                         <div class="info-section">
                             <div v-if="selectedDentalTooth" class="tooth-info">
-                                <h3>Dent sélectionnée : {{ selectedDentalTooth }}</h3>
+                                <h3>{{ __("Dent sélectionnée :") }} {{ selectedDentalTooth }}</h3>
                                 <div class="tooth-details">
                                     <div class="form-group">
                                         <label>{{ __('health_records_extra.label_55b97e79c228') }}</label>

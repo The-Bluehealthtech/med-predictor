@@ -12,6 +12,12 @@ class TunisianClubLogoFixtureSeeder extends Seeder
         $logos = [
             'Club Africain' => 'club-africain',
             'CS Sfaxien' => 'cs-sfaxien',
+            'CA Bizertin' => 'club-athletique-bizertin',
+            'JS Kairouan' => 'js-kairouanaise',
+            'AS Gabès' => 'avenir-sportif-de-gabes',
+            'Olympique de Béja' => 'olympique-beja',
+            'AS Marsa' => 'avenir-sportif-de-la-marsa',
+            'ES Métlaoui' => 'etoile-sportive-de-metlaoui',
             'Espérance Sportive de Tunis' => 'esperance-sportive-de-tunis',
             'Etoile Sportive du Sahel' => 'etoile-sportive-du-sahel',
             'Etoile Sportive de Metlaoui' => 'etoile-sportive-de-metlaoui',

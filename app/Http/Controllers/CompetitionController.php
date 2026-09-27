@@ -536,9 +536,6 @@ class CompetitionController extends Controller
                     $clubId = $match->homeTeam->club->id;
                     if ($clubsData->has($clubId)) {
                         $clubsData[$clubId]['matches']->push($match);
-                        if ($match->competition) {
-                            $clubsData[$clubId]['competitions']->push($match->competition);
-                        }
                     }
                 }
                 
@@ -547,9 +544,6 @@ class CompetitionController extends Controller
                     $clubId = $match->awayTeam->club->id;
                     if ($clubsData->has($clubId)) {
                         $clubsData[$clubId]['matches']->push($match);
-                        if ($match->competition) {
-                            $clubsData[$clubId]['competitions']->push($match->competition);
-                        }
                     }
                 }
             }

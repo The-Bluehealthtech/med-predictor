@@ -95,7 +95,7 @@
                                                 {{ $player->first_name }} {{ $player->last_name }}
                                             </div>
                                             <div class="text-sm text-gray-500">
-                                                {{ $player->date_of_birth ?? 'Date de naissance non définie' }}
+                                                {{ $player->date_of_birth ?? __('Date de naissance non définie') }}
                                             </div>
                                         </div>
                                     </div>

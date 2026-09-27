@@ -16,8 +16,8 @@
             @forelse($players as $player)
                 <li class="px-4 py-3">
                     <span class="font-medium">{{ $player->first_name }} {{ $player->last_name }}</span>
-                    <span class="text-gray-600">— {{ $player->club?->name ?? 'Club non renseigné' }}</span>
-                    <span class="block text-sm text-gray-600">Identifiant FIFA Connect : {{ $player->fifa_connect_id ?: 'Non renseigné' }}</span>
+                    <span class="text-gray-600">— {{ $player->club?->name ?? __('Club non renseigné') }}</span>
+                    <span class="block text-sm text-gray-600">Identifiant FIFA Connect : {{ $player->fifa_connect_id ?: __('Non renseigné') }}</span>
                 </li>
             @empty
                 <li class="px-4 py-3">{{ __('Aucun joueur trouvé.') }}</li>

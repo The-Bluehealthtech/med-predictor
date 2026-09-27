@@ -14,9 +14,9 @@
             <!-- Header -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <h1 class="text-2xl font-bold text-gray-800 mb-2">
-                    {{ $typeIcon ?? '📸' }} Gestion de {{ $typeLabel ?? 'la photo' }} de {{ $player->first_name ?? 'Joueur' }} {{ $player->last_name ?? '' }}
+                    {{ $typeIcon ?? '📸' }} Gestion de {{ $typeLabel ?? __('la photo') }} de {{ $player->first_name ?? 'Joueur' }} {{ $player->last_name ?? '' }}
                 </h1>
-                <p class="text-gray-600">Gérez {{ $typeLabel ?? 'la photo' }} de ce joueur</p>
+                <p class="text-gray-600">Gérez {{ $typeLabel ?? __('la photo') }} de ce joueur</p>
             </div>
 
             <!-- Élément actuel -->

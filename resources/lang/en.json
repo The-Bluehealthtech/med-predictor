@@ -2009,5 +2009,8 @@
   "EXCELLENT": "EXCELLENT",
   "BON": "GOOD",
   "À AMÉLIORER": "NEEDS IMPROVEMENT",
-  "Santé": "Health"
+  "Santé": "Health",
+  "Date de naissance non définie": "Date of birth not defined",
+  "la photo": "the photo",
+  "Club non renseigné": "Club not provided"
 }

@@ -2354,7 +2354,7 @@ class CompetitionController extends Controller
             $clubData = [
                 $engagementLabels['csv_col_club'] => $club->name,
                 $engagementLabels['csv_col_teams'] => $club->teams->count(),
-                $engagementLabels['csv_col_competitions_count'] => $club->teams->flatMap->competitions->unique('id')->count(),
+                $engagementLabels['csv_col_competitions_count'] => $club->competitions->merge($club->teams->flatMap->competitions)->unique('id')->count(),
                 $engagementLabels['csv_col_total_matches'] => GameMatch::where(function ($query) use ($club) {
                     $query->whereIn('home_team_id', $club->teams->pluck('id'))
                           ->orWhereIn('away_team_id', $club->teams->pluck('id'));

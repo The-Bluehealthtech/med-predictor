@@ -24,8 +24,8 @@ for (const file of ['resources/lang/fr/healthcare.php', 'resources/lang/en/healt
   }
 }
 
-run('FR healthcare_management', ['php', 'artisan', 'tinker', '--execute', "echo __('healthcare.healthcare_management');"], { APP_LOCALE: 'fr' });
-run('EN healthcare_management', ['php', 'artisan', 'tinker', '--execute', "App::setLocale('en'); echo __('healthcare.healthcare_management');"]);
-run('FR clés principales', ['php', 'artisan', 'tinker', '--execute', "App::setLocale('fr'); echo __('healthcare.predictions').'|'.__('healthcare.player').'|'.__('healthcare.actions');"]);
+run('FR healthcare_management', ['php', 'artisan', 'tinker', '--execute', "echo __('healthcare.medical_predictions');"], { APP_LOCALE: 'fr' });
+run('EN healthcare_management', ['php', 'artisan', 'tinker', '--execute', "App::setLocale('en'); echo __('healthcare.medical_predictions');"]);
+run('FR clés principales', ['php', 'artisan', 'tinker', '--execute', "App::setLocale('fr'); echo __('healthcare.predictions').'|'.__('healthcare.actions').'|'.__('healthcare.medical_predictions');"]);
 
 if (!process.exitCode) console.log('✅ Test healthcare terminé');

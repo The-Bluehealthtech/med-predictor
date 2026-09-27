@@ -23,13 +23,20 @@ class RoleMiddleware
             ], 403);
         }
 
-        // Super admins and system admins inherit all roles (including association_admin)
-        if (in_array($user->role, ['super_admin', 'system_admin'])) {
+        // Normalize display labels such as "System_admin" or "Admin".
+        $userRole = strtolower(str_replace(['-', ' '], '_', (string) $user->role));
+        $allowedRoles = array_map(
+            static fn ($role) => strtolower(str_replace(['-', ' '], '_', (string) $role)),
+            $roles
+        );
+
+        // Super admins and system admins inherit all roles.
+        if (in_array($userRole, ['super_admin', 'system_admin'], true)) {
             return $next($request);
         }
 
-        // Exact role match fallback
-        if (!in_array($user->role, $roles)) {
+        // Exact normalized role match fallback.
+        if (!in_array($userRole, $allowedRoles, true)) {
             return response()->json([
                 'message' => 'Forbidden. Insufficient permissions.',
                 'error' => 'INSUFFICIENT_PERMISSIONS'

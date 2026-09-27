@@ -287,20 +287,20 @@ function showCompetitionModal(competitionId) {
     // rendues dans la ligne du tableau (data-* sur la <tr>).
     const row = document.querySelector(`tr[data-competition-id="${competitionId}"]`);
     const data = row ? row.dataset : {};
-    const labels = @json([
-        'title' => __('competitions.supervision_page.js_competition_details'),
-        'id_label' => __('competitions.supervision_page.js_competition_id_label'),
-        'status_label' => __('competitions.supervision_page.js_status_label'),
-        'name_label' => __('competitions.supervision_page.js_name_label'),
-        'season_label' => __('competitions.supervision_page.js_season_label'),
-        'clubs_count_label' => __('competitions.supervision_page.js_clubs_count_label'),
-        'matches_played_label' => __('competitions.supervision_page.js_matches_played_label'),
-        'matches_total_label' => __('competitions.supervision_page.js_matches_total_label'),
-        'available_actions' => __('competitions.supervision_page.js_available_actions'),
-        'view_matches' => __('competitions.supervision_page.js_view_matches'),
-        'reports' => __('competitions.supervision_page.js_reports'),
-        'close' => __('competitions.supervision_page.js_close'),
-    ]);
+    const labels = {
+        title: 'Competition details',
+        id_label: 'ID',
+        status_label: 'Status',
+        name_label: 'Name',
+        season_label: 'Season',
+        clubs_count_label: 'Clubs',
+        matches_played_label: 'Matches played',
+        matches_total_label: 'Total matches',
+        available_actions: 'Available actions',
+        view_matches: 'View matches',
+        reports: 'Reports',
+        close: 'Close'
+    };
 
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';

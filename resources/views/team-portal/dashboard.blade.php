@@ -323,7 +323,7 @@
                                 <span class="text-white text-lg">⚽</span>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-900">{{ $team->name ?? 'Équipe sans nom' }}</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $team->name ?? __('Équipe sans nom') }}</p>
                                 <p class="text-xs text-gray-500">{{ $team->category ?? 'Catégorie N/A' }} - {{ $team->club->name ?? 'Club N/A' }}</p>
                             </div>
                         </div>

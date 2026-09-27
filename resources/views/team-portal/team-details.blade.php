@@ -153,8 +153,8 @@
                                 <span class="text-white text-lg">⚽</span>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-900">{{ $match->home_team ?? 'Équipe Domicile' }} vs {{ $match->away_team ?? 'Équipe Extérieur' }}</p>
-                                <p class="text-xs text-gray-500">{{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('d/m/Y') : 'Date N/A' }}</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $match->home_team ?? __('Équipe Domicile') }} vs {{ $match->away_team ?? __('Équipe Extérieur') }}</p>
+                                <p class="text-xs text-gray-500">{{ $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('d/m/Y') : __('Date N/A') }}</p>
                             </div>
                         </div>
                         <div class="text-right">

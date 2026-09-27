@@ -48,7 +48,7 @@
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            {{ $players->total() }} joueurs enregistrés
+                            {{ $players->total() }} {{ __('joueurs enregistrés') }}
                         </div>
                     </div>
                 </div>

@@ -1957,5 +1957,13 @@
   "Gestion de la comptabilité et des finances pour": "Accounting and finance management for",
   "✅ Disponible": "✅ Available",
   "✅ Connecté": "✅ Connected",
-  "✅ Terminé": "✅ Completed"
+  "✅ Terminé": "✅ Completed",
+  "Système hors ligne": "System offline",
+  "FIFA Connecté": "FIFA connected",
+  "FIFA Non connecté": "FIFA not connected",
+  "Synchronisé": "Synchronized",
+  "Échec": "Failed",
+  "Sélectionnez les utilisateurs auxquels vous voulez appliquer ce rôle et ses permissions.": "Select the users to whom you want to apply this role and its permissions.",
+  "Permissions qui seront appliquées :": "Permissions that will be applied:",
+  "Appliquer le rôle:": "Apply role:"
 }

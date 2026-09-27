@@ -41,11 +41,11 @@
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 {{ $connectivity['connected'] ? 'bg-green-500' : 'bg-red-500' }} rounded-full mr-2"></span>
-                            {{ $connectivity['connected'] ? 'Système opérationnel' : 'Système hors ligne' }}
+                            {{ $connectivity['connected'] ? __('Système opérationnel') : __('Système hors ligne') }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 {{ $connectivity['connected'] ? 'bg-blue-500' : 'bg-gray-500' }} rounded-full mr-2"></span>
-                            {{ $connectivity['connected'] ? 'FIFA Connecté' : 'FIFA Non connecté' }}
+                            {{ $connectivity['connected'] ? __('FIFA Connecté') : __('FIFA Non connecté') }}
                         </div>
                     </div>
                 </div>
@@ -121,7 +121,7 @@
                             <div>
                                 <p class="font-medium {{ $confederation->fifa_sync_status === 'synced' ? 'text-green-900' : ($confederation->fifa_sync_status === 'failed' ? 'text-red-900' : 'text-yellow-900') }}">{{ $confederation->name }}</p>
                                 <p class="text-sm {{ $confederation->fifa_sync_status === 'synced' ? 'text-green-700' : ($confederation->fifa_sync_status === 'failed' ? 'text-red-700' : 'text-yellow-700') }}">
-                                    {{ $confederation->fifa_sync_status === 'synced' ? 'Synchronisé' : ($confederation->fifa_sync_status === 'failed' ? 'Échec' : 'En attente') }}
+                                    {{ $confederation->fifa_sync_status === 'synced' ? __('Synchronisé') : ($confederation->fifa_sync_status === 'failed' ? __('Échec') : __('En attente')) }}
                                     @if($confederation->fifa_sync_date)
                                         - {{ $confederation->fifa_sync_date->diffForHumans() }}
                                     @endif

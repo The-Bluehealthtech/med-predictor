@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gestion des Rôles')
+@section('title', __('Gestion des Rôles'))
 
 @section('content')
 <div class="py-12">
@@ -193,11 +193,11 @@ function applyRoleToUsers(roleKey) {
     document.getElementById('applyRoleContent').innerHTML = `
         <div class="mb-4">
             <p class="text-sm text-gray-600 mb-4">
-                Sélectionnez les utilisateurs auxquels vous voulez appliquer ce rôle et ses permissions.
+                {{ __('Sélectionnez les utilisateurs auxquels vous voulez appliquer ce rôle et ses permissions.') }}
             </p>
             
             <div class="mb-4">
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Permissions qui seront appliquées :</h4>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ __('Permissions qui seront appliquées :') }}</h4>
                 <div class="grid grid-cols-2 gap-2">
                     ${role.permissions.map(permission => `
                         <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded">

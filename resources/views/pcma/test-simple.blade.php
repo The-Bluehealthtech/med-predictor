@@ -70,7 +70,7 @@
         recognition.onstart = function() {
             console.log("🎤 Reconnaissance vocale démarrée");
             isListening = true;
-            document.getElementById("voice-status").textContent = "🎤 Écoute en cours...";
+            document.getElementById("voice-status").textContent = @json(__("🎤 Écoute en cours..."));
             document.getElementById("voice-status").className = "text-green-600 font-semibold";
             
             // Afficher/masquer les boutons
@@ -162,7 +162,7 @@
         if (recognition) {
             recognition.stop();
         }
-        document.getElementById("voice-status").textContent = "⏸️ Reconnaissance arrêtée";
+        document.getElementById("voice-status").textContent = @json(__("⏸️ Reconnaissance arrêtée"));
         document.getElementById("voice-status").className = "text-yellow-600 font-semibold";
         
         // Afficher/masquer les boutons

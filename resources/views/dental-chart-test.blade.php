@@ -170,7 +170,7 @@
     </div>
     
     <div class="feedback" id="feedback">
-        <h4>✅ Feedback Interactif</h4>
+        <h4>{{ __("✅ Feedback Interactif") }}</h4>
         <p><strong>{{ __('Dent sélectionnée :') }}</strong> <span id="selected-tooth">{{ __('competitions.engagements_clubs_page.csv_no_competition') }}</span></p>
         <p><strong>{{ __('competitions.discipline_sanctions_page.view_status_label') }}</strong> <span id="tooth-status">{{ __('En attente de sélection') }}</span></p>
     </div>

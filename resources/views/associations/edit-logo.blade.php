@@ -42,7 +42,7 @@
             
             <!-- Logo actuel -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-xl font-semibold mb-4">📸 Logo Actuel</h3>
+                <h3 class="text-xl font-semibold mb-4">{{ __("📸 Logo Actuel") }}</h3>
                 
                 <div class="space-y-4">
                     @if($association->association_logo_url)
@@ -82,7 +82,7 @@
 
             <!-- Actions -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-xl font-semibold mb-4">⚙️ Actions</h3>
+                <h3 class="text-xl font-semibold mb-4">{{ __("⚙️ Actions") }}</h3>
                 
                 <div class="space-y-4">
                     <!-- Upload de nouveau logo -->

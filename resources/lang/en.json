@@ -1872,5 +1872,10 @@
   "Unknown Competition": "Unknown competition",
   "Unknown Season": "Unknown season",
   "TBD": "TBD",
-  "N/A": "N/A"
+  "N/A": "N/A",
+  "🎤 Écoute en cours...": "🎤 Listening...",
+  "⏸️ Reconnaissance arrêtée": "⏸️ Recognition stopped",
+  "📸 Logo Actuel": "📸 Current logo",
+  "⚙️ Actions": "⚙️ Actions",
+  "✅ Feedback Interactif": "✅ Interactive feedback"
 }

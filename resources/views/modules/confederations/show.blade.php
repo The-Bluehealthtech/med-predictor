@@ -164,7 +164,7 @@
                             <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                                 <div class="flex items-center space-x-3">
                                     @if($association->association_logo_url)
-                                        <img src="{{ asset('storage/' . $association->association_logo_url) }}" 
+                                        <img src="{{ \Illuminate\Support\Str::startsWith($association->association_logo_url, ['http://', 'https://']) ? $association->association_logo_url : asset('storage/' . $association->association_logo_url) }}" 
                                              alt="Logo {{ $association->name }}" 
                                              class="h-12 w-12 object-contain rounded-lg">
                                     @else

@@ -43,7 +43,9 @@ class Confederation extends Model
     public function getLogoUrlAttribute(): ?string
     {
         if ($this->confederation_logo_url) {
-            return asset('storage/' . $this->confederation_logo_url);
+            return \Illuminate\Support\Str::startsWith($this->confederation_logo_url, ['http://', 'https://'])
+                ? $this->confederation_logo_url
+                : asset('storage/' . $this->confederation_logo_url);
         }
         
         // Logo par défaut basé sur le short_name

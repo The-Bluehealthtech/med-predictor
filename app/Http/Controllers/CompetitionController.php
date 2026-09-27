@@ -605,7 +605,9 @@ class CompetitionController extends Controller
                 ];
             })->values();
 
-            return view('competitions.association.engagements-clubs', compact('clubs'));
+            $availableCompetitions = Competition::where('status', '!=', 'cancelled')->orderBy('start_date', 'desc')->get(['id', 'name', 'season']);
+            $availableClubs = Club::orderBy('name')->get(['id', 'name']);
+            return view('competitions.association.engagements-clubs', compact('clubs', 'availableCompetitions', 'availableClubs'));
             
         } catch (\Exception $e) {
             return view('errors.database', [

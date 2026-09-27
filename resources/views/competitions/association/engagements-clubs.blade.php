@@ -177,6 +177,21 @@
     </div>
 </div>
 
+<div id="engagement-modal" class="hidden fixed inset-0 z-50 bg-black/50 items-center justify-center">
+    <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+        <h3 class="text-lg font-semibold mb-4">Engager un club dans une compétition</h3>
+        <label class="block text-sm font-medium mb-1">Club</label>
+        <select id="engagement-club" class="w-full border rounded p-2 mb-4">
+            @foreach($availableClubs as $clubOption)<option value="{{ $clubOption->id }}">{{ $clubOption->name }}</option>@endforeach
+        </select>
+        <label class="block text-sm font-medium mb-1">Compétition</label>
+        <select id="engagement-competition" class="w-full border rounded p-2 mb-4">
+            @foreach($availableCompetitions as $competitionOption)<option value="{{ $competitionOption->id }}">{{ $competitionOption->name }} — {{ $competitionOption->season }}</option>@endforeach
+        </select>
+        <div class="flex justify-end gap-2"><button onclick="closeEngagementModal()" class="px-4 py-2 bg-gray-300 rounded">Annuler</button><button onclick="submitEngagement()" class="px-4 py-2 bg-indigo-600 text-white rounded">Engager</button></div>
+    </div>
+</div>
+
 <script>
 // Actions JavaScript pour les boutons
 function exportEngagements() {
@@ -227,15 +242,13 @@ function refreshData() {
     location.reload();
 }
 
-function addNewEngagement() {
-    const clubId = prompt('ID du club à engager :');
-    const competitionId = prompt('ID de la compétition cible :');
-    if (!clubId || !competitionId) return;
-    fetch('{{ route("competitions.association.engage-club") }}', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json'},
-        body: JSON.stringify({club_id: clubId, competition_id: competitionId})
-    }).then(r => r.json()).then(data => { alert(data.message || data.error); if (data.success) location.reload(); });
+function addNewEngagement() { document.getElementById('engagement-modal').classList.remove('hidden'); document.getElementById('engagement-modal').classList.add('flex'); }
+function closeEngagementModal() { document.getElementById('engagement-modal').classList.add('hidden'); document.getElementById('engagement-modal').classList.remove('flex'); }
+function submitEngagement() {
+    const clubId = document.getElementById('engagement-club').value;
+    const competitionId = document.getElementById('engagement-competition').value;
+    fetch('{{ route("competitions.association.engage-club") }}', {method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content,'Accept':'application/json'}, body:JSON.stringify({club_id:clubId, competition_id:competitionId})})
+      .then(r=>r.json()).then(data=>{ alert(data.message || data.error); if(data.success) location.reload(); });
 }
 
 function viewClubDetails(clubId) {

@@ -429,7 +429,7 @@ class CompetitionController extends Controller
                 return [
                     'id' => $competition->id,
                     'nom' => $competition->name,
-                    'saison' => $competition->season ?? 'N/A',
+                    'saison' => $competition->getRawOriginal('season') ?? ($competition->season?->name ?? 'N/A'),
                     'statut' => $competition->status ?? null,
                     'statut_label' => $statusLabels[$competition->status] ?? $unknownStatus,
                     'nb_clubs' => $nbClubs,

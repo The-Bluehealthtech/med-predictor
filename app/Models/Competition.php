@@ -27,6 +27,7 @@ class Competition extends Model
         'eligibility_rules',
         'start_date',
         'end_date',
+        'season',
         'main_stadium',
         'responsible_person',
         'contact_email',

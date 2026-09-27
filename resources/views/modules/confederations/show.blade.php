@@ -274,7 +274,7 @@
                     }, 2000);
                 } else {
                     // Erreur
-                    button.innerHTML = '❌ Erreur';
+                    button.innerHTML = @json(__('❌ Erreur'));
                     button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
                     button.classList.add('bg-red-600');
                     
@@ -289,7 +289,7 @@
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                button.innerHTML = '❌ Erreur réseau';
+                button.innerHTML = @json(__('❌ Erreur réseau'));
                 button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
                 button.classList.add('bg-red-600');
                 

@@ -2000,5 +2000,8 @@
   "Erreur lors de la recherche": "Error during search",
   "Aucun joueur disponible pour la navigation": "No players available for navigation",
   "Erreur lors de la navigation:": "Navigation error:",
-  "Erreur": "Error"
+  "Erreur": "Error",
+  "❌ Erreur": "❌ Error",
+  "Erreur lors du test": "Error during test",
+  "Erreur lors de l’analyse": "Error during analysis"
 }

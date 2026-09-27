@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 geminiAnalysisResults.classList.remove('hidden');
                 
             } else {
-                throw new Error(result.message || 'Erreur lors du test');
+                throw new Error(result.message || __('Erreur lors du test'));
             }
 
         } catch (error) {
@@ -435,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 geminiAnalysisResults.classList.remove('hidden');
                 
             } else {
-                throw new Error(result.message || 'Erreur lors de l\'analyse');
+                throw new Error(result.message || __('Erreur lors de l’analyse'));
             }
 
         } catch (error) {
@@ -492,7 +492,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 geminiAnalysisResults.classList.remove('hidden');
                 
             } else {
-                throw new Error(result.message || 'Erreur lors de l\'analyse');
+                throw new Error(result.message || __('Erreur lors de l’analyse'));
             }
 
         } catch (error) {

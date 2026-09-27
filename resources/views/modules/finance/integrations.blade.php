@@ -282,7 +282,7 @@ async function testConnection(software) {
             showNotification(@json(__('Connexion réussie avec ')) + software, 'success');
         } else {
             // Erreur
-            button.textContent = '❌ Erreur';
+            button.textContent = @json(__('❌ Erreur'));
             button.classList.remove('border-gray-300', 'text-gray-700');
             button.classList.add('border-red-500', 'text-red-700', 'bg-red-50');
             
@@ -292,7 +292,7 @@ async function testConnection(software) {
         
     } catch (error) {
         console.error('Erreur lors du test de connexion:', error);
-        button.textContent = '❌ Erreur';
+        button.textContent = @json(__('❌ Erreur'));
         button.classList.remove('border-gray-300', 'text-gray-700');
         button.classList.add('border-red-500', 'text-red-700', 'bg-red-50');
         
@@ -367,7 +367,7 @@ async function syncData(software, type) {
             
             showNotification(`Synchronisation ${type} réussie avec ${software}`, 'success');
         } else {
-            button.textContent = '❌ Erreur';
+            button.textContent = @json(__('❌ Erreur'));
             button.classList.remove('border-gray-300', 'text-gray-700');
             button.classList.add('border-red-500', 'text-red-700', 'bg-red-50');
             
@@ -376,7 +376,7 @@ async function syncData(software, type) {
         
     } catch (error) {
         console.error('Erreur lors de la synchronisation:', error);
-        button.textContent = '❌ Erreur';
+        button.textContent = @json(__('❌ Erreur'));
         button.classList.remove('border-gray-300', 'text-gray-700');
         button.classList.add('border-red-500', 'text-red-700', 'bg-red-50');
         

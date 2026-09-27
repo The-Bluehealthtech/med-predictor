@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Fixtures - Association')
+@section('title', __('competitions.association_fixtures_page.page_title'))
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900">
@@ -10,18 +10,18 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold text-white mb-2">
-                        📅 Fixtures des Compétitions
+                        📅 {{ __('competitions.association_fixtures_page.page_title') }}
                     </h1>
                     <p class="text-blue-200">
-                        Calendrier et matchs de toutes les compétitions
+                        {{ __('competitions.association_fixtures_page.subtitle') }}
                     </p>
                 </div>
                 <div class="flex space-x-3">
                     <a href="{{ route('competitions.association.supervision') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        ← Retour
+                        ← {{ __('competitions.association_fixtures_page.back_button') }}
                     </a>
                     <button onclick="exportFixtures()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        📥 Exporter
+                        📥 {{ __('competitions.association_fixtures_page.export_button') }}
                     </button>
                 </div>
             </div>
@@ -33,29 +33,29 @@
                 <div class="flex-1">
                     <input type="text" 
                            id="searchInput"
-                           placeholder="Rechercher un match..." 
+                           placeholder="{{ __('competitions.association_fixtures_page.search_placeholder') }}"
                            class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="flex gap-2">
                     <select id="competitionFilter" class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Toutes les compétitions</option>
+                        <option value="">{{ __('competitions.association_fixtures_page.all_competitions_option') }}</option>
                         @foreach($competitions as $competition)
                             <option value="{{ $competition->name }}">{{ $competition->name }}</option>
                         @endforeach
                     </select>
                     <select id="statusFilter" class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Tous les statuts</option>
-                        <option value="Terminé">Terminé</option>
-                        <option value="À venir">À venir</option>
+                        <option value="">{{ __('competitions.fixtures_page.all_statuses') }}</option>
+                        <option value="{{ __('competitions.fixtures_page.status_completed') }}">{{ __('competitions.fixtures_page.status_completed') }}</option>
+                        <option value="{{ __('competitions.fixtures_page.status_upcoming') }}">{{ __('competitions.fixtures_page.status_upcoming') }}</option>
                     </select>
                     <select id="journeeFilter" class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Toutes les journées</option>
+                        <option value="">{{ __('competitions.fixtures_page.all_matchdays') }}</option>
                         @for($i = 1; $i <= 30; $i++)
-                            <option value="{{ $i }}">Journée {{ $i }}</option>
+                            <option value="{{ $i }}">{{ __('competitions.fixtures_page.matchday_label') }} {{ $i }}</option>
                         @endfor
                     </select>
                     <button onclick="clearFilters()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        ❌ Effacer
+                        ❌ {{ __('competitions.association_fixtures_page.clear_filters_button') }}
                     </button>
                 </div>
             </div>
@@ -64,11 +64,11 @@
         <!-- Liste des Fixtures -->
         @if(isset($paginatedFixtures) && $paginatedFixtures->count() > 0)
             @foreach($paginatedFixtures as $journee)
-                <div class="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 overflow-hidden mb-6">
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 overflow-hidden mb-6" data-competition="{{ $journee['competition'] }}">
                     <div class="p-6 border-b border-white/20 bg-gradient-to-r from-blue-600/20 to-purple-600/20">
                         <div class="flex items-center justify-between">
                             <h3 class="text-xl font-semibold text-white">
-                                📅 Journée {{ $journee['journee'] }} - Championnat Tunisien
+                                📅 {{ __('competitions.fixtures_page.matchday_label') }} {{ $journee['journee'] }} - {{ $journee['competition'] }}
                             </h3>
                             <div class="text-sm text-gray-300">
                                 🕐 {{ $journee['date']->format('d/m/Y') }}
@@ -80,12 +80,12 @@
                         <table class="w-full">
                             <thead class="bg-white/5">
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Heure</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Match</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Stade</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Résultat</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Arbitre</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Actions</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.association_fixtures_page.col_time') }}</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.association_fixtures_page.col_match') }}</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.association_fixtures_page.col_stadium') }}</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.association_fixtures_page.col_result') }}</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.association_fixtures_page.col_referee') }}</th>
+                                    <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.association_fixtures_page.col_actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-white/10">
@@ -113,7 +113,7 @@
                                             {{ $match['stade'] }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            @if($match['statut'] === 'Terminé')
+                                            @if($match['statut_code'] === 'completed')
                                                 <div class="flex items-center space-x-1">
                                                     <span class="text-lg font-bold text-white">{{ $match['buts_domicile'] }}</span>
                                                     <span class="text-blue-300">-</span>
@@ -131,18 +131,18 @@
                                                                                         <div class="flex space-x-2">
                                                 <button onclick="event.stopPropagation(); viewMatchDetails({{ $match['id'] }})" 
                                                         class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors"
-                                                        title="Voir détails">
-                                                    👁️ Détails
+                                                        title="{{ __('competitions.association_fixtures_page.details_button_title') }}">
+                                                    👁️ {{ __('competitions.association_fixtures_page.details_button') }}
                                                 </button>
                                                 <button onclick="event.stopPropagation(); viewMatchSheet({{ $match['id'] }})" 
                                                         class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors"
-                                                        title="Feuille de match">
-                                                    📋 Feuille
+                                                        title="{{ __('competitions.association_fixtures_page.match_sheet_button_title') }}">
+                                                    📋 {{ __('competitions.association_fixtures_page.match_sheet_button') }}
                                                 </button>
                                                 <button onclick="event.stopPropagation(); editMatch({{ $match['id'] }})" 
                                                         class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-xs transition-colors"
-                                                        title="Modifier le match">
-                                                    ✏️ Modifier
+                                                        title="{{ __('competitions.association_fixtures_page.edit_button_title') }}">
+                                                    ✏️ {{ __('competitions.association_fixtures_page.edit_button') }}
                                                 </button>
                                             </div>
                                         </td>
@@ -158,8 +158,7 @@
             <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                 <div class="flex items-center justify-between">
                     <div class="text-sm text-gray-300">
-                        Affichage de {{ $paginatedFixtures->firstItem() }} à {{ $paginatedFixtures->lastItem() }} 
-                        sur {{ $paginatedFixtures->total() }} journées
+                        {{ __('competitions.association_fixtures_page.pagination_showing', ['first' => $paginatedFixtures->firstItem(), 'last' => $paginatedFixtures->lastItem(), 'total' => $paginatedFixtures->total()]) }}
                     </div>
                     <div class="flex space-x-2">
                         {{ $paginatedFixtures->links() }}
@@ -171,9 +170,9 @@
                 <div class="bg-gray-500/20 p-6 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
                     <i class="fas fa-calendar text-gray-400 text-3xl"></i>
                 </div>
-                <h3 class="text-lg font-medium text-white mb-2">Aucune fixture trouvée</h3>
+                <h3 class="text-lg font-medium text-white mb-2">{{ __('competitions.association_fixtures_page.empty_state_title') }}</h3>
                 <p class="text-blue-200 mb-6">
-                    Il n'y a actuellement aucune fixture programmée.
+                    {{ __('competitions.association_fixtures_page.empty_state_text') }}
                 </p>
             </div>
         @endif
@@ -181,7 +180,17 @@
 </div>
 
 <script>
-// Fonctions pour les boutons d'action
+const FIXTURES_STATUS_COMPLETED_LABEL = @json(__('competitions.fixtures_page.status_completed'));
+const FIXTURES_STATUS_UPCOMING_LABEL = @json(__('competitions.fixtures_page.status_upcoming'));
+const FIXTURES_HOME_TEAM_FALLBACK = @json(__('competitions.fixtures_page.home_club_fallback'));
+const FIXTURES_AWAY_TEAM_FALLBACK = @json(__('competitions.fixtures_page.away_club_fallback'));
+const FIXTURES_UNKNOWN_DATE_FALLBACK = @json(__('competitions.association_fixtures_page.fallback_unknown_date'));
+const FIXTURES_UNKNOWN_TIME_FALLBACK = @json(__('competitions.association_fixtures_page.fallback_unknown_time'));
+const FIXTURES_UNKNOWN_STADIUM_FALLBACK = @json(__('competitions.association_fixtures_page.fallback_unknown_stadium'));
+const FIXTURES_UNKNOWN_REFEREE_FALLBACK = @json(__('competitions.association_fixtures_page.fallback_unknown_referee'));
+const FIXTURES_MATCHDAY_LABEL = @json(__('competitions.fixtures_page.matchday_label'));
+
+// Fonctions pour les boutons d\'action
 function viewMatchDetails(matchId) {
     console.log('viewMatchDetails called with ID:', matchId);
     showMatchModal(matchId, 'details');
@@ -190,7 +199,13 @@ function viewMatchDetails(matchId) {
 function viewMatchSheet(matchId) {
     console.log('viewMatchSheet called with ID:', matchId);
     // Rediriger vers la vraie feuille de match
-    const url = `{{ route('test.feuille-match', 'PLACEHOLDER') }}`.replace('PLACEHOLDER', matchId);
+    // NOTE (audit factice -> reel, 2026-09) : 'test.feuille-match' n'est
+    // le nom d'aucune route enregistree (voir routes/web.php) - route()
+    // levait donc une RouteNotFoundException au rendu de CETTE PAGE, a
+    // chaque chargement (pas seulement au clic sur le bouton), quel que
+    // soit le contenu de $paginatedFixtures. Remplace par la vraie route
+    // nommee cote association.
+    const url = `{{ route('competitions.association.feuille-match', 'PLACEHOLDER') }}`.replace('PLACEHOLDER', matchId);
     console.log('Redirecting to:', url);
     window.location.href = url;
 }
@@ -208,11 +223,17 @@ function editMatch(matchId) {
 function exportFixtures() {
     const tables = document.querySelectorAll('table');
     if (!tables.length) {
-        showNotification("Aucun match à exporter.", 'error');
+        showNotification(@json(__('competitions.association_fixtures_page.js_export_no_matches')), 'error');
         return;
     }
 
-    let csvContent = "Match,Heure,Stade,Résultat,Arbitre\n";
+    let csvContent = [
+        @json(__('competitions.association_fixtures_page.csv_col_match')),
+        @json(__('competitions.association_fixtures_page.csv_col_time')),
+        @json(__('competitions.association_fixtures_page.csv_col_stadium')),
+        @json(__('competitions.association_fixtures_page.csv_col_result')),
+        @json(__('competitions.association_fixtures_page.csv_col_referee'))
+    ].join(',') + '\n';
     let rowCount = 0;
 
     tables.forEach(table => {
@@ -232,7 +253,7 @@ function exportFixtures() {
     });
 
     if (rowCount === 0) {
-        showNotification("Aucun match à exporter.", 'error');
+        showNotification(@json(__('competitions.association_fixtures_page.js_export_no_matches')), 'error');
         return;
     }
 
@@ -244,7 +265,7 @@ function exportFixtures() {
     a.click();
     window.URL.revokeObjectURL(url);
 
-    showNotification('Fixtures exportées avec succès !', 'success');
+    showNotification(@json(__('competitions.association_fixtures_page.js_export_success')), 'success');
 }
 
 function clearFilters() {
@@ -253,7 +274,7 @@ function clearFilters() {
     document.getElementById('statusFilter').value = '';
     document.getElementById('journeeFilter').value = '';
     filterTable();
-    showNotification('Filtres effacés !', 'success');
+    showNotification(@json(__('competitions.association_fixtures_page.js_filters_cleared')), 'success');
 }
 
 // Fonction de recherche et filtrage
@@ -292,8 +313,19 @@ function filterTable() {
         // Recherche dans le texte de la ligne
         const matchesSearch = !searchTerm || matchText.includes(searchTerm.toLowerCase());
         
-        // Filtre par compétition - pour l'instant on accepte tous les matchs car ils sont tous du même championnat
-        const matchesCompetition = !competitionValue || true; // Tous les matchs sont du championnat tunisien
+        // Trouver la carte de journée parente (utilisee pour le filtre competition ET journée)
+        const journeeCard = row.closest('.bg-white\\/10');
+
+        // Filtre par compétition - NOTE (audit factice -> reel, 2026-09) : ce filtre
+        // acceptait auparavant systematiquement tous les matchs ("ils sont tous du
+        // meme championnat"), ce qui n'est vrai que si l'association ne gere qu'une
+        // seule competition. Chaque carte de journée porte maintenant le vrai nom de
+        // sa competition (data-competition), issu de
+        // CompetitionController::getFixturesFromDatabase.
+        let matchesCompetition = true;
+        if (competitionValue) {
+            matchesCompetition = journeeCard ? journeeCard.dataset.competition === competitionValue : false;
+        }
         
         // Filtre par statut - vérifier si le statut correspond
         const matchesStatus = !statusValue || status.toLowerCase().includes(statusValue.toLowerCase());
@@ -301,13 +333,11 @@ function filterTable() {
         // Filtre par journée - vérifier si la ligne appartient à la journée sélectionnée
         let matchesJournee = true;
         if (journeeValue) {
-            // Trouver la carte de journée parente
-            const journeeCard = row.closest('.bg-white\\/10');
             if (journeeCard) {
                 const journeeTitle = journeeCard.querySelector('h3');
                 if (journeeTitle) {
                     const journeeText = journeeTitle.textContent;
-                    matchesJournee = journeeText.includes(`Journée ${journeeValue}`);
+                    matchesJournee = journeeText.includes(`${FIXTURES_MATCHDAY_LABEL} ${journeeValue}`);
                 }
             }
         }
@@ -323,7 +353,7 @@ function filterTable() {
     });
     
     // Afficher le nombre de résultats
-    showNotification(`${visibleCount} matchs sur ${totalCount} affichés`, 'success');
+    showNotification(@json(__('competitions.association_fixtures_page.js_filter_results')).replace(':count', visibleCount).replace(':total', totalCount), 'success');
 }
 
 // Fonction pour afficher une modal de match
@@ -333,13 +363,13 @@ function showMatchModal(matchId, type) {
     
     let matchData = {
         id: matchId,
-        domicile: 'Équipe Domicile',
-        exterieur: 'Équipe Extérieur',
-        date: 'Date inconnue',
-        heure: 'Heure inconnue',
-        stade: 'Stade inconnu',
-        statut: 'À venir',
-        arbitre: 'Arbitre inconnu',
+        domicile: FIXTURES_HOME_TEAM_FALLBACK,
+        exterieur: FIXTURES_AWAY_TEAM_FALLBACK,
+        date: FIXTURES_UNKNOWN_DATE_FALLBACK,
+        heure: FIXTURES_UNKNOWN_TIME_FALLBACK,
+        stade: FIXTURES_UNKNOWN_STADIUM_FALLBACK,
+        statut: FIXTURES_STATUS_UPCOMING_LABEL,
+        arbitre: FIXTURES_UNKNOWN_REFEREE_FALLBACK,
         score: '-'
     };
     
@@ -375,9 +405,9 @@ function showMatchModal(matchId, type) {
                 if (resultatText !== '-') {
                     // Nettoyer le score en supprimant les espaces et caractères invisibles
                     matchData.score = resultatText.replace(/\s+/g, ' ').trim();
-                    matchData.statut = 'Terminé';
+                    matchData.statut = FIXTURES_STATUS_COMPLETED_LABEL;
                 } else {
-                    matchData.statut = 'À venir';
+                    matchData.statut = FIXTURES_STATUS_UPCOMING_LABEL;
                 }
             }
             
@@ -390,12 +420,12 @@ function showMatchModal(matchId, type) {
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
     
-    const title = type === 'edit' ? 'Modifier le Match' : 'Détails du Match';
+    const title = type === 'edit' ? @json(__('competitions.association_fixtures_page.modal_edit_title')) : @json(__('competitions.association_fixtures_page.modal_details_title'));
     const actionButton = type === 'edit' ? 
-        '<button onclick="saveMatch(' + matchId + ')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Sauvegarder</button>' :
-        '<button onclick="viewMatchSheet(' + matchId + ')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Voir Feuille</button>';
+        '<button onclick="saveMatch(' + matchId + ')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">' + @json(__('competitions.association_fixtures_page.modal_save_button')) + '</button>' :
+        '<button onclick="viewMatchSheet(' + matchId + ')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">' + @json(__('competitions.association_fixtures_page.modal_view_sheet_button')) + '</button>';
     
-    const statutClass = matchData.statut.includes('Terminé') ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+    const statutClass = matchData.statut.includes(FIXTURES_STATUS_COMPLETED_LABEL) ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
     
     modal.innerHTML = `
         <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -408,39 +438,39 @@ function showMatchModal(matchId, type) {
             <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">ID Match</label>
+                        <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.association_fixtures_page.modal_id_label'))}</label>
                         <p class="text-lg font-semibold text-blue-600">${matchData.id}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Statut</label>
+                        <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.fixtures_page.status_label'))}</label>
                         <span class="inline-block px-3 py-1 rounded-full text-sm ${statutClass}">${matchData.statut}</span>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Match</label>
+                    <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.association_fixtures_page.modal_match_label'))}</label>
                     <p class="text-lg font-semibold">${matchData.domicile} vs ${matchData.exterieur}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Heure</label>
+                    <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.association_fixtures_page.modal_time_label'))}</label>
                     <p class="text-lg">${matchData.heure}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Stade</label>
+                    <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.association_fixtures_page.modal_stadium_label'))}</label>
                     <p class="text-lg">${matchData.stade}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Arbitre Principal</label>
+                    <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.association_fixtures_page.modal_referee_label'))}</label>
                     <p class="text-lg">${matchData.arbitre}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Score</label>
+                    <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.association_fixtures_page.modal_score_label'))}</label>
                     <p class="text-2xl font-bold text-blue-600">${matchData.score}</p>
                 </div>
                 <div class="pt-4 border-t">
                     <div class="flex justify-end space-x-2">
                         ${actionButton}
                         <button onclick="closeModal(this.closest('.fixed'))" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
-                            Fermer
+                            {{ __('competitions.association_fixtures_page.modal_close_button') }}
                         </button>
                     </div>
                 </div>
@@ -464,7 +494,7 @@ function closeModal(button) {
 // ce soit a enregistrer. Aucune edition reelle des matchs n'est disponible
 // depuis cette page pour le moment.
 function saveMatch(matchId) {
-    showNotification("La modification des matchs n'est pas encore disponible depuis cette page.", 'error');
+    showNotification(@json(__('competitions.association_fixtures_page.js_save_match_unavailable')), 'error');
     closeModal(event.target.closest('.fixed'));
 }
 

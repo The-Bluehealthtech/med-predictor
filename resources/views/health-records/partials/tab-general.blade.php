@@ -1,12 +1,12 @@
 <!-- Onglet: Informations Générales -->
 <div class="space-y-6">
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-blue-900 mb-4">👤 Informations du Patient</h3>
+        <h3 class="text-lg font-semibold text-blue-900 mb-4">{{ __('pcma.report_patient_info_title') }}</h3>
         
         <!-- Player Selection -->
         <div class="mb-6">
             <label for="player_id" class="block text-sm font-medium text-gray-700 mb-2">
-                Joueur *
+                {{ __('health_records_edit.player') }}
             </label>
             <select 
                 id="player_id" 
@@ -14,7 +14,7 @@
                 required
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-                <option value="">Sélectionner un joueur</option>
+                <option value="">{{ __('health_records_edit.select_a_player') }}</option>
                 @foreach($players as $player)
                     <option value="{{ $player->id }}" {{ old('player_id') == $player->id ? 'selected' : '' }}>
                         {{ $player->name }} ({{ $player->club->name ?? 'N/A' }})
@@ -27,7 +27,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
                 <label for="visit_date" class="block text-sm font-medium text-gray-700 mb-2">
-                    Date de Visite *
+                    {{ __('health_records_edit.visit_date') }}
                 </label>
                 <input 
                     type="date" 
@@ -41,7 +41,7 @@
             
             <div>
                 <label for="doctor_name" class="block text-sm font-medium text-gray-700 mb-2">
-                    Médecin *
+                    {{ __('health_records_edit.doctor') }}
                 </label>
                 <input 
                     type="text" 
@@ -49,14 +49,14 @@
                     name="doctor_name" 
                     value="{{ old('doctor_name') }}"
                     required
-                    placeholder="Nom du médecin"
+                    placeholder="{{ __('health_records_edit.doctor_s_name') }}"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
             </div>
             
             <div>
                 <label for="visit_type" class="block text-sm font-medium text-gray-700 mb-2">
-                    Type de Visite *
+                    {{ __('health_records_edit.visit_type') }}
                 </label>
                 <select 
                     id="visit_type" 
@@ -64,14 +64,14 @@
                     required
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                    <option value="">Sélectionner le type de visite</option>
+                    <option value="">{{ __('health_records_create.select_visit_type_placeholder') }}</option>
                     <option value="consultation" {{ old('visit_type') == 'consultation' ? 'selected' : '' }}>Consultation</option>
-                    <option value="emergency" {{ old('visit_type') == 'emergency' ? 'selected' : '' }}>Urgence</option>
-                    <option value="follow_up" {{ old('visit_type') == 'follow_up' ? 'selected' : '' }}>Suivi</option>
-                    <option value="pre_season" {{ old('visit_type') == 'pre_season' ? 'selected' : '' }}>Pré-saison</option>
-                    <option value="pcma" {{ old('visit_type') == 'pcma' ? 'selected' : '' }}>PCMA (Évaluation Capacité Physique)</option>
+                    <option value="emergency" {{ old('visit_type') == 'emergency' ? 'selected' : '' }}>{{ __('health_records.show_page.visit_type_emergency') }}</option>
+                    <option value="follow_up" {{ old('visit_type') == 'follow_up' ? 'selected' : '' }}>{{ __('health_records.show_page.visit_type_follow_up') }}</option>
+                    <option value="pre_season" {{ old('visit_type') == 'pre_season' ? 'selected' : '' }}>{{ __('health_records.show_page.visit_type_pre_season') }}</option>
+                    <option value="pcma" {{ old('visit_type') == 'pcma' ? 'selected' : '' }}>{{ __('health_records_create.visit_type_pcma') }}</option>
                     <option value="post_match" {{ old('visit_type') == 'post_match' ? 'selected' : '' }}>Post-match</option>
-                    <option value="rehabilitation" {{ old('visit_type') == 'rehabilitation' ? 'selected' : '' }}>Rééducation</option>
+                    <option value="rehabilitation" {{ old('visit_type') == 'rehabilitation' ? 'selected' : '' }}>{{ __('health_records.show_page.visit_type_rehabilitation') }}</option>
                 </select>
             </div>
         </div>
@@ -79,13 +79,13 @@
         <!-- Chief Complaint -->
         <div class="mt-6">
             <label for="chief_complaint" class="block text-sm font-medium text-gray-700 mb-2">
-                Motif de Consultation
+                {{ __('health_records.show_page.chief_complaint_label') }}
             </label>
             <textarea 
                 id="chief_complaint" 
                 name="chief_complaint" 
                 rows="3"
-                placeholder="Décrivez le motif principal de la consultation..."
+                placeholder="{{ __('health_records_create.chief_complaint_placeholder') }}"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >{{ old('chief_complaint') }}</textarea>
         </div>
@@ -93,12 +93,12 @@
 
     <!-- Vital Signs -->
     <div class="bg-green-50 border border-green-200 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-green-900 mb-4">💓 Signes Vitaux</h3>
+        <h3 class="text-lg font-semibold text-green-900 mb-4">{{ __('health_records_create.vital_signs_heading') }}</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
                 <label for="blood_pressure_systolic" class="block text-sm font-medium text-gray-700 mb-2">
-                    Tension Systolique (mmHg)
+                    {{ __('health_records_create.systolic_label') }}
                 </label>
                 <input 
                     type="number" 
@@ -112,7 +112,7 @@
             
             <div>
                 <label for="blood_pressure_diastolic" class="block text-sm font-medium text-gray-700 mb-2">
-                    Tension Diastolique (mmHg)
+                    {{ __('health_records_create.diastolic_label') }}
                 </label>
                 <input 
                     type="number" 
@@ -126,7 +126,7 @@
             
             <div>
                 <label for="heart_rate" class="block text-sm font-medium text-gray-700 mb-2">
-                    Fréquence Cardiaque (bpm)
+                    {{ __('health_records_edit.heart_rate_bpm') }}
                 </label>
                 <input 
                     type="number" 
@@ -143,7 +143,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
             <div>
                 <label for="temperature" class="block text-sm font-medium text-gray-700 mb-2">
-                    Température (°C)
+                    {{ __('health_records.show_page.temperature_label') }}
                 </label>
                 <input 
                     type="number" 
@@ -157,7 +157,7 @@
             
             <div>
                 <label for="weight" class="block text-sm font-medium text-gray-700 mb-2">
-                    Poids (kg)
+                    {{ __('health_records.show_page.weight_label') }}
                 </label>
                 <input 
                     type="number" 
@@ -171,7 +171,7 @@
             
             <div>
                 <label for="height" class="block text-sm font-medium text-gray-700 mb-2">
-                    Taille (cm)
+                    {{ __('health_records.show_page.height_label') }}
                 </label>
                 <input 
                     type="number" 
@@ -185,14 +185,14 @@
             
             <div>
                 <label for="blood_type" class="block text-sm font-medium text-gray-700 mb-2">
-                    Groupe Sanguin
+                    {{ __('health_records_edit.blood_type') }}
                 </label>
                 <select 
                     id="blood_type" 
                     name="blood_type"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                    <option value="">Sélectionner</option>
+                    <option value="">{{ __('clinical.select_button') }}</option>
                     <option value="A+" {{ old('blood_type') == 'A+' ? 'selected' : '' }}>A+</option>
                     <option value="A-" {{ old('blood_type') == 'A-' ? 'selected' : '' }}>A-</option>
                     <option value="B+" {{ old('blood_type') == 'B+' ? 'selected' : '' }}>B+</option>
@@ -208,7 +208,7 @@
 
     <!-- Medical Information -->
     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-yellow-900 mb-4">💊 Informations Médicales</h3>
+        <h3 class="text-lg font-semibold text-yellow-900 mb-4">{{ __('health_records_extra.label_8d5676ec26c7') }}</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -216,7 +216,7 @@
                     🚨 Allergies (WHO/IUIS Nomenclature)
                 </label>
                 <select id="allergies" name="allergies[]" multiple class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent" size="6">
-                    <option value="">-- Aucune allergie connue --</option>
+                    <option value="">{{ __('health_records_extra.label_575905eabd28') }}</option>
                     <optgroup label="🍽️ Allergènes Alimentaires (WHO/IUIS)">
                         <option value="f1">f1 - Egg white (Ovalbumin)</option>
                         <option value="f2">f2 - Milk (Casein)</option>
@@ -235,14 +235,14 @@
                         <option value="d3">d3 - Storage mite (Blomia tropicalis)</option>
                     </optgroup>
                 </select>
-                <p class="text-xs text-gray-500 mt-1">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs allergies</p>
+                <p class="text-xs text-gray-500 mt-1">{{ __('health_records_extra.label_5b528a804e05') }}</p>
             </div>                        
             <div>
                 <label for="medications" class="block text-sm font-medium text-gray-700 mb-2">
-                    💊 Médicaments Actuels (Vidal)
+                    {{ __('health_records_extra.label_fb38bf335424') }}
                 </label>
                 <select id="medications" name="medications[]" multiple class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent" size="6">
-                    <option value="">-- Aucun médicament --</option>
+                    <option value="">{{ __('health_records_extra.label_b45633f79e38') }}</option>
                     <optgroup label="💊 Analgésiques et Anti-inflammatoires">
                         <option value="paracetamol">Paracétamol (Doliprane, Efferalgan)</option>
                         <option value="ibuprofen">Ibuprofène (Advil, Nurofen)</option>
@@ -268,7 +268,7 @@
                         <option value="clindamycin">Clindamycine (Dalacine)</option>
                     </optgroup>
                 </select>
-                <p class="text-xs text-gray-500 mt-1">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs médicaments</p>
+                <p class="text-xs text-gray-500 mt-1">{{ __('health_records_extra.label_fa92c6841d43') }}</p>
             </div>
         </div>
 
@@ -276,27 +276,27 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div>
                 <label for="medical_history" class="block text-sm font-medium text-gray-700 mb-2">
-                    Antécédents Médicaux
+                    {{ __('pcma.medical_history_title') }}
                 </label>
                 <textarea 
                     id="medical_history" 
                     name="medical_history" 
                     rows="4"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                    placeholder="Antécédents médicaux importants..."
+                    placeholder="{{ __('health_records_edit.important_medical_history') }}"
                 >{{ old('medical_history') }}</textarea>
             </div>
             
             <div>
                 <label for="symptoms" class="block text-sm font-medium text-gray-700 mb-2">
-                    Symptômes Actuels
+                    {{ __('health_records_edit.current_symptoms') }}
                 </label>
                 <textarea 
                     id="symptoms" 
                     name="symptoms" 
                     rows="4"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                    placeholder="Symptômes rapportés par le patient..."
+                    placeholder="{{ __('health_records_edit.symptoms_reported_by_the_patient') }}"
                 >{{ old('symptoms') }}</textarea>
             </div>
         </div>

@@ -161,8 +161,8 @@
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-7xl mx-auto">
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">🏥 Nouvelle Visite Médicale</h1>
-            <p class="text-gray-600 mt-2">Enregistrer une nouvelle visite médicale - les données seront ajoutées au dossier existant du joueur</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('health_records_create.heading') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('health_records_create.subtitle') }}</p>
         </div>
 
         <form action="{{ route('health-records.store') }}" method="POST" class="space-y-8">
@@ -171,14 +171,14 @@
             @if($visit)
                 <input type="hidden" name="visit_id" value="{{ $visit->id }}">
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <h3 class="text-lg font-semibold text-blue-900 mb-2">🏥 Visite Associée</h3>
+                    <h3 class="text-lg font-semibold text-blue-900 mb-2">{{ __('health_records_extra.label_cee0aa47dcff') }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
-                            <span class="font-medium text-blue-800">Athlète:</span>
+                            <span class="font-medium text-blue-800">{{ __('pcma.report_athlete_label') }}</span>
                             <span class="text-blue-700">{{ $visit->athlete->name ?? 'N/A' }}</span>
                         </div>
                         <div>
-                            <span class="font-medium text-blue-800">Date de visite:</span>
+                            <span class="font-medium text-blue-800">{{ __('health_records_extra.label_ba85e4a12317') }}</span>
                             <span class="text-blue-700">{{ $visit->visit_date->format('d/m/Y H:i') }}</span>
                         </div>
                         <div>
@@ -186,12 +186,12 @@
                             <span class="text-blue-700">{{ ucfirst(str_replace('_', ' ', $visit->visit_type)) }}</span>
                         </div>
                         <div>
-                            <span class="font-medium text-blue-800">Médecin:</span>
+                            <span class="font-medium text-blue-800">{{ __('pcma.physician_label') }}</span>
                             <span class="text-blue-700">{{ $visit->doctor->name ?? 'Non assigné' }}</span>
                         </div>
                         @if($visit->administrative_data && isset($visit->administrative_data['complaint_data']))
                         <div class="md:col-span-2">
-                            <span class="font-medium text-blue-800">Motif de consultation:</span>
+                            <span class="font-medium text-blue-800">{{ __('health_records_extra.label_a1709a5927d0') }}</span>
                             <span class="text-blue-700">{{ $visit->administrative_data['complaint_data']['complaint'] ?? 'Non spécifié' }}</span>
                         </div>
                         @endif
@@ -205,27 +205,27 @@
                 <div class="tabs-nav">
                     <button class="tab-button" data-tab="general">
                         <span class="tab-icon">👤</span>
-                        <span class="tab-label">Informations Générales</span>
+                        <span class="tab-label">{{ __('health_records_create.tab_general') }}</span>
                     </button>
                     <button class="tab-button" data-tab="ai-assistant">
                         <span class="tab-icon">🤖</span>
-                        <span class="tab-label">Assistant IA</span>
+                        <span class="tab-label">{{ __('health_records_create.tab_ai_assistant') }}</span>
                     </button>
                     <button class="tab-button" data-tab="medical-categories">
                         <span class="tab-icon">🏥</span>
-                        <span class="tab-label">Catégories Médicales</span>
+                        <span class="tab-label">{{ __('health_records_create.tab_medical_categories') }}</span>
                     </button>
                     <button class="tab-button" data-tab="doping-control">
                         <span class="tab-icon">🧪</span>
-                        <span class="tab-label">Contrôle Anti-Dopage</span>
+                        <span class="tab-label">{{ __('health_records_create.tab_doping_control') }}</span>
                     </button>
                     <button class="tab-button" data-tab="physical-assessments">
                         <span class="tab-icon">💪</span>
-                        <span class="tab-label">Évaluations Physiques</span>
+                        <span class="tab-label">{{ __('health_records_create.tab_physical_assessments') }}</span>
                     </button>
                     <button class="tab-button" data-tab="postural-assessment">
                         <span class="tab-icon">🦴</span>
-                        <span class="tab-label">Évaluation Posturale</span>
+                        <span class="tab-label">{{ __('health_records_create.tab_postural_assessment') }}</span>
                     </button>
                     <button class="tab-button" data-tab="vaccinations">
                         <span class="tab-icon">💉</span>
@@ -233,11 +233,11 @@
                     </button>
                     <button class="tab-button" data-tab="medical-imaging">
                         <span class="tab-icon">📷</span>
-                        <span class="tab-label">Imagerie Médicale</span>
+                        <span class="tab-label">{{ __('pcma.imaging_title') }}</span>
                     </button>
                     <button class="tab-button" data-tab="notes-observations">
                         <span class="tab-icon">📝</span>
-                        <span class="tab-label">Notes et Observations</span>
+                        <span class="tab-label">{{ __('health_records_create.tab_notes_observations') }}</span>
                     </button>
                 </div>
 
@@ -297,7 +297,7 @@
                     onclick="history.back()"
                     class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
                 >
-                    ← Retour
+                    {{ __('errors.generic_back') }}
                 </button>
                 
                 <div class="flex space-x-4">
@@ -306,14 +306,14 @@
                         id="save-draft-btn"
                         class="px-6 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
                     >
-                        💾 Sauvegarder brouillon
+                        {{ __('health_records_create.save_draft_button') }}
                     </button>
                     
                     <button 
                         type="submit" 
                         class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                        ✅ Enregistrer la visite
+                        {{ __('health_records_create.save_visit_button') }}
                     </button>
                 </div>
             </div>

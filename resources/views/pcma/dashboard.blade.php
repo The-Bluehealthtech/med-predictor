@@ -8,7 +8,7 @@
         <!-- Header -->
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900">📋 PCMA Dashboard</h1>
-            <p class="text-gray-600 mt-2">Gestion des évaluations médicales pré-compétition</p>
+            <p class="text-gray-600 mt-2">{{ __('pcma_extra.label_2a2066cd9351') }}</p>
         </div>
 
         <!-- Statistics Cards -->
@@ -35,7 +35,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">En Attente</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('competitions.rapports_statistiques_page.pending') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $stats['pending_pcmas'] }}</p>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Complétés</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('pcma_extra.label_1d462fba2b2f') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $stats['completed_pcmas'] }}</p>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Échoués</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('pcma_extra.label_ff28696a1d2f') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $stats['failed_pcmas'] }}</p>
                     </div>
                 </div>
@@ -75,15 +75,15 @@
             <div class="flex space-x-4">
                 <a href="{{ route('pcma.create') }}" 
                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                    + Nouveau PCMA
+                    {{ __('pcma_extra.label_47ad15b4e542') }}
                 </a>
                 <a href="{{ route('pcma.index') }}" 
                    class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                    📋 Voir Tous les PCMAs
+                    {{ __('pcma_extra.label_6d0bc308f733') }}
                 </a>
                 <a href="{{ route('modules.index') }}" 
                    class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                    Retour aux Modules
+                    {{ __('errors.back_to_modules') }}
                 </a>
             </div>
         </div>
@@ -91,7 +91,7 @@
         <!-- Recent PCMAs -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">PCMA Récents</h2>
+                <h2 class="text-xl font-semibold text-gray-800">{{ __('pcma_extra.label_54576ae6b512') }}</h2>
             </div>
             
             <div class="p-6">
@@ -103,7 +103,7 @@
                                     <div class="flex-1">
                                         <div class="flex items-center space-x-3">
                                             <h3 class="text-lg font-medium text-gray-900">
-                                                {{ $pcma->athlete->name ?? 'Athlète inconnu' }}
+                                                {{ $pcma->athlete->name ?? __('pcma_extra.unknown_athlete') }}
                                             </h3>
                                             <span class="px-2 py-1 text-xs rounded-full {{ $pcma->status === 'completed' ? 'bg-green-100 text-green-800' : ($pcma->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
                                                 {{ ucfirst($pcma->status ?? 'pending') }}
@@ -127,11 +127,11 @@
                                     <div class="flex space-x-2">
                                         <a href="{{ route('pcma.show', $pcma) }}" 
                                            class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                            Voir
+                                            {{ __('healthcare.view') }}
                                         </a>
                                         <a href="{{ route('pcma.edit', $pcma) }}" 
                                            class="text-gray-600 hover:text-gray-800 text-sm font-medium">
-                                            Modifier
+                                            {{ __('healthcare.edit') }}
                                         </a>
                                     </div>
                                 </div>
@@ -145,11 +145,11 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun PCMA enregistré</h3>
-                        <p class="text-gray-600 mb-4">Commencez par créer votre premier PCMA.</p>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('pcma_extra.label_08e707b5e154') }}</h3>
+                        <p class="text-gray-600 mb-4">{{ __('pcma_extra.label_00f34739a43d') }}</p>
                         <a href="{{ route('pcma.create') }}" 
                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                            Créer le premier PCMA
+                            {{ __('pcma_extra.label_d1ca4cfd1223') }}
                         </a>
                     </div>
                 @endif
@@ -159,8 +159,8 @@
         <!-- Signed PCMAs with Vue.js -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden mt-8">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">📋 PCMAs Signés</h2>
-                <p class="text-sm text-gray-600 mt-1">Liste des documents médicaux signés et validés</p>
+                <h2 class="text-xl font-semibold text-gray-800">{{ __('pcma_extra.label_d285a49dffad') }}</h2>
+                <p class="text-sm text-gray-600 mt-1">{{ __('pcma_extra.label_1295b06f0f38') }}</p>
             </div>
             
             <div id="signed-pcmas-app" class="p-6">
@@ -263,7 +263,7 @@ createApp({
                         <div class="flex-1">
                             <div class="flex items-center space-x-3 mb-2">
                                 <h3 class="text-lg font-medium text-gray-900">
-                                    @{{ pcma.athlete?.name || 'Athlète inconnu' }}
+                                    <span v-if="pcma.athlete?.name">@{{ pcma.athlete.name }}</span><span v-else>{{ __('pcma_extra.unknown_athlete') }}</span>
                                 </h3>
                                 <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
                                     ✅ Signé

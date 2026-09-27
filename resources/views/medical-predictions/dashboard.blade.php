@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tableau de Bord - Prédictions Médicales - Med Predictor')
+@section('title', __('medical_predictions.dashboard_page_title'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -9,8 +9,8 @@
         <div class="mb-8">
             <div class="flex justify-between items-center">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">📊 Tableau de Bord - Prédictions Médicales</h1>
-                    <p class="text-gray-600 mt-2">Vue d'ensemble des prédictions médicales et analyses</p>
+                    <h1 class="text-3xl font-bold text-gray-900">📊 {{ __('medical_predictions.dashboard_h1') }}</h1>
+                    <p class="text-gray-600 mt-2">{{ __('medical_predictions.dashboard_subtitle') }}</p>
                 </div>
                 <div class="flex space-x-3">
                     <a href="{{ route('dashboard') }}" 
@@ -25,14 +25,14 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
-                        <span>Nouvelle Prédiction</span>
+                        <span>{{ __('medical_predictions.dashboard_new_prediction') }}</span>
                     </a>
                     <a href="{{ route('medical-predictions.index') }}" 
                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                         </svg>
-                        <span>Voir Toutes</span>
+                        <span>{{ __('medical_predictions.dashboard_view_all_link') }}</span>
                     </a>
                 </div>
             </div>
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Total Prédictions</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('medical_predictions.dashboard_total_predictions') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ $stats['total'] }}</p>
                     </div>
                 </div>
@@ -68,9 +68,9 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Risque Élevé</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('medical_predictions.dashboard_high_risk_label') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ $stats['high_risk'] }}</p>
-                        <p class="text-sm text-gray-500">{{ $stats['high_risk_percentage'] }}% du total</p>
+                        <p class="text-sm text-gray-500">{{ $stats['high_risk_percentage'] }}% {{ __('medical_predictions.dashboard_of_total') }}</p>
                     </div>
                 </div>
             </div>
@@ -86,7 +86,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Prédictions Actives</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('medical_predictions.dashboard_active_predictions') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ $stats['active'] }}</p>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Vérifiées</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('medical_predictions.dashboard_verified_label') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ $stats['verified'] }}</p>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
             <!-- Recent Predictions -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800">Prédictions Récentes</h2>
+                    <h2 class="text-xl font-semibold text-gray-800">{{ __('medical_predictions.dashboard_recent_predictions_header') }}</h2>
                 </div>
                 <div class="p-6">
                     @if(count($recentPredictions) > 0)
@@ -128,7 +128,7 @@
                                                     <span class="font-medium text-gray-900">{{ $prediction['player']['first_name'] }} {{ $prediction['player']['last_name'] }}</span>
                                                     <span class="text-sm text-gray-500">({{ $prediction['player']['position'] }})</span>
                                                 @else
-                                                    <span class="text-gray-500">Joueur supprimé</span>
+                                                    <span class="text-gray-500">{{ __('medical_predictions.shared_player_deleted') }}</span>
                                                 @endif
                                             </div>
                                             <p class="text-sm text-gray-600">{{ $prediction['predicted_condition'] }}</p>
@@ -142,19 +142,19 @@
                                                    ($prediction['prediction_type'] == 'recovery_prediction' ? 'bg-yellow-100 text-yellow-800' : 'bg-purple-100 text-purple-800'))) }}">
                                                 @switch($prediction['prediction_type'])
                                                     @case('injury_risk')
-                                                        Blessure
+                                                        {{ __('medical_predictions.dashboard_type_injury_short') }}
                                                         @break
                                                     @case('performance_prediction')
-                                                        Performance
+                                                        {{ __('medical_predictions.dashboard_type_performance_short') }}
                                                         @break
                                                     @case('health_condition')
-                                                        Santé
+                                                        {{ __('medical_predictions.dashboard_type_health_short') }}
                                                         @break
                                                     @case('recovery_prediction')
-                                                        Récupération
+                                                        {{ __('medical_predictions.dashboard_type_recovery_short') }}
                                                         @break
                                                     @case('fitness_assessment')
-                                                        Forme
+                                                        {{ __('medical_predictions.dashboard_type_fitness_short') }}
                                                         @break
                                                     @default
                                                         {{ $prediction['prediction_type'] }}
@@ -175,7 +175,7 @@
                         <div class="mt-4 text-center">
                             <a href="{{ route('medical-predictions.index') }}" 
                                class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                Voir toutes les prédictions →
+                                {{ __('medical_predictions.dashboard_view_all_predictions_arrow') }}
                             </a>
                         </div>
                     @else
@@ -183,8 +183,8 @@
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                             </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune prédiction récente</h3>
-                            <p class="mt-1 text-sm text-gray-500">Commencez par créer une nouvelle prédiction.</p>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('medical_predictions.dashboard_no_recent_predictions') }}</h3>
+                            <p class="mt-1 text-sm text-gray-500">{{ __('medical_predictions.dashboard_no_recent_predictions_hint') }}</p>
                         </div>
                     @endif
                 </div>
@@ -193,7 +193,7 @@
             <!-- High Risk Predictions -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800">Prédictions à Risque Élevé</h2>
+                    <h2 class="text-xl font-semibold text-gray-800">{{ __('medical_predictions.dashboard_high_risk_header') }}</h2>
                 </div>
                 <div class="p-6">
                     @if(count($highRiskPredictions) > 0)
@@ -207,7 +207,7 @@
                                                     <span class="font-medium text-gray-900">{{ $prediction['player']['first_name'] }} {{ $prediction['player']['last_name'] }}</span>
                                                     <span class="text-sm text-gray-500">({{ $prediction['player']['position'] }})</span>
                                                 @else
-                                                    <span class="text-gray-500">Joueur supprimé</span>
+                                                    <span class="text-gray-500">{{ __('medical_predictions.shared_player_deleted') }}</span>
                                                 @endif
                                             </div>
                                             <p class="text-sm text-gray-600">{{ $prediction['predicted_condition'] }}</p>
@@ -215,7 +215,7 @@
                                         </div>
                                         <div class="flex flex-col items-end space-y-1">
                                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                                {{ round($prediction['risk_probability'] * 100) }}% Risque
+                                                {{ round($prediction['risk_probability'] * 100) }}% {{ __('medical_predictions.dashboard_risk_suffix') }}
                                             </span>
                                             <div class="flex items-center space-x-1">
                                                 <div class="w-12 bg-gray-200 rounded-full h-1">
@@ -227,7 +227,7 @@
                                     </div>
                                     @if($prediction['recommendations'])
                                         <div class="mt-3 pt-3 border-t border-red-200">
-                                            <p class="text-xs font-medium text-red-800 mb-1">Recommandations:</p>
+                                            <p class="text-xs font-medium text-red-800 mb-1">{{ __('medical_predictions.dashboard_recommendations_colon') }}</p>
                                             <ul class="text-xs text-red-700 space-y-1">
                                                 @foreach(array_slice($prediction['recommendations'], 0, 2) as $recommendation)
                                                     <li class="flex items-start space-x-1">
@@ -245,7 +245,7 @@
                             <div class="mt-4 text-center">
                                 <a href="{{ route('medical-predictions.index', ['status' => 'active']) }}" 
                                    class="text-red-600 hover:text-red-800 text-sm font-medium">
-                                    Voir toutes les prédictions à risque →
+                                    {{ __('medical_predictions.dashboard_view_all_high_risk_arrow') }}
                                 </a>
                             </div>
                         @endif
@@ -254,8 +254,8 @@
                             <svg class="mx-auto h-12 w-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune prédiction à risque élevé</h3>
-                            <p class="mt-1 text-sm text-gray-500">Excellent ! Toutes les prédictions sont dans des limites acceptables.</p>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('medical_predictions.dashboard_no_high_risk') }}</h3>
+                            <p class="mt-1 text-sm text-gray-500">{{ __('medical_predictions.dashboard_no_high_risk_hint') }}</p>
                         </div>
                     @endif
                 </div>
@@ -264,7 +264,7 @@
 
         <!-- Quick Actions -->
         <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Actions Rapides</h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ __('medical_predictions.dashboard_quick_actions_header') }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <a href="{{ route('medical-predictions.create') }}" 
                    class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
@@ -276,8 +276,8 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-sm font-medium text-gray-900">Nouvelle Prédiction</h3>
-                        <p class="text-sm text-gray-500">Générer une prédiction médicale</p>
+                        <h3 class="text-sm font-medium text-gray-900">{{ __('medical_predictions.dashboard_new_prediction') }}</h3>
+                        <p class="text-sm text-gray-500">{{ __('medical_predictions.dashboard_quick_action_new_hint') }}</p>
                     </div>
                 </a>
 
@@ -291,8 +291,8 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-sm font-medium text-gray-900">Prédictions Actives</h3>
-                        <p class="text-sm text-gray-500">Voir les prédictions en cours</p>
+                        <h3 class="text-sm font-medium text-gray-900">{{ __('medical_predictions.dashboard_active_predictions') }}</h3>
+                        <p class="text-sm text-gray-500">{{ __('medical_predictions.dashboard_quick_action_active_hint') }}</p>
                     </div>
                 </a>
 
@@ -306,8 +306,8 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-sm font-medium text-gray-900">Risques de Blessure</h3>
-                        <p class="text-sm text-gray-500">Analyser les risques</p>
+                        <h3 class="text-sm font-medium text-gray-900">{{ __('medical_predictions.dashboard_injury_risks_header') }}</h3>
+                        <p class="text-sm text-gray-500">{{ __('medical_predictions.dashboard_quick_action_injury_hint') }}</p>
                     </div>
                 </a>
             </div>

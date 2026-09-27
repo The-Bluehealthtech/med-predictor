@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Discipline & Sanctions - Association')
+@section('title', __('competitions.discipline_sanctions_page.page_title'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -8,19 +8,19 @@
         <div>
             <h1 class="text-3xl font-bold text-gray-900">
                 <i class="fas fa-gavel text-red-600 mr-3"></i>
-                Discipline & Sanctions
+                {{ __('competitions.discipline_sanctions_page.page_title') }}
             </h1>
-            <p class="text-gray-600 mt-2">Validation et gestion des sanctions disciplinaires</p>
+            <p class="text-gray-600 mt-2">{{ __('competitions.discipline_sanctions_page.subtitle') }}</p>
         </div>
         <div class="flex space-x-3">
             <button onclick="exportSanctions()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                📥 Exporter
+                📥 {{ __('competitions.discipline_sanctions_page.export_button') }}
             </button>
             <button onclick="addNewSanction()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                ➕ Nouvelle Sanction
+                ➕ {{ __('competitions.discipline_sanctions_page.add_button') }}
             </button>
             <a href="{{ route('modules.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                ← Retour aux Modules
+                ← {{ __('competitions.discipline_sanctions_page.back_button') }}
             </a>
         </div>
     </div>
@@ -33,7 +33,7 @@
                     <i class="fas fa-exclamation-triangle text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Sanctions</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.discipline_sanctions_page.stat_total_label') }}</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $sanctions->count() }}</p>
                 </div>
             </div>
@@ -45,8 +45,8 @@
                     <i class="fas fa-clock text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">En Attente</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $sanctions->where('statut', 'En attente')->count() }}</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.discipline_sanctions_page.stat_pending_label') }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $sanctions->where('statut_code', 'pending')->count() }}</p>
                 </div>
             </div>
         </div>
@@ -57,8 +57,8 @@
                     <i class="fas fa-check text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Validées</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $sanctions->where('statut', 'Validé')->count() }}</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.discipline_sanctions_page.stat_validated_label') }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $sanctions->where('statut_code', 'validated')->count() }}</p>
                 </div>
             </div>
         </div>
@@ -69,7 +69,7 @@
                     <i class="fas fa-euro-sign text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Amendes</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.discipline_sanctions_page.stat_total_fines_label') }}</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $sanctions->sum('amende') }} TND</p>
                 </div>
             </div>
@@ -79,7 +79,7 @@
     <!-- Liste des sanctions -->
     <div class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Sanctions à Valider</h2>
+            <h2 class="text-lg font-semibold text-gray-900">{{ __('competitions.discipline_sanctions_page.section_title') }}</h2>
         </div>
         
         @if($sanctions->count() > 0)
@@ -87,14 +87,14 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joueur</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Club</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Match</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amende (TND)</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Suspension</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.discipline_sanctions_page.col_player') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.discipline_sanctions_page.col_club') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.discipline_sanctions_page.col_match') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.discipline_sanctions_page.col_type') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.discipline_sanctions_page.col_status') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.discipline_sanctions_page.col_fine') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.discipline_sanctions_page.col_suspension') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.discipline_sanctions_page.col_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -110,24 +110,32 @@
                                     {{ $sanction['match'] }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($sanction['type'] === 'Carton Jaune')
+                                    @if($sanction['type_code'] === 'yellow_card')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                            🟡 Carton Jaune
+                                            {{ __('competitions.discipline_sanctions_page.type_yellow_card') }}
                                         </span>
-                                    @elseif($sanction['type'] === 'Carton Rouge')
+                                    @elseif($sanction['type_code'] === 'red_card')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                            🔴 Carton Rouge
+                                            {{ __('competitions.discipline_sanctions_page.type_red_card') }}
+                                        </span>
+                                    @elseif($sanction['type_code'] === 'disciplinary_incident')
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
+                                            {{ __('competitions.discipline_sanctions_page.type_disciplinary_incident') }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                            {{ $sanction['type'] }}
                                         </span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($sanction['statut'] === 'Validé')
+                                    @if($sanction['statut_code'] === 'validated')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                            ✅ Validé
+                                            {{ __('competitions.discipline_sanctions_page.status_validated') }}
                                         </span>
-                                    @elseif($sanction['statut'] === 'En attente')
+                                    @elseif($sanction['statut_code'] === 'pending')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
-                                            ⏳ En attente
+                                            {{ __('competitions.discipline_sanctions_page.status_pending') }}
                                         </span>
                                     @else
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
@@ -142,27 +150,28 @@
                                         <span class="text-gray-500">-</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-90
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     @if($sanction['suspension'] > 0)
-                                        <span class="text-orange-600 font-semibold">{{ $sanction['suspension'] }} jours</iment                               @else
+                                        <span class="text-orange-600 font-semibold">{{ $sanction['suspension'] }} {{ __('competitions.discipline_sanctions_page.suspension_days_unit') }}</span>
+                                    @else
                                         <span class="text-gray-500">-</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        @if($sanction['statut'] === 'En attente')
-                                                                                    <button onclick="validateSanction({{ $sanction['id'] }})" class="text-green-600 hover:text-green-900 px-2 py-1 rounded" title="Valider">
-                                            ✅ Valider
+                                        @if($sanction['statut_code'] === 'pending')
+                                        <button onclick="validateSanction({{ $sanction['id'] }})" class="text-green-600 hover:text-green-900 px-2 py-1 rounded" title="{{ __('competitions.discipline_sanctions_page.validate_button') }}">
+                                            ✅ {{ __('competitions.discipline_sanctions_page.validate_button') }}
                                         </button>
-                                        <button onclick="rejectSanction({{ $sanction['id'] }})" class="text-red-600 hover:text-red-900 px-2 py-1 rounded" title="Rejeter">
-                                            ❌ Rejeter
+                                        <button onclick="rejectSanction({{ $sanction['id'] }})" class="text-red-600 hover:text-red-900 px-2 py-1 rounded" title="{{ __('competitions.discipline_sanctions_page.reject_button') }}">
+                                            ❌ {{ __('competitions.discipline_sanctions_page.reject_button') }}
                                         </button>
                                         @endif
-                                        <button onclick="editSanction({{ $sanction['id'] }})" class="text-yellow-600 hover:text-yellow-900 px-2 py-1 rounded" title="Modifier">
-                                            ✏️ Modifier
+                                        <button onclick="editSanction({{ $sanction['id'] }})" class="text-yellow-600 hover:text-yellow-900 px-2 py-1 rounded" title="{{ __('competitions.discipline_sanctions_page.edit_button') }}">
+                                            ✏️ {{ __('competitions.discipline_sanctions_page.edit_button') }}
                                         </button>
-                                        <button onclick="viewSanction({{ $sanction['id'] }})" class="text-blue-600 hover:text-blue-900 px-2 py-1 rounded" title="Voir détails">
-                                            👁️ Voir
+                                        <button onclick="viewSanction({{ $sanction['id'] }})" class="text-blue-600 hover:text-blue-900 px-2 py-1 rounded" title="{{ __('competitions.discipline_sanctions_page.view_button_title') }}">
+                                            👁️ {{ __('competitions.discipline_sanctions_page.view_button') }}
                                         </button>
                                     </div>
                                 </td>
@@ -177,8 +186,8 @@
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune sanction</h3>
-                    <p class="mt-1 text-sm text-gray-500">Aucune sanction n'est en attente de validation.</p>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('competitions.discipline_sanctions_page.empty_state_title') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ __('competitions.discipline_sanctions_page.empty_state_text') }}</p>
                 </div>
             </div>
         @endif
@@ -191,7 +200,7 @@
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-medium text-gray-900">
-                    ✏️ Modifier la Sanction
+                    ✏️ {{ __('competitions.discipline_sanctions_page.edit_modal_title') }}
                 </h3>
                 <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
                     ✕
@@ -203,7 +212,7 @@
                 
                 <div class="mb-4">
                     <label for="editAmende" class="block text-sm font-medium text-gray-700 mb-2">
-                        Amende (TND)
+                        {{ __('competitions.discipline_sanctions_page.fine_label') }}
                     </label>
                     <input type="number" id="editAmende" name="amende" min="0" step="0.01" 
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -212,7 +221,7 @@
                 
                 <div class="mb-4">
                     <label for="editSuspension" class="block text-sm font-medium text-gray-700 mb-2">
-                        Suspension (jours)
+                        {{ __('competitions.discipline_sanctions_page.suspension_label') }}
                     </label>
                     <input type="number" id="editSuspension" name="suspension" min="0" 
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -221,21 +230,21 @@
                 
                 <div class="mb-4">
                     <label for="editMotif" class="block text-sm font-medium text-gray-700 mb-2">
-                        Motif
+                        {{ __('competitions.discipline_sanctions_page.reason_label') }}
                     </label>
                     <textarea id="editMotif" name="motif" rows="3"
                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="Détails du motif..."></textarea>
+                              placeholder="{{ __('competitions.discipline_sanctions_page.reason_placeholder') }}"></textarea>
                 </div>
                 
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="closeEditModal()" 
                             class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
-                        Annuler
+                        {{ __('competitions.discipline_sanctions_page.cancel_button') }}
                     </button>
                     <button type="button" onclick="saveSanctionChanges()" 
                             class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                        💾 Sauvegarder
+                        💾 {{ __('competitions.discipline_sanctions_page.save_button') }}
                     </button>
                 </div>
             </form>
@@ -249,7 +258,7 @@
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-medium text-gray-900">
-                    ➕ Nouvelle Sanction
+                    ➕ {{ __('competitions.discipline_sanctions_page.add_modal_title') }}
                 </h3>
                 <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600">
                     ✕
@@ -259,33 +268,33 @@
             <form id="addSanctionForm">
                 <div class="mb-4">
                     <label for="addJoueur" class="block text-sm font-medium text-gray-700 mb-2">
-                        Joueur
+                        {{ __('competitions.discipline_sanctions_page.player_label') }}
                     </label>
                     <select id="addJoueur" name="joueur" 
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Sélectionner un joueur</option>
-                        <option value="Ahmed Ben Salah">Ahmed Ben Salah</option>
-                        <option value="Youssef Msakni">Youssef Msakni</option>
-                        <option value="Hamza Lahmar">Hamza Lahmar</option>
-                        <option value="Aymen Mathlouthi">Aymen Mathlouthi</option>
+                        <option value="">{{ __('competitions.discipline_sanctions_page.select_player_placeholder') }}</option>
+                        {{-- Liste réelle des joueurs déjà concernés par une sanction (voir CompetitionController::associationDisciplineSanctions) --}}
+                        @foreach($joueursList as $joueurOption)
+                            <option value="{{ $joueurOption }}">{{ $joueurOption }}</option>
+                        @endforeach
                     </select>
                 </div>
                 
                 <div class="mb-4">
                     <label for="addType" class="block text-sm font-medium text-gray-700 mb-2">
-                        Type de Sanction
+                        {{ __('competitions.discipline_sanctions_page.type_label') }}
                     </label>
                     <select id="addType" name="type" 
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="Carton Jaune">🟡 Carton Jaune</option>
-                        <option value="Carton Rouge">🔴 Carton Rouge</option>
-                        <option value="Incident Disciplinaire">⚠️ Incident Disciplinaire</option>
+                        <option value="yellow_card">{{ __('competitions.discipline_sanctions_page.type_yellow_card') }}</option>
+                        <option value="red_card">{{ __('competitions.discipline_sanctions_page.type_red_card') }}</option>
+                        <option value="disciplinary_incident">{{ __('competitions.discipline_sanctions_page.type_disciplinary_incident') }}</option>
                     </select>
                 </div>
                 
                 <div class="mb-4">
                     <label for="addAmende" class="block text-sm font-medium text-gray-700 mb-2">
-                        Amende (TND)
+                        {{ __('competitions.discipline_sanctions_page.fine_label') }}
                     </label>
                     <input type="number" id="addAmende" name="amende" min="0" step="0.01" 
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -294,7 +303,7 @@
                 
                 <div class="mb-4">
                     <label for="addSuspension" class="block text-sm font-medium text-gray-700 mb-2">
-                        Suspension (jours)
+                        {{ __('competitions.discipline_sanctions_page.suspension_label') }}
                     </label>
                     <input type="number" id="addSuspension" name="suspension" min="0" 
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -303,79 +312,21 @@
                 
                 <div class="mb-4">
                     <label for="addMotif" class="block text-sm font-medium text-gray-700 mb-2">
-                        Motif
+                        {{ __('competitions.discipline_sanctions_page.reason_label') }}
                     </label>
                     <textarea id="addMotif" name="motif" rows="3"
                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="Détails du motif..."></textarea>
+                              placeholder="{{ __('competitions.discipline_sanctions_page.reason_placeholder') }}"></textarea>
                 </div>
                 
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="closeAddModal()" 
                             class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
-                        Annuler
+                        {{ __('competitions.discipline_sanctions_page.cancel_button') }}
                     </button>
                     <button type="button" onclick="saveNewSanction()" 
                             class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
-                        ➕ Ajouter
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal d'édition des sanctions -->
-<div id="editSanctionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-medium text-gray-900">
-                    ✏️ Modifier la Sanction
-                </h3>
-                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
-                    ✕
-                </button>
-            </div>
-            
-            <form id="editSanctionForm">
-                <input type="hidden" id="editSanctionId" name="sanction_id">
-                
-                <div class="mb-4">
-                    <label for="editAmende" class="block text-sm font-medium text-gray-700 mb-2">
-                        Amende (TND)
-                    </label>
-                    <input type="number" id="editAmende" name="amende" min="0" step="0.01" 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="0.00">
-                </div>
-                
-                <div class="mb-4">
-                    <label for="editSuspension" class="block text-sm font-medium text-gray-700 mb-2">
-                        Suspension (jours)
-                    </label>
-                    <input type="number" id="editSuspension" name="suspension" min="0" 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="0">
-                </div>
-                
-                <div class="mb-4">
-                    <label for="editMotif" class="block text-sm font-medium text-gray-700 mb-2">
-                        Motif
-                    </label>
-                    <textarea id="editMotif" name="motif" rows="3"
-                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="Détails du motif..."></textarea>
-                </div>
-                
-                <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="closeEditModal()" 
-                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
-                        Annuler
-                    </button>
-                    <button type="button" onclick="saveSanctionChanges()" 
-                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                        💾 Sauvegarder
+                        ➕ {{ __('competitions.discipline_sanctions_page.add_submit_button') }}
                     </button>
                 </div>
             </form>
@@ -389,7 +340,7 @@
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-medium text-gray-900">
-                    👁️ Détails de la Sanction
+                    👁️ {{ __('competitions.discipline_sanctions_page.view_modal_title') }}
                 </h3>
                 <button onclick="closeViewModal()" class="text-gray-400 hover:text-gray-600">
                     ✕
@@ -400,37 +351,37 @@
             
             <div class="space-y-4">
                 <div class="flex justify-between">
-                    <span class="text-sm font-medium text-gray-700">Joueur:</span>
+                    <span class="text-sm font-medium text-gray-700">{{ __('competitions.discipline_sanctions_page.view_player_label') }}</span>
                     <span id="viewJoueur" class="text-sm text-gray-900"></span>
                 </div>
                 
                 <div class="flex justify-between">
-                    <span class="text-sm font-medium text-gray-700">Club:</span>
+                    <span class="text-sm font-medium text-gray-700">{{ __('competitions.discipline_sanctions_page.view_club_label') }}</span>
                     <span id="viewClub" class="text-sm text-gray-900"></span>
                 </div>
                 
                 <div class="flex justify-between">
-                    <span class="text-sm font-medium text-gray-700">Match:</span>
+                    <span class="text-sm font-medium text-gray-700">{{ __('competitions.discipline_sanctions_page.view_match_label') }}</span>
                     <span id="viewMatch" class="text-sm text-gray-900"></span>
                 </div>
                 
                 <div class="flex justify-between">
-                    <span class="text-sm font-medium text-gray-700">Type:</span>
+                    <span class="text-sm font-medium text-gray-700">{{ __('competitions.discipline_sanctions_page.view_type_label') }}</span>
                     <span id="viewType" class="text-sm text-gray-900"></span>
                 </div>
                 
                 <div class="flex justify-between">
-                    <span class="text-sm font-medium text-gray-700">Statut:</span>
+                    <span class="text-sm font-medium text-gray-700">{{ __('competitions.discipline_sanctions_page.view_status_label') }}</span>
                     <span id="viewStatut" class="text-sm text-gray-900"></span>
                 </div>
                 
                 <div class="flex justify-between">
-                    <span class="text-sm font-medium text-gray-700">Amende:</span>
+                    <span class="text-sm font-medium text-gray-700">{{ __('competitions.discipline_sanctions_page.view_fine_label') }}</span>
                     <span id="viewAmende" class="text-sm text-gray-900"></span>
                 </div>
                 
                 <div class="flex justify-between">
-                    <span class="text-sm font-medium text-gray-700">Suspension:</span>
+                    <span class="text-sm font-medium text-gray-700">{{ __('competitions.discipline_sanctions_page.view_suspension_label') }}</span>
                     <span id="viewSuspension" class="text-sm text-gray-900"></span>
                 </div>
             </div>
@@ -438,7 +389,7 @@
             <div class="flex justify-end mt-6">
                 <button onclick="closeViewModal()" 
                         class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
-                    Fermer
+                    {{ __('competitions.discipline_sanctions_page.close_button') }}
                 </button>
             </div>
         </div>
@@ -446,6 +397,8 @@
 </div>
 
 <script>
+const DISCIPLINE_SANCTIONS_SUSPENSION_UNIT = @json(__('competitions.discipline_sanctions_page.suspension_days_unit'));
+
 // Fonction pour valider une sanction
 // NOTE (audit factice -> reel, 2026-09) : ce bouton affichait auparavant un
 // faux message de succes ("validee avec succes") sans jamais rien
@@ -455,8 +408,8 @@
 // pas de table "sanctions" ni de statut reel a modifier : on informe donc
 // honnetement l'utilisateur plutot que de simuler un succes.
 function validateSanction(sanctionId) {
-    if (confirm('Voulez-vous valider cette sanction ?')) {
-        alert("La validation des sanctions n'est pas encore disponible : ces sanctions sont calculées automatiquement à partir des rapports d'arbitres et ne peuvent pas encore être modifiées ou validées individuellement.");
+    if (confirm(@json(__('competitions.discipline_sanctions_page.js_validate_confirm')))) {
+        alert(@json(__('competitions.discipline_sanctions_page.js_validate_unavailable')));
     }
 }
 
@@ -465,8 +418,8 @@ function validateSanction(sanctionId) {
 // ci-dessus, ce bouton affichait un faux message de succes sans rien
 // enregistrer.
 function rejectSanction(sanctionId) {
-    if (confirm('Voulez-vous rejeter cette sanction ?')) {
-        alert("Le rejet des sanctions n'est pas encore disponible : ces sanctions sont calculées automatiquement à partir des rapports d'arbitres et ne peuvent pas encore être modifiées ou rejetées individuellement.");
+    if (confirm(@json(__('competitions.discipline_sanctions_page.js_reject_confirm')))) {
+        alert(@json(__('competitions.discipline_sanctions_page.js_reject_unavailable')));
     }
 }
 
@@ -515,7 +468,7 @@ function editSanction(sanctionId) {
     if (row) {
         const cells = row.querySelectorAll('td');
         const amende = cells[5].textContent.trim().replace(' TND', '').replace('-', '0');
-        const suspension = cells[6].textContent.trim().replace(' jours', '').replace('-', '0');
+        const suspension = cells[6].textContent.trim().replace(' ' + DISCIPLINE_SANCTIONS_SUSPENSION_UNIT, '').replace('-', '0');
         
         // Remplir le modal avec les données
         document.getElementById('editAmende').value = amende;
@@ -544,23 +497,31 @@ function saveSanctionChanges() {
 
     // Validation
     if (amende < 0 || suspension < 0) {
-        alert('Les valeurs ne peuvent pas être négatives');
+        alert(@json(__('competitions.discipline_sanctions_page.js_negative_values_error')));
         return;
     }
 
-    alert("La modification des sanctions n'est pas encore disponible : ces sanctions sont calculées automatiquement à partir des rapports d'arbitres et ne peuvent pas encore être modifiées individuellement.");
+    alert(@json(__('competitions.discipline_sanctions_page.js_save_unavailable')));
     closeEditModal();
 }
 
 // Fonction pour exporter les sanctions
 function exportSanctions() {
-    console.log('Export des sanctions...');
+    console.log(@json(__('competitions.discipline_sanctions_page.js_export_console_log')));
     
     // Créer un fichier CSV avec les données
     const table = document.querySelector('table');
     const rows = table.querySelectorAll('tbody tr');
     
-    let csv = 'Joueur,Club,Match,Type,Statut,Amende,Suspension\n';
+    let csv = [
+        @json(__('competitions.discipline_sanctions_page.col_player')),
+        @json(__('competitions.discipline_sanctions_page.col_club')),
+        @json(__('competitions.discipline_sanctions_page.col_match')),
+        @json(__('competitions.discipline_sanctions_page.col_type')),
+        @json(__('competitions.discipline_sanctions_page.col_status')),
+        @json(__('competitions.discipline_sanctions_page.csv_fine_header')),
+        @json(__('competitions.discipline_sanctions_page.col_suspension'))
+    ].join(',') + '\n';
     
     rows.forEach(row => {
         const cells = row.querySelectorAll('td');
@@ -584,7 +545,7 @@ function exportSanctions() {
     a.click();
     window.URL.revokeObjectURL(url);
     
-    alert('Export des sanctions terminé !');
+    alert(@json(__('competitions.discipline_sanctions_page.js_export_done')));
 }
 
 // Fonction pour ajouter une nouvelle sanction
@@ -610,7 +571,7 @@ function closeAddModal() {
 // "sanctions" reelle dans laquelle creer une sanction manuelle : on informe
 // donc honnetement l'utilisateur plutot que de laisser le bouton casse.
 function saveNewSanction() {
-    alert("L'ajout manuel d'une sanction n'est pas encore disponible : les sanctions de cette page sont calculées automatiquement à partir des rapports d'arbitres (cartons) et il n'existe pas encore de module de saisie manuelle.");
+    alert(@json(__('competitions.discipline_sanctions_page.js_add_unavailable')));
     closeAddModal();
 }
 </script>

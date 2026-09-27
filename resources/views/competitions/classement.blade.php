@@ -33,7 +33,7 @@
                     <select id="competitionFilter" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         <option value="">{{ __('competitions.ranking.all_competitions') }}</option>
                         @foreach($competitions as $competition)
-                            <option value="{{ $competition->id }}">{{ $competition->name ?? __('competitions.ranking.default_competition_name') }}</option>
+                            <option value="{{ $competition->id }}">{{ $competition->name ?? __('competitions.ranking.unnamed_competition_fallback') }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -69,7 +69,7 @@
                 <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h2 class="text-xl font-semibold text-gray-900">{{ $competition->name ?? __('competitions.ranking.default_competition_name') }}</h2>
+                            <h2 class="text-xl font-semibold text-gray-900">{{ $competition->name ?? __('competitions.ranking.unnamed_competition_fallback') }}</h2>
                             <p class="text-sm text-gray-600">{{ $competition->season ?? 'N/A' }} - {{ $competition->association->name ?? __('competitions.ranking.association_unspecified') }}</p>
                         </div>
                         <div class="flex items-center space-x-4">
@@ -256,7 +256,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.ranking.leader') }}</h3>
-                        <p class="text-sm text-gray-500">{{ $classements[1][0]['club']->name ?? 'Espérance Sportive de Tunis' }}</p>
+                        <p class="text-sm text-gray-500">{{ $classements[1][0]['club']->name ?? __('competitions.ranking.no_leader_data') }}</p>
                     </div>
                 </div>
             </div>
@@ -303,12 +303,26 @@
 <script>
 // Fonction pour exporter le classement
 function exportClassement() {
+    const RANKING_UNNAMED_COMPETITION = @json(__('competitions.ranking.unnamed_competition_fallback'));
+    const RANKING_CSV_TITLE = @json(__('competitions.ranking.csv_title_prefix'));
+    const RANKING_CSV_COLUMNS = [
+        @json(__('competitions.ranking.csv_col_position')),
+        @json(__('competitions.ranking.col_club')),
+        @json(__('competitions.ranking.col_mj')),
+        @json(__('competitions.ranking.col_v')),
+        @json(__('competitions.ranking.col_n')),
+        @json(__('competitions.ranking.col_d')),
+        @json(__('competitions.ranking.col_bp')),
+        @json(__('competitions.ranking.col_bc')),
+        @json(__('competitions.ranking.col_diff')),
+        @json(__('competitions.ranking.col_pts'))
+    ].join(',');
     const competitionId = document.getElementById('competitionFilter').value || '1';
-    const competitionName = document.getElementById('competitionFilter').selectedOptions[0]?.text || 'Championnat Tunisien U19';
+    const competitionName = document.getElementById('competitionFilter').selectedOptions[0]?.text || RANKING_UNNAMED_COMPETITION;
     
     // Créer le contenu CSV
-    let csvContent = `Classement - ${competitionName}\n`;
-    csvContent += `Position,Club,MJ,V,N,D,BP,BC,Diff,Pts\n`;
+    let csvContent = `${RANKING_CSV_TITLE} - ${competitionName}\n`;
+    csvContent += `${RANKING_CSV_COLUMNS}\n`;
     
     // Récupérer les données du tableau
     const table = document.querySelector(`[data-competition="${competitionId}"] table tbody`);

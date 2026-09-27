@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Nouveau PCMA - Med Predictor')
+@section('title', __('pcma.title'))
 
 @section('content')
 
@@ -275,12 +275,12 @@
         <div class="mb-8">
             <div class="flex justify-between items-start mb-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900"> Nouveau PCMA</h1>
-                    <p class="text-gray-600 mt-2">Créer une nouvelle évaluation médicale pré-compétition</p>
+                    <h1 class="text-3xl font-bold text-gray-900"> {{ __('pcma.page_heading') }}</h1>
+                    <p class="text-gray-600 mt-2">{{ __('pcma.page_subheading') }}</p>
                 </div>
                 <a href="{{ route('pcma.dashboard') }}" 
                    class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                    ← Retour au Dashboard
+                    {{ __('pcma.back_to_dashboard') }}
                 </a>
             </div>
         </div>
@@ -288,7 +288,7 @@
         <!-- Input Method Selection -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">Modes de collecte</h2>
+                <h2 class="text-xl font-semibold text-gray-800">{{ __('pcma.modes_heading') }}</h2>
             </div>
             
             <div class="p-6">
@@ -299,8 +299,8 @@
                             <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
-                            <h3 class="font-semibold">Mode Manuel</h3>
-                            <p class="text-sm opacity-90">Saisie directe au clavier</p>
+                            <h3 class="font-semibold">{{ __('pcma.mode_manual_title') }}</h3>
+                            <p class="text-sm opacity-90">{{ __('pcma.mode_manual_desc') }}</p>
                         </div>
                     </button>
 
@@ -310,8 +310,8 @@
                             <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                             </svg>
-                            <h3 class="font-semibold">Mode Vocal</h3>
-                            <p class="text-sm opacity-90">Reconnaissance vocale intelligente</p>
+                            <h3 class="font-semibold">{{ __('pcma.mode_vocal_title') }}</h3>
+                            <p class="text-sm opacity-90">{{ __('pcma.mode_vocal_desc') }}</p>
                         </div>
                     </button>
 
@@ -323,8 +323,8 @@
                             <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <h3 class="font-semibold">Mode OCR</h3>
-                            <p class="text-sm opacity-90">Scan d'image et extraction</p>
+                            <h3 class="font-semibold">{{ __('pcma.mode_ocr_title') }}</h3>
+                            <p class="text-sm opacity-90">{{ __('pcma.mode_ocr_desc') }}</p>
                         </div>
                     </button>
 
@@ -334,8 +334,8 @@
                             <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
-                            <h3 class="font-semibold">Mode FHIR</h3>
-                            <p class="text-sm opacity-90">Import de données médicales</p>
+                            <h3 class="font-semibold">{{ __('pcma.mode_fhir_title') }}</h3>
+                            <p class="text-sm opacity-90">{{ __('pcma.mode_fhir_desc') }}</p>
                         </div>
                     </button>
                 </div>
@@ -357,21 +357,21 @@
                             <svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                             </svg>
-                            <h2 class="text-xl font-semibold text-indigo-900">Assistant IA PCMA</h2>
+                            <h2 class="text-xl font-semibold text-indigo-900">{{ __('pcma.ai_assistant_title') }}</h2>
                         </div>
-                        <p class="text-indigo-700 mb-4">Décrivez les résultats de l'examen médical pour une analyse automatique</p>
+                        <p class="text-indigo-700 mb-4">{{ __('pcma.ai_assistant_desc') }}</p>
                         
                         <div class="space-y-4">
                             <div>
                                 <label for="clinical_notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Notes Cliniques
+                                    {{ __('pcma_extra.create_97648c79c4ca') }}
                                 </label>
                                 <textarea 
                                     id="clinical_notes" 
                                     name="clinical_notes" 
                                     rows="4" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="Exemple: Patient présente une tension artérielle de 120/80 mmHg, fréquence cardiaque de 65 bpm au repos. Pas d'antécédents cardiovasculaires. Examen neurologique normal. Pas de douleurs musculo-squelettiques..."
+                                    placeholder="{{ __('pcma.clinical_notes_placeholder') }}"
                                 ></textarea>
                             </div>
                             
@@ -381,19 +381,19 @@
                                     id="ai-analyze-btn"
                                     class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
                                 >
-                                    Analyser avec l'IA
+                                    {{ __('pcma.analyze_ai_btn') }}
                                 </button>
                                 <button 
                                     type="button" 
                                     id="clear-notes-btn"
                                     class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
                                 >
-                                    Effacer
+                                    {{ __('pcma.clear_btn') }}
                                 </button>
                             </div>
                             
                             <div id="ai-results" class="hidden bg-white border border-gray-200 rounded-lg p-4">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-3">Analyse IA</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ __('pcma.ai_results_title') }}</h3>
                                 <div id="ai-content" class="text-sm text-gray-700"></div>
                             </div>
                         </div>
@@ -406,7 +406,7 @@
         <div id="vocal-mode-section" class="mode-section hidden" data-section-type="vocal">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
-                                         <h2 class="text-xl font-semibold text-gray-800">Mode Vocal - Reconnaissance Intelligente</h2>
+                                         <h2 class="text-xl font-semibold text-gray-800">{{ __('pcma.vocal_mode_heading') }}</h2>
                 </div>
                 
                 <div class="p-6 space-y-6">
@@ -414,11 +414,11 @@
                     
                     
                                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Assistant Vocal Google Speech-to-Text</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('pcma.vocal_assistant_title') }}</h3>
                         
                         <!-- Configuration API Google -->
                         <div class="mb-6">
-                            <h4 class="text-md font-medium text-gray-700 mb-3">Configuration API Google</h4>
+                            <h4 class="text-md font-medium text-gray-700 mb-3">{{ __('pcma.google_api_config_title') }}</h4>
                             <!-- NOTE (audit factice -> reel, 2026-09) : ce bloc affichait
                                  en dur "Google Cloud configure avec succes" / "Cle chargee
                                  automatiquement depuis la configuration serveur", quel que soit
@@ -428,54 +428,54 @@
                                  etre saisie et testee manuellement (apiKeyInput / testAPIKey /
                                  initService). Message remplace par un etat honnete. -->
                             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                                <p class="text-yellow-800 font-medium">⚠️ Clé API Google Speech-to-Text non configurée</p>
-                                <p class="text-yellow-800 text-sm">Aucune clé n'est chargée automatiquement par le serveur. Saisissez votre propre clé API dans le panel de debug ci-dessous puis initialisez le service pour activer la reconnaissance vocale.</p>
+                                <p class="text-yellow-800 font-medium">{{ __('pcma.api_key_warning_title') }}</p>
+                                <p class="text-yellow-800 text-sm">{{ __('pcma.api_key_warning_desc') }}</p>
                             </div>
                         </div>
                         
                         <!-- Initialisation du Service -->
                         <div class="mb-6">
-                            <h4 class="text-md font-medium text-blue-700 mb-3">Initialiser le Service</h4>
+                            <h4 class="text-md font-medium text-blue-700 mb-3">{{ __('pcma.init_service_title') }}</h4>
                             <button type="button" id="init-service" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
-                                Tester le Service
+                                {{ __('pcma.test_service_btn') }}
                             </button>
-                            <div id="service-status" class="mt-2 text-sm text-gray-600">Service non initialisé</div>
+                            <div id="service-status" class="mt-2 text-sm text-gray-600">{{ __('pcma.service_not_initialized') }}</div>
                         </div>
                         
                         <!-- Contrôles de Reconnaissance -->
                         <div class="mb-6">
-                            <h4 class="text-md font-medium text-blue-700 mb-3">Contrôles de Reconnaissance</h4>
+                            <h4 class="text-md font-medium text-blue-700 mb-3">{{ __('pcma.recognition_controls_title') }}</h4>
                             <div class="flex space-x-4">
                                 <button type="button" id="start-recording-btn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-full transition duration-200">
-                                                                         Démarrer Reconnaissance
+                                                                         {{ __('pcma.start_recognition_btn') }}
                                 </button>
                                 <button type="button" id="stop-recording-btn" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-full transition duration-200" class="hidden">
-                                    Arrêter Reconnaissance
+                                    {{ __('pcma.stop_recognition_btn') }}
                                 </button>
                             </div>
                         </div>
                         
                         <!-- Statut et Résultats -->
-                        <div id="voice-status" class="text-sm text-gray-500 mb-4">Service non initialisé</div>
+                        <div id="voice-status" class="text-sm text-gray-500 mb-4">{{ __('pcma.service_not_initialized') }}</div>
                         
                         <!-- Résultats de la reconnaissance vocale -->
                         <div id="voice-results" class="hidden">
-                            <h4 class="font-medium text-blue-800 mb-3">Résultats de la reconnaissance :</h4>
+                            <h4 class="font-medium text-blue-800 mb-3">{{ __('pcma.recognition_results_title') }}</h4>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nom du joueur</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('pcma.player_name_label') }}</label>
                                     <input type="text" id="voice_player_name_result" class="w-full px-3 py-2 border border-gray-300 rounded-md" readonly>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Âge</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('pcma.age_label') }}</label>
                                     <input type="text" id="voice_age_result" class="w-full px-3 py-2 border border-gray-300 rounded-md" readonly>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('pcma.position_label') }}</label>
                                     <input type="text" id="voice_position_result" class="w-full px-3 py-2 border border-gray-300 rounded-md" readonly>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Club</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('pcma.club_label') }}</label>
                                     <input type="text" id="voice_club_result" class="w-full px-3 py-2 border border-gray-300 rounded-md" readonly>
                                 </div>
                             </div>
@@ -483,29 +483,29 @@
                         
                         <!-- Affichage du Texte Reconnu -->
                         <div id="speech-text" class="hidden bg-gray-50 border-l-4 border-gray-400 p-4 mb-4">
-                            <h4 class="font-medium text-gray-800 mb-2">Texte reconnu :</h4>
+                            <h4 class="font-medium text-gray-800 mb-2">{{ __('pcma.recognized_text_title') }}</h4>
                             <p id="recognized-text" class="text-gray-700"></p>
                             <p id="confidence" class="text-xs text-gray-600 mt-1"></p>
                         </div>
                         
                         <!-- Données Extraites -->
                         <div id="extracted-data-display" class="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg hidden">
-                            <h5 class="font-medium text-gray-800 mb-2">Données extraites :</h5>
+                            <h5 class="font-medium text-gray-800 mb-2">{{ __('pcma.extracted_data_title') }}</h5>
                             <div class="grid grid-cols-2 gap-2 text-sm">
-                                <div><strong>Nom:</strong> <span id="extracted-name" class="text-gray-700">-</span></div>
-                                <div><strong>Âge:</strong> <span id="extracted-age" class="text-gray-700">-</span></div>
-                                <div><strong>Position:</strong> <span id="extracted-position" class="text-gray-700">-</span></div>
-                                <div><strong>Club:</strong> <span id="extracted-club" class="text-gray-700">-</span></div>
+                                <div><strong>{{ __('pcma.name_short') }}</strong> <span id="extracted-name" class="text-gray-700">-</span></div>
+                                <div><strong>{{ __('pcma.age_short') }}</strong> <span id="extracted-age" class="text-gray-700">-</span></div>
+                                <div><strong>{{ __('pcma_extra.create_e164c5f064fc') }}</strong> <span id="extracted-position" class="text-gray-700">-</span></div>
+                                <div><strong>{{ __('pcma_extra.create_0fd7b9a6edc0') }}</strong> <span id="extracted-club" class="text-gray-700">-</span></div>
                             </div>
                         </div>
                         
                         <!-- Boutons d'Action -->
                         <div class="flex space-x-4 mt-4">
                             <button type="button" id="apply-extracted-data" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm hidden">
-                                 Appliquer les données extraites
+                                 {{ __('pcma.apply_extracted_data_btn') }}
                             </button>
                             <button type="button" id="transfer-to-form-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
-                                 Transférer vers le formulaire PCMA
+                                 {{ __('pcma.transfer_to_form_btn') }}
                             </button>
                         </div>
                     </div>
@@ -513,8 +513,7 @@
                     <!-- MESSAGE IMPORTANT -->
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <p class="text-blue-800 text-sm">
-                            <strong>Note :</strong> Cette console vocale est connectée au formulaire PCMA du mode manuel. 
-                            Les données reconnues seront automatiquement transférées dans les champs correspondants.
+                            <strong>{{ __('pcma.vocal_console_note_label') }}</strong> {{ __('pcma.vocal_console_note_text') }}
                         </p>
                     </div>
                     
@@ -528,12 +527,12 @@
         <div id="ocr-mode-section" class="mode-section hidden">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800">Mode OCR - Scan d'image</h2>
+                    <h2 class="text-xl font-semibold text-gray-800">{{ __('pcma.ocr_mode_heading') }}</h2>
                 </div>
                 
                 <div class="p-6 space-y-6">
                     <div class="text-center">
-                        <p class="text-gray-600 mb-4">Téléchargez une image de document médical pour extraction automatique</p>
+                        <p class="text-gray-600 mb-4">{{ __('pcma.ocr_upload_prompt') }}</p>
                         
                         <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 mb-4">
                             <input type="file" id="image-upload" accept="image/*" class="hidden">
@@ -542,14 +541,14 @@
                                     <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                     </svg>
-                                    <p class="text-gray-600">Cliquez pour sélectionner une image</p>
+                                    <p class="text-gray-600">{{ __('pcma.ocr_select_image') }}</p>
                                 </div>
                             </label>
                         </div>
                         
                         <!-- Bouton pour transférer vers le formulaire -->
                         <button type="button" id="transfer-ocr-to-form-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm hidden">
-                            Transférer vers le formulaire PCMA
+                            {{ __('pcma.transfer_to_form_btn') }}
                         </button>
                     </div>
                 </div>
@@ -560,13 +559,13 @@
         <div id="fhir-mode-section" class="mode-section hidden">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800">Mode FHIR - Import de données</h2>
+                    <h2 class="text-xl font-semibold text-gray-800">{{ __('pcma.fhir_mode_heading') }}</h2>
                 </div>
                 
                 <div class="p-6 space-y-6">
                     <div>
                         <label for="fhir_server_url" class="block text-sm font-medium text-gray-700 mb-2">
-                            URL du serveur FHIR
+                            {{ __('pcma.fhir_server_url_label') }}
                         </label>
                         <input type="url" id="fhir_server_url" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -575,7 +574,7 @@
                     
                     <div>
                         <label for="fhir_patient_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            ID du patient FHIR
+                            {{ __('pcma.fhir_patient_id_label') }}
                         </label>
                         <input type="text" id="fhir_patient_id" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -584,33 +583,33 @@
                     
                     <div>
                         <label for="fhir_resource_type" class="block text-sm font-medium text-gray-700 mb-2">
-                            Type de ressource
+                            {{ __('pcma.fhir_resource_type_label') }}
                         </label>
                         <select id="fhir_resource_type" 
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="Observation">Observation (Observations médicales)</option>
-                            <option value="Condition">Condition (Diagnostics)</option>
-                            <option value="Procedure">Procedure (Procédures)</option>
-                            <option value="MedicationRequest">MedicationRequest (Prescriptions)</option>
+                            <option value="Observation">{{ __('pcma.fhir_option_observation') }}</option>
+                            <option value="Condition">{{ __('pcma.fhir_option_condition') }}</option>
+                            <option value="Procedure">{{ __('pcma.fhir_option_procedure') }}</option>
+                            <option value="MedicationRequest">{{ __('pcma_extra.create_3fa31f402332') }}</option>
                         </select>
                     </div>
                     
                     <div class="flex space-x-4">
                         <button type="button" id="fetch-fhir-data" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                             Récupérer les données FHIR
+                             {{ __('pcma.fetch_fhir_btn') }}
                         </button>
                         <button type="button" id="clear-fhir" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                            Effacer
+                            {{ __('pcma.clear_btn') }}
                         </button>
                     </div>
                     
                     <div id="fhir-results" class="hidden">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Données FHIR récupérées</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ __('pcma.fhir_results_title') }}</h3>
                         <div id="fhir-content" class="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto"></div>
                         
                         <!-- Bouton pour transférer vers le formulaire -->
                         <button type="button" id="transfer-fhir-to-form-btn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
-                            Transférer vers le formulaire PCMA
+                            {{ __('pcma.transfer_to_form_btn') }}
                         </button>
                     </div>
                 </div>
@@ -630,7 +629,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                 </svg>
                             </div>
-                            <h3 class="ml-3 text-lg font-medium text-gray-900">Incohérences détectées</h3>
+                            <h3 class="ml-3 text-lg font-medium text-gray-900">{{ __('pcma.inconsistencies_title') }}</h3>
                         </div>
                         <button onclick="closeConfirmationModal()" class="text-gray-400 hover:text-gray-600">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -642,8 +641,7 @@
                     <!-- Contenu du modal -->
                     <div class="mt-2">
                         <p class="text-sm text-gray-500 mb-4">
-                            Des différences ont été détectées entre vos données vocales et celles de la base. 
-                            Veuillez confirmer l'identité du joueur en utilisant l'une des méthodes suivantes :
+                            {{ __('pcma.inconsistencies_desc') }}
                         </p>
                         
                         <!-- Liste des incohérences -->
@@ -653,24 +651,24 @@
                         
                         <!-- Méthodes de confirmation -->
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                            <h4 class="font-medium text-blue-900 mb-3">Méthodes de confirmation :</h4>
+                            <h4 class="font-medium text-blue-900 mb-3">{{ __('pcma.confirmation_methods_title') }}</h4>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div class="text-center">
                                     <div class="bg-blue-100 rounded-lg p-3">
                                         <div class="text-2xl mb-2">ID</div>
-                                        <div class="text-sm font-medium text-blue-800">ID FIFA Connect</div>
+                                        <div class="text-sm font-medium text-blue-800">{{ __('pcma_extra.create_e9a3992329af') }}</div>
                                     </div>
                                 </div>
                                 <div class="text-center">
                                     <div class="bg-blue-100 rounded-lg p-3">
                                         <div class="text-2xl mb-2">LIC</div>
-                                        <div class="text-sm font-medium text-blue-800">Numéro de Licence</div>
+                                        <div class="text-sm font-medium text-blue-800">{{ __('pcma.license_number_label') }}</div>
                                     </div>
                                 </div>
                                 <div class="text-center">
                                     <div class="bg-blue-100 rounded-lg p-3">
                                         <div class="text-2xl mb-2">SEQ</div>
-                                        <div class="text-sm font-medium text-blue-800">Séquence complète</div>
+                                        <div class="text-sm font-medium text-blue-800">{{ __('pcma.full_sequence_label') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -679,13 +677,13 @@
                         <!-- Champs de confirmation -->
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">ID FIFA Connect ou Numéro de Licence</label>
-                                <input type="text" id="confirmation-id" placeholder="FIFA ID officiel (7 caractères) ou référence locale de licence"
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('pcma.confirmation_id_label') }}</label>
+                                <input type="text" id="confirmation-id" placeholder="{{ __('pcma.confirmation_id_placeholder') }}"
                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Séquence complète (Nom + Âge + Club + Position)</label>
-                                <input type="text" id="confirmation-sequence" placeholder="Ex: Ali Jebali 24 AS Gabès Milieu offensif" 
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('pcma.confirmation_sequence_label') }}</label>
+                                <input type="text" id="confirmation-sequence" placeholder="{{ __('pcma.confirmation_sequence_placeholder') }}"
                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                         </div>
@@ -695,11 +693,11 @@
                     <div class="flex justify-end space-x-3 mt-6">
                         <button onclick="closeConfirmationModal()" 
                                 class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
-                            Annuler
+                            {{ __('pcma.cancel_btn') }}
                         </button>
                         <button onclick="confirmPlayerIdentity()" 
                                 class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                            Confirmer l'identité
+                            {{ __('pcma.confirm_identity_btn') }}
                         </button>
                     </div>
                 </div>
@@ -712,12 +710,12 @@
 
 
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                            <h3 class="text-lg font-semibold text-blue-800 mb-4">Informations de l'Athlète</h3>
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">{{ __('pcma.athlete_info_title') }}</h3>
                             
                             <!-- Athlète -->
                             <div>
                                 <label for="athlete_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Athlète *
+                                    {{ __('pcma.athlete_label') }}
                                 </label>
                                 <select 
                                     id="athlete_id" 
@@ -725,10 +723,10 @@
                                     required
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
-                                    <option value="">Sélectionner un athlète</option>
+                                    <option value="">{{ __('pcma.select_athlete_placeholder') }}</option>
                                     @foreach($athletes as $athlete)
                                         <option value="{{ $athlete->id }}" {{ old('athlete_id') == $athlete->id ? 'selected' : '' }}>
-                                            {{ $athlete->name }} - {{ $athlete->fifa_connect_id ?? 'Pas d\'ID FIFA' }}
+                                            {{ $athlete->name }} - {{ $athlete->fifa_connect_id ?? __('pcma.no_fifa_id') }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -737,24 +735,24 @@
                             <!-- ID FIFA Connect -->
                             <div class="mt-4">
                                 <label for="fifa_connect_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                    ID FIFA Connect
+                                    {{ __('pcma.fifa_connect_id_label') }}
                                 </label>
                                 <input 
                                     type="text" 
                                     id="fifa_connect_id" 
                                     name="fifa_connect_id" 
                                     value="{{ old('fifa_connect_id') }}"
-                                    placeholder="Entrez l'ID FIFA Connect du joueur"
+                                    placeholder="{{ __('pcma.fifa_connect_id_placeholder') }}"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
-                                <p class="text-xs text-gray-600 mt-1">Laissez vide si l'athlète n'a pas d'ID FIFA Connect</p>
+                                <p class="text-xs text-gray-600 mt-1">{{ __('pcma.fifa_connect_id_hint') }}</p>
                             </div>
                         </div>
 
                         <!-- PCMA Type -->
                         <div>
                             <label for="type" class="block text-sm font-medium text-gray-700 mb-2">
-                                Type d'évaluation *
+                                {{ __('pcma.assessment_type_label') }}
                             </label>
                             <select 
                                 id="type" 
@@ -762,19 +760,19 @@
                                 required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
-                                <option value="">Sélectionner le type</option>
+                                <option value="">{{ __('pcma.select_type_placeholder') }}</option>
                                 <option value="bpma" {{ old('type') == 'bpma' ? 'selected' : '' }}>BPMA</option>
-                                <option value="cardio" {{ old('type') == 'cardio' ? 'selected' : '' }}>Cardiovasculaire</option>
-                                <option value="dental" {{ old('type') == 'dental' ? 'selected' : '' }}>Dentaire</option>
-                                <option value="neurological" {{ old('type') == 'neurological' ? 'selected' : '' }}>Neurologique</option>
-                                <option value="orthopedic" {{ old('type') == 'orthopedic' ? 'selected' : '' }}>Orthopédique</option>
+                                <option value="cardio" {{ old('type') == 'cardio' ? 'selected' : '' }}>{{ __('pcma.type_cardio') }}</option>
+                                <option value="dental" {{ old('type') == 'dental' ? 'selected' : '' }}>{{ __('pcma.type_dental') }}</option>
+                                <option value="neurological" {{ old('type') == 'neurological' ? 'selected' : '' }}>{{ __('pcma.type_neurological') }}</option>
+                                <option value="orthopedic" {{ old('type') == 'orthopedic' ? 'selected' : '' }}>{{ __('pcma.type_orthopedic') }}</option>
                             </select>
                         </div>
 
                         <!-- Assessor -->
                         <div>
                             <label for="assessor_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                Assesseur *
+                                {{ __('pcma.assessor_label') }}
                             </label>
                             <select 
                                 id="assessor_id" 
@@ -782,7 +780,7 @@
                                 required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
-                                <option value="">Sélectionner un assesseur</option>
+                                <option value="">{{ __('pcma.select_assessor_placeholder') }}</option>
                                 @foreach($users as $user)
                                     <option value="{{ $user->id }}" {{ old('assessor_id') == $user->id ? 'selected' : '' }}>
                                         {{ $user->name }}
@@ -794,7 +792,7 @@
                         <!-- Assessment Date -->
                         <div>
                             <label for="assessment_date" class="block text-sm font-medium text-gray-700 mb-2">
-                                Date d'évaluation *
+                                {{ __('pcma.assessment_date_label') }}
                             </label>
                             <input 
                                 type="date" 
@@ -809,21 +807,21 @@
                         <!-- Décision médicale PCMA -->
                         <div>
                             <label for="final_statement_overall_decision" class="block text-sm font-medium text-gray-700 mb-2">
-                                Décision médicale *
+                                {{ __('pcma.medical_decision_label') }}
                             </label>
                             <select id="final_statement_overall_decision" name="final_statement[overall_decision]" required class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                                <option value="">Sélectionner la décision</option>
-                                <option value="FIT" {{ old('final_statement.overall_decision') === 'FIT' ? 'selected' : '' }}>Apte</option>
-                                <option value="NOT_FIT" {{ old('final_statement.overall_decision') === 'NOT_FIT' ? 'selected' : '' }}>Inapte</option>
-                                <option value="CONDITIONAL" {{ old('final_statement.overall_decision') === 'CONDITIONAL' ? 'selected' : '' }}>Apte sous conditions</option>
+                                <option value="">{{ __('pcma.select_decision_placeholder') }}</option>
+                                <option value="FIT" {{ old('final_statement.overall_decision') === 'FIT' ? 'selected' : '' }}>{{ __('pcma.decision_fit') }}</option>
+                                <option value="NOT_FIT" {{ old('final_statement.overall_decision') === 'NOT_FIT' ? 'selected' : '' }}>{{ __('pcma.decision_not_fit') }}</option>
+                                <option value="CONDITIONAL" {{ old('final_statement.overall_decision') === 'CONDITIONAL' ? 'selected' : '' }}>{{ __('pcma.decision_conditional') }}</option>
                             </select>
-                            <p class="text-xs text-gray-500 mt-1">Cette décision saisie dans le PCMA sera la seule décision proposée à la signature.</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ __('pcma.decision_hint') }}</p>
                         </div>
 
                         <!-- Status -->
                         <div>
                             <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
-                                Statut *
+                                {{ __('pcma.status_label') }}
                             </label>
                             <select 
                                 id="status" 
@@ -831,9 +829,9 @@
                                 required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
-                                <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>En attente</option>
-                                <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Complété</option>
-                                <option value="failed" {{ old('status') == 'failed' ? 'selected' : '' }}>Échoué</option>
+                                <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>{{ __('pcma.status_pending') }}</option>
+                                <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>{{ __('pcma.status_completed') }}</option>
+                                <option value="failed" {{ old('status') == 'failed' ? 'selected' : '' }}>{{ __('pcma.status_failed') }}</option>
                             </select>
                         </div>
 
@@ -842,14 +840,14 @@
                         <!-- Notes -->
                         <div>
                             <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                Notes
+                                {{ __('pcma.notes_label') }}
                             </label>
                             <textarea 
                                 id="notes" 
                                 name="notes" 
                                 rows="4"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Notes additionnelles sur l'évaluation..."
+                                placeholder="{{ __('pcma.notes_placeholder') }}"
                             >{{ old('notes') }}</textarea>
                         </div>
 
@@ -861,13 +859,13 @@
                                 <svg class="w-6 h-6 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-gray-900">Signes Vitaux</h3>
+                                <h3 class="text-lg font-semibold text-gray-900">{{ __('pcma.vital_signs_title') }}</h3>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label for="blood_pressure" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Tension Artérielle
+                                        {{ __('pcma.blood_pressure_label') }}
                                     </label>
                                     <input type="text" id="blood_pressure" name="blood_pressure" 
                                            value="{{ old('blood_pressure') }}"
@@ -877,7 +875,7 @@
                                 
                                 <div>
                                     <label for="heart_rate" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Fréquence Cardiaque
+                                        {{ __('pcma.heart_rate_label') }}
                                     </label>
                                     <input type="number" id="heart_rate" name="heart_rate" 
                                            value="{{ old('heart_rate') }}"
@@ -887,7 +885,7 @@
                                 
                                 <div>
                                     <label for="temperature" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Température
+                                        {{ __('pcma.temperature_label') }}
                                     </label>
                                     <input type="number" id="temperature" name="temperature" 
                                            value="{{ old('temperature') }}"
@@ -898,7 +896,7 @@
                                 
                                 <div>
                                     <label for="respiratory_rate" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Fréquence Respiratoire
+                                        {{ __('pcma.respiratory_rate_label') }}
                                     </label>
                                     <input type="number" id="respiratory_rate" name="respiratory_rate" 
                                            value="{{ old('respiratory_rate') }}"
@@ -908,7 +906,7 @@
                                 
                                 <div>
                                     <label for="oxygen_saturation" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Saturation O₂
+                                        {{ __('pcma.oxygen_saturation_label') }}
                                     </label>
                                     <input type="number" id="oxygen_saturation" name="oxygen_saturation" 
                                            value="{{ old('oxygen_saturation') }}"
@@ -918,7 +916,7 @@
                                 
                                 <div>
                                     <label for="weight" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Poids
+                                        {{ __('pcma.weight_label') }}
                                     </label>
                                     <input type="number" id="weight" name="weight" 
                                            value="{{ old('weight') }}"
@@ -935,19 +933,19 @@
                                 <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-green-900"> Antécédents Médicaux</h3>
+                                <h3 class="text-lg font-semibold text-green-900"> {{ __('pcma.medical_history_title') }}</h3>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label for="cardiovascular_history" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Antécédents Cardio-vasculaires
+                                        {{ __('pcma.cardiovascular_history_label') }}
                                     </label>
                                     <div class="relative">
                                         <input type="text" 
                                                id="cardiovascular_search" 
                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                               placeholder="Rechercher des conditions cardio-vasculaires..."
+                                               placeholder="{{ __('pcma.cardiovascular_search_placeholder') }}"
                                                autocomplete="off">
                                         <div id="cardiovascular_results" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
                                         <input type="hidden" id="cardiovascular_history" name="cardiovascular_history" value="{{ old('cardiovascular_history') }}">
@@ -957,13 +955,13 @@
                                 
                                 <div>
                                     <label for="surgical_history" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Antécédents Chirurgicaux
+                                        {{ __('pcma.surgical_history_label') }}
                                     </label>
                                     <div class="relative">
                                         <input type="text" 
                                                id="surgical_search" 
                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                               placeholder="Rechercher des procédures chirurgicales..."
+                                               placeholder="{{ __('pcma.surgical_search_placeholder') }}"
                                                autocomplete="off">
                                         <div id="surgical_results" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
                                         <input type="hidden" id="surgical_history" name="surgical_history" value="{{ old('surgical_history') }}">
@@ -973,13 +971,13 @@
                                 
                                 <div>
                                     <label for="medications" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Médicaments Actuels
+                                        {{ __('pcma.medications_label') }}
                                     </label>
                                     <div class="relative">
                                         <input type="text" 
                                                id="medication_search" 
                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                               placeholder="Rechercher des médicaments..."
+                                               placeholder="{{ __('pcma.medication_search_placeholder') }}"
                                                autocomplete="off">
                                         <div id="medication_results" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
                                         <input type="hidden" id="medications" name="medications" value="{{ old('medications') }}">
@@ -989,13 +987,13 @@
                                 
                                 <div>
                                     <label for="allergies" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Allergies
+                                        {{ __('pcma.allergies_label') }}
                                     </label>
                                     <div class="relative">
                                         <input type="text" 
                                                id="allergy_search" 
                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                               placeholder="Rechercher des allergies..."
+                                               placeholder="{{ __('pcma.allergy_search_placeholder') }}"
                                                autocomplete="off">
                                         <div id="allergy_results" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
                                         <input type="hidden" id="allergies" name="allergies" value="{{ old('allergies') }}">
@@ -1011,55 +1009,55 @@
                                 <svg class="w-6 h-6 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-gray-900">Examen Physique</h3>
+                                <h3 class="text-lg font-semibold text-gray-900">{{ __('pcma.physical_exam_title') }}</h3>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label for="general_appearance" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Apparence Générale
+                                        {{ __('pcma.general_appearance_label') }}
                                     </label>
                                     <select id="general_appearance" name="general_appearance" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="normal" {{ old('general_appearance') == 'normal' ? 'selected' : '' }}>Normal</option>
-                                        <option value="abnormal" {{ old('general_appearance') == 'abnormal' ? 'selected' : '' }}>Anormal</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="normal" {{ old('general_appearance') == 'normal' ? 'selected' : '' }}>{{ __('pcma.normal_option') }}</option>
+                                        <option value="abnormal" {{ old('general_appearance') == 'abnormal' ? 'selected' : '' }}>{{ __('pcma.abnormal_option') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label for="skin_examination" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Examen Cutané
+                                        {{ __('pcma.skin_exam_label') }}
                                     </label>
                                     <select id="skin_examination" name="skin_examination" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="normal" {{ old('skin_examination') == 'normal' ? 'selected' : '' }}>Normal</option>
-                                        <option value="abnormal" {{ old('skin_examination') == 'abnormal' ? 'selected' : '' }}>Anormal</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="normal" {{ old('skin_examination') == 'normal' ? 'selected' : '' }}>{{ __('pcma.normal_option') }}</option>
+                                        <option value="abnormal" {{ old('skin_examination') == 'abnormal' ? 'selected' : '' }}>{{ __('pcma.abnormal_option') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label for="lymph_nodes" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Ganglions Lymphatiques
+                                        {{ __('pcma.lymph_nodes_label') }}
                                     </label>
                                     <select id="lymph_nodes" name="lymph_nodes" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="normal" {{ old('lymph_nodes') == 'normal' ? 'selected' : '' }}>Normal</option>
-                                        <option value="enlarged" {{ old('lymph_nodes') == 'enlarged' ? 'selected' : '' }}>Hypertrophiés</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="normal" {{ old('lymph_nodes') == 'normal' ? 'selected' : '' }}>{{ __('pcma.normal_option') }}</option>
+                                        <option value="enlarged" {{ old('lymph_nodes') == 'enlarged' ? 'selected' : '' }}>{{ __('pcma.lymph_enlarged_option') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label for="abdomen_examination" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Examen Abdominal
+                                        {{ __('pcma.abdomen_exam_label') }}
                                     </label>
                                     <select id="abdomen_examination" name="abdomen_examination" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="normal" {{ old('abdomen_examination') == 'normal' ? 'selected' : '' }}>Normal</option>
-                                        <option value="abnormal" {{ old('abdomen_examination') == 'abnormal' ? 'selected' : '' }}>Anormal</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="normal" {{ old('abdomen_examination') == 'normal' ? 'selected' : '' }}>{{ __('pcma.normal_option') }}</option>
+                                        <option value="abnormal" {{ old('abdomen_examination') == 'abnormal' ? 'selected' : '' }}>{{ __('pcma.abnormal_option') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -1071,7 +1069,7 @@
                                 <svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-indigo-900">Imagerie Médicale</h3>
+                                <h3 class="text-lg font-semibold text-indigo-900">{{ __('pcma.imaging_title') }}</h3>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1081,22 +1079,22 @@
                                         <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                         </svg>
-                                        <h4 class="font-semibold text-gray-900">Électrocardiogramme (ECG)</h4>
+                                        <h4 class="font-semibold text-gray-900">{{ __('pcma.ecg_upload_title') }}</h4>
                                     </div>
                                     
                                     <div class="space-y-3">
                                         <div>
                                             <label for="ecg_file" class="block text-sm font-medium text-gray-700 mb-2">
-                                                Fichier ECG
+                                                {{ __('pcma.ecg_file_label') }}
                                             </label>
                                             <input type="file" id="ecg_file" name="ecg_file" accept=".pdf,.jpg,.jpeg,.png,.bmp,.tiff,.tif,.dcm"
                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                            <p class="text-xs text-gray-500 mt-1">Formats acceptés: PDF, JPG, PNG, BMP, TIFF, DICOM</p>
+                                            <p class="text-xs text-gray-500 mt-1">{{ __('pcma.accepted_formats') }}</p>
                                         </div>
                                         
                                         <div>
                                             <label for="ecg_date" class="block text-sm font-medium text-gray-700 mb-2">
-                                                Date de l'ECG
+                                                {{ __('pcma.ecg_date_label') }}
                                             </label>
                                             <input type="date" id="ecg_date" name="ecg_date" 
                                                    value="{{ old('ecg_date') }}"
@@ -1105,30 +1103,30 @@
                                         
                                         <div>
                                             <label for="ecg_interpretation" class="block text-sm font-medium text-gray-700 mb-2">
-                                                Interprétation ECG
+                                                {{ __('pcma.ecg_interpretation_label') }}
                                             </label>
                                             <select id="ecg_interpretation" name="ecg_interpretation" 
                                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                                <option value="">Sélectionner</option>
-                                                <option value="normal" {{ old('ecg_interpretation') == 'normal' ? 'selected' : '' }}>Normal</option>
-                                                <option value="sinus_bradycardia" {{ old('ecg_interpretation') == 'sinus_bradycardia' ? 'selected' : '' }}>Bradycardie sinusale</option>
-                                                <option value="sinus_tachycardia" {{ old('ecg_interpretation') == 'sinus_tachycardia' ? 'selected' : '' }}>Tachycardie sinusale</option>
-                                                <option value="atrial_fibrillation" {{ old('ecg_interpretation') == 'atrial_fibrillation' ? 'selected' : '' }}>Fibrillation auriculaire</option>
-                                                <option value="ventricular_tachycardia" {{ old('ecg_interpretation') == 'ventricular_tachycardia' ? 'selected' : '' }}>Tachycardie ventriculaire</option>
-                                                <option value="st_elevation" {{ old('ecg_interpretation') == 'st_elevation' ? 'selected' : '' }}>Élévation du segment ST</option>
-                                                <option value="st_depression" {{ old('ecg_interpretation') == 'st_depression' ? 'selected' : '' }}>Dépression du segment ST</option>
-                                                <option value="qt_prolongation" {{ old('ecg_interpretation') == 'qt_prolongation' ? 'selected' : '' }}>Prolongation QT</option>
-                                                <option value="abnormal" {{ old('ecg_interpretation') == 'abnormal' ? 'selected' : '' }}>Anormal (préciser)</option>
+                                                <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                                <option value="normal" {{ old('ecg_interpretation') == 'normal' ? 'selected' : '' }}>{{ __('pcma.normal_option') }}</option>
+                                                <option value="sinus_bradycardia" {{ old('ecg_interpretation') == 'sinus_bradycardia' ? 'selected' : '' }}>{{ __('pcma.ecg_sinus_brady_option') }}</option>
+                                                <option value="sinus_tachycardia" {{ old('ecg_interpretation') == 'sinus_tachycardia' ? 'selected' : '' }}>{{ __('pcma.ecg_sinus_tachy_option') }}</option>
+                                                <option value="atrial_fibrillation" {{ old('ecg_interpretation') == 'atrial_fibrillation' ? 'selected' : '' }}>{{ __('pcma.ecg_afib_option') }}</option>
+                                                <option value="ventricular_tachycardia" {{ old('ecg_interpretation') == 'ventricular_tachycardia' ? 'selected' : '' }}>{{ __('pcma.ecg_vtach_option') }}</option>
+                                                <option value="st_elevation" {{ old('ecg_interpretation') == 'st_elevation' ? 'selected' : '' }}>{{ __('pcma.ecg_st_elevation_option') }}</option>
+                                                <option value="st_depression" {{ old('ecg_interpretation') == 'st_depression' ? 'selected' : '' }}>{{ __('pcma.ecg_st_depression_option') }}</option>
+                                                <option value="qt_prolongation" {{ old('ecg_interpretation') == 'qt_prolongation' ? 'selected' : '' }}>{{ __('pcma.ecg_qt_prolongation_option') }}</option>
+                                                <option value="abnormal" {{ old('ecg_interpretation') == 'abnormal' ? 'selected' : '' }}>{{ __('pcma.ecg_abnormal_specify_option') }}</option>
                                             </select>
                                         </div>
                                         
                                         <div>
                                             <label for="ecg_notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                                Notes ECG
+                                                {{ __('pcma.ecg_notes_label') }}
                                             </label>
                                             <textarea id="ecg_notes" name="ecg_notes" rows="3"
                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                                      placeholder="Détails de l'interprétation ECG...">{{ old('ecg_notes') }}</textarea>
+                                                      placeholder="{{ __('pcma.ecg_notes_placeholder') }}">{{ old('ecg_notes') }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -1139,22 +1137,22 @@
                                         <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                                         </svg>
-                                        <h4 class="font-semibold text-gray-900">🧠 Imagerie par Résonance Magnétique (IRM)</h4>
+                                        <h4 class="font-semibold text-gray-900">{{ __('pcma.mri_upload_title') }}</h4>
                                     </div>
                                     
                                     <div class="space-y-3">
                                         <div>
                                             <label for="mri_file" class="block text-sm font-medium text-gray-700 mb-2">
-                                                Fichier IRM
+                                                {{ __('pcma.mri_file_label') }}
                                             </label>
                                             <input type="file" id="mri_file" name="mri_file" accept=".pdf,.jpg,.jpeg,.png,.bmp,.tiff,.tif,.dcm"
                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                            <p class="text-xs text-gray-500 mt-1">Formats acceptés: PDF, JPG, PNG, BMP, TIFF, DICOM</p>
+                                            <p class="text-xs text-gray-500 mt-1">{{ __('pcma.accepted_formats') }}</p>
                                         </div>
                                         
                                         <div>
                                             <label for="mri_date" class="block text-sm font-medium text-gray-700 mb-2">
-                                                Date de l'IRM
+                                                {{ __('pcma.mri_date_label') }}
                                             </label>
                                             <input type="date" id="mri_date" name="mri_date" 
                                                    value="{{ old('mri_date') }}"
@@ -1163,48 +1161,48 @@
                                         
                                         <div>
                                             <label for="mri_type" class="block text-sm font-medium text-gray-700 mb-2">
-                                                Type d'IRM
+                                                {{ __('pcma.mri_type_label') }}
                                             </label>
                                             <select id="mri_type" name="mri_type" 
                                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                                <option value="">Sélectionner</option>
-                                                <option value="brain" {{ old('mri_type') == 'brain' ? 'selected' : '' }}>IRM Cérébrale</option>
-                                                <option value="spine" {{ old('mri_type') == 'spine' ? 'selected' : '' }}>IRM Rachidienne</option>
-                                                <option value="knee" {{ old('mri_type') == 'knee' ? 'selected' : '' }}>IRM du Genou</option>
-                                                <option value="shoulder" {{ old('mri_type') == 'shoulder' ? 'selected' : '' }}>IRM de l'Épaule</option>
-                                                <option value="ankle" {{ old('mri_type') == 'ankle' ? 'selected' : '' }}>IRM de la Cheville</option>
-                                                <option value="hip" {{ old('mri_type') == 'hip' ? 'selected' : '' }}>IRM de la Hanche</option>
-                                                <option value="cardiac" {{ old('mri_type') == 'cardiac' ? 'selected' : '' }}>IRM Cardiaque</option>
-                                                <option value="other" {{ old('mri_type') == 'other' ? 'selected' : '' }}>Autre</option>
+                                                <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                                <option value="brain" {{ old('mri_type') == 'brain' ? 'selected' : '' }}>{{ __('pcma.mri_brain_option') }}</option>
+                                                <option value="spine" {{ old('mri_type') == 'spine' ? 'selected' : '' }}>{{ __('pcma.mri_spine_option') }}</option>
+                                                <option value="knee" {{ old('mri_type') == 'knee' ? 'selected' : '' }}>{{ __('pcma.mri_knee_option') }}</option>
+                                                <option value="shoulder" {{ old('mri_type') == 'shoulder' ? 'selected' : '' }}>{{ __('pcma.mri_shoulder_option') }}</option>
+                                                <option value="ankle" {{ old('mri_type') == 'ankle' ? 'selected' : '' }}>{{ __('pcma.mri_ankle_option') }}</option>
+                                                <option value="hip" {{ old('mri_type') == 'hip' ? 'selected' : '' }}>{{ __('pcma.mri_hip_option') }}</option>
+                                                <option value="cardiac" {{ old('mri_type') == 'cardiac' ? 'selected' : '' }}>{{ __('pcma.mri_cardiac_option') }}</option>
+                                                <option value="other" {{ old('mri_type') == 'other' ? 'selected' : '' }}>{{ __('pcma.other_option') }}</option>
                                             </select>
                                         </div>
                                         
                                         <div>
                                             <label for="mri_findings" class="block text-sm font-medium text-gray-700 mb-2">
-                                                Résultats IRM
+                                                {{ __('pcma.mri_findings_label') }}
                                             </label>
                                             <select id="mri_findings" name="mri_findings" 
                                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                                <option value="">Sélectionner</option>
-                                                <option value="normal" {{ old('mri_findings') == 'normal' ? 'selected' : '' }}>Normal</option>
-                                                <option value="mild_abnormality" {{ old('mri_findings') == 'mild_abnormality' ? 'selected' : '' }}>Anomalie légère</option>
-                                                <option value="moderate_abnormality" {{ old('mri_findings') == 'moderate_abnormality' ? 'selected' : '' }}>Anomalie modérée</option>
-                                                <option value="severe_abnormality" {{ old('mri_findings') == 'severe_abnormality' ? 'selected' : '' }}>Anomalie sévère</option>
-                                                <option value="fracture" {{ old('mri_findings') == 'fracture' ? 'selected' : '' }}>Fracture</option>
-                                                <option value="tumor" {{ old('mri_findings') == 'tumor' ? 'selected' : '' }}>Tumeur</option>
-                                                <option value="inflammation" {{ old('mri_findings') == 'inflammation' ? 'selected' : '' }}>Inflammation</option>
-                                                <option value="degenerative" {{ old('mri_findings') == 'degenerative' ? 'selected' : '' }}>Changements dégénératifs</option>
-                                                <option value="other" {{ old('mri_findings') == 'other' ? 'selected' : '' }}>Autre</option>
+                                                <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                                <option value="normal" {{ old('mri_findings') == 'normal' ? 'selected' : '' }}>{{ __('pcma.normal_option') }}</option>
+                                                <option value="mild_abnormality" {{ old('mri_findings') == 'mild_abnormality' ? 'selected' : '' }}>{{ __('pcma.mri_mild_abn_option') }}</option>
+                                                <option value="moderate_abnormality" {{ old('mri_findings') == 'moderate_abnormality' ? 'selected' : '' }}>{{ __('pcma.mri_moderate_abn_option') }}</option>
+                                                <option value="severe_abnormality" {{ old('mri_findings') == 'severe_abnormality' ? 'selected' : '' }}>{{ __('pcma.mri_severe_abn_option') }}</option>
+                                                <option value="fracture" {{ old('mri_findings') == 'fracture' ? 'selected' : '' }}>{{ __('pcma.fracture_option') }}</option>
+                                                <option value="tumor" {{ old('mri_findings') == 'tumor' ? 'selected' : '' }}>{{ __('pcma.tumor_option') }}</option>
+                                                <option value="inflammation" {{ old('mri_findings') == 'inflammation' ? 'selected' : '' }}>{{ __('pcma.inflammation_option') }}</option>
+                                                <option value="degenerative" {{ old('mri_findings') == 'degenerative' ? 'selected' : '' }}>{{ __('pcma.degenerative_option') }}</option>
+                                                <option value="other" {{ old('mri_findings') == 'other' ? 'selected' : '' }}>{{ __('pcma.other_option') }}</option>
                                             </select>
                                         </div>
                                         
                                         <div>
                                             <label for="mri_notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                                Notes IRM
+                                                {{ __('pcma.mri_notes_label') }}
                                             </label>
                                             <textarea id="mri_notes" name="mri_notes" rows="3"
                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                                      placeholder="Détails des résultats IRM...">{{ old('mri_notes') }}</textarea>
+                                                      placeholder="{{ __('pcma.mri_notes_placeholder') }}">{{ old('mri_notes') }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -1212,11 +1210,11 @@
                             
                             <!-- Additional Imaging -->
                             <div class="mt-6">
-                                <h4 class="font-semibold text-gray-900 mb-3"> Autres Examens d'Imagerie</h4>
+                                <h4 class="font-semibold text-gray-900 mb-3"> {{ __('pcma.additional_imaging_title') }}</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <label for="xray_file" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Radiographie (X-Ray)
+                                            {{ __('pcma.xray_label') }}
                                         </label>
                                         <input type="file" id="xray_file" name="xray_file" accept=".pdf,.jpg,.jpeg,.png,.dcm"
                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
@@ -1224,16 +1222,16 @@
                                     
                                     <div class="md:col-span-3">
                                         <label for="xray_notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Notes Radiographie (X-Ray)
+                                            {{ __('pcma.xray_notes_label') }}
                                         </label>
                                         <textarea id="xray_notes" name="xray_notes" rows="3"
                                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                                  placeholder="Résultats de l'analyse radiographique...">{{ old('xray_notes') }}</textarea>
+                                                  placeholder="{{ __('pcma.xray_notes_placeholder') }}">{{ old('xray_notes') }}</textarea>
                                     </div>
                                     
                                     <div>
                                         <label for="ct_scan_file" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Scanner (CT)
+                                            {{ __('pcma.ct_label') }}
                                         </label>
                                         <input type="file" id="ct_scan_file" name="ct_scan_file" accept=".pdf,.jpg,.jpeg,.png,.dcm"
                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
@@ -1241,7 +1239,7 @@
                                     
                                     <div>
                                         <label for="ultrasound_file" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Échographie
+                                            {{ __('pcma.ultrasound_label') }}
                                         </label>
                                         <input type="file" id="ultrasound_file" name="ultrasound_file" accept=".pdf,.jpg,.jpeg,.png,.dcm"
                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
@@ -1249,20 +1247,20 @@
                                     
                                     <div class="md:col-span-3">
                                         <label for="ct_notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Notes Scanner (CT)
+                                            {{ __('pcma.ct_notes_label') }}
                                         </label>
                                         <textarea id="ct_notes" name="ct_notes" rows="3"
                                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                                  placeholder="Résultats de l'analyse scanner...">{{ old('ct_notes') }}</textarea>
+                                                  placeholder="{{ __('pcma.ct_notes_placeholder') }}">{{ old('ct_notes') }}</textarea>
                                     </div>
                                     
                                     <div class="md:col-span-3">
                                         <label for="ultrasound_notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Notes Échographie
+                                            {{ __('pcma.ultrasound_notes_label') }}
                                         </label>
                                         <textarea id="ultrasound_notes" name="ultrasound_notes" rows="3"
                                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                                  placeholder="Résultats de l'analyse échographique...">{{ old('ultrasound_notes') }}</textarea>
+                                                  placeholder="{{ __('pcma.ultrasound_notes_placeholder') }}">{{ old('ultrasound_notes') }}</textarea>
                                     </div>
                                                             </div>
                             
@@ -1272,33 +1270,33 @@
                                     <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    <h4 class="text-lg font-semibold text-green-900">🔬 Visualiseur DICOM</h4>
+                                    <h4 class="text-lg font-semibold text-green-900">{{ __('pcma.dicom_viewer_title') }}</h4>
                                 </div>
                                 
                                 <div class="space-y-4">
                                     <p class="text-sm text-green-700">
-                                        Visualisez les fichiers d'imagerie médicale (DICOM, images) avec des outils d'analyse intégrés
+                                        {{ __('pcma.dicom_viewer_desc') }}
                                     </p>
                                     
                                     <!-- File Selection for Viewer -->
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                Sélectionner un fichier à visualiser
+                                                {{ __('pcma.select_file_viewer_label') }}
                                             </label>
                                             <select id="dicom-viewer-select" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                                                <option value="">Choisir un fichier...</option>
-                                                <option value="ecg">ECG - Fichier sélectionné</option>
-                                                <option value="mri">IRM - Fichier sélectionné</option>
-                                                <option value="xray">Radiographie - Fichier sélectionné</option>
-                                                <option value="ct">Scanner CT - Fichier sélectionné</option>
-                                                <option value="ultrasound">Échographie - Fichier sélectionné</option>
+                                                <option value="">{{ __('pcma.choose_file_placeholder') }}</option>
+                                                <option value="ecg">{{ __('pcma.dicom_ecg_option') }}</option>
+                                                <option value="mri">{{ __('pcma.dicom_mri_option') }}</option>
+                                                <option value="xray">{{ __('pcma.dicom_xray_option') }}</option>
+                                                <option value="ct">{{ __('pcma.dicom_ct_option') }}</option>
+                                                <option value="ultrasound">{{ __('pcma.dicom_us_option') }}</option>
                                             </select>
                                         </div>
                                         
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                Outils de visualisation
+                                                {{ __('pcma.viewer_tools_label') }}
                                             </label>
                                             <div class="flex space-x-2">
                                                 <button type="button" id="viewer-zoom-in" class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
@@ -1318,7 +1316,7 @@
                                         
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                Mesures
+                                                {{ __('pcma.measurements_label') }}
                                             </label>
                                             <div class="flex space-x-2">
                                                 <button type="button" id="viewer-measure" class="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors">
@@ -1339,22 +1337,22 @@
                                         <div id="dicom-viewer-container" class="relative w-full h-96 bg-gray-900 flex items-center justify-center">
                                             <div id="dicom-loading" class="hidden text-white text-center">
                                                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
-                                                <p>Chargement de l'image...</p>
+                                                <p>{{ __('pcma.loading_image') }}</p>
                                             </div>
                                             
                                             <div id="dicom-error" class="hidden text-red-400 text-center">
                                                 <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                                 </svg>
-                                                <p>Erreur de chargement</p>
+                                                <p>{{ __('pcma.loading_error') }}</p>
                                             </div>
                                             
                                             <div id="dicom-placeholder" class="text-gray-400 text-center">
                                                 <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                 </svg>
-                                                <p class="text-lg font-semibold">Visualiseur DICOM</p>
-                                                <p class="text-sm">Sélectionnez un fichier pour commencer</p>
+                                                <p class="text-lg font-semibold">{{ __('pcma.dicom_placeholder_title') }}</p>
+                                                <p class="text-sm">{{ __('pcma.dicom_placeholder_desc') }}</p>
                                             </div>
                                             
                                             <canvas id="dicom-canvas" class="hidden max-w-full max-h-full object-contain"></canvas>
@@ -1364,7 +1362,7 @@
                                         <div class="bg-gray-800 p-4">
                                             <div class="flex items-center justify-between text-white">
                                                 <div class="flex items-center space-x-4">
-                                                    <span id="dicom-info" class="text-sm">Aucun fichier sélectionné</span>
+                                                    <span id="dicom-info" class="text-sm">{{ __('pcma.no_file_selected') }}</span>
                                                     <span id="dicom-dimensions" class="text-sm text-gray-300"></span>
                                                 </div>
                                                 <div class="flex items-center space-x-2">
@@ -1377,50 +1375,50 @@
                                     
                                     <!-- DICOM Metadata Panel -->
                                     <div id="dicom-metadata" class="hidden bg-white border border-gray-200 rounded-lg p-4">
-                                        <h5 class="font-semibold text-gray-900 mb-3"> Métadonnées DICOM</h5>
+                                        <h5 class="font-semibold text-gray-900 mb-3"> {{ __('pcma.dicom_metadata_title') }}</h5>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                             <div>
-                                                <p><strong>Patient:</strong> <span id="dicom-patient-name">-</span></p>
-                                                <p><strong>ID Patient:</strong> <span id="dicom-patient-id">-</span></p>
-                                                <p><strong>Date d'examen:</strong> <span id="dicom-study-date">-</span></p>
+                                                <p><strong>{{ __('pcma.patient_label') }}</strong> <span id="dicom-patient-name">-</span></p>
+                                                <p><strong>{{ __('pcma.patient_id_label') }}</strong> <span id="dicom-patient-id">-</span></p>
+                                                <p><strong>{{ __('pcma.exam_date_label') }}</strong> <span id="dicom-study-date">-</span></p>
                                                 <p><strong>Modality:</strong> <span id="dicom-modality">-</span></p>
                                             </div>
                                             <div>
                                                 <p><strong>Institution:</strong> <span id="dicom-institution">-</span></p>
-                                                <p><strong>Médecin:</strong> <span id="dicom-physician">-</span></p>
-                                                <p><strong>Description:</strong> <span id="dicom-description">-</span></p>
-                                                <p><strong>Dimensions:</strong> <span id="dicom-image-dimensions">-</span></p>
+                                                <p><strong>{{ __('pcma.physician_label') }}</strong> <span id="dicom-physician">-</span></p>
+                                                <p><strong>{{ __('pcma_extra.create_9b6f3f076617') }}</strong> <span id="dicom-description">-</span></p>
+                                                <p><strong>{{ __('pcma_extra.create_584b9c37e014') }}</strong> <span id="dicom-image-dimensions">-</span></p>
                                             </div>
                                         </div>
                                     </div>
                                     
                                     <!-- Measurement Tools -->
                                     <div id="dicom-measurements" class="hidden bg-white border border-gray-200 rounded-lg p-4">
-                                        <h5 class="font-semibold text-gray-900 mb-3">📏 Outils de Mesure</h5>
+                                        <h5 class="font-semibold text-gray-900 mb-3">{{ __('pcma.measurement_tools_title') }}</h5>
                                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-2">Distance</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('pcma.distance_label') }}</label>
                                                 <div class="flex space-x-2">
                                                     <button type="button" id="measure-distance" class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
-                                                        📏 Distance
+                                                        {{ __('pcma_extra.create_1bed8de689cc') }}
                                                     </button>
                                                     <span id="distance-result" class="text-sm text-gray-600">-</span>
                                                 </div>
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-2">Angle</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('pcma.angle_label') }}</label>
                                                 <div class="flex space-x-2">
                                                     <button type="button" id="measure-angle" class="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600">
-                                                        📐 Angle
+                                                        {{ __('pcma_extra.create_f70ad52f2233') }}
                                                     </button>
                                                     <span id="angle-result" class="text-sm text-gray-600">-</span>
                                                 </div>
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-2">Surface</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('pcma.area_label') }}</label>
                                                 <div class="flex space-x-2">
                                                     <button type="button" id="measure-area" class="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600">
-                                                        📐 Surface
+                                                        {{ __('pcma.area_btn') }}
                                                     </button>
                                                     <span id="area-result" class="text-sm text-gray-600">-</span>
                                                 </div>
@@ -1437,12 +1435,12 @@
                                     <svg class="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                                     </svg>
-                                    <h4 class="text-lg font-semibold text-purple-900">🤖 Analyse IA - Med-Gemini</h4>
+                                    <h4 class="text-lg font-semibold text-purple-900">{{ __('pcma.ai_med_gemini_title') }}</h4>
                                 </div>
                                 
                                 <div class="space-y-4">
                                     <p class="text-sm text-purple-700">
-                                        Analyse automatique des fichiers ECG et IRM pour détecter les anomalies et évaluer l'âge osseux
+                                        {{ __('pcma.ai_analysis_desc') }}
                                     </p>
                                     
                                     <div class="flex flex-wrap gap-3">
@@ -1451,7 +1449,7 @@
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                             </svg>
-                                             Analyser ECG
+                                            {{ __('pcma.analyze_ecg_btn') }}
                                         </button>
                                         
                                         <button type="button" id="ai-check-mri" 
@@ -1459,7 +1457,7 @@
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                                             </svg>
-                                            🧠 Analyser IRM (Âge Osseux)
+                                            {{ __('pcma.analyze_mri_btn') }}
                                         </button>
                                         
                                         <button type="button" id="ai-check-xray" 
@@ -1467,7 +1465,7 @@
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
                                             </svg>
-                                             Analyser X-Ray
+                                            {{ __('pcma.analyze_xray_btn') }}
                                         </button>
                                         
                                         <button type="button" id="ai-check-ct" 
@@ -1475,7 +1473,7 @@
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                             </svg>
-                                            🖥️ Analyser CT
+                                            {{ __('pcma.analyze_ct_btn') }}
                                         </button>
                                         
                                         <button type="button" id="ai-check-ultrasound" 
@@ -1483,7 +1481,7 @@
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                                             </svg>
-                                            🔊 Analyser Échographie
+                                            {{ __('pcma.analyze_us_btn') }}
                                         </button>
                                         
                                         <button type="button" id="ai-check-all" 
@@ -1491,13 +1489,13 @@
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                                             </svg>
-                                             Analyse Complète
+                                            {{ __('pcma.analyze_all_btn') }}
                                         </button>
                                     </div>
                                     
                                     <!-- AI Analysis Results -->
                                     <div id="ai-analysis-results" class="hidden bg-white border border-gray-200 rounded-lg p-4">
-                                        <h5 class="font-semibold text-gray-900 mb-3"> Résultats de l'Analyse IA</h5>
+                                        <h5 class="font-semibold text-gray-900 mb-3"> {{ __('pcma.ai_analysis_results_title') }}</h5>
                                         <div id="ai-results-content" class="space-y-3">
                                             <!-- Results will be populated here -->
                                         </div>
@@ -1509,7 +1507,7 @@
                                     <div id="ai-analysis-status" class="hidden">
                                         <div class="flex items-center text-sm">
                                             <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 mr-2"></div>
-                                            <span class="text-purple-600">Analyse en cours...</span>
+                                            <span class="text-purple-600">{{ __('pcma.analysis_in_progress') }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1522,13 +1520,13 @@
                                 <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-blue-900">❤️ Évaluation Cardiovasculaire</h3>
+                                <h3 class="text-lg font-semibold text-blue-900">{{ __('pcma.cardio_assessment_title') }}</h3>
                             </div>
                             
                             <!-- ECG Diagram -->
                             <div class="text-center mb-6">
                                 <div class="bg-white border border-gray-200 rounded-lg p-4 inline-block">
-                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Électrocardiogramme (ECG)</h4>
+                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">{{ __('pcma.ecg_upload_title') }}</h4>
                                     <svg width="300" height="80" class="mx-auto">
                                         <defs>
                                             <linearGradient id="ecgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -1547,40 +1545,40 @@
                                         <!-- T Wave -->
                                         <path d="M70,40 Q75,25 80,40" stroke="#3b82f6" stroke-width="2" fill="none"/>
                                     </svg>
-                                    <p class="text-xs text-gray-500 mt-2">Rythme sinusal normal - 65 bpm</p>
+                                    <p class="text-xs text-gray-500 mt-2">{{ __('pcma.sinus_rhythm_note') }}</p>
                                 </div>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label for="cardiac_rhythm" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Rythme Cardiaque
+                                        {{ __('pcma.cardiac_rhythm_label') }}
                                     </label>
                                     <select id="cardiac_rhythm" name="cardiac_rhythm" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="sinus" {{ old('cardiac_rhythm') == 'sinus' ? 'selected' : '' }}>Rythme sinusal</option>
-                                        <option value="irregular" {{ old('cardiac_rhythm') == 'irregular' ? 'selected' : '' }}>Rythme irrégulier</option>
-                                        <option value="arrhythmia" {{ old('cardiac_rhythm') == 'arrhythmia' ? 'selected' : '' }}>Arythmie</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="sinus" {{ old('cardiac_rhythm') == 'sinus' ? 'selected' : '' }}>{{ __('pcma.rhythm_sinus_option') }}</option>
+                                        <option value="irregular" {{ old('cardiac_rhythm') == 'irregular' ? 'selected' : '' }}>{{ __('pcma.rhythm_irregular_option') }}</option>
+                                        <option value="arrhythmia" {{ old('cardiac_rhythm') == 'arrhythmia' ? 'selected' : '' }}>{{ __('pcma.arrhythmia_option') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label for="heart_murmur" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Souffle Cardiaque
+                                        {{ __('pcma.heart_murmur_label') }}
                                     </label>
                                     <select id="heart_murmur" name="heart_murmur" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="none" {{ old('heart_murmur') == 'none' ? 'selected' : '' }}>Aucun</option>
-                                        <option value="systolic" {{ old('heart_murmur') == 'systolic' ? 'selected' : '' }}>Systolique</option>
-                                        <option value="diastolic" {{ old('heart_murmur') == 'diastolic' ? 'selected' : '' }}>Diastolique</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="none" {{ old('heart_murmur') == 'none' ? 'selected' : '' }}>{{ __('pcma.murmur_none_option') }}</option>
+                                        <option value="systolic" {{ old('heart_murmur') == 'systolic' ? 'selected' : '' }}>{{ __('pcma.murmur_systolic_option') }}</option>
+                                        <option value="diastolic" {{ old('heart_murmur') == 'diastolic' ? 'selected' : '' }}>{{ __('pcma.murmur_diastolic_option') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label for="blood_pressure_rest" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Tension au Repos
+                                        {{ __('pcma.bp_rest_label') }}
                                     </label>
                                     <input type="text" id="blood_pressure_rest" name="blood_pressure_rest" 
                                            value="{{ old('blood_pressure_rest') }}"
@@ -1590,7 +1588,7 @@
                                 
                                 <div>
                                     <label for="blood_pressure_exercise" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Tension à l'Effort
+                                        {{ __('pcma.bp_exercise_label') }}
                                     </label>
                                     <input type="text" id="blood_pressure_exercise" name="blood_pressure_exercise" 
                                            value="{{ old('blood_pressure_exercise') }}"
@@ -1606,13 +1604,13 @@
                                 <svg class="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-purple-900">🧠 Évaluation Neurologique</h3>
+                                <h3 class="text-lg font-semibold text-purple-900">{{ __('pcma.neuro_assessment_title') }}</h3>
                             </div>
                             
                             <!-- Brain Diagram -->
                             <div class="text-center mb-6">
                                 <div class="bg-white border border-gray-200 rounded-lg p-4 inline-block">
-                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Anatomie Cérébrale</h4>
+                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">{{ __('pcma.brain_anatomy_title') }}</h4>
                                     <svg width="200" height="120" class="mx-auto">
                                         <!-- Brain Outline -->
                                         <path d="M100,20 Q120,30 130,50 Q135,70 130,90 Q120,110 100,120 Q80,110 70,90 Q65,70 70,50 Q80,30 100,20" 
@@ -1625,63 +1623,63 @@
                                         <!-- Brain Stem -->
                                         <rect x="95" y="100" width="10" height="15" fill="#7c3aed"/>
                                         <!-- Labels -->
-                                        <text x="50" y="35" class="text-xs" fill="#6b7280">Frontal</text>
-                                        <text x="140" y="85" class="text-xs" fill="#6b7280">Occipital</text>
-                                        <text x="100" y="125" class="text-xs" fill="#6b7280">Tronc</text>
+                                        <text x="50" y="35" class="text-xs" fill="#6b7280">{{ __('pcma.frontal_label') }}</text>
+                                        <text x="140" y="85" class="text-xs" fill="#6b7280">{{ __('pcma.occipital_label') }}</text>
+                                        <text x="100" y="125" class="text-xs" fill="#6b7280">{{ __('pcma.brainstem_label') }}</text>
                                     </svg>
-                                    <p class="text-xs text-gray-500 mt-2">Examen neurologique normal</p>
+                                    <p class="text-xs text-gray-500 mt-2">{{ __('pcma.neuro_exam_normal_note') }}</p>
                                 </div>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label for="consciousness" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Niveau de Conscience
+                                        {{ __('pcma.consciousness_label') }}
                                     </label>
                                     <select id="consciousness" name="consciousness" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="alert" {{ old('consciousness') == 'alert' ? 'selected' : '' }}>Vigile</option>
-                                        <option value="confused" {{ old('consciousness') == 'confused' ? 'selected' : '' }}>Confus</option>
-                                        <option value="drowsy" {{ old('consciousness') == 'drowsy' ? 'selected' : '' }}>Somnolent</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="alert" {{ old('consciousness') == 'alert' ? 'selected' : '' }}>{{ __('pcma.alert_state_option') }}</option>
+                                        <option value="confused" {{ old('consciousness') == 'confused' ? 'selected' : '' }}>{{ __('pcma.confused_state_option') }}</option>
+                                        <option value="drowsy" {{ old('consciousness') == 'drowsy' ? 'selected' : '' }}>{{ __('pcma.drowsy_state_option') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label for="cranial_nerves" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Nerfs Crâniens
+                                        {{ __('pcma.cranial_nerves_label') }}
                                     </label>
                                     <select id="cranial_nerves" name="cranial_nerves" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="normal" {{ old('cranial_nerves') == 'normal' ? 'selected' : '' }}>Normaux</option>
-                                        <option value="abnormal" {{ old('cranial_nerves') == 'abnormal' ? 'selected' : '' }}>Anormaux</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="normal" {{ old('cranial_nerves') == 'normal' ? 'selected' : '' }}>{{ __('pcma.cranial_normal_option') }}</option>
+                                        <option value="abnormal" {{ old('cranial_nerves') == 'abnormal' ? 'selected' : '' }}>{{ __('pcma.cranial_abnormal_option') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label for="motor_function" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Fonction Motrice
+                                        {{ __('pcma.motor_function_label') }}
                                     </label>
                                     <select id="motor_function" name="motor_function" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="normal" {{ old('motor_function') == 'normal' ? 'selected' : '' }}>Normale</option>
-                                        <option value="weakness" {{ old('motor_function') == 'weakness' ? 'selected' : '' }}>Faiblesse</option>
-                                        <option value="paralysis" {{ old('motor_function') == 'paralysis' ? 'selected' : '' }}>Paralysie</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="normal" {{ old('motor_function') == 'normal' ? 'selected' : '' }}>{{ __('pcma.function_normal_option') }}</option>
+                                        <option value="weakness" {{ old('motor_function') == 'weakness' ? 'selected' : '' }}>{{ __('pcma.weakness_option') }}</option>
+                                        <option value="paralysis" {{ old('motor_function') == 'paralysis' ? 'selected' : '' }}>{{ __('pcma.paralysis_option') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label for="sensory_function" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Fonction Sensitive
+                                        {{ __('pcma.sensory_function_label') }}
                                     </label>
                                     <select id="sensory_function" name="sensory_function" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="normal" {{ old('sensory_function') == 'normal' ? 'selected' : '' }}>Normale</option>
-                                        <option value="decreased" {{ old('sensory_function') == 'decreased' ? 'selected' : '' }}>Diminuée</option>
-                                        <option value="absent" {{ old('sensory_function') == 'absent' ? 'selected' : '' }}>Absente</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="normal" {{ old('sensory_function') == 'normal' ? 'selected' : '' }}>{{ __('pcma.function_normal_option') }}</option>
+                                        <option value="decreased" {{ old('sensory_function') == 'decreased' ? 'selected' : '' }}>{{ __('pcma.sensory_decreased_option') }}</option>
+                                        <option value="absent" {{ old('sensory_function') == 'absent' ? 'selected' : '' }}>{{ __('pcma.sensory_absent_option') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -1693,13 +1691,13 @@
                                 <svg class="w-6 h-6 text-orange-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-orange-900">💪 Évaluation Musculo-squelettique</h3>
+                                <h3 class="text-lg font-semibold text-orange-900">{{ __('pcma.msk_assessment_title') }}</h3>
                             </div>
                             
                             <!-- Body Diagram -->
                             <div class="text-center mb-6">
                                 <div class="bg-white border border-gray-200 rounded-lg p-4 inline-block">
-                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Anatomie Musculo-squelettique</h4>
+                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">{{ __('pcma.msk_anatomy_title') }}</h4>
                                     <svg width="150" height="200" class="mx-auto">
                                         <!-- Head -->
                                         <circle cx="75" cy="20" r="15" fill="#f97316" stroke="#ea580c" stroke-width="1"/>
@@ -1720,68 +1718,68 @@
                                         <circle cx="64" cy="160" r="3" fill="#ea580c"/>
                                         <circle cx="86" cy="160" r="3" fill="#ea580c"/>
                                         <!-- Labels -->
-                                        <text x="75" y="15" class="text-xs" fill="#6b7280">Tête</text>
-                                        <text x="75" y="85" class="text-xs" fill="#6b7280">Tronc</text>
-                                        <text x="15" y="85" class="text-xs" fill="#6b7280">Bras</text>
-                                        <text x="130" y="85" class="text-xs" fill="#6b7280">Bras</text>
-                                        <text x="55" y="140" class="text-xs" fill="#6b7280">Jambe</text>
-                                        <text x="85" y="140" class="text-xs" fill="#6b7280">Jambe</text>
+                                        <text x="75" y="15" class="text-xs" fill="#6b7280">{{ __('pcma.head_label') }}</text>
+                                        <text x="75" y="85" class="text-xs" fill="#6b7280">{{ __('pcma.msk_torso_label') }}</text>
+                                        <text x="15" y="85" class="text-xs" fill="#6b7280">{{ __('pcma.arm_label') }}</text>
+                                        <text x="130" y="85" class="text-xs" fill="#6b7280">{{ __('pcma.arm_label') }}</text>
+                                        <text x="55" y="140" class="text-xs" fill="#6b7280">{{ __('pcma.leg_label') }}</text>
+                                        <text x="85" y="140" class="text-xs" fill="#6b7280">{{ __('pcma.leg_label') }}</text>
                                     </svg>
-                                    <p class="text-xs text-gray-500 mt-2">Examen musculo-squelettique normal</p>
+                                    <p class="text-xs text-gray-500 mt-2">{{ __('pcma.msk_exam_normal_note') }}</p>
                                 </div>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label for="joint_mobility" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Mobilité Articulaire
+                                        {{ __('pcma.joint_mobility_label') }}
                                     </label>
                                     <select id="joint_mobility" name="joint_mobility" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="normal" {{ old('joint_mobility') == 'normal' ? 'selected' : '' }}>Normale</option>
-                                        <option value="limited" {{ old('joint_mobility') == 'limited' ? 'selected' : '' }}>Limitée</option>
-                                        <option value="restricted" {{ old('joint_mobility') == 'restricted' ? 'selected' : '' }}>Restreinte</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="normal" {{ old('joint_mobility') == 'normal' ? 'selected' : '' }}>{{ __('pcma.function_normal_option') }}</option>
+                                        <option value="limited" {{ old('joint_mobility') == 'limited' ? 'selected' : '' }}>{{ __('pcma.limited_option') }}</option>
+                                        <option value="restricted" {{ old('joint_mobility') == 'restricted' ? 'selected' : '' }}>{{ __('pcma.restricted_option') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label for="muscle_strength" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Force Musculaire
+                                        {{ __('pcma.muscle_strength_label') }}
                                     </label>
                                     <select id="muscle_strength" name="muscle_strength" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="normal" {{ old('muscle_strength') == 'normal' ? 'selected' : '' }}>Normale</option>
-                                        <option value="reduced" {{ old('muscle_strength') == 'reduced' ? 'selected' : '' }}>Réduite</option>
-                                        <option value="weak" {{ old('muscle_strength') == 'weak' ? 'selected' : '' }}>Faible</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="normal" {{ old('muscle_strength') == 'normal' ? 'selected' : '' }}>{{ __('pcma.function_normal_option') }}</option>
+                                        <option value="reduced" {{ old('muscle_strength') == 'reduced' ? 'selected' : '' }}>{{ __('pcma.reduced_option') }}</option>
+                                        <option value="weak" {{ old('muscle_strength') == 'weak' ? 'selected' : '' }}>{{ __('pcma.weak_option') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label for="pain_assessment" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Évaluation de la Douleur
+                                        {{ __('pcma.pain_assessment_label') }}
                                     </label>
                                     <select id="pain_assessment" name="pain_assessment" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="none" {{ old('pain_assessment') == 'none' ? 'selected' : '' }}>Aucune</option>
-                                        <option value="mild" {{ old('pain_assessment') == 'mild' ? 'selected' : '' }}>Légère</option>
-                                        <option value="moderate" {{ old('pain_assessment') == 'moderate' ? 'selected' : '' }}>Modérée</option>
-                                        <option value="severe" {{ old('pain_assessment') == 'severe' ? 'selected' : '' }}>Sévère</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="none" {{ old('pain_assessment') == 'none' ? 'selected' : '' }}>{{ __('pcma.pain_none_option') }}</option>
+                                        <option value="mild" {{ old('pain_assessment') == 'mild' ? 'selected' : '' }}>{{ __('pcma.pain_mild_option') }}</option>
+                                        <option value="moderate" {{ old('pain_assessment') == 'moderate' ? 'selected' : '' }}>{{ __('pcma.pain_moderate_option') }}</option>
+                                        <option value="severe" {{ old('pain_assessment') == 'severe' ? 'selected' : '' }}>{{ __('pcma.pain_severe_option') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label for="range_of_motion" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Amplitude de Mouvement
+                                        {{ __('pcma.rom_label') }}
                                     </label>
                                     <select id="range_of_motion" name="range_of_motion" 
                                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
-                                        <option value="">Sélectionner</option>
-                                        <option value="full" {{ old('range_of_motion') == 'full' ? 'selected' : '' }}>Complète</option>
-                                        <option value="limited" {{ old('range_of_motion') == 'limited' ? 'selected' : '' }}>Limitée</option>
-                                        <option value="restricted" {{ old('range_of_motion') == 'restricted' ? 'selected' : '' }}>Restreinte</option>
+                                        <option value="">{{ __('pcma.select_placeholder') }}</option>
+                                        <option value="full" {{ old('range_of_motion') == 'full' ? 'selected' : '' }}>{{ __('pcma.rom_full_option') }}</option>
+                                        <option value="limited" {{ old('range_of_motion') == 'limited' ? 'selected' : '' }}>{{ __('pcma.limited_option') }}</option>
+                                        <option value="restricted" {{ old('range_of_motion') == 'restricted' ? 'selected' : '' }}>{{ __('pcma.restricted_option') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -1793,15 +1791,15 @@
                                 <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <h3 class="text-lg font-semibold text-green-900">🏆 Conformité FIFA</h3>
+                                <h3 class="text-lg font-semibold text-green-900">{{ __('pcma.fifa_compliance_title') }}</h3>
                             </div>
-                            <p class="text-green-700 mb-4">Informations requises pour la conformité FIFA</p>
+                            <p class="text-green-700 mb-4">{{ __('pcma.fifa_compliance_desc') }}</p>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <!-- FIFA ID -->
                                 <div>
                                     <label for="fifa_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                        ID FIFA
+                                        {{ __('pcma.fifa_id_label') }}
                                     </label>
                                     <input 
                                         type="text" 
@@ -1816,7 +1814,7 @@
                                 <!-- Competition Name -->
                                 <div>
                                     <label for="competition_name" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Nom de la compétition
+                                        {{ __('pcma.competition_name_label') }}
                                     </label>
                                     <input 
                                         type="text" 
@@ -1831,7 +1829,7 @@
                                 <!-- Competition Date -->
                                 <div>
                                     <label for="competition_date" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Date de la compétition
+                                        {{ __('pcma.competition_date_label') }}
                                     </label>
                                     <input 
                                         type="date" 
@@ -1845,7 +1843,7 @@
                                 <!-- Team Name -->
                                 <div>
                                     <label for="team_name" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Nom de l'équipe
+                                        {{ __('pcma.team_name_label') }}
                                     </label>
                                     <input 
                                         type="text" 
@@ -1853,25 +1851,25 @@
                                         name="team_name" 
                                         value="{{ old('team_name') }}"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        placeholder="Équipe nationale"
+                                        placeholder="{{ __('pcma.team_name_placeholder') }}"
                                     >
                                 </div>
 
                                 <!-- Position -->
                                 <div>
                                     <label for="position_secondary" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Poste du joueur
+                                        {{ __('pcma.player_position_label') }}
                                     </label>
                                     <select 
                                         id="position_secondary" 
                                         name="position_secondary" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                     >
-                                        <option value="">Sélectionner le poste</option>
-                                        <option value="goalkeeper" {{ old('position') == 'goalkeeper' ? 'selected' : '' }}>Gardien</option>
-                                        <option value="defender" {{ old('position') == 'defender' ? 'selected' : '' }}>Défenseur</option>
-                                        <option value="midfielder" {{ old('position') == 'midfielder' ? 'selected' : '' }}>Milieu</option>
-                                        <option value="forward" {{ old('position') == 'forward' ? 'selected' : '' }}>Attaquant</option>
+                                        <option value="">{{ __('pcma.select_position_placeholder') }}</option>
+                                        <option value="goalkeeper" {{ old('position') == 'goalkeeper' ? 'selected' : '' }}>{{ __('pcma.position_goalkeeper_option') }}</option>
+                                        <option value="defender" {{ old('position') == 'defender' ? 'selected' : '' }}>{{ __('pcma.position_defender_option') }}</option>
+                                        <option value="midfielder" {{ old('position') == 'midfielder' ? 'selected' : '' }}>{{ __('pcma.position_midfielder_option') }}</option>
+                                        <option value="forward" {{ old('position') == 'forward' ? 'selected' : '' }}>{{ __('pcma.position_forward_option') }}</option>
                                     </select>
                                 </div>
 
@@ -1887,10 +1885,10 @@
                                             class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                                         >
                                         <label for="fifa_compliant" class="ml-2 block text-sm font-medium text-gray-700">
-                                             Conforme aux standards FIFA
+                                             {{ __('pcma.fifa_compliant_label') }}
                                         </label>
                                     </div>
-                                    <p class="text-sm text-gray-500 mt-1">Cochez cette case si l'évaluation respecte tous les critères FIFA</p>
+                                    <p class="text-sm text-gray-500 mt-1">{{ __('pcma.fifa_compliant_hint') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -1903,11 +1901,11 @@
                         <svg class="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <h4 class="text-lg font-semibold text-purple-900">⚽ Évaluation Fitness Football Professionnel</h4>
+                        <h4 class="text-lg font-semibold text-purple-900">{{ __('pcma.fitness_assessment_title') }}</h4>
                     </div>
                     
                     <p class="text-sm text-purple-700 mb-4">
-                        Analyse complète de l'aptitude du joueur pour le football professionnel basée sur tous les examens médicaux
+                        {{ __('pcma.fitness_assessment_desc') }}
                     </p>
                     
                     <button type="button" id="ai-fitness-assessment" onclick="window.generateFitnessAssessment()"
@@ -1915,12 +1913,12 @@
                         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                         </svg>
-                        🤖 Générer Rapport Fitness Professionnel
+                        {{ __('pcma.generate_fitness_report_btn') }}
                     </button>
                     
                     <!-- Fitness Assessment Results -->
                     <div id="fitness-assessment-results" class="hidden mt-4 bg-white border border-purple-200 rounded-lg p-4">
-                        <h5 class="font-semibold text-purple-900 mb-3"> Rapport d'Évaluation Fitness</h5>
+                        <h5 class="font-semibold text-purple-900 mb-3"> {{ __('pcma.fitness_report_title') }}</h5>
                         <div id="fitness-results-content" class="space-y-3">
                             <!-- Fitness assessment results will be populated here -->
                         </div>
@@ -1933,11 +1931,11 @@
                         <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <h4 class="text-lg font-semibold text-green-900">📄 Export et Impression</h4>
+                        <h4 class="text-lg font-semibold text-green-900">{{ __('pcma.export_print_title') }}</h4>
                     </div>
                     
                     <p class="text-sm text-green-700 mb-4">
-                        Générez des rapports PDF et imprimez les évaluations médicales
+                        {{ __('pcma.export_print_desc') }}
                     </p>
                     
                     <div class="flex flex-wrap gap-4">
@@ -1946,7 +1944,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            📄 Générer PDF
+                            {{ __('pcma.generate_pdf_btn') }}
                         </button>
                         
                         <button type="button" id="print-report" onclick="window.printReport()"
@@ -1954,7 +1952,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                             </svg>
-                            🖨️ Imprimer Rapport
+                            {{ __('pcma.print_report_btn') }}
                         </button>
                         
 
@@ -1966,7 +1964,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                             Signature Médecin
+                             {{ __('pcma.doctor_signoff_btn') }}
                         </button>
                     </div>
                     
@@ -1974,7 +1972,7 @@
                     <div id="export-status" class="hidden mt-4">
                         <div class="flex items-center text-sm">
                             <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-2"></div>
-                            <span class="text-green-600">Génération en cours...</span>
+                            <span class="text-green-600">{{ __('pcma.generation_in_progress') }}</span>
                         </div>
                     </div>
                     
@@ -1984,7 +1982,7 @@
                 <!-- Submit Buttons -->
                 <div class="flex justify-end">
                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
-                        💾 Enregistrer
+                        {{ __('pcma.save_btn') }}
                     </button>
                 </div>
             </form>
@@ -2001,14 +1999,14 @@
 
                     <!-- Debug panel -->
                     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                                                    <h4 class="text-lg font-semibold text-yellow-800 mb-3">Panel de Debug</h4>
+                                                    <h4 class="text-lg font-semibold text-yellow-800 mb-3">{{ __('pcma.debug_panel_title') }}</h4>
                         <div class="space-y-3">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Clé API Google Speech-to-Text :</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('pcma.api_key_label') }}</label>
                                 <input 
                                     type="text" 
                                     id="apiKeyInput" 
-                                    placeholder="Entrez votre clé API Google Speech-to-Text"
+                                    placeholder="{{ __('pcma.api_key_placeholder') }}"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                                 >
                             </div>
@@ -2018,14 +2016,14 @@
                                     onclick="testAPIKey()" 
                                     class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition duration-200"
                                 >
-                                     Tester la Clé API
+                                     {{ __('pcma.test_api_key_btn') }}
                                 </button>
                                 <button 
                                     type="button" 
                                     onclick="clearConsole()" 
                                     class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition duration-200"
                                 >
-                                    🗑️ Vider la Console
+                                    {{ __('pcma.clear_console_btn') }}
                                 </button>
                             </div>
                             
@@ -2035,7 +2033,7 @@
                                     onclick="testVoiceAnalysis()" 
                                     class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-md transition duration-200"
                                 >
-                                    Test Analyse Vocale
+                                    {{ __('pcma.test_voice_analysis_btn') }}
                                 </button>
                                 <!-- Bouton de test SUPPRIMÉ (causait des données de test automatiques) -->
                                 <!-- <button 
@@ -2061,7 +2059,7 @@
                                 type="submit" 
                                 class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md transition duration-200"
                             >
-                                💾 Enregistrer
+                                {{ __('pcma.save_btn') }}
                             </button>
                             
                             <button 
@@ -2069,7 +2067,7 @@
                                 onclick="clearAllFields()" 
                                 class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md transition duration-200"
                             >
-                                🗑️ Effacer Tout
+                                {{ __('pcma.clear_all_btn') }}
                             </button>
                         </div>
                     </div>
@@ -2083,13 +2081,13 @@
         <div id="fhir-section" class="input-section hidden">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800">📥 Téléchargement depuis FHIR</h2>
+                    <h2 class="text-xl font-semibold text-gray-800">{{ __('pcma.fhir_download_title') }}</h2>
                 </div>
                 
                 <div class="p-6 space-y-6">
                     <div>
                         <label for="fhir_server_url" class="block text-sm font-medium text-gray-700 mb-2">
-                            URL du serveur FHIR
+                            {{ __('pcma.fhir_server_url_label') }}
                         </label>
                         <input type="url" id="fhir_server_url" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -2098,7 +2096,7 @@
                     
                     <div>
                         <label for="fhir_patient_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            ID du patient FHIR
+                            {{ __('pcma.fhir_patient_id_label') }}
                         </label>
                         <input type="text" id="fhir_patient_id" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -2107,28 +2105,28 @@
                     
                     <div>
                         <label for="fhir_resource_type" class="block text-sm font-medium text-gray-700 mb-2">
-                            Type de ressource
+                            {{ __('pcma.fhir_resource_type_label') }}
                         </label>
                         <select id="fhir_resource_type" 
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="Observation">Observation (Observations médicales)</option>
-                            <option value="Condition">Condition (Diagnostics)</option>
-                            <option value="Procedure">Procedure (Procédures)</option>
-                            <option value="MedicationRequest">MedicationRequest (Prescriptions)</option>
+                            <option value="Observation">{{ __('pcma.fhir_option_observation') }}</option>
+                            <option value="Condition">{{ __('pcma.fhir_option_condition') }}</option>
+                            <option value="Procedure">{{ __('pcma.fhir_option_procedure') }}</option>
+                            <option value="MedicationRequest">{{ __('pcma_extra.create_3fa31f402332') }}</option>
                         </select>
                     </div>
                     
                     <div class="flex space-x-4">
                         <button type="button" id="fetch-fhir-data" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                             Récupérer les données FHIR
+                             {{ __('pcma.fetch_fhir_btn') }}
                         </button>
                         <button type="button" id="clear-fhir" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                            Effacer
+                            {{ __('pcma.clear_btn') }}
                         </button>
                     </div>
                     
                     <div id="fhir-results" class="hidden">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Données FHIR récupérées</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ __('pcma.fhir_results_title') }}</h3>
                         <div id="fhir-content" class="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto"></div>
                     </div>
                 </div>
@@ -2139,12 +2137,12 @@
         <div id="scan-section" class="input-section hidden">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800"> Scan d'image avec OCR</h2>
+                    <h2 class="text-xl font-semibold text-gray-800"> {{ __('pcma.ocr_scan_title') }}</h2>
                 </div>
                 
                 <div class="p-6 space-y-6">
                     <div class="text-center">
-                        <p class="text-gray-600 mb-4">Téléchargez une image de document médical pour extraction automatique</p>
+                        <p class="text-gray-600 mb-4">{{ __('pcma.ocr_upload_prompt') }}</p>
                         
                         <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 mb-4">
                             <input type="file" id="image-upload" accept="image/*" class="hidden">
@@ -2153,36 +2151,36 @@
                                     <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                     </svg>
-                                    <p class="text-gray-600">Cliquez pour sélectionner une image</p>
-                                    <p class="text-sm text-gray-500">PNG, JPG, PDF jusqu'à 10MB</p>
+                                    <p class="text-gray-600">{{ __('pcma.ocr_select_image') }}</p>
+                                    <p class="text-sm text-gray-500">{{ __('pcma.ocr_upload_size_hint') }}</p>
                                 </div>
                             </label>
                         </div>
                         
                         <div id="image-preview" class="hidden mb-4">
-                            <img id="preview-img" class="max-w-md mx-auto rounded-lg shadow-md" alt="Aperçu">
+                            <img id="preview-img" class="max-w-md mx-auto rounded-lg shadow-md" alt="{{ __('pcma.image_preview_alt') }}">
                         </div>
                         
                         <div class="flex space-x-4">
                             <button type="button" id="process-image" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                 Extraire le texte (OCR)
+                                 {{ __('pcma.extract_text_btn') }}
                             </button>
                             <button type="button" id="clear-image" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                Effacer
+                                {{ __('pcma.clear_btn') }}
                             </button>
                         </div>
                     </div>
                     
                     <div id="ocr-results" class="hidden">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Texte extrait</h3>
-                        <textarea id="extracted-text" rows="8" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Le texte extrait apparaîtra ici..."></textarea>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ __('pcma.extracted_text_title') }}</h3>
+                        <textarea id="extracted-text" rows="8" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="{{ __('pcma.extracted_text_placeholder') }}"></textarea>
                         
                         <div class="flex space-x-4 mt-4">
                             <button type="button" id="process-ocr-text" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                 Analyser avec l'IA
+                                 {{ __('pcma.analyze_ai_btn') }}
                             </button>
                             <button type="button" id="clear-ocr" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                Effacer
+                                {{ __('pcma.clear_btn') }}
                             </button>
                         </div>
                     </div>
@@ -2195,7 +2193,7 @@
             <div class="bg-white rounded-xl shadow-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                 <div class="p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-2xl font-bold text-gray-900"> Signature Médecin - PCMA</h3>
+                        <h3 class="text-2xl font-bold text-gray-900"> {{ __('pcma.doctor_signoff_modal_title') }}</h3>
                         <button onclick="closeDoctorSignoff()" class="text-gray-500 hover:text-gray-700">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -2208,41 +2206,41 @@
                 <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6">
                     <!-- Header -->
                     <div class="border-b border-gray-200 pb-4 mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900"> Medical Fitness Assessment - Doctor Sign-Off</h2>
-                        <p class="text-gray-600 mt-2">Final review and digital signature required for medical clearance</p>
+                        <h2 class="text-2xl font-bold text-gray-900"> {{ __('pcma_extra.create_22149ae54f1b') }}</h2>
+                        <p class="text-gray-600 mt-2">{{ __('pcma_extra.create_0c17f9c78a7a') }}</p>
                     </div>
 
                     <!-- Summary Block -->
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                        <h3 class="text-lg font-semibold text-blue-900 mb-3"> Assessment Summary</h3>
+                        <h3 class="text-lg font-semibold text-blue-900 mb-3"> {{ __('pcma_extra.create_6ab4e93b4a8c') }}</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
-                                <span class="font-semibold text-gray-700">Player Name:</span>
-                                <span class="ml-2 text-gray-900" id="signoff-player-name">Loading...</span>
+                                <span class="font-semibold text-gray-700">{{ __('pcma_extra.create_298e7df69552') }}</span>
+                                <span class="ml-2 text-gray-900" id="signoff-player-name">{{ __('pcma_extra.create_b04ba49f8486') }}</span>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Fitness Decision:</span>
-                                <span class="ml-2 px-2 py-1 rounded-full text-xs font-semibold" id="signoff-fitness-decision">Loading...</span>
+                                <span class="font-semibold text-gray-700">{{ __('pcma_extra.create_e6eead3a1ade') }}</span>
+                                <span class="ml-2 px-2 py-1 rounded-full text-xs font-semibold" id="signoff-fitness-decision">{{ __('pcma_extra.create_b04ba49f8486') }}</span>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Date of Examination:</span>
-                                <span class="ml-2 text-gray-900" id="signoff-examination-date">Loading...</span>
+                                <span class="font-semibold text-gray-700">{{ __('pcma_extra.create_1b6b40182d53') }}</span>
+                                <span class="ml-2 text-gray-900" id="signoff-examination-date">{{ __('pcma_extra.create_b04ba49f8486') }}</span>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Assessment ID:</span>
-                                <span class="ml-2 text-gray-900" id="signoff-assessment-id">Loading...</span>
+                                <span class="font-semibold text-gray-700">{{ __('pcma_extra.create_06c00e355a28') }}</span>
+                                <span class="ml-2 text-gray-900" id="signoff-assessment-id">{{ __('pcma_extra.create_b04ba49f8486') }}</span>
                             </div>
                         </div>
                         
                         <div class="mt-3" id="signoff-clinical-notes-container" style="display: none;">
-                            <span class="font-semibold text-gray-700">Clinical Notes:</span>
+                            <span class="font-semibold text-gray-700">{{ __('pcma_extra.create_2e5626649d09') }}</span>
                             <p class="mt-1 text-gray-700 text-sm" id="signoff-clinical-notes"></p>
                         </div>
                     </div>
 
                     <!-- Legal Declaration -->
                     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                        <h3 class="text-lg font-semibold text-yellow-900 mb-3">⚖️ Legal Declaration</h3>
+                        <h3 class="text-lg font-semibold text-yellow-900 mb-3">{{ __('pcma_extra.create_2f7cd2a63882') }}</h3>
                         <div class="flex items-start space-x-3">
                             <input 
                                 type="checkbox" 
@@ -2250,17 +2248,14 @@
                                 class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                             >
                             <label for="legal-declaration" class="text-sm text-gray-700 leading-relaxed">
-                                I, the undersigned medical professional, confirm that I have reviewed the complete clinical information 
-                                and assume full responsibility for the fitness decision rendered herein. I understand that this assessment 
-                                will be used for professional football eligibility determination and I certify that all information provided 
-                                is accurate to the best of my medical knowledge.
+                                {{ __('pcma_extra.create_43699f08184a') }}
                             </label>
                         </div>
                     </div>
 
                     <!-- Signature Capture -->
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">✍️ Digital Signature</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ __('pcma_extra.create_b95c62e203fe') }}</h3>
                         
                         <!-- Signature Canvas -->
                         <div class="border border-gray-300 rounded-lg bg-white p-4">
@@ -2272,21 +2267,21 @@
                             <!-- Signature Controls -->
                             <div class="flex justify-between items-center mt-3">
                                 <div class="text-sm text-gray-600" id="signature-status">
-                                    No signature captured
+                                    {{ __('pcma_extra.create_cb4e838388e4') }}
                                 </div>
                                 <div class="flex space-x-2">
                                     <button 
                                         id="clear-signature"
                                         class="px-3 py-1 text-sm bg-gray-500 hover:bg-gray-600 text-white rounded transition duration-200"
                                     >
-                                        🗑️ Clear
+                                        {{ __('pcma_extra.create_5139bfb2e856') }}
                                     </button>
                                     <button 
                                         id="confirm-signature"
                                         class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded transition duration-200"
                                         disabled
                                     >
-                                         Confirm
+                                         {{ __('pcma_extra.create_04a212215ef9') }}
                                     </button>
                                 </div>
                             </div>
@@ -2295,26 +2290,26 @@
 
                     <!-- Doctor Information -->
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                        <h3 class="text-lg font-semibold text-green-900 mb-3"> Doctor Information</h3>
+                        <h3 class="text-lg font-semibold text-green-900 mb-3"> {{ __('pcma_extra.create_ba399a13afa1') }}</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
-                                <span class="font-semibold text-gray-700">Doctor Name:</span>
+                                <span class="font-semibold text-gray-700">{{ __('pcma_extra.create_13fb174d723d') }}</span>
                                 <input type="text" id="signoff-doctor-name-input" 
                                        class="ml-2 px-2 py-1 border border-gray-300 rounded text-gray-900 text-sm"
                                        placeholder="Enter doctor name"
                                        value="{{ auth()->user()?->name ?? '' }}" readonly>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">FIFA ID du médecin :</span>
-                                <span class="ml-2 text-gray-900" id="signoff-license-number">{{ $teamDoctorRegistration?->person_fifa_id ?? 'Inscription TeamDoctor indisponible' }}</span>
+                                <span class="font-semibold text-gray-700">{{ __('pcma.doctor_fifa_id_label') }}</span>
+                                <span class="ml-2 text-gray-900" id="signoff-license-number">{{ $teamDoctorRegistration?->person_fifa_id ?? __('pcma.teamdoctor_registration_unavailable') }}</span>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">Timestamp:</span>
-                                <span class="ml-2 text-gray-900" id="signoff-timestamp">Loading...</span>
+                                <span class="font-semibold text-gray-700">{{ __('pcma_extra.create_a9c75ed2faff') }}</span>
+                                <span class="ml-2 text-gray-900" id="signoff-timestamp">{{ __('pcma_extra.create_b04ba49f8486') }}</span>
                             </div>
                             <div>
-                                <span class="font-semibold text-gray-700">IP Address:</span>
-                                <span class="ml-2 text-gray-900" id="signoff-ip-address">Non renseignée</span>
+                                <span class="font-semibold text-gray-700">{{ __('pcma_extra.create_4e3065f5fa47') }}</span>
+                                <span class="ml-2 text-gray-900" id="signoff-ip-address">{{ __('pcma.ip_not_provided') }}</span>
                             </div>
                         </div>
                     </div>
@@ -2322,7 +2317,7 @@
                     <!-- Final Action -->
                     <div class="flex justify-between items-center pt-4 border-t border-gray-200">
                         <div class="text-sm text-gray-500" id="action-status">
-                            Legal declaration required
+                            {{ __('pcma_extra.create_1788b2310f64') }}
                         </div>
                         <button 
                             id="confirm-signoff"
@@ -2334,7 +2329,7 @@
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            <span id="confirm-signoff-text">Confirm and Sign</span>
+                            <span id="confirm-signoff-text">{{ __('pcma_extra.create_f08f38bde7e6') }}</span>
                         </button>
                     </div>
                 </div>
@@ -2347,6 +2342,105 @@
 
 <script>
 console.log(' SCRIPT TAG STARTING...');
+
+// PCMA_LABELS: centralized translated strings for this page's script (see resources/lang/{en,fr}/pcma.php)
+const PCMA_LABELS = {
+    errGeneric: @json(__('pcma.err_generic_prefix')),
+    errHttp: @json(__('pcma.err_http_prefix')),
+    errApi: @json(__('pcma.err_api_prefix')),
+    errServer: @json(__('pcma.err_server_prefix')),
+    errSave: @json(__('pcma.err_save_prefix')),
+    errSaveAlert: @json(__('pcma.err_save_alert_prefix')),
+    loadingApiKey: @json(__('pcma.loading_api_key')),
+    apiKeyLoadedAuto: @json(__('pcma.api_key_loaded_auto')),
+    errInvalidResponseFormat: @json(__('pcma.err_invalid_response_format')),
+    errLoadingKey: @json(__('pcma.err_loading_key')),
+    errMissingApiKey: @json(__('pcma.err_missing_api_key')),
+    serviceInitializedSuccess: @json(__('pcma.service_initialized_success')),
+    serviceReadyClick: @json(__('pcma.service_ready_click')),
+    errInitFailed: @json(__('pcma.err_init_failed')),
+    errInitError: @json(__('pcma.err_init_error')),
+    testSuccessOperational: @json(__('pcma.test_success_operational')),
+    errTestFailed: @json(__('pcma.err_test_failed')),
+    errTestFailedAlert: @json(__('pcma.err_test_failed_alert')),
+    errStartRecognitionFailed: @json(__('pcma.err_start_recognition_failed')),
+    recognitionStopped: @json(__('pcma.recognition_stopped')),
+    commandAnalyzedFormsFilled: @json(__('pcma.command_analyzed_forms_filled')),
+    dataAppliedToForm: @json(__('pcma.data_applied_to_form')),
+    errPlayerNotFoundDb: @json(__('pcma.err_player_not_found_db')),
+    playerFoundDataFilled: @json(__('pcma.player_found_data_filled')),
+    errAutoSearch: @json(__('pcma.err_auto_search')),
+    fieldAge: @json(__('pcma.field_age')),
+    vocalPrefix: @json(__('pcma.vocal_prefix')),
+    databasePrefix: @json(__('pcma.database_prefix')),
+    inconsistencyBadge: @json(__('pcma.inconsistency_badge')),
+    errFillConfirmationField: @json(__('pcma.err_fill_confirmation_field')),
+    identityConfirmedValidated: @json(__('pcma.identity_confirmed_validated')),
+    voiceExtractionNoteHeader: @json(__('pcma.voice_extraction_note_header')),
+    ageNotePrefix: @json(__('pcma.age_note_prefix')),
+    ageNoteSuffix: @json(__('pcma.age_note_suffix')),
+    commandNotePrefix: @json(__('pcma.command_note_prefix')),
+    savedAutomaticallySuccess: @json(__('pcma.saved_automatically_success')),
+    voiceExtractionSummaryTitle: @json(__('pcma.voice_extraction_summary_title')),
+    summaryNameLabel: @json(__('pcma.summary_name_label')),
+    summaryAgeLabel: @json(__('pcma.summary_age_label')),
+    similarityLabel: @json(__('pcma.similarity_label')),
+    signoffTeamdoctorUnavailable: @json(__('pcma.signoff_teamdoctor_unavailable')),
+    errGenericPlain: @json(__('pcma.err_generic_prefix_plain')),
+    analysisInProgress: @json(__('pcma.analysis_in_progress')),
+    analysisPending: @json(__('pcma.analysis_pending')),
+    recognitionInProgress: @json(__('pcma.recognition_in_progress')),
+    autoSearchInProgress: @json(__('pcma.auto_search_in_progress')),
+    recordingGoogleInProgress: @json(__('pcma.recording_google_in_progress')),
+    voiceRecognitionInProgress: @json(__('pcma.voice_recognition_in_progress')),
+    testInProgress: @json(__('pcma.test_in_progress')),
+    confidenceLabel: @json(__('pcma.confidence_label')),
+    confidenceHigh: @json(__('pcma.confidence_high')),
+    confidenceMedium: @json(__('pcma.confidence_medium')),
+    confidenceLow: @json(__('pcma.confidence_low')),
+    pcmaSavedWithId: @json(__('pcma.pcma_saved_with_id')),
+    searchingInProgress: @json(__('pcma.searching_in_progress')),
+    foundInDatabase: @json(__('pcma.found_in_database')),
+    playerNotFoundTitle: @json(__('pcma.player_not_found_title')),
+    searchedNameLabel: @json(__('pcma.searched_name_label')),
+    statusColonLabel: @json(__('pcma.status_colon_label')),
+    playerNotExistYet: @json(__('pcma.player_not_exist_yet')),
+    newPlayerBadge: @json(__('pcma.new_player_badge')),
+    transcriptionReceived: @json(__('pcma.transcription_received')),
+    serviceGoogleNotInitialized: @json(__('pcma.service_google_not_initialized')),
+    errGooglePrefix: @json(__('pcma.err_google_prefix')),
+    recordingStoppedGoogle: @json(__('pcma.recording_stopped_google')),
+    errStopPrefix: @json(__('pcma.err_stop_prefix')),
+    playerDataFilledAuto: @json(__('pcma.player_data_filled_auto')),
+    dataExtractedSuccess: @json(__('pcma.data_extracted_success')),
+    dataProcessedServiceVocalNlp: @json(__('pcma.data_processed_servicevocal_nlp')),
+    recognitionStoppedGeneric: @json(__('pcma.recognition_stopped_generic')),
+    dataProcessedDirectIntegration: @json(__('pcma.data_processed_direct_integration')),
+    fifaConnectCommandDetected: @json(__('pcma.fifa_connect_command_detected')),
+    numberLabelPrefix: @json(__('pcma.number_label_prefix')),
+    noStructuredDataDetected: @json(__('pcma.no_structured_data_detected')),
+    noFinalTranscript: @json(__('pcma.no_final_transcript')),
+    noDataExtracted: @json(__('pcma.no_data_extracted')),
+    testAdvancedProgress: @json(__('pcma.test_advanced_progress')),
+    speechRecognitionUnsupported: @json(__('pcma.speech_recognition_unsupported')),
+    testRecognitionStarted: @json(__('pcma.test_recognition_started')),
+    testErrorPrefix: @json(__('pcma.test_error_prefix')),
+    testCreationErrorPrefix: @json(__('pcma.test_creation_error_prefix')),
+    speechRecognitionUnsupportedBrowser: @json(__('pcma.speech_recognition_unsupported_browser')),
+    micPermissionDenied: @json(__('pcma.mic_permission_denied')),
+    noMicrophoneDetected: @json(__('pcma.no_microphone_detected')),
+    micErrorPrefix: @json(__('pcma.mic_error_prefix')),
+    recognitionStoppedPlain: @json(__('pcma.recognition_stopped_plain')),
+    listeningPrefix: @json(__('pcma.listening_prefix')),
+    listeningSuffix: @json(__('pcma.listening_suffix')),
+    googleRecordingInProgress: @json(__('pcma.google_recording_in_progress')),
+    errApiKeyNotFound: @json(__('pcma.err_api_key_not_found')),
+    modeActiveWord: @json(__('pcma.mode_active_word')),
+    transferNotImplemented: @json(__('pcma.transfer_not_implemented')),
+    transferSuccessTemplate: @json(__('pcma.transfer_success_template')),
+    transferErrorTemplate: @json(__('pcma.transfer_error_template')),
+};
+
 
 
 
@@ -2377,7 +2471,7 @@ window.generatePDF = async function() {
         
         // Aucune valeur médicale ou identité ne doit être fabriquée pour produire le PDF.
         if (!formData.get('athlete_id') || !formData.get('type') || !formData.get('assessor_id') || !formData.get('assessment_date')) {
-            alert('Renseignez les informations obligatoires avant de produire le PDF.');
+            alert(@json(__('pcma.err_pdf_required_fields')));
             return;
         }
         
@@ -2512,7 +2606,7 @@ window.generatePDF = async function() {
         
     } catch (error) {
         console.error('PDF Generation Error:', error);
-        alert('❌ Erreur lors de la génération du PDF: ' + error.message);
+        alert(@json(__('pcma.err_pdf_generation')) + error.message);
     }
 };
 
@@ -2556,123 +2650,123 @@ window.printReport = function() {
             </head>
             <body>
                 <div class="header">
-                    <h1> Rapport d'Évaluation PCMA</h1>
-                    <p>Date: ${new Date().toLocaleDateString('fr-FR')}</p>
+                    <h1> {{ __('pcma.report_title') }}</h1>
+                    <p>{{ __('pcma.report_date_label') }} ${new Date().toLocaleDateString('en-GB')}</p>
                 </div>
                 
                 <div class="section">
-                    <h3>👤 Informations du Patient</h3>
+                    <h3>{{ __('pcma.report_patient_info_title') }}</h3>
                     <div class="field">
-                        <label>Athlète:</label>
-                        <value>${formDataObj.athlete_id || 'Non spécifié'}</value>
+                        <label>{{ __('pcma.report_athlete_label') }}</label>
+                        <value>${formDataObj.athlete_id || @json(__('pcma.report_not_specified'))}</value>
                     </div>
                     <div class="field">
-                        <label>Type d'évaluation:</label>
-                        <value>${formDataObj.type || 'Non spécifié'}</value>
+                        <label>{{ __('pcma.report_assessment_type_label') }}</label>
+                        <value>${formDataObj.type || @json(__('pcma.report_not_specified'))}</value>
                     </div>
                     <div class="field">
-                        <label>Date d'évaluation:</label>
-                        <value>${formDataObj.assessment_date || 'Non spécifié'}</value>
-                    </div>
-                </div>
-                
-                <div class="section">
-                    <h3> Signes Vitaux</h3>
-                    <div class="field">
-                        <label>Tension Artérielle:</label>
-                        <value>${formDataObj.blood_pressure || 'Non spécifié'}</value>
-                    </div>
-                    <div class="field">
-                        <label>Fréquence Cardiaque:</label>
-                        <value>${formDataObj.heart_rate || 'Non spécifié'} bpm</value>
-                    </div>
-                    <div class="field">
-                        <label>Température:</label>
-                        <value>${formDataObj.temperature || 'Non spécifié'} °C</value>
+                        <label>{{ __('pcma.report_assessment_date_label') }}</label>
+                        <value>${formDataObj.assessment_date || @json(__('pcma.report_not_specified'))}</value>
                     </div>
                 </div>
                 
                 <div class="section">
-                    <h3> Antécédents Médicaux</h3>
+                    <h3> {{ __('pcma.report_vital_signs_title') }}</h3>
                     <div class="field">
-                        <label>Antécédents Cardio-vasculaires:</label>
-                        <value>${formDataObj.cardiovascular_history || 'Aucun'}</value>
+                        <label>{{ __('pcma.report_blood_pressure_label') }}</label>
+                        <value>${formDataObj.blood_pressure || @json(__('pcma.report_not_specified'))}</value>
                     </div>
                     <div class="field">
-                        <label>Antécédents Chirurgicaux:</label>
-                        <value>${formDataObj.surgical_history || 'Aucun'}</value>
+                        <label>{{ __('pcma.report_heart_rate_label') }}</label>
+                        <value>${formDataObj.heart_rate || @json(__('pcma.report_not_specified'))} bpm</value>
                     </div>
                     <div class="field">
-                        <label>Médicaments Actuels:</label>
-                        <value>${formDataObj.medications || 'Aucun'}</value>
-                    </div>
-                    <div class="field">
-                        <label>Allergies:</label>
-                        <value>${formDataObj.allergies || 'Aucune'}</value>
+                        <label>{{ __('pcma.report_temperature_label') }}</label>
+                        <value>${formDataObj.temperature || @json(__('pcma.report_not_specified'))} °C</value>
                     </div>
                 </div>
                 
                 <div class="section">
-                    <h3> Examen Physique</h3>
+                    <h3> {{ __('pcma.report_medical_history_title') }}</h3>
                     <div class="field">
-                        <label>Apparence Générale:</label>
-                        <value>${formDataObj.general_appearance || 'Non spécifié'}</value>
+                        <label>{{ __('pcma.report_cardiovascular_history_label') }}</label>
+                        <value>${formDataObj.cardiovascular_history || @json(__('pcma.report_none'))}</value>
                     </div>
                     <div class="field">
-                        <label>Examen Cutané:</label>
-                        <value>${formDataObj.skin_examination || 'Non spécifié'}</value>
-                    </div>
-                </div>
-                
-                <div class="section">
-                    <h3>❤️ Évaluation Cardiovasculaire</h3>
-                    <div class="field">
-                        <label>Rythme Cardiaque:</label>
-                        <value>${formDataObj.cardiac_rhythm || 'Non spécifié'}</value>
+                        <label>{{ __('pcma.report_surgical_history_label') }}</label>
+                        <value>${formDataObj.surgical_history || @json(__('pcma.report_none'))}</value>
                     </div>
                     <div class="field">
-                        <label>Souffle Cardiaque:</label>
-                        <value>${formDataObj.heart_murmur || 'Non spécifié'}</value>
+                        <label>{{ __('pcma.report_medications_label') }}</label>
+                        <value>${formDataObj.medications || @json(__('pcma.report_none'))}</value>
+                    </div>
+                    <div class="field">
+                        <label>{{ __('pcma.report_allergies_label') }}</label>
+                        <value>${formDataObj.allergies || @json(__('pcma.report_none_f'))}</value>
                     </div>
                 </div>
                 
                 <div class="section">
-                    <h3>🧠 Évaluation Neurologique</h3>
+                    <h3> {{ __('pcma.report_physical_exam_title') }}</h3>
                     <div class="field">
-                        <label>Niveau de Conscience:</label>
-                        <value>${formDataObj.consciousness || 'Non spécifié'}</value>
+                        <label>{{ __('pcma.report_general_appearance_label') }}</label>
+                        <value>${formDataObj.general_appearance || @json(__('pcma.report_not_specified'))}</value>
                     </div>
                     <div class="field">
-                        <label>Nerfs Crâniens:</label>
-                        <value>${formDataObj.cranial_nerves || 'Non spécifié'}</value>
-                    </div>
-                </div>
-                
-                <div class="section">
-                    <h3>💪 Évaluation Musculo-squelettique</h3>
-                    <div class="field">
-                        <label>Mobilité Articulaire:</label>
-                        <value>${formDataObj.joint_mobility || 'Non spécifié'}</value>
-                    </div>
-                    <div class="field">
-                        <label>Force Musculaire:</label>
-                        <value>${formDataObj.muscle_strength || 'Non spécifié'}</value>
+                        <label>{{ __('pcma.report_skin_exam_label') }}</label>
+                        <value>${formDataObj.skin_examination || @json(__('pcma.report_not_specified'))}</value>
                     </div>
                 </div>
                 
                 <div class="section">
-                    <h3>🏆 Conformité FIFA</h3>
+                    <h3>{{ __('pcma.cardio_assessment_title') }}</h3>
                     <div class="field">
-                        <label>ID FIFA:</label>
-                        <value>${formDataObj.fifa_id || 'Non spécifié'}</value>
+                        <label>{{ __('pcma.report_cardiac_rhythm_label') }}</label>
+                        <value>${formDataObj.cardiac_rhythm || @json(__('pcma.report_not_specified'))}</value>
                     </div>
                     <div class="field">
-                        <label>Nom de la compétition:</label>
-                        <value>${formDataObj.competition_name || 'Non spécifié'}</value>
+                        <label>{{ __('pcma.report_heart_murmur_label') }}</label>
+                        <value>${formDataObj.heart_murmur || @json(__('pcma.report_not_specified'))}</value>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>{{ __('pcma.neuro_assessment_title') }}</h3>
+                    <div class="field">
+                        <label>{{ __('pcma.report_consciousness_label') }}</label>
+                        <value>${formDataObj.consciousness || @json(__('pcma.report_not_specified'))}</value>
                     </div>
                     <div class="field">
-                        <label>Conforme aux standards FIFA:</label>
-                        <value>${formDataObj.fifa_compliant ? 'Oui' : 'Non'}</value>
+                        <label>{{ __('pcma.report_cranial_nerves_label') }}</label>
+                        <value>${formDataObj.cranial_nerves || @json(__('pcma.report_not_specified'))}</value>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>{{ __('pcma.msk_assessment_title') }}</h3>
+                    <div class="field">
+                        <label>{{ __('pcma.report_joint_mobility_label') }}</label>
+                        <value>${formDataObj.joint_mobility || @json(__('pcma.report_not_specified'))}</value>
+                    </div>
+                    <div class="field">
+                        <label>{{ __('pcma.report_muscle_strength_label') }}</label>
+                        <value>${formDataObj.muscle_strength || @json(__('pcma.report_not_specified'))}</value>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>{{ __('pcma.fifa_compliance_title') }}</h3>
+                    <div class="field">
+                        <label>{{ __('pcma.report_fifa_id_label') }}</label>
+                        <value>${formDataObj.fifa_id || @json(__('pcma.report_not_specified'))}</value>
+                    </div>
+                    <div class="field">
+                        <label>{{ __('pcma.report_competition_name_label') }}</label>
+                        <value>${formDataObj.competition_name || @json(__('pcma.report_not_specified'))}</value>
+                    </div>
+                    <div class="field">
+                        <label>{{ __('pcma.report_fifa_compliant_label') }}</label>
+                        <value>${formDataObj.fifa_compliant ? @json(__('pcma.report_yes')) : @json(__('pcma.report_no'))}</value>
                     </div>
                 </div>
                 
@@ -2681,63 +2775,63 @@ window.printReport = function() {
                 </div>
                 
                 <div class="section">
-                    <h3> Notes</h3>
-                    <p>${formDataObj.notes || 'Aucune note'}</p>
+                    <h3> {{ __('pcma.report_notes_title') }}</h3>
+                    <p>${formDataObj.notes || @json(__('pcma.report_no_notes'))}</p>
                 </div>
                 
                          ${window.signedPCMAData ? `
          <div class="section">
-             <h3> Signature Médicale</h3>
+             <h3> {{ __('pcma.report_signature_title') }}</h3>
              <div class="field">
-                 <label>Signé par:</label>
+                 <label>{{ __('pcma.report_signed_by_label') }}</label>
                  <value>${window.signedPCMAData.signedBy}</value>
              </div>
              <div class="field">
-                 <label>Numéro de licence:</label>
+                 <label>{{ __('pcma.report_license_number_label') }}</label>
                  <value>${window.signedPCMAData.doctorFifaId}</value>
              </div>
              <div class="field">
-                 <label>Date de signature:</label>
-                 <value>${new Date(window.signedPCMAData.signedAt).toLocaleString('fr-FR')}</value>
+                 <label>{{ __('pcma.report_signature_date_label') }}</label>
+                 <value>${new Date(window.signedPCMAData.signedAt).toLocaleString('en-GB')}</value>
              </div>
              <div class="field">
-                 <label>Adresse IP:</label>
+                 <label>{{ __('pcma.report_ip_address_label') }}</label>
                  <value>${window.signedPCMAData.ipAddress}</value>
              </div>
              <div class="field">
-                 <label>Statut de fitness:</label>
+                 <label>{{ __('pcma.report_fitness_status_label') }}</label>
                  <value>${window.signedPCMAData.fitnessStatus}</value>
              </div>
              <div class="field">
-                 <label>Signature:</label>
+                 <label>{{ __('pcma.report_signature_label') }}</label>
                  <div style="margin-top: 10px;">
                      ${window.signedPCMAData.signatureImage ? 
-                         `<img src="${window.signedPCMAData.signatureImage}" alt="Signature médicale" style="max-width: 200px; border: 1px solid #ccc; padding: 5px;">` : 
-                         '<p style="color: #666; font-style: italic;">Signature numérique capturée</p>'
+                         `<img src="${window.signedPCMAData.signatureImage}" alt="{{ __('pcma.report_signature_alt') }}" style="max-width: 200px; border: 1px solid #ccc; padding: 5px;">` :
+                         @json('<p style="color: #666; font-style: italic;">' . __('pcma.report_signature_captured') . '</p>')
                      }
                  </div>
              </div>
              <div class="field">
-                 <label>Déclaration légale:</label>
-                 <value style="font-style: italic; color: #666;">✓ Confirmée par le médecin signataire</value>
+                 <label>{{ __('pcma.report_legal_declaration_label') }}</label>
+                 <value style="font-style: italic; color: #666;">{{ __('pcma.report_legal_confirmed') }}</value>
              </div>
              <div class="field">
-                 <label>Validation:</label>
-                 <value style="color: #059669; font-weight: bold;">✓ Document médical validé et signé</value>
+                 <label>{{ __('pcma.report_validation_label') }}</label>
+                 <value style="color: #059669; font-weight: bold;">{{ __('pcma.report_validated') }}</value>
              </div>
          </div>
          ` : `
          <div class="section">
-             <h3> Signature Médicale</h3>
-             <p style="color: #ef4444; font-style: italic;">⚠️ Signature médicale non effectuée</p>
-             <p style="color: #ef4444; font-style: italic;">⚠️ Déclaration légale non confirmée</p>
-             <p style="color: #ef4444; font-style: italic;">⚠️ Document non validé</p>
+             <h3> {{ __('pcma.report_signature_title') }}</h3>
+             <p style="color: #ef4444; font-style: italic;">{{ __('pcma.report_signature_missing') }}</p>
+             <p style="color: #ef4444; font-style: italic;">{{ __('pcma.report_legal_not_confirmed') }}</p>
+             <p style="color: #ef4444; font-style: italic;">{{ __('pcma.report_document_not_validated') }}</p>
          </div>
          `}
                 
                 <div class="section no-print">
                     <button onclick="window.print()" style="padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                        🖨️ Imprimer ce rapport
+                        {{ __('pcma.report_print_button') }}
                     </button>
                 </div>
             </body>
@@ -2753,7 +2847,7 @@ window.printReport = function() {
             const printFitnessResults = printWindow.document.getElementById('print-fitness-results');
             if (printFitnessResults) {
                 printFitnessResults.innerHTML = `
-                    <h3>⚽ Évaluation Fitness Football Professionnel</h3>
+                    <h3>{{ __('pcma.fitness_assessment_title') }}</h3>
                     ${fitnessResults.innerHTML}
                 `;
             }
@@ -2767,7 +2861,7 @@ window.printReport = function() {
         
     } catch (error) {
         console.error('Print Error:', error);
-        alert('❌ Erreur lors de l\'ouverture de la fenêtre d\'impression: ' + error.message);
+        alert(@json(__('pcma.err_print_window')) + error.message);
     }
 };
 
@@ -2805,7 +2899,7 @@ window.openDoctorSignoff = function() {
         // Get athlete information
         const athleteSelect = document.getElementById('athlete_id');
         const selectedAthlete = athleteSelect.options[athleteSelect.selectedIndex];
-        const athleteName = selectedAthlete ? selectedAthlete.text : 'Athlète non spécifié';
+        const athleteName = selectedAthlete ? selectedAthlete.text : @json(__('pcma.athlete_not_specified'));
         
         // Get fitness assessment results if available
         const fitnessResults = document.getElementById('fitness-results-content');
@@ -2847,7 +2941,7 @@ window.openDoctorSignoff = function() {
         document.getElementById('signoff-examination-date').textContent = signoffData.examinationDate;
         document.getElementById('signoff-assessment-id').textContent = signoffData.assessmentId;
         document.getElementById('signoff-doctor-name-input').value = signoffData.doctorName;
-        document.getElementById('signoff-license-number').textContent = signoffData.doctorFifaId || 'Inscription TeamDoctor indisponible';
+        document.getElementById('signoff-license-number').textContent = signoffData.doctorFifaId || PCMA_LABELS.signoffTeamdoctorUnavailable;
         document.getElementById('signoff-timestamp').textContent = new Date().toLocaleString('en-US', {
             year: 'numeric',
             month: '2-digit',
@@ -2872,7 +2966,7 @@ window.openDoctorSignoff = function() {
         
     } catch (error) {
         console.error('Doctor Signoff Error:', error);
-        alert('❌ Erreur lors de l\'ouverture de la signature médecin: ' + error.message);
+        alert(@json(__('pcma.err_signoff_open')) + error.message);
     }
 };
 
@@ -2952,7 +3046,7 @@ function setupSignoffEventListeners(signoffData) {
             handleSignoff(signoffData);
         } catch (error) {
             console.error('❌ Error in handleSignoff:', error);
-            alert('❌ Erreur lors du traitement de la signature: ' + error.message);
+            alert(@json(__('pcma.err_signature_processing')) + error.message);
         }
     });
     
@@ -3080,7 +3174,7 @@ function updateActionStatus() {
         confirmSignoff.disabled = true;
         console.log(' Button disabled: Signature confirmation required');
     } else {
-        actionStatus.textContent = 'Signature indisponible : numéro professionnel vérifié requis';
+        actionStatus.textContent = @json(__('pcma.signature_unavailable_professional_number'));
         confirmSignoff.disabled = true;
         console.log(' Button enabled: Ready to sign');
     }
@@ -3088,7 +3182,7 @@ function updateActionStatus() {
 
 function handleSignoff(signoffData) {
     if (!signoffData.doctorFifaId || !signoffData.doctorName || !signoffData.fitnessDecision || !['FIT', 'NOT_FIT', 'CONDITIONAL'].includes(signoffData.fitnessDecision)) {
-        alert('Signature indisponible : identité, numéro professionnel et décision médicale vérifiés requis.');
+        alert(@json(__('pcma.signature_unavailable_full')));
         return;
     }
     console.log(' handleSignoff function called with data:', signoffData);
@@ -3141,7 +3235,7 @@ function handleSignoff(signoffData) {
             
             if (success) {
                 // Show success message
-                alert(' Signature médicale validée!\n\nAssessment ID: ' + signedData.assessmentId + '\nSigned by: ' + signedData.signedBy + '\nTimestamp: ' + signedData.signedAt);
+                alert(@json(__('pcma.signature_validated_alert')) + '\n\nAssessment ID: ' + signedData.assessmentId + '\nSigned by: ' + signedData.signedBy + '\nTimestamp: ' + signedData.signedAt);
                 
                 // Close modal
                 console.log(' Closing modal...');
@@ -3154,7 +3248,7 @@ function handleSignoff(signoffData) {
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                         Signature Validée
+                         {{ __('pcma.signature_validated_label') }}
                     `;
                     signoffBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
                     signoffBtn.classList.add('bg-green-600', 'hover:bg-green-700');
@@ -3164,11 +3258,11 @@ function handleSignoff(signoffData) {
                 disableFormEditing();
             } else {
                 // Show error message
-                alert('❌ Erreur lors de la sauvegarde de la signature. Veuillez réessayer.');
+                alert(@json(__('pcma.err_signature_save')));
             }
         }).catch(error => {
             console.error('❌ Error during signature save:', error);
-            alert('❌ Erreur de connexion lors de la sauvegarde. Veuillez réessayer.');
+            alert(@json(__('pcma.err_signature_connection')));
             
             // Reset loading state
             loadingSpinner.classList.add('hidden');
@@ -3195,7 +3289,7 @@ function saveSignedPCMA(signedData) {
     
     // Set default values if they're empty (with null checks)
     if (!athleteSelect?.value || !typeSelect?.value || !assessorSelect?.value || !assessmentDateInput?.value) {
-        alert('Renseignez le joueur, le type, le médecin et la date avant la signature.');
+        alert(@json(__('pcma.fill_required_before_signing')));
         return Promise.resolve(false);
     }
     
@@ -3342,9 +3436,9 @@ function disableFormEditing() {
             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
             </svg>
-            <strong>⚠️ Document signé</strong>
+            <strong>{{ __('pcma.document_signed_label') }}</strong>
         </div>
-        <p class="mt-1">Ce PCMA a été signé et ne peut plus être modifié. Seule l'impression est autorisée.</p>
+        <p class="mt-1">{{ __('pcma.document_signed_notice') }}</p>
     `;
     formContainer.insertBefore(warningDiv, formContainer.firstChild);
 }
@@ -3379,7 +3473,7 @@ window.generateFitnessAssessment = async function() {
             <svg class="animate-spin w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            🔄 Génération en cours...
+            🔄 {{ __('pcma.generation_in_progress') }}
         `;
         button.disabled = true;
         
@@ -3403,7 +3497,7 @@ window.generateFitnessAssessment = async function() {
             if (data.success && data.assessment) {
                 contentDiv.innerHTML = `
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                        <h6 class="font-semibold text-green-900 mb-2">Décision Globale</h6>
+                        <h6 class="font-semibold text-green-900 mb-2">{{ __('pcma.overall_decision_label') }}</h6>
                         <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold ${
                             data.assessment.overall_decision === 'FIT' ? 'bg-green-100 text-green-800' :
                             data.assessment.overall_decision === 'NOT_FIT' ? 'bg-red-100 text-red-800' :
@@ -3415,22 +3509,22 @@ window.generateFitnessAssessment = async function() {
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                            <h6 class="font-semibold text-blue-900 mb-1">Score Cardiovasculaire</h6>
+                            <h6 class="font-semibold text-blue-900 mb-1">{{ __('pcma.cardio_score_label') }}</h6>
                             <span class="text-2xl font-bold text-blue-600">${data.assessment.cardiovascular_score || 'N/A'}/10</span>
                         </div>
                         <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                            <h6 class="font-semibold text-orange-900 mb-1">Score Musculo-squelettique</h6>
+                            <h6 class="font-semibold text-orange-900 mb-1">{{ __('pcma.msk_score_label') }}</h6>
                             <span class="text-2xl font-bold text-orange-600">${data.assessment.musculoskeletal_score || 'N/A'}/10</span>
                         </div>
                         <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
-                            <h6 class="font-semibold text-purple-900 mb-1">Score Neurologique</h6>
+                            <h6 class="font-semibold text-purple-900 mb-1">{{ __('pcma.neuro_score_label') }}</h6>
                             <span class="text-2xl font-bold text-purple-600">${data.assessment.neurological_score || 'N/A'}/10</span>
                         </div>
                     </div>
                     
                     ${data.assessment.executive_summary ? `
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                            <h6 class="font-semibold text-gray-900 mb-2">Résumé Exécutif</h6>
+                            <h6 class="font-semibold text-gray-900 mb-2">{{ __('pcma.executive_summary_label') }}</h6>
                             <p class="text-gray-700 text-sm">${data.assessment.executive_summary}</p>
                         </div>
                     ` : ''}
@@ -3442,7 +3536,7 @@ window.generateFitnessAssessment = async function() {
                 resultsDiv.scrollIntoView({ behavior: 'smooth' });
                 
             } else {
-                throw new Error(data.message || 'Erreur lors de la génération du rapport');
+                throw new Error(data.message || @json(__('pcma.err_fitness_report')));
             }
             
         } else {
@@ -3451,7 +3545,7 @@ window.generateFitnessAssessment = async function() {
         
     } catch (error) {
         console.error('🤖 AI Fitness Assessment Error:', error);
-        alert('❌ Erreur lors de la génération du rapport fitness: ' + error.message);
+        alert(@json(__('pcma.err_fitness_report_alert')) + error.message);
         
     } finally {
         // Reset button state
@@ -3460,7 +3554,7 @@ window.generateFitnessAssessment = async function() {
             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
-            🤖 Générer Rapport Fitness Professionnel
+            {{ __('pcma.generate_fitness_report_btn') }}
         `;
         button.disabled = false;
     }
@@ -3540,7 +3634,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const voiceStatus = document.getElementById('voice-status');
             if (voiceStatus) {
-                voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                voiceStatus.textContent = `${PCMA_LABELS.errGeneric}${error.message}`;
                 voiceStatus.className = 'text-center text-red-600 font-medium';
             }
         };
@@ -3566,19 +3660,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Charger automatiquement la clé API depuis le serveur
         async function loadApiKeyFromServer() {
             try {
-                showServiceStatus('🔄 Chargement de la clé API...', 'info');
+                showServiceStatus(PCMA_LABELS.loadingApiKey, 'info');
                 
                 const response = await fetch('/api/google-speech-key');
                 
                 if (!response.ok) {
-                    throw new Error(`Erreur serveur: ${response.status}`);
+                    throw new Error(`${PCMA_LABELS.errServer}${response.status}`);
                 }
                 
                 const data = await response.json();
                 
                 if (data.status === 'success' && data.apiKey) {
                     elements.apiKeyInput.value = data.apiKey;
-                    showServiceStatus(' Clé API chargée automatiquement !', 'success');
+                    showServiceStatus(PCMA_LABELS.apiKeyLoadedAuto, 'success');
                     
                     // Activer les boutons
                     elements.initBtn.disabled = false;
@@ -3590,11 +3684,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, 1000);
                     
                 } else {
-                    throw new Error('Format de réponse invalide');
+                    throw new Error(PCMA_LABELS.errInvalidResponseFormat);
                 }
                 
             } catch (error) {
-                showServiceStatus('❌ Erreur chargement clé: ' + error.message, 'error');
+                showServiceStatus(PCMA_LABELS.errLoadingKey + error.message, 'error');
                 console.error('❌ Erreur chargement clé:', error);
             }
         }
@@ -3606,7 +3700,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Vérifier que la clé API est présente
                 if (!elements.apiKeyInput.value) {
-                    throw new Error('Clé API manquante');
+                    throw new Error(PCMA_LABELS.errMissingApiKey);
                 }
                 
                 // Configurer le service avec la clé API
@@ -3614,21 +3708,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 const success = speechService.testAPIKey();
                 
                 if (success) {
-                    showServiceStatus(' Service initialisé avec succès !', 'success');
+                    showServiceStatus(PCMA_LABELS.serviceInitializedSuccess, 'success');
                     elements.startBtn.disabled = false;
                     elements.stopBtn.disabled = false;
-                    elements.status.textContent = 'Service prêt - Cliquez pour commencer';
+                    elements.status.textContent = PCMA_LABELS.serviceReadyClick;
                     
                     // Afficher le statut du service
                     const status = speechService.getStatus();
                     console.log(' Statut du service:', status);
                     
                 } else {
-                    throw new Error('Échec de l\'initialisation');
+                    throw new Error(PCMA_LABELS.errInitFailed);
                 }
                 
             } catch (error) {
-                showServiceStatus('❌ Erreur initialisation: ' + error.message, 'error');
+                showServiceStatus(PCMA_LABELS.errInitError + error.message, 'error');
                 console.error('❌ Erreur initialisation:', error);
                 
                 // Réactiver le bouton d'initialisation
@@ -3644,13 +3738,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 const success = speechService.testAPIKey();
                 
                 if (success) {
-                    showServiceStatus(' Test réussi - Service opérationnel !', 'success');
+                    showServiceStatus(PCMA_LABELS.testSuccessOperational, 'success');
                 } else {
-                    throw new Error('Test échoué');
+                    throw new Error(PCMA_LABELS.errTestFailed);
                 }
                 
             } catch (error) {
-                showServiceStatus('❌ Test échoué: ' + error.message, 'error');
+                showServiceStatus(PCMA_LABELS.errTestFailedAlert + error.message, 'error');
                 console.error('❌ Test échoué:', error);
             }
         }
@@ -3658,7 +3752,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Démarrer la reconnaissance
         async function startSpeechRecognition() {
             try {
-                elements.status.textContent = ' Reconnaissance en cours...';
+                elements.status.textContent = PCMA_LABELS.recognitionInProgress;
                 elements.startBtn.disabled = true;
                 elements.stopBtn.disabled = false;
                 
@@ -3666,7 +3760,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     (text, confidence) => {
                         // Callback de succès
                         elements.recognizedText.textContent = text;
-                        elements.confidence.textContent = `Confiance: ${(confidence * 100).toFixed(1)}%`;
+                        elements.confidence.textContent = `${PCMA_LABELS.confidenceLabel} ${(confidence * 100).toFixed(1)}%`;
                         elements.speechText.classList.remove('hidden');
                         
                         // Traiter le texte reconnu
@@ -3675,7 +3769,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     (error) => {
                         // Callback d'erreur
                         console.error('❌ Erreur reconnaissance:', error);
-                        elements.status.textContent = '❌ Erreur: ' + error.message;
+                        elements.status.textContent = PCMA_LABELS.errGeneric + error.message;
                         elements.startBtn.disabled = false;
                         elements.stopBtn.disabled = true;
                     },
@@ -3686,12 +3780,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 );
                 
                 if (!success) {
-                    throw new Error('Échec du démarrage de la reconnaissance');
+                    throw new Error(PCMA_LABELS.errStartRecognitionFailed);
                 }
                 
             } catch (error) {
                 console.error('❌ Erreur démarrage reconnaissance:', error);
-                elements.status.textContent = '❌ Erreur: ' + error.message;
+                elements.status.textContent = PCMA_LABELS.errGeneric + error.message;
                 elements.startBtn.disabled = false;
                 elements.stopBtn.disabled = true;
             }
@@ -3700,7 +3794,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Arrêter la reconnaissance
         function stopSpeechRecognition() {
             speechService.stopListening();
-            elements.status.textContent = ' Reconnaissance arrêtée';
+            elements.status.textContent = PCMA_LABELS.recognitionStopped;
             elements.startBtn.disabled = false;
             elements.stopBtn.disabled = true;
         }
@@ -3733,7 +3827,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 fillFormFields(extractedData);
                 
                 // Mettre à jour le statut
-                elements.status.textContent = ' Commande analysée et formulaires remplis !';
+                elements.status.textContent = PCMA_LABELS.commandAnalyzedFormsFilled;
                 
                 // Afficher un résumé
                 showExtractionSummary(extractedData);
@@ -3745,7 +3839,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             } catch (error) {
                 console.error('❌ Erreur lors du traitement de la commande:', error);
-                elements.status.textContent = '❌ Erreur: ' + error.message;
+                elements.status.textContent = PCMA_LABELS.errGeneric + error.message;
             } finally {
                 isProcessingCommand = false;
             }
@@ -3786,7 +3880,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         fillFormFields(extractedData);
                         
                         // Mettre à jour le statut
-                        elements.status.textContent = ' Données appliquées au formulaire !';
+                        elements.status.textContent = PCMA_LABELS.dataAppliedToForm;
                         
                         // Masquer le bouton après application
                         applyButton.classList.add('hidden');
@@ -4156,7 +4250,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Afficher le statut de recherche
                     const voiceStatus = document.getElementById('voice-status');
                     if (voiceStatus) {
-                        voiceStatus.textContent = ' Recherche automatique en cours...';
+                        voiceStatus.textContent = PCMA_LABELS.autoSearchInProgress;
                         voiceStatus.className = 'text-center text-blue-600 font-medium';
                     }
                     
@@ -4510,7 +4604,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Afficher le statut de recherche
                 const voiceStatus = document.getElementById('voice-status');
                 if (voiceStatus) {
-                    voiceStatus.textContent = ' Recherche en cours...';
+                    voiceStatus.textContent = PCMA_LABELS.searchingInProgress;
                     voiceStatus.className = 'text-center text-blue-600 font-medium';
                 }
                 
@@ -4527,13 +4621,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 if (!searchResponse.ok) {
-                    throw new Error(`Erreur API: ${searchResponse.status}`);
+                    throw new Error(PCMA_LABELS.errApi + searchResponse.status);
                 }
                 
                 const searchResult = await searchResponse.json();
                 
                 if (!searchResult.success) {
-                    throw new Error('Joueur non trouvé dans la base de données');
+                    throw new Error(PCMA_LABELS.errPlayerNotFoundDb);
                 }
                 
                 // Données réelles du joueur trouvé
@@ -4546,7 +4640,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Mettre à jour le statut
                 if (voiceStatus) {
-                    voiceStatus.textContent = ' Joueur trouvé ! Données remplies automatiquement';
+                    voiceStatus.textContent = PCMA_LABELS.playerFoundDataFilled;
                     voiceStatus.className = 'text-center text-green-600 font-medium';
                 }
                 
@@ -4558,12 +4652,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Afficher l'erreur
                 if (voiceStatus) {
-                    voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                    voiceStatus.textContent = `${PCMA_LABELS.errGeneric}${error.message}`;
                     voiceStatus.className = 'text-center text-red-600 font-medium';
                 }
                 
                 // Afficher un message d'erreur
-                displayPlayerNotFound('Erreur lors de la recherche automatique');
+                displayPlayerNotFound(PCMA_LABELS.errAutoSearch);
             }
         }
 
@@ -4578,7 +4672,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Comparer l'âge
             if (voiceData.age && databaseData.age && voiceData.age !== databaseData.age) {
                 inconsistencies.push({
-                    field: 'âge',
+                    field: PCMA_LABELS.fieldAge,
                     voice: voiceData.age,
                     database: databaseData.age,
                     type: 'age_mismatch'
@@ -4719,7 +4813,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     let similarityText = '';
                     if (inconsistency.similarity) {
-                        similarityText = ` (Similarité: ${Math.round(inconsistency.similarity.score * 100)}%)`;
+                        similarityText = ` (${PCMA_LABELS.similarityLabel} ${Math.round(inconsistency.similarity.score * 100)}%)`;
                     }
                     
                     inconsistencyItem.innerHTML = `
@@ -4727,13 +4821,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="flex-1">
                                 <div class="font-medium text-red-800">${inconsistency.field}</div>
                                 <div class="text-sm text-red-600">
-                                     Vocal: <strong>${inconsistency.voice}</strong> | 
-                                    💾 Base: <strong>${inconsistency.database}</strong>${similarityText}
+                                    ${PCMA_LABELS.vocalPrefix}<strong>${inconsistency.voice}</strong> |
+                                    ${PCMA_LABELS.databasePrefix}<strong>${inconsistency.database}</strong>${similarityText}
                                 </div>
                             </div>
                             <div class="ml-3">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                    ⚠️ Incohérence
+                                    ${PCMA_LABELS.inconsistencyBadge}
                                 </span>
                             </div>
                         </div>
@@ -4783,7 +4877,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const sequenceValue = confirmationSequence ? confirmationSequence.value.trim() : '';
             
             if (!idValue && !sequenceValue) {
-                alert('⚠️ Veuillez remplir au moins un champ de confirmation');
+                alert(PCMA_LABELS.errFillConfirmationField);
                 return;
             }
             
@@ -4803,7 +4897,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Mettre à jour le statut
                 const voiceStatus = document.getElementById('voice-status');
                 if (voiceStatus) {
-                    voiceStatus.textContent = ' Identité confirmée - Données validées';
+                    voiceStatus.textContent = PCMA_LABELS.identityConfirmedValidated;
                     voiceStatus.className = 'text-center text-green-600 font-medium';
                 }
                 
@@ -4828,15 +4922,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 notesField.value = '';
                 console.log('🧹 Anciennes notes cliniques effacées');
                 
-                const timestamp = new Date().toLocaleString('fr-FR');
-                let note = `[${timestamp}] Données extraites par reconnaissance vocale:\n\n`;
+                const timestamp = new Date().toLocaleString('en-GB');
+                let note = `[${timestamp}] ${PCMA_LABELS.voiceExtractionNoteHeader}\n\n`;
                 
                 if (extractedData.player_name) note += `👤 PATIENT: ${extractedData.player_name}\n`;
-                if (extractedData.age) note += `📅 ÂGE: ${extractedData.age} ans\n`;
+                if (extractedData.age) note += `${PCMA_LABELS.ageNotePrefix}${extractedData.age}${PCMA_LABELS.ageNoteSuffix}`;
                 if (extractedData.position) note += `⚽ POSITION: ${extractedData.position}\n`;
                 if (extractedData.club) note += `🏆 CLUB: ${extractedData.club}\n`;
                 if (extractedData.fifa_number) note += `🆔 FIFA ID: ${extractedData.fifa_number}\n`;
-                if (extractedData.command) note += ` COMMANDE: ${extractedData.command}\n`;
+                if (extractedData.command) note += `${PCMA_LABELS.commandNotePrefix}${extractedData.command}\n`;
                 
                 //  ÉCRIRE les nouvelles données (remplace complètement)
                 notesField.value = note;
@@ -4891,22 +4985,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     if (data.success) {
                         console.log(' Données sauvegardées automatiquement:', data);
-                        showSaveStatus(' Données sauvegardées automatiquement !', 'success');
+                        showSaveStatus(PCMA_LABELS.savedAutomaticallySuccess, 'success');
                         
                         // Mettre à jour l'interface
                         updateSaveStatus(data);
                     } else {
-                        throw new Error(data.message || 'Erreur de sauvegarde');
+                        throw new Error(data.message || PCMA_LABELS.errSave);
                     }
                 })
                 .catch(error => {
                     console.error('❌ Erreur de sauvegarde automatique:', error);
-                    showSaveStatus('❌ Erreur de sauvegarde: ' + error.message, 'error');
+                    showSaveStatus(PCMA_LABELS.errSaveAlert + error.message, 'error');
                 });
                 
             } catch (error) {
                 console.error('❌ Erreur lors de la sauvegarde automatique:', error);
-                showSaveStatus('❌ Erreur de sauvegarde: ' + error.message, 'error');
+                showSaveStatus(PCMA_LABELS.errSaveAlert + error.message, 'error');
             }
         }
 
@@ -4963,15 +5057,15 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Construire le contenu du résumé
             const summaryContent = `
-                <h4 class="font-medium text-blue-800 mb-2"> Résumé de l'Extraction Vocale</h4>
+                <h4 class="font-medium text-blue-800 mb-2">${PCMA_LABELS.voiceExtractionSummaryTitle}</h4>
                 <div class="grid grid-cols-2 gap-2 text-sm text-blue-700">
-                    ${extractedData.player_name ? `<div><strong>Nom:</strong> ${extractedData.player_name}</div>` : ''}
-                    ${extractedData.age ? `<div><strong>Âge:</strong> ${extractedData.age} ans</div>` : ''}
+                    ${extractedData.player_name ? `<div><strong>${PCMA_LABELS.summaryNameLabel}</strong> ${extractedData.player_name}</div>` : ''}
+                    ${extractedData.age ? `<div><strong>${PCMA_LABELS.summaryAgeLabel}</strong> ${extractedData.age} ans</div>` : ''}
                     ${extractedData.position ? `<div><strong>Position:</strong> ${extractedData.position}</div>` : ''}
                     ${extractedData.club ? `<div><strong>Club:</strong> ${extractedData.club}</div>` : ''}
                 </div>
                 <div class="mt-2 text-xs text-blue-600">
-                    <strong>Confiance:</strong> ${extractedData.confidence === 'high' ? 'Élevée' : extractedData.confidence === 'medium' ? 'Moyenne' : 'Faible'}
+                    <strong>${PCMA_LABELS.confidenceLabel}</strong> ${extractedData.confidence === 'high' ? PCMA_LABELS.confidenceHigh : extractedData.confidence === 'medium' ? PCMA_LABELS.confidenceMedium : PCMA_LABELS.confidenceLow}
                 </div>
             `;
             
@@ -4996,7 +5090,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Afficher un message de confirmation
-            elements.status.textContent = ` PCMA sauvegardé avec l'ID: ${data.pcma_id || 'N/A'}`;
+            elements.status.textContent = `${PCMA_LABELS.pcmaSavedWithId}${data.pcma_id || 'N/A'}`;
         }
 
         // Afficher le statut du service
@@ -5312,7 +5406,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`Erreur HTTP: ${response.status}`);
+                    throw new Error(`${PCMA_LABELS.errHttp}${response.status}`);
                 }
                 
                 const data = await response.json();
@@ -5562,12 +5656,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p><strong>ID FIFA Connect:</strong> <span class="font-mono bg-blue-100 px-2 py-1 rounded">${player.fifa_connect_id || 'N/A'}</span></p>
                             <p><strong>Club:</strong> ${player.club || 'N/A'}</p>
                             <p><strong>Position:</strong> ${player.position || 'N/A'}</p>
-                            <p><strong>Âge:</strong> ${player.age || 'N/A'}</p>
+                            <p><strong>${PCMA_LABELS.summaryAgeLabel}</strong> ${player.age || 'N/A'}</p>
                         </div>
                     </div>
                     <div class="flex-shrink-0">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                             Trouvé dans la base
+                             ${PCMA_LABELS.foundInDatabase}
                         </span>
                     </div>
                 </div>
@@ -5610,15 +5704,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                     <div class="flex-1">
-                        <h4 class="text-lg font-semibold text-yellow-900">Joueur non trouvé</h4>
+                        <h4 class="text-lg font-semibold text-yellow-900">${PCMA_LABELS.playerNotFoundTitle}</h4>
                         <div class="text-sm text-yellow-700">
-                            <p><strong>Nom recherché:</strong> ${playerName}</strong></p>
-                            <p><strong>Statut:</strong> Ce joueur n'existe pas encore dans la base de données</p>
+                            <p><strong>${PCMA_LABELS.searchedNameLabel}</strong> ${playerName}</strong></p>
+                            <p><strong>${PCMA_LABELS.statusColonLabel}</strong> ${PCMA_LABELS.playerNotExistYet}</p>
                         </div>
                     </div>
                     <div class="flex-shrink-0">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            ⚠️ Nouveau joueur
+                            ${PCMA_LABELS.newPlayerBadge}
                         </span>
                     </div>
                 </div>
@@ -5734,7 +5828,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Mettre à jour le statut
             const liveStatus = document.getElementById('voice-live-status');
             if (liveStatus) {
-                liveStatus.textContent = 'Transcription reçue';
+                liveStatus.textContent = PCMA_LABELS.transcriptionReceived;
                 liveStatus.style.backgroundColor = '#F0FDF4';
                 liveStatus.style.color = '#065F46';
             }
@@ -5742,7 +5836,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Mettre à jour l'analyse NLP
             const nlpAnalysis = document.getElementById('voice-nlp-analysis');
             if (nlpAnalysis) {
-                nlpAnalysis.textContent = 'Analyse en cours...';
+                nlpAnalysis.textContent = PCMA_LABELS.analysisInProgress;
                 nlpAnalysis.style.backgroundColor = '#FEF3C7';
                 nlpAnalysis.style.color = '#92400E';
             }
@@ -5768,7 +5862,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!window.speechService) {
                 console.error('❌ Service Google vocal non disponible');
                 if (voiceStatus) {
-                    voiceStatus.textContent = '❌ Service Google vocal non initialisé';
+                    voiceStatus.textContent = PCMA_LABELS.serviceGoogleNotInitialized;
                     voiceStatus.className = 'text-center text-red-600 font-medium';
                 }
                 return;
@@ -5803,7 +5897,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('❌ Erreur Google vocal:', error);
                 
                 if (voiceStatus) {
-                    voiceStatus.textContent = `❌ Erreur Google: ${error.message}`;
+                    voiceStatus.textContent = PCMA_LABELS.errGooglePrefix + error.message;
                     voiceStatus.className = 'text-center text-red-600 font-medium';
                 }
             };
@@ -5825,7 +5919,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Afficher l'erreur à l'utilisateur
             const voiceStatus = document.getElementById('voice-status');
             if (voiceStatus) {
-                voiceStatus.textContent = '❌ Service Google vocal non initialisé';
+                voiceStatus.textContent = PCMA_LABELS.serviceGoogleNotInitialized;
                 voiceStatus.className = 'text-center text-red-600 font-medium';
             }
             return;
@@ -5838,7 +5932,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mise à jour de l'interface
         startBtn.classList.add('hidden');
         stopBtn.classList.remove('hidden');
-        voiceStatus.textContent = ' Enregistrement Google en cours...';
+        voiceStatus.textContent = PCMA_LABELS.recordingGoogleInProgress;
         voiceStatus.className = 'text-center text-red-600 font-medium';
         
         //  CORRECTION : Utiliser la méthode Google correcte
@@ -5860,7 +5954,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('❌ Erreur lors du démarrage Google:', error);
             if (voiceStatus) {
-                voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                voiceStatus.textContent = `${PCMA_LABELS.errGeneric}${error.message}`;
                 voiceStatus.className = 'text-center text-red-600 font-medium';
             }
             // Remettre le bouton start
@@ -5885,7 +5979,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mise à jour de l'interface
         stopBtn.classList.add('hidden');
         startBtn.classList.remove('hidden');
-        voiceStatus.textContent = '⏸️ Enregistrement Google arrêté';
+        voiceStatus.textContent = PCMA_LABELS.recordingStoppedGoogle;
         voiceStatus.className = 'text-center text-orange-600 font-medium';
         
         //  CORRECTION : Utiliser la méthode Google correcte
@@ -5895,7 +5989,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('❌ Erreur lors de l\'arrêt Google:', error);
             if (voiceStatus) {
-                voiceStatus.textContent = `❌ Erreur arrêt: ${error.message}`;
+                voiceStatus.textContent = PCMA_LABELS.errStopPrefix + error.message;
                 voiceStatus.className = 'text-center text-red-600 font-medium';
             }
         }
@@ -5948,7 +6042,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Mettre à jour le statut vocal
             const voiceStatus = document.getElementById('voice-status');
             if (voiceStatus) {
-                voiceStatus.textContent = ' Données du joueur remplies automatiquement';
+                voiceStatus.textContent = PCMA_LABELS.playerDataFilledAuto;
                 voiceStatus.className = 'text-center text-green-600 font-medium';
             }
             
@@ -5958,7 +6052,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Mettre à jour le statut vocal en cas d'erreur
             const voiceStatus = document.getElementById('voice-status');
             if (voiceStatus) {
-                voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                voiceStatus.textContent = `${PCMA_LABELS.errGeneric}${error.message}`;
                 voiceStatus.className = 'text-center text-red-600 font-medium';
             }
         }
@@ -5990,7 +6084,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Mettre à jour le statut
         const voiceStatus = document.getElementById('voice-status');
-        voiceStatus.textContent = ' Données extraites avec succès !';
+        voiceStatus.textContent = PCMA_LABELS.dataExtractedSuccess;
         voiceStatus.className = 'text-center text-green-600 font-medium';
         
         console.log(' Résultats vocaux affichés');
@@ -6076,7 +6170,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Mettre à jour le statut
                     const voiceStatus = document.getElementById('voice-status');
                     if (voiceStatus) {
-                        voiceStatus.textContent = ' Données traitées par ServiceVocal + NLP !';
+                        voiceStatus.textContent = PCMA_LABELS.dataProcessedServiceVocalNlp;
                         voiceStatus.className = 'text-center text-green-600 font-medium';
                     }
                     
@@ -6088,7 +6182,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const voiceStatus = document.getElementById('voice-status');
                 if (voiceStatus) {
-                    voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                    voiceStatus.textContent = `${PCMA_LABELS.errGeneric}${error.message}`;
                     voiceStatus.className = 'text-center text-red-600 font-medium';
                 }
             }
@@ -6100,7 +6194,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const voiceStatus = document.getElementById('voice-status');
             if (voiceStatus) {
-                voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                voiceStatus.textContent = `${PCMA_LABELS.errGeneric}${error.message}`;
                 voiceStatus.className = 'text-center text-red-600 font-medium';
             }
         });
@@ -6110,11 +6204,11 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(' ServiceVocal démarré');
             
             //  NOUVEAU : Mettre à jour l'affichage en temps réel
-            updateVoiceLiveStatus(' Reconnaissance vocale en cours...', 'bg-blue-100 text-blue-700');
+            updateVoiceLiveStatus(PCMA_LABELS.voiceRecognitionInProgress, 'bg-blue-100 text-blue-700');
             
             const voiceStatus = document.getElementById('voice-status');
             if (voiceStatus) {
-                voiceStatus.textContent = ' Reconnaissance vocale en cours...';
+                voiceStatus.textContent = PCMA_LABELS.voiceRecognitionInProgress;
                 voiceStatus.className = 'text-center text-blue-600 font-medium';
             }
         });
@@ -6124,11 +6218,11 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('⏸️ ServiceVocal arrêté');
             
             //  NOUVEAU : Mettre à jour l'affichage en temps réel
-            updateVoiceLiveStatus('⏸️ Reconnaissance vocale arrêtée', 'bg-orange-100 text-orange-700');
+            updateVoiceLiveStatus(PCMA_LABELS.recognitionStoppedGeneric, 'bg-orange-100 text-orange-700');
             
             const voiceStatus = document.getElementById('voice-status');
             if (voiceStatus) {
-                voiceStatus.textContent = '⏸️ Reconnaissance vocale arrêtée';
+                voiceStatus.textContent = PCMA_LABELS.recognitionStoppedGeneric;
                 voiceStatus.className = 'text-center text-orange-600 font-medium';
             }
         });
@@ -6235,7 +6329,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Mettre à jour le statut
                     const voiceStatus = document.getElementById('voice-status');
                     if (voiceStatus) {
-                        voiceStatus.textContent = ' Données traitées par intégration directe !';
+                        voiceStatus.textContent = PCMA_LABELS.dataProcessedDirectIntegration;
                         voiceStatus.className = 'text-center text-green-600 font-medium';
                     }
                     
@@ -6247,7 +6341,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const voiceStatus = document.getElementById('voice-status');
                 if (voiceStatus) {
-                    voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                    voiceStatus.textContent = `${PCMA_LABELS.errGeneric}${error.message}`;
                     voiceStatus.className = 'text-center text-red-600 font-medium';
                 }
             }
@@ -6377,7 +6471,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const voiceStatus = document.getElementById('voice-status');
                 if (voiceStatus) {
-                    voiceStatus.textContent = `❌ Erreur: ${error.message}`;
+                    voiceStatus.textContent = `${PCMA_LABELS.errGeneric}${error.message}`;
                     voiceStatus.className = 'text-center text-red-600 font-medium';
                 }
             };
@@ -6497,16 +6591,16 @@ document.addEventListener('DOMContentLoaded', function() {
             let nlpText = '';
             
             if (extractedData.command === 'fifa_connect_search') {
-                nlpText = ` Commande FIFA CONNECT détectée${extractedData.fifa_number ? ` (Numéro: ${extractedData.fifa_number})` : ''}`;
+                nlpText = `${PCMA_LABELS.fifaConnectCommandDetected}${extractedData.fifa_number ? `${PCMA_LABELS.numberLabelPrefix}${extractedData.fifa_number})` : ''}`;
             } else if (extractedData.player_name || extractedData.age || extractedData.position || extractedData.club) {
                 const parts = [];
-                if (extractedData.player_name) parts.push(`Nom: ${extractedData.player_name}`);
-                if (extractedData.age) parts.push(`Âge: ${extractedData.age}`);
+                if (extractedData.player_name) parts.push(`${PCMA_LABELS.summaryNameLabel} ${extractedData.player_name}`);
+                if (extractedData.age) parts.push(`${PCMA_LABELS.summaryAgeLabel} ${extractedData.age}`);
                 if (extractedData.position) parts.push(`Position: ${extractedData.position}`);
                 if (extractedData.club) parts.push(`Club: ${extractedData.club}`);
                 nlpText = parts.join(' | ');
             } else {
-                nlpText = 'Aucune donnée structurée détectée';
+                nlpText = PCMA_LABELS.noStructuredDataDetected;
             }
             
             nlpElement.innerHTML = `<span class="text-blue-600">${nlpText}</span>`;
@@ -6537,17 +6631,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const finalElement = document.getElementById('voice-final-transcript');
         if (finalElement) {
-            finalElement.innerHTML = '<span class="text-gray-400">Aucune transcription finale</span>';
+            finalElement.innerHTML = `<span class="text-gray-400">${PCMA_LABELS.noFinalTranscript}</span>`;
         }
         
         const nlpElement = document.getElementById('voice-nlp-analysis');
         if (nlpElement) {
-            nlpElement.innerHTML = '<span class="text-gray-400">Analyse en attente...</span>';
+            nlpElement.innerHTML = `<span class="text-gray-400">${PCMA_LABELS.analysisPending}</span>`;
         }
         
         const dataElement = document.getElementById('voice-extracted-data');
         if (dataElement) {
-            dataElement.innerHTML = '<span class="text-gray-400">Aucune donnée extraite</span>';
+            dataElement.innerHTML = `<span class="text-gray-400">${PCMA_LABELS.noDataExtracted}</span>`;
         }
     }
     
@@ -6815,13 +6909,13 @@ hideVocalContentInManual() {
     testAdvancedSpeechRecognition() {
         const voiceStatus = document.getElementById('voice-status');
         if (voiceStatus) {
-            voiceStatus.textContent = 'Test avancé en cours...';
+            voiceStatus.textContent = PCMA_LABELS.testAdvancedProgress;
             voiceStatus.className = 'text-sm text-blue-600 mb-4';
         }
         
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             if (voiceStatus) {
-                voiceStatus.textContent = 'API Speech Recognition non supportée';
+                voiceStatus.textContent = PCMA_LABELS.speechRecognitionUnsupported;
                 voiceStatus.className = 'text-sm text-red-600 mb-4';
             }
             return;
@@ -6838,7 +6932,7 @@ hideVocalContentInManual() {
             
             testRecognition.onstart = () => {
                 if (voiceStatus) {
-                    voiceStatus.textContent = 'Test: Reconnaissance démarrée !';
+                    voiceStatus.textContent = PCMA_LABELS.testRecognitionStarted;
                     voiceStatus.className = 'text-sm text-green-600 mb-4';
                 }
                 
@@ -6856,7 +6950,7 @@ hideVocalContentInManual() {
             
             testRecognition.onerror = (event) => {
                 if (voiceStatus) {
-                    voiceStatus.textContent = `Test: Erreur ${event.error}`;
+                    voiceStatus.textContent = PCMA_LABELS.testErrorPrefix + event.error;
                     voiceStatus.className = 'text-sm text-red-600 mb-4';
                 }
             };
@@ -6869,7 +6963,7 @@ hideVocalContentInManual() {
             
         } catch (error) {
             if (voiceStatus) {
-                voiceStatus.textContent = `Test: Erreur de création - ${error.message}`;
+                voiceStatus.textContent = PCMA_LABELS.testCreationErrorPrefix + error.message;
                 voiceStatus.className = 'text-sm text-red-600 mb-4';
             }
         }
@@ -6878,7 +6972,7 @@ hideVocalContentInManual() {
     testSpeechService() {
         const serviceStatus = document.getElementById('service-status');
         if (serviceStatus) {
-            serviceStatus.textContent = 'Test en cours...';
+            serviceStatus.textContent = PCMA_LABELS.testInProgress;
             serviceStatus.className = 'mt-2 text-sm text-blue-600';
         }
         
@@ -6912,7 +7006,7 @@ hideVocalContentInManual() {
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             return {
                 success: false,
-                error: 'API Speech Recognition non supportée dans ce navigateur'
+                error: PCMA_LABELS.speechRecognitionUnsupportedBrowser
             };
         }
         
@@ -6925,17 +7019,17 @@ hideVocalContentInManual() {
             if (error.name === 'NotAllowedError') {
                 return {
                     success: false,
-                    error: 'Permission microphone refusée - Cliquez sur "Autoriser"'
+                    error: PCMA_LABELS.micPermissionDenied
                 };
             } else if (error.name === 'NotFoundError') {
                 return {
                     success: false,
-                    error: 'Aucun microphone détecté sur cet appareil'
+                    error: PCMA_LABELS.noMicrophoneDetected
                 };
             } else {
                 return {
                     success: false,
-                    error: `Erreur microphone: ${error.message}`
+                    error: PCMA_LABELS.micErrorPrefix + error.message
                 };
             }
         }
@@ -6964,7 +7058,7 @@ hideVocalContentInManual() {
         
         this.speechService.startListening().then(() => {
             if (voiceStatus) {
-                voiceStatus.textContent = 'Enregistrement Google Cloud en cours... (60s max)';
+                voiceStatus.textContent = PCMA_LABELS.googleRecordingInProgress;
                 voiceStatus.className = 'text-sm text-green-600 mb-4';
             }
             if (startBtn) {
@@ -6979,7 +7073,7 @@ hideVocalContentInManual() {
             
         }).catch(error => {
             if (voiceStatus) {
-                voiceStatus.textContent = `Erreur: ${error.message}`;
+                voiceStatus.textContent = `${PCMA_LABELS.errGenericPlain}${error.message}`;
                 voiceStatus.className = 'text-sm text-red-600 mb-4';
             }
             this.resetRecognitionButtons();
@@ -6991,7 +7085,7 @@ hideVocalContentInManual() {
             const response = await fetch('/api/google-speech-key');
             
             if (!response.ok) {
-                throw new Error(`Erreur HTTP: ${response.status}`);
+                throw new Error(`${PCMA_LABELS.errHttp}${response.status}`);
             }
             
             const data = await response.json();
@@ -7018,13 +7112,13 @@ hideVocalContentInManual() {
                 this.speechService.onError = (error) => {
                     const voiceStatus = document.getElementById('voice-status');
                     if (voiceStatus) {
-                        voiceStatus.textContent = `Erreur: ${error.message}`;
+                        voiceStatus.textContent = `${PCMA_LABELS.errGenericPlain}${error.message}`;
                         voiceStatus.className = 'text-sm text-red-600 mb-4';
                     }
                 };
                 
             } else {
-                throw new Error('Clé API non trouvée dans la réponse');
+                throw new Error(PCMA_LABELS.errApiKeyNotFound);
             }
             
         } catch (error) {
@@ -7063,7 +7157,7 @@ hideVocalContentInManual() {
         
         const voiceStatus = document.getElementById('voice-status');
         if (voiceStatus) {
-            voiceStatus.textContent = 'Reconnaissance arrêtée';
+            voiceStatus.textContent = PCMA_LABELS.recognitionStoppedPlain;
             voiceStatus.className = 'text-sm text-orange-600 mb-4';
         }
         
@@ -7111,7 +7205,7 @@ hideVocalContentInManual() {
             const remainingTime = Math.max(0, 60 - Math.floor(elapsedTime / 1000));
             
             if (voiceStatus) {
-                voiceStatus.textContent = `Écoute en cours... (${remainingTime}s restantes)`;
+                voiceStatus.textContent = `${PCMA_LABELS.listeningPrefix}${remainingTime}${PCMA_LABELS.listeningSuffix}`;
             }
             
             if (remainingTime <= 0) {
@@ -7324,7 +7418,7 @@ hideVocalContentInManual() {
         
         const indicator = document.createElement('div');
         indicator.className = 'mode-indicator';
-        indicator.textContent = `Mode ${mode.charAt(0).toUpperCase() + mode.slice(1)} Actif`;
+        indicator.textContent = `${mode.charAt(0).toUpperCase() + mode.slice(1)} Mode ${PCMA_LABELS.modeActiveWord}`;
         
         document.body.appendChild(indicator);
         
@@ -7375,24 +7469,24 @@ hideVocalContentInManual() {
     // vrai transfert (ecriture reelle dans les champs du formulaire
     // principal) n'est pas implemente.
     transferVocalDataToManual() {
-        this.showTransferError('vocal', "le transfert automatique vers le formulaire principal n'est pas encore implémenté ; veuillez recopier les informations manuellement");
+        this.showTransferError('vocal', PCMA_LABELS.transferNotImplemented);
     }
     
     transferOcrDataToManual() {
-        this.showTransferError('ocr', "le transfert automatique vers le formulaire principal n'est pas encore implémenté ; veuillez recopier les informations manuellement");
+        this.showTransferError('ocr', PCMA_LABELS.transferNotImplemented);
     }
     
     transferFhirDataToManual() {
-        this.showTransferError('fhir', "le transfert automatique vers le formulaire principal n'est pas encore implémenté ; veuillez recopier les informations manuellement");
+        this.showTransferError('fhir', PCMA_LABELS.transferNotImplemented);
     }
     
     showTransferSuccess(mode) {
-        const message = `Données ${mode} transférées avec succès vers le formulaire principal !`;
+        const message = PCMA_LABELS.transferSuccessTemplate.replace(':mode', mode);
         this.showNotification(message, 'success');
     }
     
     showTransferError(mode, errorMessage) {
-        const message = `Erreur lors du transfert ${mode}: ${errorMessage}`;
+        const message = PCMA_LABELS.transferErrorTemplate.replace(':mode', mode).replace(':error', errorMessage);
         this.showNotification(message, 'error');
     }
     

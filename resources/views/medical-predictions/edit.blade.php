@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier la Prédiction - Med Predictor')
+@section('title', __('medical_predictions.edit_page_title'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -9,8 +9,8 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">✏️ Modifier la Prédiction</h1>
-                    <p class="text-gray-600 mt-2">Modifier les détails de la prédiction médicale</p>
+                    <h1 class="text-3xl font-bold text-gray-900">✏️ {{ __('medical_predictions.shared_edit_prediction_link') }}</h1>
+                    <p class="text-gray-600 mt-2">{{ __('medical_predictions.edit_subtitle') }}</p>
                 </div>
                 <div class="flex space-x-3">
                     <a href="{{ route('dashboard') }}" 
@@ -25,7 +25,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
-                        <span>Retour</span>
+                        <span>{{ __('medical_predictions.shared_back') }}</span>
                     </a>
                 </div>
             </div>
@@ -34,7 +34,7 @@
         <!-- Form -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">Modifier la Prédiction</h2>
+                <h2 class="text-xl font-semibold text-gray-800">{{ __('medical_predictions.shared_edit_prediction_link') }}</h2>
             </div>
             
             <form action="{{ route('medical-predictions.update', $medicalPrediction) }}" method="POST" class="p-6">
@@ -43,7 +43,7 @@
                 
                 <!-- Player Info (Read-only) -->
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Joueur</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('medical_predictions.shared_player_label') }}</label>
                     <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-md">
                         @if($medicalPrediction->player)
                             @if($medicalPrediction->player->player_face_url)
@@ -58,7 +58,7 @@
                                 <p class="text-gray-600">{{ $medicalPrediction->player->position }} - {{ $medicalPrediction->player->club->name ?? 'N/A' }}</p>
                             </div>
                         @else
-                            <span class="text-gray-500">Joueur supprimé</span>
+                            <span class="text-gray-500">{{ __('medical_predictions.shared_player_deleted') }}</span>
                         @endif
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                 <!-- Prediction Type -->
                 <div class="mb-6">
                     <label for="prediction_type" class="block text-sm font-medium text-gray-700 mb-2">
-                        Type de Prédiction <span class="text-red-500">*</span>
+                        {{ __('medical_predictions.shared_prediction_type_label') }} <span class="text-red-500">*</span>
                     </label>
                     <select name="prediction_type" id="prediction_type" required 
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -84,12 +84,12 @@
                 <!-- Predicted Condition -->
                 <div class="mb-6">
                     <label for="predicted_condition" class="block text-sm font-medium text-gray-700 mb-2">
-                        Condition Prédite <span class="text-red-500">*</span>
+                        {{ __('medical_predictions.edit_predicted_condition_label') }} <span class="text-red-500">*</span>
                     </label>
                     <input type="text" name="predicted_condition" id="predicted_condition" 
                            value="{{ old('predicted_condition', $medicalPrediction->predicted_condition) }}" required
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="Ex: Risque de blessure musculaire modéré">
+                           placeholder="{{ __('medical_predictions.edit_predicted_condition_placeholder') }}">
                     @error('predicted_condition')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -100,7 +100,7 @@
                     <!-- Risk Probability -->
                     <div>
                         <label for="risk_probability" class="block text-sm font-medium text-gray-700 mb-2">
-                            Probabilité de Risque <span class="text-red-500">*</span>
+                            {{ __('medical_predictions.shared_risk_probability_label') }} <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
                             <input type="range" name="risk_probability" id="risk_probability" 
@@ -122,7 +122,7 @@
                     <!-- Confidence Score -->
                     <div>
                         <label for="confidence_score" class="block text-sm font-medium text-gray-700 mb-2">
-                            Score de Confiance <span class="text-red-500">*</span>
+                            {{ __('medical_predictions.shared_confidence_score_label') }} <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
                             <input type="range" name="confidence_score" id="confidence_score" 
@@ -145,14 +145,14 @@
                 <!-- Status -->
                 <div class="mb-6">
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
-                        Statut <span class="text-red-500">*</span>
+                        {{ __('medical_predictions.edit_status_label') }} <span class="text-red-500">*</span>
                     </label>
                     <select name="status" id="status" required 
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="active" {{ $medicalPrediction->status == 'active' ? 'selected' : '' }}>Actif</option>
-                        <option value="expired" {{ $medicalPrediction->status == 'expired' ? 'selected' : '' }}>Expiré</option>
-                        <option value="verified" {{ $medicalPrediction->status == 'verified' ? 'selected' : '' }}>Vérifié</option>
-                        <option value="false_positive" {{ $medicalPrediction->status == 'false_positive' ? 'selected' : '' }}>Faux Positif</option>
+                        <option value="active" {{ $medicalPrediction->status == 'active' ? 'selected' : '' }}>{{ __('medical_predictions.shared_status_active') }}</option>
+                        <option value="expired" {{ $medicalPrediction->status == 'expired' ? 'selected' : '' }}>{{ __('medical_predictions.shared_status_expired') }}</option>
+                        <option value="verified" {{ $medicalPrediction->status == 'verified' ? 'selected' : '' }}>{{ __('medical_predictions.shared_status_verified') }}</option>
+                        <option value="false_positive" {{ $medicalPrediction->status == 'false_positive' ? 'selected' : '' }}>{{ __('medical_predictions.shared_status_false_positive') }}</option>
                     </select>
                     @error('status')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -162,7 +162,7 @@
                 <!-- Recommendations -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Recommandations
+                        {{ __('medical_predictions.shared_recommendations_label') }}
                     </label>
                     <div id="recommendations-container" class="space-y-2">
                         @if($medicalPrediction->recommendations)
@@ -170,7 +170,7 @@
                                 <div class="flex items-center space-x-2">
                                     <input type="text" name="recommendations[]" value="{{ $recommendation }}" 
                                            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                           placeholder="Recommandation">
+                                           placeholder="{{ __('medical_predictions.edit_recommendation_placeholder') }}">
                                     <button type="button" onclick="removeRecommendation(this)" 
                                             class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md transition-colors">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,7 +183,7 @@
                             <div class="flex items-center space-x-2">
                                 <input type="text" name="recommendations[]" 
                                        class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                       placeholder="Recommandation">
+                                       placeholder="{{ __('medical_predictions.edit_recommendation_placeholder') }}">
                                 <button type="button" onclick="removeRecommendation(this)" 
                                         class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -198,14 +198,14 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
-                        <span>Ajouter une Recommandation</span>
+                        <span>{{ __('medical_predictions.edit_add_recommendation_button') }}</span>
                     </button>
                 </div>
 
                 <!-- Prediction Notes -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Notes de Prédiction
+                        {{ __('medical_predictions.edit_prediction_notes_label') }}
                     </label>
                     <div id="notes-container" class="space-y-2">
                         @if($medicalPrediction->prediction_notes && is_array($medicalPrediction->prediction_notes))
@@ -214,7 +214,7 @@
                                     <div class="flex items-center space-x-2">
                                         <input type="text" name="prediction_notes[{{ $key }}]" value="{{ $note }}" 
                                                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                               placeholder="Note">
+                                               placeholder="{{ __('medical_predictions.edit_note_placeholder') }}">
                                         <button type="button" onclick="removeNote(this)" 
                                                 class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md transition-colors">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,7 +231,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
-                        <span>Ajouter une Note</span>
+                        <span>{{ __('medical_predictions.edit_add_note_button') }}</span>
                     </button>
                 </div>
 
@@ -239,14 +239,14 @@
                 <div class="flex justify-end space-x-3">
                     <a href="{{ route('medical-predictions.show', $medicalPrediction) }}" 
                        class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors">
-                        Annuler
+                        {{ __('medical_predictions.shared_cancel') }}
                     </a>
                     <button type="submit" 
                             class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
-                        <span>Mettre à Jour</span>
+                        <span>{{ __('medical_predictions.edit_update_button') }}</span>
                     </button>
                 </div>
             </form>
@@ -254,16 +254,16 @@
 
         <!-- Original Prediction Info -->
         <div class="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <h3 class="text-sm font-medium text-gray-900 mb-2">📊 Informations Originales</h3>
+            <h3 class="text-sm font-medium text-gray-900 mb-2">📊 {{ __('medical_predictions.edit_original_info_header') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
                 <div>
-                    <span class="font-medium">Généré par:</span> {{ $medicalPrediction->user->name ?? 'Système' }}
+                    <span class="font-medium">{{ __('medical_predictions.shared_generated_by_colon') }}</span> {{ $medicalPrediction->user->name ?? __('medical_predictions.shared_system_fallback') }}
                 </div>
                 <div>
-                    <span class="font-medium">Date de création:</span> {{ $medicalPrediction->prediction_date->format('d/m/Y H:i') }}
+                    <span class="font-medium">{{ __('medical_predictions.edit_creation_date_label') }}</span> {{ $medicalPrediction->prediction_date->format('d/m/Y H:i') }}
                 </div>
                 <div>
-                    <span class="font-medium">Version IA:</span> {{ $medicalPrediction->ai_model_version }}
+                    <span class="font-medium">{{ __('medical_predictions.edit_ai_version_label') }}</span> {{ $medicalPrediction->ai_model_version }}
                 </div>
             </div>
         </div>
@@ -306,7 +306,7 @@ function addRecommendation() {
     div.innerHTML = `
         <input type="text" name="recommendations[]" 
                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-               placeholder="Recommandation">
+               placeholder="{{ __('medical_predictions.edit_recommendation_placeholder') }}">
         <button type="button" onclick="removeRecommendation(this)" 
                 class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -328,7 +328,7 @@ function addNote() {
     div.innerHTML = `
         <input type="text" name="prediction_notes[note_${Date.now()}]" 
                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-               placeholder="Note">
+               placeholder="{{ __('medical_predictions.edit_note_placeholder') }}">
         <button type="button" onclick="removeNote(this)" 
                 class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

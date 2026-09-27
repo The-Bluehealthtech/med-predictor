@@ -43,4 +43,8 @@ return [
     'excel' => 'Excel',
     'pdf' => 'PDF',
     'json' => 'JSON',
+    'records_page_title' => 'Dossiers Médicaux - Med Predictor',
+    'management_subtitle' => 'Gestion des dossiers médicaux et prédictions',
+    'new_record_button' => '+ Nouveau dossier',
+    'create_first_record' => 'Créer le premier dossier',
 ];

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Engagements des Clubs - Association')
+@section('title', __('competitions.engagements_clubs_page.page_title'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -8,12 +8,12 @@
         <div>
             <h1 class="text-3xl font-bold text-gray-900">
                 <i class="fas fa-clipboard-check text-blue-600 mr-3"></i>
-                Engagements des Clubs
+                {{ __('competitions.engagements_clubs_page.page_title') }}
             </h1>
-            <p class="text-gray-600 mt-2">Validation des inscriptions aux compétitions</p>
+            <p class="text-gray-600 mt-2">{{ __('competitions.engagements_clubs_page.subtitle') }}</p>
         </div>
         <a href="{{ route('modules.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-            <i class="fas fa-arrow-left mr-2"></i>Retour aux Modules
+            <i class="fas fa-arrow-left mr-2"></i>{{ __('competitions.engagements_clubs_page.back_button') }}
         </a>
     </div>
 
@@ -25,7 +25,7 @@
                     <span class="text-blue-600 text-2xl">🏢</span>
                 </div>
                 <div class="ml-3">
-                    <p class="text-sm font-medium text-blue-600">Total Clubs</p>
+                    <p class="text-sm font-medium text-blue-600">{{ __('competitions.engagements_clubs_page.stat_total_clubs') }}</p>
                     <p class="text-2xl font-bold text-blue-900">{{ $clubs->count() }}</p>
                 </div>
             </div>
@@ -37,8 +37,8 @@
                     <span class="text-green-600 text-2xl">✅</span>
                 </div>
                 <div class="ml-3">
-                    <p class="text-sm font-medium text-green-600">Engagés</p>
-                    <p class="text-2xl font-bold text-green-900">{{ $clubs->where('statut_engagement', 'Engagé')->count() }}</p>
+                    <p class="text-sm font-medium text-green-600">{{ __('competitions.engagements_clubs_page.stat_engaged') }}</p>
+                    <p class="text-2xl font-bold text-green-900">{{ $clubs->where('statut_engagement_code', 'engaged')->count() }}</p>
                 </div>
             </div>
         </div>
@@ -49,8 +49,8 @@
                     <span class="text-yellow-600 text-2xl">⏳</span>
                 </div>
                 <div class="ml-3">
-                    <p class="text-sm font-medium text-yellow-600">En Attente</p>
-                    <p class="text-2xl font-bold text-yellow-900">{{ $clubs->where('statut_engagement', 'Non engagé')->count() }}</p>
+                    <p class="text-sm font-medium text-yellow-600">{{ __('competitions.engagements_clubs_page.stat_pending') }}</p>
+                    <p class="text-2xl font-bold text-yellow-900">{{ $clubs->where('statut_engagement_code', 'not_engaged')->count() }}</p>
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@
                     <span class="text-purple-600 text-2xl">⚽</span>
                 </div>
                 <div class="ml-3">
-                    <p class="text-sm font-medium text-purple-600">Total Matchs</p>
+                    <p class="text-sm font-medium text-purple-600">{{ __('competitions.engagements_clubs_page.stat_total_matches') }}</p>
                     <p class="text-2xl font-bold text-purple-900">{{ $clubs->sum('total_matches') }}</p>
                 </div>
             </div>
@@ -72,16 +72,16 @@
     <div class="bg-white rounded-lg shadow p-6 mb-8">
         <div class="flex flex-wrap gap-4">
             <button onclick="exportEngagements()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
-                📥 Exporter les Engagements
+                📥 {{ __('competitions.engagements_clubs_page.export_all_button') }}
             </button>
             <button onclick="validateAllEngagements()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                ✅ Valider Tous
+                ✅ {{ __('competitions.engagements_clubs_page.validate_all_button') }}
             </button>
             <button onclick="refreshData()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
-                🔄 Actualiser
+                🔄 {{ __('competitions.engagements_clubs_page.refresh_button') }}
             </button>
             <button onclick="addNewEngagement()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors">
-                ➕ Nouvel Engagement
+                ➕ {{ __('competitions.engagements_clubs_page.add_button') }}
             </button>
         </div>
     </div>
@@ -89,7 +89,7 @@
     <!-- Liste des clubs -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Clubs Inscrits</h2>
+            <h2 class="text-lg font-semibold text-gray-900">{{ __('competitions.engagements_clubs_page.section_title') }}</h2>
         </div>
         
         @if($clubs->count() > 0)
@@ -97,12 +97,12 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Club</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compétition</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matchs</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dernière Activité</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.engagements_clubs_page.col_club') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.engagements_clubs_page.col_competition') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.engagements_clubs_page.col_status') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.engagements_clubs_page.col_matches') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.engagements_clubs_page.col_last_activity') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.engagements_clubs_page.col_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -117,7 +117,7 @@
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-bold text-gray-900">{{ $club['nom'] }}</div>
-                                        <div class="text-xs text-gray-500">{{ $club['teams_count'] }} équipe(s) • {{ $club['competitions_count'] }} compétition(s)</div>
+                                        <div class="text-xs text-gray-500">{{ $club['teams_count'] }} {{ __('competitions.engagements_clubs_page.team_unit') }} • {{ $club['competitions_count'] }} {{ __('competitions.engagements_clubs_page.competition_unit') }}</div>
                                     </div>
                                 </div>
                             </td>
@@ -125,18 +125,18 @@
                                 {{ $club['competition'] }}
                                 @if($club['competitions_count'] > 1)
                                     <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        +{{ $club['competitions_count'] - 1 }} autres
+                                        +{{ $club['competitions_count'] - 1 }} {{ __('competitions.engagements_clubs_page.other_competitions_label') }}
                                     </span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                @if($club['statut_engagement'] === 'Engagé')
+                                @if($club['statut_engagement_code'] === 'engaged')
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        ✅ Engagé
+                                        {{ __('competitions.engagements_clubs_page.status_engaged_badge') }}
                                     </span>
                                 @else
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                        ⏳ En Attente
+                                        {{ __('competitions.engagements_clubs_page.status_pending_badge') }}
                                     </span>
                                 @endif
                             </td>
@@ -146,18 +146,18 @@
                                     <span class="text-gray-400 mx-1">/</span>
                                     <span class="text-gray-600">{{ $club['feuilles_soumises'] }}</span>
                                 </div>
-                                <div class="text-xs text-gray-500">Terminés / Total</div>
+                                <div class="text-xs text-gray-500">{{ __('competitions.engagements_clubs_page.matches_ratio_label') }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ $club['derniere_activite'] }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
-                                    <button onclick="viewClubDetails({{ $club['id'] }})" class="text-blue-600 hover:text-blue-900 px-2 py-1 rounded" title="Voir détails">👁️ Voir</button>
-                                    <button onclick="validateEngagement({{ $club['id'] }})" class="text-green-600 hover:text-green-900 px-2 py-1 rounded" title="Valider engagement">✅ Valider</button>
-                                    <button onclick="editEngagement({{ $club['id'] }})" class="text-yellow-600 hover:text-yellow-900 px-2 py-1 rounded" title="Modifier">✏️ Modifier</button>
-                                    <button onclick="exportClubData({{ $club['id'] }})" class="text-purple-600 hover:text-purple-900 px-2 py-1 rounded" title="Exporter">📥 Exporter</button>
-                                    <button onclick="suspendEngagement({{ $club['id'] }})" class="text-red-600 hover:text-red-900 px-2 py-1 rounded" title="Suspendre">🚫 Suspendre</button>
+                                    <button onclick="viewClubDetails({{ $club['id'] }})" class="text-blue-600 hover:text-blue-900 px-2 py-1 rounded" title="{{ __('competitions.engagements_clubs_page.view_button_title') }}">👁️ {{ __('competitions.engagements_clubs_page.view_button') }}</button>
+                                    <button onclick="validateEngagement({{ $club['id'] }})" class="text-green-600 hover:text-green-900 px-2 py-1 rounded" title="{{ __('competitions.engagements_clubs_page.validate_button_title') }}">✅ {{ __('competitions.engagements_clubs_page.validate_button') }}</button>
+                                    <button onclick="editEngagement({{ $club['id'] }})" class="text-yellow-600 hover:text-yellow-900 px-2 py-1 rounded" title="{{ __('competitions.engagements_clubs_page.edit_button_title') }}">✏️ {{ __('competitions.engagements_clubs_page.edit_button') }}</button>
+                                    <button onclick="exportClubData({{ $club['id'] }})" class="text-purple-600 hover:text-purple-900 px-2 py-1 rounded" title="{{ __('competitions.engagements_clubs_page.export_button_title') }}">📥 {{ __('competitions.engagements_clubs_page.export_button') }}</button>
+                                    <button onclick="suspendEngagement({{ $club['id'] }})" class="text-red-600 hover:text-red-900 px-2 py-1 rounded" title="{{ __('competitions.engagements_clubs_page.suspend_button_title') }}">🚫 {{ __('competitions.engagements_clubs_page.suspend_button') }}</button>
                                 </div>
                             </td>
                         </tr>
@@ -170,8 +170,8 @@
                 <div class="text-gray-400 text-6xl mb-4">
                     <i class="fas fa-users"></i>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun engagement trouvé</h3>
-                <p class="text-gray-500">Les engagements des clubs apparaîtront ici.</p>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('competitions.engagements_clubs_page.empty_state_title') }}</h3>
+                <p class="text-gray-500">{{ __('competitions.engagements_clubs_page.empty_state_text') }}</p>
             </div>
         @endif
     </div>
@@ -200,7 +200,7 @@ function exportEngagements() {
 }
 
 function validateAllEngagements() {
-    if (confirm('Voulez-vous valider tous les engagements en attente ?')) {
+    if (confirm(@json(__('competitions.engagements_clubs_page.js_validate_all_confirm')))) {
         fetch('{{ route("competitions.association.validate-all-engagements") }}', {
             method: 'POST',
             headers: {
@@ -214,11 +214,11 @@ function validateAllEngagements() {
                 alert(data.message);
                 location.reload();
             } else {
-                alert('Erreur: ' + data.error);
+                alert(@json(__('competitions.engagements_clubs_page.js_error_prefix')) + data.error);
             }
         })
         .catch(error => {
-            alert('Erreur lors de la validation: ' + error);
+            alert(@json(__('competitions.engagements_clubs_page.js_validate_all_network_error_prefix')) + error);
         });
     }
 }
@@ -228,58 +228,60 @@ function refreshData() {
 }
 
 function addNewEngagement() {
-    alert('Fonctionnalité d\'ajout d\'engagement à implémenter');
+    alert(@json(__('competitions.engagements_clubs_page.js_add_engagement_unavailable')));
     // Ici on pourrait rediriger vers un formulaire d'ajout
 }
 
 function viewClubDetails(clubId) {
-    fetch(`{{ url('test-club-details') }}/${clubId}`)
+    // NOTE (audit factice -> reel, 2026-09) : ce bouton appelait une route
+    // de test ("test-club-details") supprimee depuis, ce qui provoquait
+    // systematiquement une erreur 404. Utilise maintenant la vraie route
+    // authentifiee competitions.association.club-details, deja backee par
+    // une methode de controleur reelle (CompetitionController::clubDetails).
+    const urlTemplate = @json(route('competitions.association.club-details', ['clubId' => '__CLUB_ID__']));
+    fetch(urlTemplate.replace('__CLUB_ID__', clubId))
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 // Afficher les détails dans une modal ou une nouvelle page
                 const club = data.club;
-                alert(`Club: ${club.name}\nÉquipes: ${club.teams.length}\nCompétitions: ${club.teams.flatMap(t => t.competitions).length}`);
+                const clubLabel = @json(__('competitions.engagements_clubs_page.js_view_details_club_label'));
+                const teamsLabel = @json(__('competitions.engagements_clubs_page.js_view_details_teams_label'));
+                const competitionsLabel = @json(__('competitions.engagements_clubs_page.js_view_details_competitions_label'));
+                alert(`${clubLabel} ${club.name}\n${teamsLabel} ${club.teams.length}\n${competitionsLabel} ${club.teams.flatMap(t => t.competitions).length}`);
             } else {
-                alert('Erreur: ' + data.error);
+                alert(@json(__('competitions.engagements_clubs_page.js_error_prefix')) + data.error);
             }
         })
         .catch(error => {
-            alert('Erreur lors de la récupération: ' + error);
+            alert(@json(__('competitions.engagements_clubs_page.js_view_details_error_prefix')) + error);
         });
 }
 
 function validateEngagement(clubId) {
-    if (confirm(`Voulez-vous valider l'engagement du club ${clubId} ?`)) {
-        fetch(`{{ url('test-validate-engagement') }}/${clubId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                location.reload();
-            } else {
-                alert('Erreur: ' + data.error);
-            }
-        })
-        .catch(error => {
-            alert('Erreur lors de la validation: ' + error);
-        });
+    // NOTE (audit factice -> reel, 2026-09) : ce bouton appelait une route de
+    // test supprimee ("test-validate-engagement"), et la methode de
+    // controleur reelle derriere ce nom (CompetitionController::validateEngagement)
+    // renvoyait de toute facon un succes fictif sans logique de validation
+    // reelle. On informe donc honnetement l'utilisateur plutot que de
+    // brancher un faux succes.
+    if (confirm(@json(__('competitions.engagements_clubs_page.js_validate_engagement_confirm')))) {
+        alert(@json(__('competitions.engagements_clubs_page.js_validate_engagement_unavailable')));
     }
 }
 
 function editEngagement(clubId) {
-    alert(`Fonctionnalité de modification d'engagement ${clubId} à implémenter`);
+    alert(@json(__('competitions.engagements_clubs_page.js_edit_engagement_unavailable')));
     // Ici on pourrait ouvrir un formulaire de modification
 }
 
 function exportClubData(clubId) {
-    fetch(`{{ url('test-export-club-data') }}/${clubId}`, {
+    // NOTE (audit factice -> reel, 2026-09) : meme constat que viewClubDetails()
+    // ci-dessus, ce bouton appelait une route de test supprimee
+    // ("test-export-club-data"). Utilise maintenant la vraie route
+    // authentifiee competitions.association.export-club-data.
+    const urlTemplate = @json(route('competitions.association.export-club-data', ['clubId' => '__CLUB_ID__']));
+    fetch(urlTemplate.replace('__CLUB_ID__', clubId), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -298,31 +300,17 @@ function exportClubData(clubId) {
         document.body.removeChild(a);
     })
     .catch(error => {
-        alert('Erreur lors de l\'export: ' + error);
+        alert(@json(__('competitions.engagements_clubs_page.js_export_club_data_error_prefix')) + error);
     });
 }
 
 function suspendEngagement(clubId) {
-    if (confirm(`Voulez-vous suspendre l'engagement du club ${clubId} ?`)) {
-        fetch(`{{ url('test-suspend-engagement') }}/${clubId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                location.reload();
-            } else {
-                alert('Erreur: ' + data.error);
-            }
-        })
-        .catch(error => {
-            alert('Erreur lors de la suspension: ' + error);
-        });
+    // NOTE (audit factice -> reel, 2026-09) : meme constat que
+    // validateEngagement() ci-dessus (route de test supprimee, et methode de
+    // controleur reelle sans logique de suspension effective) : message
+    // honnete plutot qu'un faux succes.
+    if (confirm(@json(__('competitions.engagements_clubs_page.js_suspend_engagement_confirm')))) {
+        alert(@json(__('competitions.engagements_clubs_page.js_suspend_engagement_unavailable')));
     }
 }
 </script>

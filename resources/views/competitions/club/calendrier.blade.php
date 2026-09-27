@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Calendrier & Matchs - Club')
+@section('title', __('competitions.calendar_page.page_title'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <!-- En-tête -->
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Calendrier & Matchs</h1>
-            <p class="text-gray-600 mt-2">Planning des rencontres et suivi des matchs</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('competitions.calendar_page.heading') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('competitions.calendar_page.subtitle') }}</p>
         </div>
         <div class="flex space-x-4">
             <a href="{{ route('competitions.club.engagements') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i>Retour aux Engagements
+                <i class="fas fa-arrow-left mr-2"></i>{{ __('competitions.calendar_page.back_to_entries') }}
             </a>
         </div>
     </div>
@@ -25,7 +25,7 @@
                     <i class="fas fa-calendar-alt text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Matchs</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.calendar_page.stat_total_matches') }}</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $matchs->count() }}</p>
                 </div>
             </div>
@@ -37,8 +37,8 @@
                     <i class="fas fa-check text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Terminés</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $matchs->where('statut', 'Terminé')->count() }}</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.calendar_page.stat_completed') }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $matchs->where('statut_code', 'completed')->count() }}</p>
                 </div>
             </div>
         </div>
@@ -49,8 +49,8 @@
                     <i class="fas fa-clock text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Programmés</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $matchs->where('statut', 'Programmé')->count() }}</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.calendar_page.stat_scheduled') }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $matchs->where('statut_code', 'scheduled')->count() }}</p>
                 </div>
             </div>
         </div>
@@ -61,8 +61,8 @@
                     <i class="fas fa-exclamation-triangle text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Reportés</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $matchs->where('statut', 'Reporté')->count() }}</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.calendar_page.stat_postponed') }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $matchs->where('statut_code', 'postponed')->count() }}</p>
                 </div>
             </div>
         </div>
@@ -71,7 +71,7 @@
     <!-- Liste des matchs -->
     <div class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Planning des Matchs</h2>
+            <h2 class="text-lg font-semibold text-gray-900">{{ __('competitions.calendar_page.match_planning') }}</h2>
         </div>
         
         @if($matchs->count() > 0)
@@ -79,15 +79,15 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Heure</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compétition</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adversaire</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lieu</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arbitre</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Résultat</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.calendar_page.col_date') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.calendar_page.col_time') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.calendar_page.col_competition') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.calendar_page.col_opponent') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.calendar_page.col_venue') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.calendar_page.col_referee') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.calendar_page.col_status') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.calendar_page.col_result') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.calendar_page.col_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -112,17 +112,17 @@
                                     {{ $match['arbitre_principal'] }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($match['statut'] === 'Terminé')
+                                    @if($match['statut_code'] === 'completed')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                            ✅ Terminé
+                                            ✅ {{ __('competitions.calendar_page.status_completed_badge') }}
                                         </span>
-                                    @elseif($match['statut'] === 'Programmé')
+                                    @elseif($match['statut_code'] === 'scheduled')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            📅 Programmée
+                                            📅 {{ __('competitions.calendar_page.status_scheduled_badge') }}
                                         </span>
-                                    @elseif($match['statut'] === 'Reporté')
+                                    @elseif($match['statut_code'] === 'postponed')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                            ⏰ Reporté
+                                            ⏰ {{ __('competitions.calendar_page.status_postponed_badge') }}
                                         </span>
                                     @else
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
@@ -139,15 +139,15 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        @if($match['statut'] === 'Programmé')
-                                            <button class="text-blue-600 hover:text-blue-900" title="Voir détails">
+                                        @if($match['statut_code'] === 'scheduled')
+                                            <button class="text-blue-600 hover:text-blue-900" title="{{ __('competitions.calendar_page.view_details_title') }}">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            <button class="text-green-600 hover:text-green-900" title="Préparer feuille de match">
+                                            <button class="text-green-600 hover:text-green-900" title="{{ __('competitions.calendar_page.prepare_match_sheet_title') }}">
                                                 <i class="fas fa-clipboard-list"></i>
                                             </button>
-                                        @elseif($match['statut'] === 'Terminé')
-                                            <button class="text-purple-600 hover:text-purple-900" title="Voir rapport">
+                                        @elseif($match['statut_code'] === 'completed')
+                                            <button class="text-purple-600 hover:text-purple-900" title="{{ __('competitions.calendar_page.view_report_title') }}">
                                                 <i class="fas fa-file-alt"></i>
                                             </button>
                                         @endif
@@ -164,22 +164,22 @@
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun match programmé</h3>
-                    <p class="mt-1 text-sm text-gray-500">Aucun match n'est actuellement programmé pour votre club.</p>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('competitions.calendar_page.no_scheduled_match') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ __('competitions.calendar_page.no_scheduled_match_desc') }}</p>
                 </div>
             </div>
         @endif
     </div>
 
     <!-- Prochains matchs -->
-    @if($matchs->where('statut', 'Programmé')->count() > 0)
+    @if($matchs->where('statut_code', 'scheduled')->count() > 0)
         <div class="mt-8 bg-white rounded-lg shadow">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">Prochains Matchs</h2>
+                <h2 class="text-lg font-semibold text-gray-900">{{ __('competitions.calendar_page.upcoming_matches') }}</h2>
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($matchs->where('statut', 'Programmé')->take(3) as $match)
+                    @foreach($matchs->where('statut_code', 'scheduled')->take(3) as $match)
                         <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                             <div class="flex justify-between items-start mb-2">
                                 <span class="text-sm font-medium text-gray-600">{{ $match['competition'] }}</span>
@@ -193,10 +193,10 @@
                             </div>
                             <div class="mt-4 flex space-x-2">
                                 <button class="flex-1 bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition-colors">
-                                    <i class="fas fa-clipboard-list mr-1"></i>Feuille de Match
+                                    <i class="fas fa-clipboard-list mr-1"></i>{{ __('competitions.calendar_page.match_sheet') }}
                                 </button>
                                 <button class="flex-1 bg-gray-600 text-white px-3 py-2 rounded text-sm hover:bg-gray-700 transition-colors">
-                                    <i class="fas fa-eye mr-1"></i>Détails
+                                    <i class="fas fa-eye mr-1"></i>{{ __('competitions.calendar_page.details') }}
                                 </button>
                             </div>
                         </div>

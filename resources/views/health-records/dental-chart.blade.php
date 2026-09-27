@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Diagramme Dentaire')
+@section('title', __('dental_chart.page_title'))
 
 @section('content')
 <div class="container-fluid">
@@ -10,7 +10,7 @@
                 <div class="card-header">
                     <h4 class="card-title">
                         <i class="fas fa-tooth"></i> 
-                        Diagramme Dentaire - {{ $healthRecord->patient_name ?? 'Patient' }}
+                        {{ __('dental_chart.heading') }} - {{ $healthRecord->patient_name ?? __('dental_chart.patient_fallback') }}
                     </h4>
                 </div>
                 <div class="card-body">
@@ -20,7 +20,7 @@
                             <div class="dental-chart-container">
                                 <div class="image-container" id="dentalImageContainer">
                                     <img src="{{ asset('images/dental-reference.jpg') }}?v=laravel&ts={{ time() }}" 
-                                         alt="Diagramme dentaire réaliste" 
+                                         alt="{{ __('dental_chart.image_alt') }}"
                                          class="dental-image" 
                                          id="dentalImage">
                                     <div class="tooth-overlay" id="toothOverlay">
@@ -31,19 +31,19 @@
                                 <!-- Contrôles -->
                                 <div class="controls mt-3">
                                     <button type="button" class="btn btn-primary" id="saveAnnotations">
-                                        <i class="fas fa-save"></i> Sauvegarder
+                                        <i class="fas fa-save"></i> {{ __('dental_chart.save') }}
                                     </button>
                                     <button type="button" class="btn btn-secondary" id="resetZones">
-                                        <i class="fas fa-undo"></i> Réinitialiser
+                                        <i class="fas fa-undo"></i> {{ __('dental_chart.reset') }}
                                     </button>
                                     <button type="button" class="btn btn-success" id="fixAllZones">
-                                        <i class="fas fa-lock"></i> Fixer toutes
+                                        <i class="fas fa-lock"></i> {{ __('dental_chart.fix_all') }}
                                     </button>
                                     <button type="button" class="btn btn-warning" id="unfixAllZones">
-                                        <i class="fas fa-unlock"></i> Défixer toutes
+                                        <i class="fas fa-unlock"></i> {{ __('dental_chart.unfix_all') }}
                                     </button>
                                     <button type="button" class="btn btn-info" id="toggleDebug">
-                                        <i class="fas fa-bug"></i> Mode Debug
+                                        <i class="fas fa-bug"></i> {{ __('dental_chart.debug_mode') }}
                                     </button>
                                 </div>
                             </div>
@@ -53,28 +53,28 @@
                             <!-- Panneau d'informations -->
                             <div class="card">
                                 <div class="card-header">
-                                    <h5><i class="fas fa-info-circle"></i> Informations</h5>
+                                    <h5><i class="fas fa-info-circle"></i> {{ __('dental_chart.info_heading') }}</h5>
                                 </div>
                                 <div class="card-body">
                                     <div id="toothInfo">
-                                        <p class="text-muted">Cliquez sur une zone pour voir les détails</p>
+                                        <p class="text-muted">{{ __('dental_chart.click_zone_hint') }}</p>
                                     </div>
                                     
                                     <hr>
                                     
                                     <div class="stats">
-                                        <h6>Statistiques</h6>
+                                        <h6>{{ __('dental_chart.stats_heading') }}</h6>
                                         <div class="row">
                                             <div class="col-6">
                                                 <div class="stat-item">
                                                     <div class="stat-number" id="totalZones">0</div>
-                                                    <div class="stat-label">Total</div>
+                                                    <div class="stat-label">{{ __('dental_chart.stat_total') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="stat-item">
                                                     <div class="stat-number" id="fixedZones">0</div>
-                                                    <div class="stat-label">Fixées</div>
+                                                    <div class="stat-label">{{ __('dental_chart.stat_fixed') }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -83,10 +83,10 @@
                                     <hr>
                                     
                                     <div class="notes-section">
-                                        <h6>Notes</h6>
-                                        <textarea class="form-control" id="toothNotes" rows="3" placeholder="Ajouter des notes..."></textarea>
+                                        <h6>{{ __('dental_chart.notes_heading') }}</h6>
+                                        <textarea class="form-control" id="toothNotes" rows="3" placeholder="{{ __('dental_chart.notes_placeholder') }}"></textarea>
                                         <button type="button" class="btn btn-sm btn-primary mt-2" id="saveNotes">
-                                            <i class="fas fa-save"></i> Sauvegarder notes
+                                            <i class="fas fa-save"></i> {{ __('dental_chart.save_notes_button') }}
                                         </button>
                                     </div>
                                 </div>
@@ -104,30 +104,30 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Détails de la dent <span id="modalToothId"></span></h5>
+                <h5 class="modal-title">{{ __('dental_chart.modal_title') }} <span id="modalToothId"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Type:</strong> <span id="modalToothType"></span></p>
-                        <p><strong>Quadrant:</strong> <span id="modalToothQuadrant"></span></p>
-                        <p><strong>Position:</strong> <span id="modalToothPosition"></span></p>
+                        <p><strong>{{ __('dental_chart.modal_type_label') }}</strong> <span id="modalToothType"></span></p>
+                        <p><strong>{{ __('dental_chart.modal_quadrant_label') }}</strong> <span id="modalToothQuadrant"></span></p>
+                        <p><strong>{{ __('dental_chart.modal_position_label') }}</strong> <span id="modalToothPosition"></span></p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Statut:</strong> <span id="modalToothStatus"></span></p>
-                        <p><strong>Coordonnées:</strong> <span id="modalToothCoords"></span></p>
+                        <p><strong>{{ __('dental_chart.modal_status_label') }}</strong> <span id="modalToothStatus"></span></p>
+                        <p><strong>{{ __('dental_chart.modal_coords_label') }}</strong> <span id="modalToothCoords"></span></p>
                     </div>
                 </div>
                 <hr>
                 <div class="form-group">
-                    <label for="modalToothNotes">Notes:</label>
+                    <label for="modalToothNotes">{{ __('dental_chart.modal_notes_label') }}</label>
                     <textarea class="form-control" id="modalToothNotes" rows="3"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="button" class="btn btn-primary" id="saveModalNotes">Sauvegarder</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('dental_chart.close_button') }}</button>
+                <button type="button" class="btn btn-primary" id="saveModalNotes">{{ __('dental_chart.save') }}</button>
             </div>
         </div>
     </div>
@@ -264,6 +264,30 @@ const DENTAL_CONFIG = {
     statsUrl: '{{ route("api.dental.stats") }}',
     resetUrl: '{{ route("api.dental.reset") }}',
     csrfToken: '{{ csrf_token() }}'
+};
+
+// Libelles traduits (voir resources/lang/{fr,en}/dental_chart.php)
+const DENTAL_LABELS = {
+    toothLabel: @json(__('dental_chart.tooth_label')),
+    typeLabel: @json(__('dental_chart.modal_type_label')),
+    quadrantLabel: @json(__('dental_chart.modal_quadrant_label')),
+    statusLabel: @json(__('dental_chart.modal_status_label')),
+    notesLabel: @json(__('dental_chart.modal_notes_label')),
+    noNotes: @json(__('dental_chart.no_notes')),
+    toothTypeIncisor: @json(__('dental_chart.tooth_type_incisor')),
+    toothTypeCanine: @json(__('dental_chart.tooth_type_canine')),
+    toothTypePremolar: @json(__('dental_chart.tooth_type_premolar')),
+    toothTypeMolar: @json(__('dental_chart.tooth_type_molar')),
+    quadrantUpperRight: @json(__('dental_chart.quadrant_upper_right')),
+    quadrantUpperLeft: @json(__('dental_chart.quadrant_upper_left')),
+    quadrantLowerLeft: @json(__('dental_chart.quadrant_lower_left')),
+    quadrantLowerRight: @json(__('dental_chart.quadrant_lower_right')),
+    quadrantUnknown: @json(__('dental_chart.quadrant_unknown')),
+    noRecordSelected: @json(__('dental_chart.js_no_record_selected')),
+    confirmReset: @json(__('dental_chart.js_confirm_reset')),
+    saveSuccess: @json(__('dental_chart.js_save_success')),
+    saveError: @json(__('dental_chart.js_save_error')),
+    notesSaved: @json(__('dental_chart.js_notes_saved'))
 };
 
 // Variables globales
@@ -458,11 +482,11 @@ function updateToothInfo(toothId) {
     
     const toothInfo = document.getElementById('toothInfo');
     toothInfo.innerHTML = `
-        <h6>Dent ${toothId}</h6>
-        <p><strong>Type:</strong> ${getToothType(toothId)}</p>
-        <p><strong>Quadrant:</strong> ${getQuadrant(toothId)}</p>
-        <p><strong>Statut:</strong> <span class="badge bg-${getStatusColor(annotation.status)}">${annotation.status}</span></p>
-        <p><strong>Notes:</strong> ${annotation.notes || 'Aucune'}</p>
+        <h6>${DENTAL_LABELS.toothLabel} ${toothId}</h6>
+        <p><strong>${DENTAL_LABELS.typeLabel}</strong> ${getToothType(toothId)}</p>
+        <p><strong>${DENTAL_LABELS.quadrantLabel}</strong> ${getQuadrant(toothId)}</p>
+        <p><strong>${DENTAL_LABELS.statusLabel}</strong> <span class="badge bg-${getStatusColor(annotation.status)}">${annotation.status}</span></p>
+        <p><strong>${DENTAL_LABELS.notesLabel}</strong> ${annotation.notes || DENTAL_LABELS.noNotes}</p>
     `;
     
     // Mettre à jour les notes
@@ -490,21 +514,21 @@ function openToothModal(toothId) {
 
 function getToothType(toothId) {
     const position = parseInt(toothId.slice(1));
-    if (position <= 2) return 'Incisive';
-    if (position === 3) return 'Canine';
-    if (position <= 5) return 'Prémolaire';
-    return 'Molaire';
+    if (position <= 2) return DENTAL_LABELS.toothTypeIncisor;
+    if (position === 3) return DENTAL_LABELS.toothTypeCanine;
+    if (position <= 5) return DENTAL_LABELS.toothTypePremolar;
+    return DENTAL_LABELS.toothTypeMolar;
 }
 
 function getQuadrant(toothId) {
     const quadrant = toothId.slice(0, 1);
     const names = {
-        '1': 'Supérieur Droit',
-        '2': 'Supérieur Gauche', 
-        '3': 'Inférieur Gauche',
-        '4': 'Inférieur Droit'
+        '1': DENTAL_LABELS.quadrantUpperRight,
+        '2': DENTAL_LABELS.quadrantUpperLeft,
+        '3': DENTAL_LABELS.quadrantLowerLeft,
+        '4': DENTAL_LABELS.quadrantLowerRight
     };
-    return names[quadrant] || 'Inconnu';
+    return names[quadrant] || DENTAL_LABELS.quadrantUnknown;
 }
 
 function getStatusColor(status) {
@@ -600,7 +624,7 @@ function setupEventListeners() {
 
 function saveAllAnnotations() {
     if (!DENTAL_CONFIG.healthRecordId) {
-        alert('Aucun dossier de santé sélectionné');
+        alert(DENTAL_LABELS.noRecordSelected);
         return;
     }
     
@@ -641,21 +665,21 @@ function saveAllAnnotations() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Annotations sauvegardées avec succès !');
+            alert(DENTAL_LABELS.saveSuccess);
             annotations = data.data;
             updateStats();
         } else {
-            alert('Erreur lors de la sauvegarde');
+            alert(DENTAL_LABELS.saveError);
         }
     })
     .catch(error => {
         console.error('Erreur lors de la sauvegarde:', error);
-        alert('Erreur lors de la sauvegarde');
+        alert(DENTAL_LABELS.saveError);
     });
 }
 
 function resetZones() {
-    if (confirm('Êtes-vous sûr de vouloir réinitialiser toutes les zones ?')) {
+    if (confirm(DENTAL_LABELS.confirmReset)) {
         fetch(DENTAL_CONFIG.resetUrl, {
             method: 'POST',
             headers: {
@@ -714,7 +738,7 @@ function saveNotes() {
     const notes = document.getElementById('toothNotes').value;
     updateAnnotation(selectedTooth, { notes: notes });
     
-    alert('Notes sauvegardées !');
+    alert(DENTAL_LABELS.notesSaved);
 }
 
 function saveModalNotes() {
@@ -727,7 +751,7 @@ function saveModalNotes() {
     const modal = bootstrap.Modal.getInstance(document.getElementById('toothModal'));
     modal.hide();
     
-    alert('Notes sauvegardées !');
+    alert(DENTAL_LABELS.notesSaved);
 }
 </script>
 @endpush 

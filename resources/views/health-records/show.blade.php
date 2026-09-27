@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dossier Médical - Med Predictor')
+@section('title', __('health_records.show_page.page_title'))
 
 @push('scripts')
 <script>
@@ -66,20 +66,20 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">🏥 Dossier Médical</h1>
+                <h1 class="text-3xl font-bold text-gray-900">🏥 {{ __('health_records.show_page.heading') }}</h1>
                 <p class="text-gray-600 mt-2">
-                    {{ $healthRecord->player ? $healthRecord->player->full_name : 'Patient anonyme' }}
+                    {{ $healthRecord->player ? $healthRecord->player->full_name : __('healthcare.anonymous_patient') }}
                     - {{ $healthRecord->record_date->format('d/m/Y') }}
                 </p>
             </div>
             <div class="flex space-x-4">
                 <a href="{{ route('health-records.edit', $healthRecord) }}" 
                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                    ✏️ Modifier
+                    ✏️ {{ __('healthcare.edit') }}
                 </a>
                 <a href="{{ route('health-records.index') }}" 
                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
-                    ← Retour
+                    ← {{ __('health_records.show_page.back_button') }}
                 </a>
             </div>
         </div>
@@ -95,22 +95,22 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="border-b border-gray-200">
                 <nav class="flex space-x-8 px-6">
                     <button onclick="showTab('general')" class="tab-button active">
-                        📋 Général
+                        📋 {{ __('health_records.show_page.tab_general') }}
                     </button>
                     <button onclick="showTab('vitals')" class="tab-button">
-                        💓 Signes Vitaux
+                        💓 {{ __('health_records.show_page.tab_vitals') }}
                     </button>
                     <button onclick="showTab('medical')" class="tab-button">
-                        🏥 Médical
+                        🏥 {{ __('health_records.show_page.tab_medical') }}
                     </button>
                     <button onclick="showTab('pcma')" class="tab-button">
-                        📊 PCMA
+                        📊 {{ __('health_records.show_page.tab_pcma') }}
                     </button>
                     <button onclick="showTab('dental')" class="tab-button">
-                        🦷 Dentaire
+                        🦷 {{ __('health_records.show_page.tab_dental') }}
                     </button>
                     <button onclick="showTab('codes')" class="tab-button">
-                        🏷️ Codes
+                        🏷️ {{ __('health_records.show_page.tab_codes') }}
                     </button>
                 </nav>
             </div>
@@ -125,30 +125,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 <!-- Informations du patient -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">👤 Informations du Patient</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">👤 {{ __('health_records.show_page.patient_info_heading') }}</h2>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Nom complet</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.full_name_label') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">
-                                    {{ $healthRecord->player ? $healthRecord->player->full_name : 'Non spécifié' }}
+                                    {{ $healthRecord->player ? $healthRecord->player->full_name : __('health_records.show_page.not_specified') }}
                                 </p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Nationalité</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.nationality_label') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">
-                                    {{ $healthRecord->player ? $healthRecord->player->nationality : 'Non spécifié' }}
+                                    {{ $healthRecord->player ? $healthRecord->player->nationality : __('health_records.show_page.not_specified') }}
                                 </p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Date d'enregistrement</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.registration_date_label') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">{{ $healthRecord->record_date->format('d/m/Y H:i') }}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Prochaine visite</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.next_visit_label') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">
-                                    {{ $healthRecord->next_checkup_date ? $healthRecord->next_checkup_date->format('d/m/Y') : 'Non planifiée' }}
+                                    {{ $healthRecord->next_checkup_date ? $healthRecord->next_checkup_date->format('d/m/Y') : __('health_records.show_page.not_planned') }}
                                 </p>
                             </div>
                         </div>
@@ -158,46 +158,46 @@ document.addEventListener('DOMContentLoaded', function() {
                 <!-- Informations de la Visite -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">📋 Informations de la Visite</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">📋 {{ __('health_records.show_page.visit_info_heading') }}</h2>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Date de Visite</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.visit_date_label') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">
-                                    {{ $healthRecord->visit_date ? $healthRecord->visit_date->format('d/m/Y') : 'Non spécifiée' }}
+                                    {{ $healthRecord->visit_date ? $healthRecord->visit_date->format('d/m/Y') : __('health_records.show_page.not_specified_fem') }}
                                 </p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Médecin</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.doctor_label') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">
-                                    {{ $healthRecord->doctor_name ?: 'Non spécifié' }}
+                                    {{ $healthRecord->doctor_name ?: __('health_records.show_page.not_specified') }}
                                 </p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Type de Visite</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.visit_type_label') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">
                                     @switch($healthRecord->visit_type)
                                         @case('consultation')
-                                            Consultation
+                                            {{ __('health_records.show_page.visit_type_consultation') }}
                                             @break
                                         @case('emergency')
-                                            Urgence
+                                            {{ __('health_records.show_page.visit_type_emergency') }}
                                             @break
                                         @case('follow_up')
-                                            Suivi
+                                            {{ __('health_records.show_page.visit_type_follow_up') }}
                                             @break
                                         @case('pre_season')
-                                            Pré-saison
+                                            {{ __('health_records.show_page.visit_type_pre_season') }}
                                             @break
                                         @case('post_match')
-                                            Post-match
+                                            {{ __('health_records.show_page.visit_type_post_match') }}
                                             @break
                                         @case('rehabilitation')
-                                            Rééducation
+                                            {{ __('health_records.show_page.visit_type_rehabilitation') }}
                                             @break
                                         @default
-                                            Non spécifié
+                                            {{ __('health_records.show_page.visit_type_default') }}
                                     @endswitch
                                 </p>
                             </div>
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         @if($healthRecord->chief_complaint)
                         <div class="mt-6">
-                            <label class="block text-sm font-medium text-gray-700">Motif de Consultation</label>
+                            <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.chief_complaint_label') }}</label>
                             <p class="mt-1 text-sm text-gray-900">{{ $healthRecord->chief_complaint }}</p>
                         </div>
                         @endif
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div id="vitals-tab" class="tab-content hidden">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">💓 Signes Vitaux</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">💓 {{ __('health_records.show_page.vitals_heading') }}</h2>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -226,37 +226,37 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="text-2xl font-bold text-blue-600">
                                     {{ $healthRecord->blood_pressure_systolic ?: 'N/A' }}
                                 </div>
-                                <div class="text-sm text-gray-600">Pression systolique (mmHg)</div>
+                                <div class="text-sm text-gray-600">{{ __('health_records.show_page.systolic_label') }}</div>
                             </div>
                             <div class="text-center p-4 bg-green-50 rounded-lg">
                                 <div class="text-2xl font-bold text-green-600">
                                     {{ $healthRecord->blood_pressure_diastolic ?: 'N/A' }}
                                 </div>
-                                <div class="text-sm text-gray-600">Pression diastolique (mmHg)</div>
+                                <div class="text-sm text-gray-600">{{ __('health_records.show_page.diastolic_label') }}</div>
                             </div>
                             <div class="text-center p-4 bg-red-50 rounded-lg">
                                 <div class="text-2xl font-bold text-red-600">
                                     {{ $healthRecord->heart_rate ?: 'N/A' }}
                                 </div>
-                                <div class="text-sm text-gray-600">Rythme cardiaque (bpm)</div>
+                                <div class="text-sm text-gray-600">{{ __('health_records.show_page.heart_rate_label') }}</div>
                             </div>
                             <div class="text-center p-4 bg-yellow-50 rounded-lg">
                                 <div class="text-2xl font-bold text-yellow-600">
                                     {{ $healthRecord->temperature ? number_format($healthRecord->temperature, 1) : 'N/A' }}
                                 </div>
-                                <div class="text-sm text-gray-600">Température (°C)</div>
+                                <div class="text-sm text-gray-600">{{ __('health_records.show_page.temperature_label') }}</div>
                             </div>
                             <div class="text-center p-4 bg-purple-50 rounded-lg">
                                 <div class="text-2xl font-bold text-purple-600">
                                     {{ $healthRecord->weight ? number_format($healthRecord->weight, 1) : 'N/A' }}
                                 </div>
-                                <div class="text-sm text-gray-600">Poids (kg)</div>
+                                <div class="text-sm text-gray-600">{{ __('health_records.show_page.weight_label') }}</div>
                             </div>
                             <div class="text-center p-4 bg-indigo-50 rounded-lg">
                                 <div class="text-2xl font-bold text-indigo-600">
                                     {{ $healthRecord->height ?: 'N/A' }}
                                 </div>
-                                <div class="text-sm text-gray-600">Taille (cm)</div>
+                                <div class="text-sm text-gray-600">{{ __('health_records.show_page.height_label') }}</div>
                             </div>
                         </div>
                         
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     {{ number_format($healthRecord->bmi, 1) }}
                                 </div>
                                 <div class="text-sm text-gray-600">
-                                    IMC - {{ $healthRecord->bmi_category }}
+                                    {{ __('health_records.show_page.bmi_prefix') }} - {{ $healthRecord->bmi_category }}
                                 </div>
                             </div>
                         @endif
@@ -278,27 +278,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div id="medical-tab" class="tab-content hidden">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">🏥 Informations Médicales</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">🏥 {{ __('health_records.show_page.medical_info_heading') }}</h2>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Groupe sanguin</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ $healthRecord->blood_type ?: 'Non spécifié' }}</p>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.blood_type_label') }}</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ $healthRecord->blood_type ?: __('health_records.show_page.not_specified') }}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Statut</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('healthcare.status') }}</label>
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
                                     {{ $healthRecord->status === 'active' ? 'bg-green-100 text-green-800' : 
                                        ($healthRecord->status === 'archived' ? 'bg-gray-100 text-gray-800' : 'bg-yellow-100 text-yellow-800') }}">
-                                    {{ ucfirst($healthRecord->status) }}
+                                    {{ __('healthcare.status_' . $healthRecord->status) }}
                                 </span>
                             </div>
                         </div>
 
                         @if($healthRecord->allergies)
                             <div class="mt-6">
-                                <label class="block text-sm font-medium text-gray-700">Allergies</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.allergies_label') }}</label>
                                 <div class="mt-1 flex flex-wrap gap-2">
                                     @foreach($healthRecord->allergies as $allergy)
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         @if($healthRecord->medications)
                             <div class="mt-6">
-                                <label class="block text-sm font-medium text-gray-700">Médicaments</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.medications_label') }}</label>
                                 <div class="mt-1 flex flex-wrap gap-2">
                                     @foreach($healthRecord->medications as $medication)
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -324,14 +324,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         @if($healthRecord->diagnosis)
                             <div class="mt-6">
-                                <label class="block text-sm font-medium text-gray-700">Diagnostic</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.diagnosis_label') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">{{ $healthRecord->diagnosis }}</p>
                             </div>
                         @endif
 
                         @if($healthRecord->treatment_plan)
                             <div class="mt-6">
-                                <label class="block text-sm font-medium text-gray-700">Plan de traitement</label>
+                                <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.treatment_plan_label') }}</label>
                                 <p class="mt-1 text-sm text-gray-900">{{ $healthRecord->treatment_plan }}</p>
                             </div>
                         @endif
@@ -344,10 +344,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
                             <div class="flex justify-between items-center">
-                                <h2 class="text-xl font-semibold text-gray-800">📊 PCMA - Évaluations Médicales Pré-Compétition</h2>
+                                <h2 class="text-xl font-semibold text-gray-800">📊 {{ __('health_records.show_page.pcma_heading') }}</h2>
                                 <a href="{{ route('pcma.create', ['player_id' => $healthRecord->player_id]) }}" 
                                    class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                    ➕ Nouvelle PCMA
+                                    ➕ {{ __('health_records.show_page.new_pcma_button') }}
                                 </a>
                             </div>
                     </div>
@@ -370,8 +370,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <div>
                                                         <h5 class="font-medium text-gray-900">PCMA #{{ $pcma->id }}</h5>
                                         <p class="text-sm text-gray-600">
-                                                            Date: {{ $pcma->assessment_date ? $pcma->assessment_date->format('d/m/Y') : 'N/A' }} • 
-                                                            Statut: {{ ucfirst($pcma->status) }}
+
+                                                            {{ __('health_records.show_page.pcma_date_label') }} {{ $pcma->assessment_date ? $pcma->assessment_date->format('d/m/Y') : __('healthcare.na') }} •                                                            {{ __('health_records.show_page.pcma_status_label') }} {{ ucfirst(\$pcma->status) }}
                                         </p>
                                                         <div class="flex items-center space-x-4 mt-1">
                                                             <span class="px-2 py-1 text-xs rounded-full 
@@ -386,8 +386,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                                 </div>
                                                 <div class="flex space-x-2">
-                                                    <a href="{{ route('pcma.show', $pcma) }}" class="text-blue-600 hover:text-blue-800 text-sm">Voir Détails</a>
-                                                    <a href="{{ route('pcma.edit', $pcma) }}" class="text-green-600 hover:text-green-800 text-sm">Modifier</a>
+                                                    <a href="{{ route('pcma.show', $pcma) }}" class="text-blue-600 hover:text-blue-800 text-sm">{{ __('health_records.show_page.pcma_view_details') }}</a>
+                                                    <a href="{{ route('pcma.edit', \$pcma) }}" class="text-green-600 hover:text-green-800 text-sm">{{ __('healthcare.edit') }}</a>
                                                     <a href="{{ route('pcma.pdf', $pcma) }}" class="text-purple-600 hover:text-purple-800 text-sm">PDF</a>
                                 </div>
                                 </div>
@@ -397,11 +397,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             @else
                                 <div class="text-center py-8">
                                     <div class="text-gray-400 text-6xl mb-4">📋</div>
-                                    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune PCMA trouvée</h3>
-                                    <p class="text-gray-600 mb-4">Aucune évaluation médicale pré-compétition n'a été effectuée pour ce joueur.</p>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('health_records.show_page.no_pcma_heading') }}</h3>
+                                    <p class="text-gray-600 mb-4">{{ __('health_records.show_page.no_pcma_desc') }}</p>
                                     <a href="{{ route('pcma.create', ['player_id' => $healthRecord->player_id]) }}" 
                                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                        ➕ Créer la première PCMA
+                                        ➕ {{ __('health_records.show_page.create_first_pcma') }}
                                     </a>
                 </div>
                 @endif
@@ -413,10 +413,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div id="dental-tab" class="tab-content hidden">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                            <h2 class="text-xl font-semibold text-gray-800">🦷 Évaluation Dentaire</h2>
+                            <h2 class="text-xl font-semibold text-gray-800">🦷 {{ __('health_records.show_page.dental_heading') }}</h2>
                     </div>
                         <div class="p-6">
-                            <p class="text-gray-600">Les données dentaires seront affichées ici.</p>
+                            <p class="text-gray-600">{{ __('health_records.show_page.dental_placeholder') }}</p>
                         </div>
                         </div>
                         </div>
@@ -425,14 +425,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div id="codes-tab" class="tab-content hidden">
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">🏷️ Codes Médicaux</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">🏷️ {{ __('health_records.show_page.codes_heading') }}</h2>
                     </div>
                         <div class="p-6">
                             @if($healthRecord->icd_10_codes || $healthRecord->snomed_ct_codes || $healthRecord->loinc_codes)
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         @if($healthRecord->icd_10_codes)
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Codes ICD-10</label>
+                            <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.icd10_label') }}</label>
                             <div class="mt-1 flex flex-wrap gap-2">
                                 @foreach($healthRecord->icd_10_codes as $code)
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -445,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         @if($healthRecord->snomed_ct_codes)
                         <div>
-                                        <label class="block text-sm font-medium text-gray-700">Codes SNOMED-CT</label>
+                                        <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.snomed_label') }}</label>
                             <div class="mt-1 flex flex-wrap gap-2">
                                 @foreach($healthRecord->snomed_ct_codes as $code)
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         @if($healthRecord->loinc_codes)
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Codes LOINC</label>
+                            <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.loinc_label') }}</label>
                             <div class="mt-1 flex flex-wrap gap-2">
                                 @foreach($healthRecord->loinc_codes as $code)
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
@@ -470,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         @endif
                     </div>
                             @else
-                                <p class="text-gray-600">Aucun code médical enregistré.</p>
+                                <p class="text-gray-600">{{ __('health_records.show_page.no_medical_codes') }}</p>
                 @endif
                         </div>
                     </div>
@@ -482,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <!-- Score de risque -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">⚠️ Score de Risque</h3>
+                        <h3 class="text-lg font-semibold text-gray-800">⚠️ {{ __('health_records.show_page.risk_score_heading') }}</h3>
                     </div>
                     <div class="p-6">
                         @if($healthRecord->risk_score)
@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     {{ number_format($healthRecord->risk_score * 100, 0) }}%
                                 </div>
                                 <div class="text-sm text-gray-600 mt-2">
-                                    Niveau de risque: {{ $healthRecord->risk_level }}
+                                    {{ __('health_records.show_page.risk_level_label') }} {{ $healthRecord->risk_level }}
                                 </div>
                                 <div class="mt-4">
                                     <div class="w-full bg-gray-200 rounded-full h-2">
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                         @else
-                            <p class="text-gray-500 text-center">Score non calculé</p>
+                            <p class="text-gray-500 text-center">{{ __('health_records.show_page.score_not_calculated') }}</p>
                         @endif
                     </div>
                 </div>
@@ -509,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <!-- Prédictions -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">🔮 Prédictions</h3>
+                        <h3 class="text-lg font-semibold text-gray-800">🔮 {{ __('health_records.show_page.predictions_heading') }}</h3>
                     </div>
                     <div class="p-6">
                         @if($healthRecord->predictions->count() > 0)
@@ -523,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             {{ $prediction->prediction_date->format('d/m/Y') }}
                                         </div>
                                         <div class="text-xs text-gray-600 mt-1">
-                                            Confiance: {{ number_format($prediction->confidence_score * 100, 0) }}%
+                                            {{ __('health_records.show_page.confidence_label') }} {{ number_format(\$prediction->confidence_score * 100, 0) }}%
                                         </div>
                                     </div>
                                 @endforeach
@@ -531,18 +531,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             @if($healthRecord->predictions->count() > 3)
                                 <div class="mt-4 text-center">
                                     <a href="{{ route('medical-predictions.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">
-                                        Voir toutes les prédictions ({{ $healthRecord->predictions->count() }})
+                                        {{ __('health_records.show_page.view_all_predictions') }} ({{ \$healthRecord->predictions->count() }})
                                     </a>
                                 </div>
                             @endif
                         @else
-                            <p class="text-gray-500 text-center">Aucune prédiction</p>
+                            <p class="text-gray-500 text-center">{{ __('health_records.show_page.no_prediction') }}</p>
                         @endif
                         
                         <div class="mt-4">
                             <button onclick="generatePrediction()" 
                                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                                🔮 Générer une prédiction
+                                🔮 {{ __('health_records.show_page.generate_prediction_button') }}
                             </button>
                         </div>
                     </div>
@@ -551,25 +551,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 <!-- Actions rapides -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">⚡ Actions</h3>
+                        <h3 class="text-lg font-semibold text-gray-800">⚡ {{ __('healthcare.actions') }}</h3>
                     </div>
                     <div class="p-6 space-y-3">
                         <a href="{{ route('health-records.edit', $healthRecord) }}" 
                            class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                            ✏️ Modifier le dossier
+                            ✏️ {{ __('health_records.show_page.edit_record_button') }}
                         </a>
 
                         <a href="{{ route('medical-predictions.create') }}" 
                            class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                            🔮 Nouvelle prédiction
+                            🔮 {{ __('health_records.show_page.new_prediction_button') }}
                         </a>
                         <form action="{{ route('health-records.destroy', $healthRecord) }}" method="POST" class="inline w-full">
                             @csrf
                             @method('DELETE')
                             <button type="submit" 
                                     class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')">
-                                🗑️ Supprimer
+                                    onclick="return confirm('{{ __('health_records.show_page.confirm_delete') }}')">
+                                🗑️ {{ __('healthcare.delete') }}
                             </button>
                         </form>
                     </div>
@@ -593,12 +593,12 @@ function generatePrediction() {
         if (data.success) {
             location.reload();
         } else {
-            alert('Erreur lors de la génération de la prédiction');
+            alert(@json(__('health_records.show_page.js_generate_prediction_error')));
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Erreur lors de la génération de la prédiction');
+        alert(@json(__('health_records.show_page.js_generate_prediction_error')));
     });
 }
 </script>

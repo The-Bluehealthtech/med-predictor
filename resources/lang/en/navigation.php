@@ -75,4 +75,8 @@ return [
     'performance' => 'Performance',
     'dtn_manager' => 'DTN Manager',
     'rpm' => 'RPM',
+    'appointments' => 'Appointments',
+    'visits' => 'Visits',
+    'documents' => 'Documents',
+    'referee' => 'Referee',
 ];

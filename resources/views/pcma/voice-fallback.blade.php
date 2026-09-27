@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PCMA - Interface Web de Secours</title>
+    <title>{{ __('pcma_extra.label_b1a8552a4d75') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -13,15 +13,14 @@
         <!-- Header -->
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-800 mb-2">
-                🏥 Formulaire PCMA
+                {{ __('pcma_extra.label_1250717738e4') }}
             </h1>
             <p class="text-gray-600 text-lg">
-                Interface web de secours - Continuez votre formulaire ici
+                {{ __('pcma_extra.label_efbceb0e98f4') }}
             </p>
             <div class="mt-4 p-3 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded">
                 <p class="text-sm">
-                    <strong>Note :</strong> Vous êtes passé à l'interface web car l'assistant vocal a rencontré des difficultés.
-                    Vous pouvez continuer ici ou dire "recommencer" pour reprendre par la voix.
+                    <strong>{{ __('pcma.vocal_console_note_label') }}</strong> {{ __('pcma_extra.label_1f7c5e3b763d') }}
                 </p>
             </div>
         </div>
@@ -33,13 +32,13 @@
                 <div class="border-b border-gray-200 pb-6">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <span class="bg-blue-100 text-blue-800 p-2 rounded-full mr-3">1</span>
-                        Identité du joueur
+                        {{ __('pcma_extra.label_37405ba73062') }}
                     </h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="player_name" class="block text-sm font-medium text-gray-700 mb-2">
-                                Nom du joueur *
+                                {{ __('pcma_extra.label_6736098cc29a') }}
                             </label>
                             <input 
                                 type="text" 
@@ -53,7 +52,7 @@
                         
                         <div>
                             <label for="age" class="block text-sm font-medium text-gray-700 mb-2">
-                                Âge *
+                                {{ __('pcma_extra.label_12dbdddda3a2') }}
                             </label>
                             <input 
                                 type="number" 
@@ -73,28 +72,28 @@
                 <div class="border-b border-gray-200 pb-6">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <span class="bg-green-100 text-green-800 p-2 rounded-full mr-3">2</span>
-                        Position sur le terrain
+                        {{ __('pcma_extra.label_656d424bbb67') }}
                     </h2>
                     
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
                             <input type="radio" v-model="formData.position" value="attaquant" class="mr-2">
-                            <span class="text-sm font-medium">Attaquant</span>
+                            <span class="text-sm font-medium">{{ __('pcma.position_forward_option') }}</span>
                         </label>
                         
                         <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
                             <input type="radio" v-model="formData.position" value="défenseur" class="mr-2">
-                            <span class="text-sm font-medium">Défenseur</span>
+                            <span class="text-sm font-medium">{{ __('pcma.position_defender_option') }}</span>
                         </label>
                         
                         <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
                             <input type="radio" v-model="formData.position" value="milieu" class="mr-2">
-                            <span class="text-sm font-medium">Milieu</span>
+                            <span class="text-sm font-medium">{{ __('pcma.position_midfielder_option') }}</span>
                         </label>
                         
                         <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
                             <input type="radio" v-model="formData.position" value="gardien" class="mr-2">
-                            <span class="text-sm font-medium">Gardien</span>
+                            <span class="text-sm font-medium">{{ __('pcma.position_goalkeeper_option') }}</span>
                         </label>
                     </div>
                 </div>
@@ -103,38 +102,38 @@
                 <div class="border-b border-gray-200 pb-6">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <span class="bg-yellow-100 text-yellow-800 p-2 rounded-full mr-3">3</span>
-                        Antécédents médicaux
+                        {{ __('pcma_extra.label_4d47b91647c8') }}
                     </h2>
                     
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Blessures récentes
+                                {{ __('pcma_extra.label_ac39d851e3a4') }}
                             </label>
                             <textarea 
                                 v-model="formData.medical_history"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 rows="3"
-                                placeholder="Décrivez les blessures ou problèmes médicaux récents..."
+                                placeholder="{{ __('pcma_extra.label_67559a7edd6d') }}"
                             ></textarea>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Allergies connues
+                                    {{ __('pcma_extra.label_4a0d961d4c49') }}
                                 </label>
                                 <input 
                                     type="text" 
                                     v-model="formData.allergies"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="Ex: Aucune, Pénicilline..."
+                                    placeholder="{{ __('pcma_extra.label_f647fd2f9bc5') }}"
                                 >
                             </div>
                             
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Médicaments en cours
+                                    {{ __('pcma_extra.label_357fc17a6e22') }}
                                 </label>
                                 <input 
                                     type="text" 
@@ -157,32 +156,32 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Test COVID récent
+                                {{ __('pcma_extra.label_bdc64d6935ad') }}
                             </label>
                             <select 
                                 v-model="formData.covid_test"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
-                                <option value="">Sélectionner...</option>
-                                <option value="negative">Négatif</option>
-                                <option value="positive">Positif</option>
-                                <option value="not_tested">Non testé</option>
+                                <option value="">{{ __('health_records_edit.select_2') }}</option>
+                                <option value="negative">{{ __('health_records_edit.negative') }}</option>
+                                <option value="positive">{{ __('health_records_edit.positive') }}</option>
+                                <option value="not_tested">{{ __('pcma_extra.label_2611a6b69742') }}</option>
                             </select>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Vaccination COVID
+                                {{ __('pcma_extra.label_bd4aa845022b') }}
                             </label>
                             <select 
                                 v-model="formData.covid_vaccination"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
-                                <option value="">Sélectionner...</option>
-                                <option value="not_vaccinated">Non vacciné</option>
-                                <option value="partially_vaccinated">Partiellement vacciné</option>
-                                <option value="fully_vaccinated">Complètement vacciné</option>
-                                <option value="booster">Dose de rappel</option>
+                                <option value="">{{ __('health_records_edit.select_2') }}</option>
+                                <option value="not_vaccinated">{{ __('pcma_extra.label_73077969f6f3') }}</option>
+                                <option value="partially_vaccinated">{{ __('pcma_extra.label_bf3fa9ed09f2') }}</option>
+                                <option value="fully_vaccinated">{{ __('pcma_extra.label_f20355e82b8e') }}</option>
+                                <option value="booster">{{ __('pcma_extra.label_0d2f44971c8f') }}</option>
                             </select>
                         </div>
                     </div>
@@ -192,13 +191,13 @@
                 <div class="border-b border-gray-200 pb-6">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <span class="bg-purple-100 text-purple-800 p-2 rounded-full mr-3">5</span>
-                        Examen physique
+                        {{ __('pcma_extra.label_18c07c15a5dc') }}
                     </h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="height" class="block text-sm font-medium text-gray-700 mb-2">
-                                Taille (cm)
+                                {{ __('health_records_edit.height_cm') }}
                             </label>
                             <input 
                                 type="number" 
@@ -213,7 +212,7 @@
                         
                         <div>
                             <label for="weight" class="block text-sm font-medium text-gray-700 mb-2">
-                                Poids (kg)
+                                {{ __('health_records_edit.weight_kg') }}
                             </label>
                             <input 
                                 type="number" 
@@ -229,13 +228,13 @@
                     
                     <div class="mt-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Observations générales
+                            {{ __('pcma_extra.label_c76d855bde58') }}
                         </label>
                         <textarea 
                             v-model="formData.physical_observations"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             rows="3"
-                            placeholder="État général, signes particuliers, etc."
+                            placeholder="{{ __('pcma_extra.label_58476fc382df') }}"
                         ></textarea>
                     </div>
                 </div>
@@ -252,9 +251,9 @@
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            Envoi en cours...
+                            {{ __('pcma_extra.label_a6e2189fb190') }}
                         </span>
-                        <span v-else>📤 Soumettre le formulaire PCMA</span>
+                        <span v-else>{{ __('pcma_extra.label_ca0311254bdd') }}</span>
                     </button>
                     
                     <button 
@@ -262,7 +261,7 @@
                         @click="resetForm"
                         class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                     >
-                        🔄 Recommencer
+                        {{ __('pcma_extra.label_685ed6e85342') }}
                     </button>
                 </div>
             </form>
@@ -276,7 +275,7 @@
                 @click="returnToVoice"
                 class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
             >
-                🎤 Retourner à l'assistant vocal
+                {{ __('pcma_extra.label_53923f4987d3') }}
             </button>
         </div>
     </div>

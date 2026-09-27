@@ -13,35 +13,35 @@
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
                 <h1 class="text-3xl font-bold text-gray-900 mb-4">🏥 Demo - Doctor Sign-Off Component</h1>
                 <p class="text-gray-600 mb-6">
-                    Cette page démontre l'intégration du composant Vue.js pour la signature médicale.
+                    {{ __('pcma_extra.label_d614b244c0b7') }}
                 </p>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-blue-900 mb-3">📋 Données de Test</h3>
+                        <h3 class="text-lg font-semibold text-blue-900 mb-3">{{ __('pcma_extra.label_58e7f53f1f83') }}</h3>
                         <div class="space-y-2 text-sm">
-                            <div><strong>Nom du Joueur:</strong> {{ $athlete->name ?? 'John Doe' }}</div>
-                            <div><strong>Décision Fitness:</strong> 
+                            <div><strong>{{ __('pcma_extra.label_08ae3743ab84') }}</strong> {{ $athlete->name ?? 'John Doe' }}</div>
+                            <div><strong>{{ __('pcma_extra.label_fa7c3f22acc3') }}</strong>
                                 <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                                     FIT
                                 </span>
                             </div>
-                            <div><strong>Date d'Examen:</strong> {{ now()->format('d/m/Y') }}</div>
-                            <div><strong>ID d'Évaluation:</strong> PCMA-{{ rand(1000, 9999) }}</div>
-                            <div><strong>Médecin:</strong> Dr. Smith</div>
-                            <div><strong>Licence:</strong> MED-{{ rand(10000, 99999) }}</div>
+                            <div><strong>{{ __('pcma_extra.label_bea5a1b51b03') }}</strong> {{ now()->format('d/m/Y') }}</div>
+                            <div><strong>{{ __('pcma_extra.label_0fca27c69298') }}</strong> PCMA-{{ rand(1000, 9999) }}</div>
+                            <div><strong>{{ __('pcma.physician_label') }}</strong> Dr. Smith</div>
+                            <div><strong>{{ __('pcma_extra.label_38aec7f0fe5a') }}</strong> MED-{{ rand(10000, 99999) }}</div>
                         </div>
                     </div>
                     
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-green-900 mb-3">✅ Fonctionnalités</h3>
+                        <h3 class="text-lg font-semibold text-green-900 mb-3">{{ __('pcma_extra.label_e734f25b5819') }}</h3>
                         <ul class="space-y-2 text-sm">
-                            <li>✓ Signature digitale avec canvas</li>
-                            <li>✓ Déclaration légale obligatoire</li>
-                            <li>✓ Ré-authentification sécurisée</li>
-                            <li>✓ Validation complète des données</li>
-                            <li>✓ Interface professionnelle médicale</li>
-                            <li>✓ Export des données signées</li>
+                            <li>{{ __('pcma_extra.label_837c0a17f18b') }}</li>
+                            <li>{{ __('pcma_extra.label_39e9360e0183') }}</li>
+                            <li>{{ __('pcma_extra.label_f05baacdaa71') }}</li>
+                            <li>{{ __('pcma_extra.label_88290d7af5a1') }}</li>
+                            <li>{{ __('pcma_extra.label_876836413790') }}</li>
+                            <li>{{ __('pcma_extra.label_c8c94982a40b') }}</li>
                         </ul>
                     </div>
                 </div>
@@ -51,9 +51,9 @@
             <div id="doctor-signoff-container">
                 <!-- This is where the Vue component would be mounted -->
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-                    <h3 class="text-lg font-semibold text-yellow-900 mb-3">🔄 Intégration Vue.js</h3>
+                    <h3 class="text-lg font-semibold text-yellow-900 mb-3">{{ __('pcma_extra.label_c3fbb2a1046d') }}</h3>
                     <p class="text-yellow-700 mb-4">
-                        Le composant DoctorSignOff.vue serait intégré ici avec les données suivantes:
+                        {{ __('pcma_extra.label_bdf73fb902ba') }}
                     </p>
                     <div class="bg-white rounded-lg p-4 text-left text-sm">
                         <pre class="text-xs overflow-x-auto">
@@ -73,17 +73,17 @@
             
             <!-- Integration Instructions -->
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mt-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-3">📚 Instructions d'Intégration</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ __('pcma_extra.label_511286f37ad1') }}</h3>
                 <div class="space-y-4 text-sm">
                     <div>
-                        <h4 class="font-semibold text-gray-700">1. Import du Composant</h4>
+                        <h4 class="font-semibold text-gray-700">{{ __('pcma_extra.label_f5812a5d59b5') }}</h4>
                         <code class="bg-gray-100 px-2 py-1 rounded text-xs">
                             import DoctorSignOff from './components/DoctorSignOff.vue'
                         </code>
                     </div>
                     
                     <div>
-                        <h4 class="font-semibold text-gray-700">2. Utilisation dans le Template</h4>
+                        <h4 class="font-semibold text-gray-700">{{ __('pcma_extra.label_8c9ea2853c5e') }}</h4>
                         <code class="bg-gray-100 px-2 py-1 rounded text-xs block">
                             &lt;DoctorSignOff 
                                 :player-name="playerName"
@@ -99,7 +99,7 @@
                     </div>
                     
                     <div>
-                        <h4 class="font-semibold text-gray-700">3. Gestion de l'Événement</h4>
+                        <h4 class="font-semibold text-gray-700">{{ __('pcma_extra.label_1b31e2e25319') }}</h4>
                         <code class="bg-gray-100 px-2 py-1 rounded text-xs block">
                             const handleSigned = (data) => {
                                 console.log('Signed data:', data);
@@ -113,23 +113,23 @@
             <!-- Features List -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 <div class="bg-white rounded-lg shadow p-4">
-                    <h4 class="font-semibold text-gray-900 mb-2">✍️ Signature Digitale</h4>
+                    <h4 class="font-semibold text-gray-900 mb-2">{{ __('pcma_extra.label_ef10d8f114eb') }}</h4>
                     <p class="text-sm text-gray-600">
-                        Capture de signature tactile et souris avec validation et confirmation.
+                        {{ __('pcma_extra.label_8c6f3468cd7c') }}
                     </p>
                 </div>
                 
                 <div class="bg-white rounded-lg shadow p-4">
-                    <h4 class="font-semibold text-gray-900 mb-2">⚖️ Déclaration Légale</h4>
+                    <h4 class="font-semibold text-gray-900 mb-2">{{ __('pcma_extra.label_6237566e0321') }}</h4>
                     <p class="text-sm text-gray-600">
-                        Checkbox obligatoire pour confirmer la responsabilité médicale.
+                        {{ __('pcma_extra.label_534217015f87') }}
                     </p>
                 </div>
                 
                 <div class="bg-white rounded-lg shadow p-4">
-                    <h4 class="font-semibold text-gray-900 mb-2">🔐 Sécurité</h4>
+                    <h4 class="font-semibold text-gray-900 mb-2">{{ __('pcma_extra.label_a9a1fd129238') }}</h4>
                     <p class="text-sm text-gray-600">
-                        Ré-authentification et validation des données avant signature.
+                        {{ __('pcma_extra.label_9f6666f39d1a') }}
                     </p>
                 </div>
             </div>

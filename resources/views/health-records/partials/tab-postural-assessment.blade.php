@@ -1,21 +1,21 @@
 <!-- Onglet: Évaluation Posturale -->
 <div class="space-y-6">
     <div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-purple-900 mb-4">🦴 Évaluation Posturale Interactive (ICD-10: M40-M54)</h3>
-        <p class="text-purple-700 mb-4">Utilisez l'outil interactif pour analyser la posture du patient :</p>
+        <h3 class="text-lg font-semibold text-purple-900 mb-4">{{ __('health_records_extra.label_3600b18e620d') }}</h3>
+        <p class="text-purple-700 mb-4">{{ __('health_records_edit.use_the_interactive_tool_to_analyze_the_') }}</p>
         
         <div class="bg-white border border-gray-200 rounded-lg p-4">
             <div class="mb-4">
                 <ul class="text-sm text-gray-600 space-y-1 mb-4">
-                    <li>• <strong>🎯 Marqueur :</strong> Cliquez sur un point anatomique pour ajouter une note d'anomalie</li>
-                    <li>• <strong>📐 Angle :</strong> Cliquez sur 3 points pour mesurer un angle</li>
-                    <li>• <strong>📏 Fil à Plomb :</strong> Affiche une ligne de référence verticale</li>
-                    <li>• <strong>🗑️ Effacer :</strong> Supprime toutes les annotations</li>
-                    <li>• <strong>💾 Exporter :</strong> Télécharge les données d'évaluation en JSON</li>
+                    <li>• <strong>{{ __('health_records_extra.label_21ebc2a34fff') }}</strong> {{ __('health_records_edit.click_on_an_anatomical_point_to_add_an_a') }}</li>
+                    <li>• <strong>{{ __('health_records_extra.label_c603506c14c1') }}</strong> {{ __('health_records_edit.click_on_3_points_to_measure_an_angle') }}</li>
+                    <li>• <strong>{{ __('health_records_extra.label_10c6b9079e29') }}</strong> {{ __('health_records_edit.displays_a_vertical_reference_line') }}</li>
+                    <li>• <strong>{{ __('health_records_extra.label_77bc179ed62b') }}</strong> {{ __('health_records_edit.removes_all_annotations') }}</li>
+                    <li>• <strong>{{ __('health_records_extra.label_d6bc1aa18af3') }}</strong> {{ __('health_records_edit.downloads_the_assessment_data_as_json') }}</li>
                 </ul>
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                     <p class="text-sm text-yellow-800">
-                        <strong>💡 Astuce :</strong> Les données posturales sont automatiquement sauvegardées dans le formulaire et seront incluses dans le dossier médical.
+                        <strong>{{ __('health_records_edit.tip_colon') }}</strong> {{ __('health_records_edit.postural_data_is_automatically_saved_in_') }}
                     </p>
                 </div>
             </div>
@@ -29,36 +29,36 @@
                             <div class="flex items-center space-x-4">
                                 <!-- View Selector -->
                                 <div class="flex items-center space-x-2">
-                                    <label class="text-sm font-medium text-gray-700">Vue :</label>
+                                    <label class="text-sm font-medium text-gray-700">{{ __('health_records_edit.view') }}</label>
                                     <select id="postural-view-selector" class="border border-gray-300 rounded px-2 py-1 text-sm">
-                                        <option value="anterior">Antérieure</option>
-                                        <option value="posterior">Postérieure</option>
-                                        <option value="lateral">Latérale</option>
+                                        <option value="anterior">{{ __('health_records_edit.anterior') }}</option>
+                                        <option value="posterior">{{ __('health_records_edit.posterior') }}</option>
+                                        <option value="lateral">{{ __('health_records_edit.lateral') }}</option>
                                     </select>
                                 </div>
                                 
                                 <!-- Tool Selector -->
                                 <div class="flex items-center space-x-2">
-                                    <label class="text-sm font-medium text-gray-700">Outil :</label>
+                                    <label class="text-sm font-medium text-gray-700">{{ __('health_records_edit.tool') }}</label>
                                     <div class="flex space-x-1">
                                         <button 
                                             id="postural-marker-tool"
                                             class="px-3 py-1 rounded text-sm bg-blue-500 text-white"
-                                            title="Marqueur"
+                                            title="{{ __('health_records_edit.marker') }}"
                                         >
                                             🎯
                                         </button>
                                         <button 
                                             id="postural-angle-tool"
                                             class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700"
-                                            title="Mesure d'angle"
+                                            title="{{ __('health_records_edit.angle_measurement') }}"
                                         >
                                             📐
                                         </button>
                                         <button 
                                             id="postural-plumb-tool"
                                             class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700"
-                                            title="Fil à plomb"
+                                            title="{{ __('health_records_extra.label_f7d2573eeba7') }}"
                                         >
                                             📏
                                         </button>
@@ -67,7 +67,7 @@
                                 
                                 <!-- Color Palette -->
                                 <div id="postural-color-palette" class="flex items-center space-x-2" style="display: none;">
-                                    <label class="text-sm font-medium text-gray-700">Couleur :</label>
+                                    <label class="text-sm font-medium text-gray-700">{{ __('health_records_edit.color') }}</label>
                                     <div class="flex space-x-1">
                                         <button class="w-6 h-6 rounded border-2 border-gray-800 bg-red-500" data-color="#ff0000"></button>
                                         <button class="w-6 h-6 rounded border-2 border-gray-300 bg-green-500" data-color="#00ff00"></button>
@@ -82,10 +82,10 @@
                             <!-- Actions -->
                             <div class="flex items-center space-x-2">
                                 <button id="postural-clear-btn" class="px-3 py-1 bg-red-500 text-white rounded text-sm">
-                                    🗑️ Effacer
+                                    {{ __('health_records_extra.label_532d7801baef') }}
                                 </button>
                                 <button id="postural-export-btn" class="px-3 py-1 bg-green-500 text-white rounded text-sm">
-                                    💾 Exporter
+                                    {{ __('health_records_extra.label_827fdb5f00d0') }}
                                 </button>
                             </div>
                         </div>
@@ -109,11 +109,11 @@
                             <!-- Sidebar -->
                             <div class="lg:ml-6 mt-4 lg:mt-0 flex-1">
                                 <div class="bg-white rounded-lg shadow p-4">
-                                    <h3 class="text-lg font-semibold mb-4">📊 Données d'Évaluation</h3>
+                                    <h3 class="text-lg font-semibold mb-4">{{ __('health_records_extra.label_a3565220053f') }}</h3>
                                     
                                     <!-- Markers List -->
                                     <div class="mb-4">
-                                        <h4 class="font-medium text-gray-700 mb-2">🎯 Marqueurs (<span id="postural-markers-count">0</span>)</h4>
+                                        <h4 class="font-medium text-gray-700 mb-2">{{ __('health_records_extra.label_b22e662f4f46') }}<span id="postural-markers-count">0</span>)</h4>
                                         <div id="postural-markers-list" class="space-y-2 max-h-32 overflow-y-auto">
                                             <!-- Markers will be listed here -->
                                         </div>
@@ -129,7 +129,7 @@
                                     
                                     <!-- Export Data -->
                                     <div class="mt-4 p-3 bg-blue-50 rounded">
-                                        <h4 class="font-medium text-blue-800 mb-2">💾 Données d'Export</h4>
+                                        <h4 class="font-medium text-blue-800 mb-2">{{ __('health_records_extra.label_17845f30c5fa') }}</h4>
                                         <textarea 
                                             id="postural-export-data"
                                             rows="4" 
@@ -151,11 +151,11 @@
             <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h4 class="text-sm font-semibold text-blue-800 mb-3 flex items-center">
                     <span class="mr-2">📊</span>
-                    Résumé de l'Évaluation Posturale
+                    {{ __('health_records_edit.postural_assessment_summary') }}
                 </h4>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div class="flex items-center justify-between">
-                        <span>Marqueurs:</span>
+                        <span>{{ __('health_records_edit.markers_2') }}</span>
                         <span class="font-semibold text-blue-600" id="postural-markers-count">0</span>
                     </div>
                     <div class="flex items-center justify-between">
@@ -163,12 +163,12 @@
                         <span class="font-semibold text-green-600" id="postural-angles-count">0</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span>Vue actuelle:</span>
-                        <span class="font-semibold text-purple-600" id="postural-current-view">Antérieure</span>
+                        <span>{{ __('health_records_edit.current_view') }}</span>
+                        <span class="font-semibold text-purple-600" id="postural-current-view">{{ __('health_records_edit.anterior') }}</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span>Statut:</span>
-                        <span class="font-semibold text-orange-600" id="postural-status">En cours</span>
+                        <span>{{ __('clinical.status_label') }}</span>
+                        <span class="font-semibold text-orange-600" id="postural-status">{{ __('clinical.status_in_progress') }}</span>
                     </div>
                 </div>
             </div>
@@ -177,32 +177,32 @@
 
     <!-- Postural Analysis Results -->
     <div class="bg-green-50 border border-green-200 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-green-900 mb-4">📋 Analyse Posturale</h3>
+        <h3 class="text-lg font-semibold text-green-900 mb-4">{{ __('health_records_extra.label_6b95b96b35e1') }}</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label for="postural_analysis" class="block text-sm font-medium text-gray-700 mb-2">
-                    Analyse Posturale
+                    {{ __('health_records_extra.label_71a53728e4c3') }}
                 </label>
                 <textarea 
                     id="postural_analysis" 
                     name="postural_analysis" 
                     rows="6"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Analyse détaillée de la posture du patient..."
+                    placeholder="{{ __('health_records_extra.label_987f50fab3bf') }}"
                 >{{ old('postural_analysis') }}</textarea>
             </div>
             
             <div>
                 <label for="postural_recommendations" class="block text-sm font-medium text-gray-700 mb-2">
-                    Recommandations Posturales
+                    {{ __('health_records_extra.label_526cdab19f64') }}
                 </label>
                 <textarea 
                     id="postural_recommendations" 
                     name="postural_recommendations" 
                     rows="6"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Recommandations pour améliorer la posture..."
+                    placeholder="{{ __('health_records_extra.label_e09e00310ebc') }}"
                 >{{ old('postural_recommendations') }}</textarea>
             </div>
         </div>

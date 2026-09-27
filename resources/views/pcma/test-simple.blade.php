@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Assistant Vocal PCMA</title>
+    <title>{{ __('pcma_extra.label_588d22627bb4') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-8">
     <div class="max-w-4xl mx-auto">
         <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">
-            🎤 Test Assistant Vocal PCMA
+            {{ __('pcma_extra.label_99a77ce7ff90') }}
         </h1>
         
         <!-- Section vocale simplifiée -->
@@ -21,32 +21,32 @@
             <div class="space-y-4">
                 <div class="flex space-x-4">
                     <button id="start-voice-btn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold">
-                        🎤 Commencer l'examen PCMA
+                        {{ __('pcma_extra.label_fe394bfdd5e4') }}
                     </button>
                     <button id="stop-voice-btn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hidden">
-                        ⏸️ Arrêter
+                        {{ __('pcma_extra.label_0001512c0407') }}
                     </button>
                 </div>
                 
                 <div id="voice-status" class="text-lg font-semibold text-gray-600">
-                    ⏳ Prêt à écouter
+                    {{ __('pcma_extra.label_1cf9e7291ff1') }}
                 </div>
                 
                 <div id="voice-preview" class="bg-gray-100 p-4 rounded-lg min-h-[60px]">
-                    <p class="text-gray-500">Aperçu de la conversation...</p>
+                    <p class="text-gray-500">{{ __('pcma_extra.label_4ad2eba889b9') }}</p>
                 </div>
             </div>
         </div>
         
         <!-- Instructions -->
         <div class="bg-blue-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold mb-3 text-blue-800">📋 Instructions de test :</h3>
+            <h3 class="text-lg font-semibold mb-3 text-blue-800">{{ __('pcma_extra.label_8454a2f0db59') }}</h3>
             <ul class="list-disc list-inside space-y-2 text-blue-700">
-                <li>Cliquez sur "Commencer l'examen PCMA"</li>
-                <li>Autorisez l'accès au microphone</li>
-                <li>Dites "Nom du joueur : Jean Dupont"</li>
-                <li>L'assistant devrait répondre vocalement</li>
-                <li>La reconnaissance devrait continuer en continu</li>
+                <li>{{ __('pcma_extra.label_b2eb0dc81d7c') }}</li>
+                <li>{{ __('pcma_extra.label_cd1341384420') }}</li>
+                <li>{{ __('pcma_extra.label_d5ed62f372b5') }}</li>
+                <li>{{ __('pcma_extra.label_fd7e01b06d5e') }}</li>
+                <li>{{ __('pcma_extra.label_7aac5dafe000') }}</li>
             </ul>
         </div>
     </div>

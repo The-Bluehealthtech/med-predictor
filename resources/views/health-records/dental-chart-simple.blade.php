@@ -10,7 +10,7 @@
                 <div class="card-header">
                     <h4 class="card-title">
                         <i class="fas fa-tooth"></i> 
-                        Diagramme Dentaire - Test
+                        {{ __('health_records_extra.label_38f224cd18d3') }}
                     </h4>
                 </div>
                 <div class="card-body">
@@ -20,7 +20,7 @@
                             <div class="dental-chart-container">
                                 <div class="image-container" id="dentalImageContainer">
                                     <img src="{{ asset('images/dental-reference.jpg') }}?v=test&ts={{ time() }}" 
-                                         alt="Diagramme dentaire réaliste" 
+                                         alt="{{ __('dental_chart.image_alt') }}"
                                          class="dental-image" 
                                          id="dentalImage">
                                     <div class="tooth-overlay" id="toothOverlay">
@@ -31,19 +31,19 @@
                                 <!-- Contrôles -->
                                 <div class="controls mt-3">
                                     <button type="button" class="btn btn-primary" id="saveAnnotations">
-                                        <i class="fas fa-save"></i> Sauvegarder
+                                        <i class="fas fa-save"></i> {{ __('dental_chart.save') }}
                                     </button>
                                     <button type="button" class="btn btn-secondary" id="resetZones">
-                                        <i class="fas fa-undo"></i> Réinitialiser
+                                        <i class="fas fa-undo"></i> {{ __('common.reset') }}
                                     </button>
                                     <button type="button" class="btn btn-success" id="fixAllZones">
-                                        <i class="fas fa-lock"></i> Fixer toutes
+                                        <i class="fas fa-lock"></i> {{ __('dental_chart.fix_all') }}
                                     </button>
                                     <button type="button" class="btn btn-warning" id="unfixAllZones">
-                                        <i class="fas fa-unlock"></i> Défixer toutes
+                                        <i class="fas fa-unlock"></i> {{ __('dental_chart.unfix_all') }}
                                     </button>
                                     <button type="button" class="btn btn-info" id="toggleDebug">
-                                        <i class="fas fa-bug"></i> Mode Debug
+                                        <i class="fas fa-bug"></i> {{ __('dental_chart.debug_mode') }}
                                     </button>
                                 </div>
                             </div>
@@ -53,17 +53,17 @@
                             <!-- Panneau d'informations -->
                             <div class="card">
                                 <div class="card-header">
-                                    <h5><i class="fas fa-info-circle"></i> Informations</h5>
+                                    <h5><i class="fas fa-info-circle"></i> {{ __('Informations') }}</h5>
                                 </div>
                                 <div class="card-body">
                                     <div id="toothInfo">
-                                        <p class="text-muted">Cliquez sur une zone pour voir les détails</p>
+                                        <p class="text-muted">{{ __('dental_chart.click_zone_hint') }}</p>
                                     </div>
                                     
                                     <hr>
                                     
                                     <div class="stats">
-                                        <h6>Statistiques</h6>
+                                        <h6>{{ __('secretary.nav_stats') }}</h6>
                                         <div class="row">
                                             <div class="col-6">
                                                 <div class="stat-item">
@@ -74,7 +74,7 @@
                                             <div class="col-6">
                                                 <div class="stat-item">
                                                     <div class="stat-number" id="fixedZones">0</div>
-                                                    <div class="stat-label">Fixées</div>
+                                                    <div class="stat-label">{{ __('dental_chart.stat_fixed') }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -84,9 +84,9 @@
                                     
                                     <div class="notes-section">
                                         <h6>Notes</h6>
-                                        <textarea class="form-control" id="toothNotes" rows="3" placeholder="Ajouter des notes..."></textarea>
+                                        <textarea class="form-control" id="toothNotes" rows="3" placeholder="{{ __('dental_chart.notes_placeholder') }}"></textarea>
                                         <button type="button" class="btn btn-sm btn-primary mt-2" id="saveNotes">
-                                            <i class="fas fa-save"></i> Sauvegarder notes
+                                            <i class="fas fa-save"></i> {{ __('dental_chart.save_notes_button') }}
                                         </button>
                                     </div>
                                 </div>

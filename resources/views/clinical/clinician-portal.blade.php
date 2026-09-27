@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Portail Clinicien - Workflow Clinique')
+@section('title', __('clinical.clinician_portal_page_title'))
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
@@ -14,19 +14,19 @@
                             <img src="{{ asset('images/fit-logo.png') }}" alt="FIT Logo" class="w-10 h-10 mr-3">
                             <div>
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Portail Clinicien
+                                    {{ __('clinical.clinician_portal_heading') }}
                                 </h1>
-                                <p class="text-sm text-gray-600">Workflow Clinique avec IA</p>
+                                <p class="text-sm text-gray-600">{{ __('clinical.clinician_portal_subtitle') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-500">Connecté en tant que Clinicien</span>
+                    <span class="text-sm text-gray-500">{{ __('clinical.logged_in_as_clinician') }}</span>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="text-sm text-gray-500 hover:text-gray-700">
-                            Déconnexion
+                            {{ __('clinical.logout') }}
                         </button>
                     </form>
                 </div>
@@ -45,7 +45,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Patients Actifs</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('clinical.stat_active_patients') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_patients'] }}</p>
                     </div>
                 </div>
@@ -59,7 +59,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Consultations Aujourd'hui</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('clinical.stat_consultations_today') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ $stats['consultations_today'] }}</p>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">PCMA En Attente</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('clinical.stat_pending_pcmas') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ $stats['pending_pcmas'] }}</p>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Dossiers Médicaux</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('clinical.stat_medical_records') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ $stats['active_health_records'] }}</p>
                     </div>
                 </div>
@@ -97,8 +97,8 @@
         <!-- Actions Rapides -->
         <div id="consultation-choice-section" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
             <div class="text-center mb-6">
-                <h3 class="text-xl font-semibold text-gray-900 mb-2">🩺 Nouvelle Consultation</h3>
-                <p class="text-sm text-gray-600">Choisissez le type de consultation médicale</p>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">🩺 {{ __('clinical.new_consultation_heading') }}</h3>
+                <p class="text-sm text-gray-600">{{ __('clinical.choose_consultation_type_medical') }}</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -112,8 +112,8 @@
                                 </div>
                             </div>
                             <div class="ml-4">
-                                <h4 class="text-lg font-semibold text-gray-900 group-hover:text-red-700">Nouveau Dossier Médical</h4>
-                                <p class="text-sm text-gray-600 mt-1">Créer un nouveau dossier médical pour un patient</p>
+                                <h4 class="text-lg font-semibold text-gray-900 group-hover:text-red-700">{{ __('clinical.new_medical_record') }}</h4>
+                                <p class="text-sm text-gray-600 mt-1">{{ __('clinical.create_new_medical_record_desc') }}</p>
                             </div>
                         </div>
                         <div class="text-red-500 group-hover:text-red-600">
@@ -124,7 +124,7 @@
                     </div>
                     <div class="mt-4 flex items-center text-xs text-red-600">
                         <span class="inline-flex items-center px-2 py-1 rounded-full bg-red-200 text-red-800">
-                            Consultations générales
+                            {{ __('clinical.general_consultations') }}
                         </span>
                     </div>
                 </a>
@@ -140,7 +140,7 @@
                             </div>
                             <div class="ml-4">
                                 <h4 class="text-lg font-semibold text-gray-900 group-hover:text-blue-700">PCMA</h4>
-                                <p class="text-sm text-gray-600 mt-1">Évaluations médicales pré-compétition</p>
+                                <p class="text-sm text-gray-600 mt-1">{{ __('clinical.pre_competition_medical_evals') }}</p>
                             </div>
                         </div>
                         <div class="text-blue-500 group-hover:text-blue-600">
@@ -151,7 +151,7 @@
                     </div>
                     <div class="mt-4 flex items-center text-xs text-blue-600">
                         <span class="inline-flex items-center px-2 py-1 rounded-full bg-blue-200 text-blue-800">
-                            Contrôle médical
+                            {{ __('clinical.medical_control_badge') }}
                         </span>
                     </div>
                 </a>
@@ -159,7 +159,7 @@
             
             <!-- Indicateur de choix -->
             <div class="mt-6 text-center">
-                <p class="text-xs text-gray-500">Cliquez sur l'option souhaitée pour commencer la consultation</p>
+                <p class="text-xs text-gray-500">{{ __('clinical.click_option_to_start_consultation') }}</p>
             </div>
         </div>
 
@@ -168,19 +168,19 @@
             <!-- Step 1: Consultation Initiale -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200 bg-blue-50">
-                    <h3 class="text-lg font-semibold text-blue-900">1. Consultation Initiale</h3>
-                    <p class="text-sm text-blue-700">Entrée des données patient</p>
+                    <h3 class="text-lg font-semibold text-blue-900">{{ __('clinical.step1_initial_consultation') }}</h3>
+                    <p class="text-sm text-blue-700">{{ __('clinical.step1_desc') }}</p>
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
                         <button onclick="showConsultationChoice()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                            🩺 Nouvelle consultation
+                            🩺 {{ __('clinical.new_consultation_button') }}
                         </button>
                         <button onclick="showPatientList()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                            👥 Liste des patients
+                            👥 {{ __('clinical.patient_list_button') }}
                         </button>
                         <button onclick="generateSummary()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                            📝 Résumé automatique
+                            📝 {{ __('clinical.auto_summary') }}
                         </button>
                     </div>
                 </div>
@@ -189,19 +189,19 @@
             <!-- Step 2: Revue Clinique -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200 bg-green-50">
-                    <h3 class="text-lg font-semibold text-green-900">2. Revue Clinique</h3>
-                    <p class="text-sm text-green-700">Analyse et diagnostic</p>
+                    <h3 class="text-lg font-semibold text-green-900">{{ __('clinical.step2_clinical_review') }}</h3>
+                    <p class="text-sm text-green-700">{{ __('clinical.step2_desc') }}</p>
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
                         <button onclick="clinicalReview()" class="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                            🔍 Revue clinique
+                            🔍 {{ __('clinical.clinical_review_button') }}
                         </button>
                         <button onclick="evidenceResearch()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                            📚 Recherche de preuves
+                            📚 {{ __('clinical.evidence_research') }}
                         </button>
                         <button onclick="clinicalDecisionSupport()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                            🧠 Support décisionnel
+                            🧠 {{ __('clinical.decision_support') }}
                         </button>
                     </div>
                 </div>
@@ -210,19 +210,19 @@
             <!-- Step 3: Plan de Traitement -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200 bg-purple-50">
-                    <h3 class="text-lg font-semibold text-purple-900">3. Plan de Traitement</h3>
-                    <p class="text-sm text-purple-700">Traitement et suivi</p>
+                    <h3 class="text-lg font-semibold text-purple-900">{{ __('clinical.step3_treatment_plan') }}</h3>
+                    <p class="text-sm text-purple-700">{{ __('clinical.step3_desc') }}</p>
                 </div>
                 <div class="p-6">
                     <div class="space-y-4">
                         <button onclick="createTreatmentPlan()" class="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                            💊 Plan de traitement
+                            💊 {{ __('clinical.treatment_plan_button') }}
                         </button>
                         <button onclick="findClinicalTrials()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                            🧪 Essais cliniques
+                            🧪 {{ __('clinical.clinical_trials') }}
                         </button>
                         <button onclick="generateReferral()" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                            📋 Générer référent
+                            📋 {{ __('clinical.generate_referral') }}
                         </button>
                     </div>
                 </div>
@@ -233,9 +233,9 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-gray-900">Rendez-vous à Venir</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('clinical.upcoming_appointments') }}</h3>
                     <button onclick="refreshPatientList()" class="text-sm text-blue-600 hover:text-blue-800">
-                        Actualiser
+                        {{ __('clinical.refresh') }}
                     </button>
                 </div>
             </div>
@@ -243,11 +243,11 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Âge</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dernière Consultation</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.table_patient') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.table_age') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.table_last_consultation') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.table_status') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.table_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -266,7 +266,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $appointment->athlete->dob ? \Carbon\Carbon::parse($appointment->athlete->dob)->age : 'N/A' }} ans</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $appointment->athlete->dob ? \Carbon\Carbon::parse($appointment->athlete->dob)->age : 'N/A' }} {{ __('clinical.years_old_suffix') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $appointment->appointment_date ? $appointment->appointment_date->format('d/m/Y H:i') : 'N/A' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
@@ -280,18 +280,18 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <button onclick="openPatientModal({{ $appointment->athlete_id }}, '{{ $appointment->athlete->name ?? 'N/A' }}', '{{ $appointment->athlete->dob ?? 'N/A' }}', '{{ $appointment->athlete->fifa_id ?? 'N/A' }}', '{{ $appointment->type }}', '{{ $appointment->status }}')" 
                                         class="text-blue-600 hover:text-blue-900 mr-3">
-                                    <i class="fas fa-user-md"></i> Consulter
+                                    <i class="fas fa-user-md"></i> {{ __('clinical.consult_button') }}
                                 </button>
                                 <button onclick="viewPatientInfo({{ $appointment->athlete_id }})" 
                                         class="text-gray-600 hover:text-gray-900">
-                                    <i class="fas fa-eye"></i> Voir
+                                    <i class="fas fa-eye"></i> {{ __('clinical.view_button') }}
                                 </button>
                             </td>
                         </tr>
                         @empty
                         <tr>
                             <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                                Aucun rendez-vous à venir trouvé
+                                {{ __('clinical.no_upcoming_appointments') }}
                             </td>
                         </tr>
                         @endforelse
@@ -302,7 +302,7 @@
             @if($upcomingAppointments->count() > 10)
             <div class="px-6 py-4 border-t border-gray-200 text-center">
                 <a href="{{ route('secretary.dashboard') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    Voir tous les rendez-vous →
+                    {{ __('clinical.view_all_appointments') }}
                 </a>
             </div>
             @endif
@@ -315,18 +315,18 @@
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-medium text-gray-900">Choisir le type de consultation</h3>
+                <h3 class="text-lg font-medium text-gray-900">{{ __('clinical.choose_consultation_type_modal') }}</h3>
                 <button onclick="closePatientModal()" class="text-gray-400 hover:text-gray-600">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             
             <div class="mb-4 p-3 bg-gray-50 rounded-lg">
-                <h4 class="font-medium text-gray-900 mb-2">Patient sélectionné :</h4>
-                <p class="text-sm text-gray-600"><strong>Nom :</strong> <span id="modalPatientName"></span></p>
-                <p class="text-sm text-gray-600"><strong>Date de naissance :</strong> <span id="modalPatientDob"></span></p>
-                <p class="text-sm text-gray-600"><strong>FIFA ID :</strong> <span id="modalPatientFifaId"></span></p>
-                <p class="text-sm text-gray-600"><strong>Type de RDV :</strong> <span id="modalAppointmentType"></span></p>
+                <h4 class="font-medium text-gray-900 mb-2">{{ __('clinical.selected_patient_label') }}</h4>
+                <p class="text-sm text-gray-600"><strong>{{ __('clinical.name_label') }}</strong> <span id="modalPatientName"></span></p>
+                <p class="text-sm text-gray-600"><strong>{{ __('clinical.dob_label') }}</strong> <span id="modalPatientDob"></span></p>
+                <p class="text-sm text-gray-600"><strong>{{ __('clinical.fifa_id_label') }}</strong> <span id="modalPatientFifaId"></span></p>
+                <p class="text-sm text-gray-600"><strong>{{ __('clinical.appointment_type_label') }}</strong> <span id="modalAppointmentType"></span></p>
             </div>
             
             <div class="grid grid-cols-1 gap-4">
@@ -339,8 +339,8 @@
                             </div>
                         </div>
                         <div class="ml-4 text-left">
-                            <h4 class="text-lg font-semibold text-gray-900">Module Medical</h4>
-                            <p class="text-sm text-gray-600">Consultations générales et dossiers de santé</p>
+                            <h4 class="text-lg font-semibold text-gray-900">{{ __('clinical.medical_module') }}</h4>
+                            <p class="text-sm text-gray-600">{{ __('clinical.general_consultations_and_health_records') }}</p>
                         </div>
                     </div>
                 </button>
@@ -355,7 +355,7 @@
                         </div>
                         <div class="ml-4 text-left">
                             <h4 class="text-lg font-semibold text-gray-900">PCMA</h4>
-                            <p class="text-sm text-gray-600">Évaluations médicales pré-compétition</p>
+                            <p class="text-sm text-gray-600">{{ __('clinical.pre_competition_medical_evals') }}</p>
                         </div>
                     </div>
                 </button>
@@ -364,7 +364,7 @@
             <div class="mt-4 text-center">
                 <button onclick="closePatientModal()" 
                         class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
-                    Annuler
+                    {{ __('clinical.cancel') }}
                 </button>
             </div>
         </div>
@@ -376,8 +376,8 @@
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-white rounded-lg max-w-2xl w-full">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-xl font-semibold text-gray-900">🩺 Nouvelle Consultation</h3>
-                <p class="text-sm text-gray-600 mt-1">Choisissez le type de consultation médicale</p>
+                <h3 class="text-xl font-semibold text-gray-900">🩺 {{ __('clinical.new_consultation_heading') }}</h3>
+                <p class="text-sm text-gray-600 mt-1">{{ __('clinical.choose_consultation_type_medical') }}</p>
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -391,8 +391,8 @@
                                     </div>
                                 </div>
                                 <div class="ml-4">
-                                    <h4 class="text-lg font-semibold text-gray-900 group-hover:text-red-700">Module Medical</h4>
-                                    <p class="text-sm text-gray-600 mt-1">Consultations générales et dossiers de santé</p>
+                                    <h4 class="text-lg font-semibold text-gray-900 group-hover:text-red-700">{{ __('clinical.medical_module') }}</h4>
+                                    <p class="text-sm text-gray-600 mt-1">{{ __('clinical.general_consultations_and_health_records') }}</p>
                                 </div>
                             </div>
                             <div class="text-red-500 group-hover:text-red-600">
@@ -403,7 +403,7 @@
                         </div>
                         <div class="mt-4 flex items-center text-xs text-red-600">
                             <span class="inline-flex items-center px-2 py-1 rounded-full bg-red-200 text-red-800">
-                                Consultations générales
+                                {{ __('clinical.general_consultations') }}
                             </span>
                         </div>
                     </a>
@@ -419,7 +419,7 @@
                                 </div>
                                 <div class="ml-4">
                                     <h4 class="text-lg font-semibold text-gray-900 group-hover:text-blue-700">PCMA</h4>
-                                    <p class="text-sm text-gray-600 mt-1">Évaluations médicales pré-compétition</p>
+                                    <p class="text-sm text-gray-600 mt-1">{{ __('clinical.pre_competition_medical_evals') }}</p>
                                 </div>
                             </div>
                             <div class="text-blue-500 group-hover:text-blue-600">
@@ -430,7 +430,7 @@
                         </div>
                         <div class="mt-4 flex items-center text-xs text-blue-600">
                             <span class="inline-flex items-center px-2 py-1 rounded-full bg-blue-200 text-blue-800">
-                                Contrôle médical
+                                {{ __('clinical.medical_control_badge') }}
                             </span>
                         </div>
                     </a>
@@ -438,13 +438,13 @@
                 
                 <!-- Indicateur de choix -->
                 <div class="mt-6 text-center">
-                    <p class="text-xs text-gray-500">Cliquez sur l'option souhaitée pour commencer la consultation</p>
+                    <p class="text-xs text-gray-500">{{ __('clinical.click_option_to_start_consultation') }}</p>
                 </div>
                 
                 <!-- Bouton Annuler -->
                 <div class="mt-6 text-center">
                     <button onclick="closeConsultationChoiceModal()" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                        Annuler
+                        {{ __('clinical.cancel') }}
                     </button>
                 </div>
             </div>
@@ -457,33 +457,33 @@
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-xl font-semibold text-gray-900">👥 Liste des Patients</h3>
-                <p class="text-sm text-gray-600 mt-1">Sélectionnez un patient pour commencer la consultation</p>
+                <h3 class="text-xl font-semibold text-gray-900">👥 {{ __('clinical.patient_list_heading') }}</h3>
+                <p class="text-sm text-gray-600 mt-1">{{ __('clinical.select_patient_to_start') }}</p>
             </div>
             <div class="p-6">
                 <!-- Filtres -->
                 <div class="mb-6 flex flex-wrap gap-4">
                     <select id="status-filter" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Tous les statuts</option>
-                        <option value="Planifié">Planifié</option>
-                        <option value="Confirmé">Confirmé</option>
-                        <option value="En cours">En cours</option>
-                        <option value="Terminé">Terminé</option>
+                        <option value="">{{ __('clinical.all_statuses') }}</option>
+                        <option value="Planifié">{{ __('clinical.status_scheduled') }}</option>
+                        <option value="Confirmé">{{ __('clinical.status_confirmed') }}</option>
+                        <option value="En cours">{{ __('clinical.status_in_progress') }}</option>
+                        <option value="Terminé">{{ __('clinical.status_completed') }}</option>
                     </select>
                     <select id="type-filter" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Tous les types</option>
-                        <option value="consultation">Consultation</option>
-                        <option value="emergency">Urgence</option>
-                        <option value="follow_up">Suivi</option>
-                        <option value="pre_season">Pré-saison</option>
-                        <option value="post_match">Post-match</option>
-                        <option value="rehabilitation">Rééducation</option>
-                        <option value="routine_checkup">Contrôle de routine</option>
-                        <option value="injury_assessment">Évaluation de blessure</option>
-                        <option value="cardiac_evaluation">Évaluation cardiaque</option>
-                        <option value="concussion_assessment">Évaluation commotion</option>
+                        <option value="">{{ __('clinical.all_types') }}</option>
+                        <option value="consultation">{{ __('clinical.type_consultation') }}</option>
+                        <option value="emergency">{{ __('clinical.type_emergency') }}</option>
+                        <option value="follow_up">{{ __('clinical.type_follow_up') }}</option>
+                        <option value="pre_season">{{ __('clinical.type_pre_season') }}</option>
+                        <option value="post_match">{{ __('clinical.type_post_match') }}</option>
+                        <option value="rehabilitation">{{ __('clinical.type_rehabilitation') }}</option>
+                        <option value="routine_checkup">{{ __('clinical.type_routine_checkup') }}</option>
+                        <option value="injury_assessment">{{ __('clinical.type_injury_assessment') }}</option>
+                        <option value="cardiac_evaluation">{{ __('clinical.type_cardiac_evaluation') }}</option>
+                        <option value="concussion_assessment">{{ __('clinical.type_concussion_assessment') }}</option>
                     </select>
-                    <input type="date" id="date-filter" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Filtrer par date">
+                    <input type="date" id="date-filter" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="{{ __('clinical.filter_by_date_placeholder') }}">
                 </div>
 
                 <!-- Liste des patients -->
@@ -494,7 +494,7 @@
                 <!-- Bouton Fermer -->
                 <div class="mt-6 text-center">
                     <button onclick="closePatientListModal()" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                        Fermer
+                        {{ __('clinical.close') }}
                     </button>
                 </div>
             </div>
@@ -504,6 +504,42 @@
 
 <script>
 // Clinician Portal JavaScript Functions
+const PORTAL_LABELS = {
+    loadingPatients: @json(__('clinical.loading_patients')),
+    demoModeLabel: @json(__('clinical.demo_mode_label')),
+    demoDataDbUnavailable: @json(__('clinical.demo_data_db_unavailable')),
+    demoDataApiUnavailable: @json(__('clinical.demo_data_api_unavailable')),
+    errorPrefix: @json(__('clinical.error_prefix')),
+    unknownError: @json(__('clinical.unknown_error')),
+    noPatientsFound: @json(__('clinical.no_patients_found')),
+    demoNationalityTunisian: @json(__('clinical.demo_nationality_tunisian')),
+    demoPositionForward: @json(__('clinical.demo_position_forward')),
+    demoPositionMidfielder: @json(__('clinical.demo_position_midfielder')),
+    demoReasonRoutineCheckup: @json(__('clinical.type_routine_checkup')),
+    demoReasonPreseasonEval: @json(__('clinical.demo_reason_preseason_eval')),
+    fifaIdLabelShort: @json(__('clinical.fifa_id_label_short')),
+    dobLabel: @json(__('clinical.dob_label')),
+    appointmentLabelShort: @json(__('clinical.appointment_label_short')),
+    atTimeConnector: @json(__('clinical.at_time_connector')),
+    typeLabel: @json(__('clinical.type_label')),
+    statusLabel: @json(__('clinical.status_label')),
+    reasonLabel: @json(__('clinical.reason_label')),
+    selectButton: @json(__('clinical.select_button')),
+    newConsultationHeading: @json(__('clinical.new_consultation_heading')),
+    chooseMedicalRecordTypeForPatient: @json(__('clinical.choose_medical_record_type_for_patient')),
+    consultationSavedSuccess: @json(__('clinical.consultation_saved_success')),
+    consultationSaveError: @json(__('clinical.consultation_save_error')),
+    typeConsultation: @json(__('clinical.type_consultation')),
+    typeEmergency: @json(__('clinical.type_emergency')),
+    typeFollowUp: @json(__('clinical.type_follow_up')),
+    typePreSeason: @json(__('clinical.type_pre_season')),
+    typePostMatch: @json(__('clinical.type_post_match')),
+    typeRehabilitation: @json(__('clinical.type_rehabilitation')),
+    typeRoutineCheckup: @json(__('clinical.type_routine_checkup')),
+    typeInjuryAssessment: @json(__('clinical.type_injury_assessment')),
+    typeCardiacEvaluation: @json(__('clinical.type_cardiac_evaluation')),
+    typeConcussionAssessment: @json(__('clinical.type_concussion_assessment')),
+};
 function showConsultationChoice() {
     document.getElementById('consultation-choice-modal').classList.remove('hidden');
 }
@@ -540,7 +576,7 @@ function closePatientListModal() {
 
 function loadPatientList() {
     const container = document.getElementById('patient-list-container');
-    container.innerHTML = '<div class="text-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div><p class="mt-2 text-gray-600">Chargement des patients...</p></div>';
+    container.innerHTML = `<div class="text-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div><p class="mt-2 text-gray-600">${PORTAL_LABELS.loadingPatients}</p></div>`;
 
     // Récupérer les filtres
     const statusFilter = document.getElementById('status-filter').value;
@@ -568,11 +604,11 @@ function loadPatientList() {
                     // Afficher un message si on est en mode démonstration
                     const demoMessage = document.createElement('div');
                     demoMessage.className = 'mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg';
-                    demoMessage.innerHTML = '<p class="text-sm text-yellow-800"><strong>Mode démonstration:</strong> Données d\'exemple affichées car la base de données n\'est pas accessible.</p>';
+                    demoMessage.innerHTML = `<p class="text-sm text-yellow-800"><strong>${PORTAL_LABELS.demoModeLabel}</strong> ${PORTAL_LABELS.demoDataDbUnavailable}</p>`;
                     container.parentNode.insertBefore(demoMessage, container);
                 }
             } else {
-                container.innerHTML = `<div class="text-center py-8 text-red-600">Erreur: ${data.error || 'Erreur inconnue'}</div>`;
+                container.innerHTML = `<div class="text-center py-8 text-red-600">${PORTAL_LABELS.errorPrefix}${data.error || PORTAL_LABELS.unknownError}</div>`;
             }
         })
         .catch(error => {
@@ -586,12 +622,12 @@ function loadPatientList() {
                     last_name: 'Ben Ali',
                     date_of_birth: '1995-03-15',
                     fifa_connect_id: null,
-                    nationality: 'Tunisienne',
-                    position: 'Attaquant',
+                    nationality: PORTAL_LABELS.demoNationalityTunisian,
+                    position: PORTAL_LABELS.demoPositionForward,
                     appointment_date: new Date(Date.now() + 24*60*60*1000).toISOString(),
                     appointment_type: 'consultation',
                     status: 'Confirmé',
-                    reason: 'Contrôle de routine'
+                    reason: PORTAL_LABELS.demoReasonRoutineCheckup
                 },
                 {
                     id: 2,
@@ -600,16 +636,16 @@ function loadPatientList() {
                     last_name: 'Trabelsi',
                     date_of_birth: '1998-07-22',
                     fifa_connect_id: null,
-                    nationality: 'Tunisienne',
-                    position: 'Milieu',
+                    nationality: PORTAL_LABELS.demoNationalityTunisian,
+                    position: PORTAL_LABELS.demoPositionMidfielder,
                     appointment_date: new Date(Date.now() + 2*24*60*60*1000).toISOString(),
                     appointment_type: 'pre_season',
                     status: 'Planifié',
-                    reason: 'Évaluation pré-saison'
+                    reason: PORTAL_LABELS.demoReasonPreseasonEval
                 }
             ];
             
-            container.innerHTML = '<div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg"><p class="text-sm text-yellow-800"><strong>Mode démonstration:</strong> Données d\'exemple affichées car l\'API n\'est pas accessible.</p></div>';
+            container.innerHTML = `<div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg"><p class="text-sm text-yellow-800"><strong>${PORTAL_LABELS.demoModeLabel}</strong> ${PORTAL_LABELS.demoDataApiUnavailable}</p></div>`;
             displayPatientList(demoPatients);
         });
 }
@@ -618,14 +654,14 @@ function displayPatientList(patients) {
     const container = document.getElementById('patient-list-container');
     
     if (patients.length === 0) {
-        container.innerHTML = '<div class="text-center py-8 text-gray-500">Aucun patient trouvé</div>';
+        container.innerHTML = `<div class="text-center py-8 text-gray-500">${PORTAL_LABELS.noPatientsFound}</div>`;
         return;
     }
 
     let html = '';
     patients.forEach(patient => {
-        const appointmentDate = new Date(patient.appointment_date).toLocaleDateString('fr-FR');
-        const appointmentTime = new Date(patient.appointment_date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+        const appointmentDate = new Date(patient.appointment_date).toLocaleDateString('en-GB');
+        const appointmentTime = new Date(patient.appointment_date).toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'});
         
         html += `
             <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -643,23 +679,23 @@ function displayPatientList(patients) {
                                 ${patient.name || 'N/A'}
                             </h4>
                             <div class="text-sm text-gray-600 space-y-1">
-                                <p><strong>ID FIFA:</strong> ${patient.fifa_connect_id || 'N/A'}</p>
-                                <p><strong>Date de naissance:</strong> ${patient.date_of_birth ? new Date(patient.date_of_birth).toLocaleDateString('fr-FR') : 'N/A'}</p>
-                                <p><strong>RDV:</strong> ${appointmentDate} à ${appointmentTime}</p>
-                                <p><strong>Type:</strong> ${getAppointmentTypeLabel(patient.appointment_type)}</p>
-                                <p><strong>Statut:</strong> 
+                                <p><strong>${PORTAL_LABELS.fifaIdLabelShort}</strong> ${patient.fifa_connect_id || 'N/A'}</p>
+                                <p><strong>${PORTAL_LABELS.dobLabel}</strong> ${patient.date_of_birth ? new Date(patient.date_of_birth).toLocaleDateString('en-GB') : 'N/A'}</p>
+                                <p><strong>${PORTAL_LABELS.appointmentLabelShort}</strong> ${appointmentDate} ${PORTAL_LABELS.atTimeConnector} ${appointmentTime}</p>
+                                <p><strong>${PORTAL_LABELS.typeLabel}</strong> ${getAppointmentTypeLabel(patient.appointment_type)}</p>
+                                <p><strong>${PORTAL_LABELS.statusLabel}</strong>
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(patient.status)}">
                                         ${patient.status}
                                     </span>
                                 </p>
-                                ${patient.reason ? `<p><strong>Motif:</strong> ${patient.reason}</p>` : ''}
+                                ${patient.reason ? `<p><strong>${PORTAL_LABELS.reasonLabel}</strong> ${patient.reason}</p>` : ''}
                             </div>
                         </div>
                     </div>
                     <div class="flex space-x-2">
                         <button onclick="selectPatient(${patient.player_id}, '${patient.first_name}', '${patient.last_name}', '${patient.fifa_connect_id}', '${patient.date_of_birth}', '${patient.appointment_type}', '${patient.status}')" 
                                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                            📋 Sélectionner
+                            📋 ${PORTAL_LABELS.selectButton}
                         </button>
                     </div>
                 </div>
@@ -672,16 +708,16 @@ function displayPatientList(patients) {
 
 function getAppointmentTypeLabel(type) {
     const labels = {
-        'consultation': 'Consultation',
-        'emergency': 'Urgence',
-        'follow_up': 'Suivi',
-        'pre_season': 'Pré-saison',
-        'post_match': 'Post-match',
-        'rehabilitation': 'Rééducation',
-        'routine_checkup': 'Contrôle de routine',
-        'injury_assessment': 'Évaluation de blessure',
-        'cardiac_evaluation': 'Évaluation cardiaque',
-        'concussion_assessment': 'Évaluation commotion'
+        'consultation': PORTAL_LABELS.typeConsultation,
+        'emergency': PORTAL_LABELS.typeEmergency,
+        'follow_up': PORTAL_LABELS.typeFollowUp,
+        'pre_season': PORTAL_LABELS.typePreSeason,
+        'post_match': PORTAL_LABELS.typePostMatch,
+        'rehabilitation': PORTAL_LABELS.typeRehabilitation,
+        'routine_checkup': PORTAL_LABELS.typeRoutineCheckup,
+        'injury_assessment': PORTAL_LABELS.typeInjuryAssessment,
+        'cardiac_evaluation': PORTAL_LABELS.typeCardiacEvaluation,
+        'concussion_assessment': PORTAL_LABELS.typeConcussionAssessment
     };
     return labels[type] || type;
 }
@@ -724,8 +760,8 @@ function showConsultationChoiceForPatient() {
     const descriptionElement = modal.querySelector('p');
     
     if (window.selectedPatient) {
-        titleElement.innerHTML = `🩺 Nouvelle Consultation - ${window.selectedPatient.first_name} ${window.selectedPatient.last_name}`;
-        descriptionElement.textContent = 'Choisissez le type de dossier médical pour ce patient';
+        titleElement.innerHTML = `🩺 ${PORTAL_LABELS.newConsultationHeading} - ${window.selectedPatient.first_name} ${window.selectedPatient.last_name}`;
+        descriptionElement.textContent = PORTAL_LABELS.chooseMedicalRecordTypeForPatient;
     }
     
     // Ouvrir le modal
@@ -857,16 +893,16 @@ document.getElementById('consultation-form').addEventListener('submit', function
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            alert('Consultation enregistrée avec succès !');
+            alert(PORTAL_LABELS.consultationSavedSuccess);
             closeConsultationModal();
             location.reload();
         } else {
-            alert('Erreur lors de l\'enregistrement de la consultation');
+            alert(PORTAL_LABELS.consultationSaveError);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Erreur lors de l\'enregistrement de la consultation');
+        alert(PORTAL_LABELS.consultationSaveError);
     });
 });
 

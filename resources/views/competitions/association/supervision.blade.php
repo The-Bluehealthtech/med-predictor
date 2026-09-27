@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Supervision des Compétitions')
+@section('title', __('competitions.supervision_page.page_title'))
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900">
@@ -11,28 +11,28 @@
                 <div>
                     <h1 class="text-3xl font-bold text-white mb-2">
                         <i class="fas fa-eye mr-3"></i>
-                        Supervision des Compétitions
+                        {{ __('competitions.supervision_page.heading') }}
                     </h1>
                     <p class="text-blue-200">
-                        Gestion et suivi des compétitions sous votre responsabilité
+                        {{ __('competitions.supervision_page.subtitle') }}
                     </p>
                 </div>
                 <div class="flex space-x-3">
                     <a href="{{ route('modules.competitions.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
                         <i class="fas fa-arrow-left mr-2"></i>
-                        Retour
+                        {{ __('competitions.supervision_page.back') }}
                     </a>
                     <button onclick="createNewCompetition()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
                         <i class="fas fa-plus mr-2"></i>
-                        Nouvelle Compétition
+                        {{ __('competitions.supervision_page.new_competition') }}
                     </button>
                     <button onclick="exportData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
                         <i class="fas fa-download mr-2"></i>
-                        Exporter
+                        {{ __('competitions.supervision_page.export') }}
                     </button>
                     <button onclick="refreshData()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
                         <i class="fas fa-sync-alt mr-2"></i>
-                        Actualiser
+                        {{ __('competitions.supervision_page.refresh') }}
                     </button>
                 </div>
             </div>
@@ -43,7 +43,7 @@
             <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-blue-200 text-sm">Total Compétitions</p>
+                        <p class="text-blue-200 text-sm">{{ __('competitions.supervision_page.total_competitions') }}</p>
                         <p class="text-2xl font-bold text-white">{{ $competitions->count() }}</p>
                     </div>
                     <div class="bg-blue-500/20 p-3 rounded-lg">
@@ -55,8 +55,8 @@
             <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-blue-200 text-sm">Compétitions Actives</p>
-                        <p class="text-2xl font-bold text-white">{{ $competitions->where('statut', 'active')->count() }}</p>
+                        <p class="text-blue-200 text-sm">{{ __('competitions.supervision_page.active_competitions') }}</p>
+                        <p class="text-2xl font-bold text-white">{{ $activeCompetitionsCount }}</p>
                     </div>
                     <div class="bg-green-500/20 p-3 rounded-lg">
                         <i class="fas fa-play text-green-300 text-xl"></i>
@@ -67,7 +67,7 @@
             <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-blue-200 text-sm">Total Clubs</p>
+                        <p class="text-blue-200 text-sm">{{ __('competitions.supervision_page.total_clubs') }}</p>
                         <p class="text-2xl font-bold text-white">{{ $competitions->sum('nb_clubs') }}</p>
                     </div>
                     <div class="bg-purple-500/20 p-3 rounded-lg">
@@ -79,7 +79,7 @@
             <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-blue-200 text-sm">Matchs Joués</p>
+                        <p class="text-blue-200 text-sm">{{ __('competitions.supervision_page.matches_played') }}</p>
                         <p class="text-2xl font-bold text-white">{{ $competitions->sum('matchs_joues') }}</p>
                     </div>
                     <div class="bg-orange-500/20 p-3 rounded-lg">
@@ -94,10 +94,10 @@
             <div class="p-6 border-b border-white/20">
                 <h2 class="text-xl font-semibold text-white">
                     <i class="fas fa-list mr-2"></i>
-                    Compétitions Supervisées
+                    {{ __('competitions.supervision_page.supervised_competitions') }}
                 </h2>
                 <p class="text-blue-200 text-sm mt-1">
-                    {{ $tunisianAssociation->name ?? 'Association' }}
+                    {{ $tunisianAssociation->name ?? __('competitions.supervision_page.association_fallback') }}
                 </p>
             </div>
 
@@ -106,17 +106,24 @@
                     <table class="w-full">
                         <thead class="bg-white/5">
                             <tr>
-                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Compétition</th>
-                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Saison</th>
-                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Statut</th>
-                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Clubs</th>
-                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Matchs</th>
-                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">Actions</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.supervision_page.table_competition') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.supervision_page.table_season') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.supervision_page.table_status') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.supervision_page.table_clubs') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.supervision_page.table_matches') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-blue-200 uppercase tracking-wider">{{ __('competitions.supervision_page.table_actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/10">
                             @foreach($competitions as $competition)
-                                <tr class="hover:bg-white/5 transition-colors">
+                                <tr class="hover:bg-white/5 transition-colors"
+                                    data-competition-id="{{ $competition['id'] }}"
+                                    data-nom="{{ $competition['nom'] }}"
+                                    data-saison="{{ $competition['saison'] }}"
+                                    data-statut-label="{{ $competition['statut_label'] }}"
+                                    data-nb-clubs="{{ $competition['nb_clubs'] }}"
+                                    data-matchs-joues="{{ $competition['matchs_joues'] }}"
+                                    data-nb-matchs="{{ $competition['nb_matchs'] }}">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="bg-blue-500/20 p-2 rounded-lg mr-3">
@@ -124,7 +131,7 @@
                                             </div>
                                             <div>
                                                 <div class="text-sm font-medium text-white">{{ $competition['nom'] }}</div>
-                                                <div class="text-sm text-blue-200">{{ $competition['type'] ?? 'Championnat' }}</div>
+                                                <div class="text-sm text-blue-200">{{ $competition['type'] ?? __('competitions.supervision_page.championship_fallback') }}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -132,14 +139,16 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @php
                                             $statusColors = [
-                                                'active' => 'bg-green-500/20 text-green-300',
-                                                'upcoming' => 'bg-blue-500/20 text-blue-300',
-                                                'completed' => 'bg-gray-500/20 text-gray-300'
+                                                'published' => 'bg-green-500/20 text-green-300',
+                                                'submitted' => 'bg-blue-500/20 text-blue-300',
+                                                'validated' => 'bg-blue-500/20 text-blue-300',
+                                                'draft' => 'bg-gray-500/20 text-gray-300',
+                                                'cancelled' => 'bg-red-500/20 text-red-300',
                                             ];
                                             $statusColor = $statusColors[$competition['statut']] ?? 'bg-gray-500/20 text-gray-300';
                                         @endphp
                                         <span class="px-2 py-1 text-xs font-medium rounded-full {{ $statusColor }}">
-                                            {{ ucfirst($competition['statut']) }}
+                                            {{ $competition['statut_label'] }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
@@ -152,23 +161,23 @@
                                         <div class="flex space-x-2">
                                             <button onclick="viewCompetitionDetails({{ $competition['id'] }})" 
                                                     class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors" 
-                                                    title="Voir détails">
-                                                <i class="fas fa-eye mr-1"></i>Détails
+                                                    title="{{ __('competitions.supervision_page.view_details_title') }}">
+                                                <i class="fas fa-eye mr-1"></i>{{ __('competitions.supervision_page.details') }}
                                             </button>
                                             <button onclick="manageCompetition({{ $competition['id'] }})" 
                                                     class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors" 
-                                                    title="Gérer la compétition">
-                                                <i class="fas fa-cog mr-1"></i>Gérer
+                                                    title="{{ __('competitions.supervision_page.manage_title') }}">
+                                                <i class="fas fa-cog mr-1"></i>{{ __('competitions.supervision_page.manage') }}
                                             </button>
                                             <button onclick="viewReports({{ $competition['id'] }})" 
                                                     class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-xs transition-colors" 
-                                                    title="Rapports et statistiques">
-                                                <i class="fas fa-chart-bar mr-1"></i>Rapports
+                                                    title="{{ __('competitions.supervision_page.reports_title') }}">
+                                                <i class="fas fa-chart-bar mr-1"></i>{{ __('competitions.supervision_page.reports') }}
                                             </button>
                                             <button onclick="viewFixtures({{ $competition['id'] }})" 
                                                     class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-xs transition-colors" 
-                                                    title="Voir les matchs">
-                                                <i class="fas fa-calendar mr-1"></i>Matchs
+                                                    title="{{ __('competitions.supervision_page.view_matches_title') }}">
+                                                <i class="fas fa-calendar mr-1"></i>{{ __('competitions.supervision_page.matches') }}
                                             </button>
                                         </div>
                                     </td>
@@ -182,8 +191,8 @@
                     <div class="bg-gray-500/20 p-6 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
                         <i class="fas fa-trophy text-gray-400 text-3xl"></i>
                     </div>
-                    <h3 class="text-lg font-medium text-white mb-2">Aucune compétition trouvée</h3>
-                    <p class="text-blue-200 mb-6">Il n'y a actuellement aucune compétition sous votre supervision.</p>
+                    <h3 class="text-lg font-medium text-white mb-2">{{ __('competitions.supervision_page.no_competition_found') }}</h3>
+                    <p class="text-blue-200 mb-6">{{ __('competitions.supervision_page.no_competition_found_text') }}</p>
                 </div>
             @endif
         </div>
@@ -209,7 +218,7 @@ function viewFixtures(competitionId) {
 }
 
 function createNewCompetition() {
-    alert('Créer une nouvelle compétition - Fonctionnalité à implémenter');
+    alert(@json(__('competitions.supervision_page.js_not_implemented')));
 }
 
 // NOTE (audit factice -> reel, 2026-09) : cette fonction telechargeait un
@@ -221,11 +230,11 @@ function createNewCompetition() {
 function exportData() {
     const rows = document.querySelectorAll('table tbody tr');
     if (!rows.length) {
-        showNotification("Aucune compétition à exporter.", 'error');
+        showNotification(@json(__('competitions.supervision_page.js_nothing_to_export')), 'error');
         return;
     }
 
-    let csvContent = "Compétition,Saison,Statut,Clubs,Matchs\n";
+    let csvContent = @json(__('competitions.supervision_page.table_competition') . ',' . __('competitions.supervision_page.table_season') . ',' . __('competitions.supervision_page.table_status') . ',' . __('competitions.supervision_page.table_clubs') . ',' . __('competitions.supervision_page.table_matches') . "\n");
     let rowCount = 0;
 
     rows.forEach(row => {
@@ -243,7 +252,7 @@ function exportData() {
     });
 
     if (rowCount === 0) {
-        showNotification("Aucune compétition à exporter.", 'error');
+        showNotification(@json(__('competitions.supervision_page.js_nothing_to_export')), 'error');
         return;
     }
 
@@ -255,7 +264,7 @@ function exportData() {
     a.click();
     window.URL.revokeObjectURL(url);
 
-    showNotification('Données exportées avec succès !', 'success');
+    showNotification(@json(__('competitions.supervision_page.js_export_success')), 'success');
 }
 
 // NOTE (audit factice -> reel, 2026-09) : affichait un faux message
@@ -264,19 +273,41 @@ function exportData() {
 // desormais reellement la page pour obtenir les donnees a jour.
 function refreshData() {
     const button = event.target;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Actualisation...';
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>' + @json(__('competitions.supervision_page.refreshing'));
     button.disabled = true;
     location.reload();
 }
 
 // Fonctions pour les modals
 function showCompetitionModal(competitionId) {
+    // NOTE (audit factice -> reel, 2026-09) : ce modal affichait une
+    // competition entierement inventee ("Ligue 1 Tunisienne", statut
+    // "Active", 20 clubs, 150/380 matchs) quel que soit le competitionId
+    // reellement clique. Utilise desormais les vraies donnees deja
+    // rendues dans la ligne du tableau (data-* sur la <tr>).
+    const row = document.querySelector(`tr[data-competition-id="${competitionId}"]`);
+    const data = row ? row.dataset : {};
+    const labels = @json([
+        'title' => __('competitions.supervision_page.js_competition_details'),
+        'id_label' => __('competitions.supervision_page.js_competition_id_label'),
+        'status_label' => __('competitions.supervision_page.js_status_label'),
+        'name_label' => __('competitions.supervision_page.js_name_label'),
+        'season_label' => __('competitions.supervision_page.js_season_label'),
+        'clubs_count_label' => __('competitions.supervision_page.js_clubs_count_label'),
+        'matches_played_label' => __('competitions.supervision_page.js_matches_played_label'),
+        'matches_total_label' => __('competitions.supervision_page.js_matches_total_label'),
+        'available_actions' => __('competitions.supervision_page.js_available_actions'),
+        'view_matches' => __('competitions.supervision_page.js_view_matches'),
+        'reports' => __('competitions.supervision_page.js_reports'),
+        'close' => __('competitions.supervision_page.js_close'),
+    ]);
+
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
     modal.innerHTML = `
         <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-gray-800">Détails de la Compétition</h3>
+                <h3 class="text-xl font-bold text-gray-800">${labels.title}</h3>
                 <button onclick="closeModal(this)" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times text-xl"></i>
                 </button>
@@ -284,47 +315,47 @@ function showCompetitionModal(competitionId) {
             <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">ID Compétition</label>
+                        <label class="block text-sm font-medium text-gray-700">${labels.id_label}</label>
                         <p class="text-lg font-semibold text-blue-600">${competitionId}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Statut</label>
-                        <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Active</span>
+                        <label class="block text-sm font-medium text-gray-700">${labels.status_label}</label>
+                        <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">${data.statutLabel || ''}</span>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Nom</label>
-                    <p class="text-lg">Ligue 1 Tunisienne</p>
+                    <label class="block text-sm font-medium text-gray-700">${labels.name_label}</label>
+                    <p class="text-lg">${data.nom || ''}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Saison</label>
-                    <p class="text-lg">2024-2025</p>
+                    <label class="block text-sm font-medium text-gray-700">${labels.season_label}</label>
+                    <p class="text-lg">${data.saison || ''}</p>
                 </div>
                 <div class="grid grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Nombre de Clubs</label>
-                        <p class="text-2xl font-bold text-blue-600">20</p>
+                        <label class="block text-sm font-medium text-gray-700">${labels.clubs_count_label}</label>
+                        <p class="text-2xl font-bold text-blue-600">${data.nbClubs || '0'}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Matchs Joués</label>
-                        <p class="text-2xl font-bold text-green-600">150</p>
+                        <label class="block text-sm font-medium text-gray-700">${labels.matches_played_label}</label>
+                        <p class="text-2xl font-bold text-green-600">${data.matchsJoues || '0'}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Matchs Total</label>
-                        <p class="text-2xl font-bold text-purple-600">380</p>
+                        <label class="block text-sm font-medium text-gray-700">${labels.matches_total_label}</label>
+                        <p class="text-2xl font-bold text-purple-600">${data.nbMatchs || '0'}</p>
                     </div>
                 </div>
                 <div class="pt-4 border-t">
-                    <h4 class="font-semibold text-gray-800 mb-2">Actions disponibles :</h4>
+                    <h4 class="font-semibold text-gray-800 mb-2">${labels.available_actions}</h4>
                     <div class="flex space-x-2">
                         <button onclick="viewFixtures(${competitionId})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
-                            <i class="fas fa-calendar mr-1"></i>Voir Matchs
+                            <i class="fas fa-calendar mr-1"></i>${labels.view_matches}
                         </button>
                         <button onclick="viewReports(${competitionId})" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded text-sm">
-                            <i class="fas fa-chart-bar mr-1"></i>Rapports
+                            <i class="fas fa-chart-bar mr-1"></i>${labels.reports}
                         </button>
                         <button onclick="closeModal(this.closest('.fixed'))" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm">
-                            Fermer
+                            ${labels.close}
                         </button>
                     </div>
                 </div>
@@ -335,46 +366,76 @@ function showCompetitionModal(competitionId) {
 }
 
 function showManagementModal(competitionId) {
+    // NOTE (audit factice -> reel, 2026-09) : l'en-tete affichait "Ligue 1
+    // Tunisienne - Saison 2024-2025" en dur, et les 6 boutons d'action
+    // affichaient tous un faux succes ("Planification des matchs...")
+    // sans jamais rien faire reellement. En-tete corrige avec les
+    // vraies donnees de la ligne ; boutons remplaces par des messages
+    // honnetes de fonctionnalite non disponible depuis cette fenetre
+    // (Designation des Arbitres, Discipline & Sanctions et Rapports
+    // existent deja comme pages dediees, liees depuis le tableau).
+    const row = document.querySelector(`tr[data-competition-id="${competitionId}"]`);
+    const data = row ? row.dataset : {};
+    const labels = @json([
+        'title' => __('competitions.supervision_page.js_competition_management'),
+        'id_prefix' => __('competitions.supervision_page.js_competition_id_prefix'),
+        'matches_management' => __('competitions.supervision_page.js_matches_management'),
+        'schedule_matches' => __('competitions.supervision_page.js_schedule_matches'),
+        'edit_calendar' => __('competitions.supervision_page.js_edit_calendar'),
+        'manage_referees' => __('competitions.supervision_page.js_manage_referees'),
+        'clubs_management' => __('competitions.supervision_page.js_clubs_management'),
+        'club_entries' => __('competitions.supervision_page.js_club_entries'),
+        'discipline_sanctions' => __('competitions.supervision_page.js_discipline_sanctions'),
+        'generate_reports' => __('competitions.supervision_page.js_generate_reports'),
+        'close' => __('competitions.supervision_page.js_close'),
+        'schedule_matches_unavailable' => __('competitions.supervision_page.js_schedule_matches_unavailable'),
+        'edit_calendar_unavailable' => __('competitions.supervision_page.js_edit_calendar_unavailable'),
+        'manage_referees_unavailable' => __('competitions.supervision_page.js_manage_referees_unavailable'),
+        'club_entries_unavailable' => __('competitions.supervision_page.js_club_entries_unavailable'),
+        'discipline_unavailable' => __('competitions.supervision_page.js_discipline_unavailable'),
+        'reports_unavailable' => __('competitions.supervision_page.js_reports_unavailable'),
+    ]);
+
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
     modal.innerHTML = `
         <div class="bg-white rounded-lg p-6 max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-gray-800">Gestion de la Compétition</h3>
+                <h3 class="text-xl font-bold text-gray-800">${labels.title}</h3>
                 <button onclick="closeModal(this)" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             <div class="space-y-6">
                 <div class="bg-blue-50 p-4 rounded-lg">
-                    <h4 class="font-semibold text-blue-800 mb-2">Compétition ID: ${competitionId}</h4>
-                    <p class="text-blue-700">Ligue 1 Tunisienne - Saison 2024-2025</p>
+                    <h4 class="font-semibold text-blue-800 mb-2">${labels.id_prefix}: ${competitionId}</h4>
+                    <p class="text-blue-700">${data.nom || ''} - ${data.saison || ''}</p>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-4">
-                        <h4 class="font-semibold text-gray-800">Gestion des Matchs</h4>
-                        <button onclick="showNotification('Planification des matchs...', 'success')" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg text-left">
-                            <i class="fas fa-calendar-plus mr-2"></i>Planifier les Matchs
+                        <h4 class="font-semibold text-gray-800">${labels.matches_management}</h4>
+                        <button onclick="showNotification(${JSON.stringify(labels.schedule_matches_unavailable)}, 'error')" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg text-left">
+                            <i class="fas fa-calendar-plus mr-2"></i>${labels.schedule_matches}
                         </button>
-                        <button onclick="showNotification('Modification du calendrier...', 'success')" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-left">
-                            <i class="fas fa-edit mr-2"></i>Modifier le Calendrier
+                        <button onclick="showNotification(${JSON.stringify(labels.edit_calendar_unavailable)}, 'error')" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-left">
+                            <i class="fas fa-edit mr-2"></i>${labels.edit_calendar}
                         </button>
-                        <button onclick="showNotification('Gestion des arbitres...', 'success')" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg text-left">
-                            <i class="fas fa-whistle mr-2"></i>Gérer les Arbitres
+                        <button onclick="showNotification(${JSON.stringify(labels.manage_referees_unavailable)}, 'error')" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg text-left">
+                            <i class="fas fa-whistle mr-2"></i>${labels.manage_referees}
                         </button>
                     </div>
                     
                     <div class="space-y-4">
-                        <h4 class="font-semibold text-gray-800">Gestion des Clubs</h4>
-                        <button onclick="showNotification('Gestion des engagements...', 'success')" class="w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-lg text-left">
-                            <i class="fas fa-handshake mr-2"></i>Engagements des Clubs
+                        <h4 class="font-semibold text-gray-800">${labels.clubs_management}</h4>
+                        <button onclick="showNotification(${JSON.stringify(labels.club_entries_unavailable)}, 'error')" class="w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-lg text-left">
+                            <i class="fas fa-handshake mr-2"></i>${labels.club_entries}
                         </button>
-                        <button onclick="showNotification('Gestion des sanctions...', 'success')" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg text-left">
-                            <i class="fas fa-gavel mr-2"></i>Discipline & Sanctions
+                        <button onclick="showNotification(${JSON.stringify(labels.discipline_unavailable)}, 'error')" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg text-left">
+                            <i class="fas fa-gavel mr-2"></i>${labels.discipline_sanctions}
                         </button>
-                        <button onclick="showNotification('Génération des rapports...', 'success')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg text-left">
-                            <i class="fas fa-file-alt mr-2"></i>Générer Rapports
+                        <button onclick="showNotification(${JSON.stringify(labels.reports_unavailable)}, 'error')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg text-left">
+                            <i class="fas fa-file-alt mr-2"></i>${labels.generate_reports}
                         </button>
                     </div>
                 </div>
@@ -382,7 +443,7 @@ function showManagementModal(competitionId) {
                 <div class="pt-4 border-t">
                     <div class="flex justify-end space-x-2">
                         <button onclick="closeModal(this.closest('.fixed'))" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded">
-                            Fermer
+                            ${labels.close}
                         </button>
                     </div>
                 </div>

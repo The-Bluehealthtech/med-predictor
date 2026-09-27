@@ -143,14 +143,15 @@ class CompetitionController extends Controller
                     $suspension = false;
                 }
 
-                $statut = 'Éligible';
+                $statutCode = 'eligible';
                 if (!$licenceValide) {
-                    $statut = 'Inéligible - Licence FIFA Connect invalide';
+                    $statutCode = 'ineligible_license';
                 } elseif (!$pcmaAJour) {
-                    $statut = 'Inéligible - PCMA expiré';
+                    $statutCode = 'ineligible_pcma';
                 } elseif ($suspension) {
-                    $statut = 'Inéligible - Suspendu';
+                    $statutCode = 'ineligible_suspended';
                 }
+                $statut = __('competitions.eligibility_status.' . $statutCode);
 
                 return [
                     'id' => $player->id,
@@ -162,6 +163,8 @@ class CompetitionController extends Controller
                     'pcma_a_jour' => $pcmaAJour,
                     'suspension' => $suspension,
                     'statut' => $statut,
+                    'statut_code' => $statutCode,
+                    'eligible' => $statutCode === 'eligible',
                     'derniere_verification' => $player->updated_at?->format('Y-m-d') ?? 'N/A',
                     'club' => $player->club?->name ?? 'N/A',
                     'association' => $player->club?->association?->name ?? $player->association?->name ?? 'N/A',
@@ -217,11 +220,12 @@ class CompetitionController extends Controller
                     'heure' => $match->kickoff_time?->format('H:i') ?? 'N/A',
                     'competition' => $match->competition->name ?? 'N/A',
                     'adversaire' => $adversaire,
-                    'lieu' => $match->venue ?? $match->stadium ?? 'Non renseigné',
-                    'arbitre_principal' => $match->referee ?? 'Non désigné',
-                    'arbitre_assistant_1' => $match->assistant_referee_1 ?? 'Non désigné',
-                    'arbitre_assistant_2' => $match->assistant_referee_2 ?? 'Non désigné',
-                    'statut' => $isCompleted ? 'Terminé' : 'Programmé',
+                    'lieu' => $match->venue ?? $match->stadium ?? __('competitions.calendar_page.not_specified'),
+                    'arbitre_principal' => $match->referee ?? __('competitions.calendar_page.not_designated'),
+                    'arbitre_assistant_1' => $match->assistant_referee_1 ?? __('competitions.calendar_page.not_designated'),
+                    'arbitre_assistant_2' => $match->assistant_referee_2 ?? __('competitions.calendar_page.not_designated'),
+                    'statut' => $isCompleted ? __('competitions.fixtures_page.status_completed') : __('competitions.calendar_page.status_scheduled'),
+                    'statut_code' => $isCompleted ? 'completed' : 'scheduled',
                     'resultat' => $isCompleted ? ($match->home_score ?? 0) . '-' . ($match->away_score ?? 0) : null
                 ];
             });
@@ -261,16 +265,12 @@ class CompetitionController extends Controller
                 $homeName = $match?->homeTeam->name ?? 'N/A';
                 $awayName = $match?->awayTeam->name ?? 'N/A';
 
-                $statutLabels = [
-                    'draft' => 'À préparer',
-                    'submitted' => 'Soumise',
-                    'validated' => 'Validée',
-                    'rejected' => 'Rejetée',
-                ];
-                $statut = $statutLabels[$sheet->status] ?? ucfirst($sheet->status ?? 'N/A');
-                if (($sheet->status ?? 'draft') === 'draft' && $match?->match_date && $match->match_date->isPast()) {
-                    $statut = 'En retard';
+                $statutCode = $sheet->status ?? 'draft';
+                if ($statutCode === 'draft' && $match?->match_date && $match->match_date->isPast()) {
+                    $statutCode = 'late';
                 }
+                $statutLabels = __('competitions.match_sheets_page.status_labels');
+                $statut = $statutLabels[$statutCode] ?? ucfirst($sheet->status ?? 'N/A');
 
                 $rosterCount = is_array($sheet->home_team_roster) ? count($sheet->home_team_roster) : 0;
 
@@ -279,6 +279,7 @@ class CompetitionController extends Controller
                     'match' => "{$homeName} vs {$awayName}",
                     'date' => $match?->match_date?->format('Y-m-d') ?? 'N/A',
                     'statut' => $statut,
+                    'statut_code' => $statutCode,
                     'effectif_disponible' => $rosterCount,
                     'effectif_selectionne' => ($sheet->status ?? 'draft') !== 'draft' ? $rosterCount : 0
                 ];
@@ -403,7 +404,10 @@ class CompetitionController extends Controller
 
             $associationClubs = Club::where('association_id', $association->id)->get();
 
-            $competitions = $competitionsData->map(function ($competition) use ($associationClubs) {
+            $statusLabels = __('competitions.supervision_page.status_labels');
+            $unknownStatus = __('competitions.supervision_page.unknown_status');
+
+            $competitions = $competitionsData->map(function ($competition) use ($associationClubs, $statusLabels, $unknownStatus) {
                 $nbClubs = $associationClubs->count();
                 $totalMatches = GameMatch::where('competition_id', $competition->id)->count();
                 $playedMatches = GameMatch::where('competition_id', $competition->id)
@@ -419,7 +423,8 @@ class CompetitionController extends Controller
                     'id' => $competition->id,
                     'nom' => $competition->name,
                     'saison' => $competition->season ?? 'N/A',
-                    'statut' => $competition->status ?? 'Inconnu',
+                    'statut' => $competition->status ?? null,
+                    'statut_label' => $statusLabels[$competition->status] ?? $unknownStatus,
                     'nb_clubs' => $nbClubs,
                     'nb_matchs' => $totalMatches,
                     'matchs_joues' => $playedMatches,
@@ -427,13 +432,27 @@ class CompetitionController extends Controller
                     'association' => $competition->association,
                     'start_date' => $competition->start_date,
                     'end_date' => $competition->end_date,
-                    'type' => $competition->type ?? 'Championnat'
+                    'type' => $competition->type ?? __('competitions.supervision_page.championship_fallback')
                 ];
             });
 
+            // NOTE (audit factice -> reel, 2026-09) : la carte "Compétitions
+            // Actives" comparait $competition['statut'] a la valeur 'active',
+            // qui ne correspond a aucun des statuts reels de Competition
+            // (draft/submitted/validated/published/cancelled) -> toujours 0.
+            // Utilise desormais la meme definition qu'ailleurs dans
+            // l'application (Competition::isActive()) : publiee et en cours.
+            $activeCompetitionsCount = $competitionsData->filter(function ($competition) {
+                return $competition->status === Competition::STATUS_PUBLISHED
+                    && $competition->start_date
+                    && $competition->end_date
+                    && $competition->start_date <= now()
+                    && $competition->end_date >= now();
+            })->count();
+
             $tunisianAssociation = $association;
 
-            return view('competitions.association.supervision', compact('competitions', 'tunisianAssociation'));
+            return view('competitions.association.supervision', compact('competitions', 'tunisianAssociation', 'activeCompetitionsCount'));
 
         } catch (\Exception $e) {
             // NOTE (audit factice -> reel, 2026-09) : le repli affichait une
@@ -441,8 +460,9 @@ class CompetitionController extends Controller
             // Repli honnete : liste vide plutot que donnees inventees.
             $competitions = collect([]);
             $tunisianAssociation = $user->association ?? null;
+            $activeCompetitionsCount = 0;
 
-            return view('competitions.association.supervision', compact('competitions', 'tunisianAssociation'));
+            return view('competitions.association.supervision', compact('competitions', 'tunisianAssociation', 'activeCompetitionsCount'));
         }
     }
 
@@ -452,6 +472,8 @@ class CompetitionController extends Controller
     public function associationEngagementsClubs(): View
     {
         try {
+            $engagementLabels = __('competitions.engagements_clubs_page');
+
             // Récupérer tous les matchs avec leurs équipes et clubs
             $matches = GameMatch::with([
                 'homeTeam.club', 
@@ -526,11 +548,12 @@ class CompetitionController extends Controller
                 return [
                     'id' => $club->id,
                     'nom' => $club->short_name ?? $club->name,
-                    'competition' => $competitions->first()->name ?? 'Aucune compétition',
-                    'statut_engagement' => $competitions->isNotEmpty() ? 'Engagé' : 'Non engagé',
+                    'competition' => $competitions->first()->name ?? $engagementLabels['no_competition_fallback'],
+                    'statut_engagement' => $competitions->isNotEmpty() ? $engagementLabels['status_engaged'] : $engagementLabels['status_not_engaged'],
+                    'statut_engagement_code' => $competitions->isNotEmpty() ? 'engaged' : 'not_engaged',
                     'feuilles_soumises' => $totalMatches,
                     'feuilles_validees' => $completedMatches,
-                    'derniere_activite' => $lastMatch ? $lastMatch->updated_at->format('Y-m-d') : 'Aucune activité',
+                    'derniere_activite' => $lastMatch ? $lastMatch->updated_at->format('Y-m-d') : $engagementLabels['no_activity_fallback'],
                     'competitions_count' => $competitions->count(),
                     'total_matches' => $totalMatches,
                     'completed_matches' => $completedMatches,
@@ -574,9 +597,10 @@ class CompetitionController extends Controller
                 'competition' => $match->competition->name ?? 'Compétition inconnue',
                 'domicile' => $match->homeTeam->club->short_name ?? $match->homeTeam->club->name ?? 'Club domicile',
                 'exterieur' => $match->awayTeam->club->short_name ?? $match->awayTeam->club->name ?? 'Club extérieur',
-                'lieu' => $match->venue ?? 'Lieu à définir',
-                'arbitre_principal' => $match->officials->first() ? $match->officials->first()->name : 'Arbitre à désigner',
+                'lieu' => $match->venue ?? __('competitions.fixtures_page.not_specified'),
+                'arbitre_principal' => $match->officials->first() ? $match->officials->first()->name : __('competitions.fixtures_page.to_be_designated'),
                 'statut' => $this->getMatchStatus($match->status),
+                'statut_code' => $match->status ?? 'unknown',
                 'reprogrammable' => in_array($match->status, ['scheduled', 'postponed']),
                 'score_home' => $match->home_score,
                 'score_away' => $match->away_score,
@@ -584,7 +608,23 @@ class CompetitionController extends Controller
             ];
         });
 
-        return view('competitions.association.calendrier-global', compact('matchs'));
+        // NOTE (audit factice -> reel, 2026-09) : les cartes "Matchs
+        // Termines", "Matchs Reportes" et "Competitions Actives" de cette
+        // page affichaient des chiffres fixes (0, 1, 2) sans rapport avec
+        // les vrais matchs. Calculees desormais a partir de la collection
+        // $matchs reellement chargee ci-dessus.
+        $matchsTerminesCount = $matchs->where('statut_code', 'completed')->count();
+        $matchsReportesCount = $matchs->where('statut_code', 'postponed')->count();
+        $competitionsActivesCount = $matchs->pluck('competition')->unique()->count();
+        $competitionsList = $matchs->pluck('competition')->unique()->sort()->values();
+
+        return view('competitions.association.calendrier-global', compact(
+            'matchs',
+            'matchsTerminesCount',
+            'matchsReportesCount',
+            'competitionsActivesCount',
+            'competitionsList'
+        ));
     }
 
     /**
@@ -592,16 +632,9 @@ class CompetitionController extends Controller
      */
     private function getMatchStatus($status): string
     {
-        $statusMap = [
-            'scheduled' => 'Programmé',
-            'in_progress' => 'En cours',
-            'completed' => 'Terminé',
-            'postponed' => 'Reporté',
-            'cancelled' => 'Annulé',
-            'suspended' => 'Suspendu'
-        ];
+        $labels = __('competitions.match_status_label');
 
-        return $statusMap[$status] ?? 'Statut inconnu';
+        return $labels[$status] ?? $labels['unknown'];
     }
 
     /**
@@ -744,6 +777,7 @@ class CompetitionController extends Controller
         try {
             // Récupérer les vraies données de sanctions depuis les rapports d'arbitres
             $sanctions = collect();
+            $disciplineLabels = __('competitions.discipline_sanctions_page');
             
             // Récupérer tous les rapports d'arbitres avec les matchs associés
             $refereeReports = \DB::table('referee_reports')
@@ -760,13 +794,15 @@ class CompetitionController extends Controller
                         foreach ($yellowCards as $card) {
                             $sanctions->push([
                                 'id' => $sanctionId++,
-                                'joueur' => $card['player'] ?? 'Joueur inconnu',
+                                'joueur' => $card['player'] ?? $disciplineLabels['unknown_player_fallback'],
                                 'club' => $this->getClubFromReport($report),
-                                'match' => $report->competition_name ?? 'Match inconnu',
+                                'match' => $report->competition_name ?? $disciplineLabels['unknown_match_fallback'],
                                 'date' => $report->match_date ? \Carbon\Carbon::parse($report->match_date)->format('Y-m-d') : date('Y-m-d'),
                                 'type' => 'Carton Jaune',
-                                'motif' => $card['reason'] ?? 'Non spécifié',
+                                'type_code' => 'yellow_card',
+                                'motif' => $card['reason'] ?? $disciplineLabels['unspecified_reason_fallback'],
                                 'statut' => 'Validé',
+                                'statut_code' => 'validated',
                                 'amende' => $this->getFineAmountByType('Carton Jaune'),
                                 'suspension' => $this->getSuspensionDaysByType('Carton Jaune'),
                                 'minute' => $card['minute'] ?? null
@@ -782,13 +818,15 @@ class CompetitionController extends Controller
                         foreach ($redCards as $card) {
                             $sanctions->push([
                                 'id' => $sanctionId++,
-                                'joueur' => $card['player'] ?? 'Joueur inconnu',
+                                'joueur' => $card['player'] ?? $disciplineLabels['unknown_player_fallback'],
                                 'club' => $this->getClubFromReport($report),
-                                'match' => $report->competition_name ?? 'Match inconnu',
+                                'match' => $report->competition_name ?? $disciplineLabels['unknown_match_fallback'],
                                 'date' => $report->match_date ? \Carbon\Carbon::parse($report->match_date)->format('Y-m-d') : date('Y-m-d'),
                                 'type' => 'Carton Rouge',
-                                'motif' => $card['reason'] ?? 'Non spécifié',
+                                'type_code' => 'red_card',
+                                'motif' => $card['reason'] ?? $disciplineLabels['unspecified_reason_fallback'],
                                 'statut' => 'Validé',
+                                'statut_code' => 'validated',
                                 'amende' => $this->getFineAmountByType('Carton Rouge'),
                                 'suspension' => $this->getSuspensionDaysByType('Carton Rouge'),
                                 'minute' => $card['minute'] ?? null
@@ -801,13 +839,15 @@ class CompetitionController extends Controller
                 if ($report->disciplinary_incidents) {
                     $sanctions->push([
                         'id' => $sanctionId++,
-                        'joueur' => 'Incident disciplinaire',
+                        'joueur' => $disciplineLabels['disciplinary_incident_player_label'],
                         'club' => $this->getClubFromReport($report),
-                        'match' => $report->competition_name ?? 'Match inconnu',
+                        'match' => $report->competition_name ?? $disciplineLabels['unknown_match_fallback'],
                         'date' => $report->match_date ? \Carbon\Carbon::parse($report->match_date)->format('Y-m-d') : date('Y-m-d'),
                         'type' => 'Incident Disciplinaire',
+                        'type_code' => 'disciplinary_incident',
                         'motif' => $report->disciplinary_incidents,
                         'statut' => 'En attente',
+                        'statut_code' => 'pending',
                         'amende' => 500,
                         'suspension' => 3,
                         'minute' => null
@@ -820,13 +860,15 @@ class CompetitionController extends Controller
                 $sanctions = collect([
                     [
                         'id' => 0,
-                        'joueur' => 'Aucune sanction',
+                        'joueur' => $disciplineLabels['no_sanction_player_label'],
                         'club' => 'N/A',
                         'match' => 'N/A',
                         'date' => date('Y-m-d'),
                         'type' => 'Aucune',
-                        'motif' => 'Aucune sanction enregistrée dans la base de données',
+                        'type_code' => 'none',
+                        'motif' => $disciplineLabels['no_sanction_reason'],
                         'statut' => 'Aucune',
+                        'statut_code' => 'none',
                         'amende' => 0,
                         'suspension' => 0,
                         'minute' => null
@@ -834,27 +876,44 @@ class CompetitionController extends Controller
                 ]);
             }
 
-            return view('competitions.association.discipline-sanctions', compact('sanctions'));
+            // Liste réelle des joueurs concernés (pour le formulaire "Nouvelle Sanction"),
+            // dérivée des sanctions déjà chargées plutôt que des noms fictifs codés en dur.
+            $joueursList = $sanctions->pluck('joueur')
+                ->reject(fn($joueur) => in_array($joueur, [
+                    $disciplineLabels['unknown_player_fallback'],
+                    $disciplineLabels['disciplinary_incident_player_label'],
+                    $disciplineLabels['no_sanction_player_label'],
+                    $disciplineLabels['error_player_label'],
+                ]))
+                ->unique()
+                ->sort()
+                ->values();
+
+            return view('competitions.association.discipline-sanctions', compact('sanctions', 'joueursList'));
             
         } catch (\Exception $e) {
             // En cas d'erreur, retourner des données d'erreur
             $sanctions = collect([
                 [
                     'id' => 0,
-                    'joueur' => 'Erreur',
+                    'joueur' => $disciplineLabels['error_player_label'],
                     'club' => 'N/A',
                     'match' => 'N/A',
                     'date' => date('Y-m-d'),
                     'type' => 'Erreur',
-                    'motif' => 'Erreur lors du chargement des données: ' . $e->getMessage(),
+                    'type_code' => 'error',
+                    'motif' => $disciplineLabels['error_reason_prefix'] . $e->getMessage(),
                     'statut' => 'Erreur',
+                    'statut_code' => 'error',
                     'amende' => 0,
                     'suspension' => 0,
                     'minute' => null
                 ]
             ]);
             
-            return view('competitions.association.discipline-sanctions', compact('sanctions'));
+            $joueursList = collect();
+
+            return view('competitions.association.discipline-sanctions', compact('sanctions', 'joueursList'));
         }
     }
     
@@ -1044,6 +1103,7 @@ class CompetitionController extends Controller
                     'competition' => $competition->name,
                     'date_generation' => now()->format('Y-m-d'),
                     'statut' => $completedMatches > 0 ? 'Disponible' : 'En attente',
+                    'statut_code' => $completedMatches > 0 ? 'available' : 'pending',
                     'formats' => ['PDF', 'Excel'],
                     'details' => "{$completedMatches} matchs terminés sur {$matchCount}"
                 ]);
@@ -1055,6 +1115,7 @@ class CompetitionController extends Controller
                     'competition' => $competition->name,
                     'date_generation' => now()->format('Y-m-d'),
                     'statut' => $matchCount > 0 ? 'Disponible' : 'En attente',
+                    'statut_code' => $matchCount > 0 ? 'available' : 'pending',
                     'formats' => ['PDF', 'Excel'],
                     'details' => "Statistiques détaillées des {$matchCount} matchs"
                 ]);
@@ -1066,6 +1127,7 @@ class CompetitionController extends Controller
                     'competition' => $competition->name,
                     'date_generation' => now()->format('Y-m-d'),
                     'statut' => $completedMatches > 0 ? 'Disponible' : 'En attente',
+                    'statut_code' => $completedMatches > 0 ? 'available' : 'pending',
                     'formats' => ['PDF'],
                     'details' => "Sanctions et cartons des matchs terminés"
                 ]);
@@ -1079,6 +1141,7 @@ class CompetitionController extends Controller
                         'competition' => $competition->name,
                         'date_generation' => now()->format('Y-m-d'),
                         'statut' => 'Disponible',
+                        'statut_code' => 'available',
                         'formats' => ['PDF', 'Excel'],
                         'details' => "Amendes et sanctions financières"
                     ]);
@@ -1095,13 +1158,21 @@ class CompetitionController extends Controller
                         'competition' => 'N/A',
                         'date_generation' => now()->format('Y-m-d'),
                         'statut' => 'Aucun',
+                        'statut_code' => 'none',
                         'formats' => [],
                         'details' => 'Aucune compétition trouvée dans la base de données'
                     ]
                 ]);
             }
 
-            return view('competitions.association.rapports-statistiques', compact('rapports'));
+            // NOTE (audit factice -> reel, 2026-09) : la carte "Exports
+            // Aujourd'hui" affichait un chiffre fixe (12) sans rapport avec
+            // une quelconque activite reelle. Aucun export PDF/Excel reel
+            // n'est genere par cette page (voir NOTE dans la vue Blade) ;
+            // repli honnete a 0 plutot qu'un nombre invente.
+            $exportsAujourdhui = 0;
+
+            return view('competitions.association.rapports-statistiques', compact('rapports', 'exportsAujourdhui'));
             
         } catch (\Exception $e) {
             // En cas d'erreur, retourner des données d'erreur
@@ -1113,12 +1184,14 @@ class CompetitionController extends Controller
                     'competition' => 'N/A',
                     'date_generation' => now()->format('Y-m-d'),
                     'statut' => 'Erreur',
+                    'statut_code' => 'error',
                     'formats' => [],
                     'details' => 'Erreur lors du chargement des données: ' . $e->getMessage()
                 ]
             ]);
-            
-            return view('competitions.association.rapports-statistiques', compact('rapports'));
+            $exportsAujourdhui = 0;
+
+            return view('competitions.association.rapports-statistiques', compact('rapports', 'exportsAujourdhui'));
         }
     }
 
@@ -1649,7 +1722,7 @@ class CompetitionController extends Controller
                         continue;
                     }
 
-                    if ($match['statut'] === 'Terminé') {
+                    if (($match['statut_code'] ?? null) === 'completed') {
                         $butsClub = $isHome ? $match['buts_domicile'] : $match['buts_exterieur'];
                         $butsAdverse = $isHome ? $match['buts_exterieur'] : $match['buts_domicile'];
 
@@ -1875,6 +1948,9 @@ class CompetitionController extends Controller
         if ($competitions->isEmpty()) {
             return [];
         }
+
+        $fixturesLabels = __('competitions.fixtures_page');
+        $associationFixturesLabels = __('competitions.association_fixtures_page');
         
         // Récupérer les matchs depuis la base de données
         //
@@ -1886,7 +1962,7 @@ class CompetitionController extends Controller
         // QueryException a chaque appel, systematiquement rattrapee par
         // le catch de associationFixtures() qui affichait une page
         // d'erreur generique. Corrige pour utiliser les vraies colonnes.
-        $matches = GameMatch::with(['homeTeam.club', 'awayTeam.club'])
+        $matches = GameMatch::with(['homeTeam.club', 'awayTeam.club', 'competition'])
             ->whereIn('competition_id', $competitions->pluck('id'))
             ->orderBy('matchday')
             ->orderBy('match_date')
@@ -1897,38 +1973,57 @@ class CompetitionController extends Controller
         }
         
         // Organiser les matchs par journée
+        //
+        // NOTE (audit factice -> reel, 2026-09) : le regroupement se faisait
+        // uniquement par 'matchday', ce qui melangeait sous une seule
+        // "journée" des matchs appartenant a des competitions differentes de
+        // l'association (deux competitions peuvent chacune avoir une
+        // "journée 1"). L'entete de journée affichait par ailleurs
+        // toujours "Championnat Tunisien" en dur, quelle que soit la
+        // competition reelle. Regroupement corrige par (competition_id,
+        // matchday), et le nom reel de la competition est desormais
+        // renvoye avec chaque journée.
         $fixtures = [];
-        $matchesByRound = $matches->groupBy('matchday');
+        $matchesByRound = $matches->groupBy(function ($match) {
+            return $match->competition_id . '_' . $match->matchday;
+        });
         
-        foreach ($matchesByRound as $round => $roundMatches) {
+        foreach ($matchesByRound as $roundMatches) {
             $matchsJournee = [];
+            $firstMatch = $roundMatches->first();
+            $competitionName = $firstMatch->competition->name ?? $associationFixturesLabels['unknown_competition_fallback'];
             
             foreach ($roundMatches as $match) {
-                $statut = $match->status === 'completed' ? 'Terminé' : 'À venir';
+                $isCompleted = $match->status === 'completed';
+                $statut = $isCompleted ? $fixturesLabels['status_completed'] : $fixturesLabels['status_upcoming'];
+                $clubFallback = $associationFixturesLabels['unknown_club_fallback'];
                 
                 $matchsJournee[] = [
                     'id' => $match->id,
-                    'domicile' => $match->homeTeam->club->short_name ?? $match->homeTeam->club->name ?? 'Club inconnu',
-                    'exterieur' => $match->awayTeam->club->short_name ?? $match->awayTeam->club->name ?? 'Club inconnu',
+                    'domicile' => $match->homeTeam->club->short_name ?? $match->homeTeam->club->name ?? $clubFallback,
+                    'exterieur' => $match->awayTeam->club->short_name ?? $match->awayTeam->club->name ?? $clubFallback,
                     'date' => $match->match_date,
                     'heure' => $match->kickoff_time,
                     'stade' => $match->venue,
                     'buts_domicile' => $match->home_score,
                     'buts_exterieur' => $match->away_score,
                     'statut' => $statut,
+                    'statut_code' => $isCompleted ? 'completed' : 'upcoming',
                     'journee' => $match->matchday,
-                    'arbitre_principal' => $match->referee ?? 'À désigner',
-                    'arbitre_assistant_1' => $match->assistant_referee_1 ?? 'À désigner',
-                    'arbitre_assistant_2' => $match->assistant_referee_2 ?? 'À désigner',
-                    'arbitre_var' => $match->var_referee ?? 'À désigner',
-                    'delegue_match' => $match->match_official ?? 'À désigner',
-                    'observateur' => $match->observer ?? 'À désigner',
+                    'competition' => $competitionName,
+                    'arbitre_principal' => $match->referee ?? $fixturesLabels['to_be_designated'],
+                    'arbitre_assistant_1' => $match->assistant_referee_1 ?? $fixturesLabels['to_be_designated'],
+                    'arbitre_assistant_2' => $match->assistant_referee_2 ?? $fixturesLabels['to_be_designated'],
+                    'arbitre_var' => $match->var_referee ?? $fixturesLabels['to_be_designated'],
+                    'delegue_match' => $match->match_official ?? $fixturesLabels['to_be_designated'],
+                    'observateur' => $match->observer ?? $fixturesLabels['to_be_designated'],
                 ];
             }
             
             $fixtures[] = [
-                'journee' => $round,
-                'date' => $roundMatches->first()->match_date,
+                'journee' => $firstMatch->matchday,
+                'competition' => $competitionName,
+                'date' => $firstMatch->match_date,
                 'matchs' => $matchsJournee
             ];
         }
@@ -2012,6 +2107,8 @@ class CompetitionController extends Controller
     public function exportEngagements(Request $request)
     {
         try {
+            $engagementLabels = __('competitions.engagements_clubs_page');
+
             // Récupérer les données des engagements
             $matches = GameMatch::with(['homeTeam.club', 'awayTeam.club', 'competition'])->get();
             
@@ -2061,12 +2158,12 @@ class CompetitionController extends Controller
                 $competitions = $data['competitions']->unique('id');
                 
                 return [
-                    'Club' => $club->name,
-                    'Compétition' => $competitions->first()->name ?? 'Aucune',
-                    'Statut' => $competitions->isNotEmpty() ? 'Engagé' : 'Non engagé',
-                    'Total Matchs' => $matches->count(),
-                    'Matchs Terminés' => $matches->where('status', 'completed')->count(),
-                    'Dernière Activité' => $matches->sortByDesc('updated_at')->first() ? $matches->sortByDesc('updated_at')->first()->updated_at->format('Y-m-d') : 'Aucune'
+                    $engagementLabels['csv_col_club'] => $club->name,
+                    $engagementLabels['csv_col_competition'] => $competitions->first()->name ?? $engagementLabels['csv_no_competition'],
+                    $engagementLabels['csv_col_status'] => $competitions->isNotEmpty() ? $engagementLabels['status_engaged'] : $engagementLabels['status_not_engaged'],
+                    $engagementLabels['csv_col_total_matches'] => $matches->count(),
+                    $engagementLabels['csv_col_completed_matches'] => $matches->where('status', 'completed')->count(),
+                    $engagementLabels['csv_col_last_activity'] => $matches->sortByDesc('updated_at')->first() ? $matches->sortByDesc('updated_at')->first()->updated_at->format('Y-m-d') : $engagementLabels['csv_no_activity']
                 ];
             })->values();
             
@@ -2174,14 +2271,15 @@ class CompetitionController extends Controller
             }
             
             // Générer les données du club
+            $engagementLabels = __('competitions.engagements_clubs_page');
             $clubData = [
-                'Club' => $club->name,
-                'Équipes' => $club->teams->count(),
-                'Compétitions' => $club->teams->flatMap->competitions->unique('id')->count(),
-                'Total Matchs' => $club->teams->sum(function($team) {
+                $engagementLabels['csv_col_club'] => $club->name,
+                $engagementLabels['csv_col_teams'] => $club->teams->count(),
+                $engagementLabels['csv_col_competitions_count'] => $club->teams->flatMap->competitions->unique('id')->count(),
+                $engagementLabels['csv_col_total_matches'] => $club->teams->sum(function($team) {
                     return $team->matches->count();
                 }),
-                'Matchs Terminés' => $club->teams->sum(function($team) {
+                $engagementLabels['csv_col_completed_matches'] => $club->teams->sum(function($team) {
                     return $team->matches->where('status', 'completed')->count();
                 })
             ];
@@ -2230,8 +2328,12 @@ class CompetitionController extends Controller
             throw new \Exception('Match non trouvé dans la base de données');
         }
         
-        $statut = $match->status === 'completed' ? 'Terminé' : 'À venir';
-        
+        $isCompleted = $match->status === 'completed';
+        $statutCode = $isCompleted ? 'completed' : 'upcoming';
+        $fixturesLabels = __('competitions.fixtures_page');
+        $statut = $isCompleted ? $fixturesLabels['status_completed'] : $fixturesLabels['status_upcoming'];
+        $toBeDesignated = $fixturesLabels['to_be_designated'];
+
         // Retourner les données de la feuille de match
         //
         // NOTE (audit factice -> reel, 2026-09) : $match->round /
@@ -2240,7 +2342,7 @@ class CompetitionController extends Controller
         // nom d'affichage fixe pour toute competition sans nom. Corrige.
         return [
             'id' => $match->id,
-            'competition' => $match->competition ? $match->competition->name : 'N/A',
+            'competition' => $match->competition ? $match->competition->name : $fixturesLabels['not_specified'],
             'journee' => $match->matchday,
             'date' => $match->match_date,
             'heure' => $match->kickoff_time,
@@ -2250,12 +2352,13 @@ class CompetitionController extends Controller
             'buts_domicile' => $match->home_score,
             'buts_exterieur' => $match->away_score,
             'statut' => $statut,
-            'arbitre_principal' => $match->referee ?? 'À désigner',
-            'arbitre_assistant_1' => $match->assistant_referee_1 ?? 'À désigner',
-            'arbitre_assistant_2' => $match->assistant_referee_2 ?? 'À désigner',
-            'arbitre_var' => $match->var_referee ?? 'À désigner',
-            'delegue_match' => $match->match_official ?? 'À désigner',
-            'observateur' => $match->observer ?? 'À désigner',
+            'statut_code' => $statutCode,
+            'arbitre_principal' => $match->referee ?? $toBeDesignated,
+            'arbitre_assistant_1' => $match->assistant_referee_1 ?? $toBeDesignated,
+            'arbitre_assistant_2' => $match->assistant_referee_2 ?? $toBeDesignated,
+            'arbitre_var' => $match->var_referee ?? $toBeDesignated,
+            'delegue_match' => $match->match_official ?? $toBeDesignated,
+            'observateur' => $match->observer ?? $toBeDesignated,
             'joueurs_domicile' => [], // Pas de joueurs pour l'instant
             'joueurs_exterieur' => [],
             'evenements' => [] // Pas d'événements pour l'instant
@@ -2309,14 +2412,15 @@ class CompetitionController extends Controller
                         'exterieur' => $match->awayClub,
                         'date' => $match->match_date,
                         'heure' => $match->kickoff_time?->format('H:i') ?? 'N/A',
-                        'stade' => $match->venue ?? $match->stadium ?? 'Non renseigné',
+                        'stade' => $match->venue ?? $match->stadium ?? __('competitions.fixtures_page.not_specified'),
                         'buts_domicile' => $match->home_score,
                         'buts_exterieur' => $match->away_score,
-                        'statut' => $isCompleted ? 'Terminé' : 'À venir',
-                        'arbitre_principal' => $match->referee ?? 'À désigner',
-                        'arbitre_assistant_1' => $match->assistant_referee_1 ?? 'À désigner',
-                        'arbitre_assistant_2' => $match->assistant_referee_2 ?? 'À désigner',
-                        'arbitre_var' => $match->var_referee ?? 'À désigner',
+                        'statut' => $isCompleted ? __('competitions.fixtures_page.status_completed') : __('competitions.fixtures_page.status_upcoming'),
+                        'statut_code' => $isCompleted ? 'completed' : 'upcoming',
+                        'arbitre_principal' => $match->referee ?? __('competitions.fixtures_page.to_be_designated'),
+                        'arbitre_assistant_1' => $match->assistant_referee_1 ?? __('competitions.fixtures_page.to_be_designated'),
+                        'arbitre_assistant_2' => $match->assistant_referee_2 ?? __('competitions.fixtures_page.to_be_designated'),
+                        'arbitre_var' => $match->var_referee ?? __('competitions.fixtures_page.to_be_designated'),
                     ];
                 })->values()->all();
 

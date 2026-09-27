@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Rapports & Statistiques - Association')
+@section('title', __('competitions.rapports_statistiques_page.page_title'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -8,12 +8,12 @@
         <div>
             <h1 class="text-3xl font-bold text-gray-900">
                 <i class="fas fa-chart-bar text-blue-600 mr-3"></i>
-                Rapports & Statistiques
+                {{ __('competitions.rapports_statistiques_page.heading') }}
             </h1>
-            <p class="text-gray-600 mt-2">Génération et export des rapports de compétition</p>
+            <p class="text-gray-600 mt-2">{{ __('competitions.rapports_statistiques_page.subtitle') }}</p>
         </div>
         <a href="{{ route('modules.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-            <i class="fas fa-arrow-left mr-2"></i>Retour aux Modules
+            <i class="fas fa-arrow-left mr-2"></i>{{ __('competitions.rapports_statistiques_page.back_to_modules') }}
         </a>
     </div>
 
@@ -25,7 +25,7 @@
                     <i class="fas fa-file-alt text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Rapports</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.rapports_statistiques_page.total_reports') }}</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $rapports->count() }}</p>
                 </div>
             </div>
@@ -37,8 +37,8 @@
                     <i class="fas fa-check text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Disponibles</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $rapports->where('statut', 'Disponible')->count() }}</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.rapports_statistiques_page.available') }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $rapports->where('statut_code', 'available')->count() }}</p>
                 </div>
             </div>
         </div>
@@ -49,8 +49,8 @@
                     <i class="fas fa-clock text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">En Cours</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $rapports->where('statut', 'En cours')->count() }}</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.rapports_statistiques_page.pending') }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $rapports->where('statut_code', 'pending')->count() }}</p>
                 </div>
             </div>
         </div>
@@ -61,8 +61,8 @@
                     <i class="fas fa-download text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Exports Aujourd'hui</p>
-                    <p class="text-2xl font-bold text-gray-900">12</p>
+                    <p class="text-sm font-medium text-gray-600">{{ __('competitions.rapports_statistiques_page.exports_today') }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $exportsAujourdhui }}</p>
                 </div>
             </div>
         </div>
@@ -76,8 +76,8 @@
                     <i class="fas fa-plus text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-medium text-gray-900">Nouveau Rapport</h3>
-                    <p class="text-sm text-gray-500">Créer un rapport personnalisé</p>
+                    <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.rapports_statistiques_page.new_report') }}</h3>
+                    <p class="text-sm text-gray-500">{{ __('competitions.rapports_statistiques_page.new_report_desc') }}</p>
                 </div>
             </div>
         </div>
@@ -88,8 +88,8 @@
                     <i class="fas fa-calendar text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-medium text-gray-900">Rapport Automatique</h3>
-                    <p class="text-sm text-gray-500">Programmer un rapport récurrent</p>
+                    <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.rapports_statistiques_page.scheduled_report') }}</h3>
+                    <p class="text-sm text-gray-500">{{ __('competitions.rapports_statistiques_page.scheduled_report_desc') }}</p>
                 </div>
             </div>
         </div>
@@ -100,8 +100,8 @@
                     <i class="fas fa-cog text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-medium text-gray-900">Modèles</h3>
-                    <p class="text-sm text-gray-500">Gérer les modèles de rapport</p>
+                    <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.rapports_statistiques_page.templates') }}</h3>
+                    <p class="text-sm text-gray-500">{{ __('competitions.rapports_statistiques_page.templates_desc') }}</p>
                 </div>
             </div>
         </div>
@@ -110,7 +110,7 @@
     <!-- Liste des rapports -->
     <div class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Rapports Disponibles</h2>
+            <h2 class="text-lg font-semibold text-gray-900">{{ __('competitions.rapports_statistiques_page.available_reports_heading') }}</h2>
         </div>
         
         @if($rapports->count() > 0)
@@ -118,13 +118,13 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom du Rapport</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compétition</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Génération</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Formats</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.rapports_statistiques_page.table_report_name') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.rapports_statistiques_page.table_type') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.rapports_statistiques_page.table_competition') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.rapports_statistiques_page.table_generation_date') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.rapports_statistiques_page.table_status') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.rapports_statistiques_page.table_formats') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('competitions.rapports_statistiques_page.table_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -144,15 +144,15 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($rapport['type'] === 'Classement')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                            🏆 Classement
+                                            🏆 {{ __('competitions.rapports_statistiques_page.type_ranking') }}
                                         </span>
                                     @elseif($rapport['type'] === 'Statistiques')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            📊 Statistiques
+                                            📊 {{ __('competitions.rapports_statistiques_page.type_statistics') }}
                                         </span>
                                     @elseif($rapport['type'] === 'Discipline')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                            ⚖️ Discipline
+                                            ⚖️ {{ __('competitions.rapports_statistiques_page.type_discipline') }}
                                         </span>
                                     @else
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
@@ -167,13 +167,13 @@
                                     {{ \Carbon\Carbon::parse($rapport['date_generation'])->format('d/m/Y') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap status-badge">
-                                    @if($rapport['statut'] === 'Disponible')
+                                    @if($rapport['statut_code'] === 'available')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                            ✅ Disponible
+                                            ✅ {{ __('competitions.rapports_statistiques_page.status_available') }}
                                         </span>
-                                    @elseif($rapport['statut'] === 'En cours')
+                                    @elseif($rapport['statut_code'] === 'pending')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                            ⏳ En cours
+                                            ⏳ {{ __('competitions.rapports_statistiques_page.status_pending') }}
                                         </span>
                                     @else
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
@@ -198,9 +198,9 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium actions-cell">
                                     <div class="flex space-x-2" onclick="event.stopPropagation()">
-                                        @if($rapport['statut'] === 'Disponible')
+                                        @if($rapport['statut_code'] === 'available')
                                             @foreach($rapport['formats'] as $format)
-                                                <button onclick="downloadReport({{ $rapport['id'] }}, '{{ $format }}')" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" title="Télécharger {{ $format }}">
+                                                <button onclick="downloadReport({{ $rapport['id'] }}, '{{ $format }}')" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" title="{{ __('competitions.rapports_statistiques_page.download_title', ['format' => $format]) }}">
                                                     @if($format === 'PDF')
                                                         <i class="fas fa-file-pdf mr-1"></i>PDF
                                                     @elseif($format === 'Excel')
@@ -209,12 +209,12 @@
                                                 </button>
                                             @endforeach
                                         @else
-                                            <button onclick="generateReport({{ $rapport['id'] }})" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors" title="Générer">
-                                                <i class="fas fa-play mr-1"></i>Générer
+                                            <button onclick="generateReport({{ $rapport['id'] }})" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors" title="{{ __('competitions.rapports_statistiques_page.generate_title') }}">
+                                                <i class="fas fa-play mr-1"></i>{{ __('competitions.rapports_statistiques_page.generate') }}
                                             </button>
                                         @endif
-                                        <button onclick="viewReport({{ $rapport['id'] }})" class="inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" title="Voir détails">
-                                            <i class="fas fa-eye mr-1"></i>Détails
+                                        <button onclick="viewReport({{ $rapport['id'] }})" class="inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" title="{{ __('competitions.rapports_statistiques_page.view_details_title') }}">
+                                            <i class="fas fa-eye mr-1"></i>{{ __('competitions.rapports_statistiques_page.details') }}
                                         </button>
                                     </div>
                                 </td>
@@ -229,8 +229,8 @@
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun rapport</h3>
-                    <p class="mt-1 text-sm text-gray-500">Aucun rapport n'est disponible pour le moment.</p>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('competitions.rapports_statistiques_page.no_report') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ __('competitions.rapports_statistiques_page.no_report_text') }}</p>
                 </div>
             </div>
         @endif
@@ -256,14 +256,14 @@ const RAPPORTS_DATA = @json($rapports->keyBy('id'));
 
 // Fonction pour télécharger un rapport
 function downloadReport(reportId, format) {
-    showNotification("La génération de fichiers PDF/Excel n'est pas encore disponible pour ces rapports.", 'info');
+    showNotification(@json(__('competitions.rapports_statistiques_page.js_download_unavailable')), 'info');
 }
 
 // Fonction pour générer un rapport
 // NOTE (audit factice -> reel, 2026-09) : simulait une generation (delai +
 // changement de statut a l'ecran) sans jamais generer de vrai fichier.
 function generateReport(reportId) {
-    showNotification("La génération de rapports PDF/Excel n'est pas encore disponible : aucun service de génération n'est connecté pour ce type de rapport.", 'info');
+    showNotification(@json(__('competitions.rapports_statistiques_page.js_generate_unavailable')), 'info');
 }
 
 // Fonction pour voir les détails d'un rapport
@@ -276,14 +276,18 @@ function generateReport(reportId) {
 function viewReport(reportId) {
     const rapport = RAPPORTS_DATA[reportId];
     if (!rapport) {
-        showNotification("Rapport introuvable.", 'error');
+        showNotification(@json(__('competitions.rapports_statistiques_page.js_report_not_found')), 'error');
         return;
     }
 
-    const statutBadge = rapport.statut === 'Disponible'
-        ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Disponible</span>'
-        : rapport.statut === 'En cours'
-            ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">En cours</span>'
+    const statutLabels = @json([
+        'available' => __('competitions.rapports_statistiques_page.status_available'),
+        'pending' => __('competitions.rapports_statistiques_page.status_pending'),
+    ]);
+    const statutBadge = rapport.statut_code === 'available'
+        ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">${statutLabels.available}</span>`
+        : rapport.statut_code === 'pending'
+            ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">${statutLabels.pending}</span>`
             : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">${rapport.statut}</span>`;
 
     const formatsBadges = (rapport.formats || []).map(f => {
@@ -301,38 +305,38 @@ function viewReport(reportId) {
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
             <div class="mt-3">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Détails du Rapport #${reportId}</h3>
+                    <h3 class="text-lg font-medium text-gray-900">${@json(__('competitions.rapports_statistiques_page.js_report_details_title', ['id' => '__ID__'])).replace('__ID__', reportId)}</h3>
                     <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Nom du rapport</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_report_name_label') }}</label>
                         <p class="mt-1 text-sm text-gray-900">${rapport.nom}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Type</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_type_label') }}</label>
                         <p class="mt-1 text-sm text-gray-900">${rapport.type}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Compétition</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_competition_label') }}</label>
                         <p class="mt-1 text-sm text-gray-900">${rapport.competition}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Date de génération</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_generation_date_label') }}</label>
                         <p class="mt-1 text-sm text-gray-900">${rapport.date_generation}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Détails</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_details_label') }}</label>
                         <p class="mt-1 text-sm text-gray-900">${rapport.details ?? ''}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Statut</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_status_label') }}</label>
                         ${statutBadge}
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Formats disponibles</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_available_formats_label') }}</label>
                         <div class="mt-1 flex space-x-2">
                             ${formatsBadges}
                         </div>
@@ -340,7 +344,7 @@ function viewReport(reportId) {
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                        Fermer
+                        {{ __('competitions.rapports_statistiques_page.js_close') }}
                     </button>
                 </div>
             </div>
@@ -366,35 +370,35 @@ function createNewReport() {
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
             <div class="mt-3">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Créer un Nouveau Rapport</h3>
+                    <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.rapports_statistiques_page.js_new_report_title') }}</h3>
                     <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
                 <form class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Nom du rapport</label>
-                        <input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: Rapport mensuel">
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_report_name_label') }}</label>
+                        <input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="{{ __('competitions.rapports_statistiques_page.js_report_name_placeholder') }}">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Type de rapport</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_report_type_label') }}</label>
                         <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option>Classement</option>
-                            <option>Statistiques</option>
-                            <option>Discipline</option>
-                            <option>Financier</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.type_ranking') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.type_statistics') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.type_discipline') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_type_financial') }}</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Compétition</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_competition_label') }}</label>
                         <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option>Championnat Régional U19</option>
-                            <option>Coupe de Tunisie</option>
-                            <option>Championnat National</option>
+                            @foreach($rapports->pluck('competition')->unique() as $competitionName)
+                                <option>{{ $competitionName }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Formats</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_formats_label') }}</label>
                         <div class="mt-1 space-y-2">
                             <label class="flex items-center">
                                 <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200">
@@ -409,10 +413,10 @@ function createNewReport() {
                 </form>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                        Annuler
+                        {{ __('competitions.rapports_statistiques_page.js_cancel') }}
                     </button>
                     <button onclick="createReport(); closeModal();" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        Créer le rapport
+                        {{ __('competitions.rapports_statistiques_page.js_create_report') }}
                     </button>
                 </div>
             </div>
@@ -428,7 +432,7 @@ function createNewReport() {
 // pourriez ajouter le nouveau rapport a la liste"). Il n'existe pas de
 // module de creation manuelle de rapport dans l'application.
 function createReport() {
-    showNotification("La création manuelle de rapports n'est pas encore disponible.", 'info');
+    showNotification(@json(__('competitions.rapports_statistiques_page.js_create_report_unavailable')), 'info');
 }
 
 // Fonction pour programmer un rapport
@@ -439,48 +443,48 @@ function scheduleReport() {
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
             <div class="mt-3">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Programmer un Rapport</h3>
+                    <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.rapports_statistiques_page.js_schedule_report_title') }}</h3>
                     <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
                 <form class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Nom du rapport</label>
-                        <input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: Rapport hebdomadaire">
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_report_name_label') }}</label>
+                        <input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="{{ __('competitions.rapports_statistiques_page.js_report_name_weekly_placeholder') }}">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Fréquence</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_frequency_label') }}</label>
                         <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option>Quotidien</option>
-                            <option>Hebdomadaire</option>
-                            <option>Mensuel</option>
-                            <option>Trimestriel</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_daily') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_weekly') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_monthly') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_quarterly') }}</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Jour de la semaine</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_day_of_week_label') }}</label>
                         <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option>Lundi</option>
-                            <option>Mardi</option>
-                            <option>Mercredi</option>
-                            <option>Jeudi</option>
-                            <option>Vendredi</option>
-                            <option>Samedi</option>
-                            <option>Dimanche</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_monday') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_tuesday') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_wednesday') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_thursday') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_friday') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_saturday') }}</option>
+                            <option>{{ __('competitions.rapports_statistiques_page.js_sunday') }}</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Heure</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('competitions.rapports_statistiques_page.js_time_label') }}</label>
                         <input type="time" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" value="09:00">
                     </div>
                 </form>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                        Annuler
+                        {{ __('competitions.rapports_statistiques_page.js_cancel') }}
                     </button>
                     <button onclick="scheduleReportConfirm(); closeModal();" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        Programmer
+                        {{ __('competitions.rapports_statistiques_page.js_schedule') }}
                     </button>
                 </div>
             </div>
@@ -495,7 +499,7 @@ function scheduleReport() {
 // jamais programmer quoi que ce soit. Il n'existe pas de module de
 // programmation de rapports (pas de tache planifiee/cron correspondante).
 function scheduleReportConfirm() {
-    showNotification("La programmation automatique de rapports n'est pas encore disponible.", 'info');
+    showNotification(@json(__('competitions.rapports_statistiques_page.js_schedule_unavailable')), 'info');
 }
 
 // Fonction pour gérer les modèles
@@ -506,7 +510,7 @@ function manageTemplates() {
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 shadow-lg rounded-md bg-white">
             <div class="mt-3">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Gestion des Modèles de Rapport</h3>
+                    <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.rapports_statistiques_page.js_templates_management_title') }}</h3>
                     <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -514,33 +518,33 @@ function manageTemplates() {
                 <div class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="border rounded-lg p-4">
-                            <h4 class="font-medium text-gray-900 mb-2">Modèle Classement</h4>
-                            <p class="text-sm text-gray-600 mb-3">Modèle pour les rapports de classement des équipes</p>
-                            <button onclick="editTemplate('classement')" class="text-blue-600 hover:text-blue-800 text-sm">Modifier</button>
+                            <h4 class="font-medium text-gray-900 mb-2">{{ __('competitions.rapports_statistiques_page.js_template_ranking') }}</h4>
+                            <p class="text-sm text-gray-600 mb-3">{{ __('competitions.rapports_statistiques_page.js_template_ranking_desc') }}</p>
+                            <button onclick="editTemplate('classement')" class="text-blue-600 hover:text-blue-800 text-sm">{{ __('competitions.rapports_statistiques_page.js_edit') }}</button>
                         </div>
                         <div class="border rounded-lg p-4">
-                            <h4 class="font-medium text-gray-900 mb-2">Modèle Statistiques</h4>
-                            <p class="text-sm text-gray-600 mb-3">Modèle pour les rapports de statistiques des joueurs</p>
-                            <button onclick="editTemplate('statistiques')" class="text-blue-600 hover:text-blue-800 text-sm">Modifier</button>
+                            <h4 class="font-medium text-gray-900 mb-2">{{ __('competitions.rapports_statistiques_page.js_template_statistics') }}</h4>
+                            <p class="text-sm text-gray-600 mb-3">{{ __('competitions.rapports_statistiques_page.js_template_statistics_desc') }}</p>
+                            <button onclick="editTemplate('statistiques')" class="text-blue-600 hover:text-blue-800 text-sm">{{ __('competitions.rapports_statistiques_page.js_edit') }}</button>
                         </div>
                         <div class="border rounded-lg p-4">
-                            <h4 class="font-medium text-gray-900 mb-2">Modèle Discipline</h4>
-                            <p class="text-sm text-gray-600 mb-3">Modèle pour les rapports de discipline</p>
-                            <button onclick="editTemplate('discipline')" class="text-blue-600 hover:text-blue-800 text-sm">Modifier</button>
+                            <h4 class="font-medium text-gray-900 mb-2">{{ __('competitions.rapports_statistiques_page.js_template_discipline') }}</h4>
+                            <p class="text-sm text-gray-600 mb-3">{{ __('competitions.rapports_statistiques_page.js_template_discipline_desc') }}</p>
+                            <button onclick="editTemplate('discipline')" class="text-blue-600 hover:text-blue-800 text-sm">{{ __('competitions.rapports_statistiques_page.js_edit') }}</button>
                         </div>
                         <div class="border rounded-lg p-4">
-                            <h4 class="font-medium text-gray-900 mb-2">Modèle Financier</h4>
-                            <p class="text-sm text-gray-600 mb-3">Modèle pour les rapports financiers</p>
-                            <button onclick="editTemplate('financier')" class="text-blue-600 hover:text-blue-800 text-sm">Modifier</button>
+                            <h4 class="font-medium text-gray-900 mb-2">{{ __('competitions.rapports_statistiques_page.js_template_financial') }}</h4>
+                            <p class="text-sm text-gray-600 mb-3">{{ __('competitions.rapports_statistiques_page.js_template_financial_desc') }}</p>
+                            <button onclick="editTemplate('financier')" class="text-blue-600 hover:text-blue-800 text-sm">{{ __('competitions.rapports_statistiques_page.js_edit') }}</button>
                         </div>
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                        Fermer
+                        {{ __('competitions.rapports_statistiques_page.js_close') }}
                     </button>
                     <button onclick="createNewTemplate(); closeModal();" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        Nouveau Modèle
+                        {{ __('competitions.rapports_statistiques_page.js_new_template') }}
                     </button>
                 </div>
             </div>
@@ -556,12 +560,12 @@ function manageTemplates() {
 // libelles fixes ; il n'existe pas de module reel de modeles de rapport
 // personnalisables dans l'application.
 function editTemplate(type) {
-    showNotification("La gestion de modèles de rapport n'est pas encore disponible.", 'info');
+    showNotification(@json(__('competitions.rapports_statistiques_page.js_template_management_unavailable')), 'info');
 }
 
 // Fonction pour créer un nouveau modèle
 function createNewTemplate() {
-    showNotification("La création de modèles de rapport n'est pas encore disponible.", 'info');
+    showNotification(@json(__('competitions.rapports_statistiques_page.js_template_creation_unavailable')), 'info');
 }
 
 // Fonction pour afficher des notifications

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dossier Médical - Version Simple</title>
+    <title>{{ __('health_records_extra.label_08a045dd9b3c') }}</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         body {
@@ -157,8 +157,8 @@
     <div id="app">
         <div class="container">
             <div class="header">
-                <h1>🦷 Dossier Médical - Version Simple</h1>
-                <p>Test de l'intégration du diagramme dentaire interactif</p>
+                <h1>{{ __('health_records_extra.label_84d669ed7554') }}</h1>
+                <p>{{ __('health_records_extra.label_abe516745002') }}</p>
             </div>
             
             <div class="content">
@@ -175,24 +175,24 @@
                 
                 <!-- Onglet Général -->
                 <div v-show="activeTab === 'general'" class="tab-content">
-                    <h2>Informations Générales</h2>
+                    <h2>{{ __('health_records_create.tab_general') }}</h2>
                     <div class="form-group">
-                        <label>Nom du patient</label>
-                        <input type="text" v-model="patientName" placeholder="Nom du patient">
+                        <label>{{ __('health_records_extra.label_d6717996e7bb') }}</label>
+                        <input type="text" v-model="patientName" placeholder="{{ __('health_records_extra.label_d6717996e7bb') }}">
                     </div>
                     <div class="form-group">
-                        <label>Date de naissance</label>
+                        <label>{{ __('health_records_extra.label_8851f385b271') }}</label>
                         <input type="date" v-model="patientBirthDate">
                     </div>
                     <div class="form-group">
-                        <label>Notes générales</label>
-                        <textarea v-model="generalNotes" placeholder="Notes générales sur le patient"></textarea>
+                        <label>{{ __('health_records_extra.label_3f6ad7aca547') }}</label>
+                        <textarea v-model="generalNotes" placeholder="{{ __('health_records_extra.label_4876348a3862') }}"></textarea>
                     </div>
                 </div>
                 
                 <!-- Onglet Dossier Dentaire -->
                 <div v-show="activeTab === 'dental'" class="tab-content">
-                    <h2>🦷 Dossier Dentaire</h2>
+                    <h2>{{ __('health_records_create.dental_record_heading') }}</h2>
                     
                     <div class="dental-chart-container">
                         <div class="chart-section">
@@ -207,8 +207,8 @@
                             </div>
                             
                             <div style="margin-top: 20px;">
-                                <button @click="clearDentalSelection" class="btn">🗑️ Effacer la sélection</button>
-                                <button @click="saveDentalData" class="btn">💾 Sauvegarder</button>
+                                <button @click="clearDentalSelection" class="btn">{{ __('health_records_extra.label_4bddb0193083') }}</button>
+                                <button @click="saveDentalData" class="btn">{{ __('health_records_create.save_button') }}</button>
                             </div>
                         </div>
                         
@@ -217,15 +217,15 @@
                                 <h3>Dent sélectionnée : {{ selectedDentalTooth }}</h3>
                                 <div class="tooth-details">
                                     <div class="form-group">
-                                        <label>État de la dent</label>
+                                        <label>{{ __('health_records_extra.label_55b97e79c228') }}</label>
                                         <select v-model="dentalToothStatus">
-                                            <option value="healthy">Saine</option>
-                                            <option value="cavity">Carie</option>
-                                            <option value="filling">Obturation</option>
-                                            <option value="crown">Couronne</option>
-                                            <option value="missing">Manquante</option>
+                                            <option value="healthy">{{ __('health_records_edit.healthy_2') }}</option>
+                                            <option value="cavity">{{ __('health_records_edit.caries') }}</option>
+                                            <option value="filling">{{ __('health_records_create.tooth_status_filling') }}</option>
+                                            <option value="crown">{{ __('health_records_create.tooth_status_crown') }}</option>
+                                            <option value="missing">{{ __('health_records_edit.missing') }}</option>
                                             <option value="implant">Implant</option>
-                                            <option value="treatment">En traitement</option>
+                                            <option value="treatment">{{ __('health_records_create.tooth_status_treatment') }}</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -236,12 +236,12 @@
                             </div>
                             
                             <div v-else class="no-selection">
-                                <h3>👆 Cliquez sur une dent</h3>
-                                <p>Sélectionnez une dent dans le diagramme pour voir ses informations.</p>
+                                <h3>{{ __('health_records_extra.label_f2079eb60ab2') }}</h3>
+                                <p>{{ __('health_records_extra.label_f1f2198da75c') }}</p>
                             </div>
                             
                             <div style="margin-top: 20px;">
-                                <h4>Statistiques</h4>
+                                <h4>{{ __('secretary.nav_stats') }}</h4>
                                 <div style="font-size: 0.9em; color: #6b7280;">
                                     <p>Dents saines: {{ dentalStats.healthy }}</p>
                                     <p>Caries: {{ dentalStats.cavity }}</p>
@@ -256,8 +256,8 @@
                 
                 <!-- Onglet Autres -->
                 <div v-show="activeTab === 'other'" class="tab-content">
-                    <h2>Autres Informations</h2>
-                    <p>Autres sections du dossier médical...</p>
+                    <h2>{{ __('health_records_extra.label_61e32119fd51') }}</h2>
+                    <p>{{ __('health_records_extra.label_b1aebeaba826') }}</p>
                 </div>
             </div>
         </div>

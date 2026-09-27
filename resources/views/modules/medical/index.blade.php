@@ -131,11 +131,11 @@
                                             <div class="flex items-center space-x-2">
                                                 <a href="/modules/medical/athlete/{{ $player->id }}" 
                                                    class="text-blue-600 hover:text-blue-900 px-3 py-1 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">
-                                                    👁️ Voir
+                                                    👁️ View
                                                 </a>
                                                 <a href="/modules/medical/athlete/{{ $player->id }}/edit" 
                                                    class="text-indigo-600 hover:text-indigo-900 px-3 py-1 rounded-md text-sm font-medium hover:bg-indigo-50 transition-colors">
-                                                    ✏️ Modifier
+                                                    ✏️ Edit
                                                 </a>
                                             </div>
                                         </div>
@@ -212,7 +212,7 @@
                     const athleteList = document.getElementById('athleteList');
                     const searchInput = document.getElementById('athleteSearch');
 
-                    athleteList.innerHTML = '<p class="text-sm text-gray-500 p-2">Chargement...</p>';
+                    athleteList.innerHTML = '<p class="text-sm text-gray-500 p-2">Loading...</p>';
 
                     fetch('/api/players', { headers: { 'Accept': 'application/json' } })
                         .then(res => res.json())
@@ -230,13 +230,13 @@
                             };
                         })
                         .catch(() => {
-                            athleteList.innerHTML = '<p class="text-sm text-red-500 p-2">Impossible de charger la liste des joueurs.</p>';
+                            athleteList.innerHTML = '<p class="text-sm text-red-500 p-2">Unable to load the player list.</p>';
                         });
 
                     function renderAthletes(players) {
                         athleteList.innerHTML = '';
                         if (players.length === 0) {
-                            athleteList.innerHTML = '<p class="text-sm text-gray-500 p-2">Aucun joueur trouvé.</p>';
+                            athleteList.innerHTML = '<p class="text-sm text-gray-500 p-2">No player found.</p>';
                             return;
                         }
                         players.forEach(athlete => {
@@ -266,12 +266,12 @@
                         <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                             <div class="w-2 h-2 rounded-full {{ $activity->status === 'verified' ? 'bg-green-500' : ($activity->status === 'false_positive' ? 'bg-red-500' : 'bg-yellow-500') }}"></div>
                             <span class="text-sm text-gray-700">
-                                Prédiction {{ $activity->status }} ({{ $activity->predicted_condition ?? 'évaluation' }}) pour {{ $activity->player?->full_name ?? 'joueur inconnu' }}
+                                Prediction {{ $activity->status }} ({{ $activity->predicted_condition ?? 'evaluation' }}) for {{ $activity->player?->full_name ?? 'unknown player' }}
                             </span>
                             <span class="text-xs text-gray-500">{{ $activity->prediction_date?->diffForHumans() ?? '' }}</span>
                         </div>
                         @empty
-                        <p class="text-sm text-gray-500">Aucune activité médicale récente.</p>
+                        <p class="text-sm text-gray-500">No recent medical activity.</p>
                         @endforelse
                     </div>
                 </div>

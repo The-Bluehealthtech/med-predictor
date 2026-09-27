@@ -254,24 +254,27 @@
 </div>
 
 <script>
-// Fonction pour voir les détails d'une sanction
+// NOTE (audit factice -> reel, 2026-09) : ces 3 fonctions affichaient un
+// faux message de succes ("Affichage des details...", "Redirection vers
+// le systeme de paiement...", "Telechargement...") sans jamais appeler
+// de route/API reelle ni ouvrir de modal, de page de paiement ou de
+// fichier. Aucun systeme de paiement ni de generation de document n'est
+// connecte pour les sanctions disciplinaires cote club ; les messages
+// ont ete rendus honnetes en attendant une vraie implementation.
 function viewSanction(sanctionId) {
-    alert(@json(__('competitions.discipline_page.js_view_details')) + sanctionId);
-    // Ici vous pourriez ouvrir un modal ou rediriger vers une page
+    alert(@json(__('competitions.discipline_page.js_view_details_unavailable')));
 }
 
 // Fonction pour payer une amende
 function payAmende(sanctionId) {
     if (confirm(@json(__('competitions.discipline_page.js_confirm_payment')))) {
-        alert(@json(__('competitions.discipline_page.js_redirect_payment')) + sanctionId);
-        // Ici vous pourriez rediriger vers un système de paiement
+        alert(@json(__('competitions.discipline_page.js_payment_unavailable')));
     }
 }
 
-// Fonction pour télécharger une sanction
+// Fonction pour telecharger une sanction
 function downloadSanction(sanctionId) {
-    alert(@json(__('competitions.discipline_page.js_downloading')) + sanctionId);
-    // Ici vous pourriez déclencher le téléchargement d'un PDF
+    alert(@json(__('competitions.discipline_page.js_download_unavailable')));
 }
 </script>
 @endsection

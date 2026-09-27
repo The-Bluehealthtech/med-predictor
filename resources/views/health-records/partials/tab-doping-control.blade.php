@@ -1,47 +1,47 @@
 <!-- Onglet: Contrôle Anti-Dopage -->
 <div class="space-y-6">
     <div class="bg-red-50 border border-red-200 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-red-900 mb-4">🧪 Contrôle Anti-Dopage & AUT</h3>
-        <p class="text-red-700 mb-4">Gestion des tests anti-dopage et autorisations d'usage thérapeutique (AUT)</p>
+        <h3 class="text-lg font-semibold text-red-900 mb-4">{{ __('health_records_create.doping_control_heading') }}</h3>
+        <p class="text-red-700 mb-4">{{ __('health_records_extra.label_41c9e647095c') }}</p>
         
         <!-- Doping Tests -->
         <div class="space-y-4">
             <div class="flex justify-between items-center">
-                <h4 class="text-md font-semibold text-gray-800">Tests Anti-Dopage</h4>
+                <h4 class="text-md font-semibold text-gray-800">{{ __('health_records_create.doping_tests_heading') }}</h4>
                 <button 
                     type="button" 
                     id="add-doping-test-btn"
                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                 >
-                    ➕ Ajouter un test
+                    {{ __('health_records_extra.label_ffcaaa4473fe') }}
                 </button>
             </div>
             
             <!-- Doping Test Form -->
             <div id="add-doping-test-form" class="hidden bg-white border border-gray-200 rounded-lg p-4">
-                <h5 class="text-md font-semibold text-gray-800 mb-4">Nouveau Test Anti-Dopage</h5>
+                <h5 class="text-md font-semibold text-gray-800 mb-4">{{ __('health_records_extra.label_1bfac8cf75c9') }}</h5>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="doping_test_type" class="block text-sm font-medium text-gray-700 mb-2">
-                            Type de Test *
+                            {{ __('health_records_extra.label_5678190cf3d7') }}
                         </label>
                         <select 
                             id="doping_test_type" 
                             name="doping_test_type"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                         >
-                            <option value="">Sélectionner un type</option>
-                            <option value="urine">Test urinaire</option>
-                            <option value="blood">Test sanguin</option>
-                            <option value="saliva">Test salivaire</option>
-                            <option value="hair">Test capillaire</option>
+                            <option value="">{{ __('secretary.select_type_placeholder') }}</option>
+                            <option value="urine">{{ __('health_records_extra.label_e10f0ff27a4c') }}</option>
+                            <option value="blood">{{ __('health_records_extra.label_4722d131fa87') }}</option>
+                            <option value="saliva">{{ __('health_records_extra.label_9503cc65d565') }}</option>
+                            <option value="hair">{{ __('health_records_extra.label_0306731c0554') }}</option>
                         </select>
                     </div>
                     
                     <div>
                         <label for="doping_test_date" class="block text-sm font-medium text-gray-700 mb-2">
-                            Date du Test *
+                            {{ __('health_records_extra.label_d758481d44b1') }}
                         </label>
                         <input 
                             type="date" 
@@ -54,24 +54,24 @@
                     
                     <div>
                         <label for="doping_test_result" class="block text-sm font-medium text-gray-700 mb-2">
-                            Résultat *
+                            {{ __('health_records_extra.label_1496fb77ab72') }}
                         </label>
                         <select 
                             id="doping_test_result" 
                             name="doping_test_result"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                         >
-                            <option value="">Sélectionner un résultat</option>
-                            <option value="negative">Négatif</option>
-                            <option value="positive">Positif</option>
-                            <option value="inconclusive">Inconclusif</option>
-                            <option value="pending">En attente</option>
+                            <option value="">{{ __('health_records_extra.label_0a5809c095b2') }}</option>
+                            <option value="negative">{{ __('health_records_edit.negative') }}</option>
+                            <option value="positive">{{ __('health_records_edit.positive') }}</option>
+                            <option value="inconclusive">{{ __('health_records_edit.inconclusive') }}</option>
+                            <option value="pending">{{ __('healthcare.status_pending') }}</option>
                         </select>
                     </div>
                     
                     <div>
                         <label for="doping_test_laboratory" class="block text-sm font-medium text-gray-700 mb-2">
-                            Laboratoire
+                            {{ __('health_records_extra.label_0f78e26d87bf') }}
                         </label>
                         <input 
                             type="text" 
@@ -91,7 +91,7 @@
                         id="doping_test_notes" 
                         name="doping_test_notes"
                         rows="3"
-                        placeholder="Observations, substances détectées, etc."
+                        placeholder="{{ __('health_records_extra.label_b1bdb0697f98') }}"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     ></textarea>
                 </div>
@@ -102,14 +102,14 @@
                         id="cancel-doping-test-btn"
                         class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                        Annuler
+                        {{ __('common.cancel') }}
                     </button>
                     <button 
                         type="button" 
                         id="save-doping-test-btn"
                         class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                     >
-                        Enregistrer
+                        {{ __('common.save') }}
                     </button>
                 </div>
             </div>
@@ -123,41 +123,41 @@
 
     <!-- Therapeutic Use Exemptions (AUT) -->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-blue-900 mb-4">📋 Autorisations d'Usage Thérapeutique (AUT)</h3>
+        <h3 class="text-lg font-semibold text-blue-900 mb-4">{{ __('health_records_extra.label_3d4f37e11c88') }}</h3>
         
         <div class="space-y-4">
             <div class="flex justify-between items-center">
-                <h4 class="text-md font-semibold text-gray-800">AUT en cours</h4>
+                <h4 class="text-md font-semibold text-gray-800">{{ __('health_records_extra.label_89ecc0eeab10') }}</h4>
                 <button 
                     type="button" 
                     id="add-aut-btn"
                     class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                    ➕ Demander une AUT
+                    {{ __('health_records_extra.label_f6f5a3050069') }}
                 </button>
             </div>
             
             <!-- AUT Form -->
             <div id="add-aut-form" class="hidden bg-white border border-gray-200 rounded-lg p-4">
-                <h5 class="text-md font-semibold text-gray-800 mb-4">Nouvelle Demande d'AUT</h5>
+                <h5 class="text-md font-semibold text-gray-800 mb-4">{{ __('health_records_extra.label_a635c3c3220c') }}</h5>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="aut_medication" class="block text-sm font-medium text-gray-700 mb-2">
-                            Médicament *
+                            {{ __('health_records_extra.label_488992861e92') }}
                         </label>
                         <input 
                             type="text" 
                             id="aut_medication" 
                             name="aut_medication"
-                            placeholder="Nom du médicament"
+                            placeholder="{{ __('health_records_extra.label_1c5d71198d84') }}"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                     </div>
                     
                     <div>
                         <label for="aut_diagnosis" class="block text-sm font-medium text-gray-700 mb-2">
-                            Diagnostic *
+                            {{ __('health_records_extra.label_72945d1ffac9') }}
                         </label>
                         <input 
                             type="text" 
@@ -170,7 +170,7 @@
                     
                     <div>
                         <label for="aut_start_date" class="block text-sm font-medium text-gray-700 mb-2">
-                            Date de début *
+                            {{ __('health_records_extra.label_b8a1b42187f4') }}
                         </label>
                         <input 
                             type="date" 
@@ -183,7 +183,7 @@
                     
                     <div>
                         <label for="aut_end_date" class="block text-sm font-medium text-gray-700 mb-2">
-                            Date de fin *
+                            {{ __('health_records_extra.label_4528f01994e5') }}
                         </label>
                         <input 
                             type="date" 
@@ -195,24 +195,24 @@
                     
                     <div>
                         <label for="aut_status" class="block text-sm font-medium text-gray-700 mb-2">
-                            Statut *
+                            {{ __('pcma.status_label') }}
                         </label>
                         <select 
                             id="aut_status" 
                             name="aut_status"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
-                            <option value="">Sélectionner un statut</option>
-                            <option value="pending">En attente</option>
-                            <option value="approved">Approuvée</option>
-                            <option value="rejected">Rejetée</option>
-                            <option value="expired">Expirée</option>
+                            <option value="">{{ __('health_records_extra.label_552c0f1db1ef') }}</option>
+                            <option value="pending">{{ __('healthcare.status_pending') }}</option>
+                            <option value="approved">{{ __('health_records_edit.approved') }}</option>
+                            <option value="rejected">{{ __('health_records_edit.rejected') }}</option>
+                            <option value="expired">{{ __('health_records_edit.expired') }}</option>
                         </select>
                     </div>
                     
                     <div>
                         <label for="aut_dosage" class="block text-sm font-medium text-gray-700 mb-2">
-                            Posologie
+                            {{ __('health_records_extra.label_d3b05e17389b') }}
                         </label>
                         <input 
                             type="text" 
@@ -226,13 +226,13 @@
                 
                 <div class="mt-4">
                     <label for="aut_justification" class="block text-sm font-medium text-gray-700 mb-2">
-                        Justification médicale *
+                        {{ __('health_records_extra.label_d6c78de09359') }}
                     </label>
                     <textarea 
                         id="aut_justification" 
                         name="aut_justification"
                         rows="4"
-                        placeholder="Justification détaillée de la nécessité du traitement..."
+                        placeholder="{{ __('health_records_extra.label_d02e4e4bffb8') }}"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     ></textarea>
                 </div>
@@ -243,14 +243,14 @@
                         id="cancel-aut-btn"
                         class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                        Annuler
+                        {{ __('common.cancel') }}
                     </button>
                     <button 
                         type="button" 
                         id="save-aut-btn"
                         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                        Soumettre
+                        {{ __('common.submit') }}
                     </button>
                 </div>
             </div>
@@ -264,27 +264,27 @@
 
     <!-- Doping Control Summary -->
     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-yellow-900 mb-4">📊 Résumé Contrôle Anti-Dopage</h3>
+        <h3 class="text-lg font-semibold text-yellow-900 mb-4">{{ __('health_records_extra.label_aba83b9ae043') }}</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-white p-4 rounded-lg border border-yellow-200">
-                <h4 class="font-medium text-yellow-800 mb-2">🧪 Tests Effectués</h4>
+                <h4 class="font-medium text-yellow-800 mb-2">{{ __('health_records_extra.label_45cb1811f300') }}</h4>
                 <div id="doping-tests-summary" class="text-sm text-gray-700">
-                    <span class="text-yellow-600">0</span> test(s) enregistré(s)
+                    <span class="text-yellow-600">0</span> {{ __('health_records_extra.label_1e0c13cb2017') }}
                 </div>
             </div>
             
             <div class="bg-white p-4 rounded-lg border border-yellow-200">
-                <h4 class="font-medium text-yellow-800 mb-2">📋 AUT Actives</h4>
+                <h4 class="font-medium text-yellow-800 mb-2">{{ __('health_records_extra.label_d01adf25e6a2') }}</h4>
                 <div id="aut-summary" class="text-sm text-gray-700">
-                    <span class="text-yellow-600">0</span> AUT active(s)
+                    <span class="text-yellow-600">0</span> {{ __('health_records_extra.label_b1ff0f6544ab') }}
                 </div>
             </div>
             
             <div class="bg-white p-4 rounded-lg border border-yellow-200">
-                <h4 class="font-medium text-yellow-800 mb-2">⚠️ Alertes</h4>
+                <h4 class="font-medium text-yellow-800 mb-2">{{ __('health_records_extra.label_ca5f8c7dd923') }}</h4>
                 <div id="doping-alerts" class="text-sm text-gray-700">
-                    <span class="text-green-600">Aucune alerte</span>
+                    <span class="text-green-600">{{ __('health_records_extra.label_5792b61b625f') }}</span>
                 </div>
             </div>
         </div>

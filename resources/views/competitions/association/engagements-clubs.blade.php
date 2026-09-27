@@ -93,6 +93,15 @@
         </div>
         
         @if($clubs->count() > 0)
+            <div class="px-6 py-4 bg-gray-50 border-b">
+                <label for="competition-filter" class="mr-3 font-medium text-gray-700">Filtrer par compétition</label>
+                <select id="competition-filter" onchange="filterEngagementsByCompetition(this.value)" class="border-gray-300 rounded-md shadow-sm">
+                    <option value="">Toutes les compétitions</option>
+                    @foreach($availableCompetitions as $filterCompetition)
+                        <option value="{{ $filterCompetition->name }}">{{ $filterCompetition->name }} — {{ $filterCompetition->season }}</option>
+                    @endforeach
+                </select>
+            </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -194,6 +203,12 @@
 
 <script>
 // Actions JavaScript pour les boutons
+function filterEngagementsByCompetition(value) {
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.style.display = !value || row.innerText.includes(value) ? '' : 'none';
+    });
+}
+
 function exportEngagements() {
     // Créer un formulaire pour l'export
     const form = document.createElement('form');

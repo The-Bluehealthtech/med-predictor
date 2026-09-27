@@ -72,7 +72,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">{{ __('competitions.calendrier_global_page.scheduled_matches') }}</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ count($matchs) }}</p>
+                    <p id="calendarStatTotal" class="text-2xl font-bold text-gray-900">{{ count($matchs) }}</p>
                 </div>
             </div>
         </div>
@@ -84,7 +84,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">{{ __('competitions.calendrier_global_page.completed_matches') }}</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $matchsTerminesCount }}</p>
+                    <p id="calendarStatCompleted" class="text-2xl font-bold text-gray-900">{{ $matchsTerminesCount }}</p>
                 </div>
             </div>
         </div>
@@ -96,7 +96,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">{{ __('competitions.calendrier_global_page.postponed_matches') }}</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $matchsReportesCount }}</p>
+                    <p id="calendarStatPostponed" class="text-2xl font-bold text-gray-900">{{ $matchsReportesCount }}</p>
                 </div>
             </div>
         </div>
@@ -108,7 +108,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">{{ __('competitions.calendrier_global_page.active_competitions') }}</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $competitionsActivesCount }}</p>
+                    <p id="calendarStatCompetitions" class="text-2xl font-bold text-gray-900">{{ $competitionsActivesCount }}</p>
                 </div>
             </div>
         </div>
@@ -377,6 +377,11 @@ function applyCalendarFilters() {
             && periodOk;
         row.hidden = !ok;
     });
+    const visible = [...document.querySelectorAll('tbody tr[data-match-id]')].filter(row => !row.hidden);
+    document.getElementById('calendarStatTotal').textContent = visible.length;
+    document.getElementById('calendarStatCompleted').textContent = visible.filter(row => row.dataset.status === 'completed').length;
+    document.getElementById('calendarStatPostponed').textContent = visible.filter(row => row.dataset.status === 'postponed').length;
+    document.getElementById('calendarStatCompetitions').textContent = new Set(visible.map(row => row.dataset.competition)).size;
 }
 document.getElementById('calendarApplyFilters')?.addEventListener('click', applyCalendarFilters);
 ['calendarCompetitionFilter','calendarPeriodFilter','calendarStatusFilter'].forEach(id => {

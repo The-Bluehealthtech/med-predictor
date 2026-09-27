@@ -601,7 +601,7 @@
                         <dd class="text-sm text-gray-900">
                             @if($pcma->result_json['cardiovascular_assessment']['heart_murmur'] ?? null)
                                 <span class="px-2 py-1 text-xs rounded-full {{ ($pcma->result_json['cardiovascular_assessment']['heart_murmur'] ?? '') === 'none' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                    {{ ($pcma->result_json['cardiovascular_assessment']['heart_murmur'] ?? '') === 'none' ? 'Aucun' : ucfirst($pcma->result_json['cardiovascular_assessment']['heart_murmur'] ?? '') }}
+                                    {{ ($pcma->result_json['cardiovascular_assessment']['heart_murmur'] ?? '') === 'none' ? __('Aucun') : ucfirst($pcma->result_json['cardiovascular_assessment']['heart_murmur'] ?? '') }}
                                 </span>
                             @else
                                 Non renseigné
@@ -727,7 +727,7 @@
                                     {{ ($pcma->result_json['musculoskeletal_assessment']['pain_assessment'] ?? '') === 'none' ? 'bg-green-100 text-green-800' : 
                                        (($pcma->result_json['musculoskeletal_assessment']['pain_assessment'] ?? '') === 'mild' ? 'bg-yellow-100 text-yellow-800' : 
                                        (($pcma->result_json['musculoskeletal_assessment']['pain_assessment'] ?? '') === 'moderate' ? 'bg-orange-100 text-orange-800' : 'bg-red-100 text-red-800')) }}">
-                                    {{ ($pcma->result_json['musculoskeletal_assessment']['pain_assessment'] ?? '') === 'none' ? 'Aucune' : ucfirst($pcma->result_json['musculoskeletal_assessment']['pain_assessment'] ?? '') }}
+                                    {{ ($pcma->result_json['musculoskeletal_assessment']['pain_assessment'] ?? '') === 'none' ? __('Aucune') : ucfirst($pcma->result_json['musculoskeletal_assessment']['pain_assessment'] ?? '') }}
                                 </span>
                             @else
                                 Non renseigné

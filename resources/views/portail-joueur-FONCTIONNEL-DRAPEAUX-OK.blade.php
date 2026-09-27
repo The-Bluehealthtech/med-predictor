@@ -926,8 +926,8 @@
                     }
                 })
                 .catch(error => {
-                    console.error('❌ Erreur lors de la recherche:', error);
-                    resultsDiv.innerHTML = '<div class="p-4 text-center text-red-400">Erreur lors de la recherche</div>';
+                    console.error('❌ {{ __('Erreur lors de la recherche') }}:', error);
+                    resultsDiv.innerHTML = '<div class="p-4 text-center text-red-400">{{ __('Erreur lors de la recherche') }}</div>';
                 });
         }
         
@@ -1003,7 +1003,7 @@
                 })
                 .then(data => {
                     if (!data.players || data.players.length === 0) {
-                        showNavigationMessage('Aucun joueur disponible pour la navigation');
+                        showNavigationMessage('@json(__('Aucun joueur disponible pour la navigation'))');
                         return;
                     }
                     
@@ -1040,7 +1040,7 @@
                 })
                 .catch(error => {
                     console.error('❌ Erreur lors de la récupération de la liste des joueurs:', error);
-                    showNavigationMessage('Erreur lors de la navigation: ' + error.message);
+                    showNavigationMessage('@json(__('Erreur lors de la navigation:')) ' + error.message);
                 });
         }
         
@@ -1067,7 +1067,7 @@
             const playerIdMatch = currentUrl.match(/\/portail-joueur\/(\d+)/);
             
             if (!playerIdMatch) {
-                document.getElementById('player-counter').textContent = 'Erreur';
+                document.getElementById('player-counter').textContent = @json(__('Erreur'));
                 return;
             }
             
@@ -1083,7 +1083,7 @@
                 })
                 .then(data => {
                     if (!data.players || data.players.length === 0) {
-                        document.getElementById('player-counter').textContent = 'Erreur';
+                        document.getElementById('player-counter').textContent = @json(__('Erreur'));
                         return;
                     }
                     
@@ -1091,7 +1091,7 @@
                     const currentIndex = data.players.findIndex(player => player.id === currentPlayerId);
                     
                     if (currentIndex === -1) {
-                        document.getElementById('player-counter').textContent = 'Erreur';
+                        document.getElementById('player-counter').textContent = @json(__('Erreur'));
                         return;
                     }
                     
@@ -1104,7 +1104,7 @@
                 })
                 .catch(error => {
                     console.error('❌ Erreur lors de la mise à jour du compteur:', error);
-                    document.getElementById('player-counter').textContent = 'Erreur';
+                    document.getElementById('player-counter').textContent = @json(__('Erreur'));
                 });
         }
         

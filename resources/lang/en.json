@@ -1996,5 +1996,9 @@
   "🔄 Réanalyser": "🔄 Reanalyze",
   "joueurs enregistrés": "registered players",
   "Équipe sans nom": "Unnamed team",
-  "Date N/A": "Date N/A"
+  "Date N/A": "Date N/A",
+  "Erreur lors de la recherche": "Error during search",
+  "Aucun joueur disponible pour la navigation": "No players available for navigation",
+  "Erreur lors de la navigation:": "Navigation error:",
+  "Erreur": "Error"
 }

@@ -29,7 +29,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.calendrier_global_page.competition_label') }}</label>
-                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select id="calendarCompetitionFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">{{ __('competitions.calendrier_global_page.all_competitions') }}</option>
                     @foreach($competitionsList as $competitionName)
                         <option value="{{ $competitionName }}">{{ $competitionName }}</option>
@@ -38,7 +38,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.calendrier_global_page.period_label') }}</label>
-                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select id="calendarPeriodFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="semaine">{{ __('competitions.calendrier_global_page.this_week') }}</option>
                     <option value="mois">{{ __('competitions.calendrier_global_page.this_month') }}</option>
                     <option value="trimestre">{{ __('competitions.calendrier_global_page.this_quarter') }}</option>
@@ -46,7 +46,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.calendrier_global_page.status_label') }}</label>
-                <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select id="calendarStatusFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">{{ __('competitions.calendrier_global_page.all_statuses') }}</option>
                     <option value="scheduled">{{ __('competitions.match_status_label.scheduled') }}</option>
                     <option value="postponed">{{ __('competitions.match_status_label.postponed') }}</option>
@@ -54,7 +54,7 @@
                 </select>
             </div>
             <div class="flex items-end">
-                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                <button id="calendarApplyFilters" type="button" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                     <i class="fas fa-search mr-2"></i>{{ __('competitions.calendrier_global_page.filter') }}
                 </button>
             </div>
@@ -134,7 +134,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($matchs as $match)
-                            <tr class="hover:bg-gray-50" data-match-id="{{ $match['id'] }}">
+                            <tr class="hover:bg-gray-50" data-match-id="{{ $match['id'] }}" data-competition="{{ $match['competition'] }}" data-status="{{ $match['statut_code'] }}" data-date="{{ $match['date'] }}">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($match['date'])->format('d/m/Y') }}</div>
                                     <div class="text-sm text-gray-500">{{ $match['heure'] }}</div>
@@ -356,6 +356,26 @@
 </div>
 
 <script>
+function applyCalendarFilters() {
+    const competition = document.getElementById('calendarCompetitionFilter').value;
+    const status = document.getElementById('calendarStatusFilter').value;
+    const period = document.getElementById('calendarPeriodFilter').value;
+    const now = new Date();
+    const limits = { semaine: 7, mois: 31, trimestre: 92 };
+    document.querySelectorAll('tbody tr[data-match-id]').forEach(row => {
+        const date = row.dataset.date ? new Date(row.dataset.date + 'T00:00:00') : null;
+        const periodOk = !period || !date || ((date - now) / 86400000 >= -1 && (date - now) / 86400000 <= limits[period]);
+        const ok = (!competition || row.dataset.competition === competition)
+            && (!status || row.dataset.status === status)
+            && periodOk;
+        row.hidden = !ok;
+    });
+}
+document.getElementById('calendarApplyFilters')?.addEventListener('click', applyCalendarFilters);
+['calendarCompetitionFilter','calendarPeriodFilter','calendarStatusFilter'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', applyCalendarFilters);
+});
+
 // Fonctions pour les boutons d'action
 function viewMatch(matchId) {
     console.log('Voir match:', matchId);

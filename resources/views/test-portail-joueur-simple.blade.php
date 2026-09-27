@@ -1421,7 +1421,7 @@
                                     'fit' => '🟢 APTE AU JEU',
                                     'temporarily_unfit' => '🟡 TEMPORAIREMENT INAPTE',
                                     'unfit' => '🔴 INAPTE',
-                                    null => __('__('Aucune aptitude signée')'),
+                                    null => __('Aucune aptitude signée'),
                                     default => 'ℹ️ STATUT INCONNU',
                                 };
                                 @endphp

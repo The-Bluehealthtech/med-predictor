@@ -228,8 +228,14 @@ function refreshData() {
 }
 
 function addNewEngagement() {
-    alert(@json(__('competitions.engagements_clubs_page.js_add_engagement_unavailable')));
-    // Ici on pourrait rediriger vers un formulaire d'ajout
+    const clubId = prompt('ID du club à engager :');
+    const competitionId = prompt('ID de la compétition cible :');
+    if (!clubId || !competitionId) return;
+    fetch('{{ route("competitions.association.engage-club") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json'},
+        body: JSON.stringify({club_id: clubId, competition_id: competitionId})
+    }).then(r => r.json()).then(data => { alert(data.message || data.error); if (data.success) location.reload(); });
 }
 
 function viewClubDetails(clubId) {

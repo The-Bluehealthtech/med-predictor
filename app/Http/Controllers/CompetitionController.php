@@ -2266,6 +2266,16 @@ class CompetitionController extends Controller
         }
     }
 
+    public function engageClub(Request $request)
+    {
+        $data = $request->validate(['club_id' => 'required|exists:clubs,id', 'competition_id' => 'required|exists:competitions,id']);
+        DB::table('competition_club')->updateOrInsert(
+            ['club_id' => $data['club_id'], 'competition_id' => $data['competition_id']],
+            ['status' => 'registered', 'registration_date' => now(), 'updated_at' => now(), 'created_at' => now()]
+        );
+        return response()->json(['success' => true, 'message' => 'Club engagé dans la compétition.']);
+    }
+
     /**
      * Valider un engagement spécifique
      */

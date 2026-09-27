@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Schema;
 use App\Models\Competition;
 use App\Models\Club;
 use App\Models\Player;
@@ -2236,6 +2237,13 @@ class CompetitionController extends Controller
     public function validateEngagement(Request $request, $clubId)
     {
         try {
+            if (!Schema::hasTable('competition_club') || !Schema::hasColumn('competition_club', 'status')) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'La table des engagements de clubs n’est pas disponible dans la base de production.'
+                ], 422);
+            }
+
             $updated = DB::table('competition_club')
                 ->where('club_id', $clubId)
                 ->update(['status' => 'validated', 'updated_at' => now()]);
@@ -2249,8 +2257,12 @@ class CompetitionController extends Controller
                 'message' => "L'engagement du club {$clubId} a été validé avec succès"
             ]);
             
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Erreur lors de la validation: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json([
+                'success' => false,
+                'error' => 'Validation impossible : ' . $e->getMessage()
+            ], 422);
         }
     }
 

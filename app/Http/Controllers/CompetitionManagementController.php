@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use App\Models\Competition;
 use App\Models\Club;
 use App\Models\Association;
@@ -875,10 +876,13 @@ class CompetitionManagementController extends Controller
         $this->authorizeCompetitionAccess($competition);
         
         // Get the latest rankings from the competition_rankings table
-        $ranking = DB::table('competition_rankings')
-            ->where('competition_id', $competition->id)
-            ->orderBy('round', 'desc')
-            ->first();
+        $ranking = null;
+        if (Schema::hasTable('competition_rankings')) {
+            $ranking = DB::table('competition_rankings')
+                ->where('competition_id', $competition->id)
+                ->orderBy('round', 'desc')
+                ->first();
+        }
         
         if (!$ranking) {
             // Fallback to calculating from matches if no rankings exist

@@ -21,9 +21,11 @@
                 <h1 class="text-3xl font-bold text-gray-800">Détails de la Confédération</h1>
             </div>
             <div class="flex space-x-3">
-                <a href="/confederations-view/edit/{{ $confederation->id }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
+                @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations', $confederation))
+                <a href="{{ route('organization-cards.edit', ['confederations', $confederation->id]) }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
                     ✏️ Modifier
                 </a>
+                @endif
                 <a href="/modules" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
                     🏠 Modules
                 </a>

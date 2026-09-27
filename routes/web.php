@@ -104,6 +104,14 @@ Route::get('/associations', function () {
 
 
 
+// Editable organization cards; authorization is checked for every request in the controller.
+Route::middleware(['auth'])->prefix('organization-cards')->name('organization-cards.')->group(function () {
+    Route::get('/{type}/create', [\App\Http\Controllers\OrganizationCardController::class, 'create'])->name('create');
+    Route::post('/{type}', [\App\Http\Controllers\OrganizationCardController::class, 'store'])->name('store');
+    Route::get('/{type}/{id}/edit', [\App\Http\Controllers\OrganizationCardController::class, 'edit'])->name('edit');
+    Route::put('/{type}/{id}', [\App\Http\Controllers\OrganizationCardController::class, 'update'])->name('update');
+});
+
 // Test route Hero Components
 
 // Test route Portal Data
@@ -162,14 +170,16 @@ Route::middleware(['auth'])->group(function () {
     // Route principale pour éditer un club
     Route::get('/clubs-view/edit/{id}', function ($id) {
         $club = \App\Models\Club::with(['association'])->findOrFail($id);
+        abort_unless(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs', $club), 403);
         $associations = \App\Models\Association::orderBy('name')->get();
         return view('modules.clubs.edit', compact('club', 'associations'));
     })->name('clubs-view.edit');
 
     // Route pour mettre à jour un club
     Route::put('/clubs-view/update/{id}', function (Request $request, $id) {
+        $club = \App\Models\Club::findOrFail($id);
+        abort_unless(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs', $club), 403);
         try {
-            $club = \App\Models\Club::findOrFail($id);
         
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
@@ -243,8 +253,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Route pour supprimer un club
     Route::delete('/clubs-view/delete/{id}', function ($id) {
+        $club = \App\Models\Club::findOrFail($id);
+        abort_unless(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs', $club), 403);
         try {
-            $club = \App\Models\Club::findOrFail($id);
         
             // Vérifier s'il y a des données associées
             $playersCount = $club->players()->count();
@@ -321,6 +332,7 @@ Route::middleware(['auth'])->group(function () {
         
             $sourceClub = \App\Models\Club::findOrFail($sourceClubId);
             $targetClub = \App\Models\Club::findOrFail($targetClubId);
+            abort_unless(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs', $sourceClub) && \App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs', $targetClub), 403);
         
             // Vérifier que les clubs sont différents
             if ($sourceClubId === $targetClubId) {
@@ -388,14 +400,16 @@ Route::middleware(['auth'])->group(function () {
     // Route principale pour éditer une association
     Route::get('/associations-view/edit/{id}', function ($id) {
         $association = \App\Models\Association::with(['confederation'])->findOrFail($id);
+        abort_unless(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association), 403);
         $confederations = \App\Models\Confederation::orderBy('name')->get();
         return view('modules.associations.edit', compact('association', 'confederations'));
     })->name('associations-view.edit');
 
     // Route pour mettre à jour une association
     Route::put('/associations-view/update/{id}', function (Request $request, $id) {
+        $association = \App\Models\Association::findOrFail($id);
+        abort_unless(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association), 403);
         try {
-            $association = \App\Models\Association::findOrFail($id);
         
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
@@ -3379,6 +3393,8 @@ Route::get('/test-pdf', function() {
             Route::get('/engagements-clubs', [App\Http\Controllers\CompetitionController::class, 'associationEngagementsClubs'])->name('engagements-clubs');
             Route::post('/export-engagements', [App\Http\Controllers\CompetitionController::class, 'exportEngagements'])->name('export-engagements');
             Route::post('/validate-all-engagements', [App\Http\Controllers\CompetitionController::class, 'validateAllEngagements'])->name('validate-all-engagements');
+            Route::get('/club-details/{clubId}', [App\Http\Controllers\CompetitionController::class, 'clubDetails'])->name('club-details');
+            Route::post('/export-club-data/{clubId}', [App\Http\Controllers\CompetitionController::class, 'exportClubData'])->name('export-club-data');
             Route::get('/calendrier-global', [App\Http\Controllers\CompetitionController::class, 'associationCalendrierGlobal'])->name('calendrier-global');
             Route::get('/resultats-classements', [App\Http\Controllers\CompetitionController::class, 'associationResultatsClassements'])->name('resultats-classements');
             Route::get('/discipline-sanctions', [App\Http\Controllers\CompetitionController::class, 'associationDisciplineSanctions'])->name('discipline-sanctions');

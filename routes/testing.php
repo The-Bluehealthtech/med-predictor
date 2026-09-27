@@ -95,3 +95,11 @@ Route::get('/players/list', [\App\Http\Controllers\AdminController::class, 'play
     ->middleware(['auth'])->name('players.list');
 Route::get('/admin/search-players', [\App\Http\Controllers\AdminController::class, 'searchPlayers'])
     ->middleware(['auth'])->name('admin.search.players');
+
+// Organization card actions use the same controller and auth middleware as web routes.
+Route::middleware(['auth'])->prefix('organization-cards')->name('organization-cards.')->group(function () {
+    Route::get('/{type}/create', [\App\Http\Controllers\OrganizationCardController::class, 'create'])->name('create');
+    Route::post('/{type}', [\App\Http\Controllers\OrganizationCardController::class, 'store'])->name('store');
+    Route::get('/{type}/{id}/edit', [\App\Http\Controllers\OrganizationCardController::class, 'edit'])->name('edit');
+    Route::put('/{type}/{id}', [\App\Http\Controllers\OrganizationCardController::class, 'update'])->name('update');
+});

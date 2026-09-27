@@ -55,6 +55,10 @@
         </div>
         @endif
 
+        @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs'))
+            <a href="{{ route('organization-cards.create', 'clubs') }}" class="inline-block mb-6 px-4 py-2 bg-blue-700 text-white rounded">+ Ajouter un club</a>
+        @endif
+
         <!-- Navigation -->
         <div class="mb-8 flex justify-between items-center">
             @if($filtered && $association)
@@ -190,12 +194,15 @@
                                    class="flex-1 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors text-sm">
                                     👁️ Voir détails
                                 </a>
-                                <a href="{{ route('clubs-view.edit', $club->id) }}" 
+                                @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs', $club))
+                                <a href="{{ route('organization-cards.edit', ['clubs', $club->id]) }}"
                                    class="flex-1 px-4 py-2 bg-yellow-600 text-white text-center rounded-lg hover:bg-yellow-700 transition-colors text-sm">
                                     ✏️ Modifier
                                 </a>
+                                @endif
                             </div>
                             
+                            @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs', $club))
                             <!-- Actions de gestion -->
                             <div class="flex space-x-2">
                                 <!-- Bouton Supprimer -->
@@ -210,6 +217,7 @@
                                     🔗 Fusionner
                                 </button>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>

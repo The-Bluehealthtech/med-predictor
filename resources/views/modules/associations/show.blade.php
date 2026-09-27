@@ -20,9 +20,11 @@
                 <h1 class="text-3xl font-bold text-gray-800">Détails de l'Association</h1>
             </div>
             <div class="flex space-x-3">
-                <a href="{{ route('associations.edit', $association->id) }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
+                @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association))
+                <a href="{{ route('organization-cards.edit', ['associations', $association->id]) }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
                     ✏️ Modifier
                 </a>
+                @endif
                 <a href="/modules" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
                     📋 Retour aux modules
                 </a>
@@ -281,10 +283,12 @@
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">⚡ Actions rapides</h3>
                     <div class="space-y-3">
-                        <a href="{{ route('associations.edit', $association->id) }}" 
+                        @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association))
+                        <a href="{{ route('organization-cards.edit', ['associations', $association->id]) }}"
                            class="w-full px-4 py-2 bg-yellow-500 text-white text-center rounded-lg hover:bg-yellow-600 transition-colors">
                             ✏️ Modifier l'association
                         </a>
+                @endif
                         <a href="/clubs-view?association_id={{ $association->id }}" 
                            class="w-full px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors">
                             🏟️ Gérer les clubs

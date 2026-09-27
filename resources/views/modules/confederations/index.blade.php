@@ -20,6 +20,10 @@
             </a>
         </div>
 
+        @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations'))
+            <div class="mb-6"><a href="{{ route('organization-cards.create', 'confederations') }}" class="inline-block px-4 py-2 bg-purple-700 text-white rounded">+ Ajouter une confédération</a></div>
+        @endif
+
         <!-- Informations -->
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div class="flex items-center">
@@ -105,6 +109,9 @@
                            class="flex-1 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors">
                             👁️ Voir détails
                         </a>
+                        @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations', $confederation))
+                            <a href="{{ route('organization-cards.edit', ['confederations', $confederation->id]) }}" class="px-4 py-2 bg-yellow-600 text-white rounded">✏️ Modifier</a>
+                        @endif
                         <a href="/associations-view?confederation_id={{ $confederation->id }}" 
                            class="flex-1 px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors">
                             🏛️ Associations

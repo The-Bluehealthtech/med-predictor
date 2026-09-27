@@ -13,6 +13,9 @@
             <p class="text-xl text-gray-600">Gestion des fédérations nationales et régionales</p>
         </div>
 
+        @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations'))
+            <a href="{{ route('organization-cards.create', 'associations') }}" class="inline-block mb-6 px-4 py-2 bg-green-700 text-white rounded">+ Ajouter une association</a>
+        @endif
         <!-- Liste des associations -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-2xl font-semibold mb-6 text-green-600">🏛️ Associations Disponibles</h2>
@@ -107,14 +110,12 @@
                                class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
                                 👁️ Voir
                             </a>
-                            <a href="/associations-view/edit/{{ $association->id }}" 
+                            @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association))
+                            <a href="{{ route('organization-cards.edit', ['associations', $association->id]) }}"
                                class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
                                 ✏️ Modifier
                             </a>
-                            <button onclick="deleteAssociation({{ $association->id }})" 
-                                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                🗑️ Supprimer
-                            </button>
+                            @endif
                         </div>
                     </div>
                 </div>

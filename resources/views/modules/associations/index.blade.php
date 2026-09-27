@@ -108,7 +108,7 @@
                         <div class="flex space-x-2">
                             <a href="/associations-view/show/{{ $association->id }}" 
                                class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                👁️ Voir
+                                {{ __('👁️ Voir') }}
                             </a>
                             @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association))
                             <a href="{{ route('organization-cards.edit', ['associations', $association->id]) }}"

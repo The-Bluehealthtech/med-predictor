@@ -156,7 +156,7 @@
                     <div class="flex space-x-2">
                         <a href="http://localhost:8080/fifa-portal?player_id={{ $player->id }}&cache={{ time() }}" 
                            class="flex-1 bg-white/20 hover:bg-white/30 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors text-center">
-                            👁️ Voir
+                            {{ __('👁️ Voir') }}
                         </a>
                         @if(in_array(Auth::user()->role, ['system_admin', 'super_admin', 'admin', 'association_admin']))
                         <a href="{{ route('test.simple.player', $player->id) }}" 

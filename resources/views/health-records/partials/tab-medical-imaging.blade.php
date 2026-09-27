@@ -113,7 +113,7 @@
                     
                     <div>
                         <label for="imaging_technique" class="block text-sm font-medium text-gray-700 mb-2">
-                            Technique
+                            {{ __('Technique') }}
                         </label>
                         <select 
                             id="imaging_technique" 

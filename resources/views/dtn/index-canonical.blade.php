@@ -59,8 +59,8 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('auth.role_player') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Global</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Physique') }}</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Technique</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tactique</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Technique') }}</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Tactique') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">

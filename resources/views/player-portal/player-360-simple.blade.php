@@ -257,11 +257,11 @@
                             <div class="grid grid-cols-3 gap-4 text-center">
                                 <div>
                                     <div class="font-bold text-green-600">8</div>
-                                    <div class="text-xs text-gray-500">Buts</div>
+                                    <div class="text-xs text-gray-500">{{ __('Buts') }}</div>
                                 </div>
                                 <div>
                                     <div class="font-bold text-blue-600">12</div>
-                                    <div class="text-xs text-gray-500">Passes</div>
+                                    <div class="text-xs text-gray-500">{{ __('Passes') }}</div>
                                 </div>
                                 <div>
                                     <div class="font-bold text-purple-600">25</div>
@@ -397,7 +397,7 @@
                             </div>
                             <div class="text-center">
                                 <div class="text-xl font-bold text-green-600">{{ $latestPerf->technical_score ?? 'N/A' }}</div>
-                                <div class="text-sm text-gray-600">Technique</div>
+                                <div class="text-sm text-gray-600">{{ __('Technique') }}</div>
                             </div>
                         </div>
                     @else

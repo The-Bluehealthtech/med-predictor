@@ -406,7 +406,7 @@
                             
                     <div class="bg-white rounded-lg p-2 border border-blue-200 text-center">
                         <div class="text-lg font-bold text-blue-800 mb-1">0+</div>
-                        <div class="text-xs text-gray-800">Buts</div>
+                        <div class="text-xs text-gray-800">{{ __('Buts') }}</div>
                         </div>
                         
                     <div class="bg-white rounded-lg p-2 border border-green-200 text-center">
@@ -437,7 +437,7 @@
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <div class="bg-white rounded-lg p-2 border border-blue-200">
                         <div class="text-xl font-bold text-blue-800">0</div>
-                        <div class="text-xs text-gray-800">Buts</div>
+                        <div class="text-xs text-gray-800">{{ __('Buts') }}</div>
                             </div>
                             
                     <div class="bg-white rounded-lg p-2 border border-blue-200">
@@ -934,7 +934,7 @@
                                 <span class="text-yellow-400 font-bold">{{ __('clinical.severity_moderate') }}</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span>Technique</span>
+                                <span>{{ __('Technique') }}</span>
                                 <span class="text-green-400 font-bold">Faible</span>
                             </div>
                         </div>

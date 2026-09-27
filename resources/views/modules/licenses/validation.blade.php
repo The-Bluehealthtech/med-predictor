@@ -229,7 +229,7 @@
                                 <div class="flex space-x-2">
                                     <a href="{{ route('modules.players.index') }}?player_id={{ $player->id }}" 
                                        class="text-blue-600 hover:text-blue-900">
-                                        👁️ Voir
+                                        {{ __('👁️ Voir') }}
                                     </a>
                                     <a href="{{ route('player-registration.edit', $player->id) }}" 
                                        class="text-indigo-600 hover:text-indigo-900">
@@ -325,7 +325,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
                                     <button @click="viewLicense(license)" class="text-blue-600 hover:text-blue-900">
-                                        👁️ Voir
+                                        {{ __('👁️ Voir') }}
                                     </button>
                                     <button @click="validateLicense(license)" v-if="license.status === 'pending'" class="text-green-600 hover:text-green-900">
                                         ✅ Valider

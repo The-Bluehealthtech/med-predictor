@@ -14,11 +14,11 @@
                         <p class="text-gray-600 mt-1">{{ $competition->season }} - {{ $matches->count() }} matches</p>
                     </div>
                     <div class="flex space-x-2">
-                        <a href="{{ route('competition-management.competitions.competition.show', $competition) }}" 
+                        <a href="{{ route('competitions.show', $competition) }}" 
                            class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                             Back to Competition
                         </a>
-                        <a href="{{ route('competition-management.competitions.standings', $competition) }}" 
+                        <a href="{{ route('competitions.standings', $competition) }}" 
                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                             View Standings
                         </a>
@@ -151,10 +151,10 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                         <div class="flex space-x-2 justify-center">
                                             @if($match->match_status === 'scheduled')
-                                                <a href="{{ route('competition-management.matches.match-sheet.show', $match) }}" 
+                                                <a href="{{ route('match-sheet.show', $match) }}" 
                                                    class="text-indigo-600 hover:text-indigo-900">View Match Sheet</a>
                                             @elseif($match->match_status === 'completed')
-                                                <a href="{{ route('competition-management.matches.match-sheet.show', $match) }}" 
+                                                <a href="{{ route('match-sheet.show', $match) }}" 
                                                    class="text-green-600 hover:text-green-900">View Results</a>
                                             @else
                                                 <span class="text-gray-400">No Action</span>

@@ -234,7 +234,7 @@ function exportData() {
         return;
     }
 
-    let csvContent = @json(__('competitions.supervision_page.table_competition') . ',' . __('competitions.supervision_page.table_season') . ',' . __('competitions.supervision_page.table_status') . ',' . __('competitions.supervision_page.table_clubs') . ',' . __('competitions.supervision_page.table_matches') . "\n");
+    let csvContent = "Competition,Season,Status,Clubs,Matches\\n";
     let rowCount = 0;
 
     rows.forEach(row => {

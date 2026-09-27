@@ -64,6 +64,7 @@ return [
     'this_year' => 'Cette année',
     'last_year' => 'Année dernière',
     'next_year' => 'Année prochaine',
+    'back' => 'Retour',
     'fifa_connect_id' => 'Identifiant FIFA Connect',
 ];
 

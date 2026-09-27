@@ -64,6 +64,7 @@ return [
     'this_year' => 'This year',
     'last_year' => 'Last year',
     'next_year' => 'Next year',
+    'back' => 'Back',
     'fifa_connect_id' => 'FIFA Connect ID',
 ];
 

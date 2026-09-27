@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         if (!fraudAnalysisCompleted) {
             e.preventDefault();
-            alert('⚠️ Veuillez d\'abord activer la détection de fraude GPT-4 avant de soumettre le formulaire.');
+            alert(@json(__('⚠️ Veuillez d’abord activer la détection de fraude GPT-4 avant de soumettre le formulaire.')));
             return;
         }
         

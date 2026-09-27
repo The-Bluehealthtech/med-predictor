@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
     } catch (error) {
         console.error('Erreur lors de l\'initialisation de TabView médical:', error);
-        alert('Erreur lors de l\'initialisation des onglets médicaux: ' + error.message);
+        alert(@json(__('Erreur lors de l’initialisation des onglets médicaux:')) + ' ' + error.message);
     }
 });
 </script>

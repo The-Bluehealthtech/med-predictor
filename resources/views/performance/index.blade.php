@@ -284,7 +284,7 @@ function generateIndividualReport() {
 }
 
 function generateTeamReport() {
-    alert('🏆 Rapport d\'équipe généré avec succès!');
+    alert(@json(__('🏆 Rapport d\'équipe généré avec succès!')));
     console.log('Rapport d\'équipe généré');
 }
 

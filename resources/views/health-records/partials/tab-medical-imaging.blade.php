@@ -304,22 +304,22 @@ function updateImagingList() {
 
 function getImagingTypeDisplayName(type) {
     const types = {
-        'xray_chest': 'Radiographie thoracique',
-        'xray_spine': 'Radiographie rachis',
-        'xray_limb': 'Radiographie membre',
-        'xray_skull': 'Radiographie crâne',
-        'ct_head': 'Scanner cérébral',
-        'ct_chest': 'Scanner thoracique',
-        'ct_abdomen': 'Scanner abdominal',
-        'ct_spine': 'Scanner rachis',
-        'mri_brain': 'IRM cérébrale',
-        'mri_spine': 'IRM rachis',
-        'mri_knee': 'IRM genou',
-        'mri_shoulder': 'IRM épaule',
-        'us_abdomen': 'Échographie abdominale',
-        'us_heart': 'Échographie cardiaque',
-        'us_vascular': 'Échographie vasculaire',
-        'us_musculoskeletal': 'Échographie musculo-squelettique'
+        'xray_chest': @json(__('Radiographie thoracique')),
+        'xray_spine': @json(__('Radiographie rachis')),
+        'xray_limb': @json(__('Radiographie membre')),
+        'xray_skull': @json(__('Radiographie crâne')),
+        'ct_head': @json(__('Scanner cérébral')),
+        'ct_chest': @json(__('Scanner thoracique')),
+        'ct_abdomen': @json(__('Scanner abdominal')),
+        'ct_spine': @json(__('Scanner rachis')),
+        'mri_brain': @json(__('IRM cérébrale')),
+        'mri_spine': @json(__('IRM rachis')),
+        'mri_knee': @json(__('IRM genou')),
+        'mri_shoulder': @json(__('IRM épaule')),
+        'us_abdomen': @json(__('Échographie abdominale')),
+        'us_heart': @json(__('Échographie cardiaque')),
+        'us_vascular': @json(__('Échographie vasculaire')),
+        'us_musculoskeletal': @json(__('Échographie musculo-squelettique'))
     };
     return types[type] || type;
 }
@@ -347,7 +347,7 @@ function editImagingRecord(index) {
 }
 
 function deleteImagingRecord(index) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cet examen d\'imagerie ?')) {
+    if (confirm(@json(__('Êtes-vous sûr de vouloir supprimer cet examen d\'imagerie ?')))) {
         imagingRecords.splice(index, 1);
         updateImagingList();
         updateImagingData();

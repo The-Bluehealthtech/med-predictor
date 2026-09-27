@@ -206,17 +206,17 @@
 
 <script>
 function deleteTemplate(templateId) {
-    if (confirm('Are you sure you want to delete this template? This action cannot be undone.')) {
+    if (confirm(@json(__('Are you sure you want to delete this template? This action cannot be undone.')))) {
         // Here you would typically make an AJAX call to delete the template
         // For now, we'll show an alert
-        alert('Template deletion functionality would be implemented here.');
+        alert(@json(__('Template deletion functionality would be implemented here.')));
     }
 }
 
 function createLicenseFromTemplate() {
     const templateId = document.getElementById('template-select').value;
     if (!templateId) {
-        alert('Please select a template first.');
+        alert(@json(__('Please select a template first.')));
         return;
     }
     
@@ -226,7 +226,7 @@ function createLicenseFromTemplate() {
 
 function exportTemplates() {
     // Here you would typically make an AJAX call to export templates
-    alert('Template export functionality would be implemented here.');
+    alert(@json(__('Template export functionality would be implemented here.')));
 }
 </script>
 @endsection 

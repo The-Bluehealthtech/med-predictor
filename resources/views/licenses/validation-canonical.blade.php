@@ -104,7 +104,7 @@ async function licenseAction(url, options) {
 }
 
 function approveLicense(id) {
-    if (!confirm('Approuver cette licence ?')) return;
+    if (!confirm(@json(__('Approuver cette licence ?')))) return;
 
     licenseAction('/licenses/' + id + '/approve', {
         method: 'PATCH'

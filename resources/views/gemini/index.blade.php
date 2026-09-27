@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Analysis functions
     window.generateDiagnosis = async function() {
         if (symptoms.length === 0) {
-            alert('Please add at least one symptom');
+            alert(@json(__('Please add at least one symptom')));
             return;
         }
 
@@ -513,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.generateTreatment = async function() {
         const diagnosis = document.getElementById('diagnosisInput').value.trim();
         if (!diagnosis) {
-            alert('Please enter a diagnosis');
+            alert(@json(__('Please enter a diagnosis')));
             return;
         }
 
@@ -540,14 +540,14 @@ document.addEventListener('DOMContentLoaded', function() {
     window.analyzePerformance = async function() {
         const performanceData = document.getElementById('performanceData').value.trim();
         if (!performanceData) {
-            alert('Please enter performance data');
+            alert(@json(__('Please enter performance data')));
             return;
         }
 
         try {
             const data = JSON.parse(performanceData);
         } catch (error) {
-            alert('Invalid JSON format for performance data');
+            alert(@json(__('Invalid JSON format for performance data')));
             return;
         }
 
@@ -566,14 +566,14 @@ document.addEventListener('DOMContentLoaded', function() {
     window.predictInjuryRisk = async function() {
         const playerData = document.getElementById('playerData').value.trim();
         if (!playerData) {
-            alert('Please enter player data');
+            alert(@json(__('Please enter player data')));
             return;
         }
 
         try {
             const data = JSON.parse(playerData);
         } catch (error) {
-            alert('Invalid JSON format for player data');
+            alert(@json(__('Invalid JSON format for player data')));
             return;
         }
 
@@ -593,7 +593,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.generateRehabPlan = async function() {
         const injury = document.getElementById('injuryDescription').value.trim();
         if (!injury) {
-            alert('Please describe the injury');
+            alert(@json(__('Please describe the injury')));
             return;
         }
 
@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.analyzeMedicalImage = async function() {
         const imageDescription = document.getElementById('imageDescription').value.trim();
         if (!imageDescription) {
-            alert('Please describe the medical image');
+            alert(@json(__('Please describe the medical image')));
             return;
         }
 
@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Utility functions
     window.copyToClipboard = function(text) {
         navigator.clipboard.writeText(text).then(() => {
-            alert('Analysis copied to clipboard!');
+            alert(@json(__('Analysis copied to clipboard!')));
         });
     };
 

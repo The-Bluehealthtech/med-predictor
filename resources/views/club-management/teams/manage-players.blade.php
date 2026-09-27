@@ -58,7 +58,7 @@
                                                 <form method="POST" action="{{ route('club-management.teams.remove-player', [$club, $team, $teamPlayer]) }}" class="inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" onclick="return confirm('Are you sure you want to remove this player from the team?')"
+                                                    <button type="submit" onclick="return confirm(@json(__('Are you sure you want to remove this player from the team?')))"
                                                         class="text-red-600 hover:text-red-900 text-sm font-medium">
                                                         Remove
                                                     </button>

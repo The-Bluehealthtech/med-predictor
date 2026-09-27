@@ -141,7 +141,7 @@
                                 </svg>
                                 {{ __('common.edit') }}
                             </a>
-                            <form method="POST" action="{{ route('user-management.destroy', $user) }}" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
+                            <form method="POST" action="{{ route('user-management.destroy', $user) }}" class="inline" onsubmit="return confirm(@json(__('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')))">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium inline-flex items-center">

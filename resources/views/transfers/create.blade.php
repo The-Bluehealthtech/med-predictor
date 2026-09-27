@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         if (clubOrigin.value && clubDestination.value && clubOrigin.value === clubDestination.value) {
             e.preventDefault();
-            alert('Origin and destination clubs must be different.');
+            alert(@json(__('Origin and destination clubs must be different.')));
             return false;
         }
     });
@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while creating the transfer.');
+            alert(@json(__('An error occurred while creating the transfer.')));
             submitButton.disabled = false;
             submitButton.innerHTML = originalText;
         });

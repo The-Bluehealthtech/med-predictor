@@ -243,7 +243,7 @@
 
                             @if(!$user->isSystemAdmin() && $user->id !== auth()->id())
                                 <form method="POST" action="{{ route('user-management.destroy', $user) }}" class="inline w-full" 
-                                      onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
+                                      onsubmit="return confirm(@json(__('Are you sure you want to delete this user? This action cannot be undone.')))">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 

@@ -367,7 +367,7 @@
                             </button>
                             @if($matchSheet->status === 'draft')
                                 <a href="{{ route('competition-management.matches.match-sheet.submit', $match) }}" 
-                                   onclick="return confirm('Are you sure you want to submit this match sheet for validation?')"
+                                   onclick="return confirm(@json(__('Are you sure you want to submit this match sheet for validation?')))"
                                    class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
                                     Submit for Validation
                                 </a>

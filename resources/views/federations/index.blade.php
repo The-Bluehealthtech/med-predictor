@@ -194,7 +194,7 @@
                                 <a href="{{ route('federations.edit', $federation) }}" class="text-indigo-600 hover:text-indigo-900">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form action="{{ route('federations.destroy', $federation) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this federation?')">
+                                <form action="{{ route('federations.destroy', $federation) }}" method="POST" class="inline" onsubmit="return confirm(@json(__('Are you sure you want to delete this federation?')))">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:text-red-900">

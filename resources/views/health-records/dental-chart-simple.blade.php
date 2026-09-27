@@ -9,7 +9,7 @@
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">
-                        <i class="fas fa-tooth"></i> 
+                        <i class="fas fa-tooth"></i>
                         {{ __('health_records_extra.label_38f224cd18d3') }}
                     </h4>
                 </div>
@@ -19,15 +19,15 @@
                             <!-- Zone du diagramme dentaire -->
                             <div class="dental-chart-container">
                                 <div class="image-container" id="dentalImageContainer">
-                                    <img src="{{ asset('images/dental-reference.jpg') }}?v=test&ts={{ time() }}" 
+                                    <img src="{{ asset('images/dental-reference.jpg') }}?v=test&ts={{ time() }}"
                                          alt="{{ __('dental_chart.image_alt') }}"
-                                         class="dental-image" 
+                                         class="dental-image"
                                          id="dentalImage">
                                     <div class="tooth-overlay" id="toothOverlay">
                                         <!-- Les zones dentaires seront générées dynamiquement -->
                                     </div>
                                 </div>
-                                
+
                                 <!-- Contrôles -->
                                 <div class="controls mt-3">
                                     <button type="button" class="btn btn-primary" id="saveAnnotations">
@@ -48,7 +48,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-3">
                             <!-- Panneau d'informations -->
                             <div class="card">
@@ -59,9 +59,9 @@
                                     <div id="toothInfo">
                                         <p class="text-muted">{{ __('dental_chart.click_zone_hint') }}</p>
                                     </div>
-                                    
+
                                     <hr>
-                                    
+
                                     <div class="stats">
                                         <h6>{{ __('secretary.nav_stats') }}</h6>
                                         <div class="row">
@@ -79,9 +79,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <hr>
-                                    
+
                                     <div class="notes-section">
                                         <h6>Notes</h6>
                                         <textarea class="form-control" id="toothNotes" rows="3" placeholder="{{ __('dental_chart.notes_placeholder') }}"></textarea>
@@ -113,7 +113,7 @@
         cursor: default;
         margin-bottom: 20px;
     }
-    
+
     .dental-image {
         width: 100%;
         height: 100%;
@@ -122,7 +122,7 @@
         pointer-events: none;
         max-height: 100%;
     }
-    
+
     .tooth-overlay {
         position: absolute;
         top: 0;
@@ -131,7 +131,7 @@
         height: 100%;
         pointer-events: none;
     }
-    
+
     .tooth-zone {
         position: absolute;
         width: 40px; /* Même taille que working-drag.html original */
@@ -151,21 +151,21 @@
         user-select: none;
         z-index: 10;
     }
-    
+
     .tooth-zone:hover {
         background: rgba(59, 130, 246, 0.5);
         border-color: #1d4ed8;
         transform: scale(1.1);
         z-index: 20;
     }
-    
+
     .tooth-zone.selected {
         background: rgba(59, 130, 246, 0.7);
         border-color: #1d4ed8;
         box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
         z-index: 30;
     }
-    
+
     .tooth-zone.dragging {
         opacity: 0.9;
         z-index: 100;
@@ -175,13 +175,13 @@
         border-color: #f59e0b;
         background: rgba(245, 158, 11, 0.4);
     }
-    
+
     .tooth-zone.fixed {
         border-color: #10b981;
         background: rgba(16, 185, 129, 0.4);
         box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
     }
-    
+
     .stat-item {
         background: #f7fafc;
         padding: 10px;
@@ -189,36 +189,36 @@
         text-align: center;
         margin-bottom: 10px;
     }
-    
+
     .stat-number {
         font-size: 1.5em;
         font-weight: bold;
         color: #3b82f6;
     }
-    
+
     .stat-label {
         font-size: 0.9em;
         color: #718096;
     }
-    
+
     /* Responsive design - adapté pour mobile */
     @media (max-width: 768px) {
         .dental-chart-container {
             height: 400px; /* Plus petit sur mobile mais pas trop */
         }
-        
+
         .tooth-zone {
             width: 35px;
             height: 20px;
             font-size: 10px;
         }
     }
-    
+
     @media (max-width: 576px) {
         .dental-chart-container {
             height: 300px; /* Encore plus petit sur très petits écrans */
         }
-        
+
         .tooth-zone {
             width: 30px;
             height: 18px;
@@ -260,7 +260,7 @@ function createToothZones() {
         // Quadrant 4 (droite inférieure)
         '41', '42', '43', '44', '45', '46', '47', '48'
     ];
-    
+
     const defaultPositions = {
         // Quadrant 1
         '11': {top: 100, left: 350}, '12': {top: 100, left: 320}, '13': {top: 100, left: 290}, '14': {top: 100, left: 260},
@@ -275,20 +275,20 @@ function createToothZones() {
         '41': {top: 460, left: 350}, '42': {top: 460, left: 320}, '43': {top: 460, left: 290}, '44': {top: 460, left: 260},
         '45': {top: 460, left: 230}, '46': {top: 460, left: 200}, '47': {top: 460, left: 170}, '48': {top: 460, left: 140}
     };
-    
+
     teeth.forEach(toothId => {
         const zone = document.createElement('div');
         zone.className = 'tooth-zone';
         zone.setAttribute('data-tooth-id', toothId);
         zone.textContent = toothId;
-        
+
         const pos = defaultPositions[toothId];
         zone.style.top = pos.top + 'px';
         zone.style.left = pos.left + 'px';
-        
+
         overlay.appendChild(zone);
     });
-    
+
     setupZoneEvents();
 }
 
@@ -301,26 +301,26 @@ function setupZoneEvents() {
                 selectTooth(this.getAttribute('data-tooth-id'));
             }
         });
-        
+
         // Mousedown pour drag
         zone.addEventListener('mousedown', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             const toothId = this.getAttribute('data-tooth-id');
-            
+
             isDragging = true;
             currentDraggingTooth = toothId;
-            
+
             initialMouseX = e.clientX;
             initialMouseY = e.clientY;
             initialToothX = parseInt(this.style.left);
             initialToothY = parseInt(this.style.top);
-            
+
             this.classList.add('dragging');
         });
     });
-    
+
     // Events sur le conteneur
     const container = document.getElementById('dentalImageContainer');
     container.addEventListener('mousemove', handleMouseMove);
@@ -334,20 +334,20 @@ function handleMouseMove(e) {
         if (zone) {
             const dx = e.clientX - initialMouseX;
             const dy = e.clientY - initialMouseY;
-            
+
             const newX = initialToothX + dx;
             const newY = initialToothY + dy;
-            
+
             // Limiter dans les limites du conteneur
             const containerRect = container.getBoundingClientRect();
             const zoneRect = zone.getBoundingClientRect();
-            
+
             const maxX = containerRect.width - zoneRect.width;
             const maxY = containerRect.height - zoneRect.height;
-            
+
             const clampedX = Math.max(0, Math.min(newX, maxX));
             const clampedY = Math.max(0, Math.min(newY, maxY));
-            
+
             zone.style.left = clampedX + 'px';
             zone.style.top = clampedY + 'px';
         }
@@ -361,7 +361,7 @@ function handleMouseUp(e) {
             zone.classList.remove('dragging');
             zone.classList.add('fixed');
         }
-        
+
         isDragging = false;
         currentDraggingTooth = null;
         updateStats();
@@ -382,14 +382,14 @@ function selectTooth(toothId) {
             prevZone.classList.remove('selected');
         }
     }
-    
+
     // Sélectionner la nouvelle dent
     selectedTooth = toothId;
     const zone = document.querySelector(`[data-tooth-id="${toothId}"]`);
     if (zone) {
         zone.classList.add('selected');
     }
-    
+
     // Mettre à jour les informations
     updateToothInfo(toothId);
 }
@@ -406,27 +406,27 @@ function updateToothInfo(toothId) {
 
 function getToothType(toothId) {
     const position = parseInt(toothId.slice(1));
-    if (position <= 2) return 'Incisive';
-    if (position === 3) return 'Canine';
-    if (position <= 5) return 'Prémolaire';
-    return 'Molaire';
+    if (position <= 2) return @json(__('Incisive'));
+    if (position === 3) return @json(__('Canine'));
+    if (position <= 5) return @json(__('Prémolaire'));
+    return @json(__('Molaire'));
 }
 
 function getQuadrant(toothId) {
     const quadrant = toothId.slice(0, 1);
     const names = {
-        '1': 'Supérieur Droit',
-        '2': 'Supérieur Gauche', 
-        '3': 'Inférieur Gauche',
-        '4': 'Inférieur Droit'
+        '1': @json(__('Supérieur Droit')),
+        '2': @json(__('Supérieur Gauche')),
+        '3': @json(__('Inférieur Gauche')),
+        '4': @json(__('Inférieur Droit'))
     };
-    return names[quadrant] || 'Inconnu';
+    return names[quadrant] || @json(__('Inconnu'));
 }
 
 function updateStats() {
     const zones = document.querySelectorAll('.tooth-zone');
     const fixed = document.querySelectorAll('.tooth-zone.fixed');
-    
+
     document.getElementById('totalZones').textContent = zones.length;
     document.getElementById('fixedZones').textContent = fixed.length;
 }
@@ -440,7 +440,7 @@ function setupEventListeners() {
         });
         updateStats();
     });
-    
+
     // Défixer toutes les zones
     document.getElementById('unfixAllZones').addEventListener('click', function() {
         const zones = document.querySelectorAll('.tooth-zone');
@@ -449,14 +449,14 @@ function setupEventListeners() {
         });
         updateStats();
     });
-    
+
     // Réinitialiser les zones
     document.getElementById('resetZones').addEventListener('click', function() {
         if (confirm(@json(__('Êtes-vous sûr de vouloir réinitialiser toutes les zones ?')))) {
             location.reload();
         }
     });
-    
+
     // Mode debug
     document.getElementById('toggleDebug').addEventListener('click', function() {
         debugMode = !debugMode;
@@ -469,19 +469,19 @@ function setupEventListeners() {
             }
         });
     });
-    
+
     // Sauvegarder
     document.getElementById('saveAnnotations').addEventListener('click', function() {
-        alert('Fonctionnalité de sauvegarde à implémenter avec l\'API Laravel');
+        alert(@json(__('Fonctionnalité de sauvegarde à implémenter avec l\'API Laravel')));
     });
-    
+
     // Sauvegarder notes
     document.getElementById('saveNotes').addEventListener('click', function() {
         alert(@json(__('Notes sauvegardées !')));
     });
-    
+
     // Initialiser les stats
     updateStats();
 }
 </script>
-@endpush 
+@endpush

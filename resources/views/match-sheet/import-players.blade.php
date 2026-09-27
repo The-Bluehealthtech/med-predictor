@@ -454,12 +454,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     } else {
                         playersSection.style.display = 'none';
-                        alert('No players found for this club.');
+                        alert(@json(__('No players found for this club.')));
                     }
                 })
                 .catch(error => {
                     playersSection.style.display = 'none';
-                    alert('Failed to load players.');
+                    alert(@json(__('Failed to load players.')));
                 })
                 .finally(() => {
                     window.updateSubmitButton();
@@ -760,7 +760,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const validPlayers = document.querySelectorAll(`input[type="checkbox"]:checked[data-club-id="${clubSelected}"]`);
             if (validPlayers.length === 0) {
                 e.preventDefault();
-                alert('Please select at least one player from the selected club.');
+                alert(@json(__('Please select at least one player from the selected club.')));
                 return false;
             }
             

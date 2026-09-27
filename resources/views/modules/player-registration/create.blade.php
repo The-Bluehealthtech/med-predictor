@@ -606,7 +606,7 @@
                         
                         // Vérifier la taille (5MB = 5 * 1024 * 1024 bytes)
                         if (file.size > 5 * 1024 * 1024) {
-                            alert('❌ Erreur : La taille de l\'image ne doit pas dépasser 5MB');
+                            alert(@json(__('❌ Erreur : La taille de l’image ne doit pas dépasser 5MB')));
                             input.value = '';
                             return;
                         }

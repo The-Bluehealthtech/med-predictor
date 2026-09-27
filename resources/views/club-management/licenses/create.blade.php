@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!isValid) {
             e.preventDefault();
-            alert('Please fill in all required fields.');
+            alert(@json(__('Please fill in all required fields.')));
         }
     });
 });

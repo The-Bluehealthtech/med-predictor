@@ -415,7 +415,7 @@
                 
                 returnToVoice() {
                     // Rediriger vers l'assistant vocal ou afficher un message
-                    alert('Dites "Hey Google, parler à PCMA-FIT" pour reprendre par la voix, ou "recommencer" pour reprendre le formulaire.');
+                    alert(@json(__('Dites "Hey Google, parler à PCMA-FIT" pour reprendre par la voix, ou "recommencer" pour reprendre le formulaire.')));
                 }
             }
         }).mount('#app');

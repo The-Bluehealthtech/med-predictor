@@ -2582,7 +2582,7 @@ window.generatePDF = async function() {
                         console.log('📄 Attempting fallback - opening PDF in new tab');
                         const newWindow = window.open(url, '_blank');
                         if (!newWindow) {
-                            alert('📄 PDF generated but download blocked. Please check your browser settings.');
+                            alert(@json(__('📄 PDF generated but download blocked. Please check your browser settings.')));
                         }
                     }, 2000);
                     
@@ -2874,13 +2874,13 @@ window.testSignatureData = function() {
     console.log('Current signedPCMAData:', window.signedPCMAData);
     
     if (window.signedPCMAData) {
-        alert(' Signature data is available!\n\n' + 
+        alert(@json(__('Signature data is available!')) + '\n\n' +
               'Signed by: ' + window.signedPCMAData.signedBy + '\n' +
               'FIFA ID: ' + window.signedPCMAData.doctorFifaId + '\n' +
               'Date: ' + window.signedPCMAData.signedAt + '\n' +
               'Status: ' + window.signedPCMAData.fitnessStatus);
     } else {
-        alert('❌ No signature data available');
+        alert(@json(__('❌ No signature data available')));
     }
 };
 

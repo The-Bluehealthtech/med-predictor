@@ -154,7 +154,7 @@
                 handleSigned(data) {
                     this.signedData = data;
                     console.log('Signed data received:', data);
-                    alert('✅ Signature médicale validée!\n\nDonnées reçues:\n' + JSON.stringify(data, null, 2));
+                    alert(@json(__('✅ Signature médicale validée!')) + '\n\n' + @json(__('Données reçues:')) + '\n' + JSON.stringify(data, null, 2));
                 }
             }
         }).mount('#app');

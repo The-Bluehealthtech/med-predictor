@@ -474,20 +474,20 @@ function getTestTypeDisplayName(type) {
 
 function getResultDisplayName(result) {
     const results = {
-        'negative': 'Négatif',
-        'positive': 'Positif',
-        'inconclusive': 'Inconclusif',
-        'pending': 'En attente'
+        'negative': @json(__('Négatif')),
+        'positive': @json(__('Positif')),
+        'inconclusive': @json(__('Inconclusif')),
+        'pending': @json(__('En attente'))
     };
     return results[result] || result;
 }
 
 function getStatusDisplayName(status) {
     const statuses = {
-        'pending': 'En attente',
-        'approved': 'Approuvée',
-        'rejected': 'Rejetée',
-        'expired': 'Expirée'
+        'pending': @json(__('En attente')),
+        'approved': @json(__('Approuvée')),
+        'rejected': @json(__('Rejetée')),
+        'expired': @json(__('Expirée'))
     };
     return statuses[status] || status;
 }

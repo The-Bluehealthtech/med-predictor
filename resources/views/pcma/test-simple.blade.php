@@ -58,7 +58,7 @@
 
     function initSpeechRecognition() {
         if (!("webkitSpeechRecognition" in window)) {
-            alert("La reconnaissance vocale n'est pas supportée par votre navigateur.");
+            alert(@json(__('La reconnaissance vocale n'est pas supportée par votre navigateur.')));
             return;
         }
         
@@ -129,7 +129,7 @@
                     }
                 }, 100);
             } else if (event.error === "network") {
-                document.getElementById("voice-status").textContent = "❌ Erreur réseau";
+                document.getElementById("voice-status").textContent = @json(__("❌ Erreur réseau"));
                 document.getElementById("voice-status").className = "text-red-600 font-semibold";
             }
         };

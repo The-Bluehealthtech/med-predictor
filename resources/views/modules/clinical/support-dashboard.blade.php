@@ -528,7 +528,7 @@ async function analyzePCMAClinical(pCMAId) {
 
     } catch (error) {
         console.error('PCMA clinical analysis error:', error);
-        alert('Erreur lors de l\'analyse clinique PCMA');
+        alert(@json(__('Erreur lors de l’analyse clinique PCMA')));
     }
 }
 
@@ -553,7 +553,7 @@ async function analyzeVisitClinical(visitId) {
 
     } catch (error) {
         console.error('Visit clinical analysis error:', error);
-        alert('Erreur lors de l\'analyse clinique visite');
+        alert(@json(__('Erreur lors de l’analyse clinique visite')));
     }
 }
 

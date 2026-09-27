@@ -135,7 +135,7 @@
         function deleteAssociation(id) {
             if (confirm(@json(__('Êtes-vous sûr de vouloir supprimer cette association ?')))) {
                 // Ici vous pouvez ajouter la logique de suppression AJAX
-                alert('Fonction de suppression à implémenter pour l\'ID: ' + id);
+                alert(@json(__('Fonction de suppression à implémenter pour l’ID:')) + ' ' + id);
             }
         }
         </script>

@@ -155,7 +155,7 @@
                                             @method('DELETE')
                                             <button type="submit" 
                                                     class="text-red-600 hover:text-red-900"
-                                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette photo ?')">
+                                                    onclick="return confirm(@json(__('Êtes-vous sûr de vouloir supprimer cette photo ?')))">
                                                 {{ __('common.delete') }}
                                             </button>
                                         </form>
@@ -268,7 +268,7 @@
                         <form action="{{ route('licenses.destroy', $license) }}" method="POST" style="display:inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:underline" onclick="return confirm('Supprimer cette licence ?')">{{ __('common.delete') }}</button>
+                            <button type="submit" class="text-red-600 hover:underline" onclick="return confirm(@json(__('Supprimer cette licence ?')))">{{ __('common.delete') }}</button>
                         </form>
                     </td>
                 </tr>

@@ -207,7 +207,7 @@ document.getElementById('ai-analyze-btn').addEventListener('click', function() {
     const clinicalNotes = document.getElementById('clinical_notes').value;
     
     if (!clinicalNotes.trim()) {
-        alert('Veuillez saisir des notes cliniques pour l\'analyse IA');
+        alert(@json(__('Veuillez saisir des notes cliniques pour l’analyse IA')));
         return;
     }
     

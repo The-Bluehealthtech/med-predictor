@@ -170,7 +170,7 @@
                                             <form method="POST" action="{{ route('club-management.lineups.destroy', $lineup->id) }}" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this lineup?')">Delete</button>
+                                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm(@json(__('Are you sure you want to delete this lineup?')))">Delete</button>
                                             </form>
                                         </div>
                                     </td>

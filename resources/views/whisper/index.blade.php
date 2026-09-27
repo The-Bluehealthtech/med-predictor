@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Utility functions
     window.copyToClipboard = function(text) {
         navigator.clipboard.writeText(text).then(() => {
-            alert('Text copied to clipboard!');
+            alert(@json(__('Text copied to clipboard!')));
         });
     };
 

@@ -156,7 +156,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-900" 
-                                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')">
+                                                        onclick="return confirm(@json(__('Êtes-vous sûr de vouloir supprimer ce dossier ?')))">
                                                     {{ __('common.delete') }}
                                                 </button>
                                             </form>

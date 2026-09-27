@@ -385,7 +385,7 @@ function submitBulkCreate() {
     
     const names = teamNames.split('\n').filter(name => name.trim());
     if (names.length === 0) {
-        alert('Veuillez saisir au moins un nom d\'équipe');
+        alert(@json(__('Veuillez saisir au moins un nom d’équipe')));
         return;
     }
     
@@ -420,7 +420,7 @@ function submitBulkCreate() {
 }
 
 function exportTeams() {
-    alert('Fonctionnalité d\'export à implémenter');
+    alert(@json(__('Fonctionnalité d’export à implémenter')));
 }
 
 function editTeam(id) {

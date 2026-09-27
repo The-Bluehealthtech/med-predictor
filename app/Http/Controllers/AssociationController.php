@@ -17,8 +17,8 @@ class AssociationController extends Controller
 
         // Filtrage par confédération
         if ($request->has('confederation_id') && $request->confederation_id) {
-            $query->where('confederation_id', $request->confederation_id);
-            $confederation = Confederation::find($request->confederation_id);
+            $confederation = Confederation::findOrFail($request->confederation_id);
+            $query->where('confederation', $confederation->short_name);
         } else {
             $confederation = null;
         }

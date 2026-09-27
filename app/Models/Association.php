@@ -50,7 +50,7 @@ class Association extends Model
      */
     public function confederation(): BelongsTo
     {
-        return $this->belongsTo(Confederation::class, 'confederation_id', 'id');
+        return $this->belongsTo(Confederation::class, 'confederation', 'short_name');
     }
 
     public function getFullNameAttribute(): string

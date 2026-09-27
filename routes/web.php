@@ -12,6 +12,9 @@ Route::post('/language', function (\Illuminate\Http\Request $request) {
 Route::get('/match-sheet/{gameMatch}', [\App\Http\Controllers\MatchSheetController::class, 'show'])
     ->middleware('auth')->name('match-sheet.show');
 
+Route::get('/competition-management/matches/{gameMatch}/match-sheet', [\App\Http\Controllers\MatchSheetController::class, 'show'])
+    ->middleware('auth')->name('competition-management.matches.match-sheet');
+
 // Controllers will be used as needed
 
 // Force HTTP landing for /home to avoid HTTPS redirects locally

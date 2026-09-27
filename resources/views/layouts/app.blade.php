@@ -536,6 +536,8 @@
                 @endif
             @endauth
             
+            {{-- Component layouts (for <x-app-layout>) pass their page body through $slot. --}}
+            {{ $slot ?? '' }}
             @yield('content')
         </main>
 

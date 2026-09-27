@@ -55,6 +55,11 @@ class Club extends Model
         return $this->hasMany(Player::class);
     }
 
+    public function competitions(): BelongsToMany
+    {
+        return $this->belongsToMany(Competition::class, 'competition_club');
+    }
+
     public function teams(): HasMany
     {
         return $this->hasMany(Team::class);

@@ -2317,7 +2317,7 @@ class CompetitionController extends Controller
     public function clubDetails($clubId)
     {
         try {
-            $club = Club::with(['teams.competitions'])->find($clubId);
+            $club = Club::with(['competitions', 'teams.competitions'])->find($clubId);
             
             if (!$club) {
                 return response()->json(['error' => 'Club non trouvé'], 404);
@@ -2339,7 +2339,7 @@ class CompetitionController extends Controller
     public function exportClubData(Request $request, $clubId)
     {
         try {
-            $club = Club::with(['teams.competitions'])->find($clubId);
+            $club = Club::with(['competitions', 'teams.competitions'])->find($clubId);
             
             if (!$club) {
                 return response()->json(['error' => 'Club non trouvé'], 404);

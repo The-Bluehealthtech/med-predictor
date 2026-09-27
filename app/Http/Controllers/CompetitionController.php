@@ -1772,6 +1772,11 @@ class CompetitionController extends Controller
             $associationId = auth()->user()->association_id ?? null;
             $association = $associationId ? Association::find($associationId) : null;
 
+            if (!$association && in_array(auth()->user()->role, ['system_admin', 'super_admin', 'admin'], true) && $request->filled('competition_id')) {
+                $selectedCompetition = Competition::with('association')->find($request->integer('competition_id'));
+                $association = $selectedCompetition?->association;
+            }
+
             if (!$association) {
                 return view('errors.database', [
                     'error' => 'Association non trouvée',

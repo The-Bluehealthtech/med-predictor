@@ -174,7 +174,7 @@
                                                title="{{ __('competitions.supervision_page.reports_title') }}">
                                                 <i class="fas fa-chart-bar mr-1"></i>{{ __('competitions.supervision_page.reports') }}
                                             </a>
-                                            <a href="{{ route('competitions.association.fixtures', ['competition_id' => $competition['id']]) }}"
+                                            <a href="{{ route('competitions.fixtures', $competition['id']) }}"
                                                class="inline-flex items-center bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-xs transition-colors"
                                                title="{{ __('competitions.supervision_page.view_matches_title') }}">
                                                 <i class="fas fa-calendar mr-1"></i>{{ __('competitions.supervision_page.matches') }}

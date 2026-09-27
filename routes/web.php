@@ -2092,6 +2092,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/competitions', [CompetitionManagementController::class, 'store'])->name('competitions.store');
     Route::get('/competitions/{competition}', [CompetitionManagementController::class, 'show'])->name('competitions.show');
     Route::get('/competitions/{competition}/edit', [CompetitionManagementController::class, 'edit'])->name('competitions.edit');
+    Route::get('/competitions/{competition}/fixtures', [CompetitionManagementController::class, 'fixtures'])->name('competitions.fixtures');
     Route::put('/competitions/{competition}', [CompetitionManagementController::class, 'update'])->name('competitions.update');
     Route::delete('/competitions/{competition}', [CompetitionManagementController::class, 'destroy'])->name('competitions.destroy');
     Route::post('/competitions/{competition}/sync', [CompetitionManagementController::class, 'sync'])->name('competitions.sync');

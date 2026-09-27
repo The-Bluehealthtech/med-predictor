@@ -58,7 +58,7 @@
                     <!-- Logo de la confédération -->
                     <div class="flex justify-center mb-6">
                         @if($confederation->confederation_logo_url)
-                            <img src="{{ asset('storage/' . $confederation->confederation_logo_url) }}" 
+                            <img src="{{ \Illuminate\Support\Str::startsWith($confederation->confederation_logo_url, ['http://', 'https://']) ? $confederation->confederation_logo_url : asset('storage/' . $confederation->confederation_logo_url) }}" 
                                  alt="Logo {{ $confederation->name }}" 
                                  class="h-32 w-32 object-contain rounded-lg border-2 border-gray-200">
                         @else

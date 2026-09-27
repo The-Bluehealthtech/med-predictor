@@ -62,7 +62,7 @@
                         <div class="text-center">
                             <h4 class="text-sm font-medium text-gray-600 mb-2">Logo Association</h4>
                             @if($association->association_logo_url)
-                                <img src="{{ asset('storage/' . $association->association_logo_url) }}" 
+                                <img src="{{ \Illuminate\Support\Str::startsWith($association->association_logo_url, ['http://', 'https://']) ? $association->association_logo_url : asset('storage/' . $association->association_logo_url) }}" 
                                      alt="Logo {{ $association->name }}" 
                                      class="h-24 w-24 object-contain rounded-lg border-2 border-gray-200">
                             @elseif($association->logo_path)
@@ -80,7 +80,7 @@
                         <div class="text-center">
                             <h4 class="text-sm font-medium text-gray-600 mb-2">Drapeau Pays</h4>
                             @if($association->nation_flag_url)
-                                <img src="{{ asset('storage/' . $association->nation_flag_url) }}" 
+                                <img src="{{ \Illuminate\Support\Str::startsWith($association->nation_flag_url, ['http://', 'https://']) ? $association->nation_flag_url : asset('storage/' . $association->nation_flag_url) }}" 
                                      alt="Drapeau {{ $association->country }}" 
                                      class="h-24 w-16 object-cover rounded-lg border-2 border-gray-200">
                             @else

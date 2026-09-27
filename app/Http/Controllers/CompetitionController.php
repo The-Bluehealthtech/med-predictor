@@ -592,6 +592,7 @@ class CompetitionController extends Controller
                     'id' => $club->id,
                     'nom' => $club->short_name ?? $club->name,
                     'competition' => $competitions->first()->name ?? $engagementLabels['no_competition_fallback'],
+                    'competition_names' => $competitions->pluck('name')->filter()->values()->all(),
                     'statut_engagement' => $competitions->isNotEmpty() ? $engagementLabels['status_engaged'] : $engagementLabels['status_not_engaged'],
                     'statut_engagement_code' => $competitions->isNotEmpty() ? 'engaged' : 'not_engaged',
                     'feuilles_soumises' => $totalMatches,

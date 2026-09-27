@@ -116,7 +116,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($clubs as $club)
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-gray-50" data-competitions="{{ implode('|', $club['competition_names'] ?? []) }}">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-10 w-10">
@@ -205,7 +205,7 @@
 // Actions JavaScript pour les boutons
 function filterEngagementsByCompetition(value) {
     document.querySelectorAll('tbody tr').forEach(row => {
-        row.style.display = !value || row.innerText.includes(value) ? '' : 'none';
+        row.style.display = !value || (row.dataset.competitions || '').split('|').includes(value) ? '' : 'none';
     });
 }
 

@@ -1971,5 +1971,10 @@
   "Antérieure": "Anterior",
   "Postérieure": "Posterior",
   "Latérale": "Lateral",
-  "En cours": "In progress"
+  "En cours": "In progress",
+  "Impossible de récupérer les performances FIFA": "Unable to retrieve FIFA performance data",
+  "Données vérifiées indisponibles pour ce graphique.": "Verified data unavailable for this chart.",
+  "Joueur actuel non trouvé dans la liste": "Current player not found in list",
+  "Vous êtes déjà au dernier joueur": "You are already at the last player",
+  "Vous êtes déjà au premier joueur": "You are already at the first player"
 }

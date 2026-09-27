@@ -596,7 +596,7 @@
                                 onclick="changePerformanceTab('advanced')"
                                 class="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-gray-400 hover:text-gray-200 hover:bg-gray-700"
                             >
-                                <i class="fas fa-chart-bar mr-2"></i>{{ __('Statistiques avancées') }}
+                                <i class="fas fa-chart-bar mr-2"></i>{{ __('@json(__('Statistiques avancées'))') }}
                             </button>
                             <button 
                                 onclick="changePerformanceTab('match')"
@@ -794,7 +794,7 @@
                             </div>
                         </div>
 
-                        <!-- Statistiques avancées -->
+                        <!-- @json(__('Statistiques avancées')) -->
                         <div id="advanced-tab" class="space-y-6" style="display: none;">
                             <div class="bg-gray-800 rounded-xl p-6">
                                 <h3 class="text-lg font-bold mb-4 text-blue-300">
@@ -1171,9 +1171,9 @@
                     <div class="text-center py-8">
                         <div class="text-red-400 text-6xl mb-4">⚠️</div>
                         <p class="text-red-400 font-bold mb-2">{{ __('pcma.loading_error') }}</p>
-                        <p class="text-gray-400">Impossible de récupérer les performances FIFA</p>
+                        <p class="text-gray-400">{{ __('Impossible de récupérer les performances FIFA') }}</p>
                         <button onclick="loadFIFAPerformanceData()" class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white">
-                            Réessayer
+                            {{ __('Réessayer') }}
                         </button>
                     </div>
                 `;
@@ -1394,7 +1394,7 @@
                 if (!canvas.nextElementSibling?.classList.contains('unavailable-chart')) {
                     const notice = document.createElement('p');
                     notice.className = 'unavailable-chart text-gray-500 text-sm';
-                    notice.textContent = 'Données vérifiées indisponibles pour ce graphique.';
+                    notice.textContent = '@json(__('Données vérifiées indisponibles pour ce graphique.'))';
                     canvas.after(notice);
                 }
             }
@@ -1429,8 +1429,8 @@
                         console.log('✅ Joueurs trouvés:', data.players.length);
                         displaySearchResults(data.players);
                     } else {
-                        console.log('❌ Aucun joueur trouvé');
-                        resultsDiv.innerHTML = '<div class="p-4 text-center text-gray-400">{{ __('Aucun joueur trouvé') }}</div>';
+                        console.log('❌ @json(__('Aucun joueur trouvé'))');
+                        resultsDiv.innerHTML = '<div class="p-4 text-center text-gray-400">{{ __('@json(__('Aucun joueur trouvé'))') }}</div>';
                     }
                 })
                 .catch(error => {
@@ -1519,7 +1519,7 @@
                     const currentIndex = data.players.findIndex(player => player.id === currentPlayerId);
                     
                     if (currentIndex === -1) {
-                        showNavigationMessage('Joueur actuel non trouvé dans la liste');
+                        showNavigationMessage('@json(__('Joueur actuel non trouvé dans la liste'))');
                         return;
                     }
                     
@@ -1528,13 +1528,13 @@
                     if (direction === 'next') {
                         newIndex = currentIndex + 1;
                         if (newIndex >= data.players.length) {
-                            showNavigationMessage('Vous êtes déjà au dernier joueur');
+                            showNavigationMessage('@json(__('Vous êtes déjà au dernier joueur'))');
                             return;
                         }
                     } else {
                         newIndex = currentIndex - 1;
                         if (newIndex < 0) {
-                            showNavigationMessage('Vous êtes déjà au premier joueur');
+                            showNavigationMessage('@json(__('Vous êtes déjà au premier joueur'))');
                             return;
                         }
                     }
@@ -1620,7 +1620,7 @@
         let activePerformanceTab = 'overview';
         const performanceTabs = [
             { id: 'overview', name: 'Vue d\'ensemble', icon: 'fas fa-chart-line' },
-            { id: 'advanced', name: 'Statistiques avancées', icon: 'fas fa-chart-bar' },
+            { id: 'advanced', name: '@json(__('Statistiques avancées'))', icon: 'fas fa-chart-bar' },
             { id: 'match', name: 'Statistiques de match', icon: 'fas fa-futbol' },
             { id: 'comparison', name: 'Analyse comparative', icon: 'fas fa-balance-scale' },
             { id: 'trends', name: 'Tendances', icon: 'fas fa-trending-up' }

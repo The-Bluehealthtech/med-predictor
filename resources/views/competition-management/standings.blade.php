@@ -11,11 +11,11 @@
                 {{ __('Standings') }} - {{ $competition->name }}
             </h2>
             <div class="flex space-x-2">
-                <a href="{{ route('competition-management.competitions.competition.show', $competition) }}" 
+                <a href="{{ route('competitions.show', $competition) }}" 
                    class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
                     {{ __('Back to Competition') }}
                 </a>
-                <a href="{{ route('competition-management.competitions.fixtures', $competition) }}" 
+                <a href="{{ route('competitions.fixtures', $competition) }}" 
                    class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700">
                     {{ __('Fixtures') }}
                 </a>
@@ -215,7 +215,7 @@
                     <!-- Navigation Buttons -->
                     <div class="flex items-center space-x-4">
                         @if($previousMatchday)
-                            <a href="{{ route('competition-management.competitions.standings', ['competition' => $competition->id, 'matchday' => $previousMatchday]) }}" 
+                            <a href="{{ route('competitions.standings', ['competition' => $competition->id, 'matchday' => $previousMatchday]) }}" 
                                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -227,7 +227,7 @@
                         <!-- Matchday Selector -->
                         <div class="flex items-center space-x-2">
                             <span class="text-sm text-gray-500">{{ __('Matchday') }}:</span>
-                            <select onchange="window.location.href='{{ route('competition-management.competitions.standings', ['competition' => $competition->id]) }}?matchday=' + this.value" 
+                            <select onchange="window.location.href='{{ route('competitions.standings', ['competition' => $competition->id]) }}?matchday=' + this.value" 
                                     class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 @foreach($matchdayNumbers as $matchdayNum)
                                     <option value="{{ $matchdayNum }}" {{ $currentMatchday == $matchdayNum ? 'selected' : '' }}>
@@ -238,7 +238,7 @@
                         </div>
                         
                         @if($nextMatchday)
-                            <a href="{{ route('competition-management.competitions.standings', ['competition' => $competition->id, 'matchday' => $nextMatchday]) }}" 
+                            <a href="{{ route('competitions.standings', ['competition' => $competition->id, 'matchday' => $nextMatchday]) }}" 
                                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 {{ __('Next') }}
                                 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -289,7 +289,7 @@
                                         </div>
                                         <!-- Match Sheet Link -->
                                         @if($match->has_match_sheet)
-                                            <a href="{{ route('competition-management.matches.match-sheet', $match->id) }}" 
+                                            <a href="{{ route('match-sheet.show', $match->id) }}" 
                                                class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-md 
                                                       @if($match->match_sheet_status === 'validated')
                                                           bg-green-100 text-green-800 hover:bg-green-200
@@ -315,7 +315,7 @@
                                             </a>
                                         @else
                                             @if($match->is_played)
-                                                <a href="{{ route('competition-management.matches.match-sheet', $match->id) }}" 
+                                                <a href="{{ route('match-sheet.show', $match->id) }}" 
                                                    class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-md bg-blue-100 text-blue-800 hover:bg-blue-200">
                                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>

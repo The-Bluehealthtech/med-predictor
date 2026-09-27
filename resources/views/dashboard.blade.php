@@ -330,7 +330,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14"></path>
                             </svg>
                         </div>
-                        <p class="text-purple-100 mb-4">Évaluation de la valeur et qualité des données FIFA</p>
+                        <p class="text-purple-100 mb-4">{{ __('Évaluation de la valeur et qualité des données FIFA') }}</p>
                         
                         <!-- KPI Metrics -->
                         <div class="grid grid-cols-2 gap-4 mb-4">
@@ -384,9 +384,7 @@
                                class="w-full inline-flex justify-center items-center px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-medium rounded-md transition-all duration-200">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                                Accéder aux Analytics
-                            </a>
+                                </svg>{{ __('Accéder aux Analytics') }}</a>
                         </div>
                     </div>
                 </div>

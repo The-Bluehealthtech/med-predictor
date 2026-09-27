@@ -13,7 +13,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-800">🏥 Portail Patient</h1>
-                    <p class="text-gray-600 mt-2">Bienvenue, <strong>{{ $player->first_name ?? 'Joueur' }} {{ $player->last_name ?? 'Test' }}</strong></p>
+                    <p class="text-gray-600 mt-2">{{ __('Bienvenue,') }} <strong>{{ $player->first_name ?? 'Joueur' }} {{ $player->last_name ?? 'Test' }}</strong></p>
                 </div>
                 <div class="text-right">
                     <p class="text-sm text-gray-500">ID: {{ $player->id }}</p>
@@ -24,7 +24,7 @@
 
         <!-- Section Informations de l'Association -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-2xl font-semibold mb-6 text-blue-600">🏆 Informations de l'Association</h2>
+            <h2 class="text-2xl font-semibold mb-6 text-blue-600">{{ __('🏆 Informations de l\'Association') }}</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
@@ -40,7 +40,7 @@
                     @else
                         <div class="text-center">
                             <div class="text-4xl text-gray-400 mb-2">🏆</div>
-                            <div class="text-xs text-gray-500">Aucune association</div>
+                            <div class="text-xs text-gray-500">{{ __('Aucune association') }}</div>
                         </div>
                     @endif
                     
@@ -53,7 +53,7 @@
                             </a>
                         @else
                             <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm font-medium">
-                                ❌ Pas d'association
+                                {{ __('❌ Pas d\'association') }}
                             </span>
                         @endif
                     </div>
@@ -82,7 +82,7 @@
                     @else
                         <div class="text-center">
                             <div class="text-4xl text-gray-400 mb-2">🏴</div>
-                            <div class="text-xs text-gray-500">Aucune association</div>
+                            <div class="text-xs text-gray-500">{{ __('Aucune association') }}</div>
                         </div>
                     @endif
                     
@@ -95,7 +95,7 @@
                             </a>
                         @else
                             <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm font-medium">
-                                ❌ Pas d'association
+                                {{ __('❌ Pas d\'association') }}
                             </span>
                         @endif
                     </div>
@@ -112,7 +112,7 @@
                     @else
                         <div class="text-center">
                             <div class="text-2xl mb-2">📋</div>
-                            <div class="text-xs text-gray-500">Aucune association</div>
+                            <div class="text-xs text-gray-500">{{ __('Aucune association') }}</div>
                         </div>
                     @endif
                     
@@ -120,12 +120,10 @@
                     <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         @if($player->association)
                             <a href="{{ route('associations.edit-logo', $player->association->id) }}" 
-                               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">
-                                📋 Gérer
-                            </a>
+                               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors">{{ __('📋 Gérer') }}</a>
                         @else
                             <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm font-medium">
-                                ❌ Pas d'association
+                                {{ __('❌ Pas d\'association') }}
                             </span>
                         @endif
                     </div>
@@ -134,7 +132,7 @@
             
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-600">
-                    <strong>Joueur ID:</strong> {{ $player->id }} | 
+                    <strong>{{ __('Joueur ID:') }}</strong> {{ $player->id }} |
                     @if($player->association)
                         <strong>Association:</strong> {{ $player->association->name }} | 
                         <strong>Pays:</strong> {{ $player->association->country }}
@@ -147,25 +145,25 @@
 
         <!-- Section Informations du Joueur -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-2xl font-semibold mb-6 text-green-600">👤 Informations du Joueur</h2>
+            <h2 class="text-2xl font-semibold mb-6 text-green-600">{{ __('👤 Informations du Joueur') }}</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <h3 class="text-lg font-semibold mb-3">📝 Données personnelles</h3>
+                    <h3 class="text-lg font-semibold mb-3">{{ __('📝 Données personnelles') }}</h3>
                     <div class="space-y-2 text-sm">
                         <p><strong>{{ __('health_records_create.full_name_label') }}</strong> {{ $player->first_name ?? 'N/A' }} {{ $player->last_name ?? 'N/A' }}</p>
                         <p><strong>Email:</strong> {{ $player->email ?? 'Non renseigné' }}</p>
-                        <p><strong>Téléphone:</strong> {{ $player->phone ?? 'Non renseigné' }}</p>
+                        <p><strong>{{ __('Téléphone:') }}</strong> {{ $player->phone ?? 'Non renseigné' }}</p>
                         <p><strong>{{ __('health_records_create.birth_date_label') }}</strong> {{ $player->birth_date ?? 'Non renseignée' }}</p>
                     </div>
                 </div>
                 
                 <div>
-                    <h3 class="text-lg font-semibold mb-3">🏟️ Informations sportives</h3>
+                    <h3 class="text-lg font-semibold mb-3">{{ __('🏟️ Informations sportives') }}</h3>
                     <div class="space-y-2 text-sm">
                         <p><strong>Club:</strong> {{ $player->club->name ?? 'Aucun club' }}</p>
                         <p><strong>Position:</strong> {{ $player->position ?? 'Non définie' }}</p>
-                        <p><strong>Numéro:</strong> {{ $player->jersey_number ?? 'Non défini' }}</p>
+                        <p><strong>{{ __('Numéro:') }}</strong> {{ $player->jersey_number ?? 'Non défini' }}</p>
                         <p><strong>{{ __('clinical.status_label') }}</strong> {{ $player->status ?? 'Actif' }}</p>
                     </div>
                 </div>
@@ -179,23 +177,19 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 @if($player->association)
                     <a href="{{ route('associations.edit-logo', $player->association->id) }}" 
-                       class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg text-center transition-colors font-medium">
-                        🏆 Gérer le logo de l'association
-                    </a>
+                       class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg text-center transition-colors font-medium">{{ __('🏆 Gérer le logo de l\'association') }}</a>
                 @else
-                    <span class="bg-gray-400 text-white px-6 py-3 rounded-lg text-center font-medium">
-                        🏆 Gérer le logo (pas d'association)
-                    </span>
+                    <span class="bg-gray-400 text-white px-6 py-3 rounded-lg text-center font-medium">{{ __('🏆 Gérer le logo (pas d\'association)') }}</span>
                 @endif
                 
                 <a href="{{ route('demo.logos.officiels') }}" 
                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg text-center transition-colors font-medium">
-                    🎯 Voir les logos officiels
+                    {{ __('🎯 Voir les logos officiels') }}
                 </a>
                 
                 <a href="{{ route('test.logos.portail') }}" 
                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-center transition-colors font-medium">
-                    🧪 Tester les composants
+                    {{ __('🧪 Tester les composants') }}
                 </a>
             </div>
         </div>

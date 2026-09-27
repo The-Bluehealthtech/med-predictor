@@ -7,7 +7,7 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">📝 Modifier la Licence</h1>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ __('📝 Modifier la Licence') }}</h1>
                     <p class="mt-2 text-gray-600">
                         Licence #{{ $license->fifa_license_number ?? $license->id }} - 
                         {{ $license->applicant_name ?? 'Nom non défini' }}
@@ -22,10 +22,10 @@
                                 </div>
                                 <div class="ml-3">
                                     <h3 class="text-sm font-medium text-yellow-800">
-                                        Demande de correction de l'association
+                                        {{ __('Demande de correction de l\'association') }}
                                     </h3>
                                     <div class="mt-2 text-sm text-yellow-700">
-                                        <p>Cette licence nécessite des modifications avant réapprobation.</p>
+                                        <p>{{ __('Cette licence nécessite des modifications avant réapprobation.') }}</p>
                                         @if($license->rejection_reason)
                                             <p class="mt-1"><strong>Raison :</strong> {{ $license->rejection_reason }}</p>
                                         @endif
@@ -36,7 +36,7 @@
                     @endif
                 </div>
                 <a href="{{ route('licenses.index') }}" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors">
-                    ← Retour aux Licences
+                    {{ __('← Retour aux Licences') }}
                 </a>
             </div>
         </div>
@@ -49,7 +49,7 @@
 
                 <!-- Informations du demandeur -->
                 <div class="border-b border-gray-200 pb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">👤 Informations du Demandeur</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('👤 Informations du Demandeur') }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="applicant_name" class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.full_name_label') }}</label>
@@ -84,13 +84,13 @@
                         <div>
                             <label for="position" class="block text-sm font-medium text-gray-700 mb-2">Poste</label>
                             <select name="position" id="position" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                <option value="">Sélectionnez un poste</option>
+                                <option value="">{{ __('Sélectionnez un poste') }}</option>
                                 <option value="Attaquant" @if(old('position', $license->position) == 'Attaquant') selected @endif>{{ __('clinical.demo_position_forward') }}</option>
                                 <option value="Milieu" @if(old('position', $license->position) == 'Milieu') selected @endif>{{ __('clinical.demo_position_midfielder') }}</option>
                                 <option value="Défenseur" @if(old('position', $license->position) == 'Défenseur') selected @endif>{{ __('pcma.position_defender_option') }}</option>
                                 <option value="Gardien" @if(old('position', $license->position) == 'Gardien') selected @endif>{{ __('pcma.position_goalkeeper_option') }}</option>
                                 <option value="Entraîneur" @if(old('position', $license->position) == 'Entraîneur') selected @endif>{{ __('Entraîneur') }}</option>
-                                <option value="Staff médical" @if(old('position', $license->position) == 'Staff médical') selected @endif>Staff médical</option>
+                                <option value="Staff médical" @if(old('position', $license->position) == 'Staff médical') selected @endif>{{ __('Staff médical') }}</option>
                                 <option value="Arbitre" @if(old('position', $license->position) == 'Arbitre') selected @endif>{{ __('auth.role_referee') }}</option>
                             </select>
                         </div>
@@ -99,12 +99,12 @@
 
                 <!-- Informations de la licence -->
                 <div class="border-b border-gray-200 pb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">🏆 Informations de la Licence</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('🏆 Informations de la Licence') }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="license_type" class="block text-sm font-medium text-gray-700 mb-2">Type de licence</label>
+                            <label for="license_type" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Type de licence') }}</label>
                             <select name="license_type" id="license_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                <option value="">Sélectionnez le type</option>
+                                <option value="">{{ __('Sélectionnez le type') }}</option>
                                 <option value="amateur" @if(old('license_type', $license->license_type) == 'amateur') selected @endif>Amateur</option>
                                 <option value="semi_pro" @if(old('license_type', $license->license_type) == 'semi_pro') selected @endif>Semi-Professionnel</option>
                                 <option value="professional" @if(old('license_type', $license->license_type) == 'professional') selected @endif>Professionnel</option>
@@ -112,9 +112,9 @@
                             </select>
                         </div>
                         <div>
-                            <label for="validity_period" class="block text-sm font-medium text-gray-700 mb-2">Période de validité</label>
+                            <label for="validity_period" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Période de validité') }}</label>
                             <select name="validity_period" id="validity_period" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                <option value="">Sélectionnez la période</option>
+                                <option value="">{{ __('Sélectionnez la période') }}</option>
                                 <option value="1_year" @if(old('validity_period', $license->validity_period) == '1_year') selected @endif>1 an</option>
                                 <option value="2_years" @if(old('validity_period', $license->validity_period) == '2_years') selected @endif>2 ans</option>
                                 <option value="3_years" @if(old('validity_period', $license->validity_period) == '3_years') selected @endif>3 ans</option>
@@ -122,7 +122,7 @@
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <label for="license_reason" class="block text-sm font-medium text-gray-700 mb-2">Raison de la demande</label>
+                            <label for="license_reason" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Raison de la demande') }}</label>
                             <textarea name="license_reason" id="license_reason" rows="3" 
                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>{{ old('license_reason', $license->license_reason) }}</textarea>
                         </div>
@@ -131,7 +131,7 @@
 
                 <!-- Upload de photo -->
                 <div class="border-b border-gray-200 pb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">📷 Photo du Demandeur</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('📷 Photo du Demandeur') }}</h3>
                     
                     <!-- Photo actuelle -->
                     @if($license->player && $license->player->player_picture)
@@ -142,7 +142,7 @@
                                      alt="Photo actuelle" 
                                      class="w-20 h-20 object-cover rounded-lg border-2 border-gray-200">
                                 <div class="text-sm text-gray-600">
-                                    <p>Photo actuellement enregistrée</p>
+                                    <p>{{ __('Photo actuellement enregistrée') }}</p>
                                     <p class="text-xs text-gray-500">Taille : {{ Storage::disk('public')->size($license->player->player_picture) ?? 'N/A' }} bytes</p>
                                 </div>
                             </div>
@@ -151,7 +151,7 @@
 
                     <!-- Upload de nouvelle photo -->
                     <div>
-                        <label for="player_photo" class="block text-sm font-medium text-gray-700 mb-2">Nouvelle photo (optionnel)</label>
+                        <label for="player_photo" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Nouvelle photo (optionnel)') }}</label>
                         <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                             <div class="space-y-1 text-center">
                                 <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
@@ -176,7 +176,7 @@
                         {{ __('clinical.cancel') }}
                     </a>
                     <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                        💾 Enregistrer les modifications
+                        {{ __('💾 Enregistrer les modifications') }}
                     </button>
                 </div>
             </form>

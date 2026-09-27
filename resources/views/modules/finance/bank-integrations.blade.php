@@ -12,7 +12,7 @@
                     </div>
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900">{{ __('Intégrations Bancaires') }}</h1>
-                        <p class="text-gray-600 mt-1">Connexion de comptes bancaires</p>
+                        <p class="text-gray-600 mt-1">{{ __('Connexion de comptes bancaires') }}</p>
                     </div>
                 </div>
                 <a href="{{ route('modules.finance.dashboard') }}"
@@ -23,19 +23,14 @@
         </div>
 
         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-            <p class="text-yellow-800 font-semibold mb-2">⚠️ Aucune banque n'est réellement connectée</p>
+            <p class="text-yellow-800 font-semibold mb-2">{{ __('⚠️ Aucune banque n\'est réellement connectée') }}</p>
             <p class="text-sm text-yellow-800">
                 Cette page affichait auparavant une liste fixe de banques (BNP Paribas, Barclays, JPMorgan Chase, Revolut...)
                 marquées « Connecté », un solde total et un historique de synchronisation — des données d'exemple identiques
                 pour tous les utilisateurs, alors qu'aucune connexion bancaire réelle (API Open Banking / PSD2, identifiants,
                 comptes) n'existe dans cette application pour {{ $userType === 'club' ? 'votre club' : 'votre association' }}.
             </p>
-            <p class="text-sm text-yellow-800 mt-3">
-                Ces éléments ont été retirés. Mettre en place de vraies connexions bancaires nécessiterait d'intégrer un
-                vrai fournisseur Open Banking/PSD2 et de créer le modèle de données correspondant (comptes, identifiants,
-                synchronisations) ; cela dépasse le cadre d'un nettoyage de données factices et devrait être traité comme
-                un projet à part.
-            </p>
+            <p class="text-sm text-yellow-800 mt-3">{{ __('Ces éléments ont été retirés. Mettre en place de vraies connexions bancaires nécessiterait d\'intégrer un vrai fournisseur Open Banking/PSD2 et de créer le modèle de données correspondant (comptes, identifiants, synchronisations) ; cela dépasse le cadre d\'un nettoyage de données factices et devrait être traité comme un projet à part.') }}</p>
         </div>
     </div>
 </div>

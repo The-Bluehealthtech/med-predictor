@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Articles
                                 </h1>
-                                <p class="text-sm text-gray-600">Gérer les articles de presse et actualités</p>
+                                <p class="text-sm text-gray-600">{{ __('Gérer les articles de presse et actualités') }}</p>
                             </div>
                         </div>
                     </div>
@@ -34,7 +34,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Actions -->
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-medium text-gray-900">Liste des Articles</h2>
+            <h2 class="text-lg font-medium text-gray-900">{{ __('Liste des Articles') }}</h2>
             <a href="{{ route('admin.content-management.create', ['type' => 'article']) }}" 
                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
                 ➕ Nouvel Article
@@ -71,7 +71,7 @@
                                         
                                         <div class="flex items-center space-x-4 text-sm text-gray-500">
                                             <span><strong>Auteur:</strong> {{ $article['author'] }}</span>
-                                            <span><strong>Créé:</strong> {{ $article['created_at']->format('d/m/Y H:i') }}</span>
+                                            <span><strong>{{ __('Créé:') }}</strong> {{ $article['created_at']->format('d/m/Y H:i') }}</span>
                                             <span><strong>Vues:</strong> {{ $article['views'] }}</span>
                                         </div>
                                     </div>
@@ -97,11 +97,9 @@
                     </div>
                 @else
                     <div class="text-center py-8">
-                        <p class="text-gray-500 mb-4">Aucun article trouvé.</p>
+                        <p class="text-gray-500 mb-4">{{ __('Aucun article trouvé.') }}</p>
                         <a href="{{ route('admin.content-management.create', ['type' => 'article']) }}" 
-                           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                            ➕ Créer le premier article
-                        </a>
+                           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('➕ Créer le premier article') }}</a>
                     </div>
                 @endif
             </div>

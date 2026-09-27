@@ -5,9 +5,9 @@
 @section('content')
 <div class="space-y-6">
     <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-900">Gestion des Documents</h1>
+        <h1 class="text-2xl font-bold text-gray-900">{{ __('Gestion des Documents') }}</h1>
         <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-            <i class="fas fa-upload mr-2"></i>Nouveau Document
+            <i class="fas fa-upload mr-2"></i>{{ __('Nouveau Document') }}
         </button>
     </div>
     

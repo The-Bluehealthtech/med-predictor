@@ -7,7 +7,7 @@
     <div class="max-w-4xl mx-auto">
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900">⚽ Modifier {{ $player->first_name }} {{ $player->last_name }}</h1>
-            <p class="text-gray-600 mt-2">Modifier les informations du joueur</p>
+            <p class="text-gray-600 mt-2">{{ __('Modifier les informations du joueur') }}</p>
         </div>
 
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -34,7 +34,7 @@
 
                     <div>
                         <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Nom *
+                            {{ __('Nom *') }}
                         </label>
                         <input type="text" name="last_name" id="last_name" 
                                value="{{ old('last_name', $player->last_name) }}" required
@@ -46,7 +46,7 @@
 
                     <div>
                         <label for="date_of_birth" class="block text-sm font-medium text-gray-700 mb-2">
-                            Date de naissance *
+                            {{ __('Date de naissance *') }}
                         </label>
                         <input type="date" name="date_of_birth" id="date_of_birth" 
                                value="{{ old('date_of_birth', $player->date_of_birth ? $player->date_of_birth->format('Y-m-d') : '') }}" required
@@ -83,7 +83,7 @@
                             <option value="Japon" {{ old('nationality', $player->nationality) == 'Japon' ? 'selected' : '' }}>Japon</option>
                             <option value="Chine" {{ old('nationality', $player->nationality) == 'Chine' ? 'selected' : '' }}>Chine</option>
                             <option value="Australie" {{ old('nationality', $player->nationality) == 'Australie' ? 'selected' : '' }}>Australie</option>
-                            <option value="Afrique du Sud" {{ old('nationality', $player->nationality) == 'Afrique du Sud' ? 'selected' : '' }}>Afrique du Sud</option>
+                            <option value="Afrique du Sud" {{ old('nationality', $player->nationality) == 'Afrique du Sud' ? 'selected' : '' }}>{{ __('Afrique du Sud') }}</option>
                         </select>
                         @error('nationality')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -164,12 +164,12 @@
 
                 <!-- Section Photo du Joueur -->
                 <div class="mt-8 border-t border-gray-200 pt-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">📸 Photo du Joueur</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('📸 Photo du Joueur') }}</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="player_picture" class="block text-sm font-medium text-gray-700 mb-2">
-                                Photo du joueur
+                                {{ __('Photo du joueur') }}
                             </label>
                             <input type="file" name="player_picture" id="player_picture" 
                                    accept="image/*" 

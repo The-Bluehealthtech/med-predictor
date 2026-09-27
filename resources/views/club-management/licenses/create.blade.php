@@ -102,7 +102,7 @@
 
                             <div>
                                 <p class="text-sm font-medium text-gray-700">Identifiant FIFA Connect</p>
-                                <p class="mt-2 text-sm text-gray-600">La demande utilise uniquement l'identifiant déjà associé au joueur sélectionné. Aucun identifiant n'est généré ici.</p>
+                                <p class="mt-2 text-sm text-gray-600">{{ __('La demande utilise uniquement l\'identifiant déjà associé au joueur sélectionné. Aucun identifiant n\'est généré ici.') }}</p>
                             </div>
                         </div>
                     </div>

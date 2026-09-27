@@ -31,16 +31,16 @@
                                 </div>
                                 <div class="ml-3">
                                     <h1 class="text-2xl font-bold text-gray-900">
-                                        📋 Gestion des Licences - Clubs
+                                        {{ __('📋 Gestion des Licences - Clubs') }}
                                     </h1>
-                                    <p class="text-sm text-gray-600">Demande de licences par les clubs</p>
+                                    <p class="text-sm text-gray-600">{{ __('Demande de licences par les clubs') }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <a href="/modules" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux modules</a>
-                        <a href="/clubs-view" class="text-gray-600 hover:text-gray-900 text-sm font-medium">🏟️ Voir les clubs</a>
+                        <a href="/modules" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux modules') }}</a>
+                        <a href="/clubs-view" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('🏟️ Voir les clubs') }}</a>
                     </div>
                 </div>
             </div>
@@ -55,29 +55,23 @@
                         <span class="text-blue-600 text-xl">ℹ️</span>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-sm font-medium text-blue-800">Module Clubs - Demande de Licence</h3>
+                        <h3 class="text-sm font-medium text-blue-800">{{ __('Module Clubs - Demande de Licence') }}</h3>
                         <div class="mt-2 text-sm text-blue-700">
-                            <p>Cette page est destinée aux <strong>clubs</strong> pour demander des licences pour leurs joueurs.</p>
-                            <p class="mt-1">Pour la <strong>validation des licences par l'association</strong>, utilisez le module "Validation des Licences".</p>
+                            <p>{{ __('Cette page est destinée aux') }}<strong>clubs</strong> {{ __('pour demander des licences pour leurs joueurs.') }}</p>
+                            <p class="mt-1">{{ __('Pour la') }} <strong>{{ __('validation des licences par l\'association') }}</strong>{{ __(', utilisez le module "Validation des Licences".') }}</p>
                         </div>
                     </div>
                 </div>
             </div>
             
             <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Module de Gestion des Licences</h2>
-                <p class="text-gray-600 mb-4">
-                    Ce module permet aux clubs de demander des licences pour leurs joueurs.
-                    Sélectionnez un joueur dans la liste ci-dessous pour initier une demande de licence.
-                </p>
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Module de Gestion des Licences') }}</h2>
+                <p class="text-gray-600 mb-4">{{ __('Ce module permet aux clubs de demander des licences pour leurs joueurs. Sélectionnez un joueur dans la liste ci-dessous pour initier une demande de licence.') }}</p>
                 
                 <!-- Liste des Joueurs pour Demande de Licence -->
                 <div class="mt-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🏃‍♂️ Joueurs - Demande de Licence</h3>
-                    <p class="text-gray-600 mb-6">
-                        Liste des joueurs disponibles pour une demande de licence. Cliquez sur "📋 Demander Licence" pour initier le processus.
-                        Les données existantes du joueur seront automatiquement pré-remplies dans le formulaire.
-                    </p>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('🏃‍♂️ Joueurs - Demande de Licence') }}</h3>
+                    <p class="text-gray-600 mb-6">{{ __('Liste des joueurs disponibles pour une demande de licence. Cliquez sur "📋 Demander Licence" pour initier le processus. Les données existantes du joueur seront automatiquement pré-remplies dans le formulaire.') }}</p>
                     
                     @if($players->count() > 0)
                         <div class="overflow-x-auto">
@@ -97,7 +91,7 @@
                                             Association
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Statut Licence
+                                            {{ __('Statut Licence') }}
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Actions
@@ -163,7 +157,7 @@
                                                         </div>
                             </div>
                                                 @else
-                                                    <span class="text-gray-500">Aucun club</span>
+                                                    <span class="text-gray-500">{{ __('Aucun club') }}</span>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
@@ -198,7 +192,7 @@
                     </div>
                 </div>
                                                 @else
-                                                    <span class="text-gray-500">Aucune association</span>
+                                                    <span class="text-gray-500">{{ __('Aucune association') }}</span>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
@@ -223,14 +217,14 @@
                                                     </div>
                                                 @else
                                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                        Aucune licence
+                                                        {{ __('Aucune licence') }}
                                                     </span>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <a href="{{ route('player-licenses.request.create', $player) }}"
                                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
-                                                    📋 Demander Licence
+                                                    {{ __('📋 Demander Licence') }}
                                                 </a>
                                             </td>
                                         </tr>
@@ -241,11 +235,11 @@
                     @else
                         <div class="text-center py-12">
                             <div class="text-gray-400 text-6xl mb-4">👥</div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun joueur enregistré</h3>
-                            <p class="text-gray-500 mb-6">Commencez par enregistrer des joueurs</p>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Aucun joueur enregistré') }}</h3>
+                            <p class="text-gray-500 mb-6">{{ __('Commencez par enregistrer des joueurs') }}</p>
                             <a href="{{ route('player-registration.create') }}" 
                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                                ➕ Enregistrer un Joueur
+                                {{ __('➕ Enregistrer un Joueur') }}
                             </a>
                     </div>
                     @endif

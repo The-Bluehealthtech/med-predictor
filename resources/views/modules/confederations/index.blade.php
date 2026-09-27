@@ -16,7 +16,7 @@
             </div>
             <a href="/modules" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center">
                 <span class="mr-2">🏠</span>
-                Retour aux modules
+                {{ __('Retour aux modules') }}
             </a>
         </div>
 
@@ -121,7 +121,7 @@
 
         <!-- Statistiques -->
         <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">📊 Statistiques</h2>
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">{{ __('📊 Statistiques') }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="text-center">
                     <div class="text-2xl font-bold text-purple-600">{{ $confederations->count() }}</div>

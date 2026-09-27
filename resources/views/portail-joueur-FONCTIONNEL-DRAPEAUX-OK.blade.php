@@ -15,7 +15,7 @@
             <div class="flex items-center space-x-4">
                 <button id="btn-previous" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors" onclick="navigatePlayer('previous')">{{ __('← Précédent') }}</button>
                 <button id="btn-next" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors" onclick="navigatePlayer('next')">
-                    Suivant →
+                    {{ __('Suivant →') }}
                 </button>
                 <span class="text-gray-300 font-medium" id="player-counter">{{ __('common.loading') }}</span>
             </div>
@@ -274,7 +274,7 @@
             <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-2">
                                     <div class="flex items-center justify-between mb-3">
                     <h3 class="text-lg font-bold text-green-400 flex items-center">
-                        👨‍💼 Informations Agent
+                        {{ __('👨‍💼 Informations Agent') }}
                     </h3>
                     <button class="bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1 rounded-lg transition-colors text-sm">
                         {{ $player->agent_name ?? 'Agent non défini' }}
@@ -322,7 +322,7 @@
                             
             <!-- Section Attributs du Joueur - RÉDUITE -->
             <div class="bg-gradient-to-r from-gray-500 to-gray-600 rounded-lg p-2">
-                <h3 class="text-lg font-bold text-gray-300 mb-3">Attributs du Joueur</h3>
+                <h3 class="text-lg font-bold text-gray-300 mb-3">{{ __('Attributs du Joueur') }}</h3>
                 
                 <div class="grid grid-cols-2 gap-2">
                     <div class="bg-white rounded-lg p-1 border border-gray-200 text-center">
@@ -411,7 +411,7 @@
                             
                 <div class="mt-2 text-center">
                     <div class="text-xs text-blue-800">{{ __('N/A% complétée') }}</div>
-                    <div class="text-xs text-blue-800">N/A matchs restants</div>
+                    <div class="text-xs text-blue-800">{{ __('N/A matchs restants') }}</div>
                             </div>
                             </div>
                             </div>
@@ -423,7 +423,7 @@
                 <h3 class="text-lg font-bold text-green-400 mb-3">{{ __('Performances récentes') }}</h3>
                 
                 <div class="mb-3">
-                    <div class="text-sm text-green-800 mb-2">5 derniers matchs:</div>
+                    <div class="text-sm text-green-800 mb-2">{{ __('5 derniers matchs:') }}</div>
                     <div class="flex space-x-1">
                         <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">W</span>
                         <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">W</span>
@@ -436,7 +436,7 @@
 
             <!-- Section Risque de Blessure - RÉDUITE -->
             <div class="bg-gradient-to-r from-red-500 to-pink-500 rounded-lg p-4">
-                <h3 class="text-lg font-bold text-red-400 mb-3">Risque de blessure</h3>
+                <h3 class="text-lg font-bold text-red-400 mb-3">{{ __('Risque de blessure') }}</h3>
                 
                 <div class="text-center">
                     <div class="text-2xl font-bold text-red-800 mb-1">15%</div>
@@ -553,7 +553,7 @@
                     <!-- Graphique Comparaison -->
                     <div class="bg-gray-800 rounded-xl p-6">
                         <h3 class="text-xl font-bold mb-4 text-green-300">
-                            <i class="fas fa-radar-chart mr-2"></i>Comparaison des Statistiques
+                            <i class="fas fa-radar-chart mr-2"></i>{{ __('Comparaison des Statistiques') }}
                         </h3>
                         <div class="h-80">
                             <canvas id="comparisonChart"></canvas>
@@ -590,13 +590,13 @@
             <div id="notifications-tab" class="tab-content space-y-6" style="display: none;">
                 <div class="bg-gray-800 rounded-xl p-6">
                     <h3 class="text-xl font-bold mb-6 text-yellow-300">
-                        <i class="fas fa-bell mr-2"></i>Centre de Notifications
+                        <i class="fas fa-bell mr-2"></i>{{ __('Centre de Notifications') }}
                     </h3>
                     <div class="space-y-4">
                         <div class="flex items-center p-4 bg-blue-900/30 rounded-lg border-l-4 border-blue-500">
                             <i class="fas fa-info-circle text-blue-400 mr-3"></i>
                             <div>
-                                <h4 class="font-semibold">Nouveau Challenge</h4>
+                                <h4 class="font-semibold">{{ __('Nouveau Challenge') }}</h4>
                                 <p class="text-sm text-gray-300">{{ __('Défi de vitesse disponible - Améliorez votre sprint !') }}</p>
                             </div>
                         </div>
@@ -922,7 +922,7 @@
                         displaySearchResults(data.players);
                     } else {
                         console.log('❌ Aucun joueur trouvé');
-                        resultsDiv.innerHTML = '<div class="p-4 text-center text-gray-400">Aucun joueur trouvé</div>';
+                        resultsDiv.innerHTML = '<div class="p-4 text-center text-gray-400">{{ __('Aucun joueur trouvé') }}</div>';
                     }
                 })
                 .catch(error => {

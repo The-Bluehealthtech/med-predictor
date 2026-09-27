@@ -12,7 +12,7 @@
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-800">🏆 Gérer le Logo</h1>
+                    <h1 class="text-3xl font-bold text-gray-800">{{ __('🏆 Gérer le Logo') }}</h1>
                     <p class="text-gray-600 mt-2">Association : <strong>{{ $association->name }}</strong></p>
                     <p class="text-gray-600">Pays : <strong>{{ $association->country }}</strong></p>
                     @if($countryCode)
@@ -51,15 +51,13 @@
                             <img src="{{ $association->association_logo_url }}" 
                                  alt="Logo personnalisé {{ $association->name }}"
                                  class="w-32 h-32 object-contain mx-auto border-2 border-gray-200 rounded-lg">
-                            <p class="text-sm text-gray-600 mt-2">Logo personnalisé actuel</p>
+                            <p class="text-sm text-gray-600 mt-2">{{ __('Logo personnalisé actuel') }}</p>
                         </div>
                         
                         <!-- Bouton pour réinitialiser -->
                         <form action="{{ route('associations.reset-national-logo', $association->id) }}" method="POST" class="text-center">
                             @csrf
-                            <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors">
-                                🔄 Réinitialiser au logo national
-                            </button>
+                            <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors">{{ __('🔄 Réinitialiser au logo national') }}</button>
                         </form>
                     @else
                         <!-- Logo national -->
@@ -75,7 +73,7 @@
                                 <div class="w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center mx-auto">
                                     <span class="text-4xl text-gray-400">🏆</span>
                                 </div>
-                                <p class="text-sm text-gray-500 mt-2">Aucun logo disponible</p>
+                                <p class="text-sm text-gray-500 mt-2">{{ __('Aucun logo disponible') }}</p>
                             </div>
                         @endif
                     @endif
@@ -89,7 +87,7 @@
                 <div class="space-y-4">
                     <!-- Upload de nouveau logo -->
                     <div>
-                        <h4 class="font-medium mb-2">📤 Uploader un nouveau logo</h4>
+                        <h4 class="font-medium mb-2">{{ __('📤 Uploader un nouveau logo') }}</h4>
                         <form action="{{ route('associations.update-logo', $association->id) }}" 
                               method="POST" 
                               enctype="multipart/form-data"
@@ -111,13 +109,11 @@
 
                     <!-- Mise à jour des logos nationaux -->
                     <div class="border-t pt-4">
-                        <h4 class="font-medium mb-2">🌍 Mise à jour des logos nationaux</h4>
-                        <p class="text-sm text-gray-600 mb-3">Télécharger les derniers logos depuis l'API-Football</p>
+                        <h4 class="font-medium mb-2">{{ __('🌍 Mise à jour des logos nationaux') }}</h4>
+                        <p class="text-sm text-gray-600 mb-3">{{ __('Télécharger les derniers logos depuis l\'API-Football') }}</p>
                         <form action="{{ route('associations.update-national-logos') }}" method="POST" class="text-center">
                             @csrf
-                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
-                                🔄 Mettre à jour depuis l'API
-                            </button>
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('🔄 Mettre à jour depuis l\'API') }}</button>
                         </form>
                     </div>
                 </div>
@@ -126,7 +122,7 @@
 
         <!-- Informations techniques -->
         <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-xl font-semibold mb-4">🔍 Informations Techniques</h3>
+            <h3 class="text-xl font-semibold mb-4">{{ __('🔍 Informations Techniques') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                     <p><strong>ID Association :</strong> {{ $association->id }}</p>
@@ -135,7 +131,7 @@
                     <p><strong>Code pays ISO :</strong> {{ $countryCode ?? 'Non défini' }}</p>
                 </div>
                 <div>
-                    <p><strong>Logo personnalisé :</strong> {{ $association->association_logo_url ? 'OUI' : 'NON' }}</p>
+                    <p><strong>{{ __('Logo personnalisé :') }}</strong> {{ $association->association_logo_url ? 'OUI' : 'NON' }}</p>
                     <p><strong>Logo national disponible :</strong> {{ $nationalLogoExists ? 'OUI' : 'NON' }}</p>
                     @if($nationalLogoExists)
                         <p><strong>Chemin logo national :</strong> associations/{{ $countryCode }}.png</p>

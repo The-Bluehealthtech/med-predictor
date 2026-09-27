@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logos des Clubs FTF - Ligue 1</title>
+    <title>{{ __('Logos des Clubs FTF - Ligue 1') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
     <div class="max-w-6xl mx-auto p-6">
         <!-- En-tête -->
         <div class="text-center mb-8">
-            <h1 class="text-5xl font-bold text-blue-600 mb-4">🏆 Logos des Clubs FTF</h1>
-            <p class="text-xl text-gray-600">Fédération Tunisienne de Football - Ligue 1</p>
-            <p class="text-sm text-gray-500 mt-2">Tous les logos ont été générés automatiquement</p>
+            <h1 class="text-5xl font-bold text-blue-600 mb-4">{{ __('🏆 Logos des Clubs FTF') }}</h1>
+            <p class="text-xl text-gray-600">{{ __('Fédération Tunisienne de Football - Ligue 1') }}</p>
+            <p class="text-sm text-gray-500 mt-2">{{ __('Tous les logos ont été générés automatiquement') }}</p>
         </div>
 
         <!-- Grille des logos -->
@@ -230,7 +230,7 @@
 
         <!-- Résumé -->
         <div class="mt-12 bg-white rounded-xl shadow-lg p-8 text-center">
-            <h2 class="text-3xl font-bold text-green-600 mb-4">🎉 Résumé</h2>
+            <h2 class="text-3xl font-bold text-green-600 mb-4">{{ __('🎉 Résumé') }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-green-50 rounded-lg p-4">
                     <div class="text-4xl font-bold text-green-600 mb-2">16</div>
@@ -240,7 +240,7 @@
                 <div class="bg-blue-50 rounded-lg p-4">
                     <div class="text-4xl font-bold text-blue-600 mb-2">16</div>
                     <p class="text-blue-700 font-semibold">Logos SVG</p>
-                    <p class="text-sm text-blue-600">Générés</p>
+                    <p class="text-sm text-blue-600">{{ __('Générés') }}</p>
                 </div>
                 <div class="bg-purple-50 rounded-lg p-4">
                     <div class="text-4xl font-bold text-purple-600 mb-2">100%</div>
@@ -252,13 +252,13 @@
 
         <!-- Informations techniques -->
         <div class="mt-8 bg-gray-50 rounded-xl p-6">
-            <h3 class="text-xl font-semibold text-gray-700 mb-4">🔧 Informations techniques</h3>
+            <h3 class="text-xl font-semibold text-gray-700 mb-4">{{ __('🔧 Informations techniques') }}</h3>
             <div class="text-sm text-gray-600 space-y-2">
                 <p><strong>Composant :</strong> <code class="bg-gray-200 px-2 py-1 rounded">x-club-logo-working</code></p>
                 <p><strong>Format :</strong> SVG (vectoriel, redimensionnable)</p>
-                <p><strong>Dossier :</strong> <code class="bg-gray-200 px-2 py-1 rounded">public/clubs/</code></p>
-                <p><strong>Génération :</strong> Automatique via Node.js</p>
-                <p><strong>Fallback :</strong> Icône 🏟️ si logo manquant</p>
+                <p><strong>{{ __('Dossier :') }}</strong> <code class="bg-gray-200 px-2 py-1 rounded">public/clubs/</code></p>
+                <p><strong>{{ __('Génération :') }}</strong> Automatique via Node.js</p>
+                <p><strong>Fallback :</strong>{{ __('Icône 🏟️ si logo manquant') }}</p>
             </div>
         </div>
     </div>

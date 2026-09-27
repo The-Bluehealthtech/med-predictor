@@ -18,13 +18,13 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Device Connections
                                 </h1>
-                                <p class="text-sm text-gray-600">Gestion des connexions d'appareils et données IoT</p>
+                                <p class="text-sm text-gray-600">{{ __('Gestion des connexions d\'appareils et données IoT') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
                 </div>
             </div>
         </div>
@@ -37,18 +37,14 @@
             <div class="p-6">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">🔗 Device Connections</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Gestion des connexions d'appareils et données IoT
-                    </p>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Gestion des connexions d\'appareils et données IoT') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                             {{ __('Système opérationnel') }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            IoT connecté
-                        </div>
+                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>{{ __('IoT connecté') }}</div>
                     </div>
                 </div>
             </div>

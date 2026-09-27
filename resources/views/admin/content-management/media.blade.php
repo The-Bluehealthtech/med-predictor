@@ -15,10 +15,8 @@
                                 <span class="text-white font-bold text-lg">🎬</span>
                             </div>
                             <div class="ml-3">
-                                <h1 class="text-2xl font-bold text-gray-900">
-                                    Médias
-                                </h1>
-                                <p class="text-sm text-gray-600">Gérer les fichiers multimédias</p>
+                                <h1 class="text-2xl font-bold text-gray-900">{{ __('Médias') }}</h1>
+                                <p class="text-sm text-gray-600">{{ __('Gérer les fichiers multimédias') }}</p>
                             </div>
                         </div>
                     </div>
@@ -34,9 +32,9 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Actions -->
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-medium text-gray-900">Bibliothèque Médias</h2>
+            <h2 class="text-lg font-medium text-gray-900">{{ __('Bibliothèque Médias') }}</h2>
             <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
-                📁 Uploader des Fichiers
+                {{ __('📁 Uploader des Fichiers') }}
             </button>
         </div>
 
@@ -83,7 +81,7 @@
                     </div>
                 @else
                     <div class="text-center py-8">
-                        <p class="text-gray-500 mb-4">Aucun fichier média trouvé.</p>
+                        <p class="text-gray-500 mb-4">{{ __('Aucun fichier média trouvé.') }}</p>
                         <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
                             📁 Uploader le premier fichier
                         </button>

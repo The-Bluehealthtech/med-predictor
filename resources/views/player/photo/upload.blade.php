@@ -59,20 +59,17 @@
             @if(isset($externalLink) && in_array($type, ['nationality', 'association_flag']))
                 <!-- Pour les drapeaux, afficher un lien vers flag-icons -->
                 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-4">🏳️ Gestion des drapeaux</h2>
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">{{ __('🏳️ Gestion des drapeaux') }}</h2>
                     
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                        <h3 class="text-lg font-medium text-blue-800 mb-2">📚 Ressource recommandée : Flag Icons</h3>
-                        <p class="text-blue-700 mb-4">
-                            Pour gérer les drapeaux de nationalité et d'association, nous recommandons d'utiliser le projet 
-                            <strong>Flag Icons</strong> qui fournit une collection complète de drapeaux SVG de tous les pays.
-                        </p>
+                        <h3 class="text-lg font-medium text-blue-800 mb-2">{{ __('📚 Ressource recommandée : Flag Icons') }}</h3>
+                        <p class="text-blue-700 mb-4">{{ __('Pour gérer les drapeaux de nationalité et d\'association, nous recommandons d\'utiliser le projet') }}<strong>Flag Icons</strong>{{ __('qui fournit une collection complète de drapeaux SVG de tous les pays.') }}</p>
                         
                         <div class="flex space-x-4">
                             <a href="{{ $externalLink }}" 
                                target="_blank"
                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center">
-                                🌐 Voir Flag Icons sur GitHub
+                                {{ __('🌐 Voir Flag Icons sur GitHub') }}
                                 <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                 </svg>
@@ -80,9 +77,7 @@
                             
                             <a href="https://flagicons.lipis.dev" 
                                target="_blank"
-                               class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center">
-                                🎏 Voir la démo
-                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center">{{ __('🎏 Voir la démo') }}<svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                 </svg>
                             </a>
@@ -108,9 +103,7 @@
                         <input type="hidden" name="type" value="{{ $type }}">
                         
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Sélectionner une image
-                            </label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Sélectionner une image') }}</label>
                             <input type="file" name="photo" accept="image/*" required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <p class="text-sm text-gray-500 mt-1">{{ __('Formats acceptés : JPEG, PNG, JPG, GIF (max 2MB)') }}</p>
@@ -135,35 +128,29 @@
                         
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                URL de l'image
+                                {{ __('URL de l\'image') }}
                             </label>
                             <input type="url" name="external_url" 
                                    value="{{ $currentExternalUrl ?? '' }}"
                                    placeholder="https://exemple.com/{{ $type }}.jpg"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <p class="text-sm text-gray-500 mt-1">Entrez l'URL d'une image externe</p>
+                            <p class="text-sm text-gray-500 mt-1">{{ __('Entrez l\'URL d\'une image externe') }}</p>
                         </div>
                         
-                        <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
-                            🔗 Mettre à jour
-                        </button>
+                        <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">{{ __('🔗 Mettre à jour') }}</button>
                     </form>
                 </div>
             @endif
 
             <!-- Génération d'avatar -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">🎨 Générer un avatar</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">{{ __('🎨 Générer un avatar') }}</h2>
                 
-                <p class="text-gray-600 mb-4">
-                    Générez automatiquement un avatar basé sur le nom du joueur en utilisant l'API DiceBear.
-                </p>
+                <p class="text-gray-600 mb-4">{{ __('Générez automatiquement un avatar basé sur le nom du joueur en utilisant l\'API DiceBear.') }}</p>
                 
                 <form action="{{ route('joueur.photo.generate', $player->id) }}" method="POST">
                     @csrf
-                    <button type="submit" class="bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-600">
-                        🎨 Générer Avatar
-                    </button>
+                    <button type="submit" class="bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-600">{{ __('🎨 Générer Avatar') }}</button>
                 </form>
             </div>
 
@@ -171,7 +158,7 @@
             <div class="text-center">
                 <a href="{{ route('joueur.show', $player->id) }}" 
                    class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600">
-                    ← Retour au profil
+                    {{ __('← Retour au profil') }}
                 </a>
             </div>
 

@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Association Registration
                                 </h1>
-                                <p class="text-sm text-gray-600">Enregistrement avec détection de fraude GPT-4</p>
+                                <p class="text-sm text-gray-600">{{ __('Enregistrement avec détection de fraude GPT-4') }}</p>
                             </div>
                         </div>
                     </div>
@@ -35,8 +35,8 @@
         <!-- Registration Form -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">📝 Formulaire d'Enregistrement</h2>
-                <p class="text-sm text-gray-600 mt-1">Remplissez les informations de l'association</p>
+                <h2 class="text-xl font-semibold text-gray-800">{{ __('📝 Formulaire d\'Enregistrement') }}</h2>
+                <p class="text-sm text-gray-600 mt-1">{{ __('Remplissez les informations de l\'association') }}</p>
             </div>
             
             <form id="associationRegistrationForm" action="{{ route('association.registration.store') }}" method="POST" class="p-6" enctype="multipart/form-data">
@@ -46,7 +46,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
                         <label for="association_name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Nom de l'Association *
+                            {{ __('Nom de l\'Association *') }}
                         </label>
                         <input type="text" name="association_name" id="association_name" 
                                value="{{ old('association_name') }}" required
@@ -64,8 +64,8 @@
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                             <option value="">{{ __('health_records_create.select_type_placeholder') }}</option>
                             <option value="National Association" {{ old('association_type') == 'National Association' ? 'selected' : '' }}>Association Nationale</option>
-                            <option value="Regional Association" {{ old('association_type') == 'Regional Association' ? 'selected' : '' }}>Association Régionale</option>
-                            <option value="League Administrator" {{ old('association_type') == 'League Administrator' ? 'selected' : '' }}>Administrateur de Ligue</option>
+                            <option value="Regional Association" {{ old('association_type') == 'Regional Association' ? 'selected' : '' }}>{{ __('Association Régionale') }}</option>
+                            <option value="League Administrator" {{ old('association_type') == 'League Administrator' ? 'selected' : '' }}>{{ __('Administrateur de Ligue') }}</option>
                             <option value="Refereeing Body" {{ old('association_type') == 'Refereeing Body' ? 'selected' : '' }}>Organisme d'Arbitrage</option>
                         </select>
                         @error('association_type')
@@ -75,7 +75,7 @@
 
                     <div>
                         <label for="contact_email" class="block text-sm font-medium text-gray-700 mb-2">
-                            Email de Contact *
+                            {{ __('Email de Contact *') }}
                         </label>
                         <input type="email" name="contact_email" id="contact_email" 
                                value="{{ old('contact_email') }}" required
@@ -86,9 +86,7 @@
                     </div>
 
                     <div>
-                        <label for="contact_phone" class="block text-sm font-medium text-gray-700 mb-2">
-                            Téléphone de Contact *
-                        </label>
+                        <label for="contact_phone" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Téléphone de Contact *') }}</label>
                         <input type="tel" name="contact_phone" id="contact_phone" 
                                value="{{ old('contact_phone') }}" required
                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
@@ -114,7 +112,7 @@
                         </label>
                         <select name="country" id="country" required
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Sélectionner un pays</option>
+                            <option value="">{{ __('Sélectionner un pays') }}</option>
                             <option value="France" {{ old('country') == 'France' ? 'selected' : '' }}>France</option>
                             <option value="Tunisia" {{ old('country') == 'Tunisia' ? 'selected' : '' }}>Tunisie</option>
                             <option value="Morocco" {{ old('country') == 'Morocco' ? 'selected' : '' }}>Maroc</option>
@@ -135,7 +133,7 @@
                 <!-- Logo Upload -->
                 <div class="mb-6">
                     <label for="association_logo" class="block text-sm font-medium text-gray-700 mb-2">
-                        Logo de l'Association
+                        {{ __('Logo de l\'Association') }}
                     </label>
                     <div class="flex items-center space-x-4">
                         <div class="flex-shrink-0">
@@ -146,7 +144,7 @@
                         <div class="flex-1">
                             <input type="file" name="association_logo" id="association_logo" accept="image/*"
                                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <p class="mt-1 text-sm text-gray-500">Formats acceptés: JPEG, PNG, JPG. Taille max: 2MB</p>
+                            <p class="mt-1 text-sm text-gray-500">{{ __('Formats acceptés: JPEG, PNG, JPG. Taille max: 2MB') }}</p>
                             @error('association_logo')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -157,7 +155,7 @@
                 <!-- Additional Information -->
                 <div class="mb-6">
                     <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                        Description de l'Association
+                        {{ __('Description de l\'Association') }}
                     </label>
                     <textarea name="description" id="description" rows="4"
                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('description') }}</textarea>
@@ -169,12 +167,10 @@
                 <!-- Fraud Detection Section -->
                 <div class="border-t border-gray-200 pt-6 mb-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium text-gray-900">🛡️ Détection de Fraude GPT-4</h3>
+                        <h3 class="text-lg font-medium text-gray-900">{{ __('🛡️ Détection de Fraude GPT-4') }}</h3>
                         <div class="flex items-center">
                             <button type="button" id="fraudDetectionBtn" 
-                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                                🔍 Activer la Détection
-                            </button>
+                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">{{ __('🔍 Activer la Détection') }}</button>
                         </div>
                     </div>
                     
@@ -186,7 +182,7 @@
                                 </div>
                                 <div class="ml-3">
                                     <p class="text-sm font-medium text-yellow-800">
-                                        Analyse en cours avec GPT-4...
+                                        {{ __('Analyse en cours avec GPT-4...') }}
                                     </p>
                                 </div>
                             </div>
@@ -195,7 +191,7 @@
 
                     <div id="fraudDetectionResults" class="hidden">
                         <div class="bg-white border border-gray-200 rounded-md p-4">
-                            <h4 class="text-sm font-medium text-gray-900 mb-2">Résultats de l'Analyse GPT-4</h4>
+                            <h4 class="text-sm font-medium text-gray-900 mb-2">{{ __('Résultats de l\'Analyse GPT-4') }}</h4>
                             <div id="fraudAnalysisContent" class="text-sm text-gray-700"></div>
                         </div>
                     </div>
@@ -208,7 +204,7 @@
                                 </div>
                                 <div class="ml-3">
                                     <p class="text-sm font-medium text-red-800">
-                                        Erreur lors de l'analyse GPT-4
+                                        {{ __('Erreur lors de l\'analyse GPT-4') }}
                                     </p>
                                     <p id="fraudErrorDetails" class="text-sm text-red-700 mt-1"></p>
                                 </div>
@@ -222,7 +218,7 @@
                     <div class="flex items-center space-x-4">
                         <button type="submit" id="submitBtn"
                                 class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors">
-                            ✅ Enregistrer l'Association
+                            {{ __('✅ Enregistrer l\'Association') }}
                         </button>
                         <button type="button" onclick="window.history.back()"
                                 class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md text-sm font-medium transition-colors">
@@ -236,9 +232,7 @@
                             Validation automatique
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            GPT-4 Intégré
-                        </div>
+                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>{{ __('GPT-4 Intégré') }}</div>
                     </div>
                 </div>
             </form>

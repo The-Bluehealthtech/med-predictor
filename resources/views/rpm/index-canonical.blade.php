@@ -7,16 +7,14 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">⚡ Real-time Performance Monitoring</h1>
-            <p class="text-sm text-gray-600">
-                Dernières mesures réellement enregistrées dans player_real_time_health.
-            </p>
+            <p class="text-sm text-gray-600">{{ __('Dernières mesures réellement enregistrées dans player_real_time_health.') }}</p>
         </div>
         <a href="{{ route('modules.index') }}" class="text-blue-600 hover:text-blue-800">← Modules</a>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white rounded-lg shadow p-4">
-            <div class="text-sm text-gray-500">Mesures chargées</div>
+            <div class="text-sm text-gray-500">{{ __('Mesures chargées') }}</div>
             <div class="text-2xl font-bold">{{ $stats['measurements'] }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4">
@@ -24,11 +22,11 @@
             <div class="text-2xl font-bold">{{ $stats['players'] }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4">
-            <div class="text-sm text-gray-500">Alertes sur les mesures</div>
+            <div class="text-sm text-gray-500">{{ __('Alertes sur les mesures') }}</div>
             <div class="text-2xl font-bold">{{ $stats['active_alerts'] }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4">
-            <div class="text-sm text-gray-500">Dernière mesure</div>
+            <div class="text-sm text-gray-500">{{ __('Dernière mesure') }}</div>
             <div class="text-sm font-semibold">
                 {{ $stats['latest_measurement'] ? \Carbon\Carbon::parse($stats['latest_measurement'])->format('d/m/Y H:i') : 'N/A' }}
             </div>
@@ -36,9 +34,7 @@
     </div>
 
     @if($stats['measurements'] === 0)
-        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-5 text-yellow-800">
-            Aucune mesure temps réel n'est disponible dans le périmètre autorisé. Le module ne simule aucune donnée.
-        </div>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-5 text-yellow-800">{{ __('Aucune mesure temps réel n\'est disponible dans le périmètre autorisé. Le module ne simule aucune donnée.') }}</div>
     @endif
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -74,7 +70,7 @@
                             <td class="px-4 py-3 text-sm">{{ $row->data_source ?? 'N/A' }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="9" class="px-4 py-8 text-center text-gray-500">Aucune mesure disponible.</td></tr>
+                        <tr><td colspan="9" class="px-4 py-8 text-center text-gray-500">{{ __('Aucune mesure disponible.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>

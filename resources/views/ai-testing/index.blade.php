@@ -85,7 +85,7 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8">
             <div class="p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">🎤 Whisper Speech - Audio Transcription</h3>
-                <p class="text-sm text-gray-600 mb-4">Transcription audio avec OpenAI Whisper pour contexte médical</p>
+                <p class="text-sm text-gray-600 mb-4">{{ __('Transcription audio avec OpenAI Whisper pour contexte médical') }}</p>
                 
                 <!-- Arabic Model Info -->
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
@@ -154,7 +154,7 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8">
             <div class="p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">🤖 Google Gemini AI - Medical Analysis</h3>
-                <p class="text-sm text-gray-600 mb-4">Analyse médicale avancée avec Google Gemini AI</p>
+                <p class="text-sm text-gray-600 mb-4">{{ __('Analyse médicale avancée avec Google Gemini AI') }}</p>
                 
                 <div class="space-y-4">
                     <!-- Analysis Type Selection -->

@@ -8,9 +8,9 @@
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">
             <i class="fas fa-chart-bar text-green-500 mr-3"></i>
-            Rapport de Performance des Joueurs
+            {{ __('Rapport de Performance des Joueurs') }}
         </h1>
-        <p class="text-gray-600">Analyse détaillée des performances des joueurs</p>
+        <p class="text-gray-600">{{ __('Analyse détaillée des performances des joueurs') }}</p>
     </div>
 
     <!-- Barre de recherche et filtres -->
@@ -24,12 +24,12 @@
             <!-- Barre de recherche -->
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Rechercher un joueur</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Rechercher un joueur') }}</label>
                     <div class="relative">
                         <input type="text" 
                                name="search" 
                                value="{{ $search }}"
-                               placeholder="Nom du joueur, email ou club..."
+                               placeholder="{{ __('Nom du joueur, email ou club...') }}"
                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400"></i>
@@ -63,7 +63,7 @@
                 
                 <a href="{{ route('competitions.association.rapports-avances') }}" 
                    class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors text-center">
-                    <i class="fas fa-arrow-left mr-2"></i>Retour aux Rapports
+                    <i class="fas fa-arrow-left mr-2"></i>{{ __('Retour aux Rapports') }}
                 </a>
             </div>
         </form>
@@ -145,9 +145,7 @@
     <div class="bg-white rounded-lg shadow-sm border border-gray-200">
         <div class="p-6 border-b border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900">
-                <i class="fas fa-table text-gray-500 mr-2"></i>
-                Détail des Performances
-            </h3>
+                <i class="fas fa-table text-gray-500 mr-2"></i>{{ __('Détail des Performances') }}</h3>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
@@ -235,7 +233,7 @@
                         <tr>
                             <td colspan="9" class="px-6 py-4 text-center text-gray-500">
                                 <i class="fas fa-users text-3xl mb-2"></i>
-                                <p>Aucun joueur trouvé avec les filtres appliqués</p>
+                                <p>{{ __('Aucun joueur trouvé avec les filtres appliqués') }}</p>
                             </td>
                         </tr>
                     @endforelse
@@ -248,14 +246,12 @@
     @if($players->hasPages())
     <div class="mt-6 flex items-center justify-between">
         <div class="text-sm text-gray-700">
-            Affichage de 
+            {{ __('Affichage de') }}
             <span class="font-medium">{{ $players->firstItem() }}</span>
             {{ __('clinical.at_time_connector') }}
             <span class="font-medium">{{ $players->lastItem() }}</span>
-            sur 
-            <span class="font-medium">{{ $players->total() }}</span>
-            résultats
-        </div>
+            {{ __('sur') }}
+            <span class="font-medium">{{ $players->total() }}</span>{{ __('résultats') }}</div>
         
         <div class="flex items-center space-x-2">
             {{ $players->appends(request()->query())->links() }}
@@ -289,9 +285,9 @@
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">
             <i class="fas fa-chart-bar text-green-500 mr-3"></i>
-            Rapport de Performance des Joueurs
+            {{ __('Rapport de Performance des Joueurs') }}
         </h1>
-        <p class="text-gray-600">Analyse détaillée des performances des joueurs</p>
+        <p class="text-gray-600">{{ __('Analyse détaillée des performances des joueurs') }}</p>
     </div>
 
     <!-- Barre de recherche et filtres -->
@@ -305,12 +301,12 @@
             <!-- Barre de recherche -->
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Rechercher un joueur</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Rechercher un joueur') }}</label>
                     <div class="relative">
                         <input type="text" 
                                name="search" 
                                value="{{ $search }}"
-                               placeholder="Nom du joueur, email ou club..."
+                               placeholder="{{ __('Nom du joueur, email ou club...') }}"
                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400"></i>
@@ -344,7 +340,7 @@
                 
                 <a href="{{ route('competitions.association.rapports-avances') }}" 
                    class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors text-center">
-                    <i class="fas fa-arrow-left mr-2"></i>Retour aux Rapports
+                    <i class="fas fa-arrow-left mr-2"></i>{{ __('Retour aux Rapports') }}
                 </a>
             </div>
         </form>
@@ -426,9 +422,7 @@
     <div class="bg-white rounded-lg shadow-sm border border-gray-200">
         <div class="p-6 border-b border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900">
-                <i class="fas fa-table text-gray-500 mr-2"></i>
-                Détail des Performances
-            </h3>
+                <i class="fas fa-table text-gray-500 mr-2"></i>{{ __('Détail des Performances') }}</h3>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
@@ -516,7 +510,7 @@
                         <tr>
                             <td colspan="9" class="px-6 py-4 text-center text-gray-500">
                                 <i class="fas fa-users text-3xl mb-2"></i>
-                                <p>Aucun joueur trouvé avec les filtres appliqués</p>
+                                <p>{{ __('Aucun joueur trouvé avec les filtres appliqués') }}</p>
                             </td>
                         </tr>
                     @endforelse
@@ -529,14 +523,12 @@
     @if($players->hasPages())
     <div class="mt-6 flex items-center justify-between">
         <div class="text-sm text-gray-700">
-            Affichage de 
+            {{ __('Affichage de') }}
             <span class="font-medium">{{ $players->firstItem() }}</span>
             {{ __('clinical.at_time_connector') }}
             <span class="font-medium">{{ $players->lastItem() }}</span>
-            sur 
-            <span class="font-medium">{{ $players->total() }}</span>
-            résultats
-        </div>
+            {{ __('sur') }}
+            <span class="font-medium">{{ $players->total() }}</span>{{ __('résultats') }}</div>
         
         <div class="flex items-center space-x-2">
             {{ $players->appends(request()->query())->links() }}

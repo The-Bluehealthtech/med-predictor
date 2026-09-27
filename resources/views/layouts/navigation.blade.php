@@ -112,8 +112,8 @@
                     <a href="{{ route('visits.index') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-blue-700">🏥 {{ __('navigation.visits') }}</a>
                     <a href="{{ route('documents.index') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-blue-700">📄 {{ __('navigation.documents') }}</a>
                     <div class="border-t my-1"></div>
-                    <a href="{{ route('portal.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-green-700">🏃‍♂️ Portail Athlète</a>
-                    <a href="{{ route('secretary.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-purple-700">🏥 Secrétariat Médical</a>
+                    <a href="{{ route('portal.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-green-700">{{ __('🏃‍♂️ Portail Athlète') }}</a>
+                    <a href="{{ route('secretary.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50 font-semibold text-purple-700">{{ __('🏥 Secrétariat Médical') }}</a>
                 </div>
             </div>
             <!-- Referee -->
@@ -162,7 +162,7 @@
                                 <div class="flex items-start space-x-3">
                                     <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                                     <div class="flex-1">
-                                        <div class="text-sm">Licence validée - <a href="#" class="text-blue-600 hover:underline">Voir la demande</a></div>
+                                        <div class="text-sm">{{ __('Licence validée -') }}<a href="#" class="text-blue-600 hover:underline">{{ __('Voir la demande') }}</a></div>
                                         <div class="text-xs text-gray-500 mt-1">Il y a 2 heures</div>
                                     </div>
                                     <button class="text-xs text-gray-400 hover:text-gray-600">×</button>
@@ -173,7 +173,7 @@
                                 <div class="flex items-start space-x-3">
                                     <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                                     <div class="flex-1">
-                                        <div class="text-sm">Nouveau dossier médical créé pour Athlète #1234</div>
+                                        <div class="text-sm">{{ __('Nouveau dossier médical créé pour Athlète #1234') }}</div>
                                         <div class="text-xs text-gray-500 mt-1">Il y a 4 heures</div>
                                     </div>
                                 </div>
@@ -183,7 +183,7 @@
                                 <div class="flex items-start space-x-3">
                                     <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
                                     <div class="flex-1">
-                                        <div class="text-sm">Licence en attente de validation</div>
+                                        <div class="text-sm">{{ __('Licence en attente de validation') }}</div>
                                         <div class="text-xs text-gray-500 mt-1">Il y a 6 heures</div>
                                     </div>
                                 </div>

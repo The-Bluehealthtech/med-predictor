@@ -16,7 +16,7 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Gestion des Budgets
+                                    {{ __('Gestion des Budgets') }}
                                 </h1>
                                 <p class="text-sm text-gray-600">Planification et suivi des budgets {{ ucfirst($userType) }}</p>
                             </div>
@@ -33,17 +33,9 @@
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-            <p class="text-yellow-800 font-semibold mb-2">⚠️ Gestion des budgets non disponible</p>
-            <p class="text-sm text-yellow-800">
-                Cette application ne dispose pas encore d'un module de comptabilité générale : il n'existe aujourd'hui
-                aucune donnée réelle de budget annuel, de budget par catégorie (salaires, maintenance, déplacements, équipement...)
-                ni de suivi trimestriel. Les chiffres qui s'affichaient ici auparavant (budget annuel, montants dépensés, pourcentages)
-                étaient des exemples fixes, identiques pour tous les clubs et associations, et ont été retirés.
-            </p>
-            <p class="text-sm text-yellow-800 mt-3">
-                Mettre en place une vraie gestion de budgets nécessiterait de créer ce modèle de données dans l'application ;
-                cela dépasse le cadre d'un nettoyage de données factices et devrait être traité comme un projet à part.
-            </p>
+            <p class="text-yellow-800 font-semibold mb-2">{{ __('⚠️ Gestion des budgets non disponible') }}</p>
+            <p class="text-sm text-yellow-800">{{ __('Cette application ne dispose pas encore d\'un module de comptabilité générale : il n\'existe aujourd\'hui aucune donnée réelle de budget annuel, de budget par catégorie (salaires, maintenance, déplacements, équipement...) ni de suivi trimestriel. Les chiffres qui s\'affichaient ici auparavant (budget annuel, montants dépensés, pourcentages) étaient des exemples fixes, identiques pour tous les clubs et associations, et ont été retirés.') }}</p>
+            <p class="text-sm text-yellow-800 mt-3">{{ __('Mettre en place une vraie gestion de budgets nécessiterait de créer ce modèle de données dans l\'application ; cela dépasse le cadre d\'un nettoyage de données factices et devrait être traité comme un projet à part.') }}</p>
         </div>
 
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mt-8 p-6 text-center">

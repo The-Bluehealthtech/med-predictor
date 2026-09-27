@@ -6,12 +6,8 @@
         <h1 class="text-2xl font-bold text-gray-800 mb-6">🏆 Rankings</h1>
         
         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-            <p class="text-yellow-800">
-                🚧 Cette section est en cours de développement.
-            </p>
-            <p class="text-yellow-600 text-sm mt-2">
-                Les classements et rankings seront bientôt disponibles.
-            </p>
+            <p class="text-yellow-800">{{ __('🚧 Cette section est en cours de développement.') }}</p>
+            <p class="text-yellow-600 text-sm mt-2">{{ __('Les classements et rankings seront bientôt disponibles.') }}</p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -34,9 +30,7 @@
         
         <div class="mt-6">
             <a href="{{ route('competitions.index') }}" 
-               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
-                ← Retour aux compétitions
-            </a>
+               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">{{ __('← Retour aux compétitions') }}</a>
         </div>
     </div>
 </div>

@@ -16,9 +16,9 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Gestion RBAC
+                                    {{ __('Gestion RBAC') }}
                                 </h1>
-                                <p class="text-sm text-gray-600">Rôles, permissions et contrôle d'accès</p>
+                                <p class="text-sm text-gray-600">{{ __('Rôles, permissions et contrôle d\'accès') }}</p>
                             </div>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Rôles Actifs</dt>
+                                <dt class="text-sm font-medium text-gray-500 truncate">{{ __('Rôles Actifs') }}</dt>
                                 <dd class="flex items-baseline">
                                     <div class="text-2xl font-semibold text-gray-900">{{ $stats['active_roles'] }}</div>
                                 </dd>
@@ -124,19 +124,13 @@
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <a href="{{ route('admin.rbac.roles') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                        👥 Gérer les Rôles
-                    </a>
-                    <a href="{{ route('admin.rbac.module-permissions') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                        🔑 Gérer les Permissions
-                    </a>
-                    <a href="{{ route('admin.rbac.users') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                        👤 Gérer les Utilisateurs
-                    </a>
+                    <a href="{{ route('admin.rbac.roles') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">{{ __('👥 Gérer les Rôles') }}</a>
+                    <a href="{{ route('admin.rbac.module-permissions') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">{{ __('🔑 Gérer les Permissions') }}</a>
+                    <a href="{{ route('admin.rbac.users') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">{{ __('👤 Gérer les Utilisateurs') }}</a>
                     <form action="{{ route('admin.rbac.initialize-permissions') }}" method="POST" class="inline">
                         @csrf
                         <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                            ⚡ Initialiser les Permissions
+                            {{ __('⚡ Initialiser les Permissions') }}
                         </button>
                     </form>
                 </div>
@@ -146,7 +140,7 @@
         <!-- Vue d'ensemble des rôles -->
         <div class="bg-white shadow rounded-lg mb-8">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Vue d'ensemble des Rôles</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('Vue d\'ensemble des Rôles') }}</h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
@@ -203,7 +197,7 @@
         <!-- Répartition des utilisateurs par rôle -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Répartition des Utilisateurs par Rôle</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('Répartition des Utilisateurs par Rôle') }}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($stats['users_by_role'] as $role => $count)
                     <div class="bg-gray-50 rounded-lg p-4">

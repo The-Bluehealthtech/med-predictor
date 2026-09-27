@@ -6,19 +6,13 @@
 <div class="max-w-6xl mx-auto px-4 py-8 space-y-6">
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">🔄 Digital Twin — scénario what-if</h1>
-            <p class="text-sm text-gray-600">
-                Simulation mathématique basée sur la dernière performance réellement enregistrée.
-            </p>
+            <h1 class="text-2xl font-bold text-gray-900">{{ __('🔄 Digital Twin — scénario what-if') }}</h1>
+            <p class="text-sm text-gray-600">{{ __('Simulation mathématique basée sur la dernière performance réellement enregistrée.') }}</p>
         </div>
         <a href="{{ route('analytics.dashboard') }}" class="text-blue-600 hover:text-blue-800">← Analytics</a>
     </div>
 
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-900">
-        Les résultats ci-dessous sont des <strong>scénarios simulés</strong>, pas des mesures,
-        pas un diagnostic médical et pas le score FIT canonique.
-        L'ajustement applique simplement le pourcentage choisi aux scores disponibles.
-    </div>
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-900">{{ __('Les résultats ci-dessous sont des') }}<strong>{{ __('scénarios simulés') }}</strong>{{ __(', pas des mesures, pas un diagnostic médical et pas le score FIT canonique. L\'ajustement applique simplement le pourcentage choisi aux scores disponibles.') }}</div>
 
     <form method="GET" action="{{ route('analytics.digital-twin') }}" class="bg-white rounded-lg shadow p-5 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
         <div>
@@ -33,15 +27,13 @@
             </select>
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">Ajustement du scénario (%)</label>
+            <label class="block text-sm font-medium text-gray-700">{{ __('Ajustement du scénario (%)') }}</label>
             <input type="number" name="adjustment_pct" min="-20" max="20" step="0.5"
                    value="{{ request('adjustment_pct', 0) }}"
                    class="mt-1 w-full rounded border-gray-300">
-            <p class="text-xs text-gray-500 mt-1">Plage autorisée : -20 % à +20 %.</p>
+            <p class="text-xs text-gray-500 mt-1">{{ __('Plage autorisée : -20 % à +20 %.') }}</p>
         </div>
-        <button type="submit" class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
-            Calculer le scénario
-        </button>
+        <button type="submit" class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">{{ __('Calculer le scénario') }}</button>
     </form>
 
     @if($selectedPlayer)
@@ -51,9 +43,7 @@
             </h2>
 
             @if(!$baseline)
-                <p class="mt-3 text-sm text-gray-500">
-                    Aucune performance réelle n'est disponible pour ce joueur. Aucun scénario n'est généré.
-                </p>
+                <p class="mt-3 text-sm text-gray-500">{{ __('Aucune performance réelle n\'est disponible pour ce joueur. Aucun scénario n\'est généré.') }}</p>
             @else
                 <p class="mt-1 text-sm text-gray-500">
                     Performance du {{ $baseline->performance_date?->format('d/m/Y') ?? 'date inconnue' }}.

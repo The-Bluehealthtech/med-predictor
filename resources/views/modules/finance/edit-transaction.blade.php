@@ -11,8 +11,8 @@
                         💰
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Édition Transaction</h1>
-                        <p class="text-gray-600 mt-1">Modifier les données financières</p>
+                        <h1 class="text-3xl font-bold text-gray-900">{{ __('Édition Transaction') }}</h1>
+                        <p class="text-gray-600 mt-1">{{ __('Modifier les données financières') }}</p>
                     </div>
                 </div>
                 <a href="{{ route('modules.finance.dashboard') }}" 
@@ -31,10 +31,10 @@
                 <!-- Type de Transaction -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Type de Transaction</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Type de Transaction') }}</label>
                         <select name="type" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                             <option value="revenue" {{ ($transaction->type ?? '') == 'revenue' ? 'selected' : '' }}>Revenu</option>
-                            <option value="expense" {{ ($transaction->type ?? '') == 'expense' ? 'selected' : '' }}>Dépense</option>
+                            <option value="expense" {{ ($transaction->type ?? '') == 'expense' ? 'selected' : '' }}>{{ __('Dépense') }}</option>
                             <option value="transfer" {{ ($transaction->type ?? '') == 'transfer' ? 'selected' : '' }}>Transfert</option>
                         </select>
                     </div>
@@ -58,26 +58,26 @@
                         <input type="text" name="description" 
                                value="{{ $transaction->description ?? '' }}"
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                               placeholder="Description de la transaction" required>
+                               placeholder="{{ __('Description de la transaction') }}" required>
                     </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Catégorie') }}</label>
                         <select name="category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <option value="">Sélectionner une catégorie</option>
+                            <option value="">{{ __('Sélectionner une catégorie') }}</option>
                             <optgroup label="Revenus">
                                 <option value="matchday_revenue" {{ ($transaction->category ?? '') == 'matchday_revenue' ? 'selected' : '' }}>Recettes match</option>
                                 <option value="sponsorship" {{ ($transaction->category ?? '') == 'sponsorship' ? 'selected' : '' }}>Sponsoring</option>
                                 <option value="merchandising" {{ ($transaction->category ?? '') == 'merchandising' ? 'selected' : '' }}>Merchandising</option>
-                                <option value="player_transfers" {{ ($transaction->category ?? '') == 'player_transfers' ? 'selected' : '' }}>Transferts joueurs</option>
+                                <option value="player_transfers" {{ ($transaction->category ?? '') == 'player_transfers' ? 'selected' : '' }}>{{ __('Transferts joueurs') }}</option>
                                 <option value="prize_money" {{ ($transaction->category ?? '') == 'prize_money' ? 'selected' : '' }}>Prix et primes</option>
                             </optgroup>
                             <optgroup label="Dépenses">
-                                <option value="player_salaries" {{ ($transaction->category ?? '') == 'player_salaries' ? 'selected' : '' }}>Salaires joueurs</option>
+                                <option value="player_salaries" {{ ($transaction->category ?? '') == 'player_salaries' ? 'selected' : '' }}>{{ __('Salaires joueurs') }}</option>
                                 <option value="staff_salaries" {{ ($transaction->category ?? '') == 'staff_salaries' ? 'selected' : '' }}>Salaires staff</option>
                                 <option value="facility_maintenance" {{ ($transaction->category ?? '') == 'facility_maintenance' ? 'selected' : '' }}>Maintenance installations</option>
-                                <option value="travel_expenses" {{ ($transaction->category ?? '') == 'travel_expenses' ? 'selected' : '' }}>Frais de déplacement</option>
-                                <option value="equipment" {{ ($transaction->category ?? '') == 'equipment' ? 'selected' : '' }}>Équipement</option>
+                                <option value="travel_expenses" {{ ($transaction->category ?? '') == 'travel_expenses' ? 'selected' : '' }}>{{ __('Frais de déplacement') }}</option>
+                                <option value="equipment" {{ ($transaction->category ?? '') == 'equipment' ? 'selected' : '' }}>{{ __('Équipement') }}</option>
                             </optgroup>
                         </select>
                     </div>
@@ -107,7 +107,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
                     <textarea name="notes" rows="3" 
                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                              placeholder="Notes supplémentaires...">{{ $transaction->notes ?? '' }}</textarea>
+                              placeholder="{{ __('Notes supplémentaires...') }}">{{ $transaction->notes ?? '' }}</textarea>
                 </div>
 
                 <!-- Actions -->

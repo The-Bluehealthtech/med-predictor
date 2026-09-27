@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     FAQ
                                 </h1>
-                                <p class="text-sm text-gray-600">Gérer les questions fréquemment posées</p>
+                                <p class="text-sm text-gray-600">{{ __('Gérer les questions fréquemment posées') }}</p>
                             </div>
                         </div>
                     </div>
@@ -34,10 +34,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Actions -->
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-medium text-gray-900">Questions Fréquemment Posées</h2>
+            <h2 class="text-lg font-medium text-gray-900">{{ __('Questions Fréquemment Posées') }}</h2>
             <a href="{{ route('admin.content-management.create', ['type' => 'faq']) }}" 
                class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors">
-                ➕ Nouvelle FAQ
+                {{ __('➕ Nouvelle FAQ') }}
             </a>
         </div>
 
@@ -74,7 +74,7 @@
                                         <p class="text-gray-600 mb-3">{{ Str::limit($faq['answer'], 200) }}</p>
                                         
                                         <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                            <span><strong>Modifié:</strong> {{ $faq['updated_at']->format('d/m/Y H:i') }}</span>
+                                            <span><strong>{{ __('Modifié:') }}</strong> {{ $faq['updated_at']->format('d/m/Y H:i') }}</span>
                                         </div>
                                     </div>
                                     
@@ -99,11 +99,9 @@
                     </div>
                 @else
                     <div class="text-center py-8">
-                        <p class="text-gray-500 mb-4">Aucune FAQ trouvée.</p>
+                        <p class="text-gray-500 mb-4">{{ __('Aucune FAQ trouvée.') }}</p>
                         <a href="{{ route('admin.content-management.create', ['type' => 'faq']) }}" 
-                           class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors">
-                            ➕ Créer la première FAQ
-                        </a>
+                           class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('➕ Créer la première FAQ') }}</a>
                     </div>
                 @endif
             </div>

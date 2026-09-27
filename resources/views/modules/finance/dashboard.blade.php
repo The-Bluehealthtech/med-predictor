@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@
         <!-- Avis : pas de comptabilite generale -->
         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">
             <p class="text-sm text-yellow-800">
-                ⚠️ <strong>{{ __('Comptabilité générale non disponible.') }}</strong>{{ __('Cette application n\'a pas de module de comptabilité générale (revenus, dépenses, budgets, salaires) : aucun logiciel comptable ou compte bancaire n\'y est connecté. Les seules données financières réellement enregistrées ci-dessous concernent les') }}<strong>paiements de transferts de joueurs</strong>.
+                ⚠️ <strong>{{ __('Comptabilité générale non disponible.') }}</strong>{{ __('Cette application n\'a pas de module de comptabilité générale (revenus, dépenses, budgets, salaires) : aucun logiciel comptable ou compte bancaire n\'y est connecté. Les seules données financières réellement enregistrées ci-dessous concernent les') }}<strong>{{ __('paiements de transferts de joueurs') }}</strong>.
             </p>
         </div>
 
@@ -215,7 +215,7 @@
                     </div>
                     <div>
                         <h3 class="font-semibold text-gray-900">{{ __('Intégrations') }}</h3>
-                        <p class="text-sm text-gray-600">Connecter des logiciels</p>
+                        <p class="text-sm text-gray-600">{{ __('Connecter des logiciels') }}</p>
                     </div>
                 </a>
             </div>
@@ -232,7 +232,7 @@
                     </div>
                     <div>
                         <h3 class="font-semibold text-gray-900">Banques</h3>
-                        <p class="text-sm text-gray-600">Connecter vos comptes bancaires</p>
+                        <p class="text-sm text-gray-600">{{ __('Connecter vos comptes bancaires') }}</p>
                     </div>
                 </a>
             </div>

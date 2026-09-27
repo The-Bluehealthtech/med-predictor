@@ -18,13 +18,13 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     {{ __('Gestion des Rôles') }}
                                 </h1>
-                                <p class="text-sm text-gray-600">Créer et gérer les rôles du système</p>
+                                <p class="text-sm text-gray-600">{{ __('Créer et gérer les rôles du système') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('admin.rbac.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au RBAC</a>
+                    <a href="{{ route('admin.rbac.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour au RBAC') }}</a>
                 </div>
             </div>
         </div>
@@ -48,16 +48,14 @@
         <div class="bg-white shadow rounded-lg mb-8">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Actions</h3>
-                <button onclick="openCreateRoleModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    ➕ Créer un Nouveau Rôle
-                </button>
+                <button onclick="openCreateRoleModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('➕ Créer un Nouveau Rôle') }}</button>
             </div>
         </div>
 
         <!-- Liste des rôles -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Rôles du Système</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('Rôles du Système') }}</h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
@@ -105,7 +103,7 @@
                                         <button onclick="editRole({{ $role->id }})" class="text-indigo-600 hover:text-indigo-900 mr-3">{{ __('common.edit') }}</button>
                                         <button onclick="deleteRole({{ $role->id }})" class="text-red-600 hover:text-red-900">{{ __('common.delete') }}</button>
                                     @else
-                                        <span class="text-gray-400">Rôle système</span>
+                                        <span class="text-gray-400">{{ __('Rôle système') }}</span>
                                     @endif
                                 </td>
                             </tr>
@@ -122,11 +120,11 @@
 <div id="createRoleModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Créer un Nouveau Rôle</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Créer un Nouveau Rôle') }}</h3>
             <form action="{{ route('admin.rbac.create-role') }}" method="POST">
                 @csrf
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom du rôle</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Nom du rôle') }}</label>
                     <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-4">

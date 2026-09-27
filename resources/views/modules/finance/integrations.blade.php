@@ -12,7 +12,7 @@
                     </div>
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900">{{ __('Intégrations API') }}</h1>
-                        <p class="text-gray-600 mt-1">Connectez vos logiciels comptables professionnels</p>
+                        <p class="text-gray-600 mt-1">{{ __('Connectez vos logiciels comptables professionnels') }}</p>
                     </div>
                 </div>
                 <a href="{{ route('modules.finance.dashboard') }}" 
@@ -105,7 +105,7 @@
                     <div class="mb-4">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{{ __('⚪ Non connecté') }}</span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-4">Import automatique des transactions et synchronisation des comptes.</p>
+                    <p class="text-sm text-gray-600 mb-4">{{ __('Import automatique des transactions et synchronisation des comptes.') }}</p>
                     <div class="flex space-x-2">
                         <button class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors">
                             Configurer
@@ -174,7 +174,7 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900">Excel/CSV</h3>
-                            <p class="text-sm text-gray-600">Import de fichiers</p>
+                            <p class="text-sm text-gray-600">{{ __('Import de fichiers') }}</p>
                         </div>
                     </div>
                     <div class="mb-4">
@@ -222,7 +222,7 @@
 
         <!-- Historique des Synchronisations -->
         <div class="bg-white rounded-lg shadow-lg p-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Historique des Synchronisations</h2>
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ __('Historique des Synchronisations') }}</h2>
             
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">

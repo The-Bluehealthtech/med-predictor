@@ -148,18 +148,18 @@
 @section('content')
 <div class="container">
     <div class="header">
-        <h1>🦷 Test Diagramme Dentaire Adapté</h1>
-        <p>Vérification de l'intégration du diagramme dentaire dans l'espace disponible</p>
+        <h1>{{ __('🦷 Test Diagramme Dentaire Adapté') }}</h1>
+        <p>{{ __('Vérification de l\'intégration du diagramme dentaire dans l\'espace disponible') }}</p>
     </div>
     
     <div class="instructions">
-        <h3>📋 Instructions de Test</h3>
+        <h3>{{ __('📋 Instructions de Test') }}</h3>
         <ul>
-            <li><strong>Cliquez sur une dent</strong> pour la sélectionner (elle doit devenir plus foncée)</li>
-            <li><strong>Survolez les dents</strong> pour voir l'effet de hover</li>
-            <li><strong>Vérifiez que les numéros</strong> sont bien centrés dans chaque zone</li>
-            <li><strong>Testez l'interactivité</strong> en cliquant sur différentes dents</li>
-            <li><strong>Utilisez les contrôles</strong> pour changer l'état des dents</li>
+            <li><strong>{{ __('Cliquez sur une dent') }}</strong>{{ __('pour la sélectionner (elle doit devenir plus foncée)') }}</li>
+            <li><strong>{{ __('Survolez les dents') }}</strong> {{ __('pour voir l\'effet de hover') }}</li>
+            <li><strong>{{ __('Vérifiez que les numéros') }}</strong>{{ __('sont bien centrés dans chaque zone') }}</li>
+            <li><strong>{{ __('Testez l\'interactivité') }}</strong>{{ __('en cliquant sur différentes dents') }}</li>
+            <li><strong>{{ __('Utilisez les contrôles') }}</strong>{{ __('pour changer l\'état des dents') }}</li>
         </ul>
     </div>
     
@@ -171,14 +171,14 @@
     
     <div class="feedback" id="feedback">
         <h4>✅ Feedback Interactif</h4>
-        <p><strong>Dent sélectionnée :</strong> <span id="selected-tooth">{{ __('competitions.engagements_clubs_page.csv_no_competition') }}</span></p>
-        <p><strong>{{ __('competitions.discipline_sanctions_page.view_status_label') }}</strong> <span id="tooth-status">En attente de sélection</span></p>
+        <p><strong>{{ __('Dent sélectionnée :') }}</strong> <span id="selected-tooth">{{ __('competitions.engagements_clubs_page.csv_no_competition') }}</span></p>
+        <p><strong>{{ __('competitions.discipline_sanctions_page.view_status_label') }}</strong> <span id="tooth-status">{{ __('En attente de sélection') }}</span></p>
     </div>
     
     <div class="dental-controls" id="dental-controls" style="display: none;">
-        <h4>🦷 Contrôles de la Dent</h4>
+        <h4>{{ __('🦷 Contrôles de la Dent') }}</h4>
         <div>
-            <label><strong>État de la dent :</strong></label>
+            <label><strong>{{ __('État de la dent :') }}</strong></label>
             <select id="tooth-status-select">
                 <option value="healthy">{{ __('health_records_create.tooth_status_healthy') }}</option>
                 <option value="cavity">Carie</option>
@@ -191,7 +191,7 @@
         </div>
         <div>
             <label><strong>{{ __('dental_chart.modal_notes_label') }}</strong></label>
-            <textarea id="tooth-notes" rows="2" placeholder="Notes sur cette dent..."></textarea>
+            <textarea id="tooth-notes" rows="2" placeholder="{{ __('health_records_create.tooth_notes_placeholder') }}"></textarea>
         </div>
         <div>
             <button onclick="saveToothData()">{{ __('health_records_create.save_button') }}</button>
@@ -200,15 +200,15 @@
     </div>
     
     <div class="chart-info">
-        <h3>Informations sur l'adaptation :</h3>
+        <h3>{{ __('Informations sur l\'adaptation :') }}</h3>
         <p><strong>Hauteur originale :</strong> 600px</p>
-        <p><strong>Hauteur adaptée :</strong> 300px</p>
-        <p><strong>ViewBox adapté :</strong> 0 0 800 400</p>
-        <p><strong>Position des dents :</strong> Ajustée pour la nouvelle taille</p>
-        <p><strong>Numéros :</strong> Repositionnés et redimensionnés (10px)</p>
-        <p><strong>Interactivité :</strong> Améliorée avec feedback visuel</p>
-        <p><strong>Légende :</strong> Repositionnée et redimensionnée</p>
-        <p><strong>Chargement :</strong> Dynamique via fetch()</p>
+        <p><strong>{{ __('Hauteur adaptée :') }}</strong> 300px</p>
+        <p><strong>{{ __('ViewBox adapté :') }}</strong> 0 0 800 400</p>
+        <p><strong>{{ __('Position des dents :') }}</strong>{{ __('Ajustée pour la nouvelle taille') }}</p>
+        <p><strong>{{ __('Numéros :') }}</strong>{{ __('Repositionnés et redimensionnés (10px)') }}</p>
+        <p><strong>{{ __('Interactivité :') }}</strong>{{ __('Améliorée avec feedback visuel') }}</p>
+        <p><strong>{{ __('Légende :') }}</strong>{{ __('Repositionnée et redimensionnée') }}</p>
+        <p><strong>{{ __('Chargement :') }}</strong> Dynamique via fetch()</p>
     </div>
 </div>
 @endsection

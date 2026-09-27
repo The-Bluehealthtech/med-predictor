@@ -107,7 +107,7 @@
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <span class="mr-2">⚽</span>
-                        Informations FIFA Connect
+                        {{ __('Informations FIFA Connect') }}
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -140,11 +140,11 @@
                             <div class="space-y-2">
                                 <button onclick="syncWithFifa({{ $confederation->id }})" 
                                         class="w-full px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
-                                    🔄 Synchroniser avec FIFA
+                                    {{ __('🔄 Synchroniser avec FIFA') }}
                                 </button>
                                 <a href="/fifa/dashboard?confederation_id={{ $confederation->id }}" 
                                    class="block w-full px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors text-center">
-                                    📊 Voir statistiques FIFA
+                                    {{ __('📊 Voir statistiques FIFA') }}
                                 </a>
                             </div>
                         </div>
@@ -207,7 +207,7 @@
             <div class="space-y-6">
                 <!-- Statistiques rapides -->
                 <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Statistiques</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('📊 Statistiques') }}</h3>
                     <div class="space-y-4">
                         <div class="flex items-center justify-between">
                             <span class="text-gray-600">Associations</span>
@@ -218,7 +218,7 @@
                             <span class="font-bold text-blue-600">{{ $confederation->associations->sum(function($assoc) { return $assoc->clubs->count(); }) }}</span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-gray-600">Joueurs totaux</span>
+                            <span class="text-gray-600">{{ __('Joueurs totaux') }}</span>
                             <span class="font-bold text-green-600">{{ $confederation->associations->sum(function($assoc) { return $assoc->players->count(); }) }}</span>
                         </div>
                     </div>
@@ -232,7 +232,7 @@
                            class="block w-full px-4 py-2 bg-purple-600 text-white text-center rounded-lg hover:bg-purple-700 transition-colors">{{ __('🏛️ Gérer les associations') }}</a>
                         <a href="/clubs-view?confederation_id={{ $confederation->id }}" 
                            class="block w-full px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors">
-                            🏟️ Voir tous les clubs
+                            {{ __('🏟️ Voir tous les clubs') }}
                         </a>
                         <a href="/modules/licenses?confederation_id={{ $confederation->id }}" 
                            class="block w-full px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors">{{ __('📋 Licences de la confédération') }}</a>

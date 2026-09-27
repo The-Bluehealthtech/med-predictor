@@ -11,7 +11,7 @@
         <!-- Header -->
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-800 mb-2">
-                ✏️ Modifier le Club
+                {{ __('✏️ Modifier le Club') }}
             </h1>
             <p class="text-lg text-gray-600">
                 Modifier les informations de {{ $club->name }}
@@ -21,11 +21,11 @@
         <!-- Navigation -->
         <div class="mb-8 flex justify-between items-center">
             <a href="/clubs-view" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                ← Retour aux clubs
+                {{ __('← Retour aux clubs') }}
             </a>
             
             <a href="/modules" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                📋 Retour aux modules
+                {{ __('📋 Retour aux modules') }}
             </a>
         </div>
 
@@ -52,7 +52,7 @@
                     <!-- Informations de base -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom du club *</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Nom du club *') }}</label>
                             <input type="text" name="name" value="{{ old('name', $club->name) }}" required 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $errors->has('name') ? 'border-red-500' : '' }}">
                             @error('name')
@@ -61,11 +61,11 @@
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom abrégé</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Nom abrégé') }}</label>
                             <input type="text" name="short_name" value="{{ old('short_name', $club->short_name) }}" 
                                    placeholder="Ex: EST, CA, etc." maxlength="50"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <p class="text-xs text-gray-500 mt-1">Nom court utilisé pour l'affichage</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ __('Nom court utilisé pour l\'affichage') }}</p>
                         </div>
                     </div>
                     
@@ -136,7 +136,7 @@
                     
                     <!-- Logo du club -->
                     <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Logo du club</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Logo du club') }}</label>
                         <div class="flex items-center space-x-4">
                             @if($club->logo_path)
                                 <div class="flex-shrink-0">
@@ -148,7 +148,7 @@
                             <div class="flex-1">
                                 <input type="file" name="logo" accept="image/*" 
                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <p class="text-sm text-gray-500 mt-1">Laissez vide pour conserver le logo actuel</p>
+                                <p class="text-sm text-gray-500 mt-1">{{ __('Laissez vide pour conserver le logo actuel') }}</p>
                             </div>
                         </div>
                     </div>
@@ -156,11 +156,11 @@
                     <!-- Boutons d'action -->
                     <div class="flex space-x-4 pt-6 border-t border-gray-200">
                         <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            💾 Sauvegarder les modifications
+                            {{ __('💾 Sauvegarder les modifications') }}
                         </button>
                         <a href="{{ route('clubs-view.show', ['id' => $club->id]) }}" 
                            class="flex-1 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors text-center">
-                            ❌ Annuler
+                            {{ __('❌ Annuler') }}
                         </a>
                     </div>
                 </form>

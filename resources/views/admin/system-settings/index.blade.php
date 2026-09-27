@@ -309,7 +309,7 @@
                         @if(($settings ?? collect())->where('is_editable', true)->count() > 0)
                             <div class="mt-6 flex justify-end">
                                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
-                                    💾 Sauvegarder les Modifications
+                                    {{ __('💾 Sauvegarder les Modifications') }}
                                 </button>
                             </div>
                         @endif

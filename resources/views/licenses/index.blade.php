@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des Licences - Système de Licences</title>
+    <title>{{ __('Liste des Licences - Système de Licences') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-8">
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">🏆 Liste des Licences</h1>
+            <h1 class="text-3xl font-bold text-gray-800">{{ __('🏆 Liste des Licences') }}</h1>
             <a href="{{ route('license.upload.photo.form') }}" 
                class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                📤 Nouvelle Licence + Photo
+                {{ __('📤 Nouvelle Licence + Photo') }}
             </a>
         </div>
 
@@ -32,7 +32,7 @@
                 <div>
                     <label for="type_filter" class="block text-sm font-medium text-gray-700 mb-2">Type</label>
                     <select id="type_filter" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                        <option value="">Tous les types</option>
+                        <option value="">{{ __('Tous les types') }}</option>
                         <option value="amateur">Amateur</option>
                         <option value="semi_pro">Semi-Professionnel</option>
                         <option value="professional">Professionnel</option>
@@ -42,7 +42,7 @@
                 <div>
                     <label for="status_filter" class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                     <select id="status_filter" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                        <option value="">Tous les statuts</option>
+                        <option value="">{{ __('Tous les statuts') }}</option>
                         <option value="active">Active</option>
                         <option value="expired">{{ __('health_records_edit.expired') }}</option>
                         <option value="suspended">Suspendue</option>
@@ -51,7 +51,7 @@
                 </div>
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-2">{{ __('secretary.label_search') }}</label>
-                    <input type="text" id="search" placeholder="Nom du joueur..." 
+                    <input type="text" id="search" placeholder="{{ __('Nom du joueur...') }}"
                            class="w-full px-3 py-2 border border-gray-300 rounded-md">
                 </div>
             </div>
@@ -96,7 +96,7 @@
                                          class="w-16 h-16 object-cover rounded-lg">
                                 @else
                                     <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                                        <span class="text-gray-500 text-xs">Pas de photo</span>
+                                        <span class="text-gray-500 text-xs">{{ __('Pas de photo') }}</span>
                                     </div>
                                 @endif
                             </td>
@@ -165,11 +165,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
-                                Aucune licence trouvée. 
-                                <a href="{{ route('license.upload.photo.form') }}" class="text-blue-600 hover:text-blue-800">
-                                    Créer la première licence
-                                </a>
+                            <td colspan="7" class="px-6 py-4 text-center text-gray-500">{{ __('Aucune licence trouvée.') }}<a href="{{ route('license.upload.photo.form') }}" class="text-blue-600 hover:text-blue-800">{{ __('Créer la première licence') }}</a>
                             </td>
                         </tr>
                         @endforelse
@@ -225,7 +221,7 @@
 <div class="container mx-auto px-4 py-8">
     <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-bold">{{ __('common.licenses') }}</h1>
-        <a href="{{ route('licenses.create') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Créer une licence</a>
+        <a href="{{ route('licenses.create') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">{{ __('Créer une licence') }}</a>
     </div>
     <form method="GET" class="mb-4 flex flex-wrap gap-4 items-center">
         <div>
@@ -268,7 +264,7 @@
                     <td class="px-6 py-4 whitespace-nowrap">{{ $license->type ?? '-' }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $license->status ?? '-' }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <a href="{{ route('licenses.edit', $license) }}" class="text-blue-600 hover:underline mr-2">Éditer</a>
+                        <a href="{{ route('licenses.edit', $license) }}" class="text-blue-600 hover:underline mr-2">{{ __('Éditer') }}</a>
                         <form action="{{ route('licenses.destroy', $license) }}" method="POST" style="display:inline">
                             @csrf
                             @method('DELETE')
@@ -278,7 +274,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">Aucune licence trouvée.</td>
+                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">{{ __('Aucune licence trouvée.') }}</td>
                 </tr>
             @endforelse
         </tbody>

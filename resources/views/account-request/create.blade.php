@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Demande de Compte - FIT Platform</title>
+    <title>{{ __('Demande de Compte - FIT Platform') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -19,9 +19,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('landing') }}" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                        Retour à l'accueil
-                    </a>
+                    <a href="{{ route('landing') }}" class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-md text-sm font-medium transition-colors">{{ __('Retour à l\'accueil') }}</a>
                     <a href="{{ route('login') }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all duration-200">
                         {{ __('auth.login') }}
                     </a>
@@ -59,9 +57,9 @@
             <div class="flex flex-col md:flex-row items-center justify-between">
                 <div class="flex items-center mb-4 md:mb-0">
                     <img src="{{ asset('images/logos/the-blue-healthtech-logo.png') }}" alt="The Blue Healthtech" class="h-8 mr-3">
-                    <span class="text-gray-400 text-lg">Développé par</span>
+                    <span class="text-gray-400 text-lg">{{ __('Développé par') }}</span>
                 </div>
-                <p class="text-gray-400 text-lg">&copy; 2025 The Blue Healthtech Ltd. Tous droits réservés.</p>
+                <p class="text-gray-400 text-lg">{{ __('&copy; 2025 The Blue Healthtech Ltd. Tous droits réservés.') }}</p>
             </div>
         </div>
     </footer>

@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logos Originaux des Clubs FTF - Ligue 1</title>
+    <title>{{ __('Logos Originaux des Clubs FTF - Ligue 1') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-green-50 to-blue-100 min-h-screen">
     <div class="max-w-7xl mx-auto p-6">
         <!-- En-tête -->
         <div class="text-center mb-8">
-            <h1 class="text-5xl font-bold text-green-600 mb-4">🏆 Logos Originaux des Clubs FTF</h1>
-            <p class="text-xl text-gray-600">Fédération Tunisienne de Football - Ligue 1</p>
-            <p class="text-sm text-gray-500 mt-2">Liens vers les sites officiels et logos réels</p>
+            <h1 class="text-5xl font-bold text-green-600 mb-4">{{ __('🏆 Logos Originaux des Clubs FTF') }}</h1>
+            <p class="text-xl text-gray-600">{{ __('Fédération Tunisienne de Football - Ligue 1') }}</p>
+            <p class="text-sm text-gray-500 mt-2">{{ __('Liens vers les sites officiels et logos réels') }}</p>
         </div>
 
         <!-- Grille des clubs FTF avec liens officiels -->
@@ -28,7 +28,7 @@
                 <a href="https://www.est.org.tn" target="_blank" class="inline-block bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- ESS -->
@@ -41,7 +41,7 @@
                 <a href="https://www.etoile-du-sahel.com" target="_blank" class="inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- CA -->
@@ -54,7 +54,7 @@
                 <a href="https://www.clubafricain.com" target="_blank" class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- CSS -->
@@ -67,7 +67,7 @@
                 <a href="https://www.cssfaxien.com" target="_blank" class="inline-block bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- CAB -->
@@ -80,7 +80,7 @@
                 <a href="https://www.cabizertin.com" target="_blank" class="inline-block bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- ST -->
@@ -93,7 +93,7 @@
                 <a href="https://www.stadetunisien.com" target="_blank" class="inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- USM -->
@@ -106,7 +106,7 @@
                 <a href="https://www.usmonastir.com" target="_blank" class="inline-block bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- USBG -->
@@ -119,7 +119,7 @@
                 <a href="https://www.usbenguerdane.com" target="_blank" class="inline-block bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- OB -->
@@ -132,7 +132,7 @@
                 <a href="https://www.olympiquedeja.com" target="_blank" class="inline-block bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- ASG -->
@@ -145,7 +145,7 @@
                 <a href="https://www.asgabes.com" target="_blank" class="inline-block bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- ESM -->
@@ -158,7 +158,7 @@
                 <a href="https://www.esmetlaoui.com" target="_blank" class="inline-block bg-lime-600 text-white px-4 py-2 rounded-lg hover:bg-lime-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- ESZ -->
@@ -171,7 +171,7 @@
                 <a href="https://www.eszarzis.com" target="_blank" class="inline-block bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- JSO -->
@@ -184,7 +184,7 @@
                 <a href="https://www.jselomrane.com" target="_blank" class="inline-block bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- EGSG -->
@@ -197,7 +197,7 @@
                 <a href="https://www.elgawafelgafsa.com" target="_blank" class="inline-block bg-rose-600 text-white px-4 py-2 rounded-lg hover:bg-rose-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- ASS -->
@@ -210,7 +210,7 @@
                 <a href="https://www.assoliman.com" target="_blank" class="inline-block bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
             <!-- UST -->
@@ -223,43 +223,40 @@
                 <a href="https://www.ustataouine.com" target="_blank" class="inline-block bg-stone-600 text-white px-4 py-2 rounded-lg hover:bg-stone-700 transition-colors">
                     🌐 Site Officiel
                 </a>
-                <p class="text-xs text-gray-500 mt-2">Logo officiel sur le site</p>
+                <p class="text-xs text-gray-500 mt-2">{{ __('Logo officiel sur le site') }}</p>
             </div>
 
         </div>
 
         <!-- Section d'information -->
         <div class="mt-12 bg-white rounded-xl shadow-lg p-8">
-            <h2 class="text-3xl font-bold text-blue-600 mb-6">ℹ️ Informations importantes</h2>
+            <h2 class="text-3xl font-bold text-blue-600 mb-6">{{ __('ℹ️ Informations importantes') }}</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <h3 class="text-xl font-semibold mb-4 text-green-600">🎯 Pourquoi cette page ?</h3>
+                    <h3 class="text-xl font-semibold mb-4 text-green-600">{{ __('🎯 Pourquoi cette page ?') }}</h3>
                     <ul class="space-y-2 text-gray-700">
-                        <li>• Les logos générés automatiquement ne sont pas les vrais logos des clubs</li>
+                        <li>{{ __('• Les logos générés automatiquement ne sont pas les vrais logos des clubs') }}</li>
                         <li>• Chaque club a son propre logo officiel et sa charte graphique</li>
-                        <li>• Les vrais logos sont protégés par des droits d'auteur</li>
-                        <li>• Cette page vous guide vers les sites officiels</li>
+                        <li>{{ __('• Les vrais logos sont protégés par des droits d\'auteur') }}</li>
+                        <li>{{ __('• Cette page vous guide vers les sites officiels') }}</li>
                     </ul>
                 </div>
                 
                 <div>
-                    <h3 class="text-xl font-semibold mb-4 text-blue-600">🔗 Comment obtenir les vrais logos ?</h3>
+                    <h3 class="text-xl font-semibold mb-4 text-blue-600">{{ __('🔗 Comment obtenir les vrais logos ?') }}</h3>
                     <ul class="space-y-2 text-gray-700">
-                        <li>• Visitez les sites officiels des clubs</li>
-                        <li>• Contactez directement les clubs pour autorisation</li>
-                        <li>• Utilisez les logos fournis par la FTF</li>
-                        <li>• Respectez les droits d'utilisation</li>
+                        <li>{{ __('• Visitez les sites officiels des clubs') }}</li>
+                        <li>{{ __('• Contactez directement les clubs pour autorisation') }}</li>
+                        <li>{{ __('• Utilisez les logos fournis par la FTF') }}</li>
+                        <li>{{ __('• Respectez les droits d\'utilisation') }}</li>
                     </ul>
                 </div>
             </div>
             
             <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <h3 class="text-lg font-semibold text-yellow-800 mb-2">⚠️ Note importante</h3>
-                <p class="text-yellow-700">
-                    Les logos affichés sur cette page sont des placeholders. Pour utiliser les vrais logos des clubs FTF, 
-                    vous devez obtenir l'autorisation officielle de chaque club ou de la Fédération Tunisienne de Football.
-                </p>
+                <p class="text-yellow-700">{{ __('Les logos affichés sur cette page sont des placeholders. Pour utiliser les vrais logos des clubs FTF, vous devez obtenir l\'autorisation officielle de chaque club ou de la Fédération Tunisienne de Football.') }}</p>
             </div>
         </div>
 
@@ -268,7 +265,7 @@
             <h3 class="text-xl font-semibold text-gray-700 mb-4">🔗 Liens utiles</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <h4 class="font-semibold text-gray-800 mb-2">🏆 Fédération Tunisienne de Football</h4>
+                    <h4 class="font-semibold text-gray-800 mb-2">{{ __('🏆 Fédération Tunisienne de Football') }}</h4>
                     <a href="https://www.ftf.org.tn" target="_blank" class="text-blue-600 hover:underline">ftf.org.tn</a>
                 </div>
                 <div>

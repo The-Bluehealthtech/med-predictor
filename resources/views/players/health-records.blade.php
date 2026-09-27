@@ -9,13 +9,13 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">📋 Dossiers Médicaux</h1>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ __('📋 Dossiers Médicaux') }}</h1>
                     <p class="text-gray-600 mt-2">{{ $player->full_name }} • {{ $player->position }} • {{ $player->nationality }}</p>
                 </div>
                 <div class="flex space-x-4">
                     <a href="{{ route('player-registration.show', $player) }}" 
                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
-                        ← Retour au joueur
+                        {{ __('← Retour au joueur') }}
                     </a>
                     <a href="{{ route('health-records.create', ['player_id' => $player->id]) }}" 
                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
@@ -59,7 +59,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Haute gravité</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('Haute gravité') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ $healthRecords->where('status', 'active')->count() }}</p>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Moyenne gravité</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('Moyenne gravité') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ $healthRecords->where('status', 'pending')->count() }}</p>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Faible gravité</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('Faible gravité') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">{{ $healthRecords->where('status', 'archived')->count() }}</p>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
         <!-- Liste des dossiers -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">Historique des Dossiers</h2>
+                <h2 class="text-xl font-semibold text-gray-800">{{ __('Historique des Dossiers') }}</h2>
             </div>
             
             @if($healthRecords->count() > 0)
@@ -115,9 +115,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('health_records.show_page.diagnosis_label') }}
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Gravité
-                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Gravité') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('health_records.show_page.doctor_label') }}
                                 </th>

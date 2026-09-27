@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test des Modules - Rapport</title>
+    <title>{{ __('Test des Modules - Rapport') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .status-ok { background-color: #10B981; }
@@ -17,8 +17,8 @@
             <!-- Header -->
             <div class="bg-white shadow-sm rounded-lg mb-6">
                 <div class="px-6 py-4">
-                    <h1 class="text-3xl font-bold text-gray-900">Test des Modules - Rapport</h1>
-                    <p class="text-gray-600 mt-2">État de toutes les cartes des modules</p>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ __('Test des Modules - Rapport') }}</h1>
+                    <p class="text-gray-600 mt-2">{{ __('État de toutes les cartes des modules') }}</p>
                     <p class="text-sm text-gray-500 mt-1">Généré le {{ now()->format('d/m/Y H:i:s') }}</p>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                             </div>
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Vue non trouvée</dt>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">{{ __('Vue non trouvée') }}</dt>
                                     <dd class="text-lg font-medium text-gray-900">{{ $results->where('status', 'VIEW_NOT_FOUND')->count() }}</dd>
                                 </dl>
                             </div>
@@ -109,7 +109,7 @@
             <!-- Tableau des résultats -->
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">Détail des Modules</h2>
+                    <h2 class="text-lg font-semibold text-gray-900">{{ __('Détail des Modules') }}</h2>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -145,9 +145,7 @@
                                             ERREUR
                                         </span>
                                     @elseif($result['status'] === 'VIEW_NOT_FOUND')
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                            VUE NON TROUVÉE
-                                        </span>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">{{ __('VUE NON TROUVÉE') }}</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -176,7 +174,7 @@
             <!-- Résumé par module -->
             <div class="mt-8 bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">Résumé par Module</h2>
+                    <h2 class="text-lg font-semibold text-gray-900">{{ __('Résumé par Module') }}</h2>
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -14,16 +14,16 @@
         <div class="flex items-center justify-between mb-8">
             <div>
                 <h1 class="text-4xl font-bold text-gray-800 mb-2">{{ __('📋 Validation des Licences (Côté Association)') }}</h1>
-                <p class="text-lg text-gray-600">Validation et gestion des demandes de licences FIFA Connect soumises par les clubs</p>
+                <p class="text-lg text-gray-600">{{ __('Validation et gestion des demandes de licences FIFA Connect soumises par les clubs') }}</p>
             </div>
             <div class="flex space-x-3">
                 <button @click="showBatchValidationModal = true" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
                     <span class="mr-2">🔄</span>
-                    Validation en lot
+                    {{ __('Validation en lot') }}
                 </button>
                 <button @click="showCreateLicenseModal = true" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
                     <span class="mr-2">➕</span>
-                    Nouvelle licence
+                    {{ __('Nouvelle licence') }}
                 </button>
             </div>
         </div>
@@ -39,7 +39,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                     <select v-model="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">Tous les statuts</option>
+                        <option value="">{{ __('Tous les statuts') }}</option>
                         <option value="valid">{{ __('Valide') }}</option>
                         <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
                         <option value="expired">{{ __('health_records_edit.expired') }}</option>
@@ -50,7 +50,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
                     <select v-model="typeFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">Tous les types</option>
+                        <option value="">{{ __('Tous les types') }}</option>
                         <option value="player">{{ __('auth.role_player') }}</option>
                         <option value="coach">{{ __('Entraîneur') }}</option>
                         <option value="referee">{{ __('auth.role_referee') }}</option>
@@ -87,7 +87,7 @@
                         <span class="text-2xl text-green-600">✅</span>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Licences valides</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('Licences valides') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $licenseStats['valid'] ?? 0 }}</p>
                     </div>
                 </div>
@@ -152,7 +152,7 @@
                                 Association
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Statut Licence
+                                {{ __('Statut Licence') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Actions
@@ -192,7 +192,7 @@
                                     <div class="font-medium">{{ $player->club->name }}</div>
                                     <div class="text-xs text-gray-500">{{ $player->club->city ?? 'N/A' }}</div>
                                 @else
-                                    <span class="text-gray-500">Aucun club</span>
+                                    <span class="text-gray-500">{{ __('Aucun club') }}</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -200,7 +200,7 @@
                                     <div class="font-medium">{{ $player->association->name }}</div>
                                     <div class="text-xs text-gray-500">{{ $player->association->country ?? 'N/A' }}</div>
                                 @else
-                                    <span class="text-gray-500">Aucune association</span>
+                                    <span class="text-gray-500">{{ __('Aucune association') }}</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -221,7 +221,7 @@
                                     </span>
                                 @else
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                                        Aucune licence
+                                        {{ __('Aucune licence') }}
                                     </span>
                                 @endif
                             </td>
@@ -355,7 +355,7 @@
         <div v-if="showBatchValidationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
                 <div class="p-6">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">🔄 Validation en lot des licences</h3>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ __('🔄 Validation en lot des licences') }}</h3>
                     
                     <div class="space-y-4">
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -403,7 +403,7 @@
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Type de licence *</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Type de licence *') }}</label>
                                 <select v-model="licenseForm.type" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                                     <option value="">{{ __('health_records_create.select_type_placeholder') }}</option>
                                     <option value="player">{{ __('auth.role_player') }}</option>
@@ -418,19 +418,19 @@
                         <!-- Informations du titulaire -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Nom du titulaire *</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Nom du titulaire *') }}</label>
                                 <input v-model="licenseForm.holderName" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">ID du titulaire</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('ID du titulaire') }}</label>
                                 <input v-model="licenseForm.holderId" type="text" placeholder="ex: PLAYER_001, COACH_123" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                             </div>
                         </div>
                         
                         <!-- Informations FIFA Connect -->
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <h4 class="text-sm font-medium text-blue-800 mb-3">⚽ Informations FIFA Connect</h4>
+                            <h4 class="text-sm font-medium text-blue-800 mb-3">{{ __('⚽ Informations FIFA Connect') }}</h4>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>

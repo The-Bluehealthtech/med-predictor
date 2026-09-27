@@ -45,7 +45,7 @@
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            Score de Valeur 8.7/10
+                            {{ __('Score de Valeur 8.7/10') }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>{{ __('Qualité 87.3%') }}</div>
@@ -166,9 +166,9 @@
                                 </div>
                             </div>
                             <div class="ml-4 flex-1">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Score de Valeur</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('Score de Valeur') }}</h3>
                                 <div class="text-3xl font-bold text-purple-600 mb-2">{{ $overviewData['datasetValue'] }}</div>
-                                <div class="text-sm text-gray-600 mb-4">Valeur globale du dataset</div>
+                                <div class="text-sm text-gray-600 mb-4">{{ __('Valeur globale du dataset') }}</div>
                                 <div class="text-sm text-purple-600 font-medium">
                                     🏆 {{ $overviewData['datasetValue'] >= 9.0 ? 'Excellent' : ($overviewData['datasetValue'] >= 8.0 ? 'Très Bon' : ($overviewData['datasetValue'] >= 7.0 ? 'Bon' : 'Moyen')) }}/10
                                 </div>
@@ -272,7 +272,7 @@
                         </h3>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <span class="text-lg text-gray-700">Statistiques Offensives</span>
+                                <span class="text-lg text-gray-700">{{ __('Statistiques Offensives') }}</span>
                                 <div class="flex items-center space-x-3">
                                     <div class="w-32 bg-gray-200 rounded-full h-2">
                                         <div class="bg-green-500 h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
@@ -281,7 +281,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-lg text-gray-700">Statistiques Physiques</span>
+                                <span class="text-lg text-gray-700">{{ __('Statistiques Physiques') }}</span>
                                 <div class="flex items-center space-x-3">
                                     <div class="w-32 bg-gray-200 rounded-full h-2">
                                         <div class="bg-green-500 h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
@@ -290,7 +290,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-lg text-gray-700">Statistiques Techniques</span>
+                                <span class="text-lg text-gray-700">{{ __('Statistiques Techniques') }}</span>
                                 <div class="flex items-center space-x-3">
                                     <div class="w-32 bg-gray-200 rounded-full h-2">
                                         <div class="bg-green-500 h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
@@ -299,7 +299,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-lg text-gray-700">Statistiques de Match</span>
+                                <span class="text-lg text-gray-700">{{ __('Statistiques de Match') }}</span>
                                 <div class="flex items-center space-x-3">
                                     <div class="w-32 bg-gray-200 rounded-full h-2">
                                         <div class="bg-green-500 h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
@@ -395,7 +395,7 @@
                         <div class="space-y-6" id="trends-growth-container">
                             <!-- Les données de croissance seront chargées dynamiquement ici -->
                             <div class="text-center py-8">
-                                <div class="text-gray-500">Chargement des tendances...</div>
+                                <div class="text-gray-500">{{ __('Chargement des tendances...') }}</div>
                             </div>
                         </div>
                     </div>
@@ -423,7 +423,7 @@
                     <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">{{ __('⭐ Évaluation de la Valeur du Dataset') }}</h3>
                     <div class="text-center mb-8">
                         <div class="text-6xl font-bold text-yellow-600 mb-4" id="value-overall-score">--</div>
-                        <div class="text-xl text-gray-600 mb-2">Score Global de Valeur</div>
+                        <div class="text-xl text-gray-600 mb-2">{{ __('Score Global de Valeur') }}</div>
                         <div class="text-lg text-yellow-600 font-semibold" id="value-overall-rating">--</div>
                     </div>
                     
@@ -447,7 +447,7 @@
                         <div class="space-y-4" id="value-strengths-container">
                             <!-- Les points forts seront chargés dynamiquement ici -->
                             <div class="text-center py-8">
-                                <div class="text-gray-500">Chargement des points forts...</div>
+                                <div class="text-gray-500">{{ __('Chargement des points forts...') }}</div>
                             </div>
                         </div>
                     </div>
@@ -475,7 +475,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="value-recommendations-container">
                         <!-- Les recommandations seront chargées dynamiquement ici -->
                         <div class="text-center py-8 col-span-2">
-                            <div class="text-gray-500">Chargement des recommandations...</div>
+                            <div class="text-gray-500">{{ __('Chargement des recommandations...') }}</div>
                         </div>
                     </div>
                 </div>

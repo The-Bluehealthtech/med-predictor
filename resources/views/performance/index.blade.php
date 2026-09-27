@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
                 </div>
             </div>
         </div>
@@ -104,7 +104,7 @@
                     👤 Suivi Individuel
                 </button>
                 <button onclick="generateReports()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    📈 Rapports
+                    {{ __('📈 Rapports') }}
                 </button>
                 <button onclick="showRealTimeData()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-center transition-colors">{{ __('⚡ Temps Réel') }}</button>
             </div>
@@ -191,17 +191,17 @@
 
         <!-- Reports Section -->
         <div id="reportsSection" class="bg-white rounded-lg shadow-md p-6 mt-8 hidden">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">📈 Rapports</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('📈 Rapports') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="border border-gray-200 rounded-lg p-4">
-                    <h4 class="font-medium text-gray-900 mb-2">Rapport Mensuel</h4>
+                    <h4 class="font-medium text-gray-900 mb-2">{{ __('Rapport Mensuel') }}</h4>
                     <p class="text-sm text-gray-600 mb-3">{{ __('Analyse complète des performances du mois') }}</p>
                     <button onclick="generateMonthlyReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
                         {{ __('competitions.rapports_statistiques_page.generate_title') }}
                     </button>
                 </div>
                 <div class="border border-gray-200 rounded-lg p-4">
-                    <h4 class="font-medium text-gray-900 mb-2">Rapport Individuel</h4>
+                    <h4 class="font-medium text-gray-900 mb-2">{{ __('Rapport Individuel') }}</h4>
                     <p class="text-sm text-gray-600 mb-3">{{ __('Performance détaillée par athlète') }}</p>
                     <button onclick="generateIndividualReport()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors">
                         {{ __('competitions.rapports_statistiques_page.generate_title') }}
@@ -215,7 +215,7 @@
                     </button>
                 </div>
                 <div class="border border-gray-200 rounded-lg p-4">
-                    <h4 class="font-medium text-gray-900 mb-2">Rapport de Progression</h4>
+                    <h4 class="font-medium text-gray-900 mb-2">{{ __('Rapport de Progression') }}</h4>
                     <p class="text-sm text-gray-600 mb-3">{{ __('Évolution des performances dans le temps') }}</p>
                     <button onclick="generateProgressReport()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition-colors">
                         {{ __('competitions.rapports_statistiques_page.generate_title') }}
@@ -251,7 +251,7 @@ function generateReports() {
 }
 
 function showRealTimeData() {
-    alert('⚡ Données en temps réel - Surveillance active des performances...');
+    alert(@json(__('⚡ Données en temps réel - Surveillance active des performances...')));
     console.log('⚡ Temps Réel activé');
 }
 

@@ -11,7 +11,7 @@
                 <i class="fas fa-calendar-alt text-blue-600 mr-3"></i>
                 Fixtures
             </h1>
-            <p class="text-gray-600 mt-2">Calendrier des matchs et rencontres</p>
+            <p class="text-gray-600 mt-2">{{ __('Calendrier des matchs et rencontres') }}</p>
         </div>
         <div class="flex space-x-4">
             <a href="{{ route('modules.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
@@ -48,7 +48,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                 <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Tous les statuts</option>
+                    <option value="">{{ __('Tous les statuts') }}</option>
                     <option value="programme">{{ __('competitions.match_status_label.scheduled') }}</option>
                     <option value="en-cours">En cours</option>
                     <option value="termine">{{ __('clinical.status_completed') }}</option>
@@ -117,20 +117,20 @@
     <!-- Calendrier des Fixtures -->
     <div class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Calendrier des Fixtures</h2>
+            <h2 class="text-lg font-semibold text-gray-900">{{ __('Calendrier des Fixtures') }}</h2>
         </div>
         
         <div class="p-6">
             <!-- Vue par Semaine -->
             <div class="mb-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Semaine du 15-21 Septembre 2024</h3>
+                    <h3 class="text-lg font-medium text-gray-900">{{ __('Semaine du 15-21 Septembre 2024') }}</h3>
                     <div class="flex space-x-2">
                         <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                             <i class="fas fa-chevron-left mr-1"></i>{{ __('Précédent') }}
                         </button>
                         <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                            Suivant<i class="fas fa-chevron-right ml-1"></i>
+                            {{ __('Suivant') }}<i class="fas fa-chevron-right ml-1"></i>
                         </button>
                     </div>
                 </div>
@@ -152,7 +152,7 @@
                                     </div>
                                     <div class="text-2xl font-bold text-gray-400">vs</div>
                                     <div class="text-left">
-                                        <div class="font-medium text-gray-900">Notre Club</div>
+                                        <div class="font-medium text-gray-900">{{ __('Notre Club') }}</div>
                                         <div class="text-sm text-gray-500">{{ __('Extérieur') }}</div>
                                     </div>
                                 </div>
@@ -195,7 +195,7 @@
                             <div class="flex items-center space-x-4">
                                 <div class="text-center">
                                     <div class="text-sm font-medium text-gray-900">{{ __('Coupe Régionale') }}</div>
-                                    <div class="text-xs text-gray-500">Stade des Sports</div>
+                                    <div class="text-xs text-gray-500">{{ __('Stade des Sports') }}</div>
                                 </div>
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
                                     {{ __('competitions.match_status_label.postponed') }}
@@ -246,7 +246,7 @@
 
             <!-- Vue par Jour -->
             <div class="border-t border-gray-200 pt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Vue par Jour</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Vue par Jour') }}</h3>
                 <div class="grid grid-cols-7 gap-2">
                     <!-- Lundi -->
                     <div class="text-center">
@@ -327,7 +327,7 @@
             </div>
             <div class="flex items-center">
                 <div class="w-4 h-4 bg-gray-100 rounded-full mr-3"></div>
-                <span class="text-sm text-gray-600">Aucun match</span>
+                <span class="text-sm text-gray-600">{{ __('Aucun match') }}</span>
             </div>
         </div>
     </div>

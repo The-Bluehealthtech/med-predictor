@@ -230,7 +230,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Notes</label>
-                                        <textarea v-model="dentalToothNotes" placeholder="Notes sur cette dent"></textarea>
+                                        <textarea v-model="dentalToothNotes" placeholder="{{ __('Notes sur cette dent') }}"></textarea>
                                     </div>
                                 </div>
                             </div>

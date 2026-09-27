@@ -134,13 +134,13 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <x-input-label for="description" :value="__('Description')" />
-                                <textarea id="description" name="description" rows="4" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" placeholder="Description de la compétition...">{{ old('description', $competition->description) }}</textarea>
+                                <textarea id="description" name="description" rows="4" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" placeholder="{{ __('Description de la compétition...') }}">{{ old('description', $competition->description) }}</textarea>
                                 <x-input-error :messages="$errors->get('description')" class="mt-2" />
                             </div>
                             
                             <div>
                                 <x-input-label for="rules" :value="__('Règlement')" />
-                                <textarea id="rules" name="rules" rows="4" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" placeholder="Règlement spécifique...">{{ old('rules', $competition->rules) }}</textarea>
+                                <textarea id="rules" name="rules" rows="4" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" placeholder="{{ __('Règlement spécifique...') }}">{{ old('rules', $competition->rules) }}</textarea>
                                 <x-input-error :messages="$errors->get('rules')" class="mt-2" />
                             </div>
                         </div>

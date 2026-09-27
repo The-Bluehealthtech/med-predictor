@@ -16,13 +16,13 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Digital Twin Network
                                 </h1>
-                                <p class="text-sm text-gray-600">Réseau de jumeaux numériques</p>
+                                <p class="text-sm text-gray-600">{{ __('Réseau de jumeaux numériques') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
                 </div>
             </div>
         </div>
@@ -35,9 +35,7 @@
             <div class="p-6">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">🔄 Digital Twin Network</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Simulation et modélisation avancée des athlètes
-                    </p>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Simulation et modélisation avancée des athlètes') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
@@ -77,7 +75,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Predictions</p>
-                        <p class="text-2xl font-bold text-gray-900">Prédire</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ __('Prédire') }}</p>
                     </div>
                 </div>
             </div>
@@ -120,14 +118,14 @@
                     <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                         <div>
                             <p class="font-medium text-blue-900">Athlete Models</p>
-                            <p class="text-sm text-blue-700">Modèles numériques des athlètes</p>
+                            <p class="text-sm text-blue-700">{{ __('Modèles numériques des athlètes') }}</p>
                         </div>
                         <span class="text-blue-600">→</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
                         <div>
                             <p class="font-medium text-green-900">Performance Simulation</p>
-                            <p class="text-sm text-green-700">Simulation des performances</p>
+                            <p class="text-sm text-green-700">{{ __('Simulation des performances') }}</p>
                         </div>
                         <span class="text-green-600">→</span>
                     </div>
@@ -148,21 +146,21 @@
                     <div class="flex items-center justify-between p-4 bg-indigo-50 rounded-lg">
                         <div>
                             <p class="font-medium text-indigo-900">Performance Forecast</p>
-                            <p class="text-sm text-indigo-700">Prévision des performances</p>
+                            <p class="text-sm text-indigo-700">{{ __('Prévision des performances') }}</p>
                         </div>
                         <span class="text-indigo-600">→</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
                         <div>
                             <p class="font-medium text-yellow-900">Recovery Timeline</p>
-                            <p class="text-sm text-yellow-700">Calendrier de récupération</p>
+                            <p class="text-sm text-yellow-700">{{ __('Calendrier de récupération') }}</p>
                         </div>
                         <span class="text-yellow-600">→</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-pink-50 rounded-lg">
                         <div>
                             <p class="font-medium text-pink-900">Training Optimization</p>
-                            <p class="text-sm text-pink-700">Optimisation de l'entraînement</p>
+                            <p class="text-sm text-pink-700">{{ __('Optimisation de l\'entraînement') }}</p>
                         </div>
                         <span class="text-pink-600">→</span>
                     </div>

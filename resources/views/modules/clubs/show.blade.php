@@ -14,7 +14,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
-                    Retour aux clubs
+                    {{ __('Retour aux clubs') }}
                 </a>
                 <h1 class="text-3xl font-bold text-gray-800">{{ __('Détails du Club') }}</h1>
             </div>
@@ -23,7 +23,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                     {{ __('pcma_extra.label_723bbbfede8a') }}
                 </a>
                 <a href="/modules" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
-                    📋 Retour aux modules
+                    {{ __('📋 Retour aux modules') }}
                 </a>
             </div>
         </div>
@@ -139,7 +139,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <span class="mr-2">📞</span>
-                        Informations de contact
+                        {{ __('Informations de contact') }}
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -314,7 +314,7 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
             <div class="space-y-6">
                 <!-- Logo du club -->
                 <div class="bg-white rounded-lg shadow-lg p-6 text-center">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Logo du club</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('Logo du club') }}</h3>
                     
                     @if($club->logo_path)
                         <img src="{{ asset('storage/' . $club->logo_path) }}" 
@@ -334,17 +334,17 @@ page    <title>{{ $club->name }} - Détails du Club - Plateforme FIT</title>
                     <div class="space-y-3">
                         <a href="{{ route('clubs-view.edit', ['id' => $club->id]) }}" 
                            class="w-full px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors text-center block">
-                            ✏️ Modifier le club
+                            {{ __('✏️ Modifier le club') }}
                         </a>
                         
                         <a href="/clubs-view" 
                            class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-center block">
-                            👁️ Voir tous les clubs
+                            {{ __('👁️ Voir tous les clubs') }}
                         </a>
                         
                         <a href="/modules" 
                            class="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-center block">
-                            📋 Retour aux modules
+                            {{ __('📋 Retour aux modules') }}
                         </a>
                     </div>
                 </div>

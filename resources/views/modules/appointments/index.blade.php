@@ -16,16 +16,16 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Gestion des Rendez-vous
+                                    {{ __('Gestion des Rendez-vous') }}
                                 </h1>
-                                <p class="text-sm text-gray-600">Planification et suivi des consultations médicales</p>
+                                <p class="text-sm text-gray-600">{{ __('Planification et suivi des consultations médicales') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                        + Nouveau Rendez-vous
+                        {{ __('+ Nouveau Rendez-vous') }}
                     </button>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                         <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Tous les statuts</option>
+                            <option value="">{{ __('Tous les statuts') }}</option>
                             <option value="scheduled">{{ __('competitions.match_status_label.scheduled') }}</option>
                             <option value="confirmed">{{ __('clinical.status_confirmed') }}</option>
                             <option value="completed">{{ __('clinical.status_completed') }}</option>
@@ -55,7 +55,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records.show_page.doctor_label') }}</label>
                         <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Tous les médecins</option>
+                            <option value="">{{ __('Tous les médecins') }}</option>
                             <option value="1">Dr. Ahmed Ben Ali</option>
                             <option value="2">Dr. Sarah Johnson</option>
                             <option value="3">Dr. Mohamed Khelifi</option>
@@ -63,7 +63,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('secretary.label_search') }}</label>
-                        <input type="text" placeholder="Nom du patient..." class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" placeholder="{{ __('Nom du patient...') }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                 </div>
             </div>
@@ -73,7 +73,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900">Rendez-vous du jour</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Rendez-vous du jour') }}</h3>
                     <div class="flex space-x-2">
                         <button class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">{{ __('common.today') }}</button>
                         <button class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">{{ __('common.tomorrow') }}</button>
@@ -98,7 +98,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">09:00</div>
-                                    <div class="text-sm text-gray-500">26 Août 2025</div>
+                                    <div class="text-sm text-gray-500">{{ __('26 Août 2025') }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
@@ -133,7 +133,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">10:30</div>
-                                    <div class="text-sm text-gray-500">26 Août 2025</div>
+                                    <div class="text-sm text-gray-500">{{ __('26 Août 2025') }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
@@ -168,7 +168,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">14:00</div>
-                                    <div class="text-sm text-gray-500">26 Août 2025</div>
+                                    <div class="text-sm text-gray-500">{{ __('26 Août 2025') }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
@@ -183,7 +183,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">Dr. Mohamed Khelifi</div>
-                                    <div class="text-sm text-gray-500">Médecine sportive</div>
+                                    <div class="text-sm text-gray-500">{{ __('Médecine sportive') }}</div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -208,14 +208,13 @@
                 <!-- Pagination -->
                 <div class="flex items-center justify-between mt-6">
                     <div class="text-sm text-gray-700">
-                        Affichage de <span class="font-medium">1</span> {{ __('clinical.at_time_connector') }} <span class="font-medium">3</span> sur <span class="font-medium">12</span> résultats
-                    </div>
+                        {{ __('Affichage de') }} <span class="font-medium">1</span> {{ __('clinical.at_time_connector') }} <span class="font-medium">3</span> {{ __('sur') }} <span class="font-medium">12</span>{{ __('résultats') }}</div>
                     <div class="flex space-x-2">
                         <button class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50" disabled>{{ __('Précédent') }}</button>
                         <button class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 bg-blue-50 text-blue-600">1</button>
                         <button class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">2</button>
                         <button class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">3</button>
-                        <button class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">Suivant</button>
+                        <button class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">{{ __('Suivant') }}</button>
                     </div>
                 </div>
             </div>
@@ -240,7 +239,7 @@
                         ✅
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Confirmés</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('Confirmés') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">6</p>
                     </div>
                 </div>
@@ -262,7 +261,7 @@
                         ❌
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Annulés</p>
+                        <p class="text-sm font-medium text-gray-600">{{ __('Annulés') }}</p>
                         <p class="text-2xl font-semibold text-gray-900">1</p>
                     </div>
                 </div>

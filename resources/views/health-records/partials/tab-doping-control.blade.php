@@ -77,7 +77,7 @@
                             type="text" 
                             id="doping_test_laboratory" 
                             name="doping_test_laboratory"
-                            placeholder="Nom du laboratoire"
+                            placeholder="{{ __('Nom du laboratoire') }}"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                         >
                     </div>

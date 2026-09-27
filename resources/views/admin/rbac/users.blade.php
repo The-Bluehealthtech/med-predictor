@@ -16,15 +16,15 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Gestion des Utilisateurs
+                                    {{ __('Gestion des Utilisateurs') }}
                                 </h1>
-                                <p class="text-sm text-gray-600">Assigner des rôles aux utilisateurs</p>
+                                <p class="text-sm text-gray-600">{{ __('Assigner des rôles aux utilisateurs') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('admin.rbac.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au RBAC</a>
+                    <a href="{{ route('admin.rbac.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour au RBAC') }}</a>
                 </div>
             </div>
         </div>
@@ -47,14 +47,14 @@
         <!-- Liste des utilisateurs -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Utilisateurs du Système</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('Utilisateurs du Système') }}</h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('navigation.user') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle Actuel</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Rôle Actuel') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('clinical.table_status') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
@@ -91,9 +91,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button onclick="assignRole({{ $user->id }}, '{{ $user->role }}')" class="text-indigo-600 hover:text-indigo-900">
-                                        Assigner Rôle
-                                    </button>
+                                    <button onclick="assignRole({{ $user->id }}, '{{ $user->role }}')" class="text-indigo-600 hover:text-indigo-900">{{ __('Assigner Rôle') }}</button>
                                 </td>
                             </tr>
                             @endforeach
@@ -109,7 +107,7 @@
 <div id="assignRoleModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Assigner un Rôle</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Assigner un Rôle') }}</h3>
             <form id="assignRoleForm" method="POST">
                 @csrf
                 <div class="mb-4">
@@ -117,9 +115,9 @@
                     <input type="text" id="userInfo" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Nouveau Rôle</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Nouveau Rôle') }}</label>
                     <select name="role" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option value="">Sélectionner un rôle</option>
+                        <option value="">{{ __('Sélectionner un rôle') }}</option>
                         @foreach($roles as $role)
                             <option value="{{ $role->name }}">{{ $role->display_name }}</option>
                         @endforeach

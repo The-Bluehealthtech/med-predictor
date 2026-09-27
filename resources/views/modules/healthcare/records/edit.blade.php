@@ -33,7 +33,7 @@
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('health_records.show_page.patient_info_heading') }}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="patient_name" class="block text-sm font-medium text-gray-700 mb-2">Nom du Patient</label>
+                        <label for="patient_name" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Nom du Patient') }}</label>
                         <input type="text" id="patient_name" name="patient_name" value="Patient Example" 
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
@@ -72,25 +72,25 @@
                         <label for="medical_history" class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records_edit.medical_history') }}</label>
                         <textarea id="medical_history" name="medical_history" rows="3" 
                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  placeholder="Décrivez les antécédents médicaux...">{{ __('Aucun antécédent médical significatif noté.') }}</textarea>
+                                  placeholder="{{ __('Décrivez les antécédents médicaux...') }}">{{ __('Aucun antécédent médical significatif noté.') }}</textarea>
                     </div>
                     <div>
                         <label for="allergies" class="block text-sm font-medium text-gray-700 mb-2">Allergies</label>
                         <textarea id="allergies" name="allergies" rows="3" 
                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  placeholder="Listez les allergies...">Aucune allergie connue.</textarea>
+                                  placeholder="{{ __('Listez les allergies...') }}">{{ __('Aucune allergie connue.') }}</textarea>
                     </div>
                     <div>
                         <label for="current_medications" class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records_edit.current_medications_2') }}</label>
                         <textarea id="current_medications" name="current_medications" rows="3" 
                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  placeholder="Listez les médicaments actuels...">{{ __('Aucun médicament en cours.') }}</textarea>
+                                  placeholder="{{ __('Listez les médicaments actuels...') }}">{{ __('Aucun médicament en cours.') }}</textarea>
                     </div>
                     <div>
                         <label for="special_conditions" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Conditions Spéciales') }}</label>
                         <textarea id="special_conditions" name="special_conditions" rows="3" 
                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  placeholder="Décrivez les conditions spéciales...">{{ __('Aucune condition spéciale.') }}</textarea>
+                                  placeholder="{{ __('Décrivez les conditions spéciales...') }}">{{ __('Aucune condition spéciale.') }}</textarea>
                     </div>
                 </div>
             </div>

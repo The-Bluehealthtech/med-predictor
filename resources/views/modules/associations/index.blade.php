@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Démonstration Logos Officiels des Fédérations</title>
+    <title>{{ __('Démonstration Logos Officiels des Fédérations') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="max-w-6xl mx-auto p-6">
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-4">🏛️ Associations de Football</h1>
-            <p class="text-xl text-gray-600">Gestion des fédérations nationales et régionales</p>
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">{{ __('🏛️ Associations de Football') }}</h1>
+            <p class="text-xl text-gray-600">{{ __('Gestion des fédérations nationales et régionales') }}</p>
         </div>
 
         @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations'))
-            <a href="{{ route('organization-cards.create', 'associations') }}" class="inline-block mb-6 px-4 py-2 bg-green-700 text-white rounded">+ Ajouter une association</a>
+            <a href="{{ route('organization-cards.create', 'associations') }}" class="inline-block mb-6 px-4 py-2 bg-green-700 text-white rounded">{{ __('+ Ajouter une association') }}</a>
         @endif
         <!-- Liste des associations -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -67,7 +67,7 @@
                             <p><span class="font-medium">Version FIFA:</span> {{ $association->fifa_version }}</p>
                         @endif
                         @if($association->founded_year)
-                            <p><span class="font-medium">Fondée en:</span> {{ $association->founded_year }}</p>
+                            <p><span class="font-medium">{{ __('Fondée en:') }}</span> {{ $association->founded_year }}</p>
                         @endif
                     </div>
                     
@@ -99,8 +99,8 @@
                     
                     <!-- Compétitions (à développer plus tard) -->
                     <div class="mb-3 p-2 bg-purple-50 rounded">
-                        <p class="text-xs text-purple-700 font-medium">🏆 Compétitions</p>
-                        <p class="text-xs text-purple-600">À développer</p>
+                        <p class="text-xs text-purple-700 font-medium">{{ __('🏆 Compétitions') }}</p>
+                        <p class="text-xs text-purple-600">{{ __('À développer') }}</p>
                     </div>
                     
                     <!-- Boutons d'action qui apparaissent au survol -->
@@ -126,14 +126,14 @@
         <!-- Navigation -->
         <div class="text-center mb-8">
             <a href="/modules" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium">
-                🔙 Retour aux modules
+                {{ __('🔙 Retour aux modules') }}
             </a>
         </div>
 
         <!-- JavaScript pour la suppression -->
         <script>
         function deleteAssociation(id) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cette association ?')) {
+            if (confirm(@json(__('Êtes-vous sûr de vouloir supprimer cette association ?')))) {
                 // Ici vous pouvez ajouter la logique de suppression AJAX
                 alert('Fonction de suppression à implémenter pour l\'ID: ' + id);
             }

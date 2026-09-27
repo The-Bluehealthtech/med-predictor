@@ -77,10 +77,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-6">Notification Preferences</h2>
-                    <p class="text-sm text-gray-500">
-                        Les préférences de notification ne sont pas encore configurables individuellement pour le moment.
-                        Cette fonctionnalité arrivera dans une prochaine mise à jour.
-                    </p>
+                    <p class="text-sm text-gray-500">{{ __('Les préférences de notification ne sont pas encore configurables individuellement pour le moment. Cette fonctionnalité arrivera dans une prochaine mise à jour.') }}</p>
                 </div>
             </div>
         </div>

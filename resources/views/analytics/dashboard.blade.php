@@ -18,13 +18,13 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Analytics Dashboard
                                 </h1>
-                                <p class="text-sm text-gray-600">Analyse avancée et insights</p>
+                                <p class="text-sm text-gray-600">{{ __('Analyse avancée et insights') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
                 </div>
             </div>
         </div>
@@ -37,18 +37,14 @@
             <div class="p-6">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">📊 Analytics Dashboard</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Analyse avancée, tendances et alertes de performance
-                    </p>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Analyse avancée, tendances et alertes de performance') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                             {{ __('Système opérationnel') }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                            Données en temps réel
-                        </div>
+                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>{{ __('Données en temps réel') }}</div>
                     </div>
                 </div>
             </div>
@@ -136,21 +132,21 @@
                     <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                         <div>
                             <p class="font-medium text-blue-900">Performance Metrics</p>
-                            <p class="text-sm text-blue-700">Analyse des performances des athlètes</p>
+                            <p class="text-sm text-blue-700">{{ __('Analyse des performances des athlètes') }}</p>
                         </div>
                         <span class="text-blue-600">→</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
                         <div>
                             <p class="font-medium text-green-900">Health Analytics</p>
-                            <p class="text-sm text-green-700">Suivi de la santé et bien-être</p>
+                            <p class="text-sm text-green-700">{{ __('Suivi de la santé et bien-être') }}</p>
                         </div>
                         <span class="text-green-600">→</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
                         <div>
                             <p class="font-medium text-purple-900">Training Analytics</p>
-                            <p class="text-sm text-purple-700">Analyse des sessions d'entraînement</p>
+                            <p class="text-sm text-purple-700">{{ __('Analyse des sessions d\'entraînement') }}</p>
                         </div>
                         <span class="text-purple-600">→</span>
                     </div>
@@ -164,21 +160,21 @@
                     <div class="flex items-center justify-between p-4 bg-indigo-50 rounded-lg">
                         <div>
                             <p class="font-medium text-indigo-900">Performance Trends</p>
-                            <p class="text-sm text-indigo-700">Évolution des performances</p>
+                            <p class="text-sm text-indigo-700">{{ __('Évolution des performances') }}</p>
                         </div>
                         <span class="text-indigo-600">→</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
                         <div>
                             <p class="font-medium text-yellow-900">Injury Trends</p>
-                            <p class="text-sm text-yellow-700">Analyse des blessures</p>
+                            <p class="text-sm text-yellow-700">{{ __('Analyse des blessures') }}</p>
                         </div>
                         <span class="text-yellow-600">→</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-pink-50 rounded-lg">
                         <div>
                             <p class="font-medium text-pink-900">Recovery Trends</p>
-                            <p class="text-sm text-pink-700">Temps de récupération</p>
+                            <p class="text-sm text-pink-700">{{ __('Temps de récupération') }}</p>
                         </div>
                         <span class="text-pink-600">→</span>
                     </div>

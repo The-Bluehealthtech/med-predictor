@@ -7,7 +7,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">📈 Performance Analytics</h1>
-            <p class="text-sm text-gray-600">Données enregistrées dans player_performances. Aucune valeur de démonstration.</p>
+            <p class="text-sm text-gray-600">{{ __('Données enregistrées dans player_performances. Aucune valeur de démonstration.') }}</p>
         </div>
         <a href="{{ route('modules.index') }}" class="text-blue-600 hover:text-blue-800">← Modules</a>
     </div>
@@ -43,20 +43,20 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white rounded-lg shadow p-5">
-            <h2 class="font-semibold text-gray-900 mb-4">Évolution du score global</h2>
+            <h2 class="font-semibold text-gray-900 mb-4">{{ __('Évolution du score global') }}</h2>
             @if(count($trend['values']) > 0)
                 <canvas id="performanceTrend"></canvas>
             @else
-                <p class="text-sm text-gray-500">Aucune donnée historique disponible.</p>
+                <p class="text-sm text-gray-500">{{ __('Aucune donnée historique disponible.') }}</p>
             @endif
         </div>
 
         <div class="bg-white rounded-lg shadow p-5">
-            <h2 class="font-semibold text-gray-900 mb-4">Meilleures moyennes enregistrées</h2>
+            <h2 class="font-semibold text-gray-900 mb-4">{{ __('Meilleures moyennes enregistrées') }}</h2>
             @if(count($topPerformers['values']) > 0)
                 <canvas id="topPerformers"></canvas>
             @else
-                <p class="text-sm text-gray-500">Aucune donnée de performance disponible.</p>
+                <p class="text-sm text-gray-500">{{ __('Aucune donnée de performance disponible.') }}</p>
             @endif
         </div>
     </div>
@@ -96,7 +96,7 @@
                     @empty
                         <tr>
                             <td colspan="8" class="px-4 py-8 text-center text-gray-500">
-                                Aucune performance enregistrée dans le périmètre autorisé.
+                                {{ __('Aucune performance enregistrée dans le périmètre autorisé.') }}
                             </td>
                         </tr>
                     @endforelse

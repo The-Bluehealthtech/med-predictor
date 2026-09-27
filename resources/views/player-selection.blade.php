@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sélection des Joueurs - FIT Platform</title>
+    <title>{{ __('Sélection des Joueurs - FIT Platform') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -12,8 +12,8 @@
         <!-- Header -->
         <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
             <div class="container mx-auto px-6 py-4">
-                <h1 class="text-3xl font-bold">🏆 Sélection des Joueurs</h1>
-                <p class="text-blue-100">Choisissez un joueur pour accéder à son portail</p>
+                <h1 class="text-3xl font-bold">{{ __('🏆 Sélection des Joueurs') }}</h1>
+                <p class="text-blue-100">{{ __('Choisissez un joueur pour accéder à son portail') }}</p>
             </div>
         </header>
 
@@ -26,7 +26,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records.show_page.nationality_label') }}</label>
                         <select id="nationality-filter" class="w-full border border-gray-300 rounded-md px-3 py-2">
-                            <option value="">Toutes les nationalités</option>
+                            <option value="">{{ __('Toutes les nationalités') }}</option>
                             @foreach($nationalities as $nationality)
                                 <option value="{{ $nationality->name }}">{{ $nationality->name }}</option>
                             @endforeach
@@ -35,10 +35,10 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Position</label>
                         <select id="position-filter" class="w-full border border-gray-300 rounded-md px-3 py-2">
-                            <option value="">Toutes les positions</option>
+                            <option value="">{{ __('Toutes les positions') }}</option>
                             <option value="FW">Attaquant (FW)</option>
                             <option value="MF">Milieu (MF)</option>
-                            <option value="DF">Défenseur (DF)</option>
+                            <option value="DF">{{ __('Défenseur (DF)') }}</option>
                             <option value="GK">Gardien (GK)</option>
                         </select>
                     </div>
@@ -53,7 +53,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('secretary.label_search') }}</label>
-                        <input type="text" id="search-filter" placeholder="Nom du joueur..." class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <input type="text" id="search-filter" placeholder="{{ __('Nom du joueur...') }}" class="w-full border border-gray-300 rounded-md px-3 py-2">
                     </div>
                 </div>
             </div>
@@ -118,7 +118,7 @@
                                                  alt="Logo de {{ $player->club->name }}">
                                             <span class="text-sm text-gray-900">{{ $player->club->name }}</span>
                                         @else
-                                            <span class="text-sm text-gray-500">Sans club</span>
+                                            <span class="text-sm text-gray-500">{{ __('Sans club') }}</span>
                                         @endif
                                     </div>
                                 </td>
@@ -141,9 +141,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <a href="{{ route('joueur.portal', $player->id) }}" 
                                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                        <i class="fas fa-external-link-alt mr-2"></i>
-                                        Accéder au Portail
-                                    </a>
+                                        <i class="fas fa-external-link-alt mr-2"></i>{{ __('Accéder au Portail') }}</a>
                                 </td>
                             </tr>
                             @endforeach

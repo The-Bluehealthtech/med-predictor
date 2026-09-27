@@ -16,7 +16,7 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Gestion des Permissions par Module
+                                    {{ __('Gestion des Permissions par Module') }}
                                 </h1>
                                 <p class="text-sm text-gray-600">{{ __('Configurez les accès aux modules pour chaque rôle') }}</p>
                             </div>
@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('admin.rbac.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au RBAC</a>
+                    <a href="{{ route('admin.rbac.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour au RBAC') }}</a>
                 </div>
             </div>
         </div>
@@ -54,9 +54,9 @@
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <div class="px-4 py-5 sm:p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">Matrice des Permissions par Module</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">{{ __('Matrice des Permissions par Module') }}</h3>
                     <button onclick="savePermissions()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        💾 Sauvegarder les Permissions
+                        {{ __('💾 Sauvegarder les Permissions') }}
                     </button>
                 </div>
 

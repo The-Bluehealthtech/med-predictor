@@ -32,7 +32,7 @@
                 <!-- Matches Assignés (à venir) -->
                 @if($assignedMatches->count() > 0)
                     <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Matches Assignés (À Venir)</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Matches Assignés (À Venir)') }}</h3>
                         <div class="space-y-4">
                             @foreach($assignedMatches as $match)
                                 <div class="border border-blue-200 rounded-lg p-4 hover:bg-blue-50 transition-colors">
@@ -63,7 +63,7 @@
                 <!-- Matches Terminés -->
                 @if($recentMatches->count() > 0)
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Matches Terminés - Créer un Rapport</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Matches Terminés - Créer un Rapport') }}</h3>
                         <div class="space-y-4">
                             @foreach($recentMatches as $match)
                                 <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">

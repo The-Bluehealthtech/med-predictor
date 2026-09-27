@@ -62,7 +62,7 @@
                             <p class="mt-1 text-sm text-gray-500">
                                 Formats acceptés: JPEG, PNG, JPG. Taille max: 5MB
                                 @if($isReadOnly)
-                                    <br><span class="text-blue-600">⚠️ Photo modifiable même en mode lecture seule</span>
+                                    <br><span class="text-blue-600">{{ __('⚠️ Photo modifiable même en mode lecture seule') }}</span>
                                 @endif
                             </p>
                             @error('player_picture')
@@ -102,7 +102,7 @@
 
                         <div>
                             <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
-                                Nom *
+                                {{ __('Nom *') }}
                             </label>
                             <input type="text" name="last_name" id="last_name" 
                                    value="{{ old('last_name', $existingPlayer->last_name ?? '') }}" required
@@ -115,7 +115,7 @@
 
                         <div>
                             <label for="date_of_birth" class="block text-sm font-medium text-gray-700 mb-2">
-                                Date de naissance *
+                                {{ __('Date de naissance *') }}
                             </label>
                             <input type="date" name="date_of_birth" id="date_of_birth" 
                                    value="{{ old('date_of_birth', $existingPlayer->date_of_birth ? $existingPlayer->date_of_birth->format('Y-m-d') : '') }}" required
@@ -170,7 +170,7 @@
 
                 <!-- Informations Administratives -->
                 <div class="mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Informations Administratives</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Informations Administratives') }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
@@ -199,7 +199,7 @@
 
                         <div>
                             <label for="contact_email" class="block text-sm font-medium text-gray-700 mb-2">
-                                Email de contact
+                                {{ __('Email de contact') }}
                             </label>
                             <input type="email" name="contact_email" id="contact_email" 
                                    value="{{ old('contact_email', $existingPlayer->contact_email ?? '') }}"
@@ -233,7 +233,7 @@
                                 <option value="">{{ __('health_records_extra.label_552c0f1db1ef') }}</option>
                                 <option value="student" {{ (old('school_professional_status', $existingPlayer->school_professional_status ?? '') == 'student') ? 'selected' : '' }}>{{ __('Étudiant') }}</option>
                                 <option value="employed" {{ (old('school_professional_status', $existingPlayer->school_professional_status ?? '') == 'employed') ? 'selected' : '' }}>{{ __('Employé') }}</option>
-                                <option value="unemployed" {{ (old('school_professional_status', $existingPlayer->school_professional_status ?? '') == 'unemployed') ? 'selected' : '' }}>Sans emploi</option>
+                                <option value="unemployed" {{ (old('school_professional_status', $existingPlayer->school_professional_status ?? '') == 'unemployed') ? 'selected' : '' }}>{{ __('Sans emploi') }}</option>
                                 <option value="retired" {{ (old('school_professional_status', $existingPlayer->school_professional_status ?? '') == 'retired') ? 'selected' : '' }}>{{ __('Retraité') }}</option>
                             </select>
                             @error('school_professional_status')
@@ -266,7 +266,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="license_type" class="block text-sm font-medium text-gray-700 mb-2">
-                                Type de licence *
+                                {{ __('Type de licence *') }}
                             </label>
                             <select name="license_type" id="license_type" required
                                     class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 {{ $isReadOnly ? 'opacity-50 cursor-not-allowed bg-gray-100' : '' }}"
@@ -323,7 +323,7 @@
 
                 <!-- Informations de licence et club -->
                 <div class="mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Informations de licence et club</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Informations de licence et club') }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         @if($isClubUser)
                             <input type="hidden" name="club_id" value="{{ $user->club_id }}">
@@ -401,7 +401,7 @@
                             <input type="text" name="license_number" id="license_number" 
                                    value="{{ old('license_number') }}"
                                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                   placeholder="Auto-généré si vide">
+                                   placeholder="{{ __('Auto-généré si vide') }}">
                             @error('license_number')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -409,7 +409,7 @@
 
                         <div>
                             <label for="license_status" class="block text-sm font-medium text-gray-700 mb-2">
-                                Statut de la licence
+                                {{ __('Statut de la licence') }}
                             </label>
                             <select name="license_status" id="license_status"
                                     class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
@@ -448,7 +448,7 @@
                                     {{ $pcmaStatus['message'] }}
                                 </p>
                                 <div class="mt-3 text-sm text-green-600">
-                                    <strong>Date de validation:</strong> {{ $pcmaStatus['pcma']->signed_at ? \Carbon\Carbon::parse($pcmaStatus['pcma']->signed_at)->format('d/m/Y') : 'N/A' }}
+                                    <strong>{{ __('Date de validation:') }}</strong> {{ $pcmaStatus['pcma']->signed_at ? \Carbon\Carbon::parse($pcmaStatus['pcma']->signed_at)->format('d/m/Y') : 'N/A' }}
                                 </div>
                             </div>
 
@@ -469,8 +469,7 @@
                                     {{ $pcmaStatus['message'] }}
                                 </p>
                                 <p class="text-red-600 text-sm mt-2">
-                                    <strong>Important:</strong> Un PCMA (Protocole de Concertation Médicale d'Aptitude) valide et signé avec statut "cleared" est obligatoire pour soumettre la demande de licence.
-                                </p>
+                                    <strong>Important:</strong>{{ __('Un PCMA (Protocole de Concertation Médicale d\'Aptitude) valide et signé avec statut "cleared" est obligatoire pour soumettre la demande de licence.') }}</p>
                                 <div class="mt-3">
                                     <a href="{{ route('modules.index') }}" class="text-red-600 hover:text-red-800 text-sm font-medium underline">
                                         {{ __('Accéder aux modules PCMA →') }}
@@ -514,18 +513,16 @@
                         </div>
                         <div>
                             <label for="pcma_validation" class="block text-sm font-medium text-gray-700 mb-2">
-                                Validation PCMA *
+                                {{ __('Validation PCMA *') }}
                             </label>
                             <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
                                 <div class="flex items-center">
                                     <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                    <span class="text-blue-800 font-medium">PCMA requis pour la licence</span>
+                                    <span class="text-blue-800 font-medium">{{ __('PCMA requis pour la licence') }}</span>
                                 </div>
-                                <p class="text-blue-700 text-sm mt-2">
-                                    Un PCMA (Protocole de Concertation Médicale d'Aptitude) valide et signé est requis pour soumettre la demande de licence à l'association.
-                                </p>
+                                <p class="text-blue-700 text-sm mt-2">{{ __('Un PCMA (Protocole de Concertation Médicale d\'Aptitude) valide et signé est requis pour soumettre la demande de licence à l\'association.') }}</p>
                                 <div class="mt-3">
                                     <a href="{{ route('pcma.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
                                         {{ __('Vérifier le statut PCMA →') }}
@@ -566,7 +563,7 @@
                         <!-- Bouton Envoyer demande -->
                         <button type="submit" name="action" value="submit" 
                                 class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
-                            📤 Envoyer demande
+                            {{ __('📤 Envoyer demande') }}
                         </button>
                     @else
                         <!-- Bouton Créer pour les nouveaux joueurs -->
@@ -582,12 +579,11 @@
                     <div class="mt-6 bg-blue-50 border border-blue-200 rounded-md p-4">
                         <h4 class="text-sm font-medium text-blue-800 mb-2">📋 Actions disponibles :</h4>
                         <ul class="text-sm text-blue-700 space-y-1">
-                            <li><strong>💾 Sauvegarder :</strong> Enregistre les données de la demande dans l'état "En cours" (brouillon)</li>
-                            <li><strong>📤 Envoyer demande :</strong> Passe la demande à l'état "Demande envoyée" et l'envoie à l'association pour validation</li>
+                            <li><strong>💾 Sauvegarder :</strong>{{ __('Enregistre les données de la demande dans l\'état "En cours" (brouillon)') }}</li>
+                            <li><strong>{{ __('📤 Envoyer demande :') }}</strong>{{ __('Passe la demande à l\'état "Demande envoyée" et l\'envoie à l\'association pour validation') }}</li>
                         </ul>
                         <p class="text-xs text-blue-600 mt-2">
-                            <strong>{{ __('medical_predictions.create_ai_note_label') }}</strong> Une fois envoyée, la demande ne peut plus être modifiée par le club.
-                        </p>
+                            <strong>{{ __('medical_predictions.create_ai_note_label') }}</strong>{{ __('Une fois envoyée, la demande ne peut plus être modifiée par le club.') }}</p>
                     </div>
                 @endif
             </form>

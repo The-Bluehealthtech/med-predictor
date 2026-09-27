@@ -18,13 +18,13 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Players
                                 </h1>
-                                <p class="text-sm text-gray-600">Gestion des joueurs</p>
+                                <p class="text-sm text-gray-600">{{ __('Gestion des joueurs') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
                 </div>
             </div>
         </div>
@@ -39,10 +39,8 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
             <div class="p-6">
                 <div class="text-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">👥 Gestion des Joueurs</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Gestion complète des joueurs, profils et informations
-                    </p>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ __('👥 Gestion des Joueurs') }}</h2>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Gestion complète des joueurs, profils et informations') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
@@ -62,17 +60,15 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                         <a href="{{ route('player-registration.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                            ➕ Nouveau Joueur
+                            {{ __('➕ Nouveau Joueur') }}
                         </a>
                                                         <a href="{{ route('modules.players.index') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                            📋 Gestion des Licences
+                            {{ __('📋 Gestion des Licences') }}
                         </a>
                 <a href="{{ route('player-passports.index') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     🛂 Passeports
                 </a>
-                <a href="{{ route('health-records.index') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    🏥 Dossiers Médicaux
-                </a>
+                <a href="{{ route('health-records.index') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-center transition-colors">{{ __('🏥 Dossiers Médicaux') }}</a>
             </div>
         </div>
 
@@ -80,7 +76,7 @@
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-semibold text-gray-800">Liste des Joueurs</h2>
+                    <h2 class="text-xl font-semibold text-gray-800">{{ __('Liste des Joueurs') }}</h2>
                     <div class="flex items-center space-x-4">
                         <div class="text-sm text-gray-600">
                             Total: <span class="font-semibold">{{ $players->total() }}</span> {{ __('competitions.match_sheets_page.players_suffix') }}
@@ -107,11 +103,9 @@
                                     Position
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Statut Licence
+                                    {{ __('Statut Licence') }}
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Dernière Mise à Jour
-                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Dernière Mise à Jour') }}</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Actions
                                 </th>
@@ -159,20 +153,16 @@
                                         @endphp
                                         
                                         @if($licenseStatus === 'approved')
-                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                                ✅ Approuvée
-                                            </span>
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">{{ __('✅ Approuvée') }}</span>
                                         @elseif($licenseStatus === 'pending')
                                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
                                                 {{ __('competitions.engagements_clubs_page.status_pending_badge') }}
                                             </span>
                                         @elseif($licenseStatus === 'rejected')
-                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                                ❌ Rejetée
-                                            </span>
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">{{ __('❌ Rejetée') }}</span>
                                         @else
                                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                📋 Aucune Licence
+                                                {{ __('📋 Aucune Licence') }}
                                             </span>
                                         @endif
                                     </td>
@@ -186,17 +176,17 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
                                             <a href="{{ route('health-records.index', ['player_id' => $player->id]) }}" 
-                                               class="text-blue-600 hover:text-blue-900" title="Dossier Médical">
+                                               class="text-blue-600 hover:text-blue-900" title="{{ __('health_records.show_page.heading') }}">
                                                 🏥
                                             </a>
                                             <a href="{{ route('player-licenses.request.create', $player) }}"
-                                               class="text-green-600 hover:text-green-900" title="Licence">
+                                               class="text-green-600 hover:text-green-900" title="{{ __('competitions.squad_page.license_option') }}">
                                                 📋
                                             </a>
                                             <a href="#" class="text-purple-600 hover:text-purple-900" title="Passeport">
                                                 🛂
                                             </a>
-                                            <a href="#" class="text-yellow-600 hover:text-yellow-900" title="Modifier">
+                                            <a href="#" class="text-yellow-600 hover:text-yellow-900" title="{{ __('common.edit') }}">
                                                 ✏️
                                             </a>
                                             @if(in_array(Auth::user()->role, ['system_admin', 'super_admin', 'admin', 'association_admin']))
@@ -218,11 +208,11 @@
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                         </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun joueur enregistré</h3>
-                        <p class="mt-1 text-sm text-gray-500">Commencez par ajouter un nouveau joueur.</p>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('Aucun joueur enregistré') }}</h3>
+                        <p class="mt-1 text-sm text-gray-500">{{ __('Commencez par ajouter un nouveau joueur.') }}</p>
                         <div class="mt-6">
                             <a href="{{ route('player-registration.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                                Ajouter un joueur
+                                {{ __('Ajouter un joueur') }}
                             </a>
                         </div>
                     </div>
@@ -245,7 +235,7 @@
                                 return $player->licenses->where('status', 'approved')->count() > 0; 
                             })->count() }}
                         </div>
-                        <div class="text-sm text-gray-600">Licences Approuvées</div>
+                        <div class="text-sm text-gray-600">{{ __('Licences Approuvées') }}</div>
                     </div>
                     <div class="text-center">
                         <div class="text-2xl font-bold text-yellow-600">
@@ -261,7 +251,7 @@
                                 return $player->licenses->where('status', 'rejected')->count() > 0; 
                             })->count() }}
                         </div>
-                        <div class="text-sm text-gray-600">Rejetées</div>
+                        <div class="text-sm text-gray-600">{{ __('Rejetées') }}</div>
                     </div>
                 </div>
             </div>

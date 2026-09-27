@@ -8,9 +8,7 @@
     <div class="flex justify-between items-center mb-8">
         <div>
             <h1 class="text-3xl font-bold text-gray-900 flex items-center">
-                <i class="fas fa-edit text-blue-600 mr-3"></i>
-                Modifier l'Équipe
-            </h1>
+                <i class="fas fa-edit text-blue-600 mr-3"></i>{{ __('Modifier l\'Équipe') }}</h1>
             <p class="text-gray-600 mt-2">Modification de l'équipe : {{ $team->name }}</p>
         </div>
         <a href="{{ route('modules.teams.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center">
@@ -29,7 +27,7 @@
                 <!-- Nom de l'équipe -->
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nom de l'équipe *
+                        {{ __('Nom de l\'équipe *') }}
                     </label>
                     <input type="text" 
                            id="name" 
@@ -73,7 +71,7 @@
                             name="level" 
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('level') border-red-500 @enderror"
                             required>
-                        <option value="">Sélectionner un niveau</option>
+                        <option value="">{{ __('Sélectionner un niveau') }}</option>
                         <option value="professional" {{ old('level', $team->level) == 'professional' ? 'selected' : '' }}>
                             Professionnel
                         </option>
@@ -98,13 +96,13 @@
                 <!-- Catégorie d'âge -->
                 <div>
                     <label for="age_category" class="block text-sm font-medium text-gray-700 mb-2">
-                        Catégorie d'âge *
+                        {{ __('Catégorie d\'âge *') }}
                     </label>
                     <select id="age_category" 
                             name="age_category" 
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('age_category') border-red-500 @enderror"
                             required>
-                        <option value="">Sélectionner une catégorie</option>
+                        <option value="">{{ __('Sélectionner une catégorie') }}</option>
                         <option value="U-12" {{ old('age_category', $team->age_category) == 'U-12' ? 'selected' : '' }}>U-12</option>
                         <option value="U-14" {{ old('age_category', $team->age_category) == 'U-14' ? 'selected' : '' }}>U-14</option>
                         <option value="U-16" {{ old('age_category', $team->age_category) == 'U-16' ? 'selected' : '' }}>U-16</option>
@@ -130,7 +128,7 @@
                             name="discipline" 
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('discipline') border-red-500 @enderror"
                             required>
-                        <option value="">Sélectionner une discipline</option>
+                        <option value="">{{ __('Sélectionner une discipline') }}</option>
                         <option value="football" {{ old('discipline', $team->discipline) == 'football' ? 'selected' : '' }}>
                             Football
                         </option>

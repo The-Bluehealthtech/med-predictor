@@ -11,7 +11,7 @@
                 <i class="fas fa-users text-blue-600 mr-3"></i>
                 {{ $team->name }}
             </h1>
-            <p class="text-gray-600 mt-2">Détails de l'équipe</p>
+            <p class="text-gray-600 mt-2">{{ __('Détails de l\'équipe') }}</p>
         </div>
         <div class="flex space-x-3">
             <a href="{{ route('modules.teams.edit', $team) }}" 
@@ -60,7 +60,7 @@
                         </span>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500">Catégorie d'âge</label>
+                        <label class="block text-sm font-medium text-gray-500">{{ __('Catégorie d\'âge') }}</label>
                         <p class="text-lg font-semibold text-gray-900">{{ $team->age_category ?? 'N/A' }}</p>
                     </div>
                     <div>
@@ -79,7 +79,7 @@
                         </span>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500">ID Équipe</label>
+                        <label class="block text-sm font-medium text-gray-500">{{ __('ID Équipe') }}</label>
                         <p class="text-lg font-semibold text-gray-900">#{{ $team->id }}</p>
                     </div>
                 </div>
@@ -89,7 +89,7 @@
         <!-- Carte du club -->
         <div>
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Informations du club</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Informations du club') }}</h3>
                 @if($team->club)
                     <div class="space-y-3">
                         <div>
@@ -113,7 +113,7 @@
                             <p class="text-gray-900">{{ $team->club->founded_year ?? 'N/A' }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-500">Statut du club</label>
+                            <label class="block text-sm font-medium text-gray-500">{{ __('Statut du club') }}</label>
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
                                 @if($team->club->status === 'active') bg-green-100 text-green-800
                                 @elseif($team->club->status === 'inactive') bg-red-100 text-red-800
@@ -124,7 +124,7 @@
                         </div>
                     </div>
                 @else
-                    <p class="text-gray-500">Aucune information de club disponible</p>
+                    <p class="text-gray-500">{{ __('Aucune information de club disponible') }}</p>
                 @endif
             </div>
         </div>
@@ -136,7 +136,7 @@
         <div class="flex flex-wrap gap-4">
             <button onclick="viewPlayers()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-users mr-2"></i>
-                Voir les joueurs
+                {{ __('Voir les joueurs') }}
             </button>
             <button onclick="viewMatches()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-futbol mr-2"></i>
@@ -156,19 +156,19 @@
 
 <script>
 function viewPlayers() {
-    alert('Fonctionnalité de visualisation des joueurs à implémenter');
+    alert(@json(__('Fonctionnalité de visualisation des joueurs à implémenter')));
 }
 
 function viewMatches() {
-    alert('Fonctionnalité de visualisation des matchs à implémenter');
+    alert(@json(__('Fonctionnalité de visualisation des matchs à implémenter')));
 }
 
 function viewStatistics() {
-    alert('Fonctionnalité de visualisation des statistiques à implémenter');
+    alert(@json(__('Fonctionnalité de visualisation des statistiques à implémenter')));
 }
 
 function exportTeam() {
-    alert('Fonctionnalité d\'export à implémenter');
+    alert(@json(__('Fonctionnalité d\'export à implémenter')));
 }
 </script>
 @endsection

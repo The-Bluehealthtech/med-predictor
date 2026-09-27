@@ -63,7 +63,7 @@
                             </label>
                             <input type="text" name="name" id="name" value="{{ old('name') }}" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                   placeholder="ex: Nouvelle fonctionnalité activée" required>
+                                   placeholder="{{ __('ex: Nouvelle fonctionnalité activée') }}" required>
                             <p class="mt-1 text-sm text-gray-500">{{ __('Nom affiché dans l\'interface') }}</p>
                         </div>
                     </div>
@@ -74,7 +74,7 @@
                         </label>
                         <textarea name="description" id="description" rows="3" 
                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                  placeholder="Description détaillée du paramètre">{{ old('description') }}</textarea>
+                                  placeholder="{{ __('Description détaillée du paramètre') }}">{{ old('description') }}</textarea>
                     </div>
                 </div>
             </div>
@@ -122,14 +122,14 @@
                         </label>
                         <input type="text" name="value" id="value" value="{{ old('value') }}" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                               placeholder="Valeur du paramètre" required>
+                               placeholder="{{ __('Valeur du paramètre') }}" required>
                     </div>
 
                     <div class="mt-6">
                         <label for="default_value" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Valeur par défaut') }}</label>
                         <input type="text" name="default_value" id="default_value" value="{{ old('default_value') }}" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                               placeholder="Valeur par défaut (optionnel)">
+                               placeholder="{{ __('Valeur par défaut (optionnel)') }}">
                     </div>
 
                     <div class="mt-6">

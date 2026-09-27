@@ -7,9 +7,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">⚽ Direction Technique Nationale</h1>
-            <p class="text-sm text-gray-600">
-                Pilotage technique basé sur les données du périmètre association autorisé.
-            </p>
+            <p class="text-sm text-gray-600">{{ __('Pilotage technique basé sur les données du périmètre association autorisé.') }}</p>
         </div>
         <a href="{{ route('modules.index') }}" class="text-blue-600 hover:text-blue-800">← Modules</a>
     </div>
@@ -32,26 +30,26 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <a href="{{ route('modules.players.index') }}" class="bg-white rounded-lg shadow p-5 hover:shadow-md">
-            <div class="font-semibold text-gray-900">🏃 Joueurs</div>
-            <p class="text-sm text-gray-600 mt-1">Effectifs et profils du périmètre autorisé.</p>
+            <div class="font-semibold text-gray-900">{{ __('🏃 Joueurs') }}</div>
+            <p class="text-sm text-gray-600 mt-1">{{ __('Effectifs et profils du périmètre autorisé.') }}</p>
         </a>
         <a href="{{ route('modules.teams.index') }}" class="bg-white rounded-lg shadow p-5 hover:shadow-md">
-            <div class="font-semibold text-gray-900">👥 Équipes</div>
-            <p class="text-sm text-gray-600 mt-1">Organisation technique des équipes.</p>
+            <div class="font-semibold text-gray-900">{{ __('👥 Équipes') }}</div>
+            <p class="text-sm text-gray-600 mt-1">{{ __('Organisation technique des équipes.') }}</p>
         </a>
         <a href="{{ route('modules.competitions.index') }}" class="bg-white rounded-lg shadow p-5 hover:shadow-md">
-            <div class="font-semibold text-gray-900">🏆 Compétitions</div>
-            <p class="text-sm text-gray-600 mt-1">Compétitions réellement enregistrées.</p>
+            <div class="font-semibold text-gray-900">{{ __('🏆 Compétitions') }}</div>
+            <p class="text-sm text-gray-600 mt-1">{{ __('Compétitions réellement enregistrées.') }}</p>
         </a>
         <a href="{{ route('performances.analytics') }}" class="bg-white rounded-lg shadow p-5 hover:shadow-md">
             <div class="font-semibold text-gray-900">📈 Performance Analytics</div>
-            <p class="text-sm text-gray-600 mt-1">Analyse des performances enregistrées.</p>
+            <p class="text-sm text-gray-600 mt-1">{{ __('Analyse des performances enregistrées.') }}</p>
         </a>
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="p-5 border-b">
-            <h2 class="font-semibold text-gray-900">Dernières évaluations de performance</h2>
+            <h2 class="font-semibold text-gray-900">{{ __('Dernières évaluations de performance') }}</h2>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
@@ -79,9 +77,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                                Aucune performance enregistrée dans le périmètre autorisé.
-                            </td>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">{{ __('Aucune performance enregistrée dans le périmètre autorisé.') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

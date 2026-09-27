@@ -7,7 +7,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">📊 Analytics Dashboard</h1>
-            <p class="text-sm text-gray-600">Agrégats et alertes réels dans le périmètre autorisé.</p>
+            <p class="text-sm text-gray-600">{{ __('Agrégats et alertes réels dans le périmètre autorisé.') }}</p>
         </div>
         <a href="{{ route('modules.index') }}" class="text-blue-600 hover:text-blue-800">← Modules</a>
     </div>
@@ -31,17 +31,17 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <a href="{{ route('performances.analytics') }}" class="bg-white rounded-lg shadow p-6 hover:shadow-md">
             <h2 class="font-semibold text-gray-900">📈 Performance Analytics</h2>
-            <p class="text-sm text-gray-600 mt-2">Tendances et scores enregistrés dans player_performances.</p>
+            <p class="text-sm text-gray-600 mt-2">{{ __('Tendances et scores enregistrés dans player_performances.') }}</p>
         </a>
         <a href="{{ route('analytics.digital-twin') }}" class="bg-white rounded-lg shadow p-6 hover:shadow-md">
             <h2 class="font-semibold text-gray-900">🔄 Digital Twin</h2>
-            <p class="text-sm text-gray-600 mt-2">Scénarios de simulation, séparés des données observées.</p>
+            <p class="text-sm text-gray-600 mt-2">{{ __('Scénarios de simulation, séparés des données observées.') }}</p>
         </a>
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="p-5 border-b">
-            <h2 class="font-semibold text-gray-900">Alertes de performance actives</h2>
+            <h2 class="font-semibold text-gray-900">{{ __('Alertes de performance actives') }}</h2>
         </div>
         <div class="divide-y divide-gray-200">
             @forelse($alerts as $alert)
@@ -69,9 +69,7 @@
                     @endif
                 </div>
             @empty
-                <div class="p-8 text-center text-gray-500">
-                    Aucune alerte active dans le périmètre autorisé.
-                </div>
+                <div class="p-8 text-center text-gray-500">{{ __('Aucune alerte active dans le périmètre autorisé.') }}</div>
             @endforelse
         </div>
     </div>

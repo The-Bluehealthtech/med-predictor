@@ -29,7 +29,7 @@
                             <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                             </svg>
-                            <span class="ml-4 text-gray-500">Statistiques Techniques</span>
+                            <span class="ml-4 text-gray-500">{{ __('Statistiques Techniques') }}</span>
                         </div>
                     </li>
                 </ol>
@@ -122,7 +122,7 @@
             <!-- Users Statistics -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">👥 Statistiques Utilisateurs</h3>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('👥 Statistiques Utilisateurs') }}</h3>
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div class="sm:col-span-1">
                             <dt class="text-sm font-medium text-gray-500">Utilisateurs Actifs</dt>
@@ -190,7 +190,7 @@
                     <!-- Top Tables by Size -->
                     @if(count($databaseStats['table_sizes']) > 0)
                     <div class="mt-4">
-                        <h4 class="text-sm font-medium text-gray-700 mb-2">Tables les Plus Volumineuses</h4>
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">{{ __('Tables les Plus Volumineuses') }}</h4>
                         <div class="space-y-1">
                             @foreach(array_slice($databaseStats['table_sizes'], 0, 5) as $table)
                             <div class="flex justify-between items-center text-sm">
@@ -382,7 +382,7 @@
                     </dl>
                     <!-- Log Levels Chart -->
                     <div class="mt-4">
-                        <h4 class="text-sm font-medium text-gray-700 mb-2">Niveaux de Log (24h)</h4>
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">{{ __('Niveaux de Log (24h)') }}</h4>
                         <div class="space-y-2">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600">Erreurs</span>
@@ -420,7 +420,7 @@
         <!-- Performance Indicators -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">📊 Indicateurs de Performance</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('📊 Indicateurs de Performance') }}</h3>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <!-- Database Health -->
                     <div class="relative">

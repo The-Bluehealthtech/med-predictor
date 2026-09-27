@@ -16,13 +16,13 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Performance Analytics
                                 </h1>
-                                <p class="text-sm text-gray-600">Analyse des performances des athlètes</p>
+                                <p class="text-sm text-gray-600">{{ __('Analyse des performances des athlètes') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
                 </div>
             </div>
         </div>
@@ -35,9 +35,7 @@
             <div class="p-6">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">📊 Performance Analytics</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Analyse avancée des performances des athlètes
-                    </p>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Analyse avancée des performances des athlètes') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
@@ -45,7 +43,7 @@
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                            Données en temps réel
+                            {{ __('Données en temps réel') }}
                         </div>
                     </div>
                 </div>
@@ -120,21 +118,21 @@
                     <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                         <div>
                             <p class="font-medium text-blue-900">Speed Analysis</p>
-                            <p class="text-sm text-blue-700">Analyse de la vitesse des athlètes</p>
+                            <p class="text-sm text-blue-700">{{ __('Analyse de la vitesse des athlètes') }}</p>
                         </div>
                         <span class="text-blue-600">→</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
                         <div>
                             <p class="font-medium text-green-900">Endurance Metrics</p>
-                            <p class="text-sm text-green-700">Métriques d'endurance</p>
+                            <p class="text-sm text-green-700">{{ __('Métriques d\'endurance') }}</p>
                         </div>
                         <span class="text-green-600">→</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
                         <div>
                             <p class="font-medium text-purple-900">Strength Analysis</p>
-                            <p class="text-sm text-purple-700">Analyse de la force</p>
+                            <p class="text-sm text-purple-700">{{ __('Analyse de la force') }}</p>
                         </div>
                         <span class="text-purple-600">→</span>
                     </div>
@@ -148,21 +146,21 @@
                     <div class="flex items-center justify-between p-4 bg-indigo-50 rounded-lg">
                         <div>
                             <p class="font-medium text-indigo-900">Improvement Trends</p>
-                            <p class="text-sm text-indigo-700">Tendances d'amélioration</p>
+                            <p class="text-sm text-indigo-700">{{ __('Tendances d\'amélioration') }}</p>
                         </div>
                         <span class="text-indigo-600">→</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
                         <div>
                             <p class="font-medium text-yellow-900">Decline Alerts</p>
-                            <p class="text-sm text-yellow-700">Alertes de déclin</p>
+                            <p class="text-sm text-yellow-700">{{ __('Alertes de déclin') }}</p>
                         </div>
                         <span class="text-yellow-600">→</span>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-pink-50 rounded-lg">
                         <div>
                             <p class="font-medium text-pink-900">Recovery Patterns</p>
-                            <p class="text-sm text-pink-700">Modèles de récupération</p>
+                            <p class="text-sm text-pink-700">{{ __('Modèles de récupération') }}</p>
                         </div>
                         <span class="text-pink-600">→</span>
                     </div>

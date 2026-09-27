@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Audit Trail
                                 </h1>
-                                <p class="text-sm text-gray-600">Journal des activités et événements système</p>
+                                <p class="text-sm text-gray-600">{{ __('Journal des activités et événements système') }}</p>
                             </div>
                         </div>
                     </div>
@@ -128,7 +128,7 @@
                         📤 Exporter CSV
                     </a>
                     <button onclick="openCleanupModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        🗑️ Nettoyer les anciens logs
+                        {{ __('🗑️ Nettoyer les anciens logs') }}
                     </button>
                 </div>
             </div>
@@ -200,12 +200,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Date de début</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Date de début') }}</label>
                         <input type="date" name="date_from" value="{{ $filters['date_from'] }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Date de fin</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Date de fin') }}</label>
                         <input type="date" name="date_to" value="{{ $filters['date_to'] }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
@@ -226,7 +226,7 @@
         <!-- Liste des logs -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Journal des Activités</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('Journal des Activités') }}</h3>
                 @if($logs->count() > 0)
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -290,7 +290,7 @@
                     </div>
                 @else
                     <div class="text-center py-8">
-                        <p class="text-gray-500">Aucun log trouvé avec les filtres actuels.</p>
+                        <p class="text-gray-500">{{ __('Aucun log trouvé avec les filtres actuels.') }}</p>
                     </div>
                 @endif
             </div>
@@ -302,11 +302,11 @@
 <div id="cleanupModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Nettoyer les anciens logs</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Nettoyer les anciens logs') }}</h3>
             <form action="{{ route('admin.audit-trail.cleanup') }}" method="POST">
                 @csrf
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Supprimer les logs plus anciens que (jours)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Supprimer les logs plus anciens que (jours)') }}</label>
                     <select name="days" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
                         <option value="30">30 jours</option>
                         <option value="60">60 jours</option>

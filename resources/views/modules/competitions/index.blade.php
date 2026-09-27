@@ -44,7 +44,7 @@
                         <i class="fas fa-clock text-yellow-600 text-2xl"></i>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm font-medium text-yellow-600">À Venir</p>
+                        <p class="text-sm font-medium text-yellow-600">{{ __('À Venir') }}</p>
                         <p class="text-2xl font-bold text-yellow-900">{{ $upcomingMatches }}</p>
                     </div>
                 </div>
@@ -102,9 +102,7 @@
         <!-- Résultats Récents -->
         <div class="bg-white rounded-lg shadow p-6">
             <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                Résultats Récents
-            </h2>
+                <i class="fas fa-check-circle text-green-500 mr-2"></i>{{ __('Résultats Récents') }}</h2>
             @if($recentResults->count() > 0)
                 <div class="space-y-3">
                     @foreach($recentResults as $match)
@@ -128,7 +126,7 @@
                     @endforeach
                 </div>
             @else
-                <p class="text-gray-500 text-center py-4">Aucun résultat récent</p>
+                <p class="text-gray-500 text-center py-4">{{ __('Aucun résultat récent') }}</p>
             @endif
         </div>
     </div>
@@ -174,7 +172,7 @@
                                 <i class="fas fa-trophy text-yellow-600 mr-3"></i>
                                 <div>
                                     <div class="font-medium text-gray-900">Classements</div>
-                                    <div class="text-sm text-gray-600">Suivi des performances et classements</div>
+                                    <div class="text-sm text-gray-600">{{ __('Suivi des performances et classements') }}</div>
                                 </div>
                             </div>
                         </a>
@@ -185,7 +183,7 @@
                                 <i class="fas fa-calendar-alt text-purple-600 mr-3"></i>
                                 <div>
                                     <div class="font-medium text-gray-900">Fixtures</div>
-                                    <div class="text-sm text-gray-600">Calendrier complet des matchs</div>
+                                    <div class="text-sm text-gray-600">{{ __('Calendrier complet des matchs') }}</div>
                                 </div>
                             </div>
                         </a>
@@ -248,7 +246,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-clipboard-check text-blue-600 mr-3"></i>
                                 <div>
-                                    <div class="font-medium text-gray-900">Engagements des Clubs</div>
+                                    <div class="font-medium text-gray-900">{{ __('Engagements des Clubs') }}</div>
                                     <div class="text-sm text-gray-600">{{ __('competitions.home.club_entries_desc') }}</div>
                                 </div>
                             </div>
@@ -270,7 +268,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-trophy text-yellow-600 mr-3"></i>
                                 <div>
-                                    <div class="font-medium text-gray-900">Résultats & Classements</div>
+                                    <div class="font-medium text-gray-900">{{ __('Résultats & Classements') }}</div>
                                     <div class="text-sm text-gray-600">{{ __('competitions.home.results_rankings_desc') }}</div>
                                 </div>
                             </div>
@@ -281,8 +279,8 @@
                             <div class="flex items-center">
                                 <i class="fas fa-chart-bar text-orange-600 mr-3"></i>
                                 <div>
-                                    <div class="font-medium text-gray-900">Classements Détaillés</div>
-                                    <div class="text-sm text-gray-600">Tableaux professionnels avec statistiques</div>
+                                    <div class="font-medium text-gray-900">{{ __('Classements Détaillés') }}</div>
+                                    <div class="text-sm text-gray-600">{{ __('Tableaux professionnels avec statistiques') }}</div>
                                 </div>
                             </div>
                         </a>
@@ -293,7 +291,7 @@
                                 <i class="fas fa-calendar-alt text-purple-600 mr-3"></i>
                                 <div>
                                     <div class="font-medium text-gray-900">Fixtures</div>
-                                    <div class="text-sm text-gray-600">Calendrier complet des matchs</div>
+                                    <div class="text-sm text-gray-600">{{ __('Calendrier complet des matchs') }}</div>
                                 </div>
                             </div>
                         </a>
@@ -326,7 +324,7 @@
                                 <i class="fas fa-whistle text-orange-600 mr-3"></i>
                                 <div>
                                     <div class="font-medium text-gray-900">{{ __('competitions.designation_arbitres_page.heading') }}</div>
-                                    <div class="text-sm text-gray-600">Gestion des arbitres et désignations</div>
+                                    <div class="text-sm text-gray-600">{{ __('Gestion des arbitres et désignations') }}</div>
                                 </div>
                             </div>
                         </a>

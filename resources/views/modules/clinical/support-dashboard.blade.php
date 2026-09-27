@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('pcma.dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au Dashboard PCMA</a>
+                    <a href="{{ route('pcma.dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour au Dashboard PCMA') }}</a>
                 </div>
             </div>
         </div>
@@ -174,7 +174,7 @@
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune alerte clinique</h3>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('Aucune alerte clinique') }}</h3>
                         <p class="mt-1 text-sm text-gray-500">{{ __('Tous les paramètres cliniques sont normaux.') }}</p>
                     </div>
                 </div>

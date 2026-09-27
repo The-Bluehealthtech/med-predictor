@@ -48,7 +48,7 @@
                             <span class="text-2xl">👤</span>
                         </div>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Gestion des Utilisateurs</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Gestion des Utilisateurs') }}</h3>
                     <p class="text-gray-600 mb-4">{{ __('Gérer les comptes utilisateurs, rôles et permissions') }}</p>
                     <a href="{{ route('user-management.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">{{ __('Accéder →') }}</a>
                 </div>
@@ -76,7 +76,7 @@
                             <span class="text-2xl">📝</span>
                         </div>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Demandes de Comptes</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Demandes de Comptes') }}</h3>
                     <p class="text-gray-600 mb-4">{{ __('Approuver ou rejeter les demandes de création de comptes') }}</p>
                     <a href="{{ route('admin.account-requests.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 transition-colors">{{ __('Accéder →') }}</a>
                 </div>
@@ -90,7 +90,7 @@
                                     <span class="text-2xl">🔐</span>
                                 </div>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Gestion RBAC</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Gestion RBAC') }}</h3>
                             <p class="text-gray-600 mb-4">{{ __('Gérer les rôles, permissions et contrôle d\'accès') }}</p>
                             <a href="/admin/rbac" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-colors">{{ __('Accéder →') }}</a>
                         </div>
@@ -119,7 +119,7 @@
                         </div>
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Audit Trail</h3>
-                    <p class="text-gray-600 mb-4">Consulter l'historique des actions et modifications</p>
+                    <p class="text-gray-600 mb-4">{{ __('Consulter l\'historique des actions et modifications') }}</p>
                     <a href="{{ route('admin.audit-trail.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">{{ __('Accéder →') }}</a>
                 </div>
             </div>

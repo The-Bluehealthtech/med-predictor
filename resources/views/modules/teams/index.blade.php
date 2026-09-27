@@ -8,14 +8,12 @@
     <div class="flex justify-between items-center mb-8">
         <div>
             <h1 class="text-3xl font-bold text-gray-900 flex items-center">
-                <i class="fas fa-users text-blue-600 mr-3"></i>
-                Gestion des Équipes
-            </h1>
-            <p class="text-gray-600 mt-2">Gestion des équipes selon les standards FIFA Connect</p>
+                <i class="fas fa-users text-blue-600 mr-3"></i>{{ __('Gestion des Équipes') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('Gestion des équipes selon les standards FIFA Connect') }}</p>
         </div>
         <a href="{{ route('modules.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center">
             <i class="fas fa-arrow-left mr-2"></i>
-            Retour vers Modules
+            {{ __('Retour vers Modules') }}
         </a>
     </div>
 
@@ -24,9 +22,7 @@
         <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                        Total Équipes
-                    </p>
+                    <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">{{ __('Total Équipes') }}</p>
                     <p class="text-2xl font-bold text-gray-900">
                         {{ $teams->count() }}
                     </p>
@@ -104,12 +100,10 @@
         <div class="flex flex-wrap gap-4">
             <button onclick="openCreateModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-plus mr-2"></i>
-                Créer une Équipe
+                {{ __('Créer une Équipe') }}
             </button>
             <button onclick="openBulkCreateModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
-                <i class="fas fa-layer-group mr-2"></i>
-                Création en Masse
-            </button>
+                <i class="fas fa-layer-group mr-2"></i>{{ __('Création en Masse') }}</button>
             <button onclick="exportTeams()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-download mr-2"></i>
                 {{ __('common.export') }}
@@ -133,7 +127,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records_create.posture_level') }}</label>
                 <select id="levelFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Tous les niveaux</option>
+                    <option value="">{{ __('Tous les niveaux') }}</option>
                     <option value="professional">Professionnel</option>
                     <option value="semi-professional">Semi-Professionnel</option>
                     <option value="amateur">Amateur</option>
@@ -144,7 +138,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>
                 <select id="statusFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Tous les statuts</option>
+                    <option value="">{{ __('Tous les statuts') }}</option>
                     <option value="active">{{ __('healthcare.status_active') }}</option>
                     <option value="inactive">{{ __('Inactif') }}</option>
                     <option value="pending">{{ __('competition_management.statuses.pending') }}</option>
@@ -156,7 +150,7 @@
     <!-- Tableau des équipes -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Liste des Équipes</h3>
+            <h3 class="text-lg font-semibold text-gray-900">{{ __('Liste des Équipes') }}</h3>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
@@ -251,19 +245,19 @@
                                 <div class="flex space-x-2">
                                     <button onclick="editTeam({{ $team->id }})" 
                                             class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200"
-                                            title="Modifier l'équipe">
+                                            title="{{ __('Modifier l\'équipe') }}">
                                         <i class="fas fa-edit mr-1"></i>
                                         {{ __('common.edit') }}
                                     </button>
                                     <button onclick="viewTeam({{ $team->id }})" 
                                             class="bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200"
-                                            title="Voir les détails">
+                                            title="{{ __('dashboard.view_details') }}">
                                         <i class="fas fa-eye mr-1"></i>
                                         {{ __('clinical.view_button') }}
                                     </button>
                                     <button onclick="deleteTeam({{ $team->id }})" 
                                             class="bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200"
-                                            title="Supprimer l'équipe">
+                                            title="{{ __('Supprimer l\'équipe') }}">
                                         <i class="fas fa-trash mr-1"></i>
                                         {{ __('common.delete') }}
                                     </button>
@@ -317,7 +311,7 @@ function openBulkCreateModal() {
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records_create.posture_level') }}</label>
                     <select id="bulkLevel" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Sélectionner un niveau</option>
+                        <option value="">{{ __('Sélectionner un niveau') }}</option>
                         <option value="professional">Professionnel</option>
                         <option value="semi-professional">Semi-Professionnel</option>
                         <option value="amateur">Amateur</option>
@@ -329,7 +323,7 @@ function openBulkCreateModal() {
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Discipline</label>
                     <select id="bulkDiscipline" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Sélectionner une discipline</option>
+                        <option value="">{{ __('Sélectionner une discipline') }}</option>
                         <option value="football">Football</option>
                         <option value="futsal">Futsal</option>
                         <option value="beach_soccer">Beach Soccer</option>

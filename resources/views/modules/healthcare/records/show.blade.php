@@ -30,7 +30,7 @@
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('health_records.show_page.patient_info_heading') }}</h3>
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Nom du Patient</label>
+                            <label class="block text-sm font-medium text-gray-700">{{ __('Nom du Patient') }}</label>
                             <p class="text-sm text-gray-900">Patient Example</p>
                         </div>
                         <div>
@@ -77,7 +77,7 @@
                 </div>
                 <div>
                     <h4 class="font-medium text-gray-900 mb-2">Allergies</h4>
-                    <p class="text-sm text-gray-600">Aucune allergie connue.</p>
+                    <p class="text-sm text-gray-600">{{ __('Aucune allergie connue.') }}</p>
                 </div>
                 <div>
                     <h4 class="font-medium text-gray-900 mb-2">{{ __('health_records_edit.current_medications_2') }}</h4>

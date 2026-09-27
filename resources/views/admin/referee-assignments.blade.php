@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-6xl mx-auto px-4 py-8 space-y-6">
-    <h1 class="text-2xl font-bold text-gray-900">Désignation des arbitres</h1>
+    <h1 class="text-2xl font-bold text-gray-900">{{ __('Désignation des arbitres') }}</h1>
     @if(session('success'))
         <p class="rounded bg-green-50 p-3 text-green-800">{{ session('success') }}</p>
     @endif
@@ -13,7 +13,7 @@
             @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
         </div>
     @endif
-    <p class="text-gray-600">Matchs programmés et arbitres enregistrés.</p>
+    <p class="text-gray-600">{{ __('Matchs programmés et arbitres enregistrés.') }}</p>
     @forelse($matchesToAssign as $match)
         <section class="rounded bg-white p-5 shadow">
             <h2 class="font-semibold">{{ $match->homeTeam?->name ?? 'Équipe non renseignée' }}
@@ -40,11 +40,11 @@
                     <button class="self-end rounded bg-blue-700 px-4 py-2 text-white">{{ __('clinical.save') }}</button>
                 </form>
             @else
-                <p class="mt-3 text-sm text-gray-600">Trois arbitres enregistrés sont requis.</p>
+                <p class="mt-3 text-sm text-gray-600">{{ __('Trois arbitres enregistrés sont requis.') }}</p>
             @endif
         </section>
     @empty
-        <p class="rounded bg-white p-5 text-gray-600 shadow">Aucun match programmé à désigner.</p>
+        <p class="rounded bg-white p-5 text-gray-600 shadow">{{ __('Aucun match programmé à désigner.') }}</p>
     @endforelse
 </div>
 @endsection

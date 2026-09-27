@@ -14,7 +14,7 @@
                 <div class="px-6 py-8 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h1 class="text-3xl font-bold">Rapport Soumis avec Succès!</h1>
+                            <h1 class="text-3xl font-bold">{{ __('Rapport Soumis avec Succès!') }}</h1>
                             <p class="text-green-100 mt-2">
                                 {{ $report->match->homeTeam->name ?? 'TBD' }} vs {{ $report->match->awayTeam->name ?? 'TBD' }}
                             </p>
@@ -50,7 +50,7 @@
                                     <span class="font-medium">{{ $report->half_time_score ?? 'Non spécifié' }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Note du Match:</span>
+                                    <span class="text-gray-600">{{ __('Note du Match:') }}</span>
                                     <span class="font-medium">{{ $report->match_rating ?? 'Non spécifié' }}/10</span>
                                 </div>
                             </div>
@@ -142,7 +142,7 @@
                 <div class="px-6 py-8 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h1 class="text-3xl font-bold">Rapport Soumis avec Succès!</h1>
+                            <h1 class="text-3xl font-bold">{{ __('Rapport Soumis avec Succès!') }}</h1>
                             <p class="text-green-100 mt-2">
                                 {{ $report->match->homeTeam->name ?? 'TBD' }} vs {{ $report->match->awayTeam->name ?? 'TBD' }}
                             </p>
@@ -178,7 +178,7 @@
                                     <span class="font-medium">{{ $report->half_time_score ?? 'Non spécifié' }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Note du Match:</span>
+                                    <span class="text-gray-600">{{ __('Note du Match:') }}</span>
                                     <span class="font-medium">{{ $report->match_rating ?? 'Non spécifié' }}/10</span>
                                 </div>
                             </div>

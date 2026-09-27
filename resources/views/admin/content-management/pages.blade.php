@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Pages
                                 </h1>
-                                <p class="text-sm text-gray-600">Gérer les pages statiques du site</p>
+                                <p class="text-sm text-gray-600">{{ __('Gérer les pages statiques du site') }}</p>
                             </div>
                         </div>
                     </div>
@@ -34,10 +34,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Actions -->
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-medium text-gray-900">Liste des Pages</h2>
+            <h2 class="text-lg font-medium text-gray-900">{{ __('Liste des Pages') }}</h2>
             <a href="{{ route('admin.content-management.create', ['type' => 'page']) }}" 
                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
-                ➕ Nouvelle Page
+                {{ __('➕ Nouvelle Page') }}
             </a>
         </div>
 
@@ -69,7 +69,7 @@
                                         
                                         <div class="flex items-center space-x-4 text-sm text-gray-500 mb-3">
                                             <span><strong>URL:</strong> /{{ $page['slug'] }}</span>
-                                            <span><strong>Modifié:</strong> {{ $page['updated_at']->format('d/m/Y H:i') }}</span>
+                                            <span><strong>{{ __('Modifié:') }}</strong> {{ $page['updated_at']->format('d/m/Y H:i') }}</span>
                                         </div>
                                     </div>
                                     
@@ -94,11 +94,9 @@
                     </div>
                 @else
                     <div class="text-center py-8">
-                        <p class="text-gray-500 mb-4">Aucune page trouvée.</p>
+                        <p class="text-gray-500 mb-4">{{ __('Aucune page trouvée.') }}</p>
                         <a href="{{ route('admin.content-management.create', ['type' => 'page']) }}" 
-                           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
-                            ➕ Créer la première page
-                        </a>
+                           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('➕ Créer la première page') }}</a>
                     </div>
                 @endif
             </div>

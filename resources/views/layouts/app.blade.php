@@ -455,7 +455,7 @@
                             @else
                                 <li class="px-4 py-2 text-gray-400">
                                     <div class="text-center">
-                                        <p class="text-sm text-gray-600 mb-2">Connectez-vous pour voir vos notifications</p>
+                                        <p class="text-sm text-gray-600 mb-2">{{ __('Connectez-vous pour voir vos notifications') }}</p>
                                         <a href="{{ route('login') }}" class="inline-flex items-center px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
                                             Se connecter
                                         </a>

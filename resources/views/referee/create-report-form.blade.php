@@ -29,7 +29,7 @@
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                                 </svg>
-                                Retour aux Rapports
+                                {{ __('Retour aux Rapports') }}
                             </a>
                         </div>
                     </div>
@@ -65,7 +65,7 @@
                 <!-- Tab 1: Informations Match -->
                 <div v-show="activeTab === 'info'" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Informations Match</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Informations Match') }}</h2>
                         
                         <!-- Match Summary -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -133,10 +133,10 @@
                             <div class="flex items-center">
                                 <input type="checkbox" v-model="formData.penalty_shootout" name="penalty_shootout" id="penalty_shootout" 
                                        class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
-                                <label for="penalty_shootout" class="ml-2 block text-sm text-gray-900">Tirs au but</label>
+                                <label for="penalty_shootout" class="ml-2 block text-sm text-gray-900">{{ __('Tirs au but') }}</label>
                             </div>
                             <div v-if="formData.penalty_shootout">
-                                <label for="penalty_shootout_score" class="block text-sm font-medium text-gray-700">Score Tirs au but</label>
+                                <label for="penalty_shootout_score" class="block text-sm font-medium text-gray-700">{{ __('Score Tirs au but') }}</label>
                                 <input type="text" v-model="formData.penalty_shootout_score" name="penalty_shootout_score" id="penalty_shootout_score" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                        placeholder="e.g., 4-3">
@@ -155,37 +155,37 @@
                                 <label for="main_referee" class="block text-sm font-medium text-gray-700">{{ __('competitions.designation_arbitres_page.main_referee_required') }}</label>
                                 <input type="text" v-model="formData.main_referee" name="main_referee" id="main_referee" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom de l'arbitre principal" required>
+                                       placeholder="{{ __('Nom de l\'arbitre principal') }}" required>
                             </div>
                             <div>
                                 <label for="assistant_referee_1" class="block text-sm font-medium text-gray-700">Assistant Arbitre 1 *</label>
                                 <input type="text" v-model="formData.assistant_referee_1" name="assistant_referee_1" id="assistant_referee_1" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom de l'assistant 1" required>
+                                       placeholder="{{ __('Nom de l\'assistant 1') }}" required>
                             </div>
                             <div>
                                 <label for="assistant_referee_2" class="block text-sm font-medium text-gray-700">Assistant Arbitre 2 *</label>
                                 <input type="text" v-model="formData.assistant_referee_2" name="assistant_referee_2" id="assistant_referee_2" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom de l'assistant 2" required>
+                                       placeholder="{{ __('Nom de l\'assistant 2') }}" required>
                             </div>
                             <div>
                                 <label for="fourth_official" class="block text-sm font-medium text-gray-700">{{ __('4ème Arbitre *') }}</label>
                                 <input type="text" v-model="formData.fourth_official" name="fourth_official" id="fourth_official" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom du 4ème arbitre" required>
+                                       placeholder="{{ __('Nom du 4ème arbitre') }}" required>
                             </div>
                             <div>
                                 <label for="var_referee" class="block text-sm font-medium text-gray-700">Arbitre VAR</label>
                                 <input type="text" v-model="formData.var_referee" name="var_referee" id="var_referee" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom de l'arbitre VAR">
+                                       placeholder="{{ __('Nom de l\'arbitre VAR') }}">
                             </div>
                             <div>
                                 <label for="avar_referee" class="block text-sm font-medium text-gray-700">Assistant VAR</label>
                                 <input type="text" v-model="formData.avar_referee" name="avar_referee" id="avar_referee" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom de l'assistant VAR">
+                                       placeholder="{{ __('Nom de l\'assistant VAR') }}">
                             </div>
                         </div>
                     </div>
@@ -334,21 +334,21 @@
                                 <label for="disciplinary_incidents" class="block text-sm font-medium text-gray-700">Incidents Disciplinaires</label>
                                 <textarea v-model="formData.disciplinary_incidents" name="disciplinary_incidents" id="disciplinary_incidents" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                          placeholder="Décrivez les incidents disciplinaires..."></textarea>
+                                          placeholder="{{ __('Décrivez les incidents disciplinaires...') }}"></textarea>
                             </div>
                             
                             <div>
-                                <label for="crowd_incidents" class="block text-sm font-medium text-gray-700">Incidents avec le Public</label>
+                                <label for="crowd_incidents" class="block text-sm font-medium text-gray-700">{{ __('Incidents avec le Public') }}</label>
                                 <textarea v-model="formData.crowd_incidents" name="crowd_incidents" id="crowd_incidents" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                          placeholder="Décrivez les incidents avec le public..."></textarea>
+                                          placeholder="{{ __('Décrivez les incidents avec le public...') }}"></textarea>
                             </div>
                             
                             <div>
                                 <label for="safety_issues" class="block text-sm font-medium text-gray-700">{{ __('Problèmes de Sécurité') }}</label>
                                 <textarea v-model="formData.safety_issues" name="safety_issues" id="safety_issues" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                          placeholder="Décrivez les problèmes de sécurité..."></textarea>
+                                          placeholder="{{ __('Décrivez les problèmes de sécurité...') }}"></textarea>
                             </div>
                         </div>
                     </div>
@@ -364,18 +364,18 @@
                                 <label for="general_comments" class="block text-sm font-medium text-gray-700">{{ __('Observations Générales *') }}</label>
                                 <textarea v-model="formData.general_comments" name="general_comments" id="general_comments" rows="6" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                          placeholder="Décrivez le déroulement général du match, l'ambiance, le comportement des équipes..." required></textarea>
+                                          placeholder="{{ __('Décrivez le déroulement général du match, l\'ambiance, le comportement des équipes...') }}" required></textarea>
                             </div>
                             
                             <div>
                                 <label for="match_quality_assessment" class="block text-sm font-medium text-gray-700">{{ __('Évaluation de la Qualité du Match') }}</label>
                                 <textarea v-model="formData.match_quality_assessment" name="match_quality_assessment" id="match_quality_assessment" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                          placeholder="Évaluez la qualité technique du match, le niveau de jeu..."></textarea>
+                                          placeholder="{{ __('Évaluez la qualité technique du match, le niveau de jeu...') }}"></textarea>
                             </div>
                             
                             <div>
-                                <label for="match_rating" class="block text-sm font-medium text-gray-700">Note du Match (1-10)</label>
+                                <label for="match_rating" class="block text-sm font-medium text-gray-700">{{ __('Note du Match (1-10)') }}</label>
                                 <select v-model="formData.match_rating" name="match_rating" id="match_rating" 
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
                                     <option value="">{{ __('auth.login_select_placeholder') }}</option>
@@ -409,7 +409,7 @@
                                                 : 'bg-orange-600 hover:bg-orange-700',
                                             'text-white px-4 py-2 rounded-md'
                                         ]">
-                                    Suivant
+                                    {{ __('Suivant') }}
                                 </button>
                             </div>
                             
@@ -426,7 +426,7 @@
                                                 : 'bg-gray-300 cursor-not-allowed',
                                             'text-white px-6 py-2 rounded-md'
                                         ]">
-                                    Soumettre Rapport
+                                    {{ __('Soumettre Rapport') }}
                                 </button>
                             </div>
                         </div>
@@ -518,7 +518,7 @@
                     }
                 },
                 addGoal(team, player) {
-                    const minute = prompt(`Minute du but pour ${player}:`);
+                    const minute = prompt(`${@json(__('Minute du but pour'))} ${player}:`);
                     if (minute) {
                         this.timelineEvents.push({
                             id: ++this.eventCounter,
@@ -531,7 +531,7 @@
                     }
                 },
                 addCard(type, team, player) {
-                    const minute = prompt(`Minute du carton ${type === 'yellow' ? 'jaune' : 'rouge'} pour ${player}:`);
+                    const minute = prompt(`${@json(__('Minute du carton'))} ${type === 'yellow' ? @json(__('jaune')) : @json(__('rouge'))} ${@json(__('pour'))} ${player}:`);
                     if (minute) {
                         this.timelineEvents.push({
                             id: ++this.eventCounter,
@@ -588,7 +588,7 @@
                 },
                 async submitReport() {
                     if (!this.isFormValid) {
-                        alert('Veuillez remplir tous les champs obligatoires');
+                        alert(@json(__('Veuillez remplir tous les champs obligatoires')));
                         return;
                     }
 
@@ -608,7 +608,7 @@
                         window.location.href = `/referee-report-success/${response.data.report_id}`;
                     } catch (error) {
                         console.error('Erreur lors de la soumission:', error);
-                        alert('Erreur lors de la soumission du rapport');
+                        alert(@json(__('Erreur lors de la soumission du rapport')));
                     }
                 }
             }
@@ -646,7 +646,7 @@
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                                 </svg>
-                                Retour aux Rapports
+                                {{ __('Retour aux Rapports') }}
                             </a>
                         </div>
                     </div>
@@ -682,7 +682,7 @@
                 <!-- Tab 1: Informations Match -->
                 <div v-show="activeTab === 'info'" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Informations Match</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Informations Match') }}</h2>
                         
                         <!-- Match Summary -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -750,10 +750,10 @@
                             <div class="flex items-center">
                                 <input type="checkbox" v-model="formData.penalty_shootout" name="penalty_shootout" id="penalty_shootout" 
                                        class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
-                                <label for="penalty_shootout" class="ml-2 block text-sm text-gray-900">Tirs au but</label>
+                                <label for="penalty_shootout" class="ml-2 block text-sm text-gray-900">{{ __('Tirs au but') }}</label>
                             </div>
                             <div v-if="formData.penalty_shootout">
-                                <label for="penalty_shootout_score" class="block text-sm font-medium text-gray-700">Score Tirs au but</label>
+                                <label for="penalty_shootout_score" class="block text-sm font-medium text-gray-700">{{ __('Score Tirs au but') }}</label>
                                 <input type="text" v-model="formData.penalty_shootout_score" name="penalty_shootout_score" id="penalty_shootout_score" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
                                        placeholder="e.g., 4-3">
@@ -772,37 +772,37 @@
                                 <label for="main_referee" class="block text-sm font-medium text-gray-700">{{ __('competitions.designation_arbitres_page.main_referee_required') }}</label>
                                 <input type="text" v-model="formData.main_referee" name="main_referee" id="main_referee" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom de l'arbitre principal" required>
+                                       placeholder="{{ __('Nom de l\'arbitre principal') }}" required>
                             </div>
                             <div>
                                 <label for="assistant_referee_1" class="block text-sm font-medium text-gray-700">Assistant Arbitre 1 *</label>
                                 <input type="text" v-model="formData.assistant_referee_1" name="assistant_referee_1" id="assistant_referee_1" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom de l'assistant 1" required>
+                                       placeholder="{{ __('Nom de l\'assistant 1') }}" required>
                             </div>
                             <div>
                                 <label for="assistant_referee_2" class="block text-sm font-medium text-gray-700">Assistant Arbitre 2 *</label>
                                 <input type="text" v-model="formData.assistant_referee_2" name="assistant_referee_2" id="assistant_referee_2" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom de l'assistant 2" required>
+                                       placeholder="{{ __('Nom de l\'assistant 2') }}" required>
                             </div>
                             <div>
                                 <label for="fourth_official" class="block text-sm font-medium text-gray-700">{{ __('4ème Arbitre *') }}</label>
                                 <input type="text" v-model="formData.fourth_official" name="fourth_official" id="fourth_official" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom du 4ème arbitre" required>
+                                       placeholder="{{ __('Nom du 4ème arbitre') }}" required>
                             </div>
                             <div>
                                 <label for="var_referee" class="block text-sm font-medium text-gray-700">Arbitre VAR</label>
                                 <input type="text" v-model="formData.var_referee" name="var_referee" id="var_referee" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom de l'arbitre VAR">
+                                       placeholder="{{ __('Nom de l\'arbitre VAR') }}">
                             </div>
                             <div>
                                 <label for="avar_referee" class="block text-sm font-medium text-gray-700">Assistant VAR</label>
                                 <input type="text" v-model="formData.avar_referee" name="avar_referee" id="avar_referee" 
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                       placeholder="Nom de l'assistant VAR">
+                                       placeholder="{{ __('Nom de l\'assistant VAR') }}">
                             </div>
                         </div>
                     </div>
@@ -951,21 +951,21 @@
                                 <label for="disciplinary_incidents" class="block text-sm font-medium text-gray-700">Incidents Disciplinaires</label>
                                 <textarea v-model="formData.disciplinary_incidents" name="disciplinary_incidents" id="disciplinary_incidents" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                          placeholder="Décrivez les incidents disciplinaires..."></textarea>
+                                          placeholder="{{ __('Décrivez les incidents disciplinaires...') }}"></textarea>
                             </div>
                             
                             <div>
-                                <label for="crowd_incidents" class="block text-sm font-medium text-gray-700">Incidents avec le Public</label>
+                                <label for="crowd_incidents" class="block text-sm font-medium text-gray-700">{{ __('Incidents avec le Public') }}</label>
                                 <textarea v-model="formData.crowd_incidents" name="crowd_incidents" id="crowd_incidents" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                          placeholder="Décrivez les incidents avec le public..."></textarea>
+                                          placeholder="{{ __('Décrivez les incidents avec le public...') }}"></textarea>
                             </div>
                             
                             <div>
                                 <label for="safety_issues" class="block text-sm font-medium text-gray-700">{{ __('Problèmes de Sécurité') }}</label>
                                 <textarea v-model="formData.safety_issues" name="safety_issues" id="safety_issues" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                          placeholder="Décrivez les problèmes de sécurité..."></textarea>
+                                          placeholder="{{ __('Décrivez les problèmes de sécurité...') }}"></textarea>
                             </div>
                         </div>
                     </div>
@@ -981,18 +981,18 @@
                                 <label for="general_comments" class="block text-sm font-medium text-gray-700">{{ __('Observations Générales *') }}</label>
                                 <textarea v-model="formData.general_comments" name="general_comments" id="general_comments" rows="6" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                          placeholder="Décrivez le déroulement général du match, l'ambiance, le comportement des équipes..." required></textarea>
+                                          placeholder="{{ __('Décrivez le déroulement général du match, l\'ambiance, le comportement des équipes...') }}" required></textarea>
                             </div>
                             
                             <div>
                                 <label for="match_quality_assessment" class="block text-sm font-medium text-gray-700">{{ __('Évaluation de la Qualité du Match') }}</label>
                                 <textarea v-model="formData.match_quality_assessment" name="match_quality_assessment" id="match_quality_assessment" rows="4" 
                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
-                                          placeholder="Évaluez la qualité technique du match, le niveau de jeu..."></textarea>
+                                          placeholder="{{ __('Évaluez la qualité technique du match, le niveau de jeu...') }}"></textarea>
                             </div>
                             
                             <div>
-                                <label for="match_rating" class="block text-sm font-medium text-gray-700">Note du Match (1-10)</label>
+                                <label for="match_rating" class="block text-sm font-medium text-gray-700">{{ __('Note du Match (1-10)') }}</label>
                                 <select v-model="formData.match_rating" name="match_rating" id="match_rating" 
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500">
                                     <option value="">{{ __('auth.login_select_placeholder') }}</option>
@@ -1026,7 +1026,7 @@
                                                 : 'bg-orange-600 hover:bg-orange-700',
                                             'text-white px-4 py-2 rounded-md'
                                         ]">
-                                    Suivant
+                                    {{ __('Suivant') }}
                                 </button>
                             </div>
                             
@@ -1043,7 +1043,7 @@
                                                 : 'bg-gray-300 cursor-not-allowed',
                                             'text-white px-6 py-2 rounded-md'
                                         ]">
-                                    Soumettre Rapport
+                                    {{ __('Soumettre Rapport') }}
                                 </button>
                             </div>
                         </div>
@@ -1135,7 +1135,7 @@
                     }
                 },
                 addGoal(team, player) {
-                    const minute = prompt(`Minute du but pour ${player}:`);
+                    const minute = prompt(`${@json(__('Minute du but pour'))} ${player}:`);
                     if (minute) {
                         this.timelineEvents.push({
                             id: ++this.eventCounter,
@@ -1148,7 +1148,7 @@
                     }
                 },
                 addCard(type, team, player) {
-                    const minute = prompt(`Minute du carton ${type === 'yellow' ? 'jaune' : 'rouge'} pour ${player}:`);
+                    const minute = prompt(`${@json(__('Minute du carton'))} ${type === 'yellow' ? @json(__('jaune')) : @json(__('rouge'))} ${@json(__('pour'))} ${player}:`);
                     if (minute) {
                         this.timelineEvents.push({
                             id: ++this.eventCounter,
@@ -1205,7 +1205,7 @@
                 },
                 async submitReport() {
                     if (!this.isFormValid) {
-                        alert('Veuillez remplir tous les champs obligatoires');
+                        alert(@json(__('Veuillez remplir tous les champs obligatoires')));
                         return;
                     }
 
@@ -1225,7 +1225,7 @@
                         window.location.href = `/referee-report-success/${response.data.report_id}`;
                     } catch (error) {
                         console.error('Erreur lors de la soumission:', error);
-                        alert('Erreur lors de la soumission du rapport');
+                        alert(@json(__('Erreur lors de la soumission du rapport')));
                     }
                 }
             }

@@ -75,7 +75,7 @@
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Buts Marqués</p>
+                            <p class="text-sm font-medium text-gray-500">{{ __('Buts Marqués') }}</p>
                             <p class="text-2xl font-bold text-gray-900">{{ $teamStats['goals_scored'] }}</p>
                         </div>
                     </div>
@@ -103,7 +103,7 @@
         <div class="bg-white rounded-lg shadow-md border border-gray-200 mb-8">
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-900">Effectif de l'Équipe</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Effectif de l\'Équipe') }}</h3>
                     <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                         <span class="text-blue-600 text-sm">👥</span>
                     </div>
@@ -138,7 +138,7 @@
         <div class="bg-white rounded-lg shadow-md border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-900">Matchs Récents</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Matchs Récents') }}</h3>
                     <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                         <span class="text-green-600 text-sm">⚽</span>
                     </div>

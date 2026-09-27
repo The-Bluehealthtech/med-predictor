@@ -16,15 +16,15 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Gestion des Permissions
+                                    {{ __('Gestion des Permissions') }}
                                 </h1>
-                                <p class="text-sm text-gray-600">Créer et gérer les permissions du système</p>
+                                <p class="text-sm text-gray-600">{{ __('Créer et gérer les permissions du système') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('admin.rbac.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour au RBAC</a>
+                    <a href="{{ route('admin.rbac.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour au RBAC') }}</a>
                 </div>
             </div>
         </div>
@@ -49,13 +49,11 @@
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Actions</h3>
                 <div class="flex space-x-4">
-                    <button onclick="openCreatePermissionModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        ➕ Créer une Permission
-                    </button>
+                    <button onclick="openCreatePermissionModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('➕ Créer une Permission') }}</button>
                     <form action="{{ route('admin.rbac.initialize-permissions') }}" method="POST" class="inline">
                         @csrf
                         <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors">
-                            ⚡ Initialiser les Permissions
+                            {{ __('⚡ Initialiser les Permissions') }}
                         </button>
                     </form>
                 </div>
@@ -110,12 +108,12 @@
         @else
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6 text-center">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Aucune permission trouvée</h3>
-                    <p class="text-gray-500 mb-4">Initialisez les permissions par défaut pour commencer.</p>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('Aucune permission trouvée') }}</h3>
+                    <p class="text-gray-500 mb-4">{{ __('Initialisez les permissions par défaut pour commencer.') }}</p>
                     <form action="{{ route('admin.rbac.initialize-permissions') }}" method="POST" class="inline">
                         @csrf
                         <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors">
-                            ⚡ Initialiser les Permissions
+                            {{ __('⚡ Initialiser les Permissions') }}
                         </button>
                     </form>
                 </div>
@@ -128,11 +126,11 @@
 <div id="createPermissionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Créer une Nouvelle Permission</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Créer une Nouvelle Permission') }}</h3>
             <form action="{{ route('admin.rbac.create-permission') }}" method="POST">
                 @csrf
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la permission</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Nom de la permission') }}</label>
                     <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
                 <div class="mb-4">

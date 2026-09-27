@@ -18,13 +18,13 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Association
                                 </h1>
-                                <p class="text-sm text-gray-600">Gestion de l'Association et validation</p>
+                                <p class="text-sm text-gray-600">{{ __('Gestion de l\'Association et validation') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
                 </div>
             </div>
         </div>
@@ -124,13 +124,13 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Validation Status -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Statut de Validation</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Statut de Validation') }}</h3>
                 <div class="space-y-4">
                     <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                         <div class="flex items-center">
                             <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
                             <div>
-                                <p class="font-medium text-blue-900">Licences en Attente</p>
+                                <p class="font-medium text-blue-900">{{ __('Licences en Attente') }}</p>
                                 <p class="text-sm text-blue-700">{{ __('23 licences à valider') }}</p>
                             </div>
                         </div>
@@ -171,7 +171,7 @@
 
             <!-- Fraud Detection Alerts -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Alertes de Fraude</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Alertes de Fraude') }}</h3>
                 <div class="space-y-4">
                     <div class="flex items-center justify-between p-4 bg-red-50 rounded-lg">
                         <div class="flex items-center">
@@ -222,14 +222,14 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('dashboard.quick_actions') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <a href="{{ route('association.registration.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
-                    🏛️ Nouvelle Association
+                    {{ __('🏛️ Nouvelle Association') }}
                 </a>
                 <a href="{{ route('licenses.validation') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors">
                     ✅ Validation
                 </a>
                 <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-center" aria-disabled="true">{{ __('🛡️ Détection de fraude indisponible') }}</span>
                 <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-center" aria-disabled="true">🚨 Alertes indisponibles</span>
-                <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-center" aria-disabled="true">📊 Rapports indisponibles</span>
+                <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-center" aria-disabled="true">{{ __('📊 Rapports indisponibles') }}</span>
             </div>
         </div>
     </div>

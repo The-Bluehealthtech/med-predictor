@@ -6,11 +6,11 @@
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Validation des licences</h1>
-            <p class="text-sm text-gray-600">Licences joueurs enregistrées dans player_licenses.</p>
+            <h1 class="text-2xl font-bold text-gray-900">{{ __('Validation des licences') }}</h1>
+            <p class="text-sm text-gray-600">{{ __('Licences joueurs enregistrées dans player_licenses.') }}</p>
         </div>
         <a href="{{ route('modules.licenses.index') }}" class="text-blue-600 hover:text-blue-800">
-            ← Gestion des licences
+            {{ __('← Gestion des licences') }}
         </a>
     </div>
 
@@ -28,7 +28,7 @@
             <div class="text-2xl font-bold">{{ $approvedCount }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4">
-            <div class="text-sm text-gray-500">Rejetées / révoquées</div>
+            <div class="text-sm text-gray-500">{{ __('Rejetées / révoquées') }}</div>
             <div class="text-2xl font-bold">{{ $rejectedCount }}</div>
         </div>
     </div>
@@ -73,9 +73,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                                Aucune licence dans le périmètre autorisé.
-                            </td>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">{{ __('Aucune licence dans le périmètre autorisé.') }}</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -116,7 +114,7 @@ function approveLicense(id) {
 }
 
 function rejectLicense(id) {
-    const reason = prompt('Motif du rejet :');
+    const reason = prompt(@json(__('Motif du rejet :')));
     if (!reason) return;
 
     licenseAction('/licenses/' + id + '/reject', {

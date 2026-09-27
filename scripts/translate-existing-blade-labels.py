@@ -34,9 +34,9 @@ for french, english in json.loads((ROOT / 'resources/lang/en.json').read_text())
         mapping[french] = french
 
 
-blocked = re.compile(r'(?is)(<script\\b.*?</script>|<style\\b.*?</style>|<!--.*?-->|@php\\b.*?@endphp)')
+blocked = re.compile(r'(?is)(<script\b.*?</script>|<style\b.*?</style>|<!--.*?-->|@php\b.*?@endphp)')
 text_node = re.compile(r'(?s)>([^<>]+)<')
-attribute = re.compile(r'(?i)\\b(placeholder|title|aria-label|alt)=(["\\\'])(.*?)\\2')
+attribute = re.compile(r'''(?i)\b(placeholder|title|aria-label|alt)=(["'])(.*?)\2''')
 counts = defaultdict(int)
 
 

@@ -63,7 +63,7 @@
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Informations Personnelles</h3>
+                                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">{{ __('Informations Personnelles') }}</h3>
                                 <dl class="space-y-3">
                                     <div>
                                         <dt class="text-sm font-medium text-gray-500">{{ __('clinical.full_name_label') }}</dt>
@@ -178,7 +178,7 @@
                             <h2 class="text-xl font-semibold text-gray-800">{{ __('Dossiers Médicaux Récents') }}</h2>
                             <a href="{{ route('players.health-records', $player) }}" 
                                class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                                Voir tous →
+                                {{ __('Voir tous →') }}
                             </a>
                         </div>
                     </div>
@@ -210,9 +210,7 @@
                                 </div>
                                 <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('healthcare.no_records') }}</h3>
                                 <p class="text-gray-500 mb-4">{{ __('Ce joueur n\'a pas encore de dossier médical enregistré.') }}</p>
-                                <button class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg cursor-not-allowed" disabled>
-                                    Créer un dossier (fonctionnalité à venir)
-                                </button>
+                                <button class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg cursor-not-allowed" disabled>{{ __('Créer un dossier (fonctionnalité à venir)') }}</button>
                             </div>
                         @endif
                     </div>
@@ -247,7 +245,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">Sans club</h3>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Sans club') }}</h3>
                                 <p class="text-gray-500">{{ __('Ce joueur n\'est actuellement affilié à aucun club.') }}</p>
                             </div>
                         @endif
@@ -287,7 +285,7 @@
                 <!-- Informations FIFA -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">Informations FIFA</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">{{ __('Informations FIFA') }}</h2>
                     </div>
                     <div class="p-6">
                         <dl class="space-y-3">

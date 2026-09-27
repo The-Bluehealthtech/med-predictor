@@ -16,15 +16,15 @@
                             </div>
                             <div class="ml-3">
                                 <h1 class="text-2xl font-bold text-gray-900">
-                                    Clubs de Football
+                                    {{ __('Clubs de Football') }}
                                 </h1>
-                                <p class="text-sm text-gray-600">Gestion et suivi de tous les clubs affiliés</p>
+                                <p class="text-sm text-gray-600">{{ __('Gestion et suivi de tous les clubs affiliés') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
                 </div>
             </div>
         </div>
@@ -49,21 +49,21 @@
                     </div>
                 </div>
                 <a href="/clubs-view" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    🏟️ Voir tous les clubs
+                    {{ __('🏟️ Voir tous les clubs') }}
                 </a>
             </div>
         </div>
         @endif
 
         @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs'))
-            <a href="{{ route('organization-cards.create', 'clubs') }}" class="inline-block mb-6 px-4 py-2 bg-blue-700 text-white rounded">+ Ajouter un club</a>
+            <a href="{{ route('organization-cards.create', 'clubs') }}" class="inline-block mb-6 px-4 py-2 bg-blue-700 text-white rounded">{{ __('+ Ajouter un club') }}</a>
         @endif
 
         <!-- Navigation -->
         <div class="mb-8 flex justify-between items-center">
             @if($filtered && $association)
                 <a href="/associations-view" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    ← Retour aux associations
+                    {{ __('← Retour aux associations') }}
                 </a>
             @else
                 <a href="/" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -72,7 +72,7 @@
             @endif
             
             <a href="/modules" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                📋 Retour aux modules
+                {{ __('📋 Retour aux modules') }}
             </a>
         </div>
 
@@ -180,7 +180,7 @@
                             <div class="mt-2 text-center">
                                 <a href="/clubs-view?association_id={{ $club->association->id }}" 
                                    class="text-xs text-blue-600 hover:text-blue-800 underline">
-                                    🏟️ Voir tous les clubs de cette association
+                                    {{ __('🏟️ Voir tous les clubs de cette association') }}
                                 </a>
                             </div>
                         </div>
@@ -225,10 +225,10 @@
             @else
                 <div class="col-span-full text-center py-12">
                     <div class="text-gray-400 text-6xl mb-4">🏟️</div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun club trouvé</h3>
-                    <p class="text-gray-500 mb-6">Aucun club n'est actuellement enregistré dans la base de données</p>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Aucun club trouvé') }}</h3>
+                    <p class="text-gray-500 mb-6">{{ __('Aucun club n\'est actuellement enregistré dans la base de données') }}</p>
                     <a href="/modules" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
-                        📋 Retour aux modules
+                        {{ __('📋 Retour aux modules') }}
                     </a>
                 </div>
             @endif
@@ -237,19 +237,19 @@
         <!-- Statistiques -->
         @if($clubs->count() > 0)
         <div class="mt-12 bg-white rounded-lg shadow-lg p-6">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">📊 Statistiques des clubs</h3>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ __('📊 Statistiques des clubs') }}</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="text-center">
                     <div class="text-3xl font-bold text-blue-600">{{ $clubs->count() }}</div>
-                    <div class="text-sm text-gray-600">Clubs total</div>
+                    <div class="text-sm text-gray-600">{{ __('Clubs total') }}</div>
                 </div>
                 <div class="text-center">
                     <div class="text-3xl font-bold text-green-600">{{ $clubs->where('status', 'active')->count() }}</div>
-                    <div class="text-sm text-gray-600">Clubs actifs</div>
+                    <div class="text-sm text-gray-600">{{ __('Clubs actifs') }}</div>
                 </div>
                 <div class="text-center">
                     <div class="text-3xl font-bold text-yellow-600">{{ $clubs->where('status', 'inactive')->count() }}</div>
-                    <div class="text-sm text-gray-600">Clubs inactifs</div>
+                    <div class="text-sm text-gray-600">{{ __('Clubs inactifs') }}</div>
                 </div>
             </div>
         </div>
@@ -267,10 +267,9 @@
                 </div>
                 <div class="text-center">
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Confirmer la suppression</h3>
-                    <p class="text-sm text-gray-500 mb-6">
-                        Êtes-vous sûr de vouloir supprimer le club <strong id="clubNameToDelete"></strong> ?
+                    <p class="text-sm text-gray-500 mb-6">{{ __('Êtes-vous sûr de vouloir supprimer le club') }}<strong id="clubNameToDelete"></strong> ?
                         <br><br>
-                        <span class="text-red-600 font-medium">⚠️ Cette action est irréversible !</span>
+                        <span class="text-red-600 font-medium">{{ __('⚠️ Cette action est irréversible !') }}</span>
                     </p>
                     <div class="flex space-x-3">
                         <button onclick="closeDeleteModal()" 
@@ -297,9 +296,8 @@
                     </div>
                 </div>
                 <div class="text-center mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Fusionner le club</h3>
-                    <p class="text-sm text-gray-500">
-                        Sélectionnez le club avec lequel vous voulez fusionner <strong id="clubNameToMerge"></strong>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Fusionner le club') }}</h3>
+                    <p class="text-sm text-gray-500">{{ __('Sélectionnez le club avec lequel vous voulez fusionner') }}<strong id="clubNameToMerge"></strong>
                     </p>
                 </div>
                 

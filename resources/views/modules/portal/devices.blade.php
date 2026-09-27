@@ -5,8 +5,8 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">📱 Portail des Appareils</h1>
-            <p class="mt-2 text-gray-600">Gestion des appareils connectés et dispositifs IoT</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('📱 Portail des Appareils') }}</h1>
+            <p class="mt-2 text-gray-600">{{ __('Gestion des appareils connectés et dispositifs IoT') }}</p>
         </div>
 
         <!-- Statistics Cards -->
@@ -23,7 +23,7 @@
                         </div>
                         <div class="ml-4">
                             <div class="text-2xl font-bold text-gray-900">{{ $stats['total'] }}</div>
-                            <div class="text-sm text-gray-500">Appareils enregistrés</div>
+                            <div class="text-sm text-gray-500">{{ __('Appareils enregistrés') }}</div>
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                         </div>
                         <div class="ml-4">
                             <div class="text-2xl font-bold text-gray-900">{{ $stats['connected'] }}</div>
-                            <div class="text-sm text-gray-500">Actuellement connectés</div>
+                            <div class="text-sm text-gray-500">{{ __('Actuellement connectés') }}</div>
                         </div>
                     </div>
                 </div>
@@ -59,7 +59,7 @@
                         </div>
                         <div class="ml-4">
                             <div class="text-2xl font-bold text-gray-900">{{ $stats['total'] > 0 ? round(($stats['connected'] / $stats['total']) * 100) . '%' : '—' }}</div>
-                            <div class="text-sm text-gray-500">Taux de connectivité</div>
+                            <div class="text-sm text-gray-500">{{ __('Taux de connectivité') }}</div>
                         </div>
                     </div>
                 </div>
@@ -76,8 +76,8 @@
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun appareil enregistré</h3>
-                    <p class="mt-1 text-sm text-gray-500">Les appareils connectés (montres, trackers) apparaîtront ici une fois synchronisés.</p>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('Aucun appareil enregistré') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ __('Les appareils connectés (montres, trackers) apparaîtront ici une fois synchronisés.') }}</p>
                 </div>
                 @else
                 <div class="space-y-4">

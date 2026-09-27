@@ -8,10 +8,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-6">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">📋 Licences des Joueurs</h1>
-                    <p class="text-sm text-gray-600">Vue d'ensemble de toutes les licences</p>
+                    <h1 class="text-2xl font-bold text-gray-900">{{ __('📋 Licences des Joueurs') }}</h1>
+                    <p class="text-sm text-gray-600">{{ __('Vue d\'ensemble de toutes les licences') }}</p>
                 </div>
-                <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
             </div>
         </div>
     </div>

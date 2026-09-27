@@ -575,7 +575,7 @@
             Dopage historique
         </button>
         <button class="fifa-tab-button" onclick="showFIFATab('licenses')">
-            Historique licences
+            {{ __('Historique licences') }}
         </button>
     </div>
 
@@ -859,8 +859,7 @@
                                             <!-- SDOH Details -->
                         <div class="w-full space-y-4">
                             <p class="text-gray-700 mb-4">
-                                Cet indicateur <strong>SDOH</strong> (Social Determinants of Health) donne une vision
-                                des facteurs sociaux, environnementaux et comportementaux du joueur.
+                                {{ __('Cet indicateur') }} <strong>SDOH</strong> {{ __('(Social Determinants of Health) donne une vision des facteurs sociaux, environnementaux et comportementaux du joueur.') }}
                             </p>
                             
                             <!-- SDOH Factors breakdown -->
@@ -992,7 +991,7 @@
                     <div style="text-align: left; margin-top: 15px;">
                         @if($injuryAlerts)
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Risque de blessure:</span>
+                                <span>{{ __('Risque de blessure:') }}</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ $injuryAlerts->risk_level }}%</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
@@ -1014,7 +1013,7 @@
                             </div>
                         @else
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Risque de blessure:</span>
+                                <span>{{ __('Risque de blessure:') }}</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
@@ -1041,7 +1040,7 @@
                                 <span style="color: #ffd700; font-weight: bold;">{{ ucfirst($playerMedications->first()->medication_type) }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Dernier ajout:</span>
+                                <span>{{ __('Dernier ajout:') }}</span>
                                 <span style="color: #87ceeb; font-weight: bold;">{{ \Carbon\Carbon::parse($playerMedications->first()->start_date)->format('d M Y') }}</span>
                             </div>
                         @else
@@ -1900,7 +1899,7 @@
                                 </div>
                                 <div class="text-center p-3 bg-green-50 rounded-lg">
                                     <div class="text-2xl font-bold text-green-600">{{ number_format($behavioralData->steps_count) }}</div>
-                                    <div class="text-sm text-green-700">Pas</div>
+                                    <div class="text-sm text-green-700">{{ __('Pas') }}</div>
                                 </div>
                                 <div class="text-center p-3 bg-yellow-50 rounded-lg">
                                     <div class="text-2xl font-bold text-yellow-600">{{ $behavioralData->active_minutes }}min</div>
@@ -1943,7 +1942,7 @@
                                             <div class="text-xs text-gray-500 mb-2">API: {{ $center->api_endpoint }}</div>
                                         @endif
                                         <div class="text-sm text-gray-700 mb-2">
-                                            <strong>Plan de traitement:</strong> 
+                                            <strong>{{ __('Plan de traitement:') }}</strong>
                                             @php $plan = json_decode($center->treatment_plan, true); @endphp
                                             {{ $plan['objectif'] ?? 'Non spécifié' }}
                                         </div>
@@ -2517,7 +2516,7 @@
                         <h4>{{ __('💰 Calcul des Primes') }}</h4>
                         <div class="fifa-compensation-info">
                             <div class="fifa-compensation-stat">
-                                <span>Club de formation:</span>
+                                <span>{{ __('Club de formation:') }}</span>
                                 <span>{{ $player->club->name ?? 'N/A' }}</span>
                             </div>
                             <div class="fifa-compensation-stat">

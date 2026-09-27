@@ -311,7 +311,7 @@
                              dès qu'il sera fourni. --}}
                         <span class="text-[#94A3B8] text-sm">{{ app()->getLocale() === 'en' ? 'Developed by The Blue Healthtech' : 'Développé par The Blue Healthtech' }}</span>
                     </div>
-                    <p class="text-[#94A3B8] text-sm">&copy; 2025 The Blue Healthtech Ltd. Tous droits réservés.</p>
+                    <p class="text-[#94A3B8] text-sm">{{ __('&copy; 2025 The Blue Healthtech Ltd. Tous droits réservés.') }}</p>
                 </div>
             </div>
         </div>

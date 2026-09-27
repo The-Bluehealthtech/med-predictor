@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de bord Administrateur - Med Predictor</title>
+    <title>{{ __('Tableau de bord Administrateur - Med Predictor') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -26,16 +26,16 @@
         <div class="max-w-7xl mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <h1 class="text-2xl font-bold text-white">🏥 Tableau de bord Administrateur</h1>
+                    <h1 class="text-2xl font-bold text-white">{{ __('🏥 Tableau de bord Administrateur') }}</h1>
                     <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm">Admin</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="{{ route('modules.index') }}" class="text-blue-300 hover:text-blue-200 text-sm underline">
                         <i class="fas fa-arrow-left mr-1"></i>
-                        Retour aux modules
+                        {{ __('Retour aux modules') }}
                     </a>
                     <a href="{{ route('joueur.portal', 7) }}" class="text-blue-300 hover:text-blue-200 text-sm underline">
-                        Voir portail joueur
+                        {{ __('Voir portail joueur') }}
                     </a>
                     <a href="{{ route('logout') }}" 
                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
@@ -67,7 +67,7 @@
                         <i class="fas fa-shield-alt text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-300">Avec Club</p>
+                        <p class="text-sm font-medium text-gray-300">{{ __('Avec Club') }}</p>
                         <p class="text-2xl font-bold text-white">{{ $players->whereNotNull('club_id')->count() }}</p>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                         <i class="fas fa-trophy text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-300">Avec Association</p>
+                        <p class="text-sm font-medium text-gray-300">{{ __('Avec Association') }}</p>
                         <p class="text-2xl font-bold text-white">{{ $players->whereNotNull('association_id')->count() }}</p>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                         <i class="fas fa-clock text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-300">Récents (30j)</p>
+                        <p class="text-sm font-medium text-gray-300">{{ __('Récents (30j)') }}</p>
                         <p class="text-2xl font-bold text-white">{{ $players->where('created_at', '>=', now()->subDays(30))->count() }}</p>
                     </div>
                 </div>
@@ -115,7 +115,7 @@
                 </div>
                 <div class="flex gap-2">
                     <select name="position" class="px-3 py-2 border border-white/20 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Toutes les positions</option>
+                        <option value="">{{ __('Toutes les positions') }}</option>
                         <option value="Gardien" {{ request('position') == 'Gardien' ? 'selected' : '' }}>{{ __('pcma.position_goalkeeper_option') }}</option>
                         <option value="Défenseur" {{ request('position') == 'Défenseur' ? 'selected' : '' }}>{{ __('pcma.position_defender_option') }}</option>
                         <option value="Milieu" {{ request('position') == 'Milieu' ? 'selected' : '' }}>{{ __('clinical.demo_position_midfielder') }}</option>
@@ -149,12 +149,11 @@
             <div class="px-6 py-4 border-b border-white/20">
                 <div class="flex justify-between items-center">
                     <div>
-                        <h2 class="text-xl font-semibold text-white">Liste des Joueurs</h2>
-                        <p class="text-gray-300 text-sm">Cliquez sur un joueur pour accéder à son portail</p>
+                        <h2 class="text-xl font-semibold text-white">{{ __('Liste des Joueurs') }}</h2>
+                        <p class="text-gray-300 text-sm">{{ __('Cliquez sur un joueur pour accéder à son portail') }}</p>
                     </div>
                     <div class="text-sm text-gray-300">
-                        <span id="resultsCount">{{ $players->total() }}</span> joueurs trouvés
-                    </div>
+                        <span id="resultsCount">{{ $players->total() }}</span>{{ __('joueurs trouvés') }}</div>
                 </div>
             </div>
             
@@ -249,7 +248,7 @@
                                             </div>
                                         </div>
                                     @else
-                                        <span class="text-gray-500">Aucun club</span>
+                                        <span class="text-gray-500">{{ __('Aucun club') }}</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
@@ -278,7 +277,7 @@
                                             </div>
                                         </div>
                                     @else
-                                        <span class="text-gray-500">Aucune association</span>
+                                        <span class="text-gray-500">{{ __('Aucune association') }}</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -315,11 +314,11 @@
                         <span class="text-white">1.0.0</span>
                     </div>
                     <div class="flex justify-between">
-                        <span>Base de données FIT:</span>
+                        <span>{{ __('Base de données FIT:') }}</span>
                         <span class="text-white">SQLite</span>
                     </div>
                     <div class="flex justify-between">
-                        <span>Dernière mise à jour FIT:</span>
+                        <span>{{ __('Dernière mise à jour FIT:') }}</span>
                         <span class="text-white">{{ now()->format('d/m/Y H:i') }}</span>
                     </div>
                 </div>
@@ -328,9 +327,9 @@
             <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
                 <h3 class="text-lg font-semibold text-white mb-4">Aide</h3>
                 <div class="space-y-2 text-sm text-gray-300">
-                    <p>• Cliquez sur "FIT Portal" pour accéder au portail FIT du joueur</p>
-                    <p>• Utilisez la barre de navigation pour passer d'un joueur à l'autre</p>
-                    <p>• Les données sont maintenant 100% dynamiques</p>
+                    <p>{{ __('• Cliquez sur "FIT Portal" pour accéder au portail FIT du joueur') }}</p>
+                    <p>{{ __('• Utilisez la barre de navigation pour passer d\'un joueur à l\'autre') }}</p>
+                    <p>{{ __('• Les données sont maintenant 100% dynamiques') }}</p>
                 </div>
             </div>
         </div>

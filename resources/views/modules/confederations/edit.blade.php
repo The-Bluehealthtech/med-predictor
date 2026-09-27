@@ -42,7 +42,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Colonne gauche - Informations de base -->
                     <div class="space-y-6">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4">📋 Informations de base</h2>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ __('📋 Informations de base') }}</h2>
 
                         <!-- Nom de la confédération -->
                         <div>
@@ -69,7 +69,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Continent/Pays *</label>
                             <input type="text" name="country" value="{{ old('country', $confederation->country) }}" required 
-                                   placeholder="Ex: Afrique, Europe, Amérique du Sud"
+                                   placeholder="{{ __('Ex: Afrique, Europe, Amérique du Sud') }}"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent {{ $errors->has('country') ? 'border-red-500' : '' }}">
                             @error('country')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -185,7 +185,7 @@
                     </a>
                     <button type="submit" 
                             class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-                        💾 Sauvegarder les modifications
+                        {{ __('💾 Sauvegarder les modifications') }}
                     </button>
                 </div>
             </form>

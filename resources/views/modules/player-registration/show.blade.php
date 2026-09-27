@@ -102,7 +102,7 @@
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Informations Personnelles</h3>
+                                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">{{ __('Informations Personnelles') }}</h3>
                                 <dl class="space-y-3">
                                     <div>
                                         <dt class="text-sm font-medium text-gray-500">{{ __('clinical.full_name_label') }}</dt>
@@ -154,13 +154,13 @@
                 <!-- Club and Association Information -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">Club et Association</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">{{ __('Club et Association') }}</h2>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             @if($player->club)
                                 <div>
-                                    <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Club Actuel</h3>
+                                    <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">{{ __('Club Actuel') }}</h3>
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-16 w-16 mr-4">
                                             @if($player->club->logo_url)
@@ -299,29 +299,29 @@
                             <div class="bg-blue-50 rounded-lg p-4">
                                 <h4 class="text-sm font-medium text-blue-600 uppercase tracking-wider mb-2">{{ __('common.matches') }}</h4>
                                 <div class="text-2xl font-bold text-blue-900">N/A</div>
-                                <div class="text-sm text-blue-600">Statistiques non disponibles</div>
+                                <div class="text-sm text-blue-600">{{ __('Statistiques non disponibles') }}</div>
                                 <div class="text-xs text-blue-500">{{ __('Modèle Player actuel') }}</div>
                             </div>
                             <div class="bg-green-50 rounded-lg p-4">
                                 <h4 class="text-sm font-medium text-green-600 uppercase tracking-wider mb-2">Buts & Passes</h4>
                                 <div class="text-2xl font-bold text-green-900">N/A</div>
-                                <div class="text-sm text-green-600">Statistiques non disponibles</div>
+                                <div class="text-sm text-green-600">{{ __('Statistiques non disponibles') }}</div>
                                 <div class="text-xs text-green-500">{{ __('Modèle Player actuel') }}</div>
                             </div>
                             <div class="bg-yellow-50 rounded-lg p-4">
                                 <h4 class="text-sm font-medium text-yellow-600 uppercase tracking-wider mb-2">Cartons</h4>
                                 <div class="text-2xl font-bold text-yellow-900">N/A</div>
-                                <div class="text-sm text-yellow-600">Statistiques non disponibles</div>
+                                <div class="text-sm text-yellow-600">{{ __('Statistiques non disponibles') }}</div>
                                 <div class="text-xs text-yellow-500">{{ __('Modèle Player actuel') }}</div>
                             </div>
                         </div>
 
                         <!-- Season Statistics -->
                         <div class="mb-6">
-                            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Statistiques par Saison</h3>
+                            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">{{ __('Statistiques par Saison') }}</h3>
                             <div class="bg-gray-50 rounded-lg p-4">
                                 <div class="text-center text-gray-500">
-                                    <p>Statistiques de saison non disponibles</p>
+                                    <p>{{ __('Statistiques de saison non disponibles') }}</p>
                                     <p class="text-sm">{{ __('Le modèle Player actuel ne contient pas ces données') }}</p>
                                 </div>
                             </div>
@@ -347,7 +347,7 @@
                             <h2 class="text-xl font-semibold text-gray-800">{{ __('Dossiers Médicaux Récents') }}</h2>
                             <a href="{{ route('player-registration.health-records', $player) }}" 
                                class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                                Voir tous →
+                                {{ __('Voir tous →') }}
                             </a>
                         </div>
                     </div>
@@ -417,7 +417,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">Sans club</h3>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Sans club') }}</h3>
                                 <p class="text-gray-500">{{ __('Ce joueur n\'est actuellement affilié à aucun club.') }}</p>
                             </div>
                         @endif
@@ -427,7 +427,7 @@
                 <!-- Statistiques Rapides -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">Statistiques Rapides</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">{{ __('Statistiques Rapides') }}</h2>
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
@@ -459,11 +459,11 @@
                             @endif
                             <div class="border-t pt-4">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-600">Ratio buts/match</span>
+                                    <span class="text-sm text-gray-600">{{ __('Ratio buts/match') }}</span>
                                     <span class="text-sm font-semibold text-gray-900">N/A</span>
                                 </div>
                                 <div class="flex justify-between items-center mt-2">
-                                    <span class="text-sm text-gray-600">Minutes/match</span>
+                                    <span class="text-sm text-gray-600">{{ __('Minutes/match') }}</span>
                                     <span class="text-sm font-semibold text-gray-900">N/A</span>
                                 </div>
                             </div>
@@ -500,7 +500,7 @@
                 <!-- Informations FIFA -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800">Informations FIFA</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">{{ __('Informations FIFA') }}</h2>
                     </div>
                     <div class="p-6">
                         <dl class="space-y-3">

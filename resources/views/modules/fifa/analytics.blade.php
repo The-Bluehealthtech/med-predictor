@@ -16,13 +16,13 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     FIFA Analytics
                                 </h1>
-                                <p class="text-sm text-gray-600">Tableau de bord analytique</p>
+                                <p class="text-sm text-gray-600">{{ __('Tableau de bord analytique') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
                 </div>
             </div>
         </div>
@@ -35,9 +35,7 @@
             <div class="p-6">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">📊 FIFA Analytics Dashboard</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Tableau de bord analytique pour le suivi des données FIFA Connect
-                    </p>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Tableau de bord analytique pour le suivi des données FIFA Connect') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
@@ -45,7 +43,7 @@
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            Données en temps réel
+                            {{ __('Données en temps réel') }}
                         </div>
                     </div>
                 </div>
@@ -63,7 +61,7 @@
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Joueurs Totaux</p>
+                            <p class="text-sm font-medium text-gray-500">{{ __('Joueurs Totaux') }}</p>
                             <p class="text-2xl font-bold text-gray-900">{{ \App\Models\Player::count() }}</p>
                         </div>
                     </div>
@@ -178,7 +176,7 @@
                                 <span class="text-white text-lg">👤</span>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-900">Nouveaux joueurs ajoutés</p>
+                                <p class="text-sm font-medium text-gray-900">{{ __('Nouveaux joueurs ajoutés') }}</p>
                                 <p class="text-xs text-gray-500">{{ __('common.this_week') }}</p>
                             </div>
                         </div>
@@ -194,7 +192,7 @@
                                 <span class="text-white text-lg">🏆</span>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-900">Clubs enregistrés</p>
+                                <p class="text-sm font-medium text-gray-900">{{ __('Clubs enregistrés') }}</p>
                                 <p class="text-xs text-gray-500">Total actif</p>
                             </div>
                         </div>

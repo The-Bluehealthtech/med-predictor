@@ -19,11 +19,10 @@
         <form method="POST" action="{{ $record ? route('organization-cards.update', [$type, $record->id]) : route('organization-cards.store', $type) }}" class="space-y-5">
             @csrf
             @if($record) @method('PUT') @endif
-            <label class="block">Nom *
+            <label class="block">{{ __('Nom *') }}
                 <input name="name" required maxlength="255" value="{{ old('name', $record?->name) }}" class="mt-1 block w-full border rounded p-2">
             </label>
-            <label class="block">Nom abrégé
-                <input name="short_name" maxlength="50" value="{{ old('short_name', $record?->short_name) }}" class="mt-1 block w-full border rounded p-2">
+            <label class="block">{{ __('Nom abrégé') }}<input name="short_name" maxlength="50" value="{{ old('short_name', $record?->short_name) }}" class="mt-1 block w-full border rounded p-2">
             </label>
             @if($type === 'confederations' || $type === 'associations')
                 <label class="block">{{ $type === 'confederations' ? 'Continent / pays' : 'Pays' }} {{ $type === 'associations' ? '*' : '' }}
@@ -42,8 +41,7 @@
                     </select>
                 </label>
             @elseif($type === 'associations')
-                <label class="block">Confédération *
-                    <select name="confederation_id" required class="mt-1 block w-full border rounded p-2">
+                <label class="block">{{ __('Confédération *') }}<select name="confederation_id" required class="mt-1 block w-full border rounded p-2">
                         <option value="">Choisir</option>
                         @foreach($confederations as $confederation)
                             <option value="{{ $confederation->id }}" @selected((int) old('confederation_id', $record?->confederation_id) === (int) $confederation->id)>{{ $confederation->name }}</option>
@@ -62,7 +60,7 @@
                     </select>
                 </label>
             @endif
-            <p class="text-sm text-gray-600">Les identifiants et statuts de synchronisation FIFA sont renseignés uniquement par l'intégration FIFA.</p>
+            <p class="text-sm text-gray-600">{{ __('Les identifiants et statuts de synchronisation FIFA sont renseignés uniquement par l\'intégration FIFA.') }}</p>
             <button type="submit" class="bg-blue-700 text-white rounded px-5 py-2">{{ __('clinical.save') }}</button>
         </form>
     </main>

@@ -7,7 +7,7 @@
     <div class="max-w-4xl mx-auto">
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900">⚽ Modifier {{ $player->full_name }}</h1>
-            <p class="text-gray-600 mt-2">Modifier les informations du joueur</p>
+            <p class="text-gray-600 mt-2">{{ __('Modifier les informations du joueur') }}</p>
         </div>
 
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -40,7 +40,7 @@
                             </label>
                             <input type="file" name="player_picture" id="player_picture" accept="image/*"
                                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <p class="mt-1 text-sm text-gray-500">Formats acceptés: JPEG, PNG, JPG, GIF. Taille max: 2MB</p>
+                            <p class="mt-1 text-sm text-gray-500">{{ __('Formats acceptés: JPEG, PNG, JPG, GIF. Taille max: 2MB') }}</p>
                             @error('player_picture')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -63,7 +63,7 @@
 
                     <div>
                         <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Nom *
+                            {{ __('Nom *') }}
                         </label>
                         <input type="text" name="last_name" id="last_name" 
                                value="{{ old('last_name', $player->last_name) }}" required
@@ -75,7 +75,7 @@
 
                     <div>
                         <label for="date_of_birth" class="block text-sm font-medium text-gray-700 mb-2">
-                            Date de naissance *
+                            {{ __('Date de naissance *') }}
                         </label>
                         <input type="date" name="date_of_birth" id="date_of_birth" 
                                value="{{ old('date_of_birth', $player->date_of_birth ? $player->date_of_birth->format('Y-m-d') : '') }}" required

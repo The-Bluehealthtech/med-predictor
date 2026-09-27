@@ -357,8 +357,7 @@
                     };
 
                     typeInput.addEventListener('change', () => {
-                        nameInput.innerHTML =
-                            '<option value="">Sélectionner une métrique</option>';
+                        nameInput.replaceChildren(new Option(@json(__('Sélectionner une métrique')), ''));
 
                         const definitions = catalog[typeInput.value];
 
@@ -435,7 +434,7 @@
 
                         if (!config) {
                             showMessage(
-                                'La métrique sélectionnée ne fait pas partie du catalogue FIT.',
+                                @json(__('La métrique sélectionnée ne fait pas partie du catalogue FIT.')),
                                 true
                             );
                             return;
@@ -460,7 +459,7 @@
                         if (config.scale === 'explicit') {
                             if (!socialModeInput.value) {
                                 showMessage(
-                                    'Sélectionnez le mode de mesure sociale.',
+                                    @json(__('Sélectionnez le mode de mesure sociale.')),
                                     true
                                 );
                                 return;
@@ -476,7 +475,7 @@
 
                                 if (scaleMax <= scaleMin) {
                                     showMessage(
-                                        'Le maximum de l’échelle doit être supérieur au minimum.',
+                                        @json(__('Le maximum de l’échelle doit être supérieur au minimum.')),
                                         true
                                     );
                                     return;
@@ -517,7 +516,7 @@
                                         ? errors.join('\n')
                                         : (
                                             body.message
-                                            ?? 'Enregistrement refusé.'
+                                            ?? @json(__('Enregistrement refusé.'))
                                         ),
                                     true
                                 );
@@ -527,7 +526,7 @@
                             window.location.reload();
                         } catch (error) {
                             showMessage(
-                                'La requête n’a pas pu être envoyée.',
+                                @json(__('La requête n’a pas pu être envoyée.')),
                                 true
                             );
                         } finally {
@@ -542,7 +541,7 @@
                     <h2 class="text-lg font-semibold text-gray-900">{{ __('Historique des métriques') }}</h2>
 
                     <p class="text-sm text-gray-500 mt-1">
-                        Vérification autorisée :
+                        {{ __('Vérification autorisée :') }}
                         {{ $canVerify ? 'oui' : 'non' }}
                     </p>
                 </div>
@@ -687,7 +686,7 @@
                                         window.location.reload();
                                     } catch (error) {
                                         message.textContent =
-                                            'La requête n’a pas pu être envoyée.';
+                                            @json(__('La requête n’a pas pu être envoyée.'));
                                         message.classList.add(
                                             'text-red-600'
                                         );

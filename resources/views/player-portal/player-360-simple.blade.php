@@ -39,7 +39,7 @@
         <div class="mb-6 flex items-center justify-between">
             <a href="{{ route('player-portal.dashboard') }}" class="flex items-center text-gray-600 hover:text-gray-800 transition-colors">
                 <i class="fas fa-arrow-left mr-2"></i>
-                Retour au Dashboard
+                {{ __('Retour au Dashboard') }}
             </a>
             <div class="text-sm text-gray-500">
                 Fiche Joueur 360° - {{ now()->format('d/m/Y H:i') }}
@@ -61,7 +61,7 @@
                         <!-- Photo du joueur -->
                         <div class="relative mb-6">
                             <img src="/images/ronaldo.jpg" 
-                                 alt="Photo de Cristiano Ronaldo"
+                                 alt="{{ __('Photo de Cristiano Ronaldo') }}"
                                  class="w-48 h-60 object-cover rounded-2xl border-4 border-white/30 shadow-2xl pulse-glow"
                                  onerror="this.src='/images/default_player.svg'"
                                  loading="lazy">
@@ -324,7 +324,7 @@
 
             <!-- Club actuel -->
             <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h2 class="text-2xl font-bold gradient-text mb-6">Club Actuel</h2>
+                <h2 class="text-2xl font-bold gradient-text mb-6">{{ __('Club Actuel') }}</h2>
                 @if($player->club ?? false)
                 <div class="flex items-center space-x-4 mb-4">
                     @if($player->club ?? false)
@@ -341,7 +341,7 @@
                 </div>
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Contrat jusqu'au</span>
+                        <span class="text-gray-600">{{ __('Contrat jusqu\'au') }}</span>
                         <span class="font-medium">{{ $player->contract_valid_until ? $player->contract_valid_until->format('d/m/Y') : 'Non défini' }}</span>
                     </div>
                     <div class="flex justify-between items-center">
@@ -374,7 +374,7 @@
                         <span class="font-bold text-purple-600">{{ $player->medicalPredictions->count() ?? 0 }}</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Risque de blessure</span>
+                        <span class="text-gray-600">{{ __('Risque de blessure') }}</span>
                         <span class="font-bold text-green-600">{{ $player->injury_risk_score ?? 15 }}% (FAIBLE)</span>
                     </div>
                 </div>

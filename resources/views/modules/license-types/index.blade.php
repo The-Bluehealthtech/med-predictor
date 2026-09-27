@@ -8,10 +8,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-6">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">📄 Types de Licence</h1>
-                    <p class="text-sm text-gray-600">Catalogue des types de licences FIFA Connect</p>
+                    <h1 class="text-2xl font-bold text-gray-900">{{ __('📄 Types de Licence') }}</h1>
+                    <p class="text-sm text-gray-600">{{ __('Catalogue des types de licences FIFA Connect') }}</p>
                 </div>
-                <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
             </div>
         </div>
     </div>
@@ -27,7 +27,7 @@
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun type de licence configuré</h3>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('Aucun type de licence configuré') }}</h3>
             </div>
             @else
             <div class="overflow-x-auto">
@@ -36,7 +36,7 @@
                         <tr>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
-                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Durée de validité</th>
+                            <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Durée de validité') }}</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">Frais</th>
                             <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('clinical.table_status') }}</th>
                         </tr>

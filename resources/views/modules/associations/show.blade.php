@@ -15,9 +15,9 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
-                    Retour aux associations
+                    {{ __('Retour aux associations') }}
                 </a>
-                <h1 class="text-3xl font-bold text-gray-800">Détails de l'Association</h1>
+                <h1 class="text-3xl font-bold text-gray-800">{{ __('Détails de l\'Association') }}</h1>
             </div>
             <div class="flex space-x-3">
                 @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association))
@@ -26,7 +26,7 @@
                 </a>
                 @endif
                 <a href="/modules" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                    📋 Retour aux modules
+                    {{ __('📋 Retour aux modules') }}
                 </a>
             </div>
         </div>
@@ -131,7 +131,7 @@
                         <div class="flex items-center">
                             <span class="w-6 h-6 mr-3 text-green-600">🏟️</span>
                             <div>
-                                <p class="text-sm text-gray-500">Clubs affiliés</p>
+                                <p class="text-sm text-gray-500">{{ __('Clubs affiliés') }}</p>
                                 <p class="font-medium">{{ $association->clubs ? $association->clubs->count() : 0 }}</p>
                             </div>
                         </div>
@@ -149,7 +149,7 @@
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <span class="mr-2">⚽</span>
-                        Informations FIFA Connect
+                        {{ __('Informations FIFA Connect') }}
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -182,7 +182,7 @@
                             <div class="space-y-2">
                                 @if($association->phone)
                                 <div class="flex justify-between">
-                                    <span class="text-blue-600">📞 Téléphone:</span>
+                                    <span class="text-blue-600">{{ __('📞 Téléphone:') }}</span>
                                     <span class="font-medium">{{ $association->phone }}</span>
                                 </div>
                                 @endif
@@ -249,7 +249,7 @@
                     <div class="mt-4 text-center">
                         <a href="/clubs-view?association_id={{ $association->id }}" 
                            class="inline-flex items-center px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                            🏟️ Voir tous les clubs de cette association
+                            {{ __('🏟️ Voir tous les clubs de cette association') }}
                         </a>
                     </div>
                 </div>
@@ -260,15 +260,15 @@
             <div class="space-y-6">
                 <!-- Statistiques -->
                 <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Statistiques</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('📊 Statistiques') }}</h3>
                     <div class="space-y-4">
                         <div class="text-center">
                             <div class="text-3xl font-bold text-green-600">{{ $association->clubs ? $association->clubs->count() : 0 }}</div>
-                            <div class="text-sm text-gray-600">Clubs affiliés</div>
+                            <div class="text-sm text-gray-600">{{ __('Clubs affiliés') }}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-3xl font-bold text-blue-600">{{ $association->players ? $association->players->count() : 0 }}</div>
-                            <div class="text-sm text-gray-600">Joueurs total</div>
+                            <div class="text-sm text-gray-600">{{ __('Joueurs total') }}</div>
                         </div>
                         @if($association->fifa_ranking)
                         <div class="text-center">
@@ -286,16 +286,14 @@
                         @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association))
                         <a href="{{ route('organization-cards.edit', ['associations', $association->id]) }}"
                            class="w-full px-4 py-2 bg-yellow-500 text-white text-center rounded-lg hover:bg-yellow-600 transition-colors">
-                            ✏️ Modifier l'association
+                            {{ __('✏️ Modifier l\'association') }}
                         </a>
                 @endif
                         <a href="/clubs-view?association_id={{ $association->id }}" 
-                           class="w-full px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors">
-                            🏟️ Gérer les clubs
-                        </a>
+                           class="w-full px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors">{{ __('🏟️ Gérer les clubs') }}</a>
                         <a href="/associations-view" 
                            class="w-full px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors">
-                            🏛️ Voir toutes les associations
+                            {{ __('🏛️ Voir toutes les associations') }}
                         </a>
                     </div>
                 </div>

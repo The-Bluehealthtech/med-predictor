@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Annonces
                                 </h1>
-                                <p class="text-sm text-gray-600">Gérer les annonces officielles</p>
+                                <p class="text-sm text-gray-600">{{ __('Gérer les annonces officielles') }}</p>
                             </div>
                         </div>
                     </div>
@@ -34,10 +34,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Actions -->
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-medium text-gray-900">Liste des Annonces</h2>
+            <h2 class="text-lg font-medium text-gray-900">{{ __('Liste des Annonces') }}</h2>
             <a href="{{ route('admin.content-management.create', ['type' => 'announcement']) }}" 
                class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors">
-                ➕ Nouvelle Annonce
+                {{ __('➕ Nouvelle Annonce') }}
             </a>
         </div>
 
@@ -67,24 +67,18 @@
                                             @endif
                                             
                                             @if($announcement['priority'] === 'high')
-                                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                                    🔴 Haute Priorité
-                                                </span>
+                                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">{{ __('🔴 Haute Priorité') }}</span>
                                             @elseif($announcement['priority'] === 'medium')
-                                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                    🟡 Moyenne Priorité
-                                                </span>
+                                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">{{ __('🟡 Moyenne Priorité') }}</span>
                                             @else
-                                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                                    🟢 Basse Priorité
-                                                </span>
+                                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">{{ __('🟢 Basse Priorité') }}</span>
                                             @endif
                                         </div>
                                         
                                         <p class="text-gray-600 mb-3">{{ Str::limit($announcement['content'], 150) }}</p>
                                         
                                         <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                            <span><strong>Créé:</strong> {{ $announcement['created_at']->format('d/m/Y H:i') }}</span>
+                                            <span><strong>{{ __('Créé:') }}</strong> {{ $announcement['created_at']->format('d/m/Y H:i') }}</span>
                                         </div>
                                     </div>
                                     
@@ -109,11 +103,9 @@
                     </div>
                 @else
                     <div class="text-center py-8">
-                        <p class="text-gray-500 mb-4">Aucune annonce trouvée.</p>
+                        <p class="text-gray-500 mb-4">{{ __('Aucune annonce trouvée.') }}</p>
                         <a href="{{ route('admin.content-management.create', ['type' => 'announcement']) }}" 
-                           class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors">
-                            ➕ Créer la première annonce
-                        </a>
+                           class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('➕ Créer la première annonce') }}</a>
                     </div>
                 @endif
             </div>

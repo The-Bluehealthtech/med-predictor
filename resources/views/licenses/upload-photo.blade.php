@@ -40,7 +40,7 @@
                 
                 <!-- Sélection du Joueur -->
                 <div>
-                    <label for="player_id" class="block text-sm font-medium text-gray-700 mb-2">👤 Joueur</label>
+                    <label for="player_id" class="block text-sm font-medium text-gray-700 mb-2">{{ __('👤 Joueur') }}</label>
                     @if($preSelectedPlayer)
                         <div class="flex items-center space-x-2">
                             <select name="player_id" id="player_id" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" disabled>
@@ -58,7 +58,7 @@
                 
                 <!-- Upload de Photo -->
                 <div>
-                    <label for="player_photo" class="block text-sm font-medium text-gray-700 mb-2">📷 Photo du Joueur</label>
+                    <label for="player_photo" class="block text-sm font-medium text-gray-700 mb-2">{{ __('📷 Photo du Joueur') }}</label>
                     <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                         <div class="space-y-1 text-center">
                             <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
@@ -78,7 +78,7 @@
                 
                 <!-- Type de Licence -->
                 <div>
-                    <label for="license_type" class="block text-sm font-medium text-gray-700 mb-2">🏆 Type de Licence</label>
+                    <label for="license_type" class="block text-sm font-medium text-gray-700 mb-2">{{ __('🏆 Type de Licence') }}</label>
                     <select name="license_type" id="license_type" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">{{ __('Sélectionnez le type de licence') }}</option>
                         <option value="amateur">Amateur</option>

@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">← Retour aux Modules</a>
+                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
                 </div>
             </div>
         </div>
@@ -106,7 +106,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <span class="text-xs text-gray-400">Cette saison</span>
+                        <span class="text-xs text-gray-400">{{ __('Cette saison') }}</span>
                     </div>
                 </div>
             </div>
@@ -149,7 +149,7 @@
             <!-- Performance Trends -->
             <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Tendances de Performance</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Tendances de Performance') }}</h3>
                     <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                         <span class="text-green-600 text-sm">📈</span>
                     </div>
@@ -196,7 +196,7 @@
                 </div>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Joueurs en forme</span>
+                        <span class="text-sm text-gray-600">{{ __('Joueurs en forme') }}</span>
                         <span class="font-semibold text-green-600">{{ $clubStats['fit_players'] }}</span>
                     </div>
                     <div class="flex justify-between items-center">
@@ -204,7 +204,7 @@
                         <span class="font-semibold text-red-600">{{ $clubStats['injured_players'] }}</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Niveau de forme</span>
+                        <span class="text-sm text-gray-600">{{ __('Niveau de forme') }}</span>
                         <span class="font-semibold text-blue-600">{{ $trainingData['fitness_level'] }}/10</span>
                     </div>
                 </div>
@@ -213,14 +213,14 @@
             <!-- Match Analysis -->
             <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Analyse Matchs</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Analyse Matchs') }}</h3>
                     <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                         <span class="text-purple-600 text-sm">⚽</span>
                     </div>
                 </div>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Matchs ce mois</span>
+                        <span class="text-sm text-gray-600">{{ __('Matchs ce mois') }}</span>
                         <span class="font-semibold text-gray-900">{{ $performanceMetrics['matches_this_month'] }}</span>
                     </div>
                     <div class="flex justify-between items-center">

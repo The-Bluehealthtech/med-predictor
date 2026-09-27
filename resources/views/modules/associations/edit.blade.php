@@ -8,14 +8,14 @@
 </head>
 <body class="bg-gradient-to-br from-red-50 to-pink-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">✏️ Modifier Association</h1>
+        <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">{{ __('✏️ Modifier Association') }}</h1>
         
         <div class="mb-8 flex justify-between items-center">
             <a href="/associations-view" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                ← Retour aux associations
+                {{ __('← Retour aux associations') }}
             </a>
             <a href="/modules" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                📋 Retour aux modules
+                {{ __('📋 Retour aux modules') }}
             </a>
         </div>
 
@@ -38,13 +38,13 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom *</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Nom *') }}</label>
                         <input type="text" name="name" value="{{ old('name', $association->name) }}" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom abrégé</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Nom abrégé') }}</label>
                         <input type="text" name="short_name" value="{{ old('short_name', $association->short_name) }}" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md">
                     </div>
@@ -56,7 +56,7 @@
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Confédération *</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Confédération *') }}</label>
                         <select name="confederation_id" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
                             <option value="">{{ __('auth.login_select_placeholder') }}</option>
                             @foreach($confederations as $confederation)
@@ -85,7 +85,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
                     <div>
-                        <h4 class="text-lg font-medium text-gray-700 mb-4">Logo de l'association</h4>
+                        <h4 class="text-lg font-medium text-gray-700 mb-4">{{ __('Logo de l\'association') }}</h4>
                         
                         @if($association->association_logo_url)
                             <div class="mb-4">
@@ -101,7 +101,7 @@
                     </div>
                     
                     <div>
-                        <h4 class="text-lg font-medium text-gray-700 mb-4">Drapeau du pays</h4>
+                        <h4 class="text-lg font-medium text-gray-700 mb-4">{{ __('Drapeau du pays') }}</h4>
                         
                         @if($association->nation_flag_url)
                             <div class="mb-4">

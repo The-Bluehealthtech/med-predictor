@@ -8,12 +8,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">FIFA Portal</h1>
-                <p class="text-sm text-gray-600">
-                    Données locales traçables et état de l'intégration FIFA Connect
-                </p>
+                <p class="text-sm text-gray-600">{{ __('Données locales traçables et état de l\'intégration FIFA Connect') }}</p>
             </div>
             <a href="{{ route('modules.index') }}" class="text-sm text-blue-600 hover:text-blue-800">
-                ← Retour aux modules
+                {{ __('← Retour aux modules') }}
             </a>
         </div>
     </div>
@@ -37,9 +35,7 @@
                             {{ __('Non configuré') }}
                         </span>
                     @elseif(($connectivity['status'] ?? null) === 'mock')
-                        <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                            Simulation explicite — non connectée
-                        </span>
+                        <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">{{ __('Simulation explicite — non connectée') }}</span>
                     @else
                         <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
                             Hors ligne
@@ -54,18 +50,18 @@
                     <dd class="font-medium text-gray-900">{{ $connectivity['status'] ?? 'unknown' }}</dd>
                 </div>
                 <div>
-                    <dt class="text-gray-500">Connexion live vérifiée</dt>
+                    <dt class="text-gray-500">{{ __('Connexion live vérifiée') }}</dt>
                     <dd class="font-medium text-gray-900">{{ !empty($connectivity['connected']) ? 'Oui' : 'Non' }}</dd>
                 </div>
                 <div>
-                    <dt class="text-gray-500">Dernière vérification</dt>
+                    <dt class="text-gray-500">{{ __('Dernière vérification') }}</dt>
                     <dd class="font-medium text-gray-900">{{ $connectivity['timestamp'] ?? 'N/A' }}</dd>
                 </div>
             </dl>
         </div>
 
         <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Joueurs disponibles localement</h2>
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Joueurs disponibles localement') }}</h2>
 
             <form method="GET" action="{{ route('fifa.portal.integrated') }}" class="flex flex-col md:flex-row gap-3">
                 <select name="player_id" class="flex-1 rounded-md border-gray-300">
@@ -85,9 +81,7 @@
             </form>
 
             @if($players->isEmpty())
-                <p class="mt-4 text-sm text-gray-600">
-                    Aucun joueur n'est disponible dans le périmètre autorisé.
-                </p>
+                <p class="mt-4 text-sm text-gray-600">{{ __('Aucun joueur n\'est disponible dans le périmètre autorisé.') }}</p>
             @endif
         </div>
 
@@ -96,9 +90,7 @@
                 <h2 class="text-xl font-semibold text-gray-900">
                     {{ trim(($selectedPlayer->first_name ?? '') . ' ' . ($selectedPlayer->last_name ?? '')) ?: ($selectedPlayer->name ?? ('Joueur #' . $selectedPlayer->id)) }}
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">
-                    Les valeurs ci-dessous proviennent de l'enregistrement local du joueur. Aucun fallback numérique n'est généré.
-                </p>
+                <p class="text-sm text-gray-500 mt-1">{{ __('Les valeurs ci-dessous proviennent de l\'enregistrement local du joueur. Aucun fallback numérique n\'est généré.') }}</p>
 
                 <dl class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     <div>
@@ -136,13 +128,9 @@
                 </dl>
 
                 @if(!$selectedPlayer->fifa_connect_id)
-                    <div class="mt-6 p-4 rounded-md bg-yellow-50 text-yellow-800 text-sm">
-                        Synchronisation FIFA Connect indisponible : aucun FIFA Connect ID n'est associé à ce joueur.
-                    </div>
+                    <div class="mt-6 p-4 rounded-md bg-yellow-50 text-yellow-800 text-sm">{{ __('Synchronisation FIFA Connect indisponible : aucun FIFA Connect ID n\'est associé à ce joueur.') }}</div>
                 @elseif(empty($connectivity['connected']))
-                    <div class="mt-6 p-4 rounded-md bg-yellow-50 text-yellow-800 text-sm">
-                        Synchronisation live non exécutée : l'API FIFA Connect n'est pas actuellement connectée.
-                    </div>
+                    <div class="mt-6 p-4 rounded-md bg-yellow-50 text-yellow-800 text-sm">{{ __('Synchronisation live non exécutée : l\'API FIFA Connect n\'est pas actuellement connectée.') }}</div>
                 @endif
             </div>
         @endif

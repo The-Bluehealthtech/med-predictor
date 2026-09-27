@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des Joueurs - Plateforme FIT</title>
+    <title>{{ __('Liste des Joueurs - Plateforme FIT') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     @php
         use Illuminate\Support\Facades\Auth;
@@ -38,8 +38,8 @@
     <div class="container mx-auto px-4 py-8">
         <!-- Header -->
         <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-gray-800 mb-4">Liste des Joueurs</h1>
-            <p class="text-xl text-gray-600">Plateforme Fédération Internationale de Tunisie</p>
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">{{ __('Liste des Joueurs') }}</h1>
+            <p class="text-xl text-gray-600">{{ __('Plateforme Fédération Internationale de Tunisie') }}</p>
             <div class="mt-4">
                 <span class="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -54,7 +54,7 @@
         <div class="mb-8">
             <div class="max-w-md mx-auto">
                 <div class="relative">
-                    <input type="text" id="searchInput" placeholder="Rechercher un joueur..." 
+                    <input type="text" id="searchInput" placeholder="{{ __('competitions.squad_page.search_player_placeholder') }}"
                            class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -179,8 +179,8 @@
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun joueur trouvé</h3>
-            <p class="mt-1 text-sm text-gray-500">Essayez de modifier vos critères de recherche.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('Aucun joueur trouvé') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ __('Essayez de modifier vos critères de recherche.') }}</p>
         </div>
     </div>
 

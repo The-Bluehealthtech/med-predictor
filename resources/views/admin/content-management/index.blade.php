@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     Content Management
                                 </h1>
-                                <p class="text-sm text-gray-600">Gérer les articles, pages, médias et contenu du site</p>
+                                <p class="text-sm text-gray-600">{{ __('Gérer les articles, pages, médias et contenu du site') }}</p>
                             </div>
                         </div>
                     </div>
@@ -96,7 +96,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Médias</dt>
+                                <dt class="text-sm font-medium text-gray-500 truncate">{{ __('Médias') }}</dt>
                                 <dd class="flex items-baseline">
                                     <div class="text-2xl font-semibold text-purple-600">{{ $stats['total_media'] }}</div>
                                 </dd>
@@ -150,7 +150,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Publiés</dt>
+                                <dt class="text-sm font-medium text-gray-500 truncate">{{ __('Publiés') }}</dt>
                                 <dd class="flex items-baseline">
                                     <div class="text-2xl font-semibold text-green-600">{{ $stats['published_content'] }}</div>
                                 </dd>
@@ -164,7 +164,7 @@
         <!-- Types de contenu -->
         <div class="bg-white shadow rounded-lg mb-8">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Types de Contenu</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ __('Types de Contenu') }}</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($contentTypes as $type => $config)
                         <a href="{{ route('admin.content-management.' . $type) }}" 
@@ -193,15 +193,15 @@
                     </a>
                     <a href="{{ route('admin.content-management.create', ['type' => 'page']) }}" 
                        class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                        📄 Nouvelle Page
+                        {{ __('📄 Nouvelle Page') }}
                     </a>
                     <a href="{{ route('admin.content-management.create', ['type' => 'announcement']) }}" 
                        class="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
-                        📢 Nouvelle Annonce
+                        {{ __('📢 Nouvelle Annonce') }}
                     </a>
                     <a href="{{ route('admin.content-management.create', ['type' => 'faq']) }}" 
                        class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                        ❓ Nouvelle FAQ
+                        {{ __('❓ Nouvelle FAQ') }}
                     </a>
                 </div>
             </div>
@@ -215,7 +215,7 @@
                         <span class="text-3xl mr-4">📚</span>
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 mb-1">{{ __('Guide Utilisateur') }}</h3>
-                            <p class="text-sm text-gray-600">Découvrez comment utiliser efficacement le Content Management avec des copies d'écran détaillées</p>
+                            <p class="text-sm text-gray-600">{{ __('Découvrez comment utiliser efficacement le Content Management avec des copies d\'écran détaillées') }}</p>
                         </div>
                     </div>
                     <a href="{{ route('admin.content-management.user-guide') }}" 

@@ -543,7 +543,7 @@ class CompetitionController extends Controller
             }
             
             // Transformer en format final
-            $clubs = $clubsData->map(function($data) {
+            $clubs = $clubsData->map(function($data) use ($engagementLabels) {
                 $club = $data['club'];
                 $matches = $data['matches']->unique('id');
                 $competitions = $data['competitions']->unique('id');

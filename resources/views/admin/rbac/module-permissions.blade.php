@@ -161,7 +161,7 @@
             <h3 class="text-lg font-medium text-gray-900 mb-4">Actions en Masse</h3>
             <div class="flex space-x-4">
                 <button onclick="activateAll()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    ✓ Tout Activer
+                    {{ __('✓ Tout Activer') }}
                 </button>
                 <button onclick="deactivateAll()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('✗ Tout Désactiver') }}</button>
                 <button onclick="resetPermissions()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors">{{ __('🔄 Réinitialiser') }}</button>

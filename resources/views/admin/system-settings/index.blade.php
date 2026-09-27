@@ -172,11 +172,11 @@
                                 'fifa' => '🌍'
                             ];
                             $groupDescriptions = [
-                                'general' => 'Paramètres généraux du système',
-                                'security' => 'Paramètres de sécurité et authentification',
-                                'database' => 'Configuration de la base de données',
+                                'general' => __('Paramètres généraux du système'),
+                                'security' => __('Paramètres de sécurité et authentification'),
+                                'database' => __('Configuration de la base de données'),
                                 'email' => 'Configuration des emails et notifications',
-                                'fifa' => 'Paramètres FIFA Connect'
+                                'fifa' => __('Paramètres FIFA Connect')
                             ];
                             $icon = $groupIcons[$groupName] ?? '⚙️';
                             $description = $groupDescriptions[$groupName] ?? 'Paramètres ' . $groupName;
@@ -227,7 +227,7 @@
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1">
                                         <div class="flex items-center space-x-3 mb-2">
-                                            <h4 class="text-lg font-medium text-gray-900">{{ $setting->name ?? 'Paramètre ' . $loop->iteration }}</h4>
+                                            <h4 class="text-lg font-medium text-gray-900">{{ $setting->name ?? __('Paramètre ') . $loop->iteration }}</h4>
                                             @if($setting->is_required ?? false)
                                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                                                     Requis
@@ -245,7 +245,7 @@
                                             @endif
                                         </div>
                                         
-                                        <p class="text-sm text-gray-600 mb-3">{{ $setting->description ?? 'Description du paramètre' }}</p>
+                                        <p class="text-sm text-gray-600 mb-3">{{ $setting->description ?? __('Description du paramètre') }}</p>
                                         
                                         <div class="flex items-center space-x-4 text-sm text-gray-500">
                                             <span><strong>{{ __('Clé:') }}</strong> <code class="bg-gray-100 px-2 py-1 rounded">{{ $setting->key ?? 'setting_' . $loop->iteration }}</code></span>
@@ -289,9 +289,9 @@
                                         @elseif(($setting->type ?? 'string') === 'integer')
                                             <input type="number" name="settings[{{ $setting->key ?? 'setting_' . $loop->iteration }}]" value="{{ $setting->value ?? '100' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                         @elseif(($setting->type ?? 'string') === 'text')
-                                            <textarea name="settings[{{ $setting->key ?? 'setting_' . $loop->iteration }}]" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">{{ $setting->value ?? 'Valeur par défaut' }}</textarea>
+                                            <textarea name="settings[{{ $setting->key ?? 'setting_' . $loop->iteration }}]" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">{{ $setting->value ?? __('Valeur par défaut') }}</textarea>
                                         @else
-                                            <input type="text" name="settings[{{ $setting->key ?? 'setting_' . $loop->iteration }}]" value="{{ $setting->value ?? 'Valeur par défaut' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <input type="text" name="settings[{{ $setting->key ?? 'setting_' . $loop->iteration }}]" value="{{ $setting->value ?? __('Valeur par défaut') }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                         @endif
                                     </div>
                                 @else

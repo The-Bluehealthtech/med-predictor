@@ -1877,5 +1877,19 @@
   "⏸️ Reconnaissance arrêtée": "⏸️ Recognition stopped",
   "📸 Logo Actuel": "📸 Current logo",
   "⚙️ Actions": "⚙️ Actions",
-  "✅ Feedback Interactif": "✅ Interactive feedback"
+  "✅ Feedback Interactif": "✅ Interactive feedback",
+  "Système": "System",
+  "Personnalisé": "Custom",
+  "Vérifié": "Verified",
+  "Non vérifié": "Not verified",
+  "✓ Tout Activer": "✓ Enable all",
+  "Paramètres généraux du système": "General system settings",
+  "Paramètres de sécurité et authentification": "Security and authentication settings",
+  "Configuration de la base de données": "Database configuration",
+  "Paramètres FIFA Connect": "FIFA Connect settings",
+  "Paramètre ": "Setting ",
+  "Description du paramètre": "Setting description",
+  "Équipe non renseignée": "Team not provided",
+  "Compétition non renseignée": "Competition not provided",
+  "Date non renseignée": "Date not provided"
 }

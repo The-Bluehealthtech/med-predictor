@@ -172,7 +172,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $role->is_system_role ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
-                                        {{ $role->is_system_role ? 'Système' : 'Personnalisé' }}
+                                        {{ $role->is_system_role ? __('Système') : __('Personnalisé') }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Désignation des arbitres')
+@section('title', __('Désignation des arbitres'))
 
 @section('content')
 <div class="max-w-6xl mx-auto px-4 py-8 space-y-6">
@@ -16,10 +16,10 @@
     <p class="text-gray-600">{{ __('Matchs programmés et arbitres enregistrés.') }}</p>
     @forelse($matchesToAssign as $match)
         <section class="rounded bg-white p-5 shadow">
-            <h2 class="font-semibold">{{ $match->homeTeam?->name ?? 'Équipe non renseignée' }}
-                — {{ $match->awayTeam?->name ?? 'Équipe non renseignée' }}</h2>
-            <p class="text-sm text-gray-600">{{ $match->competition?->name ?? 'Compétition non renseignée' }}
-                · {{ $match->match_date ?? 'Date non renseignée' }}</p>
+            <h2 class="font-semibold">{{ $match->homeTeam?->name ?? __('Équipe non renseignée') }}
+                — {{ $match->awayTeam?->name ?? __('Équipe non renseignée') }}</h2>
+            <p class="text-sm text-gray-600">{{ $match->competition?->name ?? __('Compétition non renseignée') }}
+                · {{ $match->match_date ?? __('Date non renseignée') }}</p>
             @if($referees->count() >= 3)
                 <form class="mt-4 grid gap-3 md:grid-cols-4" method="POST"
                     action="{{ route('admin.assign-referees') }}">

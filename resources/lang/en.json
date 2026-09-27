@@ -2034,5 +2034,10 @@
     "Humeur": "Mood",
     "Dernière mise à jour": "Last updated",
     "Appareils": "Devices",
-    "Dopage historique": "Doping history"
+    "Dopage historique": "Doping history",
+    "PHYSIQUE": "PHYSICAL",
+    "TECHNIQUE": "TECHNICAL",
+    "TACTIQUE": "TACTICAL",
+    "MENTAL": "MENTAL",
+    "SOCIAL": "SOCIAL"
 }

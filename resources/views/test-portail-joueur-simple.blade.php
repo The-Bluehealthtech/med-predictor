@@ -303,11 +303,11 @@
                             @if($latestFitAttempt)
                                 @php
                                     $fitAxisLabels = [
-                                        'physical' => 'PHYSIQUE',
-                                        'technical' => 'TECHNIQUE',
-                                        'tactical' => 'TACTIQUE',
-                                        'mental' => 'MENTAL',
-                                        'social' => 'SOCIAL',
+                                        'physical' => __('PHYSIQUE'),
+                                        'technical' => __('TECHNIQUE'),
+                                        'tactical' => __('TACTIQUE'),
+                                        'mental' => __('MENTAL'),
+                                        'social' => __('SOCIAL'),
                                     ];
 
                                     $fitMissingAxisLabels = [];
@@ -333,11 +333,11 @@
                             @else
                                 @php
                                     $fitDiagnosticAxisLabels = [
-                                        'physical' => 'PHYSIQUE',
-                                        'technical' => 'TECHNIQUE',
-                                        'tactical' => 'TACTIQUE',
-                                        'mental' => 'MENTAL',
-                                        'social' => 'SOCIAL',
+                                        'physical' => __('PHYSIQUE'),
+                                        'technical' => __('TECHNIQUE'),
+                                        'tactical' => __('TACTIQUE'),
+                                        'mental' => __('MENTAL'),
+                                        'social' => __('SOCIAL'),
                                     ];
 
                                     $fitDiagnosticMissingLabels = [];
@@ -506,23 +506,23 @@
                             'value' => $latestFitSnapshot?->fit_score,
                         ],
                         [
-                            'label' => 'PHYSIQUE',
+                            'label' => __('PHYSIQUE'),
                             'value' => $latestFitSnapshot?->physical_score,
                         ],
                         [
-                            'label' => 'TECHNIQUE',
+                            'label' => __('TECHNIQUE'),
                             'value' => $latestFitSnapshot?->technical_score,
                         ],
                         [
-                            'label' => 'TACTIQUE',
+                            'label' => __('TACTIQUE'),
                             'value' => $latestFitSnapshot?->tactical_score,
                         ],
                         [
-                            'label' => 'MENTAL',
+                            'label' => __('MENTAL'),
                             'value' => $latestFitSnapshot?->mental_score,
                         ],
                         [
-                            'label' => 'SOCIAL',
+                            'label' => __('SOCIAL'),
                             'value' => $latestFitSnapshot?->social_score,
                         ],
                     ];

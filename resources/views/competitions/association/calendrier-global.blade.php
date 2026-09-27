@@ -40,6 +40,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.calendrier_global_page.period_label') }}</label>
                 <select id="calendarPeriodFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">Toutes les périodes</option>
+                    <option value="saison">Cette Saison</option>
                     <option value="semaine">{{ __('competitions.calendrier_global_page.this_week') }}</option>
                     <option value="mois">{{ __('competitions.calendrier_global_page.this_month') }}</option>
                     <option value="trimestre">{{ __('competitions.calendrier_global_page.this_quarter') }}</option>
@@ -363,9 +364,14 @@ function applyCalendarFilters() {
     const period = document.getElementById('calendarPeriodFilter').value;
     const now = new Date();
     const limits = { semaine: 7, mois: 31, trimestre: 92 };
+    const seasonStart = new Date(now.getFullYear(), 8, 1);
+    if (now < seasonStart) seasonStart.setFullYear(seasonStart.getFullYear() - 1);
+    const seasonEnd = new Date(seasonStart.getFullYear() + 1, 7, 31, 23, 59, 59);
     document.querySelectorAll('tbody tr[data-match-id]').forEach(row => {
         const date = row.dataset.date ? new Date(row.dataset.date + 'T00:00:00') : null;
-        const periodOk = !period || !date || ((date - now) / 86400000 >= -1 && (date - now) / 86400000 <= limits[period]);
+        const periodOk = !period || !date
+            || (period === 'saison' ? (date >= seasonStart && date <= seasonEnd)
+                : ((date - now) / 86400000 >= -1 && (date - now) / 86400000 <= limits[period]));
         const ok = (!competition || row.dataset.competition === competition)
             && (!status || row.dataset.status === status)
             && periodOk;

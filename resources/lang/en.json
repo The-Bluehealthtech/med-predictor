@@ -2003,5 +2003,11 @@
   "Erreur": "Error",
   "❌ Erreur": "❌ Error",
   "Erreur lors du test": "Error during test",
-  "Erreur lors de l’analyse": "Error during analysis"
+  "Erreur lors de l’analyse": "Error during analysis",
+  "ÉLEVÉ": "HIGH",
+  "FAIBLE": "LOW",
+  "EXCELLENT": "EXCELLENT",
+  "BON": "GOOD",
+  "À AMÉLIORER": "NEEDS IMPROVEMENT",
+  "Santé": "Health"
 }

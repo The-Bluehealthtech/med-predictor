@@ -1007,7 +1007,7 @@
                                 @php
                                     $riskLevel = $injuryAlerts->risk_level;
                                     $riskColor = $riskLevel > 20 ? '#ff6b6b' : ($riskLevel > 10 ? '#ffd700' : '#51cf66');
-                                    $riskText = $riskLevel > 20 ? 'ÉLEVÉ' : ($riskLevel > 10 ? 'MODÉRÉ' : 'FAIBLE');
+                                    $riskText = $riskLevel > 20 ? __('ÉLEVÉ') : ($riskLevel > 10 ? __('MODÉRÉ') : __('FAIBLE'));
                                 @endphp
                                 <span style="color: {{ $riskColor }}; font-weight: bold;">{{ $riskText }}</span>
                             </div>
@@ -1157,7 +1157,7 @@
                                 @php
                                     $fitnessScore = $playerHealthWellbeing->fitness_score;
                                     $fitnessColor = $fitnessScore === null ? '#6c757d' : ($fitnessScore >= 80 ? '#51cf66' : ($fitnessScore >= 60 ? '#ffd700' : '#ff6b6b'));
-                                    $fitnessText = $fitnessScore === null ? __('Données non disponibles') : ($fitnessScore >= 80 ? 'EXCELLENT' : ($fitnessScore >= 60 ? 'BON' : 'À AMÉLIORER'));
+                                    $fitnessText = $fitnessScore === null ? __('Données non disponibles') : ($fitnessScore >= 80 ? __('EXCELLENT') : ($fitnessScore >= 60 ? __('BON') : __('À AMÉLIORER')));
                                 @endphp
                                 <span class="fifa-health-status" style="color: {{ $fitnessColor }};">{{ $fitnessText }}</span>
                             </div>
@@ -1990,7 +1990,7 @@
                                                 </div>
                                             <div class="text-center p-2 bg-green-50 rounded">
                                                 <div class="text-lg font-bold text-green-600">{{ $app->wellness_score }}/10</div>
-                                                <div class="text-xs text-green-700">{{ __('Bien-être') }}</div>
+                                                <div class="text-xs text-green-700">{{ __(__('Bien-être')) }}</div>
                                             </div>
                                         </div>
                                         <div class="text-xs text-gray-600">

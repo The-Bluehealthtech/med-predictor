@@ -22,7 +22,7 @@ class PlayerPortalSimpleController extends Controller
 
         $requestedPlayerId = null;
 
-        if ($request->has('player_id')) {
+        if ($request->filled('player_id')) {
             $validatedPlayerId = filter_var(
                 $request->query('player_id'),
                 FILTER_VALIDATE_INT,

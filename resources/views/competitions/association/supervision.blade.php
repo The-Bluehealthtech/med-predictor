@@ -218,7 +218,7 @@ function viewFixtures(competitionId) {
 }
 
 function createNewCompetition() {
-    alert(@json(__('competitions.supervision_page.js_not_implemented')));
+    window.location.href = @json(route('competitions.create'));
 }
 
 // NOTE (audit factice -> reel, 2026-09) : cette fonction telechargeait un

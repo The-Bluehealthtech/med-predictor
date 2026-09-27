@@ -389,7 +389,8 @@ class CompetitionController extends Controller
             // matchs (App\Models\GameMatch).
             $user = auth()->user();
             $associationId = $user->association_id;
-            $isGlobalAdmin = in_array($user->role, ['system_admin', 'super_admin', 'admin'], true);
+            $normalizedRole = strtolower(str_replace(['-', ' '], '_', (string) $user->role));
+            $isGlobalAdmin = in_array($normalizedRole, ['system_admin', 'super_admin', 'admin'], true);
 
             $association = $associationId ? Association::find($associationId) : null;
 

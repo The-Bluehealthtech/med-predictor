@@ -81,6 +81,7 @@ class CompetitionManagementController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
+        $role = strtolower(str_replace(['-', ' '], '_', (string) $user->role));
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -126,7 +127,7 @@ class CompetitionManagementController extends Controller
                 'rules' => $validated['rules'],
                 'entry_fee' => $validated['entry_fee'],
                 'prize_pool' => $validated['prize_pool'],
-                'association_id' => in_array($user->role, ['system_admin', 'admin'])
+                'association_id' => in_array($role, ['system_admin', 'admin'])
                     ? ($validated['association_id'] ?? $user->association_id)
                     : $user->association_id,
                 'fifa_connect_id' => null,

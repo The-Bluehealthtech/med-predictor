@@ -108,8 +108,8 @@
 
                         <!-- Logo du club -->
                         <div class="flex justify-center mb-4">
-                            @if($club->logo_path)
-                                <img src="{{ asset('storage/' . $club->logo_path) }}" 
+                            @if($club->logo_url)
+                                <img src="{{ \Illuminate\Support\Str::startsWith($club->logo_url, ['http://', 'https://']) ? $club->logo_url : asset('storage/' . $club->logo_url) }}" 
                                      alt="Logo {{ $club->name }}" 
                                      class="h-20 w-20 object-contain rounded-lg border-2 border-gray-200">
                             @else
@@ -154,7 +154,7 @@
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
                                     @if($club->association->association_logo_url)
-                                        <img src="{{ asset('storage/' . $club->association->association_logo_url) }}" 
+                                        <img src="{{ \Illuminate\Support\Str::startsWith($club->association->association_logo_url, ['http://', 'https://']) ? $club->association->association_logo_url : asset('storage/' . $club->association->association_logo_url) }}" 
                                              alt="Logo {{ $club->association->name }}" 
                                              class="h-8 w-8 object-contain mr-3 rounded-lg border border-blue-200">
                                     @elseif($club->association->logo_path)

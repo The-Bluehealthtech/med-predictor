@@ -377,16 +377,13 @@ Route::middleware(['auth'])->group(function () {
     
         if ($confederationId) {
             // Filtrer par confédération
-            $associations = \App\Models\Association::where('confederation_id', $confederationId)
-                ->with(['confederation'])
+            $confederation = \App\Models\Confederation::findOrFail($confederationId);
+            $associations = \App\Models\Association::where('confederation', $confederation->short_name)
                 ->orderBy('name')
                 ->get();
-            $confederation = \App\Models\Confederation::find($confederationId);
         } else {
             // Toutes les associations
-            $associations = \App\Models\Association::with(['confederation'])
-                ->orderBy('name')
-                ->get();
+            $associations = \App\Models\Association::orderBy('name')->get();
             $confederation = null;
         }
     
@@ -395,14 +392,14 @@ Route::middleware(['auth'])->group(function () {
 
     // Route principale pour vue détaillée d'une association
     Route::get('/associations-view/show/{id}', function ($id) {
-        $association = \App\Models\Association::with(['confederation', 'clubs', 'players'])
+        $association = \App\Models\Association::with(['clubs', 'players'])
             ->findOrFail($id);
         return view('modules.associations.show', compact('association'));
     })->name('associations-view.show');
 
     // Route principale pour éditer une association
     Route::get('/associations-view/edit/{id}', function ($id) {
-        $association = \App\Models\Association::with(['confederation'])->findOrFail($id);
+        $association = \App\Models\Association::findOrFail($id);
         abort_unless(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association), 403);
         $confederations = \App\Models\Confederation::orderBy('name')->get();
         return view('modules.associations.edit', compact('association', 'confederations'));

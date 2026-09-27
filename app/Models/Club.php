@@ -147,7 +147,7 @@ class Club extends Model
         // Utiliser une requête directe pour récupérer la confédération
         if ($this->association_id) {
             $confederation = \DB::table('confederations')
-                ->join('associations', 'confederations.id', '=', 'associations.confederation_id')
+                ->join('associations', 'confederations.short_name', '=', 'associations.confederation')
                 ->where('associations.id', $this->association_id)
                 ->select('confederations.*')
                 ->first();

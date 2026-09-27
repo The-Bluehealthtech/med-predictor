@@ -183,7 +183,7 @@ page    <title>{{ $club->name }} - {{ __('Détails du Club - Plateforme FIT') }}
                     
                     <div class="flex items-center space-x-4">
                         @if($club->association->association_logo_url)
-                            <img src="{{ asset('storage/' . $club->association->association_logo_url) }}" 
+                            <img src="{{ \Illuminate\Support\Str::startsWith($club->association->association_logo_url, ['http://', 'https://']) ? $club->association->association_logo_url : asset('storage/' . $club->association->association_logo_url) }}" 
                                  alt="Logo {{ $club->association->name }}" 
                                  class="h-16 w-16 object-contain rounded-lg border-2 border-gray-200">
                         @elseif($club->association->logo_path)
@@ -316,8 +316,8 @@ page    <title>{{ $club->name }} - {{ __('Détails du Club - Plateforme FIT') }}
                 <div class="bg-white rounded-lg shadow-lg p-6 text-center">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('Logo du club') }}</h3>
                     
-                    @if($club->logo_path)
-                        <img src="{{ asset('storage/' . $club->logo_path) }}" 
+                    @if($club->logo_url)
+                        <img src="{{ \Illuminate\Support\Str::startsWith($club->logo_url, ['http://', 'https://']) ? $club->logo_url : asset('storage/' . $club->logo_url) }}" 
                              alt="Logo {{ $club->name }}" 
                              class="h-32 w-32 object-contain mx-auto rounded-lg border-2 border-gray-200">
                     @else

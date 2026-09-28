@@ -2058,8 +2058,9 @@ class CompetitionController extends Controller
             $competitionName = $firstMatch->competition?->name ?? $associationFixturesLabels['unknown_competition_fallback'];
             
             foreach ($roundMatches as $match) {
-                $isCompleted = $match->status === 'completed';
+                $isCompleted = in_array($match->match_status, ['completed', 'finished'], true);
                 $statut = $isCompleted ? $fixturesLabels['status_completed'] : $fixturesLabels['status_upcoming'];
+                $officialFallback = $isCompleted ? $fixturesLabels['unavailable'] : $fixturesLabels['to_be_designated'];
                 $clubFallback = $associationFixturesLabels['unknown_club_fallback'];
                 
                 $matchsJournee[] = [
@@ -2075,12 +2076,12 @@ class CompetitionController extends Controller
                     'statut_code' => $isCompleted ? 'completed' : 'upcoming',
                     'journee' => $match->matchday,
                     'competition' => $competitionName,
-                    'arbitre_principal' => $match->referee ?? $fixturesLabels['to_be_designated'],
-                    'arbitre_assistant_1' => $match->assistant_referee_1 ?? $fixturesLabels['to_be_designated'],
-                    'arbitre_assistant_2' => $match->assistant_referee_2 ?? $fixturesLabels['to_be_designated'],
-                    'arbitre_var' => $match->var_referee ?? $fixturesLabels['to_be_designated'],
-                    'delegue_match' => $match->match_official ?? $fixturesLabels['to_be_designated'],
-                    'observateur' => $match->observer ?? $fixturesLabels['to_be_designated'],
+                    'arbitre_principal' => $match->referee ?? $officialFallback,
+                    'arbitre_assistant_1' => $match->assistant_referee_1 ?? $officialFallback,
+                    'arbitre_assistant_2' => $match->assistant_referee_2 ?? $officialFallback,
+                    'arbitre_var' => $match->var_referee ?? $officialFallback,
+                    'delegue_match' => $match->match_official ?? $officialFallback,
+                    'observateur' => $match->observer ?? $officialFallback,
                 ];
             }
             

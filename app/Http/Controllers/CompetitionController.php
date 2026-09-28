@@ -118,10 +118,19 @@ class CompetitionController extends Controller
             ->get();
 
             $effectif = $players->map(function($player) {
-                // Vérifier la validité de la licence FIFA Connect
-                $licenceValide = !empty($player->fifa_connect_id);
+                // L'éligibilité sportive repose sur la licence fédérale
+                // approuvée du joueur, jamais sur un identifiant FIFA Connect.
+                $licenceValide = $player->playerLicenses()
+                    ->where(function ($query) {
+                        $query->where('status', 'active')
+                            ->orWhere('approval_status', 'approved');
+                    })
+                    ->where(function ($query) {
+                        $query->whereNull('expiry_date')->orWhere('expiry_date', '>=', now()->toDateString());
+                    })
+                    ->exists();
                 
-                // Déterminer le type de licence FIFA Connect
+                // Déterminer le type de licence fédérale
                 $typeLicence = $this->getFifaLicenseType($player);
                 
                 // Vérifier le PCMA (basé sur les health records)

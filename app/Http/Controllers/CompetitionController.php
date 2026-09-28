@@ -1939,10 +1939,17 @@ class CompetitionController extends Controller
             $competitions = \App\Models\Competition::orderBy('name')->get();
 
             // Récupérer les matchs programmés
-            $matches = \App\Models\GameMatch::with(['homeTeam.club', 'awayTeam.club', 'competition'])
+            $competitionId = request('competition_id');
+            $dateFrom = request('date_from') ? \Carbon\Carbon::parse(request('date_from'))->startOfDay() : \Carbon\Carbon::now()->subDays(30)->startOfDay();
+            $dateTo = request('date_to') ? \Carbon\Carbon::parse(request('date_to'))->endOfDay() : \Carbon\Carbon::now()->addDays(90)->endOfDay();
+
+            $matchesQuery = \App\Models\GameMatch::with(['homeTeam.club', 'awayTeam.club', 'competition'])
                 ->where('status', 'scheduled')
-                ->orderBy('match_date')
-                ->get();
+                ->whereBetween('match_date', [$dateFrom, $dateTo]);
+            if ($competitionId !== null && $competitionId !== '') {
+                $matchesQuery->where('competition_id', (int) $competitionId);
+            }
+            $matches = $matchesQuery->orderBy('match_date')->get();
 
             // NOTE (audit factice -> reel, 2026-09) : en l'absence
             // d'arbitres réels (ou en cas d'erreur), 4 arbitres fictifs

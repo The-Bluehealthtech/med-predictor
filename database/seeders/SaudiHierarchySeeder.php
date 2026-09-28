@@ -66,6 +66,23 @@ class SaudiHierarchySeeder extends Seeder
         );
 
         $club = DB::table('clubs')->where('name', 'Al-Hazem SC')->first();
+
+        DB::table('teams')->updateOrInsert(
+            ['club_id' => $club->id, 'name' => 'Al-Hazem SC Senior'],
+            [
+                'type' => 'first_team',
+                'association_id' => $associationId,
+                'status' => 'active',
+                'season' => '2026/27',
+                'competition_level' => 'Saudi Professional League',
+                'formation' => '4-3-3',
+                'home_ground' => 'Al-Hazem Club Stadium',
+                'description' => 'Équipe senior masculine d’Al-Hazem SC.',
+                'updated_at' => $now,
+                'created_at' => $now,
+            ]
+        );
+
         DB::table('competitions')->updateOrInsert(
             ['name' => 'Saudi Professional League', 'season' => '2026/27'],
             [

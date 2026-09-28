@@ -1944,7 +1944,14 @@ class CompetitionController extends Controller
             $dateTo = request('date_to') ? \Carbon\Carbon::parse(request('date_to'))->endOfDay() : \Carbon\Carbon::now()->addDays(90)->endOfDay();
 
             $matchesQuery = \App\Models\GameMatch::with(['homeTeam.club', 'awayTeam.club', 'competition'])
-                ->where('match_status', 'scheduled')
+                ->where(function ($query) {
+                    // Les anciennes rencontres utilisent parfois status,
+                    // les nouvelles utilisent match_status.
+                    $query->where('match_status', 'scheduled')
+                        ->orWhere('status', 'scheduled')
+                        ->orWhere('match_status', 'postponed')
+                        ->orWhere('status', 'postponed');
+                })
                 ->whereBetween('match_date', [$dateFrom, $dateTo]);
             if ($competitionId !== null && $competitionId !== '') {
                 $matchesQuery->where('competition_id', (int) $competitionId);

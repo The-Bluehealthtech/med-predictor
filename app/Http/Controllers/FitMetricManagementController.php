@@ -65,6 +65,14 @@ class FitMetricManagementController extends Controller
             );
         }
 
+        $advancedMetrics = $request->filled('player_id')
+            ? \Illuminate\Support\Facades\DB::table('external_player_performance_metrics')
+                ->where('player_id', (int) $request->input('player_id'))
+                ->where('source', 'KSA')
+                ->orderBy('metric_name')
+                ->get()
+            : collect();
+
         $authUser = $request->get('auth_user') ?? $request->user();
 
         $canVerify = $authUser
@@ -80,6 +88,7 @@ class FitMetricManagementController extends Controller
             'selectedPlayer' => $selectedPlayer,
             'metrics' => $metrics,
             'canVerify' => $canVerify,
+            'advancedMetrics' => $advancedMetrics,
         ]);
     }
 }

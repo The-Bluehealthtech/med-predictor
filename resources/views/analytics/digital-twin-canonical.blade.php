@@ -90,5 +90,16 @@
             </div>
         </div>
     @endif
+    @if($selectedPlayer)
+        <section class="mt-6 rounded-lg border border-amber-300 bg-amber-50 p-5">
+            <h2 class="text-lg font-semibold">Statistiques Avancées</h2>
+            <p class="text-sm">Métriques KSA affichées séparément des scénarios DTN.</p>
+            @forelse($advancedMetrics as $metric)
+                <span class="mr-3 inline-block rounded bg-white px-3 py-2 text-sm">{{ str_replace('_', ' ', $metric->metric_name) }}: {{ $metric->metric_value ?? 'Non disponible' }} {{ $metric->metric_unit }}</span>
+            @empty
+                <p class="text-sm">Aucune métrique avancée enregistrée.</p>
+            @endforelse
+        </section>
+    @endif
 </div>
 @endsection

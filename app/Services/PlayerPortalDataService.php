@@ -966,6 +966,12 @@ class PlayerPortalDataService
 
         $licenseRequests = $licenseRequestsQuery->get();
 
+        $ksaMetrics = DB::table('external_player_performance_metrics')
+            ->where('player_id', $playerId)
+            ->where('source', 'KSA')
+            ->orderBy('metric_name')
+            ->get();
+
         return compact(
             'healthRecords',
             'playerStats',
@@ -1007,7 +1013,8 @@ class PlayerPortalDataService
             'dopingAlerts',
             'complianceStatus',
             'complianceResources',
-            'licenseRequests'
+            'licenseRequests',
+            'ksaMetrics'
         );
     }
 

@@ -85,11 +85,20 @@ class DigitalTwinController extends Controller
             }
         }
 
+        $advancedMetrics = $selectedPlayer
+            ? \Illuminate\Support\Facades\DB::table('external_player_performance_metrics')
+                ->where('player_id', $selectedPlayer->id)
+                ->where('source', 'KSA')
+                ->orderBy('metric_name')
+                ->get()
+            : collect();
+
         return view('analytics.digital-twin-canonical', compact(
             'players',
             'selectedPlayer',
             'baseline',
-            'scenario'
+            'scenario',
+            'advancedMetrics'
         ));
     }
 

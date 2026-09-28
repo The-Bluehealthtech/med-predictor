@@ -61,7 +61,13 @@ class RpmController extends Controller
             })->count(),
         ];
 
-        return view('rpm.index-canonical', compact('measurements', 'stats'));
+        $advancedMetrics = DB::table('external_player_performance_metrics')
+            ->where('source', 'KSA')
+            ->orderByDesc('updated_at')
+            ->limit(100)
+            ->get();
+
+        return view('rpm.index-canonical', compact('measurements', 'stats', 'advancedMetrics'));
     }
 
     private function scopeQuery(Builder $query): Builder

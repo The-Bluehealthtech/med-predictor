@@ -1349,8 +1349,12 @@ class CompetitionManagementController extends Controller
         if ($matchSheet && blank($matchSheet->match_number)) {
             $matchSheet->match_number = 'MS-' . date('Y') . '-' . str_pad($match->id, 3, '0', STR_PAD_LEFT);
         }
-        $homeTeamPlayers = $match->homeTeam->club?->players()->where('status', 'active')->orderBy('name')->get() ?? collect([]);
-        $awayTeamPlayers = $match->awayTeam->club?->players()->where('status', 'active')->orderBy('name')->get() ?? collect([]);
+        $eligiblePlayers = fn ($team) => $team->club?->players()->where('status', 'active')->whereHas('playerLicenses', function ($query) use ($team) {
+            $query->where('club_id', $team->club_id)->where('status', 'active')->where('approval_status', 'approved')
+                ->where(function ($q) { $q->whereNull('expiry_date')->orWhereDate('expiry_date', '>=', today()); });
+        })->orderBy('name')->get() ?? collect([]);
+        $homeTeamPlayers = $eligiblePlayers($match->homeTeam);
+        $awayTeamPlayers = $eligiblePlayers($match->awayTeam);
         $venues = collect()
             ->merge(Club::query()->whereNotNull('stadium_name')->pluck('stadium_name'))
             ->merge(Club::query()->whereNotNull('stadium')->pluck('stadium'))
@@ -1381,7 +1385,11 @@ class CompetitionManagementController extends Controller
     {
         $this->authorizeCompetitionAccess($match->competition);
         abort_unless(in_array($team->id, [$match->home_team_id, $match->away_team_id], true), 404);
-        return response()->json($team->club?->players()->where('status', 'active')->orderBy('name')->get(['id', 'name']) ?? collect());
+        $players = $team->club?->players()->where('status', 'active')->whereHas('playerLicenses', function ($query) use ($team) {
+            $query->where('club_id', $team->club_id)->where('status', 'active')->where('approval_status', 'approved')
+                ->where(function ($q) { $q->whereNull('expiry_date')->orWhereDate('expiry_date', '>=', today()); });
+        })->orderBy('name')->get(['id', 'name']) ?? collect();
+        return response()->json($players);
     }
 
     public function updateMatchSheet(Request $request, MatchModel $match)

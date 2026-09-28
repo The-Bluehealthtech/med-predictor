@@ -80,11 +80,13 @@
                             </div>
                             <div>
                                 <label for="stadium_venue" class="block text-sm font-medium text-gray-700">Stadium/Venue</label>
-                                <input type="text" name="stadium_venue" id="stadium_venue" list="registered-venues" value="{{ old('stadium_venue', $matchSheet->stadium_venue) }}"
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                <datalist id="registered-venues">
-                                    @foreach($venues as $venue)<option value="{{ $venue }}">@endforeach
-                                </datalist>
+                                <select name="stadium_venue" id="stadium_venue" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Sélectionner un stade/lieu</option>
+                                    @foreach($venues as $venue)
+                                        <option value="{{ $venue }}" {{ old('stadium_venue', $matchSheet->stadium_venue) === $venue ? 'selected' : '' }}>{{ $venue }}</option>
+                                    @endforeach
+                                </select>
+                                @if($venues->isEmpty())<p class="mt-1 text-sm text-gray-500">Aucun stade enregistré</p>@endif
                             </div>
                             <div>
                                 <label for="weather_conditions" class="block text-sm font-medium text-gray-700">Weather Conditions</label>
@@ -120,12 +122,12 @@
                                 <div class="space-y-3">
                                     <div>
                                         <label for="home_team_coach" class="block text-sm font-medium text-gray-700">Coach</label>
-                                        <input type="text" name="home_team_coach" id="home_team_coach" value="{{ old('home_team_coach', $matchSheet->home_team_coach) }}"
+                                        <input type="text" name="home_team_coach" id="home_team_coach" value="{{ old('home_team_coach', $matchSheet->home_team_coach) }}" placeholder="Non renseigné"
                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500">
                                     </div>
                                     <div>
                                         <label for="home_team_manager" class="block text-sm font-medium text-gray-700">Manager</label>
-                                        <input type="text" name="home_team_manager" id="home_team_manager" value="{{ old('home_team_manager', $matchSheet->home_team_manager) }}"
+                                        <input type="text" name="home_team_manager" id="home_team_manager" value="{{ old('home_team_manager', $matchSheet->home_team_manager) }}" placeholder="Non renseigné"
                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500">
                                     </div>
                                 </div>
@@ -137,12 +139,12 @@
                                 <div class="space-y-3">
                                     <div>
                                         <label for="away_team_coach" class="block text-sm font-medium text-gray-700">Coach</label>
-                                        <input type="text" name="away_team_coach" id="away_team_coach" value="{{ old('away_team_coach', $matchSheet->away_team_coach) }}"
+                                        <input type="text" name="away_team_coach" id="away_team_coach" value="{{ old('away_team_coach', $matchSheet->away_team_coach) }}" placeholder="Non renseigné"
                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500">
                                     </div>
                                     <div>
                                         <label for="away_team_manager" class="block text-sm font-medium text-gray-700">Manager</label>
-                                        <input type="text" name="away_team_manager" id="away_team_manager" value="{{ old('away_team_manager', $matchSheet->away_team_manager) }}"
+                                        <input type="text" name="away_team_manager" id="away_team_manager" value="{{ old('away_team_manager', $matchSheet->away_team_manager) }}" placeholder="Non renseigné"
                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500">
                                     </div>
                                 </div>

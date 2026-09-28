@@ -431,11 +431,10 @@
                             <button type="submit" name="signature_role" value="away_captain" class="px-3 py-2 bg-green-600 text-white rounded-md text-xs">Signature capitaine visiteur</button>
                             <button type="submit" name="signature_role" value="referee" class="px-3 py-2 bg-indigo-600 text-white rounded-md text-xs">Signature arbitre</button>
                             @if($matchSheet->status === 'draft')
-                                <a href="{{ route('competition-management.matches.match-sheet.submit', $match) }}" 
-                                   onclick="return confirm(@json(__('Are you sure you want to submit this match sheet for validation?')))"
+                                <button type="submit" formmethod="POST" formaction="{{ route('competition-management.matches.match-sheet.submit', $match) }}" onclick="return confirm(@json(__('Are you sure you want to submit this match sheet for validation?')))"
                                    class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
-                                    Submit for Validation
-                                </a>
+                                    Soumettre pour validation
+                                </button>
                             @endif
                         </div>
                         <a href="{{ route('competition-management.competitions.standings', $match->competition) }}" 

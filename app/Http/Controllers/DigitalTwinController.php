@@ -85,6 +85,7 @@ class DigitalTwinController extends Controller
             }
         }
 
+        $ksaCatalog = collect(config('ksa_portal_fields', []))->map(fn ($label) => (object) ['metric_name' => $label, 'metric_value' => null, 'metric_unit' => null, 'source' => 'KSA'])->values();
         $advancedMetrics = $selectedPlayer
             ? \Illuminate\Support\Facades\DB::table('external_player_performance_metrics')
                 ->where('player_id', $selectedPlayer->id)
@@ -92,6 +93,7 @@ class DigitalTwinController extends Controller
                 ->orderBy('metric_name')
                 ->get()
             : collect();
+        $advancedMetrics = $ksaCatalog->concat($advancedMetrics)->values();
 
         return view('analytics.digital-twin-canonical', compact(
             'players',

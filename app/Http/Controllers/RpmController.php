@@ -61,11 +61,13 @@ class RpmController extends Controller
             })->count(),
         ];
 
+        $ksaCatalog = collect(config('ksa_portal_fields', []))->map(fn ($label) => (object) ['metric_name' => $label, 'metric_value' => null, 'metric_unit' => null, 'source' => 'KSA'])->values();
         $advancedMetrics = DB::table('external_player_performance_metrics')
             ->where('source', 'KSA')
             ->orderByDesc('updated_at')
             ->limit(100)
             ->get();
+        $advancedMetrics = $ksaCatalog->concat($advancedMetrics)->values();
 
         return view('rpm.index-canonical', compact('measurements', 'stats', 'advancedMetrics'));
     }

@@ -966,11 +966,15 @@ class PlayerPortalDataService
 
         $licenseRequests = $licenseRequestsQuery->get();
 
+        $ksaMetricCatalog = collect(config('ksa_portal_fields', []))->map(fn ($label) => (object) ['metric_name' => $label, 'metric_value' => null, 'metric_unit' => null, 'source' => 'KSA'])->values();
+
         $ksaMetrics = DB::table('external_player_performance_metrics')
             ->where('player_id', $playerId)
             ->where('source', 'KSA')
             ->orderBy('metric_name')
             ->get();
+
+        $ksaMetrics = $ksaMetricCatalog->concat($ksaMetrics)->values();
 
         return compact(
             'healthRecords',

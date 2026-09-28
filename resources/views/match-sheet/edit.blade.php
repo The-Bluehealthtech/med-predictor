@@ -80,8 +80,11 @@
                             </div>
                             <div>
                                 <label for="stadium_venue" class="block text-sm font-medium text-gray-700">Stadium/Venue</label>
-                                <input type="text" name="stadium_venue" id="stadium_venue" value="{{ old('stadium_venue', $matchSheet->stadium_venue) }}"
+                                <input type="text" name="stadium_venue" id="stadium_venue" list="registered-venues" value="{{ old('stadium_venue', $matchSheet->stadium_venue) }}"
                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <datalist id="registered-venues">
+                                    @foreach($venues as $venue)<option value="{{ $venue }}">@endforeach
+                                </datalist>
                             </div>
                             <div>
                                 <label for="weather_conditions" class="block text-sm font-medium text-gray-700">Weather Conditions</label>

@@ -1349,6 +1349,13 @@ class CompetitionManagementController extends Controller
         }
         $homeTeamPlayers = $match->homeTeam->players ?? collect([]);
         $awayTeamPlayers = $match->awayTeam->players ?? collect([]);
+        $venues = MatchSheet::query()->whereNotNull('stadium_venue')->where('stadium_venue', '<>', '')
+            ->distinct()->orderBy('stadium_venue')->pluck('stadium_venue');
+        foreach ([['team' => $match->homeTeam, 'coach' => 'home_team_coach', 'manager' => 'home_team_manager'], ['team' => $match->awayTeam, 'coach' => 'away_team_coach', 'manager' => 'away_team_manager']] as $staff) {
+            $club = $staff['team']->club;
+            if ($club && blank($matchSheet->{$staff['coach']})) $matchSheet->{$staff['coach']} = $club->coach_name ?? null;
+            if ($club && blank($matchSheet->{$staff['manager']})) $matchSheet->{$staff['manager']} = $club->manager_name ?? null;
+        }
         $referees = User::where('role', 'referee')
             ->where(function ($query) use ($match) {
                 $query->where('association_id', $match->competition->association_id)
@@ -1357,7 +1364,7 @@ class CompetitionManagementController extends Controller
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        return view('match-sheet.edit', compact('match', 'matchSheet', 'homeTeamPlayers', 'awayTeamPlayers', 'referees'));
+        return view('match-sheet.edit', compact('match', 'matchSheet', 'homeTeamPlayers', 'awayTeamPlayers', 'referees', 'venues'));
     }
 
     public function updateMatchSheet(Request $request, MatchModel $match)

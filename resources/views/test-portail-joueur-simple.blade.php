@@ -769,13 +769,15 @@
                             <div class="col-span-full mt-4">
                                 <h3 class="text-sm font-semibold uppercase tracking-wide opacity-70">{{ $group }}</h3>
                             </div>
-                            @foreach($groupMetrics as $metric)
-                                <div class="fifa-stat-card">
-                                    <div class="fifa-stat-header">{{ $metric->metric_name }}</div>
-                                    <div class="fifa-stat-value">{{ $metric->metric_value ?? 'Données non disponibles' }}</div>
-                                    <div class="text-xs opacity-70">{{ $metric->metric_unit ?: '—' }} · {{ $metric->source }}</div>
-                                </div>
-                            @endforeach
+                            <div class="col-span-full grid gap-3 md:grid-cols-3">
+                                @foreach($groupMetrics as $metric)
+                                    <div class="fifa-stat-card">
+                                        <div class="fifa-stat-header">{{ $metric->metric_name }}</div>
+                                        <div class="fifa-stat-value">{{ $metric->metric_value ?? 'Données non disponibles' }}</div>
+                                        <div class="text-xs opacity-70">{{ $metric->metric_unit ?: '—' }} · {{ $metric->source }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
                         @endforeach
                     </div>
                     <div class="fifa-health-grid mt-6" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;">

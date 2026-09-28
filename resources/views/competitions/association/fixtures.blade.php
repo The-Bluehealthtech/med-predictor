@@ -15,6 +15,16 @@
                     <p class="text-blue-200">
                         {{ __('competitions.association_fixtures_page.subtitle') }}
                     </p>
+                    @if($availableAssociations->isNotEmpty())
+                        <form method="GET" class="mt-3 flex items-center gap-2">
+                            <label for="association_id" class="text-sm text-blue-100">Association</label>
+                            <select id="association_id" name="association_id" onchange="this.form.submit()" class="rounded px-3 py-2 text-gray-900">
+                                @foreach($availableAssociations as $availableAssociation)
+                                    <option value="{{ $availableAssociation->id }}" @selected($association->id == $availableAssociation->id)>{{ $availableAssociation->name }}</option>
+                                @endforeach
+                            </select>
+                        </form>
+                    @endif
                 </div>
                 <div class="flex space-x-3">
                     <a href="{{ route('competitions.association.supervision') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">

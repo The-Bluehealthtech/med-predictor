@@ -1819,8 +1819,15 @@ class CompetitionController extends Controller
                 $selectedCompetition = Competition::with('association')->find($request->integer('competition_id'));
                 $association = $selectedCompetition?->association;
             }
+            $availableAssociations = $isAdministrator
+                ? Association::orderBy('name')->get(['id', 'name'])
+                : collect();
+
+            if ($isAdministrator && $request->filled('association_id')) {
+                $association = Association::find($request->integer('association_id'));
+            }
             if (!$association && $isAdministrator) {
-                $association = Association::orderBy('id')->first();
+                $association = $availableAssociations->first();
             }
 
             if (!$association) {
@@ -1875,7 +1882,7 @@ class CompetitionController extends Controller
                     ];
                 });
 
-            return view('competitions.association.fixtures', compact('paginatedFixtures', 'clubs', 'competitions'));
+            return view('competitions.association.fixtures', compact('paginatedFixtures', 'clubs', 'competitions', 'availableAssociations', 'association'));
             
         } catch (\Throwable $e) {
             report($e);

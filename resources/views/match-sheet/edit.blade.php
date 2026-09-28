@@ -365,8 +365,8 @@
                                     @endforeach
                                 </select>
                                 <select name="events[{{ $i }}][reason]" class="w-full min-w-0 event-reason border-gray-300 rounded-md text-xs px-2 py-1">
-                                    <option value="">Motif</option>
-                                    @foreach(['J1'=>'Comportement antisportif','J2'=>'Désapprobation','J3'=>'Persistance','J4'=>'Retard de reprise','J5'=>'Distance requise','J6'=>'Entrée sans autorisation','J7'=>'Sortie sans autorisation','R1'=>'Faute grossière','R2'=>'Acte de brutalité','R3'=>'Cracher','R4'=>'DOGSO main','R5'=>'DOGSO faute','R6'=>'Propos injurieux','2J'=>'Second avertissement'] as $code => $label)
+                                    <option value="">Motif / type</option>
+                                    @foreach(['GOAL_OPEN'=>'But dans le jeu','GOAL_PENALTY'=>'But sur penalty','GOAL_OWN'=>'But contre son camp','J1'=>'Comportement antisportif','J2'=>'Désapprobation','J3'=>'Persistance','J4'=>'Retard de reprise','J5'=>'Distance requise','J6'=>'Entrée sans autorisation','J7'=>'Sortie sans autorisation','R1'=>'Faute grossière','R2'=>'Acte de brutalité','R3'=>'Cracher','R4'=>'DOGSO main','R5'=>'DOGSO faute','R6'=>'Propos injurieux','2J'=>'Second avertissement'] as $code => $label)
                                         <option value="{{ $code }}" data-reason-code="{{ $code }}" {{ old("events.$i.reason", data_get($event?->event_data, 'reason')) === $code ? 'selected' : '' }}>{{ $code }} — {{ $label }}</option>
                                     @endforeach
                                 </select>

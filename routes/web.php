@@ -2084,6 +2084,11 @@ Route::middleware(['auth'])->group(function () {
         return view('modules.performance-recommendations.index');
     })->name('performance-recommendations.index');
     
+    // Contrainte globale : les paramètres {competition} sont des IDs numériques.
+    // Empêche la route /competitions/{competition}/fixtures de capturer
+    // /competitions/association/fixtures.
+    Route::pattern('competition', '[0-9]+');
+
     // Competitions routes
     Route::get('/competitions', [CompetitionManagementController::class, 'index'])->name('competitions.index');
     

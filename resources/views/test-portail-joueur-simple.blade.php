@@ -780,19 +780,7 @@
                             </div>
                         @endforeach
                     </div>
-                    <div class="fifa-medical-card mt-6">
-                        <div class="fifa-stat-header"><span>RPM individuel</span><span class="text-xs opacity-70">Mesure la plus récente</span></div>
-                        <div class="fifa-health-grid" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.75rem;width:100%;">
-                            <div class="fifa-health-card"><div class="fifa-health-stat"><span>Mesure</span><strong>{{ $latestRealtime?->measurement_time ?? 'Données non disponibles' }}</strong></div></div>
-                            <div class="fifa-health-card"><div class="fifa-health-stat"><span>FC</span><strong>{{ $latestRealtime?->heart_rate ?? 'Données non disponibles' }}</strong></div></div>
-                            <div class="fifa-health-card"><div class="fifa-health-stat"><span>SpO₂</span><strong>{{ $latestRealtime?->oxygen_saturation ?? 'Données non disponibles' }}</strong></div></div>
-                            <div class="fifa-health-card"><div class="fifa-health-stat"><span>Température</span><strong>{{ $latestRealtime?->temperature ?? 'Données non disponibles' }}</strong></div></div>
-                            <div class="fifa-health-card"><div class="fifa-health-stat"><span>Hydratation</span><strong>{{ $latestRealtime?->hydration_level ?? 'Données non disponibles' }}</strong></div></div>
-                            <div class="fifa-health-card"><div class="fifa-health-stat"><span>Récupération</span><strong>{{ $latestRealtime?->recovery_score ?? 'Données non disponibles' }}</strong></div></div>
-                            <div class="fifa-health-card"><div class="fifa-health-stat"><span>Readiness</span><strong>{{ $latestRealtime?->readiness_score ?? 'Données non disponibles' }}</strong></div></div>
-                            <div class="fifa-health-card"><div class="fifa-health-stat"><span>Source</span><strong>{{ $latestRealtime?->data_source ?? 'Données non disponibles' }}</strong></div></div>
-                        </div>
-                    </div>
+
                     <div class="fifa-health-grid mt-6" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;">
                         <div class="fifa-medical-card"><h4>Évolution</h4><canvas id="ksaTrendChart" height="150"></canvas><p class="text-xs opacity-70">Courbe disponible après enregistrement des mesures.</p></div>
                         <div class="fifa-medical-card"><h4>Volumes</h4><canvas id="ksaVolumeChart" height="150"></canvas><p class="text-xs opacity-70">Histogramme disponible après enregistrement des mesures.</p></div>
@@ -1885,6 +1873,21 @@
                 </div>
             </div>
         </div>
+
+        <div class="fifa-medical-card mt-6">
+            <div class="fifa-stat-header"><span>RPM individuel</span><span class="text-xs opacity-70">Mesure la plus récente</span></div>
+            <div class="fifa-health-grid" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.75rem;width:100%;">
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Mesure</span><strong>{{ $latestRealtime?->measurement_time ?? 'Données non disponibles' }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>FC</span><strong>{{ $latestRealtime?->heart_rate ?? 'Données non disponibles' }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>SpO₂</span><strong>{{ $latestRealtime?->oxygen_saturation ?? 'Données non disponibles' }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Température</span><strong>{{ $latestRealtime?->temperature ?? 'Données non disponibles' }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Hydratation</span><strong>{{ $latestRealtime?->hydration_level ?? 'Données non disponibles' }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Récupération</span><strong>{{ $latestRealtime?->recovery_score ?? 'Données non disponibles' }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Readiness</span><strong>{{ $latestRealtime?->readiness_score ?? 'Données non disponibles' }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Source</span><strong>{{ $latestRealtime?->data_source ?? 'Données non disponibles' }}</strong></div></div>
+            </div>
+        </div>
+
     </div>
 
     <div id="devices-tab" class="fifa-tab-content">

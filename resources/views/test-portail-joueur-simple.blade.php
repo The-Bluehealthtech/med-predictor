@@ -748,18 +748,34 @@
                     </div>
                 </div>
 
-                <section id="ksa-statistics" class="fifa-stat-card mt-6">
+                <section id="ksa-statistics" class="fifa-stat-card mt-6 mx-auto" style="max-width:1120px;">
                     <div class="fifa-stat-header">
                         <span>Données de jeu</span>
                         <span class="text-xs opacity-70">Indicateurs détaillés</span>
                     </div>
                     <div class="fifa-health-grid" style="grid-template-columns:repeat(5,minmax(0,1fr));gap:0.75rem;">
-                        @foreach(($ksaMetrics ?? collect()) as $metric)
-                            <div class="fifa-stat-card">
-                                <div class="fifa-stat-header">{{ $metric->metric_name }}</div>
-                                <div class="fifa-stat-value">{{ $metric->metric_value ?? 'Données non disponibles' }}</div>
-                                <div class="text-xs opacity-70">{{ $metric->metric_unit ?: '—' }} · {{ $metric->source }}</div>
+                        @php
+                            $gameGroups = ($ksaMetrics ?? collect())->groupBy(function ($metric) {
+                                $label = strtolower($metric->metric_name);
+                                if (str_contains($label, 'pass') || str_contains($label, 'cross')) return 'Passes';
+                                if (str_contains($label, 'challenge') || str_contains($label, 'tackle') || str_contains($label, 'interception')) return 'Duels et défense';
+                                if (str_contains($label, 'dribbl')) return 'Dribbles';
+                                if (str_contains($label, 'card') || str_contains($label, 'foul')) return 'Discipline';
+                                if (str_contains($label, 'chance') || str_contains($label, 'goal') || str_contains($label, 'shot')) return 'Occasions et tirs';
+                                return 'Autres indicateurs';
+                            });
+                        @endphp
+                        @foreach($gameGroups as $group => $groupMetrics)
+                            <div class="col-span-full mt-4">
+                                <h3 class="text-sm font-semibold uppercase tracking-wide opacity-70">{{ $group }}</h3>
                             </div>
+                            @foreach($groupMetrics as $metric)
+                                <div class="fifa-stat-card">
+                                    <div class="fifa-stat-header">{{ $metric->metric_name }}</div>
+                                    <div class="fifa-stat-value">{{ $metric->metric_value ?? 'Données non disponibles' }}</div>
+                                    <div class="text-xs opacity-70">{{ $metric->metric_unit ?: '—' }} · {{ $metric->source }}</div>
+                                </div>
+                            @endforeach
                         @endforeach
                     </div>
                     <div class="fifa-health-grid mt-6" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;">

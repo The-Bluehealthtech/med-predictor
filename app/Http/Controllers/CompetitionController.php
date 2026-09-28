@@ -934,6 +934,8 @@ class CompetitionController extends Controller
                 ->sort()
                 ->values();
 
+            $matchPlayers = \App\Models\Player::orderBy('name')->get(['id', 'name']);
+            $joueursList = $matchPlayers->pluck('name')->filter()->unique()->values();
             $matchesList = GameMatch::with(['competition', 'homeTeam.club', 'awayTeam.club'])->orderByDesc('match_date')->limit(200)->get();
             $dirigeantsList = \App\Models\User::whereIn('role', ['club_manager', 'association_admin', 'admin'])->orderBy('name')->get(['id', 'name']);
             return view('competitions.association.discipline-sanctions', compact('sanctions', 'joueursList', 'matchesList', 'dirigeantsList'));

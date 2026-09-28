@@ -1345,8 +1345,15 @@ class CompetitionManagementController extends Controller
         $matchSheet = $match->matchSheet;
         $homeTeamPlayers = $match->homeTeam->players ?? collect([]);
         $awayTeamPlayers = $match->awayTeam->players ?? collect([]);
+        $referees = User::where('role', 'referee')
+            ->where(function ($query) use ($match) {
+                $query->where('association_id', $match->competition->association_id)
+                    ->orWhereNull('association_id');
+            })
+            ->orderBy('name')
+            ->get(['id', 'name']);
 
-        return view('match-sheet.edit', compact('match', 'matchSheet', 'homeTeamPlayers', 'awayTeamPlayers'));
+        return view('match-sheet.edit', compact('match', 'matchSheet', 'homeTeamPlayers', 'awayTeamPlayers', 'referees'));
     }
 
     public function updateMatchSheet(Request $request, MatchModel $match)

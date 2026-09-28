@@ -1571,7 +1571,7 @@ class CompetitionController extends Controller
             $user = auth()->user();
 
             $query = Competition::with(['association', 'clubs'])
-                ->whereIn('status', ['published', 'active']);
+                ->where('status', '!=', 'cancelled');
 
             if ($user && $user->association_id) {
                 $query->where('association_id', $user->association_id);

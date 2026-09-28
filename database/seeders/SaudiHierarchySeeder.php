@@ -63,7 +63,7 @@ class SaudiHierarchySeeder extends Seeder
                 'status' => 'active',
                 'founded_year' => 1957,
                 'website' => 'https://alhazem.sa',
-                'logo_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Al-Hazem_SC_logo.png',
+                'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/6/6e/Al-Hazem_SC_logo.png',
                 'updated_at' => $now,
                 'created_at' => $now,
             ]

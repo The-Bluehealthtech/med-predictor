@@ -167,9 +167,11 @@
                                             ❌ {{ __('competitions.discipline_sanctions_page.reject_button') }}
                                         </button>
                                         @endif
+                                        @if($sanction['type_code'] !== 'none')
                                         <button onclick="editSanction({{ $sanction['id'] }})" class="text-yellow-600 hover:text-yellow-900 px-2 py-1 rounded" title="{{ __('competitions.discipline_sanctions_page.edit_button') }}">
                                             ✏️ {{ __('competitions.discipline_sanctions_page.edit_button') }}
                                         </button>
+                                        @endif
                                         <button onclick="viewSanction({{ $sanction['id'] }})" class="text-blue-600 hover:text-blue-900 px-2 py-1 rounded" title="{{ __('competitions.discipline_sanctions_page.view_button_title') }}">
                                             👁️ {{ __('competitions.discipline_sanctions_page.view_button') }}
                                         </button>
@@ -306,6 +308,7 @@
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="yellow_card">{{ __('competitions.discipline_sanctions_page.type_yellow_card') }}</option>
                         <option value="red_card">{{ __('competitions.discipline_sanctions_page.type_red_card') }}</option>
+                        <option value="second_yellow">Deuxième carton jaune entraînant un carton rouge</option>
                         <option value="disciplinary_incident">{{ __('competitions.discipline_sanctions_page.type_disciplinary_incident') }}</option>
                     </select>
                 </div>
@@ -351,7 +354,7 @@
                             <option value="R4">R4 — DOGSO-H (main)</option>
                             <option value="R5">R5 — DOGSO-F (faute)</option>
                             <option value="R6">R6 — Propos ou gestes blessants, injurieux ou grossiers</option>
-                            <option value="R7">R7 — Second avertissement dans le même match</option>
+                            <option value="2J">2J — Deuxième avertissement dans le même match entraînant un rouge</option>
                         </optgroup>
                     </select>
                 </div>
@@ -588,7 +591,7 @@ function exportSanctions() {
 // Fonction pour ajouter une nouvelle sanction
 document.getElementById('addType')?.addEventListener('change', function () {
     const motif = document.getElementById('addMotif');
-    const prefix = this.value === 'yellow_card' ? 'J' : (this.value === 'red_card' ? 'R' : '');
+    const prefix = this.value === 'yellow_card' ? 'J' : (this.value === 'red_card' ? 'R' : (this.value === 'second_yellow' ? '2J' : ''));
     Array.from(motif.options).forEach(option => {
         option.hidden = !!prefix && option.value && !option.value.startsWith(prefix);
     });

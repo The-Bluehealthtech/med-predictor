@@ -85,7 +85,11 @@ class DigitalTwinController extends Controller
             }
         }
 
-        $ksaCatalog = collect(config('ksa_portal_fields', []))->map(fn ($label) => (object) ['metric_name' => $label, 'metric_value' => null, 'metric_unit' => null, 'source' => 'KSA'])->values();
+        $excludedKsaFields = ['№', 'Player', 'Age', 'Height', 'Weight', 'Nationality', 'Position', 'Minutes played', 'Goals', 'Assists', 'Yellow cards', 'Red cards', 'Fouls', 'Fouls suffered', 'Shots', 'Shots on target', 'Passes', 'Passes accurate', 'Passes accurate, %', 'Key passes', 'Crosses', 'Tackles', 'Tackles successful', 'Tackles successful, %', 'Interceptions', 'xG (expected goals)'];
+        $ksaCatalog = collect(config('ksa_portal_fields', []))
+            ->reject(fn ($label) => in_array($label, $excludedKsaFields, true))
+            ->map(fn ($label) => (object) ['metric_name' => $label, 'metric_value' => null, 'metric_unit' => null, 'source' => 'KSA'])
+            ->values();
         $advancedMetrics = $selectedPlayer
             ? \Illuminate\Support\Facades\DB::table('external_player_performance_metrics')
                 ->where('player_id', $selectedPlayer->id)

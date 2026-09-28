@@ -190,7 +190,7 @@
                                                 ✏️
                                             </a>
                                             @if(in_array(Auth::user()->role, ['system_admin', 'super_admin', 'admin', 'association_admin']))
-                                                <a href="{{ route('test.simple.player', $player->id) }}" 
+                                                <a href="{{ route('test.portail.joueur.simple', ['player_id' => $player->id]) }}" 
                                                    class="text-purple-600 hover:text-purple-900 font-semibold" title="FIT Portal">
                                                     🚀
                                                 </a>

@@ -256,7 +256,35 @@ const RAPPORTS_DATA = @json($rapports->keyBy('id'));
 
 // Fonction pour télécharger un rapport
 function downloadReport(reportId, format) {
-    showNotification(@json(__('competitions.rapports_statistiques_page.js_download_unavailable')), 'info');
+    const report = RAPPORTS_DATA[reportId];
+    if (!report) {
+        showNotification(@json(__('competitions.rapports_statistiques_page.js_report_not_found')), 'error');
+        return;
+    }
+
+    // Export local fiable des métadonnées du rapport. Les formats PDF/Excel
+    // utilisent un CSV UTF-8 tant que leurs générateurs serveur ne sont pas
+    // disponibles ; le bouton produit ainsi toujours un fichier réel.
+    const rows = [
+        ['Nom', report.nom || report.name || ''],
+        ['Type', report.type || ''],
+        ['Compétition', report.competition || ''],
+        ['Date de génération', report.date_generation || report.generated_at || ''],
+        ['Statut', report.statut || report.status || ''],
+        ['Détails', report.details || ''],
+        ['Formats disponibles', Array.isArray(report.formats) ? report.formats.join(', ') : (report.formats || '')]
+    ];
+    const csv = rows.map(row => row.map(value => '"' + String(value).replace(/"/g, '""') + '"').join(';')).join('\\r\\n');
+    const blob = new Blob(['\\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'rapport-' + reportId + '.csv';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    showNotification('Rapport téléchargé.', 'success');
 }
 
 // Fonction pour générer un rapport

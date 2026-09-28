@@ -181,7 +181,10 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($teams as $team)
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-gray-50 team-row"
+                            data-club-id="{{ $team->club_id }}"
+                            data-level="{{ $team->level ?? $team->type ?? '' }}"
+                            data-status="{{ $team->status ?? '' }}">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-12 w-12">
@@ -462,19 +465,23 @@ function deleteTeam(id) {
 }
 
 // Filtres
-document.getElementById('clubFilter').addEventListener('change', function() {
-    // Logique de filtrage à implémenter
-    console.log('Filtre club:', this.value);
-});
+function applyTeamFilters() {
+    const club = document.getElementById('clubFilter').value;
+    const level = document.getElementById('levelFilter').value;
+    const status = document.getElementById('statusFilter').value;
 
-document.getElementById('levelFilter').addEventListener('change', function() {
-    // Logique de filtrage à implémenter
-    console.log('Filtre niveau:', this.value);
-});
+    document.querySelectorAll('.team-row').forEach(function (row) {
+        const matchesClub = !club || row.dataset.clubId === club;
+        const matchesLevel = !level
+            || row.dataset.level === level
+            || (level === 'professional' && row.dataset.level === 'first_team');
+        const matchesStatus = !status || row.dataset.status === status;
+        row.hidden = !(matchesClub && matchesLevel && matchesStatus);
+    });
+}
 
-document.getElementById('statusFilter').addEventListener('change', function() {
-    // Logique de filtrage à implémenter
-    console.log('Filtre statut:', this.value);
+['clubFilter', 'levelFilter', 'statusFilter'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', applyTeamFilters);
 });
 </script>
 @endsection

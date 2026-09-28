@@ -26,7 +26,6 @@ class AlHazemClubAdminSeeder extends Seeder
                 'status' => 'active',
                 'language' => 'fr',
                 'timezone' => 'Asia/Riyadh',
-                'permissions' => ['club_only' => true],
             ]
         );
 

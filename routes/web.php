@@ -1212,9 +1212,9 @@ Route::middleware(['auth'])->group(function () {
                     ],
                     [
                         'name' => 'Validation de Licence',
-                        'description' => 'Validation et vérification des licences',
+                        'description' => 'Validation et vérification des licences côté ligue/fédération',
                         'icon' => '✅',
-                        'route' => 'modules.licenses.index',
+                        'route' => 'licenses.validation',
                         'status' => 'active',
                         'color' => 'green',
                         'category' => 'documents'

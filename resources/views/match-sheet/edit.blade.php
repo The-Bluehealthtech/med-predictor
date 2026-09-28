@@ -340,13 +340,25 @@
                     <!-- Match Events Section -->
                     <div class="bg-orange-50 p-6 rounded-lg">
                         <h3 class="text-lg font-semibold text-orange-900 mb-4">7. Événements et sanctions</h3>
-                        @if($events->isEmpty())
-                            <p class="text-sm text-gray-600">Aucun événement enregistré.</p>
-                        @else
-                            <div class="overflow-x-auto"><table class="min-w-full text-sm"><thead><tr><th class="text-left">Minute</th><th class="text-left">Type</th><th class="text-left">Joueur</th><th class="text-left">Motif</th></tr></thead><tbody>
-                            @foreach($events as $event)<tr class="border-t"><td>{{ $event->minute ?? '-' }}{{ $event->extra_time_minute ? '+' . $event->extra_time_minute : '' }}</td><td>{{ $event->event_type_label }}</td><td>{{ $event->player->name ?? 'Non renseigné' }}</td><td>{{ data_get($event->event_data, 'reason', '—') }}</td></tr>@endforeach
-                            </tbody></table></div>
-                        @endif
+                        @for($i = 0; $i < max(5, $events->count()); $i++)
+                            @php($event = $events[$i] ?? null)
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+                                <input type="number" name="events[{{ $i }}][minute]" min="0" max="130" placeholder="Minute" value="{{ old("events.$i.minute", $event?->minute) }}" class="border-gray-300 rounded-md">
+                                <select name="events[{{ $i }}][event_type]" class="border-gray-300 rounded-md">
+                                    <option value="">Type d'événement</option>
+                                    @foreach(['goal'=>'But','own_goal'=>'But contre son camp','penalty_goal'=>'Penalty','yellow_card'=>'Carton jaune (J)','red_card'=>'Carton rouge (R)','second_yellow'=>'Second avertissement → rouge','substitution_in'=>'Entrée','substitution_out'=>'Sortie'] as $type => $label)
+                                        <option value="{{ $type }}" {{ old("events.$i.event_type", $event?->event_type) === $type ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                                <select name="events[{{ $i }}][player_id]" class="border-gray-300 rounded-md">
+                                    <option value="">Joueur</option>
+                                    @foreach($homeTeamPlayers->merge($awayTeamPlayers)->unique('id') as $player)
+                                        <option value="{{ $player->id }}" {{ old("events.$i.player_id", $event?->player_id) == $player->id ? 'selected' : '' }}>{{ $player->name }}</option>
+                                    @endforeach
+                                </select>
+                                <input type="text" name="events[{{ $i }}][reason]" placeholder="Motif J1–J7 / R1–R6" value="{{ old("events.$i.reason", data_get($event?->event_data, 'reason')) }}" class="border-gray-300 rounded-md">
+                            </div>
+                        @endfor
                     </div>
 
                     <!-- Referee Report Section -->

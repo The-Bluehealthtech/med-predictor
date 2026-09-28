@@ -16,6 +16,7 @@ use Illuminate\Validation\Rule;
 use App\Models\GameMatch;
 use App\Models\MatchModel;
 use App\Models\MatchSheet;
+use App\Models\MatchEvent;
 
 class CompetitionManagementController extends Controller
 {
@@ -1406,6 +1407,11 @@ class CompetitionManagementController extends Controller
             'protests_incidents' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
             'suspension_reason' => ['nullable', 'string'],
+            'events' => ['nullable', 'array', 'max:30'],
+            'events.*.event_type' => ['required_with:events.*.minute', 'nullable', 'in:goal,own_goal,penalty_goal,yellow_card,red_card,second_yellow,substitution_in,substitution_out'],
+            'events.*.minute' => ['nullable', 'integer', 'min:0', 'max:130'],
+            'events.*.player_id' => ['nullable', 'integer'],
+            'events.*.reason' => ['nullable', 'string', 'max:255'],
         ]);
 
         $sheet = $match->matchSheet ?: new MatchSheet(['match_id' => $match->id]);
@@ -1419,6 +1425,23 @@ class CompetitionManagementController extends Controller
             'changes' => array_keys(array_diff_assoc($sheet->only(array_keys($validated)), $before)),
         ]]);
         $sheet->save();
+        if ($request->has('events')) {
+            MatchEvent::where('match_sheet_id', $sheet->id)->delete();
+            foreach ($validated['events'] ?? [] as $event) {
+                if (blank($event['event_type'] ?? null)) continue;
+                MatchEvent::create([
+                    'match_id' => $match->id,
+                    'match_sheet_id' => $sheet->id,
+                    'player_id' => $event['player_id'] ?? null,
+                    'event_type' => $event['event_type'],
+                    'type' => $event['event_type'],
+                    'minute' => $event['minute'] ?? null,
+                    'event_data' => ['reason' => $event['reason'] ?? null],
+                    'recorded_by_user_id' => auth()->id(),
+                    'is_confirmed' => false,
+                ]);
+            }
+        }
 
         $match->update([
             'home_score' => $validated['home_team_score'] ?? null,

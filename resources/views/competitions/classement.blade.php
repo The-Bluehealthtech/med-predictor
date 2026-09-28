@@ -268,7 +268,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.ranking.best_attack') }}</h3>
-                        <p class="text-sm text-gray-500">{{ collect($classements[1])->max('buts_pour') }} {{ __('competitions.ranking.goals_suffix') }}</p>
+                        <p class="text-sm text-gray-500">{{ collect($classements[1] ?? [])->max('buts_pour') }} {{ __('competitions.ranking.goals_suffix') }}</p>
                     </div>
                 </div>
             </div>
@@ -280,7 +280,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.ranking.best_defense') }}</h3>
-                        <p class="text-sm text-gray-500">{{ collect($classements[1])->min('buts_contre') }} {{ __('competitions.ranking.goals_conceded_suffix') }}</p>
+                        <p class="text-sm text-gray-500">{{ collect($classements[1] ?? [])->min('buts_contre') }} {{ __('competitions.ranking.goals_conceded_suffix') }}</p>
                     </div>
                 </div>
             </div>
@@ -292,7 +292,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.ranking.win_rate') }}</h3>
-                        <p class="text-sm text-gray-500">{{ number_format((collect($classements[1])->max('victoires') / collect($classements[1])->max('matchs_joues')) * 100, 1) }}%</p>
+                        <p class="text-sm text-gray-500">{{ number_format((collect($classements[1] ?? [])->max('victoires') / max((int) collect($classements[1] ?? [])->max('matchs_joues'), 1)) * 100, 1) }}%</p>
                     </div>
                 </div>
             </div>

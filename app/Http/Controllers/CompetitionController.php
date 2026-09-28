@@ -1899,6 +1899,7 @@ class CompetitionController extends Controller
             'away_score' => 'nullable|integer|min:0',
             'match_status' => 'nullable|string|max:50',
         ]);
+        $validated = array_filter($validated, static fn ($value) => $value !== null && $value !== '');
         $match = GameMatch::findOrFail($id);
         $match->fill($validated);
         $match->save();

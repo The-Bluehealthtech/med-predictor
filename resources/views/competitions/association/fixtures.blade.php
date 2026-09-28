@@ -508,7 +508,7 @@ function saveMatch(matchId) {
     const modal = window.activeMatchModal || document.querySelector('.fixed.inset-0');
     const venue = modal?.querySelector('#edit-match-venue')?.value || '';
     const score = modal?.querySelector('#edit-match-score')?.value || '';
-    const scores = score.match(/(\\d+)\\s*-\\s*(\\d+)/);
+    const scores = score.match(/(\d+)\s*-\s*(\d+)/);
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
     fetch('{{ url('/competitions/association/match') }}/' + matchId + '/update', {
         method: 'POST',

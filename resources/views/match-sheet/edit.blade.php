@@ -350,15 +350,18 @@
                                         <option value="{{ $type }}" {{ old("events.$i.event_type", $event?->event_type) === $type ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
-                                <select name="events[{{ $i }}][team_id]" class="w-full min-w-0 border-gray-300 rounded-md text-xs px-2 py-1">
+                                <select name="events[{{ $i }}][team_id]" class="event-team w-full min-w-0 border-gray-300 rounded-md text-xs px-2 py-1">
                                     <option value="">Équipe</option>
                                     <option value="{{ $match->home_team_id }}" {{ old("events.$i.team_id", $event?->team_id) == $match->home_team_id ? 'selected' : '' }}>{{ $match->homeTeam->club->name ?? $match->homeTeam->name }}</option>
                                     <option value="{{ $match->away_team_id }}" {{ old("events.$i.team_id", $event?->team_id) == $match->away_team_id ? 'selected' : '' }}>{{ $match->awayTeam->club->name ?? $match->awayTeam->name }}</option>
                                 </select>
-                                <select name="events[{{ $i }}][player_id]" class="w-full min-w-0 border-gray-300 rounded-md text-xs px-2 py-1">
+                                <select name="events[{{ $i }}][player_id]" class="event-player w-full min-w-0 border-gray-300 rounded-md text-xs px-2 py-1">
                                     <option value="">Joueur</option>
-                                    @foreach($homeTeamPlayers->merge($awayTeamPlayers)->unique('id') as $player)
-                                        <option value="{{ $player->id }}" {{ old("events.$i.player_id", $event?->player_id) == $player->id ? 'selected' : '' }}>{{ $player->name }}</option>
+                                    @foreach($homeTeamPlayers as $player)
+                                        <option value="{{ $player->id }}" data-team-id="{{ $match->home_team_id }}" {{ old("events.$i.player_id", $event?->player_id) == $player->id ? 'selected' : '' }}>{{ $player->name }}</option>
+                                    @endforeach
+                                    @foreach($awayTeamPlayers as $player)
+                                        <option value="{{ $player->id }}" data-team-id="{{ $match->away_team_id }}" {{ old("events.$i.player_id", $event?->player_id) == $player->id ? 'selected' : '' }}>{{ $player->name }}</option>
                                     @endforeach
                                 </select>
                                 <select name="events[{{ $i }}][reason]" class="w-full min-w-0 event-reason border-gray-300 rounded-md text-xs px-2 py-1">
@@ -422,4 +425,18 @@
         </div>
     </div>
 </div>
+<script>
+document.querySelectorAll('.event-team').forEach(function(teamSelect) {
+    function filterPlayers() {
+        const playerSelect = teamSelect.closest('.grid').querySelector('.event-player');
+        const teamId = teamSelect.value;
+        playerSelect.querySelectorAll('option[data-team-id]').forEach(function(option) {
+            option.hidden = teamId !== '' && option.dataset.teamId !== teamId;
+            if (option.hidden && option.selected) { playerSelect.value = ''; }
+        });
+    }
+    teamSelect.addEventListener('change', filterPlayers);
+    filterPlayers();
+});
+</script>
 @endsection 

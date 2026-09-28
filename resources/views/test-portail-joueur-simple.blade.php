@@ -773,23 +773,39 @@
                 @php
                     $seasonStat = $seasonStat ?? ($playerStats?->first());
                     $cockpitMetrics = collect($ksaMetrics ?? []);
-                    $metricValue = function (array $needles) use ($cockpitMetrics) {
-                        $metric = $cockpitMetrics->first(function ($item) use ($needles) {
-                            $name = str_replace('_', ' ', strtolower((string) data_get($item, 'metric_name', '')));
-                            foreach ($needles as $needle) if (str_contains($name, strtolower($needle))) return true;
-                            return false;
+                    $metricRow = function (array $names) use ($cockpitMetrics) {
+                        $normalized = array_map(fn ($name) => strtolower(str_replace(' ', '_', $name)), $names);
+                        return $cockpitMetrics->first(function ($item) use ($normalized) {
+                            $name = strtolower(str_replace(' ', '_', trim((string) data_get($item, 'metric_name', ''))));
+                            return in_array($name, $normalized, true) && data_get($item, 'metric_value') !== null;
                         });
-                        return data_get($metric, 'metric_value');
                     };
+                    $metricValue = fn (array $names) => data_get($metricRow($names), 'metric_value');
+                    $metricRate = function (array $names) use ($metricRow) {
+                        $row = $metricRow($names);
+                        if (strtolower((string) data_get($row, 'metric_unit')) !== 'percent') return null;
+                        $value = data_get($row, 'metric_value');
+                        if (!is_numeric($value) || (float) $value < 0 || (float) $value > 1) return null;
+                        return round(100 * (float) $value, 2);
+                    };
+                    $passRate = $latestMatchPerformance && (int) $latestMatchPerformance->passes_attempted > 0
+                        ? round(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 2)
+                        : $metricRate(['passes_accuracy', 'passing_accuracy']);
+                    $radarRates = [
+                        'passes_accuracy' => $passRate,
+                        'progressive_passes_accurate' => $metricRate(['progressive_passes_accurate']),
+                        'dribbles_successful' => $metricRate(['dribbles_successful']),
+                        'tackles_successful' => $metricRate(['tackles_successful']),
+                        'challenges_won' => $metricRate(['challenges_won']),
+                        'aerial_challenges_won' => $metricRate(['aerial_challenges_won']),
+                    ];
                     $cockpitData = [
                         'matches_played' => $seasonStat?->matches_played,
                         'minutes_played' => $seasonStat?->minutes_played,
                         'index_ksa' => $metricValue(['index ksa', 'ksa index']),
                         'goals' => $seasonStat?->goals,
                         'expected_goals' => $metricValue(['expected goals', 'xg']),
-                        'passes_accuracy' => $latestMatchPerformance && (int) $latestMatchPerformance->passes_attempted > 0
-                            ? round(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1)
-                            : $metricValue(['passes accuracy', 'passing accuracy']),
+                        'passes_accuracy' => $passRate,
                         'progressive_passes_accurate' => $metricValue(['progressive passes accurate', 'progressive pass']),
                         'dribbles_successful' => $metricValue(['dribbles successful', 'successful dribbles']),
                         'tackles_successful' => $metricValue(['tackles successful', 'tackles won']),
@@ -801,7 +817,7 @@
                         'red_cards' => $seasonStat?->red_cards,
                     ];
                 @endphp
-                <section id="cockpit-joueur" class="fifa-stat-card mt-6 mx-auto" data-cockpit='@json($cockpitData)' aria-labelledby="cockpit-title">
+                <section id="cockpit-joueur" class="fifa-stat-card mt-6 mx-auto" data-cockpit='@json($cockpitData)' data-radar-rates='@json($radarRates)' aria-labelledby="cockpit-title">
                     <style>
                         /* Scoped tokens from resources/css/fifa-design-system.css. */
                         #cockpit-joueur{
@@ -849,7 +865,7 @@
                         @endforeach
                     </div>
                     <div class="cockpit-grid">
-                        <div class="cockpit-panel"><h4>Taux de réussite</h4><div class="cockpit-radar"><svg viewBox="0 0 260 260" width="250" height="250" role="img" aria-label="Radar des taux de réussite"><g transform="translate(130 130)"><line x1="0" y1="-100" x2="0" y2="100"/><line x1="-100" y1="0" x2="100" y2="0"/><line x1="-70" y1="-70" x2="70" y2="70"/><polygon data-radar-points="0"/></g></svg></div></div>
+                        <div class="cockpit-panel"><h4>Taux de réussite</h4><div class="cockpit-radar" data-radar></div></div>
                         <div class="cockpit-panel"><h4>Lecture automatique</h4><div class="cockpit-insights" data-insights></div></div>
                         <div class="cockpit-panel"><h4>Attaque</h4><div data-bars='["goals","expected_goals","shots","shots_on_target"]'></div></div>
                         <div class="cockpit-panel"><h4>Construction</h4><div data-bars='["passes_accuracy","progressive_passes_accurate","dribbles_successful"]'></div></div>
@@ -857,7 +873,116 @@
                         <div class="cockpit-panel"><h4>Discipline et erreurs</h4><div data-bars='["yellow_cards","red_cards"]'></div></div>
                     </div>
                     <script>
-                    (()=>{const root=document.getElementById('cockpit-joueur');if(!root)return;const d=JSON.parse(root.dataset.cockpit||'{}'), labels={goals:'Buts',expected_goals:'xG',shots:'Tirs',shots_on_target:'Tirs cadrés',passes_accuracy:'Précision passes',progressive_passes_accurate:'Passes progressives',dribbles_successful:'Dribbles réussis',tackles_successful:'Tacles réussis',challenges_won:'Duels gagnés',aerial_challenges_won:'Duels aériens',yellow_cards:'Cartons jaunes',red_cards:'Cartons rouges'};const n=v=>v===null||v===undefined||v===''?null:Number(v);const pct=v=>Math.max(0,Math.min(100,n(v)));function bars(){root.querySelectorAll('[data-bars]').forEach(el=>{el.innerHTML='';JSON.parse(el.dataset.bars).forEach(k=>{if(n(d[k])===null)return;const row=document.createElement('div');row.className='cockpit-bar';row.innerHTML='<span>'+labels[k]+'</span><span class="cockpit-track"><span class="cockpit-fill" style="width:'+pct(d[k])+'%"></span></span><strong>'+d[k]+'</strong>';el.appendChild(row)})})}function insights(){const box=root.querySelector('[data-insights]');const out=[];if(n(d.passes_accuracy)!==null&&d.passes_accuracy>=80)out.push(['Précision de passe élevée','']);if(n(d.dribbles_successful)!==null&&d.dribbles_successful>=70)out.push(['Dribbles réussis : point fort','']);if(n(d.tackles_successful)!==null&&d.tackles_successful<50)out.push(['Tacles à surveiller','warn']);if(n(d.red_cards)!==null&&d.red_cards>0)out.push(['Discipline : carton rouge enregistré','warn']);box.innerHTML=out.map(x=>'<div class="cockpit-insight '+x[1]+'">'+x[0]+'</div>').join('')||'<div class="cockpit-unavailable">Aucune règle calculable avec les données disponibles.</div>'}function radar(){const keys=['passes_accuracy','progressive_passes_accurate','dribbles_successful','tackles_successful','challenges_won','aerial_challenges_won'],pts=keys.map((k,i)=>{const v=pct(d[k]);const a=-Math.PI/2+i*2*Math.PI/keys.length;return (Math.cos(a)*v).toFixed(1)+','+(Math.sin(a)*v).toFixed(1)}).join(' ');root.querySelector('[data-radar-points]').setAttribute('points',pts)}bars();insights();radar();root.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{root.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b===btn));}));})();
+                    (() => {
+                        const root = document.getElementById('cockpit-joueur');
+                        if (!root) return;
+                        const d = JSON.parse(root.dataset.cockpit || '{}');
+                        const rates = JSON.parse(root.dataset.radarRates || '{}');
+                        const labels = {
+                            goals: 'Buts', expected_goals: 'xG', shots: 'Tirs',
+                            shots_on_target: 'Tirs cadrés', passes_accuracy: 'Précision passes',
+                            progressive_passes_accurate: 'Passes progressives',
+                            dribbles_successful: 'Dribbles réussis', tackles_successful: 'Tacles réussis',
+                            challenges_won: 'Duels gagnés', aerial_challenges_won: 'Duels aériens',
+                            yellow_cards: 'Cartons jaunes', red_cards: 'Cartons rouges'
+                        };
+                        const keys = ['passes_accuracy', 'progressive_passes_accurate',
+                            'dribbles_successful', 'tackles_successful', 'challenges_won',
+                            'aerial_challenges_won'];
+                        const number = value => value === null || value === undefined || value === ''
+                            ? null : (Number.isFinite(Number(value)) ? Number(value) : null);
+                        const rate = key => {
+                            const value = number(rates[key]);
+                            return value !== null && value >= 0 && value <= 100 ? value : null;
+                        };
+                        const format = value => value.toLocaleString(document.documentElement.lang || 'fr', {
+                            maximumFractionDigits: 2
+                        });
+                        root.querySelectorAll('[data-bars]').forEach(el => {
+                            JSON.parse(el.dataset.bars).forEach(key => {
+                                const value = number(d[key]);
+                                if (value === null) return;
+                                const row = document.createElement('div');
+                                row.className = 'cockpit-bar';
+                                const label = document.createElement('span');
+                                label.textContent = labels[key];
+                                const track = document.createElement('span');
+                                track.className = 'cockpit-track';
+                                const fill = document.createElement('span');
+                                fill.className = 'cockpit-fill';
+                                const percent = rate(key);
+                                fill.style.width = percent === null ? '0%' : percent + '%';
+                                track.appendChild(fill);
+                                const display = document.createElement('strong');
+                                display.textContent = percent === null ? String(d[key]) : format(percent) + ' %';
+                                row.append(label, track, display);
+                                el.appendChild(row);
+                            });
+                        });
+                        const insights = root.querySelector('[data-insights]');
+                        const available = keys.filter(key => rate(key) !== null);
+                        if (available.length) {
+                            available.forEach(key => {
+                                const item = document.createElement('div');
+                                item.className = 'cockpit-insight';
+                                item.textContent = labels[key] + ' : ' + format(rate(key)) + ' %';
+                                insights.appendChild(item);
+                            });
+                        } else {
+                            insights.textContent = 'Aucun taux de réussite vérifié disponible.';
+                        }
+                        const radar = root.querySelector('[data-radar]');
+                        if (available.length === keys.length) {
+                            const svgNS = 'http://www.w3.org/2000/svg';
+                            const svg = document.createElementNS(svgNS, 'svg');
+                            svg.setAttribute('viewBox', '0 0 360 320');
+                            svg.setAttribute('width', '360');
+                            svg.setAttribute('height', '320');
+                            svg.setAttribute('role', 'img');
+                            svg.setAttribute('aria-label', keys.map(key => labels[key] + ' ' + format(rate(key)) + ' %').join(', '));
+                            const point = (index, radius) => {
+                                const angle = -Math.PI / 2 + index * 2 * Math.PI / keys.length;
+                                return [180 + Math.cos(angle) * radius, 150 + Math.sin(angle) * radius];
+                            };
+                            [25, 50, 75, 100].forEach(level => {
+                                const ring = document.createElementNS(svgNS, 'polygon');
+                                ring.setAttribute('points', keys.map((_, index) => point(index, level).join(',')).join(' '));
+                                ring.setAttribute('fill', 'none');
+                                ring.setAttribute('stroke', '#d1d5db');
+                                svg.appendChild(ring);
+                            });
+                            keys.forEach((key, index) => {
+                                const axis = document.createElementNS(svgNS, 'line');
+                                const [x, y] = point(index, 100);
+                                axis.setAttribute('x1', '180'); axis.setAttribute('y1', '150');
+                                axis.setAttribute('x2', x); axis.setAttribute('y2', y);
+                                axis.setAttribute('stroke', '#d1d5db');
+                                svg.appendChild(axis);
+                                const text = document.createElementNS(svgNS, 'text');
+                                const [tx, ty] = point(index, 130);
+                                text.setAttribute('x', tx); text.setAttribute('y', ty);
+                                text.setAttribute('text-anchor', 'middle');
+                                text.setAttribute('font-size', '10');
+                                text.setAttribute('fill', '#374151');
+                                text.textContent = labels[key];
+                                svg.appendChild(text);
+                            });
+                            const shape = document.createElementNS(svgNS, 'polygon');
+                            shape.setAttribute('points', keys.map((key, index) => point(index, rate(key)).join(',')).join(' '));
+                            shape.setAttribute('fill', 'rgba(59,130,246,.18)');
+                            shape.setAttribute('stroke', '#3b82f6');
+                            shape.setAttribute('stroke-width', '2');
+                            svg.appendChild(shape);
+                            radar.appendChild(svg);
+                        } else {
+                            radar.textContent = 'Radar disponible lorsque les six taux vérifiés sont présents.';
+                            radar.classList.add('cockpit-unavailable');
+                        }
+                        root.querySelectorAll('[data-mode]').forEach(button =>
+                            button.addEventListener('click', () =>
+                                root.querySelectorAll('[data-mode]').forEach(other =>
+                                    other.setAttribute('aria-pressed', other === button ? 'true' : 'false'))));
+                    })();
                     </script>
                 </section>
                 <section id="ksa-statistics" class="fifa-stat-card mt-6 mx-auto" style="max-width:1120px;">

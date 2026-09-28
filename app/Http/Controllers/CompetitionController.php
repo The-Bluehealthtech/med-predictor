@@ -1810,10 +1810,11 @@ class CompetitionController extends Controller
             // la FTF à tout utilisateur association quelle que soit son
             // association réelle. Remplacé par l'association de
             // l'utilisateur connecté.
-            $associationId = auth()->user()->association_id ?? null;
+            $user = auth()->user();
+            $associationId = $user?->association_id;
             $association = $associationId ? Association::find($associationId) : null;
 
-            if (!$association && in_array(auth()->user()->role, ['system_admin', 'super_admin', 'admin'], true) && $request->filled('competition_id')) {
+            if (!$association && $user && in_array($user->role, ['system_admin', 'super_admin', 'admin'], true) && $request->filled('competition_id')) {
                 $selectedCompetition = Competition::with('association')->find($request->integer('competition_id'));
                 $association = $selectedCompetition?->association;
             }

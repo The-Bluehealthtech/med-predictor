@@ -182,7 +182,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-calendar-alt text-purple-600 mr-3"></i>
                                 <div>
-                                    <div class="font-medium text-gray-900">Fixtures</div>
+                                    <div class="font-medium text-gray-900">Calendrier des matchs</div>
                                     <div class="text-sm text-gray-600">{{ __('Calendrier complet des matchs') }}</div>
                                 </div>
                             </div>
@@ -290,7 +290,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-calendar-alt text-purple-600 mr-3"></i>
                                 <div>
-                                    <div class="font-medium text-gray-900">Fixtures</div>
+                                    <div class="font-medium text-gray-900">Calendrier des matchs</div>
                                     <div class="text-sm text-gray-600">{{ __('Calendrier complet des matchs') }}</div>
                                 </div>
                             </div>

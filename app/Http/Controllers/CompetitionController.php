@@ -2001,14 +2001,8 @@ class CompetitionController extends Controller
             ]);
 
             $match = GameMatch::findOrFail($request->match_id);
-            // Conserver aussi l'arbitre principal sur la rencontre : les
-            // fixtures et la feuille de match lisent referee_id, tandis que
-            // le détail des rôles est conservé dans match_officials.
-            if ($request->filled('main_referee_id')) {
-                $match->referee_id = (int) $request->main_referee_id;
-                $match->save();
-            }
-            
+            // Les désignations sont conservées dans la table dédiée
+            // match_officials, compatible avec le schéma PostgreSQL déployé.
             // Supprimer les assignations existantes pour ce match
             \App\Models\MatchOfficial::where('match_id', $match->id)->delete();
             

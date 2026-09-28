@@ -279,6 +279,24 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="mb-4">
+                    <label for="addMatch" class="block text-sm font-medium text-gray-700 mb-2">Match</label>
+                    <select id="addMatch" name="match_id" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="">Sélectionner un match</option>
+                        @foreach($matchesList as $matchOption)
+                            <option value="{{ $matchOption->id }}">{{ $matchOption->competition?->name }} — {{ $matchOption->match_date }} — {{ $matchOption->homeTeam?->club?->name }} / {{ $matchOption->awayTeam?->club?->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="addDirigeant" class="block text-sm font-medium text-gray-700 mb-2">Dirigeant</label>
+                    <select id="addDirigeant" name="dirigeant_id" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="">Aucun dirigeant</option>
+                        @foreach($dirigeantsList as $dirigeant)
+                            <option value="{{ $dirigeant->id }}">{{ $dirigeant->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 
                 <div class="mb-4">
                     <label for="addType" class="block text-sm font-medium text-gray-700 mb-2">

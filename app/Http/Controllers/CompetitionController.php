@@ -934,7 +934,9 @@ class CompetitionController extends Controller
                 ->sort()
                 ->values();
 
-            return view('competitions.association.discipline-sanctions', compact('sanctions', 'joueursList'));
+            $matchesList = GameMatch::with(['competition', 'homeTeam.club', 'awayTeam.club'])->orderByDesc('match_date')->limit(200)->get();
+            $dirigeantsList = \App\Models\User::whereIn('role', ['club_manager', 'association_admin', 'admin'])->orderBy('name')->get(['id', 'name']);
+            return view('competitions.association.discipline-sanctions', compact('sanctions', 'joueursList', 'matchesList', 'dirigeantsList'));
             
         } catch (\Exception $e) {
             // En cas d'erreur, retourner des données d'erreur
@@ -957,8 +959,10 @@ class CompetitionController extends Controller
             ]);
             
             $joueursList = collect();
+            $matchesList = collect();
+            $dirigeantsList = collect();
 
-            return view('competitions.association.discipline-sanctions', compact('sanctions', 'joueursList'));
+            return view('competitions.association.discipline-sanctions', compact('sanctions', 'joueursList', 'matchesList', 'dirigeantsList'));
         }
     }
     

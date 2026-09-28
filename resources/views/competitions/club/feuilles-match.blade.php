@@ -130,22 +130,29 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
                                         @if($feuille['statut_code'] === 'draft')
-                                            <button onclick="openPreparationModal({{ $feuille['id'] }})" class="text-blue-600 hover:text-blue-900" title="{{ __('competitions.match_sheets_page.prepare_match_sheet_title') }}">
-                                                <i class="fas fa-edit"></i>
+                                            <button onclick="openPreparationModal({{ $feuille['id'] }})" class="text-blue-600 hover:text-blue-900 px-2 py-1 border rounded" title="{{ __('competitions.match_sheets_page.prepare_match_sheet_title') }}">
+                                                ✏️ Préparer
                                             </button>
-                                            <button onclick="openEffectifModal({{ $feuille['id'] }})" class="text-green-600 hover:text-green-900" title="{{ __('competitions.match_sheets_page.select_squad_title') }}">
-                                                <i class="fas fa-users"></i>
+                                            <button onclick="openEffectifModal({{ $feuille['id'] }})" class="text-green-600 hover:text-green-900 px-2 py-1 border rounded" title="{{ __('competitions.match_sheets_page.select_squad_title') }}">
+                                                👥 Effectif
                                             </button>
                                         @elseif($feuille['statut_code'] === 'submitted')
-                                            <button onclick="viewFeuille({{ $feuille['id'] }})" class="text-purple-600 hover:text-purple-900" title="{{ __('competitions.match_sheets_page.view_submitted_sheet_title') }}">
-                                                <i class="fas fa-eye"></i>
+                                            <button onclick="viewFeuille({{ $feuille['id'] }})" class="text-purple-600 hover:text-purple-900 px-2 py-1 border rounded" title="{{ __('competitions.match_sheets_page.view_submitted_sheet_title') }}">
+                                                👁️ Voir
                                             </button>
-                                            <button onclick="editFeuille({{ $feuille['id'] }})" class="text-orange-600 hover:text-orange-900" title="{{ __('competitions.match_sheets_page.edit_title') }}">
-                                                <i class="fas fa-edit"></i>
+                                            <button onclick="editFeuille({{ $feuille['id'] }})" class="text-orange-600 hover:text-orange-900 px-2 py-1 border rounded" title="{{ __('competitions.match_sheets_page.edit_title') }}">
+                                                ✏️ Modifier
+                                            </button>
+                                        @else
+                                            <button onclick="viewFeuille({{ $feuille['id'] }})" class="text-purple-600 hover:text-purple-900 px-2 py-1 border rounded" title="Voir la feuille">
+                                                👁️ Voir
+                                            </button>
+                                            <button onclick="editFeuille({{ $feuille['id'] }})" class="text-orange-600 hover:text-orange-900 px-2 py-1 border rounded" title="Modifier la feuille">
+                                                ✏️ Modifier
                                             </button>
                                         @endif
-                                        <button onclick="downloadPDF({{ $feuille['id'] }})" class="text-gray-600 hover:text-gray-900" title="{{ __('competitions.match_sheets_page.download_pdf_title') }}">
-                                            <i class="fas fa-download"></i>
+                                        <button onclick="downloadPDF({{ $feuille['id'] }})" class="text-gray-600 hover:text-gray-900 px-2 py-1 border rounded" title="{{ __('competitions.match_sheets_page.download_pdf_title') }}">
+                                            ⬇️ PDF
                                         </button>
                                     </div>
                                 </td>

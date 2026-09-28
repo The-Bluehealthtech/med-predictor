@@ -350,13 +350,23 @@
                                         <option value="{{ $type }}" {{ old("events.$i.event_type", $event?->event_type) === $type ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
+                                <select name="events[{{ $i }}][team_id]" class="border-gray-300 rounded-md">
+                                    <option value="">Équipe</option>
+                                    <option value="{{ $match->home_team_id }}" {{ old("events.$i.team_id", $event?->team_id) == $match->home_team_id ? 'selected' : '' }}>{{ $match->homeTeam->club->name ?? $match->homeTeam->name }}</option>
+                                    <option value="{{ $match->away_team_id }}" {{ old("events.$i.team_id", $event?->team_id) == $match->away_team_id ? 'selected' : '' }}>{{ $match->awayTeam->club->name ?? $match->awayTeam->name }}</option>
+                                </select>
                                 <select name="events[{{ $i }}][player_id]" class="border-gray-300 rounded-md">
                                     <option value="">Joueur</option>
                                     @foreach($homeTeamPlayers->merge($awayTeamPlayers)->unique('id') as $player)
                                         <option value="{{ $player->id }}" {{ old("events.$i.player_id", $event?->player_id) == $player->id ? 'selected' : '' }}>{{ $player->name }}</option>
                                     @endforeach
                                 </select>
-                                <input type="text" name="events[{{ $i }}][reason]" placeholder="Motif J1–J7 / R1–R6" value="{{ old("events.$i.reason", data_get($event?->event_data, 'reason')) }}" class="border-gray-300 rounded-md">
+                                <select name="events[{{ $i }}][reason]" class="event-reason border-gray-300 rounded-md">
+                                    <option value="">Motif</option>
+                                    @foreach(['J1'=>'Comportement antisportif','J2'=>'Désapprobation','J3'=>'Persistance','J4'=>'Retard de reprise','J5'=>'Distance requise','J6'=>'Entrée sans autorisation','J7'=>'Sortie sans autorisation','R1'=>'Faute grossière','R2'=>'Acte de brutalité','R3'=>'Cracher','R4'=>'DOGSO main','R5'=>'DOGSO faute','R6'=>'Propos injurieux','2J'=>'Second avertissement'] as $code => $label)
+                                        <option value="{{ $code }}" data-reason-code="{{ $code }}" {{ old("events.$i.reason", data_get($event?->event_data, 'reason')) === $code ? 'selected' : '' }}>{{ $code }} — {{ $label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         @endfor
                     </div>

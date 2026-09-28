@@ -1410,6 +1410,7 @@ class CompetitionManagementController extends Controller
             'events' => ['nullable', 'array', 'max:30'],
             'events.*.event_type' => ['required_with:events.*.minute', 'nullable', 'in:goal,own_goal,penalty_goal,yellow_card,red_card,second_yellow,substitution_in,substitution_out'],
             'events.*.minute' => ['nullable', 'integer', 'min:0', 'max:130'],
+            'events.*.team_id' => ['nullable', 'integer', 'in:' . $match->home_team_id . ',' . $match->away_team_id],
             'events.*.player_id' => ['nullable', 'integer'],
             'events.*.reason' => ['nullable', 'string', 'max:255'],
         ]);
@@ -1432,6 +1433,7 @@ class CompetitionManagementController extends Controller
                 MatchEvent::create([
                     'match_id' => $match->id,
                     'match_sheet_id' => $sheet->id,
+                    'team_id' => $event['team_id'] ?? null,
                     'player_id' => $event['player_id'] ?? null,
                     'event_type' => $event['event_type'],
                     'type' => $event['event_type'],

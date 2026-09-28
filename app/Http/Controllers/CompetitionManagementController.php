@@ -1342,7 +1342,9 @@ class CompetitionManagementController extends Controller
             'matchSheet.events.team'
         ]);
         
-        return view('match-sheet.edit', compact('match'));
+        $matchSheet = $match->matchSheet;
+
+        return view('match-sheet.edit', compact('match', 'matchSheet'));
     }
 
     public function updateMatchSheet(Request $request, MatchModel $match)

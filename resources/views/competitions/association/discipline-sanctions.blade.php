@@ -602,6 +602,10 @@ document.getElementById('addType')?.addEventListener('change', function () {
     motif.value = '';
 });
 
+// Appliquer le filtre dès l'ouverture de la page : aucun motif d'un autre
+// type ne doit être sélectionnable avant un changement manuel du type.
+document.getElementById('addType')?.dispatchEvent(new Event('change'));
+
 function addNewSanction() {
     // Ouvrir le modal d'ajout
     document.getElementById('addSanctionModal').classList.remove('hidden');
@@ -624,6 +628,13 @@ function closeAddModal() {
 // "sanctions" reelle dans laquelle creer une sanction manuelle : on informe
 // donc honnetement l'utilisateur plutot que de laisser le bouton casse.
 function saveNewSanction() {
+    const type = document.getElementById('addType').value;
+    const motif = document.getElementById('addMotif').value;
+    const expectedPrefix = type === 'yellow_card' ? 'J' : (type === 'red_card' ? 'R' : (type === 'second_yellow' ? '2J' : ''));
+    if (expectedPrefix && !motif.startsWith(expectedPrefix)) {
+        alert('Le motif sélectionné ne correspond pas au type de sanction.');
+        return;
+    }
     alert(@json(__('competitions.discipline_sanctions_page.js_add_unavailable')));
     closeAddModal();
 }

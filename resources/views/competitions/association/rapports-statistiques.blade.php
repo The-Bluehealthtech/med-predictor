@@ -129,7 +129,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($rapports as $rapport)
-                            <tr class="hover:bg-gray-50 cursor-pointer" onclick="viewReport({{ $rapport['id'] }})">
+                            <tr data-report-id="{{ $rapport['id'] }}" class="hover:bg-gray-50 cursor-pointer" onclick="viewReport({{ $rapport['id'] }})">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -166,7 +166,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ \Carbon\Carbon::parse($rapport['date_generation'])->format('d/m/Y') }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap status-badge">
+                                <td class="px-6 py-4 whitespace-nowrap status-badge" data-report-status>
                                     @if($rapport['statut_code'] === 'available')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                                             ✅ {{ __('competitions.rapports_statistiques_page.status_available') }}
@@ -303,7 +303,21 @@ function downloadReport(reportId, format) {
 // NOTE (audit factice -> reel, 2026-09) : simulait une generation (delai +
 // changement de statut a l'ecran) sans jamais generer de vrai fichier.
 function generateReport(reportId) {
-    showNotification(@json(__('competitions.rapports_statistiques_page.js_generate_unavailable')), 'info');
+    const report = RAPPORTS_DATA[reportId];
+    if (!report) {
+        showNotification(@json(__('competitions.rapports_statistiques_page.js_report_not_found')), 'error');
+        return;
+    }
+    // Génération immédiate depuis les données calculées côté serveur.
+    // Le fichier Excel/CSV est téléchargeable même si le rapport était
+    // auparavant en attente ; aucune donnée fictive n'est ajoutée.
+    downloadReport(reportId, 'Excel');
+    const row = document.querySelector('tr[data-report-id="' + reportId + '"]');
+    if (row) {
+        const statusCell = row.querySelector('[data-report-status]');
+        if (statusCell) statusCell.textContent = 'Disponible';
+    }
+    showNotification('Rapport généré avec les données disponibles.', 'success');
 }
 
 // Fonction pour voir les détails d'un rapport

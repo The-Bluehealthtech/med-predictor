@@ -16,5 +16,6 @@ composer dump-autoload --no-interaction
 
 DB_CONNECTION=pgsql DATABASE_URL="$DATABASE_URL" \
 php artisan db:seed --class='Database\Seeders\SaudiHierarchySeeder' --force
+DB_CONNECTION=pgsql DATABASE_URL="$DATABASE_URL" php artisan db:seed --class='Database\Seeders\AlHazemClubAdminSeeder' --force
 
 unset DATABASE_URL

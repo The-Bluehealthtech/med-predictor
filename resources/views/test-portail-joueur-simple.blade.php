@@ -221,11 +221,12 @@
                                     <div class="flex items-center space-x-3 p-2 bg-white/5 rounded-lg">
                                         <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
                                             @php
-                                                $confederation = $player->association->confederation;
-                                                $confederationLogo = is_object($confederation) ? $confederation->confederation_logo_url : null;
+                                                $confederationCode = $player->association->getRawOriginal('confederation');
+                                                $confederation = \App\Models\Confederation::where('short_name', $confederationCode)->first();
+                                                $confederationLogo = $confederation?->confederation_logo_url;
                                             @endphp
                                             @if($confederationLogo)
-                                                <img src="{{ $confederationLogo }}" alt="Logo {{ $confederation->name }}" class="w-6 h-6 object-contain">
+                                                <img src="{{ $confederationLogo }}" alt="Logo {{ $confederation?->name }}" class="w-6 h-6 object-contain">
                                             @else
                                                 <i class="fas fa-globe text-purple-600 text-sm"></i>
                                             @endif

@@ -161,7 +161,7 @@
                                             <select name="home_team_roster[]" class="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500">
                                                 <option value="">Select player</option>
                                                 @foreach($homeTeamPlayers as $player)
-                                                    <option value="{{ $player->id }}" {{ old("home_team_roster.{$i-1}", $matchSheet->home_team_roster[$i-1] ?? '') == $player->id ? 'selected' : '' }}>
+                                                    <option value="{{ $player->id }}" {{ old('home_team_roster.' . ($i - 1), $matchSheet->home_team_roster[$i-1] ?? '') == $player->id ? 'selected' : '' }}>
                                                         {{ $player->name }} ({{ $player->position }})
                                                     </option>
                                                 @endforeach
@@ -178,7 +178,7 @@
                                             <select name="home_team_substitutes[]" class="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500">
                                                 <option value="">Select substitute</option>
                                                 @foreach($homeTeamPlayers as $player)
-                                                    <option value="{{ $player->id }}" {{ old("home_team_substitutes.{$i-1}", $matchSheet->home_team_substitutes[$i-1] ?? '') == $player->id ? 'selected' : '' }}>
+                                                    <option value="{{ $player->id }}" {{ old('home_team_substitutes.' . ($i - 1), $matchSheet->home_team_substitutes[$i-1] ?? '') == $player->id ? 'selected' : '' }}>
                                                         {{ $player->name }} ({{ $player->position }})
                                                     </option>
                                                 @endforeach
@@ -198,7 +198,7 @@
                                             <select name="away_team_roster[]" class="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500">
                                                 <option value="">Select player</option>
                                                 @foreach($awayTeamPlayers as $player)
-                                                    <option value="{{ $player->id }}" {{ old("away_team_roster.{$i-1}", $matchSheet->away_team_roster[$i-1] ?? '') == $player->id ? 'selected' : '' }}>
+                                                    <option value="{{ $player->id }}" {{ old('away_team_roster.' . ($i - 1), $matchSheet->away_team_roster[$i-1] ?? '') == $player->id ? 'selected' : '' }}>
                                                         {{ $player->name }} ({{ $player->position }})
                                                     </option>
                                                 @endforeach
@@ -215,7 +215,7 @@
                                             <select name="away_team_substitutes[]" class="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500">
                                                 <option value="">Select substitute</option>
                                                 @foreach($awayTeamPlayers as $player)
-                                                    <option value="{{ $player->id }}" {{ old("away_team_substitutes.{$i-1}", $matchSheet->away_team_substitutes[$i-1] ?? '') == $player->id ? 'selected' : '' }}>
+                                                    <option value="{{ $player->id }}" {{ old('away_team_substitutes.' . ($i - 1), $matchSheet->away_team_substitutes[$i-1] ?? '') == $player->id ? 'selected' : '' }}>
                                                         {{ $player->name }} ({{ $player->position }})
                                                     </option>
                                                 @endforeach

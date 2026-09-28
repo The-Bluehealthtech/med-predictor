@@ -803,6 +803,18 @@
                 @endphp
                 <section id="cockpit-joueur" class="fifa-stat-card mt-6 mx-auto" data-cockpit='@json($cockpitData)' aria-labelledby="cockpit-title">
                     <style>
+                        /* Scoped tokens from resources/css/fifa-design-system.css. */
+                        #cockpit-joueur{
+                            --fifa-white:#ffffff;--fifa-gray-50:#f9fafb;--fifa-gray-200:#e5e7eb;
+                            --fifa-gray-300:#d1d5db;--fifa-gray-500:#6b7280;--fifa-gray-700:#374151;
+                            --fifa-gray-800:#1f2937;--fifa-blue-primary:#1e3a8a;
+                            --fifa-blue-secondary:#3b82f6;--fifa-success:#10b981;
+                            --fifa-success-light:#d1fae5;--fifa-warning:#f59e0b;
+                            --fifa-warning-light:#fef3c7;--fifa-gold:#f59e0b;
+                            --fifa-radius-sm:.25rem;--fifa-radius-md:.5rem;--fifa-radius-lg:.75rem;
+                            --fifa-spacing-lg:1.5rem;--fifa-font-weight-bold:700;
+                            --fifa-shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
+                        }
                         #cockpit-joueur{color:var(--fifa-gray-800);background:var(--fifa-white);border:1px solid var(--fifa-gray-200);border-radius:var(--fifa-radius-lg);box-shadow:var(--fifa-shadow-md);padding:var(--fifa-spacing-lg);max-width:1120px}
                         #cockpit-joueur .cockpit-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem}
                         #cockpit-joueur .cockpit-title{font-size:1.25rem;font-weight:var(--fifa-font-weight-bold);color:var(--fifa-blue-primary);margin:0}

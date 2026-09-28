@@ -17,6 +17,7 @@ use App\Models\GameMatch;
 use App\Models\MatchModel;
 use App\Models\MatchSheet;
 use App\Models\MatchEvent;
+use App\Models\Team;
 
 class CompetitionManagementController extends Controller
 {
@@ -1374,6 +1375,13 @@ class CompetitionManagementController extends Controller
             ->get(['id', 'name']);
 
         return view('match-sheet.edit', compact('match', 'matchSheet', 'homeTeamPlayers', 'awayTeamPlayers', 'referees', 'venues', 'events'));
+    }
+
+    public function teamPlayersForMatchSheet(MatchModel $match, Team $team)
+    {
+        $this->authorizeCompetitionAccess($match->competition);
+        abort_unless(in_array($team->id, [$match->home_team_id, $match->away_team_id], true), 404);
+        return response()->json($team->club?->players()->where('status', 'active')->orderBy('name')->get(['id', 'name']) ?? collect());
     }
 
     public function updateMatchSheet(Request $request, MatchModel $match)

@@ -2120,6 +2120,7 @@ Route::middleware(['auth'])->group(function () {
         abort_unless($matchSheet->match, 404, 'Match associé introuvable');
         return app(CompetitionManagementController::class)->editMatchSheet($matchSheet->match);
     })->name('match-sheets.edit');
+    Route::get('/match-sheets/{match}/team-players/{team}', [CompetitionManagementController::class, 'teamPlayersForMatchSheet'])->name('match-sheets.team-players');
     Route::put('/match-sheets/{match}', [CompetitionManagementController::class, 'updateMatchSheet'])->name('match-sheets.update');
     
     // Fixtures routes

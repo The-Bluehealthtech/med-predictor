@@ -431,12 +431,22 @@ document.querySelectorAll('.event-team').forEach(function(teamSelect) {
         const playerSelect = teamSelect.closest('.grid').querySelector('.event-player');
         const teamId = teamSelect.value;
         playerSelect.disabled = teamId === '';
-        playerSelect.querySelectorAll('option[data-team-id]').forEach(function(option) {
-            const visible = teamId !== '' && option.dataset.teamId === teamId;
-            option.hidden = !visible;
-            option.style.display = visible ? '' : 'none';
-            if (!visible && option.selected) { playerSelect.value = ''; }
-        });
+        playerSelect.innerHTML = '<option value="">Chargement des joueurs…</option>';
+        if (!teamId) {
+            playerSelect.innerHTML = '<option value="">Sélectionner d’abord une équipe</option>';
+            return;
+        }
+        fetch('{{ url('/match-sheets/' . $match->id . '/team-players') }}/' + teamId, {headers: {'Accept': 'application/json'}})
+            .then(response => response.json())
+            .then(players => {
+                playerSelect.innerHTML = '<option value="">Joueur</option>';
+                players.forEach(player => {
+                    const option = document.createElement('option');
+                    option.value = player.id;
+                    option.textContent = player.name;
+                    playerSelect.appendChild(option);
+                });
+            });
     }
     teamSelect.addEventListener('change', filterPlayers);
     filterPlayers();

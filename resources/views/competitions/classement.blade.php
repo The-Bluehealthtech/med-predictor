@@ -40,8 +40,10 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.form.season') }}</label>
                     <select id="seasonFilter" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="2024-2025">2024-2025</option>
-                        <option value="2023-2024">2023-2024</option>
+                        <option value="">Toutes les saisons</option>
+                        @foreach($seasons as $season)
+                            <option value="{{ $season }}">{{ $season }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div>
@@ -64,7 +66,7 @@
 
         <!-- Classements -->
         @foreach($competitions as $competition)
-            <div class="bg-white rounded-lg shadow mb-6 competition-table" data-competition="{{ $competition->id }}">
+            <div class="bg-white rounded-lg shadow mb-6 competition-table" data-competition="{{ $competition->id }}" data-season="{{ $competition->season }}">
                 <!-- En-tête de la compétition -->
                 <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                     <div class="flex items-center justify-between">
@@ -268,7 +270,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.ranking.best_attack') }}</h3>
-                        <p class="text-sm text-gray-500">{{ collect($classements[1])->max('buts_pour') }} {{ __('competitions.ranking.goals_suffix') }}</p>
+                        <p class="text-sm text-gray-500">{{ collect($classements[1] ?? [])->max('buts_pour') }} {{ __('competitions.ranking.goals_suffix') }}</p>
                     </div>
                 </div>
             </div>
@@ -280,7 +282,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.ranking.best_defense') }}</h3>
-                        <p class="text-sm text-gray-500">{{ collect($classements[1])->min('buts_contre') }} {{ __('competitions.ranking.goals_conceded_suffix') }}</p>
+                        <p class="text-sm text-gray-500">{{ collect($classements[1] ?? [])->min('buts_contre') }} {{ __('competitions.ranking.goals_conceded_suffix') }}</p>
                     </div>
                 </div>
             </div>
@@ -292,7 +294,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">{{ __('competitions.ranking.win_rate') }}</h3>
-                        <p class="text-sm text-gray-500">{{ number_format((collect($classements[1])->max('victoires') / collect($classements[1])->max('matchs_joues')) * 100, 1) }}%</p>
+                        <p class="text-sm text-gray-500">{{ number_format((collect($classements[1] ?? [])->max('victoires') / max((int) collect($classements[1] ?? [])->max('matchs_joues'), 1)) * 100, 1) }}%</p>
                     </div>
                 </div>
             </div>
@@ -383,7 +385,9 @@ function applyFilters() {
     // Masquer/afficher les tableaux selon le filtre de compétition
     const tables = document.querySelectorAll('.competition-table');
     tables.forEach(table => {
-        if (!competitionFilter || table.dataset.competition === competitionFilter) {
+        const matchesCompetition = !competitionFilter || table.dataset.competition === competitionFilter;
+        const matchesSeason = !seasonFilter || table.dataset.season === seasonFilter;
+        if (matchesCompetition && matchesSeason) {
             table.style.display = 'block';
         } else {
             table.style.display = 'none';

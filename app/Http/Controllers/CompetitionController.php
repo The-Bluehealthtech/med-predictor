@@ -536,9 +536,6 @@ class CompetitionController extends Controller
                     $clubId = $match->homeTeam->club->id;
                     if ($clubsData->has($clubId)) {
                         $clubsData[$clubId]['matches']->push($match);
-                        if ($match->competition) {
-                            $clubsData[$clubId]['competitions']->push($match->competition);
-                        }
                     }
                 }
                 
@@ -547,9 +544,6 @@ class CompetitionController extends Controller
                     $clubId = $match->awayTeam->club->id;
                     if ($clubsData->has($clubId)) {
                         $clubsData[$clubId]['matches']->push($match);
-                        if ($match->competition) {
-                            $clubsData[$clubId]['competitions']->push($match->competition);
-                        }
                     }
                 }
             }
@@ -633,16 +627,16 @@ class CompetitionController extends Controller
             }
         ])
         ->orderBy('match_date', 'asc')
-        ->orderBy('match_time', 'asc')
+        ->orderBy('kickoff_time', 'asc')
         ->get()
         ->map(function($match) {
             return [
                 'id' => $match->id,
                 'date' => $match->match_date ? \Carbon\Carbon::parse($match->match_date)->format('Y-m-d') : null,
-                'heure' => $match->match_time ? \Carbon\Carbon::parse($match->match_time)->format('H:i') : null,
-                'competition' => $match->competition->name ?? 'Compétition inconnue',
-                'domicile' => $match->homeTeam->club->short_name ?? $match->homeTeam->club->name ?? 'Club domicile',
-                'exterieur' => $match->awayTeam->club->short_name ?? $match->awayTeam->club->name ?? 'Club extérieur',
+                'heure' => $match->kickoff_time ? \Carbon\Carbon::parse($match->kickoff_time)->format('H:i') : null,
+                'competition' => $match->competition?->name ?? 'Compétition inconnue',
+                'domicile' => $match->homeTeam?->club?->short_name ?? $match->homeTeam?->club?->name ?? 'Club domicile',
+                'exterieur' => $match->awayTeam?->club?->short_name ?? $match->awayTeam?->club?->name ?? 'Club extérieur',
                 'lieu' => $match->venue ?? __('competitions.fixtures_page.not_specified'),
                 'arbitre_principal' => $match->officials->first() ? $match->officials->first()->name : __('competitions.fixtures_page.to_be_designated'),
                 'statut' => $this->getMatchStatus($match->status),
@@ -686,13 +680,16 @@ class CompetitionController extends Controller
     /**
      * Résultats & Classements - Compilation auto
      */
-    public function associationResultatsClassements(): View
+    public function associationResultatsClassements(Request $request): View
     {
         try {
-            // Récupérer les vraies données de compétitions et leurs classements
-            $competitions = \App\Models\Competition::with(['clubs'])
-                ->whereIn('status', ['published', 'active'])
-                ->get();
+            // Récupérer les compétitions et appliquer le filtre sélectionné.
+            $competitionQuery = \App\Models\Competition::with(['clubs'])
+                ->where('status', '!=', 'cancelled');
+            if ($request->filled('competition_id')) {
+                $competitionQuery->whereKey($request->integer('competition_id'));
+            }
+            $competitions = $competitionQuery->orderBy('name')->get();
 
             $classements = collect();
 
@@ -712,7 +709,7 @@ class CompetitionController extends Controller
                             $query->whereIn('home_team_id', $teamIds)
                                   ->orWhereIn('away_team_id', $teamIds);
                         })
-                        ->where('status', 'completed')
+                        ->where('match_status', 'completed')
                         ->whereNotNull('home_score')
                         ->whereNotNull('away_score')
                         ->get();
@@ -806,12 +803,14 @@ class CompetitionController extends Controller
             // Si aucune donnée réelle, retourner une collection vide
             // Pas de données de démonstration pour éviter les données incorrectes
 
-            return view('competitions.association.resultats-classements', compact('classements'));
+            $availableCompetitions = \App\Models\Competition::where('status', '!=', 'cancelled')->orderBy('name')->get(['id', 'name']);
+            return view('competitions.association.resultats-classements', compact('classements', 'availableCompetitions'));
 
         } catch (\Exception $e) {
             // En cas d'erreur, retourner une collection vide
             $classements = collect();
-            return view('competitions.association.resultats-classements', compact('classements'));
+            $availableCompetitions = collect();
+            return view('competitions.association.resultats-classements', compact('classements', 'availableCompetitions'));
         }
     }
 
@@ -1572,7 +1571,7 @@ class CompetitionController extends Controller
             $user = auth()->user();
 
             $query = Competition::with(['association', 'clubs'])
-                ->whereIn('status', ['published', 'active']);
+                ->where('status', '!=', 'cancelled');
 
             if ($user && $user->association_id) {
                 $query->where('association_id', $user->association_id);
@@ -1595,9 +1594,10 @@ class CompetitionController extends Controller
                 return $competition->clubs;
             })->unique('id')->values();
 
-            $tunisianAssociation = $user->association ?? null;
+            $tunisianAssociation = $user?->association ?? null;
+            $seasons = $competitions->pluck('season')->filter()->unique()->sort()->values();
 
-            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation', 'matchsInfo'));
+            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation', 'matchsInfo', 'seasons'));
 
         } catch (\Exception $e) {
             // Etat honnete en cas d'erreur : listes vides, plus de
@@ -1607,8 +1607,9 @@ class CompetitionController extends Controller
             $tunisianClubs = collect();
             $tunisianAssociation = null;
             $matchsInfo = [];
+            $seasons = collect();
 
-            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation', 'matchsInfo'));
+            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation', 'matchsInfo', 'seasons'));
         }
     }
 
@@ -1809,10 +1810,11 @@ class CompetitionController extends Controller
             // la FTF à tout utilisateur association quelle que soit son
             // association réelle. Remplacé par l'association de
             // l'utilisateur connecté.
-            $associationId = auth()->user()->association_id ?? null;
+            $user = auth()->user();
+            $associationId = $user?->association_id;
             $association = $associationId ? Association::find($associationId) : null;
 
-            if (!$association && in_array(auth()->user()->role, ['system_admin', 'super_admin', 'admin'], true) && $request->filled('competition_id')) {
+            if (!$association && $user && in_array($user->role, ['system_admin', 'super_admin', 'admin'], true) && $request->filled('competition_id')) {
                 $selectedCompetition = Competition::with('association')->find($request->integer('competition_id'));
                 $association = $selectedCompetition?->association;
             }
@@ -1871,8 +1873,8 @@ class CompetitionController extends Controller
 
             return view('competitions.association.fixtures', compact('paginatedFixtures', 'clubs', 'competitions'));
             
-        } catch (\Exception $e) {
-            // En cas d'erreur, retourner une vue d'erreur
+        } catch (\Throwable $e) {
+            report($e);
             return view('errors.database', ['message' => 'Erreur lors de la récupération des données: ' . $e->getMessage()]);
         }
     }
@@ -2042,7 +2044,7 @@ class CompetitionController extends Controller
         foreach ($matchesByRound as $roundMatches) {
             $matchsJournee = [];
             $firstMatch = $roundMatches->first();
-            $competitionName = $firstMatch->competition->name ?? $associationFixturesLabels['unknown_competition_fallback'];
+            $competitionName = $firstMatch->competition?->name ?? $associationFixturesLabels['unknown_competition_fallback'];
             
             foreach ($roundMatches as $match) {
                 $isCompleted = $match->status === 'completed';
@@ -2051,8 +2053,8 @@ class CompetitionController extends Controller
                 
                 $matchsJournee[] = [
                     'id' => $match->id,
-                    'domicile' => $match->homeTeam->club->short_name ?? $match->homeTeam->club->name ?? $clubFallback,
-                    'exterieur' => $match->awayTeam->club->short_name ?? $match->awayTeam->club->name ?? $clubFallback,
+                    'domicile' => $match->homeTeam?->club?->short_name ?? $match->homeTeam?->club?->name ?? $clubFallback,
+                    'exterieur' => $match->awayTeam?->club?->short_name ?? $match->awayTeam?->club?->name ?? $clubFallback,
                     'date' => $match->match_date,
                     'heure' => $match->kickoff_time,
                     'stade' => $match->venue,

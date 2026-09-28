@@ -33,7 +33,6 @@ class SaudiHierarchySeeder extends Seeder
             'name' => 'Fédération saoudienne de football',
             'short_name' => 'SAFF',
             'country' => 'Arabie saoudite',
-            'confederation_id' => $confederation->id,
             'confederation' => 'AFC',
             'status' => 'active',
             'fifa_id' => 'SAFF',

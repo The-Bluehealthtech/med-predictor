@@ -3446,8 +3446,15 @@ Route::get('/test-pdf', function() {
 
     
     Route::get('/modules/teams', function () {
-        $teams = \App\Models\Team::with(['club', 'club.association'])->orderBy('name')->get();
-        $clubs = \App\Models\Club::with('association')->orderBy('name')->get();
+        try {
+            $teams = \App\Models\Team::with(['club', 'club.association'])->orderBy('name')->get();
+            $clubs = \App\Models\Club::with('association')->orderBy('name')->get();
+        } catch (\Throwable $exception) {
+            report($exception);
+            $teams = collect();
+            $clubs = collect();
+        }
+
         return view('modules.teams.index', compact('teams', 'clubs'));
     })->name('modules.teams.index');
     

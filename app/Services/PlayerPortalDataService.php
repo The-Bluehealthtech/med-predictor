@@ -1009,6 +1009,7 @@ class PlayerPortalDataService
             'playerMedicalAptitude',
             'playerVitalSigns',
             'profileSynthetic',
+            'latestRealtime',
             'playerInjuriesDiseases',
             'sportsDevices',
             'behavioralData',

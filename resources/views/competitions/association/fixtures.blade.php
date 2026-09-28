@@ -453,7 +453,7 @@ function showMatchModal(matchId, type) {
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.fixtures_page.status_label'))}</label>
-                        <span class="inline-block px-3 py-1 rounded-full text-sm ${statutClass}">${matchData.statut}</span>
+                        ${type === 'edit' ? '<select id="edit-match-status" class="border rounded px-2 py-1 w-full"><option value="scheduled">Programmé</option><option value="postponed">Reporté</option><option value="completed">Terminé</option><option value="cancelled">Annulé</option></select>' : '<span class="inline-block px-3 py-1 rounded-full text-sm ' + statutClass + '">' + matchData.statut + '</span>'}
                     </div>
                 </div>
                 <div>
@@ -507,6 +507,7 @@ function closeModal(button) {
 function saveMatch(matchId) {
     const modal = window.activeMatchModal || document.querySelector('.fixed.inset-0');
     const venue = modal?.querySelector('#edit-match-venue')?.value || '';
+    const status = modal?.querySelector('#edit-match-status')?.value || '';
     const score = modal?.querySelector('#edit-match-score')?.value || '';
     const scores = score.match(/(\d+)\s*-\s*(\d+)/);
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
@@ -515,6 +516,7 @@ function saveMatch(matchId) {
         headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf},
         body: JSON.stringify({
             venue,
+            match_status: status || null,
             home_score: scores ? Number(scores[1]) : null,
             away_score: scores ? Number(scores[2]) : null
         })

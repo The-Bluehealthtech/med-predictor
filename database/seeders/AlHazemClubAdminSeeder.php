@@ -29,8 +29,6 @@ class AlHazemClubAdminSeeder extends Seeder
             ]
         );
 
-        $club->forceFill(['tenant_id' => $tenant->id])->save();
-
         $user = User::updateOrCreate(
             ['email' => 'admin.alhazem@fit.local'],
             [

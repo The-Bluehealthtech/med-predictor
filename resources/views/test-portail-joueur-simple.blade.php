@@ -771,14 +771,15 @@
                 </div>
 
                 @php
+                    $seasonStat = $seasonStat ?? ($playerStats?->first());
                     $cockpitMetrics = collect($ksaMetrics ?? []);
                     $metricValue = function (array $needles) use ($cockpitMetrics) {
                         $metric = $cockpitMetrics->first(function ($item) use ($needles) {
-                            $name = strtolower((string) ($item->metric_name ?? ''));
+                            $name = strtolower((string) data_get($item, 'metric_name', ''));
                             foreach ($needles as $needle) if (str_contains($name, strtolower($needle))) return true;
                             return false;
                         });
-                        return $metric?->metric_value;
+                        return data_get($metric, 'metric_value');
                     };
                     $cockpitData = [
                         'matches_played' => $seasonStat?->matches_played,

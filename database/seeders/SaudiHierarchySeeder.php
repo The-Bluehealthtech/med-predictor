@@ -19,6 +19,7 @@ class SaudiHierarchySeeder extends Seeder
                 'status' => 'active',
                 'fifa_sync_status' => 'pending',
                 'founded_year' => 1954,
+                'confederation_logo_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Asian%20Football%20Confederation%20emblem.svg',
                 'updated_at' => $now,
                 'created_at' => $now,
             ]
@@ -36,6 +37,8 @@ class SaudiHierarchySeeder extends Seeder
             'confederation' => 'AFC',
             'status' => 'active',
             'fifa_id' => 'SAFF',
+            'association_logo_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Saudi%20Arabian%20Football%20Federation%20Logo.svg',
+            'nation_flag_url' => 'https://flagcdn.com/w640/sa.png',
             'updated_at' => $now,
         ];
 
@@ -60,6 +63,7 @@ class SaudiHierarchySeeder extends Seeder
                 'status' => 'active',
                 'founded_year' => 1957,
                 'website' => 'https://alhazem.sa',
+                'logo_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Al-Hazem_SC_logo.png',
                 'updated_at' => $now,
                 'created_at' => $now,
             ]

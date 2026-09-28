@@ -1594,7 +1594,7 @@ class CompetitionController extends Controller
                 return $competition->clubs;
             })->unique('id')->values();
 
-            $tunisianAssociation = $user->association ?? null;
+            $tunisianAssociation = $user?->association ?? null;
 
             return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation', 'matchsInfo'));
 

@@ -1890,6 +1890,21 @@ class CompetitionController extends Controller
         }
     }
 
+    public function updateAssociationMatch(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'venue' => 'nullable|string|max:255',
+            'match_date' => 'nullable|date',
+            'home_score' => 'nullable|integer|min:0',
+            'away_score' => 'nullable|integer|min:0',
+            'match_status' => 'nullable|string|max:50',
+        ]);
+        $match = GameMatch::findOrFail($id);
+        $match->fill($validated);
+        $match->save();
+        return response()->json(['success' => true, 'message' => 'Match modifié avec succès']);
+    }
+
     /**
      * Feuille de match détaillée
      */

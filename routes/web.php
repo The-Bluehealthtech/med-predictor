@@ -3410,6 +3410,7 @@ Route::get('/test-pdf', function() {
             Route::get('/classement', [App\Http\Controllers\CompetitionController::class, 'classement'])->name('classement');
             Route::get('/fixtures', [App\Http\Controllers\CompetitionController::class, 'associationFixtures'])->name('fixtures');
             Route::get('/feuille-match/{id}', [App\Http\Controllers\CompetitionController::class, 'feuilleMatch'])->name('feuille-match');
+            Route::post('/match/{id}/update', [App\Http\Controllers\CompetitionController::class, 'updateAssociationMatch'])->name('match.update');
             Route::get('/designation-arbitres', [App\Http\Controllers\CompetitionController::class, 'designationArbitres'])->name('designation-arbitres');
             // NOTE (audit factice -> reel, 2026-09) : CompetitionController::saveArbitreAssignments()
             // existe et est fonctionnelle (enregistre reellement dans la table

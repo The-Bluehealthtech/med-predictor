@@ -462,11 +462,11 @@ function showMatchModal(matchId, type) {
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.association_fixtures_page.modal_time_label'))}</label>
-                    <p class="text-lg">${matchData.heure}</p>
+                    ${type === 'edit' ? '<input id="edit-match-time" type="text" class="border rounded px-2 py-1 w-full" value="' + (matchData.heure || '') + '">' : '<p class="text-lg">' + matchData.heure + '</p>'}
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.association_fixtures_page.modal_stadium_label'))}</label>
-                    <p class="text-lg">${matchData.stade}</p>
+                    ${type === 'edit' ? '<input id="edit-match-venue" class="border rounded px-2 py-1 w-full" value="' + (matchData.stade || '') + '">' : '<p class="text-lg">' + matchData.stade + '</p>'}
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.association_fixtures_page.modal_referee_label'))}</label>
@@ -474,7 +474,7 @@ function showMatchModal(matchId, type) {
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">${@json(__('competitions.association_fixtures_page.modal_score_label'))}</label>
-                    <p class="text-2xl font-bold text-blue-600">${matchData.score}</p>
+                    ${type === 'edit' ? '<input id="edit-match-score" class="border rounded px-2 py-1 w-32" value="' + (matchData.score || '') + '">' : '<p class="text-2xl font-bold text-blue-600">' + matchData.score + '</p>'}
                 </div>
                 <div class="pt-4 border-t">
                     <div class="flex justify-end space-x-2">
@@ -504,8 +504,23 @@ function closeModal(button) {
 // ce soit a enregistrer. Aucune edition reelle des matchs n'est disponible
 // depuis cette page pour le moment.
 function saveMatch(matchId) {
-    showNotification(@json(__('competitions.association_fixtures_page.js_save_match_unavailable')), 'error');
-    closeModal(event.target.closest('.fixed'));
+    const modal = document.querySelector('.fixed.inset-0:last-of-type');
+    const venue = modal?.querySelector('#edit-match-venue')?.value || '';
+    const score = modal?.querySelector('#edit-match-score')?.value || '';
+    const scores = score.match(/(\\d+)\\s*-\\s*(\\d+)/);
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+    fetch('{{ url('/competitions/association/match') }}/' + matchId + '/update', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf},
+        body: JSON.stringify({
+            venue,
+            home_score: scores ? Number(scores[1]) : null,
+            away_score: scores ? Number(scores[2]) : null
+        })
+    }).then(r => r.json()).then(data => {
+        showNotification(data.message || data.error, data.success ? 'success' : 'error');
+        if (data.success) setTimeout(() => location.reload(), 600);
+    }).catch(() => showNotification('Erreur lors de la modification', 'error'));
 }
 
 function showNotification(message, type = 'success') {

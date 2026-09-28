@@ -978,7 +978,8 @@ class PlayerPortalDataService
             ->orderBy('metric_name')
             ->get();
 
-        $ksaMetrics = $ksaMetricCatalog->concat($ksaMetrics)->unique('metric_name')->values();
+        // Prefer persisted player values over the empty catalog placeholders.
+        $ksaMetrics = $ksaMetrics->concat($ksaMetricCatalog)->unique('metric_name')->values();
 
         return compact(
             'healthRecords',

@@ -775,7 +775,7 @@
                     $cockpitMetrics = collect($ksaMetrics ?? []);
                     $metricValue = function (array $needles) use ($cockpitMetrics) {
                         $metric = $cockpitMetrics->first(function ($item) use ($needles) {
-                            $name = strtolower((string) data_get($item, 'metric_name', ''));
+                            $name = str_replace('_', ' ', strtolower((string) data_get($item, 'metric_name', '')));
                             foreach ($needles as $needle) if (str_contains($name, strtolower($needle))) return true;
                             return false;
                         });

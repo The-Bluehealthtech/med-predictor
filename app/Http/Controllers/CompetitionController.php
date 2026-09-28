@@ -261,7 +261,7 @@ class CompetitionController extends Controller
             // l'utilisateur via matches.home_club_id/away_club_id.
             $clubId = auth()->user()->club_id;
 
-            $query = \App\Models\MatchSheet::with(['match.homeTeam', 'match.awayTeam']);
+            $query = \App\Models\MatchSheet::with(['match.homeTeam.club', 'match.awayTeam.club']);
 
             if ($clubId) {
                 $query->whereHas('match', function ($q) use ($clubId) {
@@ -273,8 +273,12 @@ class CompetitionController extends Controller
 
             $feuilles = $sheets->map(function ($sheet) {
                 $match = $sheet->match;
-                $homeName = $match?->homeTeam->name ?? 'N/A';
-                $awayName = $match?->awayTeam->name ?? 'N/A';
+                $homeName = $match?->homeTeam?->club?->name
+                    ? ($match->homeTeam->club->name . ' — ' . ($match->homeTeam->name ?? 'Équipe'))
+                    : ($match?->homeTeam?->name ?? 'N/A');
+                $awayName = $match?->awayTeam?->club?->name
+                    ? ($match->awayTeam->club->name . ' — ' . ($match->awayTeam->name ?? 'Équipe'))
+                    : ($match?->awayTeam?->name ?? 'N/A');
 
                 $statutCode = $sheet->status ?? 'draft';
                 if ($statutCode === 'draft' && $match?->match_date && $match->match_date->isPast()) {

@@ -93,7 +93,7 @@ class DigitalTwinController extends Controller
                 ->orderBy('metric_name')
                 ->get()
             : collect();
-        $advancedMetrics = $ksaCatalog->concat($advancedMetrics)->values();
+        $advancedMetrics = $ksaCatalog->concat($advancedMetrics)->unique('metric_name')->values();
 
         return view('analytics.digital-twin-canonical', compact(
             'players',

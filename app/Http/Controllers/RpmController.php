@@ -67,7 +67,7 @@ class RpmController extends Controller
             ->orderByDesc('updated_at')
             ->limit(100)
             ->get();
-        $advancedMetrics = $ksaCatalog->concat($advancedMetrics)->values();
+        $advancedMetrics = $ksaCatalog->concat($advancedMetrics)->unique('metric_name')->values();
 
         return view('rpm.index-canonical', compact('measurements', 'stats', 'advancedMetrics'));
     }

@@ -79,8 +79,16 @@
     <section class="mt-6 rounded-lg border border-amber-300 bg-amber-50 p-5">
         <h2 class="text-lg font-semibold">Statistiques Avancées</h2>
         <p class="text-sm">Métriques KSA disponibles séparément des mesures RPM.</p>
-        @forelse($advancedMetrics as $metric)
-            <span class="mr-3 inline-block rounded bg-white px-3 py-2 text-sm">{{ str_replace('_', ' ', $metric->metric_name) }}: {{ $metric->metric_value ?? 'Non disponible' }} {{ $metric->metric_unit }}</span>
+        @forelse($advancedMetrics->chunk(4) as $row)
+            <div class="grid gap-3 md:grid-cols-4">
+                @foreach($row as $metric)
+                    <div class="rounded border border-amber-100 bg-white p-3 shadow-sm">
+                        <div class="text-xs text-gray-500">{{ $metric->metric_name }}</div>
+                        <div class="mt-1 font-semibold">{{ $metric->metric_value ?? 'Non disponible' }}</div>
+                        <div class="text-xs text-gray-400">{{ $metric->metric_unit ?: '—' }} · {{ $metric->source }}</div>
+                    </div>
+                @endforeach
+            </div>
         @empty
             <p class="text-sm">Aucune métrique avancée enregistrée.</p>
         @endforelse

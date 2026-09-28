@@ -747,6 +747,22 @@
                         </div>
                     </div>
                 </div>
+
+                <section id="ksa-statistics" class="fifa-stat-card mt-6">
+                    <div class="fifa-stat-header">
+                        <span>Données de jeu</span>
+                        <span class="text-xs opacity-70">Indicateurs détaillés</span>
+                    </div>
+                    <div class="fifa-health-grid">
+                        @foreach(($ksaMetrics ?? collect()) as $metric)
+                            <div class="fifa-stat-card">
+                                <div class="fifa-stat-header">{{ $metric->metric_name }}</div>
+                                <div class="fifa-stat-value">{{ $metric->metric_value ?? 'Données non disponibles' }}</div>
+                                <div class="text-xs opacity-70">{{ $metric->metric_unit ?: '—' }} · {{ $metric->source }}</div>
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
             </div>
         </div>
 
@@ -3305,24 +3321,5 @@
                          console.log('✅ Graphiques Chart.js initialisés !');
                      }
                  </script>
-             <section id="ksa-statistics" class="fifa-stat-card mt-6">
-                 <div class="fifa-stat-header">
-                     <h2>Statistiques Avancées</h2>
-                     <p>Données détaillées de performance · Note FIT indépendante</p>
-                 </div>
-                 @if(($ksaMetrics ?? collect())->isEmpty())
-                     <p class="mt-4 text-sm">Aucune donnée KSA enregistrée.</p>
-                 @else
-                     <div class="fifa-health-grid">
-                         @foreach($ksaMetrics as $metric)
-                             <div class="fifa-stat-card">
-                                 <div class="fifa-stat-header">{{ $metric->metric_name }}</div>
-                                 <div class="fifa-stat-value">{{ $metric->metric_value ?? 'Non disponible' }}</div>
-                                 <div class="text-xs opacity-70">{{ $metric->metric_unit ?: '—' }} · {{ $metric->source }}</div>
-                             </div>
-                         @endforeach
-                     </div>
-                 @endif
-             </section>
              </body>
              </html>

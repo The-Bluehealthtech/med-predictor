@@ -1873,8 +1873,8 @@ class CompetitionController extends Controller
 
             return view('competitions.association.fixtures', compact('paginatedFixtures', 'clubs', 'competitions'));
             
-        } catch (\Exception $e) {
-            // En cas d'erreur, retourner une vue d'erreur
+        } catch (\Throwable $e) {
+            report($e);
             return view('errors.database', ['message' => 'Erreur lors de la récupération des données: ' . $e->getMessage()]);
         }
     }
@@ -2044,7 +2044,7 @@ class CompetitionController extends Controller
         foreach ($matchesByRound as $roundMatches) {
             $matchsJournee = [];
             $firstMatch = $roundMatches->first();
-            $competitionName = $firstMatch->competition->name ?? $associationFixturesLabels['unknown_competition_fallback'];
+            $competitionName = $firstMatch->competition?->name ?? $associationFixturesLabels['unknown_competition_fallback'];
             
             foreach ($roundMatches as $match) {
                 $isCompleted = $match->status === 'completed';
@@ -2053,8 +2053,8 @@ class CompetitionController extends Controller
                 
                 $matchsJournee[] = [
                     'id' => $match->id,
-                    'domicile' => $match->homeTeam->club->short_name ?? $match->homeTeam->club->name ?? $clubFallback,
-                    'exterieur' => $match->awayTeam->club->short_name ?? $match->awayTeam->club->name ?? $clubFallback,
+                    'domicile' => $match->homeTeam?->club?->short_name ?? $match->homeTeam?->club?->name ?? $clubFallback,
+                    'exterieur' => $match->awayTeam?->club?->short_name ?? $match->awayTeam?->club?->name ?? $clubFallback,
                     'date' => $match->match_date,
                     'heure' => $match->kickoff_time,
                     'stade' => $match->venue,

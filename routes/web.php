@@ -2107,7 +2107,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/competitions/{competition}/register-team', [CompetitionManagementController::class, 'registerTeam'])->name('competitions.register-team');
 
     // Feuille de match complète : sélection et sauvegarde des joueurs.
-    Route::get('/match-sheets/{match}/edit', [CompetitionManagementController::class, 'editMatchSheet'])->name('match-sheets.edit');
+    Route::get('/match-sheets/{sheet}/edit', function (int $sheet) {
+        $matchSheet = \App\Models\MatchSheet::with('match')->findOrFail($sheet);
+        abort_unless($matchSheet->match, 404, 'Match associé introuvable');
+        return app(CompetitionManagementController::class)->editMatchSheet($matchSheet->match);
+    })->name('match-sheets.edit');
     Route::put('/match-sheets/{match}', [CompetitionManagementController::class, 'updateMatchSheet'])->name('match-sheets.update');
     
     // Fixtures routes

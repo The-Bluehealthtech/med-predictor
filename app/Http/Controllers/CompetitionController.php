@@ -1936,7 +1936,7 @@ class CompetitionController extends Controller
             // véritable id de la rencontre (MatchModel).
             if ($request->boolean('edit')) {
                 $sheet = \App\Models\MatchSheet::findOrFail($id);
-                return redirect()->route('match-sheets.edit', ['match' => $sheet->match_id]);
+                return redirect()->route('match-sheets.edit', ['sheet' => $id]);
             }
 
             // Utiliser les données de la base de données au lieu de générer des données

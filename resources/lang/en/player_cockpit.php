@@ -14,4 +14,12 @@ return [
     'lowest' => 'Lowest rate among these indicators: :label (:value%).',
     'spread' => 'Difference between these rates: :value percentage points.',
     'scope_note' => 'Descriptive comparison of available rates; this is neither an overall score nor a diagnosis.',
+    'details_title' => 'Recorded KSA indicators',
+    'no_recorded_metrics' => 'No KSA indicators recorded.',
+    'group_passes' => 'Passing',
+    'group_defense' => 'Duels and defending',
+    'group_dribbles' => 'Dribbling',
+    'group_discipline' => 'Discipline',
+    'group_attack' => 'Chances and shots',
+    'group_other' => 'Other indicators',
 ];

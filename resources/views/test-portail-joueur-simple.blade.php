@@ -812,6 +812,12 @@
                     $highestRateKey = $sortedRates->keys()->first();
                     $lowestRateKey = $sortedRates->keys()->last();
                     $formatRate = fn ($value) => number_format((float) $value, 2, app()->getLocale() === 'fr' ? ',' : '.', app()->getLocale() === 'fr' ? ' ' : ',');
+                    $formatGameValue = function ($value) {
+                        if (!is_numeric($value)) return (string) $value;
+                        $rounded = number_format((float) $value, 2, '.', '');
+                        $trimmed = rtrim(rtrim($rounded, '0'), '.');
+                        return app()->getLocale() === 'fr' ? str_replace('.', ',', $trimmed) : $trimmed;
+                    };
                     $cockpitData = [
                         'matches_played' => $seasonStat?->matches_played,
                         'minutes_played' => $seasonStat?->minutes_played,
@@ -868,13 +874,12 @@
                         #cockpit-joueur .cockpit-toggle button[aria-pressed=true]{background:var(--fifa-blue-primary);color:var(--fifa-white)}
                         #cockpit-joueur .cockpit-toggle button:focus-visible{outline:2px solid var(--fifa-gold);outline-offset:2px}
                         #cockpit-joueur .cockpit-unavailable{color:var(--fifa-gray-500);font-size:.8rem}
-                        #cockpit-joueur + #ksa-statistics{display:none!important}
                         @media(max-width:700px){#cockpit-joueur .cockpit-kpis,#cockpit-joueur .cockpit-grid{grid-template-columns:1fr}#cockpit-joueur .cockpit-head{align-items:flex-start;flex-direction:column}#cockpit-joueur .cockpit-bar{grid-template-columns:115px 1fr 38px}}
                     </style>
                     <div class="cockpit-head"><div><h3 id="cockpit-title" class="cockpit-title">Données de jeu</h3><div class="cockpit-note">Performance du joueur · source FIT disponible</div></div><div class="cockpit-toggle" role="group" aria-label="Mode d'affichage"><button type="button" data-mode="match" aria-pressed="true">Par match</button><button type="button" data-mode="90">Par 90 min</button></div></div>
                     <div class="cockpit-kpis">
                         @foreach(['matches_played'=>'Matchs','minutes_played'=>'Minutes','index_ksa'=>'Index KSA','goals'=>'Buts','expected_goals'=>'xG','passes_accuracy'=>'Précision passes'] as $key=>$label)
-                            @if($cockpitData[$key] !== null)<div class="cockpit-kpi"><div class="cockpit-kpi-label">{{ $label }}</div><div class="cockpit-kpi-value">{{ $cockpitData[$key] }}</div></div>@endif
+                            @if($cockpitData[$key] !== null)<div class="cockpit-kpi"><div class="cockpit-kpi-label">{{ $label }}</div><div class="cockpit-kpi-value">{{ $formatGameValue($cockpitData[$key]) }}{{ $key === 'passes_accuracy' ? ' %' : '' }}</div></div>@endif
                         @endforeach
                     </div>
                     <div class="cockpit-grid">
@@ -945,7 +950,7 @@
                                 fill.style.width = percent === null ? '0%' : percent + '%';
                                 track.appendChild(fill);
                                 const display = document.createElement('strong');
-                                display.textContent = percent === null ? String(d[key]) : format(percent) + ' %';
+                                display.textContent = percent === null ? format(value) : format(percent) + ' %';
                                 row.append(label, track, display);
                                 el.appendChild(row);
                             });
@@ -1005,44 +1010,53 @@
                     })();
                     </script>
                 </section>
-                <section id="ksa-statistics" class="fifa-stat-card mt-6 mx-auto" style="max-width:1120px;">
-                    <div class="fifa-stat-header">
-                        <span>Données de jeu</span>
-                        <span class="text-xs opacity-70">Indicateurs détaillés</span>
-                    </div>
-                    <div class="fifa-health-grid" style="display:block;width:100%;">
-                        @php
-                            $gameGroups = ($ksaMetrics ?? collect())->groupBy(function ($metric) {
-                                $label = strtolower($metric->metric_name);
-                                if (str_contains($label, 'pass') || str_contains($label, 'cross')) return 'Passes';
-                                if (str_contains($label, 'challenge') || str_contains($label, 'tackle') || str_contains($label, 'interception')) return 'Duels et défense';
-                                if (str_contains($label, 'dribbl')) return 'Dribbles';
-                                if (str_contains($label, 'card') || str_contains($label, 'foul')) return 'Discipline';
-                                if (str_contains($label, 'chance') || str_contains($label, 'goal') || str_contains($label, 'shot')) return 'Occasions et tirs';
-                                return 'Autres indicateurs';
-                            });
-                        @endphp
-                        @foreach($gameGroups as $group => $groupMetrics)
-                            <div class="col-span-full mt-4">
-                                <h3 class="text-sm font-semibold uppercase tracking-wide opacity-70">{{ $group }}</h3>
-                            </div>
-                            <div class="col-span-full" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;width:100%;">
-                                @foreach($groupMetrics as $metric)
-                                    <div class="fifa-stat-card">
-                                        <div class="fifa-stat-header">{{ $metric->metric_name }}</div>
-                                        <div class="fifa-stat-value">{{ $metric->metric_value ?? 'Données non disponibles' }}</div>
-                                        <div class="text-xs opacity-70">{{ $metric->metric_unit ?: '—' }} · {{ $metric->source }}</div>
+                @php
+                    $recordedKsaMetrics = collect($ksaMetrics ?? [])
+                        ->filter(fn ($metric) => data_get($metric, 'metric_value') !== null
+                            && is_numeric(data_get($metric, 'metric_value')));
+                    $gameGroups = $recordedKsaMetrics->groupBy(function ($metric) {
+                        $label = strtolower($metric->metric_name);
+                        if (str_contains($label, 'pass') || str_contains($label, 'cross')) return __('player_cockpit.group_passes');
+                        if (str_contains($label, 'challenge') || str_contains($label, 'tackle') || str_contains($label, 'interception')) return __('player_cockpit.group_defense');
+                        if (str_contains($label, 'dribbl')) return __('player_cockpit.group_dribbles');
+                        if (str_contains($label, 'card') || str_contains($label, 'foul')) return __('player_cockpit.group_discipline');
+                        if (str_contains($label, 'chance') || str_contains($label, 'goal') || str_contains($label, 'shot')) return __('player_cockpit.group_attack');
+                        return __('player_cockpit.group_other');
+                    });
+                @endphp
+                <section id="ksa-statistics" class="fifa-stat-card mt-6 mx-auto" style="max-width:1120px;" aria-labelledby="ksa-details-title">
+                    <h3 id="ksa-details-title">{{ __('player_cockpit.details_title') }} ({{ $recordedKsaMetrics->count() }})</h3>
+                    @forelse($gameGroups as $group => $groupMetrics)
+                        <h4 class="mt-4 mb-2 font-semibold">{{ $group }}</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            @foreach($groupMetrics as $metric)
+                                @php
+                                    $unit = strtolower(trim((string) $metric->metric_unit));
+                                    $value = (float) $metric->metric_value;
+                                    $isRate = $unit === 'percent' && $value >= 0 && $value <= 1;
+                                    $displayValue = $isRate ? $formatGameValue($value * 100).' %' : $formatGameValue($value);
+                                    $displayUnit = $isRate ? '' : ($unit === 'count' ? '' : $metric->metric_unit);
+                                    $metricKey = strtolower(str_replace(' ', '_', trim((string) $metric->metric_name)));
+                                    $labelKey = 'player_cockpit.'.$metricKey;
+                                    $displayLabel = __($labelKey) === $labelKey
+                                        ? ucfirst(str_replace('_', ' ', $metric->metric_name))
+                                        : __($labelKey);
+                                @endphp
+                                <div class="fifa-stat-card">
+                                    <div class="fifa-stat-header">{{ $displayLabel }}</div>
+                                    <div class="fifa-stat-value">{{ $displayValue }}@if($displayUnit) <small>{{ $displayUnit }}</small>@endif</div>
+                                    <div class="text-xs opacity-70">
+                                        {{ $metric->source }}
+                                        @if($metric->season) · {{ $metric->season }} @endif
+                                        @if($metric->competition) · {{ $metric->competition }} @endif
+                                        @if($metric->measured_at) · {{ \Carbon\Carbon::parse($metric->measured_at)->format('d/m/Y') }} @endif
                                     </div>
-                                @endforeach
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <div class="fifa-health-grid mt-6" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;">
-                        <div class="fifa-medical-card"><h4>Évolution</h4><canvas id="ksaTrendChart" height="150"></canvas><p class="text-xs opacity-70">Courbe disponible après enregistrement des mesures.</p></div>
-                        <div class="fifa-medical-card"><h4>Volumes</h4><canvas id="ksaVolumeChart" height="150"></canvas><p class="text-xs opacity-70">Histogramme disponible après enregistrement des mesures.</p></div>
-                        <div class="fifa-medical-card"><h4>Répartition</h4><canvas id="ksaCategoryChart" height="150"></canvas><p class="text-xs opacity-70">Répartition disponible après enregistrement des mesures.</p></div>
-                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @empty
+                        <p>{{ __('player_cockpit.no_recorded_metrics') }}</p>
+                    @endforelse
                 </section>
             </div>
         </div>

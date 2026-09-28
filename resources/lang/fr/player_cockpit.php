@@ -14,4 +14,12 @@ return [
     'lowest' => 'Taux le plus faible parmi ces indicateurs : :label (:value %).',
     'spread' => 'Écart entre ces taux : :value points de pourcentage.',
     'scope_note' => 'Comparaison descriptive des taux disponibles ; elle ne constitue ni une note globale ni un diagnostic.',
+    'details_title' => 'Indicateurs KSA enregistrés',
+    'no_recorded_metrics' => 'Aucun indicateur KSA enregistré.',
+    'group_passes' => 'Passes',
+    'group_defense' => 'Duels et défense',
+    'group_dribbles' => 'Dribbles',
+    'group_discipline' => 'Discipline',
+    'group_attack' => 'Occasions et tirs',
+    'group_other' => 'Autres indicateurs',
 ];

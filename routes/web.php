@@ -18,7 +18,7 @@ Route::get('/competition-management/matches/{match}/match-sheet/edit', [\App\Htt
     ->middleware('auth')->name('competition-management.matches.match-sheet.edit');
 Route::put('/competition-management/matches/{match}/match-sheet', [\App\Http\Controllers\CompetitionManagementController::class, 'updateMatchSheet'])
     ->middleware('auth')->name('competition-management.matches.match-sheet.update');
-Route::post('/competition-management/matches/{match}/match-sheet/submit', [\App\Http\Controllers\CompetitionManagementController::class, 'submitMatchSheet'])
+Route::match(['post', 'put'], '/competition-management/matches/{match}/match-sheet/submit', [\App\Http\Controllers\CompetitionManagementController::class, 'submitMatchSheet'])
     ->middleware('auth')->name('competition-management.matches.match-sheet.submit');
 Route::get('/competition-management/competitions/{competition}/standings', [\App\Http\Controllers\CompetitionManagementController::class, 'standings'])
     ->middleware('auth')->name('competition-management.competitions.standings');

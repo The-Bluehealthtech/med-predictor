@@ -14,6 +14,14 @@ Route::get('/match-sheet/{gameMatch}', [\App\Http\Controllers\MatchSheetControll
 
 Route::get('/competition-management/matches/{gameMatch}/match-sheet', [\App\Http\Controllers\MatchSheetController::class, 'show'])
     ->middleware('auth')->name('competition-management.matches.match-sheet');
+Route::get('/competition-management/matches/{match}/match-sheet/edit', [\App\Http\Controllers\CompetitionManagementController::class, 'editMatchSheet'])
+    ->middleware('auth')->name('competition-management.matches.match-sheet.edit');
+Route::put('/competition-management/matches/{match}/match-sheet', [\App\Http\Controllers\CompetitionManagementController::class, 'updateMatchSheet'])
+    ->middleware('auth')->name('competition-management.matches.match-sheet.update');
+Route::post('/competition-management/matches/{match}/match-sheet/submit', [\App\Http\Controllers\CompetitionManagementController::class, 'submitMatchSheet'])
+    ->middleware('auth')->name('competition-management.matches.match-sheet.submit');
+Route::get('/competition-management/competitions/{competition}/standings', [\App\Http\Controllers\CompetitionManagementController::class, 'standings'])
+    ->middleware('auth')->name('competition-management.competitions.standings');
 
 // Controllers will be used as needed
 

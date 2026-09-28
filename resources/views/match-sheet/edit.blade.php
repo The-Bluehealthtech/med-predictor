@@ -337,6 +337,18 @@
                         </div>
                     </div>
 
+                    <!-- Match Events Section -->
+                    <div class="bg-orange-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold text-orange-900 mb-4">7. Événements et sanctions</h3>
+                        @if($events->isEmpty())
+                            <p class="text-sm text-gray-600">Aucun événement enregistré.</p>
+                        @else
+                            <div class="overflow-x-auto"><table class="min-w-full text-sm"><thead><tr><th class="text-left">Minute</th><th class="text-left">Type</th><th class="text-left">Joueur</th><th class="text-left">Motif</th></tr></thead><tbody>
+                            @foreach($events as $event)<tr class="border-t"><td>{{ $event->minute ?? '-' }}{{ $event->extra_time_minute ? '+' . $event->extra_time_minute : '' }}</td><td>{{ $event->event_type_label }}</td><td>{{ $event->player->name ?? 'Non renseigné' }}</td><td>{{ data_get($event->event_data, 'reason', '—') }}</td></tr>@endforeach
+                            </tbody></table></div>
+                        @endif
+                    </div>
+
                     <!-- Referee Report Section -->
                     <div class="bg-indigo-50 p-6 rounded-lg">
                         <h3 class="text-lg font-semibold text-indigo-900 mb-4">6. Referee Report</h3>

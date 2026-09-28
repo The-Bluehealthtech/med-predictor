@@ -1363,6 +1363,7 @@ class CompetitionManagementController extends Controller
             if ($team && blank($matchSheet->{$staff['coach']})) $matchSheet->{$staff['coach']} = $team->coach_name ?? null;
             if ($manager && blank($matchSheet->{$staff['manager']})) $matchSheet->{$staff['manager']} = $manager->name;
         }
+        $events = $matchSheet?->events()->with('player')->orderBy('minute')->get() ?? collect([]);
         $referees = User::where('role', 'referee')
             ->where(function ($query) use ($match) {
                 $query->where('association_id', $match->competition->association_id)
@@ -1371,7 +1372,7 @@ class CompetitionManagementController extends Controller
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        return view('match-sheet.edit', compact('match', 'matchSheet', 'homeTeamPlayers', 'awayTeamPlayers', 'referees', 'venues'));
+        return view('match-sheet.edit', compact('match', 'matchSheet', 'homeTeamPlayers', 'awayTeamPlayers', 'referees', 'venues', 'events'));
     }
 
     public function updateMatchSheet(Request $request, MatchModel $match)
@@ -1432,10 +1433,19 @@ class CompetitionManagementController extends Controller
     public function submitMatchSheet(MatchModel $match)
     {
         $this->authorizeCompetitionAccess($match->competition);
-        
-        // Submit match sheet logic here
+        $sheet = $match->matchSheet;
+        abort_unless($sheet, 404, 'Feuille de match introuvable');
+        if ($sheet->status !== 'draft') {
+            return redirect()->route('competition-management.matches.match-sheet', $match)->with('error', 'Cette feuille est déjà soumise ou validée.');
+        }
+        $sheet->status = 'submitted';
+        $sheet->submitted_at = now();
+        $sheet->user_action_log = array_merge($sheet->user_action_log ?? [], [[
+            'action' => 'submitted', 'user_id' => auth()->id(), 'at' => now()->toIso8601String(),
+        ]]);
+        $sheet->save();
         return redirect()->route('competition-management.matches.match-sheet', $match)
-            ->with('success', 'Match sheet submitted successfully');
+            ->with('success', 'Feuille de match soumise pour validation.');
     }
 
     public function signTeamMatchSheet(Request $request, MatchModel $match)

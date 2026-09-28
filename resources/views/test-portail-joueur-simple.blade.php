@@ -794,7 +794,7 @@
 
     <div id="rpm-player-sub-tab" class="fifa-sub-tab-content">
         <h3>RPM individuel</h3>
-        <div class="fifa-health-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;">
+        <div class="fifa-health-grid" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.75rem;width:100%;">
             <div class="fifa-health-card"><div class="fifa-health-stat"><span>Mesure</span><strong>{{ $latestRealtime?->measurement_time ?? 'Données non disponibles' }}</strong></div></div>
             <div class="fifa-health-card"><div class="fifa-health-stat"><span>Fréquence cardiaque</span><strong>{{ $latestRealtime?->heart_rate ?? 'Données non disponibles' }}</strong></div></div>
             <div class="fifa-health-card"><div class="fifa-health-stat"><span>SpO₂</span><strong>{{ $latestRealtime?->oxygen_saturation ?? 'Données non disponibles' }}</strong></div></div>

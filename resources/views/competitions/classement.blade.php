@@ -40,8 +40,10 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('competitions.form.season') }}</label>
                     <select id="seasonFilter" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="2024-2025">2024-2025</option>
-                        <option value="2023-2024">2023-2024</option>
+                        <option value="">Toutes les saisons</option>
+                        @foreach($seasons as $season)
+                            <option value="{{ $season }}">{{ $season }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div>
@@ -64,7 +66,7 @@
 
         <!-- Classements -->
         @foreach($competitions as $competition)
-            <div class="bg-white rounded-lg shadow mb-6 competition-table" data-competition="{{ $competition->id }}">
+            <div class="bg-white rounded-lg shadow mb-6 competition-table" data-competition="{{ $competition->id }}" data-season="{{ $competition->season }}">
                 <!-- En-tête de la compétition -->
                 <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                     <div class="flex items-center justify-between">
@@ -383,7 +385,9 @@ function applyFilters() {
     // Masquer/afficher les tableaux selon le filtre de compétition
     const tables = document.querySelectorAll('.competition-table');
     tables.forEach(table => {
-        if (!competitionFilter || table.dataset.competition === competitionFilter) {
+        const matchesCompetition = !competitionFilter || table.dataset.competition === competitionFilter;
+        const matchesSeason = !seasonFilter || table.dataset.season === seasonFilter;
+        if (matchesCompetition && matchesSeason) {
             table.style.display = 'block';
         } else {
             table.style.display = 'none';

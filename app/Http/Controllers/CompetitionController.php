@@ -1595,8 +1595,9 @@ class CompetitionController extends Controller
             })->unique('id')->values();
 
             $tunisianAssociation = $user?->association ?? null;
+            $seasons = $competitions->pluck('season')->filter()->unique()->sort()->values();
 
-            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation', 'matchsInfo'));
+            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation', 'matchsInfo', 'seasons'));
 
         } catch (\Exception $e) {
             // Etat honnete en cas d'erreur : listes vides, plus de
@@ -1606,8 +1607,9 @@ class CompetitionController extends Controller
             $tunisianClubs = collect();
             $tunisianAssociation = null;
             $matchsInfo = [];
+            $seasons = collect();
 
-            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation', 'matchsInfo'));
+            return view('competitions.classement', compact('competitions', 'classements', 'tunisianClubs', 'tunisianAssociation', 'matchsInfo', 'seasons'));
         }
     }
 

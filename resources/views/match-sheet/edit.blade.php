@@ -430,9 +430,12 @@ document.querySelectorAll('.event-team').forEach(function(teamSelect) {
     function filterPlayers() {
         const playerSelect = teamSelect.closest('.grid').querySelector('.event-player');
         const teamId = teamSelect.value;
+        playerSelect.disabled = teamId === '';
         playerSelect.querySelectorAll('option[data-team-id]').forEach(function(option) {
-            option.hidden = teamId !== '' && option.dataset.teamId !== teamId;
-            if (option.hidden && option.selected) { playerSelect.value = ''; }
+            const visible = teamId !== '' && option.dataset.teamId === teamId;
+            option.hidden = !visible;
+            option.style.display = visible ? '' : 'none';
+            if (!visible && option.selected) { playerSelect.value = ''; }
         });
     }
     teamSelect.addEventListener('change', filterPlayers);

@@ -753,7 +753,7 @@
                         <span>Données de jeu</span>
                         <span class="text-xs opacity-70">Indicateurs détaillés</span>
                     </div>
-                    <div class="fifa-health-grid" style="grid-template-columns:repeat(5,minmax(0,1fr));gap:0.75rem;">
+                    <div class="fifa-health-grid" style="display:block;width:100%;">
                         @php
                             $gameGroups = ($ksaMetrics ?? collect())->groupBy(function ($metric) {
                                 $label = strtolower($metric->metric_name);
@@ -769,7 +769,7 @@
                             <div class="col-span-full mt-4">
                                 <h3 class="text-sm font-semibold uppercase tracking-wide opacity-70">{{ $group }}</h3>
                             </div>
-                            <div class="col-span-full grid gap-3 md:grid-cols-3">
+                            <div class="col-span-full" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;width:100%;">
                                 @foreach($groupMetrics as $metric)
                                     <div class="fifa-stat-card">
                                         <div class="fifa-stat-header">{{ $metric->metric_name }}</div>

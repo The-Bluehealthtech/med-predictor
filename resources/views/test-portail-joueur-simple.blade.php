@@ -770,6 +770,83 @@
                     </div>
                 </div>
 
+                @php
+                    $cockpitMetrics = collect($ksaMetrics ?? []);
+                    $metricValue = function (array $needles) use ($cockpitMetrics) {
+                        $metric = $cockpitMetrics->first(function ($item) use ($needles) {
+                            $name = strtolower((string) ($item->metric_name ?? ''));
+                            foreach ($needles as $needle) if (str_contains($name, strtolower($needle))) return true;
+                            return false;
+                        });
+                        return $metric?->metric_value;
+                    };
+                    $cockpitData = [
+                        'matches_played' => $seasonStat?->matches_played,
+                        'minutes_played' => $seasonStat?->minutes_played,
+                        'index_ksa' => $metricValue(['index ksa', 'ksa index']),
+                        'goals' => $seasonStat?->goals,
+                        'expected_goals' => $metricValue(['expected goals', 'xg']),
+                        'passes_accuracy' => $latestMatchPerformance && (int) $latestMatchPerformance->passes_attempted > 0
+                            ? round(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1)
+                            : $metricValue(['passes accuracy', 'passing accuracy']),
+                        'progressive_passes_accurate' => $metricValue(['progressive passes accurate', 'progressive pass']),
+                        'dribbles_successful' => $metricValue(['dribbles successful', 'successful dribbles']),
+                        'tackles_successful' => $metricValue(['tackles successful', 'tackles won']),
+                        'challenges_won' => $metricValue(['challenges won', 'duels won']),
+                        'aerial_challenges_won' => $metricValue(['aerial challenges won', 'aerial duels won']),
+                        'shots' => $metricValue(['shots']),
+                        'shots_on_target' => $latestMatchPerformance?->shots_on_target,
+                        'yellow_cards' => $seasonStat?->yellow_cards,
+                        'red_cards' => $seasonStat?->red_cards,
+                    ];
+                @endphp
+                <section id="cockpit-joueur" class="fifa-stat-card mt-6 mx-auto" data-cockpit='@json($cockpitData)' aria-labelledby="cockpit-title">
+                    <style>
+                        #cockpit-joueur{color:var(--fifa-gray-800);background:var(--fifa-white);border:1px solid var(--fifa-gray-200);border-radius:var(--fifa-radius-lg);box-shadow:var(--fifa-shadow-md);padding:var(--fifa-spacing-lg);max-width:1120px}
+                        #cockpit-joueur .cockpit-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem}
+                        #cockpit-joueur .cockpit-title{font-size:1.25rem;font-weight:var(--fifa-font-weight-bold);color:var(--fifa-blue-primary);margin:0}
+                        #cockpit-joueur .cockpit-note{font-size:.75rem;color:var(--fifa-gray-500)}
+                        #cockpit-joueur .cockpit-kpis,#cockpit-joueur .cockpit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
+                        #cockpit-joueur .cockpit-kpi,#cockpit-joueur .cockpit-panel{border:1px solid var(--fifa-gray-200);border-radius:var(--fifa-radius-md);padding:.75rem;background:var(--fifa-gray-50)}
+                        #cockpit-joueur .cockpit-kpi-label{font-size:.72rem;color:var(--fifa-gray-500);text-transform:uppercase;letter-spacing:.04em}
+                        #cockpit-joueur .cockpit-kpi-value{font-size:1.35rem;font-weight:var(--fifa-font-weight-bold);color:var(--fifa-blue-primary);margin-top:.2rem}
+                        #cockpit-joueur .cockpit-grid{margin-top:1rem;grid-template-columns:repeat(2,minmax(0,1fr))}
+                        #cockpit-joueur .cockpit-panel h4{margin:0 0 .75rem;color:var(--fifa-gray-700);font-size:.95rem}
+                        #cockpit-joueur .cockpit-bar{display:grid;grid-template-columns:150px 1fr 42px;align-items:center;gap:.5rem;margin:.55rem 0;font-size:.78rem}
+                        #cockpit-joueur .cockpit-track{height:7px;background:var(--fifa-gray-200);border-radius:999px;overflow:hidden}
+                        #cockpit-joueur .cockpit-fill{height:100%;background:linear-gradient(90deg,var(--fifa-blue-secondary),var(--fifa-success));border-radius:inherit}
+                        #cockpit-joueur .cockpit-radar{display:flex;justify-content:center;align-items:center;min-height:250px}
+                        #cockpit-joueur .cockpit-radar polygon{fill:rgba(59,130,246,.18);stroke:var(--fifa-blue-secondary);stroke-width:2}
+                        #cockpit-joueur .cockpit-radar line{stroke:var(--fifa-gray-300);stroke-width:1}
+                        #cockpit-joueur .cockpit-insights{display:grid;gap:.5rem}
+                        #cockpit-joueur .cockpit-insight{padding:.6rem .75rem;border-left:4px solid var(--fifa-success);background:var(--fifa-success-light);border-radius:var(--fifa-radius-sm);font-size:.82rem}
+                        #cockpit-joueur .cockpit-insight.warn{border-color:var(--fifa-warning);background:var(--fifa-warning-light)}
+                        #cockpit-joueur .cockpit-toggle{display:inline-flex;gap:.25rem}
+                        #cockpit-joueur .cockpit-toggle button{border:1px solid var(--fifa-blue-primary);background:var(--fifa-white);color:var(--fifa-blue-primary);padding:.4rem .65rem;border-radius:var(--fifa-radius-sm);cursor:pointer}
+                        #cockpit-joueur .cockpit-toggle button[aria-pressed=true]{background:var(--fifa-blue-primary);color:var(--fifa-white)}
+                        #cockpit-joueur .cockpit-toggle button:focus-visible{outline:2px solid var(--fifa-gold);outline-offset:2px}
+                        #cockpit-joueur .cockpit-unavailable{color:var(--fifa-gray-500);font-size:.8rem}
+                        #cockpit-joueur + #ksa-statistics{display:none!important}
+                        @media(max-width:700px){#cockpit-joueur .cockpit-kpis,#cockpit-joueur .cockpit-grid{grid-template-columns:1fr}#cockpit-joueur .cockpit-head{align-items:flex-start;flex-direction:column}#cockpit-joueur .cockpit-bar{grid-template-columns:115px 1fr 38px}}
+                    </style>
+                    <div class="cockpit-head"><div><h3 id="cockpit-title" class="cockpit-title">Données de jeu</h3><div class="cockpit-note">Performance du joueur · source FIT disponible</div></div><div class="cockpit-toggle" role="group" aria-label="Mode d'affichage"><button type="button" data-mode="match" aria-pressed="true">Par match</button><button type="button" data-mode="90">Par 90 min</button></div></div>
+                    <div class="cockpit-kpis">
+                        @foreach(['matches_played'=>'Matchs','minutes_played'=>'Minutes','index_ksa'=>'Index KSA','goals'=>'Buts','expected_goals'=>'xG','passes_accuracy'=>'Précision passes'] as $key=>$label)
+                            @if($cockpitData[$key] !== null)<div class="cockpit-kpi"><div class="cockpit-kpi-label">{{ $label }}</div><div class="cockpit-kpi-value">{{ $cockpitData[$key] }}</div></div>@endif
+                        @endforeach
+                    </div>
+                    <div class="cockpit-grid">
+                        <div class="cockpit-panel"><h4>Taux de réussite</h4><div class="cockpit-radar"><svg viewBox="0 0 260 260" width="250" height="250" role="img" aria-label="Radar des taux de réussite"><g transform="translate(130 130)"><line x1="0" y1="-100" x2="0" y2="100"/><line x1="-100" y1="0" x2="100" y2="0"/><line x1="-70" y1="-70" x2="70" y2="70"/><polygon data-radar-points="0"/></g></svg></div></div>
+                        <div class="cockpit-panel"><h4>Lecture automatique</h4><div class="cockpit-insights" data-insights></div></div>
+                        <div class="cockpit-panel"><h4>Attaque</h4><div data-bars='@json(["goals","expected_goals","shots","shots_on_target"])'></div></div>
+                        <div class="cockpit-panel"><h4>Construction</h4><div data-bars='@json(["passes_accuracy","progressive_passes_accurate","dribbles_successful"])'></div></div>
+                        <div class="cockpit-panel"><h4>Duels et défense</h4><div data-bars='@json(["tackles_successful","challenges_won","aerial_challenges_won"])'></div></div>
+                        <div class="cockpit-panel"><h4>Discipline et erreurs</h4><div data-bars='@json(["yellow_cards","red_cards"])'></div></div>
+                    </div>
+                    <script>
+                    (()=>{const root=document.getElementById('cockpit-joueur');if(!root)return;const d=JSON.parse(root.dataset.cockpit||'{}'), labels={goals:'Buts',expected_goals:'xG',shots:'Tirs',shots_on_target:'Tirs cadrés',passes_accuracy:'Précision passes',progressive_passes_accurate:'Passes progressives',dribbles_successful:'Dribbles réussis',tackles_successful:'Tacles réussis',challenges_won:'Duels gagnés',aerial_challenges_won:'Duels aériens',yellow_cards:'Cartons jaunes',red_cards:'Cartons rouges'};const n=v=>v===null||v===undefined||v===''?null:Number(v);const pct=v=>Math.max(0,Math.min(100,n(v)));function bars(){root.querySelectorAll('[data-bars]').forEach(el=>{el.innerHTML='';JSON.parse(el.dataset.bars).forEach(k=>{if(n(d[k])===null)return;const row=document.createElement('div');row.className='cockpit-bar';row.innerHTML='<span>'+labels[k]+'</span><span class="cockpit-track"><span class="cockpit-fill" style="width:'+pct(d[k])+'%"></span></span><strong>'+d[k]+'</strong>';el.appendChild(row)})})}function insights(){const box=root.querySelector('[data-insights]');const out=[];if(n(d.passes_accuracy)!==null&&d.passes_accuracy>=80)out.push(['Précision de passe élevée','']);if(n(d.dribbles_successful)!==null&&d.dribbles_successful>=70)out.push(['Dribbles réussis : point fort','']);if(n(d.tackles_successful)!==null&&d.tackles_successful<50)out.push(['Tacles à surveiller','warn']);if(n(d.red_cards)!==null&&d.red_cards>0)out.push(['Discipline : carton rouge enregistré','warn']);box.innerHTML=out.map(x=>'<div class="cockpit-insight '+x[1]+'">'+x[0]+'</div>').join('')||'<div class="cockpit-unavailable">Aucune règle calculable avec les données disponibles.</div>'}function radar(){const keys=['passes_accuracy','progressive_passes_accurate','dribbles_successful','tackles_successful','challenges_won','aerial_challenges_won'],pts=keys.map((k,i)=>{const v=pct(d[k]);const a=-Math.PI/2+i*2*Math.PI/keys.length;return (Math.cos(a)*v).toFixed(1)+','+(Math.sin(a)*v).toFixed(1)}).join(' ');root.querySelector('[data-radar-points]').setAttribute('points',pts)}bars();insights();radar();root.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{root.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b===btn));}));})();
+                    </script>
+                </section>
                 <section id="ksa-statistics" class="fifa-stat-card mt-6 mx-auto" style="max-width:1120px;">
                     <div class="fifa-stat-header">
                         <span>Données de jeu</span>

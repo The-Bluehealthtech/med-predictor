@@ -2466,7 +2466,7 @@ class CompetitionController extends Controller
     private function getFeuilleMatchFromDatabase($id)
     {
         // Récupérer le match directement depuis la base de données
-        $match = GameMatch::with(['homeTeam', 'awayTeam', 'competition', 'officials.user'])
+        $match = GameMatch::with(['homeTeam.club', 'awayTeam.club', 'competition', 'officials.user'])
             ->find($id);
         
         if (!$match) {
@@ -2478,6 +2478,14 @@ class CompetitionController extends Controller
         $fixturesLabels = __('competitions.fixtures_page');
         $statut = $isCompleted ? $fixturesLabels['status_completed'] : $fixturesLabels['status_upcoming'];
         $toBeDesignated = $fixturesLabels['to_be_designated'];
+
+        // Afficher le club réel avec l'équipe, au lieu d'un nom générique.
+        if ($match->homeTeam?->club) {
+            $match->homeTeam->name = $match->homeTeam->club->name . ' — ' . $match->homeTeam->name;
+        }
+        if ($match->awayTeam?->club) {
+            $match->awayTeam->name = $match->awayTeam->club->name . ' — ' . $match->awayTeam->name;
+        }
 
         // Retourner les données de la feuille de match
         //

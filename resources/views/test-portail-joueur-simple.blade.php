@@ -167,9 +167,13 @@
                             <!-- Club avec logo -->
                             <div class="flex items-center space-x-3 p-2 bg-white/5 rounded-lg">
                                 <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                    @if($player->club->logo_path)
-                                        <img src="/storage/{{ $player->club->logo_path }}" 
-                                             alt="Logo {{ $player->club->name }}" 
+                                    @php
+                                        $clubLogo = $player->club->logo_url
+                                            ?: ($player->club->logo_path ? asset('storage/' . $player->club->logo_path) : null);
+                                    @endphp
+                                    @if($clubLogo)
+                                        <img src="{{ $clubLogo }}"
+                                             alt="Logo {{ $player->club->name }}"
                                              class="w-6 h-6 object-contain">
                                     @else
                                         <i class="fas fa-shield-alt text-blue-600 text-sm"></i>
@@ -185,13 +189,22 @@
                                 <!-- Association avec logo -->
                                 <div class="flex items-center space-x-3 p-2 bg-white/5 rounded-lg">
                                     <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                                        @if($player->association->association_logo_url)
-                                            <img src="/storage/{{ $player->association->association_logo_url }}" 
-                                                 alt="Logo {{ $player->association->name }}" 
+                                        @php
+                                            $associationLogo = $player->association->association_logo_url;
+                                            $associationLogo = $associationLogo && filter_var($associationLogo, FILTER_VALIDATE_URL)
+                                                ? $associationLogo
+                                                : ($associationLogo ? asset('storage/' . $associationLogo) : null);
+                                            $associationFallback = $player->association->logo_path
+                                                ? asset('storage/' . $player->association->logo_path)
+                                                : null;
+                                        @endphp
+                                        @if($associationLogo)
+                                            <img src="{{ $associationLogo }}"
+                                                 alt="Logo {{ $player->association->name }}"
                                                  class="w-6 h-6 object-contain">
-                                        @elseif($player->association->logo_path)
-                                            <img src="/storage/{{ $player->association->logo_path }}" 
-                                                 alt="Logo {{ $player->association->name }}" 
+                                        @elseif($associationFallback)
+                                            <img src="{{ $associationFallback }}"
+                                                 alt="Logo {{ $player->association->name }}"
                                                  class="w-6 h-6 object-contain">
                                         @else
                                             <i class="fas fa-flag text-green-600 text-sm"></i>
@@ -207,7 +220,15 @@
                                     <!-- Confédération -->
                                     <div class="flex items-center space-x-3 p-2 bg-white/5 rounded-lg">
                                         <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                                            <i class="fas fa-globe text-purple-600 text-sm"></i>
+                                            @php
+                                                $confederation = $player->association->confederation;
+                                                $confederationLogo = is_object($confederation) ? $confederation->confederation_logo_url : null;
+                                            @endphp
+                                            @if($confederationLogo)
+                                                <img src="{{ $confederationLogo }}" alt="Logo {{ $confederation->name }}" class="w-6 h-6 object-contain">
+                                            @else
+                                                <i class="fas fa-globe text-purple-600 text-sm"></i>
+                                            @endif
                                         </div>
                                         <div>
                                             <span class="text-purple-200 text-xs">{{ __('🌍 Confédération:') }}</span>

@@ -15,6 +15,7 @@ use App\Services\FifaConnectService;
 use Illuminate\Validation\Rule;
 use App\Models\GameMatch;
 use App\Models\MatchModel;
+use App\Models\MatchSheet;
 
 class CompetitionManagementController extends Controller
 {
@@ -1343,6 +1344,9 @@ class CompetitionManagementController extends Controller
         ]);
         
         $matchSheet = $match->matchSheet;
+        if ($matchSheet && blank($matchSheet->match_number)) {
+            $matchSheet->match_number = 'MS-' . date('Y') . '-' . str_pad($match->id, 3, '0', STR_PAD_LEFT);
+        }
         $homeTeamPlayers = $match->homeTeam->players ?? collect([]);
         $awayTeamPlayers = $match->awayTeam->players ?? collect([]);
         $referees = User::where('role', 'referee')
@@ -1359,8 +1363,54 @@ class CompetitionManagementController extends Controller
     public function updateMatchSheet(Request $request, MatchModel $match)
     {
         $this->authorizeCompetitionAccess($match->competition);
-        
-        // Update match sheet logic here
+
+        $validated = $request->validate([
+            'match_number' => ['required', 'string', 'max:100'],
+            'stadium_venue' => ['nullable', 'string', 'max:255'],
+            'weather_conditions' => ['nullable', 'string', 'max:50'],
+            'pitch_conditions' => ['nullable', 'string', 'max:50'],
+            'home_team_coach' => ['nullable', 'string', 'max:255'],
+            'away_team_coach' => ['nullable', 'string', 'max:255'],
+            'home_team_manager' => ['nullable', 'string', 'max:255'],
+            'away_team_manager' => ['nullable', 'string', 'max:255'],
+            'home_team_roster' => ['nullable', 'array', 'max:11'],
+            'away_team_roster' => ['nullable', 'array', 'max:11'],
+            'home_team_substitutes' => ['nullable', 'array', 'max:7'],
+            'away_team_substitutes' => ['nullable', 'array', 'max:7'],
+            'home_team_score' => ['nullable', 'integer', 'min:0', 'max:50'],
+            'away_team_score' => ['nullable', 'integer', 'min:0', 'max:50'],
+            'match_status' => ['required', 'in:scheduled,in_progress,completed,suspended,abandoned,postponed,cancelled'],
+            'main_referee_id' => ['nullable', 'integer'],
+            'assistant_referee_1_id' => ['nullable', 'integer'],
+            'assistant_referee_2_id' => ['nullable', 'integer'],
+            'fourth_official_id' => ['nullable', 'integer'],
+            'var_referee_id' => ['nullable', 'integer'],
+            'var_assistant_id' => ['nullable', 'integer'],
+            'referee_report' => ['nullable', 'string'],
+            'crowd_issues' => ['nullable', 'string'],
+            'protests_incidents' => ['nullable', 'string'],
+            'notes' => ['nullable', 'string'],
+            'suspension_reason' => ['nullable', 'string'],
+        ]);
+
+        $sheet = $match->matchSheet ?: new MatchSheet(['match_id' => $match->id]);
+        $before = $sheet->only(array_keys($validated));
+        foreach (['home_team_roster', 'away_team_roster', 'home_team_substitutes', 'away_team_substitutes'] as $field) {
+            $validated[$field] = array_values(array_filter($validated[$field] ?? [], fn ($id) => filled($id)));
+        }
+        $sheet->fill($validated);
+        $sheet->user_action_log = array_merge($sheet->user_action_log ?? [], [[
+            'action' => 'updated', 'user_id' => auth()->id(), 'at' => now()->toIso8601String(),
+            'changes' => array_keys(array_diff_assoc($sheet->only(array_keys($validated)), $before)),
+        ]]);
+        $sheet->save();
+
+        $match->update([
+            'home_score' => $validated['home_team_score'] ?? null,
+            'away_score' => $validated['away_team_score'] ?? null,
+            'match_status' => $validated['match_status'],
+        ]);
+
         return redirect()->route('competition-management.matches.match-sheet', $match)
             ->with('success', 'Match sheet updated successfully');
     }

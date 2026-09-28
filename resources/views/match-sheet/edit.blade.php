@@ -321,9 +321,9 @@
                         <div class="mt-4">
                             <label for="match_status" class="block text-sm font-medium text-gray-700">Match Status *</label>
                             <select name="match_status" id="match_status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500">
-                                <option value="completed" {{ old('match_status', $matchSheet->match_status) === 'completed' ? 'selected' : '' }}>Completed</option>
-                                <option value="suspended" {{ old('match_status', $matchSheet->match_status) === 'suspended' ? 'selected' : '' }}>Suspended</option>
-                                <option value="abandoned" {{ old('match_status', $matchSheet->match_status) === 'abandoned' ? 'selected' : '' }}>Abandoned</option>
+                                @foreach(['scheduled' => 'Scheduled', 'in_progress' => 'In progress', 'completed' => 'Completed', 'suspended' => 'Suspended', 'abandoned' => 'Abandoned', 'postponed' => 'Postponed', 'cancelled' => 'Cancelled'] as $statusValue => $statusLabel)
+                                    <option value="{{ $statusValue }}" {{ old('match_status', $matchSheet->match_status) === $statusValue ? 'selected' : '' }}>{{ $statusLabel }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="mt-4">

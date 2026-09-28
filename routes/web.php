@@ -2105,6 +2105,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/competitions/{competition}/standings', [CompetitionManagementController::class, 'standings'])->name('competitions.standings');
     Route::get('/competitions/{competition}/register-team-form', [CompetitionManagementController::class, 'showRegisterTeamForm'])->name('competitions.register-team-form');
     Route::post('/competitions/{competition}/register-team', [CompetitionManagementController::class, 'registerTeam'])->name('competitions.register-team');
+
+    // Feuille de match complète : sélection et sauvegarde des joueurs.
+    Route::get('/match-sheets/{match}/edit', [CompetitionManagementController::class, 'editMatchSheet'])->name('match-sheets.edit');
+    Route::put('/match-sheets/{match}', [CompetitionManagementController::class, 'updateMatchSheet'])->name('match-sheets.update');
     
     // Fixtures routes
     Route::get('/fixtures', function () {

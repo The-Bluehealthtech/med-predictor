@@ -1928,9 +1928,17 @@ class CompetitionController extends Controller
     /**
      * Feuille de match détaillée
      */
-    public function feuilleMatch($id): View
+    public function feuilleMatch($id, Request $request)
     {
         try {
+            // Le lien de la liste utilise l'id de match_sheets. Pour l'édition,
+            // réutiliser le formulaire complet déjà existant, qui attend le
+            // véritable id de la rencontre (MatchModel).
+            if ($request->boolean('edit')) {
+                $sheet = \App\Models\MatchSheet::findOrFail($id);
+                return redirect()->route('match-sheets.edit', ['match' => $sheet->match_id]);
+            }
+
             // Utiliser les données de la base de données au lieu de générer des données
             $feuilleMatch = $this->getFeuilleMatchFromDatabase($id);
             

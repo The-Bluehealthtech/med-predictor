@@ -3305,18 +3305,20 @@
                          console.log('✅ Graphiques Chart.js initialisés !');
                      }
                  </script>
-             <section id="ksa-statistics" class="mt-8 rounded-xl border border-amber-300 bg-amber-50 p-6 text-gray-900">
-                 <h2 class="text-xl font-bold">Statistiques Avancées</h2>
-                 <p class="text-sm mt-1">Données détaillées de performance. La source est indiquée pour chaque métrique et la Note FIT reste indépendante.</p>
+             <section id="ksa-statistics" class="fifa-stat-card mt-6">
+                 <div class="fifa-stat-header">
+                     <h2>Statistiques Avancées</h2>
+                     <p>Données détaillées de performance · Note FIT indépendante</p>
+                 </div>
                  @if(($ksaMetrics ?? collect())->isEmpty())
                      <p class="mt-4 text-sm">Aucune donnée KSA enregistrée.</p>
                  @else
-                     <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+                     <div class="fifa-health-grid">
                          @foreach($ksaMetrics as $metric)
-                             <div class="rounded-lg bg-white p-3 shadow-sm">
-                                 <div class="text-xs text-gray-500">{{ str_replace('_', ' ', $metric->metric_name) }}</div>
-                                 <div class="text-lg font-semibold">{{ $metric->metric_value ?? 'Non disponible' }} {{ $metric->metric_unit }}</div>
-                                 <div class="text-xs text-gray-500">Source : {{ $metric->source }}</div>
+                             <div class="fifa-stat-card">
+                                 <div class="fifa-stat-header">{{ $metric->metric_name }}</div>
+                                 <div class="fifa-stat-value">{{ $metric->metric_value ?? 'Non disponible' }}</div>
+                                 <div class="text-xs opacity-70">{{ $metric->metric_unit ?: '—' }} · {{ $metric->source }}</div>
                              </div>
                          @endforeach
                      </div>

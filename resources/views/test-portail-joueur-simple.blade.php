@@ -792,13 +792,26 @@
                         ? round(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 2)
                         : $metricRate(['passes_accuracy', 'passing_accuracy']);
                     $radarRates = [
-                        'passes_accuracy' => $passRate,
+                        'passes_accuracy' => $metricRate(['passes_accuracy', 'passing_accuracy']),
                         'progressive_passes_accurate' => $metricRate(['progressive_passes_accurate']),
                         'dribbles_successful' => $metricRate(['dribbles_successful']),
                         'tackles_successful' => $metricRate(['tackles_successful']),
                         'challenges_won' => $metricRate(['challenges_won']),
                         'aerial_challenges_won' => $metricRate(['aerial_challenges_won']),
                     ];
+                    $rateLabels = [
+                        'passes_accuracy' => __('player_cockpit.passes_accuracy'),
+                        'progressive_passes_accurate' => __('player_cockpit.progressive_passes_accurate'),
+                        'dribbles_successful' => __('player_cockpit.dribbles_successful'),
+                        'tackles_successful' => __('player_cockpit.tackles_successful'),
+                        'challenges_won' => __('player_cockpit.challenges_won'),
+                        'aerial_challenges_won' => __('player_cockpit.aerial_challenges_won'),
+                    ];
+                    $availableRates = collect($radarRates)->filter(fn ($value) => is_numeric($value) && $value >= 0 && $value <= 100);
+                    $sortedRates = $availableRates->sortDesc();
+                    $highestRateKey = $sortedRates->keys()->first();
+                    $lowestRateKey = $sortedRates->keys()->last();
+                    $formatRate = fn ($value) => number_format((float) $value, 2, app()->getLocale() === 'fr' ? ',' : '.', app()->getLocale() === 'fr' ? ' ' : ',');
                     $cockpitData = [
                         'matches_played' => $seasonStat?->matches_played,
                         'minutes_played' => $seasonStat?->minutes_played,
@@ -866,7 +879,25 @@
                     </div>
                     <div class="cockpit-grid">
                         <div class="cockpit-panel"><h4>Taux de réussite</h4><div class="cockpit-radar" data-radar></div></div>
-                        <div class="cockpit-panel"><h4>Lecture automatique</h4><div class="cockpit-insights" data-insights></div></div>
+                        <div class="cockpit-panel">
+                            <h4>{{ __('player_cockpit.analysis_title') }}</h4>
+                            <div class="cockpit-insights" data-insights>
+                                @if($availableRates->isEmpty())
+                                    <div class="cockpit-unavailable">{{ __('player_cockpit.no_verified_rates') }}</div>
+                                @else
+                                    <div class="cockpit-insight">{{ __('player_cockpit.coverage', ['count' => $availableRates->count(), 'total' => count($radarRates)]) }}</div>
+                                    @foreach($availableRates as $key => $value)
+                                        <div class="cockpit-insight">{{ $rateLabels[$key] }} : {{ $formatRate($value) }} %</div>
+                                    @endforeach
+                                    @if($availableRates->count() >= 2)
+                                        <div class="cockpit-insight">{{ __('player_cockpit.highest', ['label' => $rateLabels[$highestRateKey], 'value' => $formatRate($availableRates[$highestRateKey])]) }}</div>
+                                        <div class="cockpit-insight">{{ __('player_cockpit.lowest', ['label' => $rateLabels[$lowestRateKey], 'value' => $formatRate($availableRates[$lowestRateKey])]) }}</div>
+                                        <div class="cockpit-insight">{{ __('player_cockpit.spread', ['value' => $formatRate($availableRates[$highestRateKey] - $availableRates[$lowestRateKey])]) }}</div>
+                                    @endif
+                                    <div class="cockpit-note">{{ __('player_cockpit.scope_note') }}</div>
+                                @endif
+                            </div>
+                        </div>
                         <div class="cockpit-panel"><h4>Attaque</h4><div data-bars='["goals","expected_goals","shots","shots_on_target"]'></div></div>
                         <div class="cockpit-panel"><h4>Construction</h4><div data-bars='["passes_accuracy","progressive_passes_accurate","dribbles_successful"]'></div></div>
                         <div class="cockpit-panel"><h4>Duels et défense</h4><div data-bars='["tackles_successful","challenges_won","aerial_challenges_won"]'></div></div>
@@ -919,18 +950,7 @@
                                 el.appendChild(row);
                             });
                         });
-                        const insights = root.querySelector('[data-insights]');
                         const available = keys.filter(key => rate(key) !== null);
-                        if (available.length) {
-                            available.forEach(key => {
-                                const item = document.createElement('div');
-                                item.className = 'cockpit-insight';
-                                item.textContent = labels[key] + ' : ' + format(rate(key)) + ' %';
-                                insights.appendChild(item);
-                            });
-                        } else {
-                            insights.textContent = 'Aucun taux de réussite vérifié disponible.';
-                        }
                         const radar = root.querySelector('[data-radar]');
                         if (available.length === keys.length) {
                             const svgNS = 'http://www.w3.org/2000/svg';

@@ -1347,8 +1347,8 @@ class CompetitionManagementController extends Controller
         if ($matchSheet && blank($matchSheet->match_number)) {
             $matchSheet->match_number = 'MS-' . date('Y') . '-' . str_pad($match->id, 3, '0', STR_PAD_LEFT);
         }
-        $homeTeamPlayers = $match->homeTeam->players ?? collect([]);
-        $awayTeamPlayers = $match->awayTeam->players ?? collect([]);
+        $homeTeamPlayers = $match->homeTeam->club?->players()->where('status', 'active')->orderBy('name')->get() ?? collect([]);
+        $awayTeamPlayers = $match->awayTeam->club?->players()->where('status', 'active')->orderBy('name')->get() ?? collect([]);
         $venues = MatchSheet::query()->whereNotNull('stadium_venue')->where('stadium_venue', '<>', '')
             ->distinct()->orderBy('stadium_venue')->pluck('stadium_venue');
         foreach ([['team' => $match->homeTeam, 'coach' => 'home_team_coach', 'manager' => 'home_team_manager'], ['team' => $match->awayTeam, 'coach' => 'away_team_coach', 'manager' => 'away_team_manager']] as $staff) {

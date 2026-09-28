@@ -2113,7 +2113,7 @@ class CompetitionController extends Controller
                     'statut_code' => $isCompleted ? 'completed' : 'upcoming',
                     'journee' => $match->matchday,
                     'competition' => $competitionName,
-                    'arbitre_principal' => optional($match->officials->firstWhere('role', 'main_referee')?->user)->name ?? $officialFallback,
+                    'arbitre_principal' => optional(($match->officials->firstWhere('role', 'main_referee') ?? $match->officials->first())?->user)->name ?? $officialFallback,
                     'arbitre_assistant_1' => optional($match->officials->firstWhere('role', 'assistant_referee_1')?->user)->name ?? $officialFallback,
                     'arbitre_assistant_2' => optional($match->officials->firstWhere('role', 'assistant_referee_2')?->user)->name ?? $officialFallback,
                     'arbitre_var' => $match->var_referee ?? $officialFallback,

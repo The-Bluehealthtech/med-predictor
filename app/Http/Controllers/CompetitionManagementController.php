@@ -1343,8 +1343,10 @@ class CompetitionManagementController extends Controller
         ]);
         
         $matchSheet = $match->matchSheet;
+        $homeTeamPlayers = $match->homeTeam->players ?? collect([]);
+        $awayTeamPlayers = $match->awayTeam->players ?? collect([]);
 
-        return view('match-sheet.edit', compact('match', 'matchSheet'));
+        return view('match-sheet.edit', compact('match', 'matchSheet', 'homeTeamPlayers', 'awayTeamPlayers'));
     }
 
     public function updateMatchSheet(Request $request, MatchModel $match)

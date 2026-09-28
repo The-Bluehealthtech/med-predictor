@@ -753,7 +753,7 @@
                         <span>Données de jeu</span>
                         <span class="text-xs opacity-70">Indicateurs détaillés</span>
                     </div>
-                    <div class="fifa-health-grid">
+                    <div class="fifa-health-grid" style="grid-template-columns:repeat(5,minmax(0,1fr));gap:0.75rem;">
                         @foreach(($ksaMetrics ?? collect()) as $metric)
                             <div class="fifa-stat-card">
                                 <div class="fifa-stat-header">{{ $metric->metric_name }}</div>
@@ -761,6 +761,11 @@
                                 <div class="text-xs opacity-70">{{ $metric->metric_unit ?: '—' }} · {{ $metric->source }}</div>
                             </div>
                         @endforeach
+                    </div>
+                    <div class="fifa-health-grid mt-6" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;">
+                        <div class="fifa-medical-card"><h4>Évolution</h4><canvas id="ksaTrendChart" height="150"></canvas><p class="text-xs opacity-70">Courbe disponible après enregistrement des mesures.</p></div>
+                        <div class="fifa-medical-card"><h4>Volumes</h4><canvas id="ksaVolumeChart" height="150"></canvas><p class="text-xs opacity-70">Histogramme disponible après enregistrement des mesures.</p></div>
+                        <div class="fifa-medical-card"><h4>Répartition</h4><canvas id="ksaCategoryChart" height="150"></canvas><p class="text-xs opacity-70">Répartition disponible après enregistrement des mesures.</p></div>
                     </div>
                 </section>
             </div>

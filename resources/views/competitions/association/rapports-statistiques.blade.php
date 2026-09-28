@@ -276,14 +276,20 @@ function downloadReport(reportId, format) {
     ];
     const tableRows = rows.map(row => '<tr><th style="text-align:left;padding:8px;border:1px solid #ddd">' + row[0] + '</th><td style="padding:8px;border:1px solid #ddd">' + String(row[1]).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])) + '</td></tr>').join('');
     if (String(format).toUpperCase() === 'PDF') {
-        const pdfWindow = window.open('', '_blank');
-        if (!pdfWindow) {
-            showNotification('Autorisez les fenêtres contextuelles pour exporter le PDF.', 'error');
-            return;
-        }
-        pdfWindow.document.write('<!doctype html><html><head><title>Rapport ' + reportId + '</title><style>body{font-family:Arial,sans-serif;margin:32px}table{border-collapse:collapse;width:100%}h1{color:#123b6d}</style></head><body><h1>' + String(report.nom || '').replace(/[&<>]/g, '') + '</h1><table>' + tableRows + '</table><script>window.onload=function(){window.print();};<\\/script></body></html>');
-        pdfWindow.document.close();
-        showNotification('Le rapport PDF est prêt : choisissez « Enregistrer au format PDF ».', 'success');
+        fetch('{{ url('/competitions/association/rapports-statistiques') }}/' + reportId + '/pdf', { headers: { 'Accept': 'application/pdf' } })
+            .then(response => { if (!response.ok) throw new Error('PDF'); return response.blob(); })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'rapport-' + reportId + '.pdf';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(url);
+                showNotification('PDF téléchargé avec les données.', 'success');
+            })
+            .catch(() => showNotification('Impossible de générer le PDF.', 'error'));
         return;
     }
     const csv = rows.map(row => row.map(value => '"' + String(value).replace(/"/g, '""') + '"').join(';')).join('\\r\\n');

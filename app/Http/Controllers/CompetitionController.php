@@ -2556,4 +2556,18 @@ class CompetitionController extends Controller
         return $fixtures;
     }
 
+    public function downloadAssociationReportPdf(int $reportId)
+    {
+        $competitionId = intdiv($reportId, 10);
+        $competition = \App\Models\Competition::with('matches')->findOrFail($competitionId);
+        $completed = $competition->matches->where('status', 'completed')->count();
+        $html = '<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:DejaVu Sans,sans-serif;color:#1f2937}h1{color:#123b6d}table{border-collapse:collapse;width:100%;margin-top:20px}th,td{border:1px solid #d1d5db;padding:8px;text-align:left}th{background:#eef2ff}</style></head><body>'
+            . '<h1>Rapport statistique — ' . e($competition->name) . '</h1>'
+            . '<table><tr><th>Compétition</th><td>' . e($competition->name) . '</td></tr>'
+            . '<tr><th>Matchs total</th><td>' . $competition->matches->count() . '</td></tr>'
+            . '<tr><th>Matchs terminés</th><td>' . $completed . '</td></tr>'
+            . '<tr><th>Date de génération</th><td>' . now()->format('d/m/Y H:i') . '</td></tr></table></body></html>';
+        return \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)->download('rapport-' . $reportId . '.pdf');
+    }
+
 }

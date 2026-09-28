@@ -3407,6 +3407,7 @@ Route::get('/test-pdf', function() {
             Route::get('/resultats-classements', [App\Http\Controllers\CompetitionController::class, 'associationResultatsClassements'])->name('resultats-classements');
             Route::get('/discipline-sanctions', [App\Http\Controllers\CompetitionController::class, 'associationDisciplineSanctions'])->name('discipline-sanctions');
             Route::get('/rapports-statistiques', [App\Http\Controllers\CompetitionController::class, 'associationRapportsStatistiques'])->name('rapports-statistiques');
+            Route::get('/rapports-statistiques/{reportId}/pdf', [App\Http\Controllers\CompetitionController::class, 'downloadAssociationReportPdf'])->whereNumber('reportId')->name('rapports-statistiques.pdf');
             Route::get('/classement', [App\Http\Controllers\CompetitionController::class, 'classement'])->name('classement');
             Route::get('/fixtures', [App\Http\Controllers\CompetitionController::class, 'associationFixtures'])->name('fixtures');
             Route::get('/feuille-match/{id}', [App\Http\Controllers\CompetitionController::class, 'feuilleMatch'])->name('feuille-match');

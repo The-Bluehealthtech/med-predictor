@@ -65,6 +65,39 @@ class SaudiHierarchySeeder extends Seeder
             ]
         );
 
-        $this->command?->info('Hiérarchie AFC → SAFF → Al-Hazem SC créée.');
+        $club = DB::table('clubs')->where('name', 'Al-Hazem SC')->first();
+        DB::table('competitions')->updateOrInsert(
+            ['name' => 'Saudi Professional League', 'season' => '2026/27'],
+            [
+                'short_name' => 'SPL',
+                'type' => 'championship',
+                'country' => 'Arabie saoudite',
+                'region' => 'Asie',
+                'season' => '2026/27',
+                'start_date' => '2026-08-01',
+                'end_date' => '2027-05-31',
+                'registration_deadline' => '2026-07-31',
+                'min_teams' => 18,
+                'max_teams' => 18,
+                'format' => 'round_robin',
+                'status' => 'published',
+                'description' => 'Championnat national de première division saoudienne.',
+                'organizer' => 'Fédération saoudienne de football',
+                'association_id' => $associationId,
+                'updated_at' => $now,
+                'created_at' => $now,
+            ]
+        );
+
+        $competition = DB::table('competitions')
+            ->where('name', 'Saudi Professional League')
+            ->where('season', '2026/27')
+            ->first();
+        DB::table('competition_club')->updateOrInsert(
+            ['competition_id' => $competition->id, 'club_id' => $club->id],
+            ['registration_date' => $now, 'status' => 'approved', 'updated_at' => $now, 'created_at' => $now]
+        );
+
+        $this->command?->info('Hiérarchie AFC → SAFF → Saudi Professional League → Al-Hazem SC créée.');
     }
 }

@@ -680,13 +680,16 @@ class CompetitionController extends Controller
     /**
      * Résultats & Classements - Compilation auto
      */
-    public function associationResultatsClassements(): View
+    public function associationResultatsClassements(Request $request): View
     {
         try {
-            // Récupérer les vraies données de compétitions et leurs classements
-            $competitions = \App\Models\Competition::with(['clubs'])
-                ->whereIn('status', ['published', 'active'])
-                ->get();
+            // Récupérer les compétitions et appliquer le filtre sélectionné.
+            $competitionQuery = \App\Models\Competition::with(['clubs'])
+                ->where('status', '!=', 'cancelled');
+            if ($request->filled('competition_id')) {
+                $competitionQuery->whereKey($request->integer('competition_id'));
+            }
+            $competitions = $competitionQuery->orderBy('name')->get();
 
             $classements = collect();
 
@@ -706,7 +709,7 @@ class CompetitionController extends Controller
                             $query->whereIn('home_team_id', $teamIds)
                                   ->orWhereIn('away_team_id', $teamIds);
                         })
-                        ->where('status', 'completed')
+                        ->where('match_status', 'completed')
                         ->whereNotNull('home_score')
                         ->whereNotNull('away_score')
                         ->get();
@@ -800,12 +803,14 @@ class CompetitionController extends Controller
             // Si aucune donnée réelle, retourner une collection vide
             // Pas de données de démonstration pour éviter les données incorrectes
 
-            return view('competitions.association.resultats-classements', compact('classements'));
+            $availableCompetitions = \App\Models\Competition::where('status', '!=', 'cancelled')->orderBy('name')->get(['id', 'name']);
+            return view('competitions.association.resultats-classements', compact('classements', 'availableCompetitions'));
 
         } catch (\Exception $e) {
             // En cas d'erreur, retourner une collection vide
             $classements = collect();
-            return view('competitions.association.resultats-classements', compact('classements'));
+            $availableCompetitions = collect();
+            return view('competitions.association.resultats-classements', compact('classements', 'availableCompetitions'));
         }
     }
 

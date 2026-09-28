@@ -17,6 +17,19 @@
         </a>
     </div>
 
+    <form method="GET" action="{{ route('competitions.association.resultats-classements') }}" class="bg-white rounded-lg shadow p-4 mb-6 flex gap-3 items-end">
+        <div>
+            <label for="competition_id" class="block text-sm font-medium text-gray-700 mb-1">Compétition</label>
+            <select id="competition_id" name="competition_id" class="border rounded px-3 py-2">
+                <option value="">Toutes les compétitions</option>
+                @foreach($availableCompetitions as $availableCompetition)
+                    <option value="{{ $availableCompetition->id }}" @selected((string) request('competition_id') === (string) $availableCompetition->id)>{{ $availableCompetition->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded" type="submit">Filtrer</button>
+    </form>
+
     @if(count($classements) > 0)
         @foreach($classements as $classement)
             <div class="bg-white rounded-lg shadow p-6 mb-6">

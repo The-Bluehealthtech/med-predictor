@@ -1349,12 +1349,19 @@ class CompetitionManagementController extends Controller
         }
         $homeTeamPlayers = $match->homeTeam->club?->players()->where('status', 'active')->orderBy('name')->get() ?? collect([]);
         $awayTeamPlayers = $match->awayTeam->club?->players()->where('status', 'active')->orderBy('name')->get() ?? collect([]);
-        $venues = MatchSheet::query()->whereNotNull('stadium_venue')->where('stadium_venue', '<>', '')
-            ->distinct()->orderBy('stadium_venue')->pluck('stadium_venue');
+        $venues = collect()
+            ->merge(Club::query()->whereNotNull('stadium_name')->pluck('stadium_name'))
+            ->merge(Club::query()->whereNotNull('stadium')->pluck('stadium'))
+            ->merge(MatchModel::query()->whereNotNull('venue')->pluck('venue'))
+            ->merge(MatchModel::query()->whereNotNull('stadium')->pluck('stadium'))
+            ->merge(MatchSheet::query()->whereNotNull('stadium_venue')->pluck('stadium_venue'))
+            ->filter()->unique()->sort()->values();
         foreach ([['team' => $match->homeTeam, 'coach' => 'home_team_coach', 'manager' => 'home_team_manager'], ['team' => $match->awayTeam, 'coach' => 'away_team_coach', 'manager' => 'away_team_manager']] as $staff) {
-            $club = $staff['team']->club;
-            if ($club && blank($matchSheet->{$staff['coach']})) $matchSheet->{$staff['coach']} = $club->coach_name ?? null;
-            if ($club && blank($matchSheet->{$staff['manager']})) $matchSheet->{$staff['manager']} = $club->manager_name ?? null;
+            $team = $staff['team'];
+            $club = $team->club;
+            $manager = $club?->users()->where('role', 'club_manager')->first();
+            if ($team && blank($matchSheet->{$staff['coach']})) $matchSheet->{$staff['coach']} = $team->coach_name ?? null;
+            if ($manager && blank($matchSheet->{$staff['manager']})) $matchSheet->{$staff['manager']} = $manager->name;
         }
         $referees = User::where('role', 'referee')
             ->where(function ($query) use ($match) {

@@ -37,7 +37,7 @@ class SaudiHierarchySeeder extends Seeder
             'confederation' => 'AFC',
             'status' => 'active',
             'fifa_id' => 'SAFF',
-            'association_logo_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Saudi%20Arabian%20Football%20Federation%20Logo.svg',
+            'association_logo_url' => 'https://fr.wikipedia.org/wiki/Special:Redirect/file/Logo_F%C3%A9d%C3%A9ration_Arabie_Saoudite_Football.svg',
             'nation_flag_url' => 'https://flagcdn.com/w640/sa.png',
             'updated_at' => $now,
         ];

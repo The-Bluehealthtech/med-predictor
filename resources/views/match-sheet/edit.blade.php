@@ -150,6 +150,26 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Capitaine — équipe domicile</label>
+                                <select name="home_captain_id" class="mt-1 w-full border-gray-300 rounded-md">
+                                    <option value="">Sélectionner le capitaine</option>
+                                    @foreach($homeTeamPlayers as $player)
+                                        <option value="{{ $player->id }}" {{ data_get($matchSheet->match_statistics, 'home_captain_id') == $player->id ? 'selected' : '' }}>{{ $player->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Capitaine — équipe visiteuse</label>
+                                <select name="away_captain_id" class="mt-1 w-full border-gray-300 rounded-md">
+                                    <option value="">Sélectionner le capitaine</option>
+                                    @foreach($awayTeamPlayers as $player)
+                                        <option value="{{ $player->id }}" {{ data_get($matchSheet->match_statistics, 'away_captain_id') == $player->id ? 'selected' : '' }}>{{ $player->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Player Rosters Section -->
@@ -405,8 +425,11 @@
                     <div class="flex items-center justify-between pt-6 border-t border-gray-200">
                         <div class="flex items-center space-x-4">
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Save Match Sheet
+                                Enregistrer la feuille
                             </button>
+                            <button type="submit" name="signature_role" value="home_captain" class="px-3 py-2 bg-green-600 text-white rounded-md text-xs">Signature capitaine domicile</button>
+                            <button type="submit" name="signature_role" value="away_captain" class="px-3 py-2 bg-green-600 text-white rounded-md text-xs">Signature capitaine visiteur</button>
+                            <button type="submit" name="signature_role" value="referee" class="px-3 py-2 bg-indigo-600 text-white rounded-md text-xs">Signature arbitre</button>
                             @if($matchSheet->status === 'draft')
                                 <a href="{{ route('competition-management.matches.match-sheet.submit', $match) }}" 
                                    onclick="return confirm(@json(__('Are you sure you want to submit this match sheet for validation?')))"

@@ -1409,6 +1409,9 @@ class CompetitionManagementController extends Controller
             'away_team_roster' => ['nullable', 'array', 'max:11'],
             'home_team_substitutes' => ['nullable', 'array', 'max:7'],
             'away_team_substitutes' => ['nullable', 'array', 'max:7'],
+            'home_captain_id' => ['nullable', 'integer'],
+            'away_captain_id' => ['nullable', 'integer'],
+            'signature_role' => ['nullable', 'in:home_captain,away_captain,referee'],
             'home_team_score' => ['nullable', 'integer', 'min:0', 'max:50'],
             'away_team_score' => ['nullable', 'integer', 'min:0', 'max:50'],
             'match_status' => ['required', 'in:scheduled,in_progress,completed,suspended,abandoned,postponed,cancelled'],
@@ -1437,10 +1440,30 @@ class CompetitionManagementController extends Controller
             $validated[$field] = array_values(array_filter($validated[$field] ?? [], fn ($id) => filled($id)));
         }
         $sheet->fill($validated);
+        $sheet->match_statistics = array_merge($sheet->match_statistics ?? [], [
+            'home_captain_id' => $validated['home_captain_id'] ?? null,
+            'away_captain_id' => $validated['away_captain_id'] ?? null,
+        ]);
         $sheet->user_action_log = array_merge($sheet->user_action_log ?? [], [[
             'action' => 'updated', 'user_id' => auth()->id(), 'at' => now()->toIso8601String(),
             'changes' => array_keys(array_diff_assoc($sheet->only(array_keys($validated)), $before)),
         ]]);
+        if ($request->filled('signature_role')) {
+            $role = $request->string('signature_role')->toString();
+            $field = match ($role) {
+                'home_captain' => 'home_team_signature',
+                'away_captain' => 'away_team_signature',
+                'referee' => 'referee_digital_signature',
+            };
+            $timeField = match ($role) {
+                'home_captain' => 'home_team_signed_at',
+                'away_captain' => 'away_team_signed_at',
+                'referee' => 'referee_signed_at',
+            };
+            $sheet->{$field} = 'signed_by_user_' . auth()->id();
+            $sheet->{$timeField} = now();
+            $sheet->user_action_log = array_merge($sheet->user_action_log ?? [], [['action' => 'signed_' . $role, 'user_id' => auth()->id(), 'at' => now()->toIso8601String()]]);
+        }
         $sheet->save();
         if ($request->has('events')) {
             MatchEvent::where('match_sheet_id', $sheet->id)->delete();

@@ -488,6 +488,7 @@ function showMatchModal(matchId, type) {
         </div>
     `;
     document.body.appendChild(modal);
+    window.activeMatchModal = modal;
 }
 
 function closeModal(button) {
@@ -504,7 +505,7 @@ function closeModal(button) {
 // ce soit a enregistrer. Aucune edition reelle des matchs n'est disponible
 // depuis cette page pour le moment.
 function saveMatch(matchId) {
-    const modal = document.querySelector('.fixed.inset-0:last-of-type');
+    const modal = window.activeMatchModal || document.querySelector('.fixed.inset-0');
     const venue = modal?.querySelector('#edit-match-venue')?.value || '';
     const score = modal?.querySelector('#edit-match-score')?.value || '';
     const scores = score.match(/(\\d+)\\s*-\\s*(\\d+)/);

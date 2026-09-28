@@ -1814,9 +1814,13 @@ class CompetitionController extends Controller
             $associationId = $user?->association_id;
             $association = $associationId ? Association::find($associationId) : null;
 
-            if (!$association && $user && in_array($user->role, ['system_admin', 'super_admin', 'admin'], true) && $request->filled('competition_id')) {
+            $isAdministrator = $user && in_array($user->role, ['system_admin', 'super_admin', 'admin'], true);
+            if (!$association && $isAdministrator && $request->filled('competition_id')) {
                 $selectedCompetition = Competition::with('association')->find($request->integer('competition_id'));
                 $association = $selectedCompetition?->association;
+            }
+            if (!$association && $isAdministrator) {
+                $association = Association::orderBy('id')->first();
             }
 
             if (!$association) {

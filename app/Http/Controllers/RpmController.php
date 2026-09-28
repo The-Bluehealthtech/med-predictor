@@ -66,12 +66,15 @@ class RpmController extends Controller
             ->reject(fn ($label) => in_array($label, $excludedKsaFields, true))
             ->map(fn ($label) => (object) ['metric_name' => $label, 'metric_value' => null, 'metric_unit' => null, 'source' => 'KSA'])
             ->values();
-        $advancedMetrics = DB::table('external_player_performance_metrics')
-            ->where('source', 'KSA')
-            ->orderByDesc('updated_at')
-            ->limit(100)
+        $advancedMetrics = DB::table('external_player_performance_metrics as metrics')
+            ->join('players', 'players.id', '=', 'metrics.player_id')
+            ->where('metrics.source', 'KSA')
+            ->select('metrics.*', 'players.name as player_name')
+            ->orderBy('players.name')
+            ->orderBy('metrics.metric_name')
+            ->limit(500)
             ->get();
-        $advancedMetrics = $ksaCatalog->concat($advancedMetrics)->unique('metric_name')->values();
+        $advancedMetrics = $advancedMetrics->isNotEmpty() ? $advancedMetrics : $ksaCatalog;
 
         return view('rpm.index-canonical', compact('measurements', 'stats', 'advancedMetrics'));
     }

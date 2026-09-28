@@ -367,17 +367,19 @@ function saveEffectif() {
 
 // Fonction pour voir une feuille soumise
 function viewFeuille(feuilleId) {
-    alert(@json(__('competitions.match_sheets_page.js_view_sheet_unavailable', ['id' => '__ID__'])).replace('__ID__', feuilleId));
+    window.location.href = '{{ url('/competitions/club/feuille-match') }}/' + feuilleId;
 }
 
-// Fonction pour modifier une feuille
+// Fonction pour modifier une feuille : ouvrir la feuille réelle permet
+// d'utiliser ses contrôles d'édition et de soumission.
 function editFeuille(feuilleId) {
-    alert(@json(__('competitions.match_sheets_page.js_edit_sheet_unavailable', ['id' => '__ID__'])).replace('__ID__', feuilleId));
+    window.location.href = '{{ url('/competitions/club/feuille-match') }}/' + feuilleId + '?edit=1';
 }
 
-// Fonction pour télécharger le PDF
+// Téléchargement PDF via la feuille réelle (le contrôleur applique le rendu
+// officiel et le navigateur peut l'imprimer/enregistrer en PDF).
 function downloadPDF(feuilleId) {
-    alert(@json(__('competitions.match_sheets_page.js_download_pdf_unavailable', ['id' => '__ID__'])).replace('__ID__', feuilleId));
+    window.location.href = '{{ url('/competitions/club/feuille-match') }}/' + feuilleId + '?format=pdf';
 }
 
 // Fermer les modals en cliquant à l'extérieur

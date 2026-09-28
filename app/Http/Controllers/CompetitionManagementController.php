@@ -1407,7 +1407,7 @@ class CompetitionManagementController extends Controller
             'protests_incidents' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
             'suspension_reason' => ['nullable', 'string'],
-            'events' => ['nullable', 'array', 'max:30'],
+            'events' => ['nullable', 'array', 'max:100'],
             'events.*.event_type' => ['required_with:events.*.minute', 'nullable', 'in:goal,own_goal,penalty_goal,yellow_card,red_card,second_yellow,substitution_in,substitution_out'],
             'events.*.minute' => ['nullable', 'integer', 'min:0', 'max:130'],
             'events.*.team_id' => ['nullable', 'integer', 'in:' . $match->home_team_id . ',' . $match->away_team_id],

@@ -340,7 +340,7 @@
                     <!-- Match Events Section -->
                     <div class="bg-orange-50 p-6 rounded-lg">
                         <h3 class="text-lg font-semibold text-orange-900 mb-4">7. Événements et sanctions</h3>
-                        @for($i = 0; $i < max(5, $events->count()); $i++)
+                        @for($i = 0; $i < max(30, $events->count()); $i++)
                             @php($event = $events[$i] ?? null)
                             <div class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2 items-center">
                                 <input type="number" name="events[{{ $i }}][minute]" min="0" max="130" placeholder="Min." value="{{ old("events.$i.minute", $event?->minute) }}" class="w-full min-w-0 border-gray-300 rounded-md text-xs px-2 py-1">

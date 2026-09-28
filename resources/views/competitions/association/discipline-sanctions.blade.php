@@ -118,6 +118,10 @@
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                                             {{ __('competitions.discipline_sanctions_page.type_red_card') }}
                                         </span>
+                                    @elseif($sanction['type_code'] === 'second_yellow')
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                            Deuxième carton jaune → carton rouge
+                                        </span>
                                     @elseif($sanction['type_code'] === 'disciplinary_incident')
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
                                             {{ __('competitions.discipline_sanctions_page.type_disciplinary_incident') }}

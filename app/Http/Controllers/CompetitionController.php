@@ -2063,7 +2063,7 @@ class CompetitionController extends Controller
         // QueryException a chaque appel, systematiquement rattrapee par
         // le catch de associationFixtures() qui affichait une page
         // d'erreur generique. Corrige pour utiliser les vraies colonnes.
-        $matches = GameMatch::with(['homeTeam.club', 'awayTeam.club', 'competition'])
+        $matches = GameMatch::with(['homeTeam.club', 'awayTeam.club', 'competition', 'officials.user'])
             ->whereIn('competition_id', $competitions->pluck('id'))
             ->orderBy('matchday')
             ->orderBy('match_date')
@@ -2113,9 +2113,9 @@ class CompetitionController extends Controller
                     'statut_code' => $isCompleted ? 'completed' : 'upcoming',
                     'journee' => $match->matchday,
                     'competition' => $competitionName,
-                    'arbitre_principal' => $match->referee ?? $officialFallback,
-                    'arbitre_assistant_1' => $match->assistant_referee_1 ?? $officialFallback,
-                    'arbitre_assistant_2' => $match->assistant_referee_2 ?? $officialFallback,
+                    'arbitre_principal' => optional($match->officials->firstWhere('role', 'main_referee')?->user)->name ?? $officialFallback,
+                    'arbitre_assistant_1' => optional($match->officials->firstWhere('role', 'assistant_referee_1')?->user)->name ?? $officialFallback,
+                    'arbitre_assistant_2' => optional($match->officials->firstWhere('role', 'assistant_referee_2')?->user)->name ?? $officialFallback,
                     'arbitre_var' => $match->var_referee ?? $officialFallback,
                     'delegue_match' => $match->match_official ?? $officialFallback,
                     'observateur' => $match->observer ?? $officialFallback,
@@ -2453,7 +2453,7 @@ class CompetitionController extends Controller
     private function getFeuilleMatchFromDatabase($id)
     {
         // Récupérer le match directement depuis la base de données
-        $match = GameMatch::with(['homeTeam', 'awayTeam', 'competition'])
+        $match = GameMatch::with(['homeTeam', 'awayTeam', 'competition', 'officials.user'])
             ->find($id);
         
         if (!$match) {
@@ -2485,9 +2485,9 @@ class CompetitionController extends Controller
             'buts_exterieur' => $match->away_score,
             'statut' => $statut,
             'statut_code' => $statutCode,
-            'arbitre_principal' => $match->referee ?? $toBeDesignated,
-            'arbitre_assistant_1' => $match->assistant_referee_1 ?? $toBeDesignated,
-            'arbitre_assistant_2' => $match->assistant_referee_2 ?? $toBeDesignated,
+            'arbitre_principal' => optional($match->officials->firstWhere('role', 'main_referee')?->user)->name ?? $toBeDesignated,
+            'arbitre_assistant_1' => optional($match->officials->firstWhere('role', 'assistant_referee_1')?->user)->name ?? $toBeDesignated,
+            'arbitre_assistant_2' => optional($match->officials->firstWhere('role', 'assistant_referee_2')?->user)->name ?? $toBeDesignated,
             'arbitre_var' => $match->var_referee ?? $toBeDesignated,
             'delegue_match' => $match->match_official ?? $toBeDesignated,
             'observateur' => $match->observer ?? $toBeDesignated,

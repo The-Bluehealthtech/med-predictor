@@ -445,6 +445,7 @@
                     @if($profileSynthetic)
                         <p class="text-xs text-yellow-300 mb-2">{{ __('Profil fictif de test.') }}</p>
                     @endif
+                    @php $ksaSourceField = fn ($name) => collect($cockpitV2Data['extra'] ?? [])->firstWhere('name', $name)['value'] ?? null; @endphp
 
                     <div class="space-y-2">
                         <div class="flex justify-between">
@@ -453,17 +454,17 @@
                                 @if($player->date_of_birth)
                                     {{ \Carbon\Carbon::parse($player->date_of_birth)->age }} ans
                                 @else
-                                    N/A
+                                    {{ $ksaSourceField('Age') !== null ? $ksaSourceField('Age').' (KSA)' : 'N/A' }}
                                 @endif
                             </span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-purple-200 text-sm">{{ __('health_records_edit.size') }}</span>
-                            <span class="text-white font-medium">{{ $player->height ?? 'N/A' }} cm</span>
+                            <span class="text-white font-medium">{{ $player->height ?? $ksaSourceField('Height') ?? 'N/A' }} cm{{ $player->height === null && $ksaSourceField('Height') !== null ? ' (KSA)' : '' }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-purple-200 text-sm">Poids:</span>
-                            <span class="text-white font-medium">{{ $player->weight ?? 'N/A' }} kg</span>
+                            <span class="text-white font-medium">{{ $player->weight ?? $ksaSourceField('Weight') ?? 'N/A' }} kg{{ $player->weight === null && $ksaSourceField('Weight') !== null ? ' (KSA)' : '' }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-purple-200 text-sm">Pied:</span>

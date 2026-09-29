@@ -46,12 +46,46 @@ class KsaPlayerCockpitData
         };
 
         $matches = $value('matches_played', 'count');
+        $covered = array_merge(self::COUNTS, self::RATES, ['minutes_played', 'matches_played', 'index_ksa']);
+        $definitions = require dirname(__DIR__, 2) . '/config/ksa_metrics.php';
+        $raw = data_get($metrics->first(), 'raw_data', []);
+        $sourceRow = is_string($raw) ? (json_decode($raw, true) ?: []) : (array) $raw;
+        $extra = [];
+        $metadata = ['№', 'Player', 'Age', 'Height', 'Weight', 'Nationality', 'Position'];
+        foreach ($sourceRow as $header => $rawValue) {
+            if (in_array($header, $metadata, true) || !is_numeric($rawValue)) continue;
+            $name = $definitions[$header]['name'] ?? \Illuminate\Support\Str::slug($header, '_');
+            $unit = $definitions[$header]['unit'] ?? (str_contains($header, '%') ? 'percent' : 'count');
+            $alreadyShown = in_array($name, self::COUNTS, true) && $unit !== 'percent'
+                || in_array($name, self::RATES, true) && $unit === 'percent'
+                || in_array($name, ['minutes_played', 'matches_played', 'index_ksa'], true);
+            $number = (float) $rawValue;
+            if ($alreadyShown || !is_finite($number) || $number < 0 || ($unit === 'percent' && $number > 1)) continue;
+            $extra[] = ['name' => $name, 'label' => $header, 'value' => $number, 'unit' => $unit];
+        }
+        foreach (['№', 'Age', 'Height', 'Weight', 'Nationality', 'Position'] as $header) {
+            $rawValue = $sourceRow[$header] ?? null;
+            if ($rawValue === null || trim((string) $rawValue) === '' || trim((string) $rawValue) === '-') continue;
+            $extra[] = ['name' => $header, 'label' => $header, 'value' => trim((string) $rawValue), 'unit' => 'text'];
+        }
+        if (!$sourceRow) {
+            foreach ($metrics as $metric) {
+                $name = (string) data_get($metric, 'metric_name');
+                $unit = (string) data_get($metric, 'metric_unit');
+                $rawValue = data_get($metric, 'metric_value');
+                if (in_array($name, $covered, true) || !is_numeric($rawValue)) continue;
+                $number = (float) $rawValue;
+                if (!is_finite($number) || $number < 0 || ($unit === 'percent' && $number > 1)) continue;
+                $extra[] = ['name' => $name, 'label' => str_replace('_', ' ', $name), 'value' => $number, 'unit' => $unit];
+            }
+        }
         return [
             'minutes' => $value('minutes_played', 'minutes'),
             'matches' => $matches !== null && floor($matches) === $matches ? (int) $matches : null,
             'index' => $value('index_ksa', 'ksa_index'),
             'v' => collect(self::COUNTS)->mapWithKeys(fn ($key) => [$key => $value($key)])->all(),
             'p' => collect(self::RATES)->mapWithKeys(fn ($key) => [$key => $value($key, 'percent')])->all(),
+            'extra' => $extra,
         ];
     }
 }

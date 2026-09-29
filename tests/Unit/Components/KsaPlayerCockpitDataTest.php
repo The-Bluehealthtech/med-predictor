@@ -29,6 +29,55 @@ class KsaPlayerCockpitDataTest extends TestCase
         self::assertCount(11, $data['p']);
     }
 
+    public function test_remaining_excel_columns_are_preserved_including_a_count_and_its_rate(): void
+    {
+        $source = json_encode([
+            'Player' => 'Test Player', 'Minutes played' => '450', 'Goals' => '0.2',
+            'Yellow cards' => '0.5', 'Red cards' => '-', 'Assists' => '0',
+            'Tackles successful' => '2', 'Tackles successful, %' => '0.8',
+            'Chances successful' => '1', 'Chances successful, %' => '0.5',
+        ]);
+        $data = (new KsaPlayerCockpitData())->fromMetrics(collect([
+            (object) ['metric_name' => 'minutes_played', 'metric_value' => '450', 'metric_unit' => 'minutes', 'raw_data' => $source],
+            (object) ['metric_name' => 'goals', 'metric_value' => '0.2', 'metric_unit' => 'count'],
+            (object) ['metric_name' => 'tackles_successful', 'metric_value' => '0.8', 'metric_unit' => 'percent'],
+        ]));
+        self::assertSame(['Yellow cards', 'Assists', 'Tackles successful', 'Chances successful', 'Chances successful, %'], array_column(array_filter($data['extra'], fn ($row) => $row['unit'] !== 'text'), 'label'));
+        self::assertSame([0.5, 0.0, 2.0, 1.0, 0.5], array_column(array_filter($data['extra'], fn ($row) => $row['unit'] !== 'text'), 'value'));
+        self::assertSame(0.8, $data['p']['tackles_successful']);
+    }
+
+    public function test_every_numeric_column_of_all_ksa_source_rows_has_a_display_destination(): void
+    {
+        $sourcePath = dirname(__DIR__, 3) . '/storage/app/imports/ksa_player_statistics.csv';
+        if (!is_file($sourcePath)) self::markTestSkipped('KSA source CSV is not distributed with the repository.');
+        $handle = fopen($sourcePath, 'r');
+        $headers = fgetcsv($handle, 0, ',', '"', '');
+        $definitions = require dirname(__DIR__, 3) . '/config/ksa_metrics.php';
+        $metadata = ['№', 'Player', 'Age', 'Height', 'Weight', 'Nationality', 'Position'];
+        $checked = 0;
+        while (($cells = fgetcsv($handle, 0, ',', '"', '')) !== false) {
+            $row = array_combine($headers, $cells);
+            $metricRows = [];
+            $numericHeaders = 0;
+            foreach ($row as $header => $raw) {
+                if (in_array($header, $metadata, true) || !is_numeric($raw)) continue;
+                $numericHeaders++;
+                $name = $definitions[$header]['name'] ?? \Illuminate\Support\Str::slug($header, '_');
+                $unit = $definitions[$header]['unit'] ?? (str_contains($header, '%') ? 'percent' : 'count');
+                $metricRows[$name] = (object) ['metric_name' => $name, 'metric_value' => $raw, 'metric_unit' => $unit, 'raw_data' => json_encode($row)];
+            }
+            $data = (new KsaPlayerCockpitData())->fromMetrics(collect(array_values($metricRows)));
+            $displayed = count(array_filter($data['extra'], fn ($row) => $row['unit'] !== 'text')) + count(array_filter($data['v'], fn ($v) => $v !== null))
+                + count(array_filter($data['p'], fn ($v) => $v !== null))
+                + (int) ($data['minutes'] !== null) + (int) ($data['index'] !== null);
+            self::assertSame($numericHeaders, $displayed, $row['Player']);
+            $checked++;
+        }
+        fclose($handle);
+        self::assertSame(24, $checked);
+    }
+
     public function test_missing_invalid_and_zero_values_keep_their_meanings(): void
     {
         $service = new KsaPlayerCockpitData();

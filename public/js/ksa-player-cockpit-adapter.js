@@ -17,6 +17,7 @@
             host.removeAttribute('class');
             host.textContent = '';
             mountCockpit(host, DATA);
+            appendExtraMetrics(host, DATA, 1);
         } else {
             mountPartialCockpit(host, DATA, goalkeeper);
         }
@@ -26,6 +27,40 @@
         message.className = 'bg-white/10 rounded-lg p-4 border border-white/20 text-gray-300';
         message.textContent = 'Données indisponibles pour le moment';
         host.appendChild(message);
+    }
+
+    function appendExtraMetrics(target, D, mode) {
+        const root = target.shadowRoot;
+        const rows = (D.extra || []).filter(row => finite(row.value) || row.unit === 'text' && typeof row.value === 'string');
+        if (!root || !rows.length) return;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'blocks';
+        const card = document.createElement('section');
+        card.className = 'card';
+        const title = document.createElement('h3');
+        title.textContent = 'Autres données disponibles · source KSA';
+        card.appendChild(title);
+        rows.forEach(row => {
+            const line = document.createElement('div');
+            line.className = 'row';
+            const label = document.createElement('span');
+            label.textContent = row.label;
+            const value = document.createElement('b');
+            const number = row.unit === 'percent' ? row.value * 100
+                : mode === 90 && row.unit === 'count' && D.matches > 0 && D.minutes > 0
+                    ? row.value * 90 * D.matches / D.minutes : row.value;
+            value.textContent = row.unit === 'text' ? row.value
+                : String(Math.round(number * 100) / 100).replace('.', ',')
+                    + (row.unit === 'percent' ? ' %' : '');
+            line.append(label, value);
+            card.appendChild(line);
+        });
+        const note = document.createElement('p');
+        note.className = 'note';
+        note.textContent = 'Comptages par match dans la source KSA' + (mode === 90 ? ', ramenés à 90 min' : '') + '. Pourcentages et valeurs totales non convertis.';
+        card.appendChild(note);
+        wrapper.appendChild(card);
+        root.appendChild(wrapper);
     }
 
     function mountPartialCockpit(target, D, isGoalkeeper) {
@@ -200,6 +235,7 @@
             top.append(heading,buttons);root.appendChild(top);
             root.append(reading(),kpis());
             const grid=el('div','grid');grid.appendChild(radar());const gauge=gauges();if(gauge)grid.appendChild(gauge);root.append(grid,blocks());
+            appendExtraMetrics(target, D, mode);
         }
         /* The original stylesheet is copied exactly from mountCockpit, inside this Shadow DOM. */
         const css=':host{display:block;--bg:var(--ck-bg,#111827);--card:var(--ck-card,rgba(255,255,255,.1));--ink:var(--ck-ink,#ffffff);--mute:var(--ck-mute,#9ca3af);--line:var(--ck-line,rgba(255,255,255,.2));--acc:var(--ck-acc,#326295);--warn:var(--ck-warn,#b4530a);--bad:var(--ck-bad,#a4262c);--rad:var(--ck-radius,8px);color:var(--ink);font-family:inherit;line-height:1.5}'

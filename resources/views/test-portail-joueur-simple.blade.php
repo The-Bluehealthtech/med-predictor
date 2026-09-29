@@ -803,13 +803,14 @@
                         fn ($metric) => data_get($metric, 'metric_value') !== null
                             && is_numeric(data_get($metric, 'metric_value'))
                     );
+                    $ksaExtraValue = fn ($name) => collect($cockpitV2Data['extra'] ?? [])->firstWhere('name', $name)['value'] ?? null;
                     $seasonChartStats = $hasKsaCockpit ? [
                         'matches_played' => $cockpitV2Data['matches'],
                         'minutes_played' => $cockpitV2Data['minutes'],
                         'goals' => $cockpitV2Data['v']['goals'],
-                        'assists' => $seasonStat?->assists,
-                        'yellow_cards' => $seasonStat?->yellow_cards,
-                        'red_cards' => $seasonStat?->red_cards,
+                        'assists' => $ksaExtraValue('assists'),
+                        'yellow_cards' => $ksaExtraValue('yellow_cards'),
+                        'red_cards' => $ksaExtraValue('red_cards'),
                     ] : $seasonStat;
                 @endphp
 
@@ -826,20 +827,20 @@
                                 <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($cockpitV2Data['v']['goals'] !== null ? $formatGameValue($cockpitV2Data['v']['goals']) : __('Données non disponibles')) : ($seasonStat?->goals ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>{{ __('Passes décisives') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->assists ?? __('Données non disponibles') }}</span>
+                                <span>{{ $hasKsaCockpit ? __('Passes décisives par match') : __('Passes décisives') }}</span>
+                                <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($ksaExtraValue('assists') !== null ? $formatGameValue($ksaExtraValue('assists')) : __('Données non disponibles')) : ($seasonStat?->assists ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>{{ __('Minutes jouées') }}</span>
                                 <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($cockpitV2Data['minutes'] ?? __('Données non disponibles')) : ($seasonStat?->minutes_played ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>{{ __('Cartons jaunes') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->yellow_cards ?? __('Données non disponibles') }}</span>
+                                <span>{{ $hasKsaCockpit ? __('Cartons jaunes par match') : __('Cartons jaunes') }}</span>
+                                <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($ksaExtraValue('yellow_cards') !== null ? $formatGameValue($ksaExtraValue('yellow_cards')) : __('Données non disponibles')) : ($seasonStat?->yellow_cards ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>{{ __('Cartons rouges') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->red_cards ?? __('Données non disponibles') }}</span>
+                                <span>{{ $hasKsaCockpit ? __('Cartons rouges par match') : __('Cartons rouges') }}</span>
+                                <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($ksaExtraValue('red_cards') !== null ? $formatGameValue($ksaExtraValue('red_cards')) : __('Données non disponibles')) : ($seasonStat?->red_cards ?? __('Données non disponibles')) }}</span>
                             </div>
                         </div>
                     </div>
@@ -3188,10 +3189,10 @@ render();
                             new Chart(statsCtx, {
                                 type: 'bar',
                                 data: {
-                                    labels: [@json(__('Matchs')), @json(__('Minutes')), @json($hasKsaCockpit ? __('Buts par match') : __('Buts')), @json(__('Passes décisives')), @json(__('Jaunes')), @json(__('Rouges'))],
+                                    labels: [@json(__('Matchs')), @json(__('Minutes')), @json($hasKsaCockpit ? __('Buts par match') : __('Buts')), @json($hasKsaCockpit ? __('Passes décisives / match') : __('Passes décisives')), @json($hasKsaCockpit ? __('Jaunes / match') : __('Jaunes')), @json($hasKsaCockpit ? __('Rouges / match') : __('Rouges'))],
                                     datasets: [
                                         {
-                                            label: @json(__('Statistiques de saison')),
+                                            label: @json($hasKsaCockpit ? __('KSA par match (sauf matchs)') : __('Statistiques de saison')),
                                             data: seasonStats ? [
                                                 nullableNumber(seasonStats.matches_played),
                                                 null,

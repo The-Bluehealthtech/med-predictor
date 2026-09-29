@@ -24,6 +24,8 @@ cases.append(('853', copy.deepcopy(baseline), 'RAM'))
 another = copy.deepcopy(baseline)
 another['index'] = 200
 another['v']['goals'] = 0.5
+another['extra'] = [{'name':'yellow_cards','label':'Yellow cards','value':0.5,'unit':'count'},
+                    {'name':'Height','label':'Height','value':'182','unit':'text'}]
 cases.append(('complete_other', another, 'CF'))
 missing = copy.deepcopy(baseline)
 missing['matches'] = None
@@ -65,7 +67,9 @@ for name, data, position in cases:
             disabled90:!!root.querySelector('button[data-m="90"]')?.disabled,
             shortNote:text.includes('Échantillon très court'),
             fallback:text.includes('Profil de réussite indisponible'),
-            indexText:root?.querySelectorAll('.kpi b')[2]?.textContent||''
+            indexText:root?.querySelectorAll('.kpi b')[2]?.textContent||'',
+            hasYellow:text.includes('Yellow cards') && text.includes('0,5'),
+            hasHeight:text.includes('Height') && text.includes('182')
         });
     }'''.replace('CASE_NAME', json.dumps(name)))
     parts.append('</script>')
@@ -86,7 +90,7 @@ with tempfile.TemporaryDirectory() as tmp:
     assert len(results)==len(cases),results
     assert all(x['noErrors'] and x['noBadText'] and x['titleCount']==1 for x in results),results
     assert results[0]['hash']==2820450506 and results[0]['length']==16859,results[0]
-    assert results[1]['hash']!=results[0]['hash']
+    assert results[1]['hash']!=results[0]['hash'] and results[1]['hasYellow'] and results[1]['hasHeight']
     assert not results[2]['matchKpi'] and results[2]['radarAxes']==4
     assert results[3]['fallback'] and results[3]['disabled90']
     assert results[4]['disabled90'] and results[4]['shortNote']

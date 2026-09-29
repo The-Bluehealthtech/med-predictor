@@ -2,7 +2,7 @@
 
 // Versionner toute modification des paramètres : un résultat garde sa version de calcul.
 return [
-    'version' => '1.0.0',
+    'version' => '1.1.0',
     'positions' => [
         'LCB' => 'central', 'RCB' => 'central', 'CB' => 'central',
         'LB' => 'lateral', 'RB' => 'lateral',

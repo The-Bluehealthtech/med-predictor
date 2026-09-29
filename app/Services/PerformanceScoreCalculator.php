@@ -295,6 +295,9 @@ final class PerformanceScoreCalculator
     {
         $base = ['player_id' => $player['id'], 'famille' => $player['family'], 'mode' => $player['mode'],
             'matchs' => $player['count'], 'minutes' => $player['minutes'], 'version_configuration' => $this->cfg['version']];
+        if (!$player['entries']) {
+            return $base + ['raison' => 'aucune donnée observée'];
+        }
         if ($player['family'] === null) {
             return $base + ['raison' => 'poste détaillé inconnu'];
         }

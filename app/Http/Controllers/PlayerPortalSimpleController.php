@@ -121,7 +121,7 @@ class PlayerPortalSimpleController extends Controller
             $portalData = $this->portalDataService->forPlayer($player);
             $cockpitData = $this->cockpitDataService->fromMetrics($portalData['ksaMetrics']);
             $goalkeeperData = $player->position === Player::POSITION_GOALKEEPER
-                ? $this->goalkeeperCockpitData->forPlayer($player)
+                ? $this->goalkeeperCockpitData->forPlayer($player, $portalData['playerStats']->first())
                 : null;
         } catch (\Throwable $exception) {
             report($exception);

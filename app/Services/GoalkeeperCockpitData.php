@@ -20,7 +20,7 @@ class GoalkeeperCockpitData
         'long_passes_accurate', 'forward_passes_accurate',
     ];
 
-    public function forPlayer(Player $player): array
+    public function forPlayer(Player $player, ?object $seasonStat = null): array
     {
         $data = [
             'minutes' => null,
@@ -34,6 +34,19 @@ class GoalkeeperCockpitData
             ->where('position_played', 'GK')
             ->get();
         if ($rows->isEmpty()) {
+            // Use the same season row as the statistics card on this page.
+            $matches = data_get($seasonStat, 'matches_played');
+            $minutes = data_get($seasonStat, 'minutes_played');
+            $data['matches'] = is_numeric($matches) && $matches >= 0 ? (int) $matches : null;
+            $data['minutes'] = is_numeric($minutes) && $minutes >= 0 ? (int) $minutes : null;
+            if ($data['matches'] > 0) {
+                foreach (['saves' => 'saves', 'goals_conceded' => 'goals_conceded'] as $key => $column) {
+                    $total = data_get($seasonStat, $column);
+                    if (is_numeric($total) && $total >= 0) {
+                        $data['v'][$key] = (float) $total / $data['matches'];
+                    }
+                }
+            }
             return $data;
         }
         $data['matches'] = $rows->unique('match_id')->count();

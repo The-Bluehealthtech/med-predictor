@@ -284,7 +284,7 @@
                             </div>
 
                             <div class="text-green-200 text-sm">
-                                Score FIT {{ $latestFitSnapshot->calculation_version }}
+                                {{ __('Score FIT') }} {{ $latestFitSnapshot->calculation_version }}
                             </div>
 
                             <div class="text-xs text-gray-300">
@@ -294,7 +294,7 @@
 
                             @if($fitConfidence !== null)
                                 <div class="text-xs text-gray-300">
-                                    Confiance : {{ number_format($fitConfidence, 1) }}%
+                                    {{ __('Confiance :') }} {{ number_format($fitConfidence, 1) }}%
                                 </div>
                             @endif
 
@@ -859,7 +859,7 @@
                                     $matchExtras = json_decode($latestMatchPerformance->additional_metrics ?? '{}', true) ?: [];
                                 @endphp
                                 @if(str_contains($latestMatchPerformance->notes ?? '', 'synthetic_demo'))
-                                    <p>Match fictif de test du {{ \Carbon\Carbon::parse($latestMatchPerformance->match_date)->format('d/m/Y') }}.</p>
+                                    <p>{{ __('Match fictif de test du :date.', ['date' => \Carbon\Carbon::parse($latestMatchPerformance->match_date)->format('d/m/Y')]) }}</p>
                                 @endif
                                 <div class="fifa-stat-header"><span>{{ __('Tacles gagnés') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->tackles_won }}</span></div>
                                 @if(isset($matchExtras['interceptions']))
@@ -1257,12 +1257,12 @@ render();
                     <div style="text-align: left; margin-top: 15px;">
                         @if($playerMedications && $playerMedications->count() > 0)
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Traitements actifs:</span>
+                                <span>{{ __('Traitements actifs:') }}</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ $playerMedications->count() }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                                 <span>{{ __('Type principal:') }}</span>
-                                <span style="color: #ffd700; font-weight: bold;">{{ ucfirst($playerMedications->first()->medication_type) }}</span>
+                                <span style="color: #ffd700; font-weight: bold;">{{ __(ucfirst($playerMedications->first()->medication_type)) }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                                 <span>{{ __('Dernier ajout:') }}</span>
@@ -1329,8 +1329,8 @@ render();
                                         @endif">
                                         <div class="flex justify-between items-start">
                                             <div class="flex-1">
-                                                <div class="font-semibold text-gray-800">{{ $notification->title }}</div>
-                                                <div class="text-sm text-gray-600 mt-1">{{ $notification->message }}</div>
+                                                <div class="font-semibold text-gray-800">{{ __($notification->title) }}</div>
+                                                <div class="text-sm text-gray-600 mt-1">{{ __($notification->message) }}</div>
                                                 <div class="text-xs text-gray-500 mt-2">
                                                     {{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}
                                                 </div>
@@ -2305,7 +2305,7 @@ render();
                                                 @else 🔄 En attente
                                                 @endif
                                             </div>
-                                            <div>Données: {{ implode(', ', $dataTypes) }}</div>
+                                            <div>{{ __('Données:') }} {{ implode(', ', $dataTypes) }}</div>
                                             <div class="text-xs text-{{ $color }}-600 mt-1">
                                                 Dernière sync: {{ \Carbon\Carbon::parse($api->last_sync)->diffForHumans() }}
                                             </div>

@@ -50,6 +50,7 @@
     'Dernière passe dans la surface':'Final pass into the box',
     'Erreurs coûteuses':'Costly errors', 'Passe dans la surface':'Pass into the box',
     'Jeu long':'Long passing', 'Priorité :':'Priority:',
+    'Base de calcul':'Calculation basis', 'Radar des taux de réussite':'Success rate radar',
   };
   const ordered = Object.entries(labels).sort((a,b)=>b[0].length-a[0].length);
   const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
@@ -66,6 +67,7 @@
     [/^Une erreur menant à un but sur (\d+) matchs, et autant menant à une occasion\.$/,(_,n)=>`One error leading to a goal over ${n} matches, and another leading to a chance.`],
     [/^0 centre précis sur (.*?) tenté\(s\) : revoir la décision \(centrer ou non\) et la technique de frappe\.$/,(_,n)=>`No accurate cross from ${n} attempt(s): review the crossing decision and technique.`],
     [/^Passer de (.*?) à plus de 60 % en choisissant mieux le moment et l'angle\.$/,(_,n)=>`Improve from ${n} to over 60% by choosing better timing and angles.`],
+    [/^Gagner davantage de duels \((\d+) % aujourd'hui\) : placement avant contact et jeu aérien \((\d+) %\)\.$/,(_,d,a)=>`Win more duels (${d}% currently): improve positioning before contact and aerial play (${a}%).`],
   ];
   const snippets = [
     ['Valeurs par match','Values per match'],['ramenées à 90 min','per 90 min'],

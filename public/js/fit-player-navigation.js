@@ -118,8 +118,10 @@
     });
     document.addEventListener('click', event => {
         const link = event.target.closest('a[href]');
-        if (!link) return;
+        if (!link || link.closest('[aria-label="Language selector"]')) return;
         const url = new URL(link.href, window.location.href);
+        const current = new URL(window.location.href);
+        if (url.searchParams.get('lang') !== current.searchParams.get('lang')) return;
         if (url.origin === window.location.origin && url.pathname === pagePath
             && url.searchParams.has('player_id') && !event.metaKey && !event.ctrlKey) {
             event.preventDefault();

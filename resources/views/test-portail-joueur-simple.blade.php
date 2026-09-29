@@ -798,33 +798,12 @@
                         'red_cards' => $seasonStat?->red_cards,
                     ];
                 @endphp
-                @if((int) $player->id === 853)
                 @php
-                    // DATA only: KSA records, with seven matches confirmed by the user.
-                    $cockpitV2KeysV = ["goals", "expected_goals", "shots", "shots_on_target", "chances", "chances_created", "key_passes", "passes_for_a_shot", "dribbling_in_the_final_third", "involvement_in_scoring_attacks", "passes", "short_passes", "long_passes", "progressive_passes", "progressive_open_passes", "passes_forward_to_the_final_third", "passes_into_the_penalty_box", "crosses", "tackles", "interceptions", "loose_ball_recoveries", "challenges", "defensive_challenges", "attacking_challenges", "aerial_challenges", "dribbles", "fouls_committed", "fouls_suffered", "mistakes_leading_to_chances", "mistakes_leading_to_goals"];
-                    $cockpitV2KeysP = ["passes_accuracy", "progressive_passes_accurate", "short_passes_accurate", "passes_into_the_penalty_box_accurate", "crosses_accurate", "challenges_won", "defensive_challenges_won", "attacking_challenges_won", "aerial_challenges_won", "tackles_successful", "dribbles_successful"];
-                    $cockpitV2Missing = [];
-                    $cockpitV2Value = function ($key, $unit = null) use ($metricRow, &$cockpitV2Missing) {
-                        $row = $metricRow([$key]);
-                        $value = data_get($row, 'metric_value');
-                        if (!is_numeric($value) || ($unit && strtolower((string) data_get($row, 'metric_unit')) !== $unit)
-                            || ($unit === 'percent' && ((float) $value < 0 || (float) $value > 1))) {
-                            $cockpitV2Missing[] = $key;
-                            return null;
-                        }
-                        return (float) $value;
-                    };
-                    $cockpitV2Data = [
-                        'minutes' => $cockpitV2Value('minutes_played', 'minutes'),
-                        'matches' => 7,
-                        'index' => $cockpitV2Value('index_ksa', 'ksa_index'),
-                        'v' => collect($cockpitV2KeysV)->mapWithKeys(fn ($key) => [$key => $cockpitV2Value($key)])->all(),
-                        'p' => collect($cockpitV2KeysP)->mapWithKeys(fn ($key) => [$key => $cockpitV2Value($key, 'percent')])->all(),
-                    ];
-                @endphp
-                @endif
-                @php
-                    $seasonChartStats = (int) $player->id === 853 ? [
+                    $hasKsaCockpit = collect($ksaMetrics ?? [])->contains(
+                        fn ($metric) => data_get($metric, 'metric_value') !== null
+                            && is_numeric(data_get($metric, 'metric_value'))
+                    );
+                    $seasonChartStats = $hasKsaCockpit ? [
                         'matches_played' => $cockpitV2Data['matches'],
                         'minutes_played' => $cockpitV2Data['minutes'],
                         'goals' => $cockpitV2Data['v']['goals'],
@@ -840,11 +819,11 @@
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
                                 <span>{{ __('Matchs joués') }}</span>
-                                <span class="fifa-stat-value highlight">{{ (int) $player->id === 853 ? ($cockpitV2Data['matches'] ?? __('Données non disponibles')) : ($seasonStat?->matches_played ?? __('Données non disponibles')) }}</span>
+                                <span class="fifa-stat-value highlight">{{ $hasKsaCockpit ? ($cockpitV2Data['matches'] ?? __('Données non disponibles')) : ($seasonStat?->matches_played ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>{{ (int) $player->id === 853 ? __('Buts par match') : __('Buts marqués') }}</span>
-                                <span class="fifa-stat-value">{{ (int) $player->id === 853 ? ($cockpitV2Data['v']['goals'] !== null ? $formatGameValue($cockpitV2Data['v']['goals']) : __('Données non disponibles')) : ($seasonStat?->goals ?? __('Données non disponibles')) }}</span>
+                                <span>{{ $hasKsaCockpit ? __('Buts par match') : __('Buts marqués') }}</span>
+                                <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($cockpitV2Data['v']['goals'] !== null ? $formatGameValue($cockpitV2Data['v']['goals']) : __('Données non disponibles')) : ($seasonStat?->goals ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>{{ __('Passes décisives') }}</span>
@@ -852,7 +831,7 @@
                             </div>
                             <div class="fifa-stat-header">
                                 <span>{{ __('Minutes jouées') }}</span>
-                                <span class="fifa-stat-value">{{ (int) $player->id === 853 ? ($cockpitV2Data['minutes'] ?? __('Données non disponibles')) : ($seasonStat?->minutes_played ?? __('Données non disponibles')) }}</span>
+                                <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($cockpitV2Data['minutes'] ?? __('Données non disponibles')) : ($seasonStat?->minutes_played ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>{{ __('Cartons jaunes') }}</span>
@@ -888,13 +867,12 @@
                     </div>
                 </div>
 
-                @if((int) $player->id === 853)
-                    @if(empty($cockpitV2Missing))
 <style>#cockpit-joueur{max-width:1080px;margin:0 auto;padding:20px 16px 40px}</style>
-<div id="cockpit-joueur"></div>
+<div id="cockpit-joueur" role="status" aria-live="polite" class="text-gray-300 p-4">{{ __('Chargement des performances…') }}</div>
 <script>
 /* ===== 1. DONNÉES : seul bloc à brancher sur les données réelles du site ===== */
 var DATA=@json($cockpitV2Data);
+var cockpitPosition=@json($player->position);
 
 /* ===== 2. COMPOSANT (isolé du CSS du site par Shadow DOM) ===== */
 function mountCockpit(host,D){
@@ -968,235 +946,9 @@ Array.prototype.forEach.call(root.querySelectorAll("button"),function(b){b.oncli
 }
 render();
 }
-mountCockpit(document.getElementById("cockpit-joueur"),DATA);
+// Initialization is selected by the guarded adapter below.
 </script>
-                    @else
-                        <p class="text-yellow-300">Cockpit indisponible : mesures KSA manquantes ou unité invalide : {{ implode(", ", $cockpitV2Missing) }}</p>
-                    @endif
-                @else
-                <section id="cockpit-joueur" class="fifa-stat-card mt-6 mx-auto" data-cockpit='@json($cockpitData)' data-radar-rates='@json($radarRates)' aria-labelledby="cockpit-title">
-                    <style>
-                        /* Scoped tokens from resources/css/fifa-design-system.css. */
-                        #cockpit-joueur{
-                            --fifa-white:#ffffff;--fifa-gray-50:#f9fafb;--fifa-gray-200:#e5e7eb;
-                            --fifa-gray-300:#d1d5db;--fifa-gray-500:#6b7280;--fifa-gray-700:#374151;
-                            --fifa-gray-800:#1f2937;--fifa-blue-primary:#1e3a8a;
-                            --fifa-blue-secondary:#3b82f6;--fifa-success:#10b981;
-                            --fifa-success-light:#d1fae5;--fifa-warning:#f59e0b;
-                            --fifa-warning-light:#fef3c7;--fifa-gold:#f59e0b;
-                            --fifa-radius-sm:.25rem;--fifa-radius-md:.5rem;--fifa-radius-lg:.75rem;
-                            --fifa-spacing-lg:1.5rem;--fifa-font-weight-bold:700;
-                            --fifa-shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
-                        }
-                        #cockpit-joueur{color:var(--fifa-gray-800);background:var(--fifa-white);border:1px solid var(--fifa-gray-200);border-radius:var(--fifa-radius-lg);box-shadow:var(--fifa-shadow-md);padding:var(--fifa-spacing-lg);max-width:1120px}
-                        #cockpit-joueur .cockpit-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem}
-                        #cockpit-joueur .cockpit-title{font-size:1.25rem;font-weight:var(--fifa-font-weight-bold);color:var(--fifa-blue-primary);margin:0}
-                        #cockpit-joueur .cockpit-note{font-size:.75rem;color:var(--fifa-gray-500)}
-                        #cockpit-joueur .cockpit-kpis,#cockpit-joueur .cockpit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
-                        #cockpit-joueur .cockpit-kpi,#cockpit-joueur .cockpit-panel{border:1px solid var(--fifa-gray-200);border-radius:var(--fifa-radius-md);padding:.75rem;background:var(--fifa-gray-50)}
-                        #cockpit-joueur .cockpit-kpi-label{font-size:.72rem;color:var(--fifa-gray-500);text-transform:uppercase;letter-spacing:.04em}
-                        #cockpit-joueur .cockpit-kpi-value{font-size:1.35rem;font-weight:var(--fifa-font-weight-bold);color:var(--fifa-blue-primary);margin-top:.2rem}
-                        #cockpit-joueur .cockpit-grid{margin-top:1rem;grid-template-columns:repeat(2,minmax(0,1fr))}
-                        #cockpit-joueur .cockpit-panel h4{margin:0 0 .75rem;color:var(--fifa-gray-700);font-size:.95rem}
-                        #cockpit-joueur .cockpit-bar{display:grid;grid-template-columns:150px 1fr 42px;align-items:center;gap:.5rem;margin:.55rem 0;font-size:.78rem}
-                        #cockpit-joueur .cockpit-track{height:7px;background:var(--fifa-gray-200);border-radius:999px;overflow:hidden}
-                        #cockpit-joueur .cockpit-fill{height:100%;background:linear-gradient(90deg,var(--fifa-blue-secondary),var(--fifa-success));border-radius:inherit}
-                        #cockpit-joueur .cockpit-radar{display:flex;justify-content:center;align-items:center;min-height:250px}
-                        #cockpit-joueur .cockpit-radar polygon{fill:rgba(59,130,246,.18);stroke:var(--fifa-blue-secondary);stroke-width:2}
-                        #cockpit-joueur .cockpit-radar line{stroke:var(--fifa-gray-300);stroke-width:1}
-                        #cockpit-joueur .cockpit-insights{display:grid;gap:.5rem}
-                        #cockpit-joueur .cockpit-insight{padding:.6rem .75rem;border-left:4px solid var(--fifa-success);background:var(--fifa-success-light);border-radius:var(--fifa-radius-sm);font-size:.82rem}
-                        #cockpit-joueur .cockpit-insight.warn{border-color:var(--fifa-warning);background:var(--fifa-warning-light)}
-                        #cockpit-joueur .cockpit-toggle{display:inline-flex;gap:.25rem}
-                        #cockpit-joueur .cockpit-toggle button{border:1px solid var(--fifa-blue-primary);background:var(--fifa-white);color:var(--fifa-blue-primary);padding:.4rem .65rem;border-radius:var(--fifa-radius-sm);cursor:pointer}
-                        #cockpit-joueur .cockpit-toggle button[aria-pressed=true]{background:var(--fifa-blue-primary);color:var(--fifa-white)}
-                        #cockpit-joueur .cockpit-toggle button:focus-visible{outline:2px solid var(--fifa-gold);outline-offset:2px}
-                        #cockpit-joueur .cockpit-unavailable{color:var(--fifa-gray-500);font-size:.8rem}
-                        @media(max-width:700px){#cockpit-joueur .cockpit-kpis,#cockpit-joueur .cockpit-grid{grid-template-columns:1fr}#cockpit-joueur .cockpit-head{align-items:flex-start;flex-direction:column}#cockpit-joueur .cockpit-bar{grid-template-columns:115px 1fr 38px}}
-                    </style>
-                    <div class="cockpit-head"><div><h3 id="cockpit-title" class="cockpit-title">Données de jeu</h3><div class="cockpit-note">Performance du joueur · source FIT disponible</div></div><div class="cockpit-toggle" role="group" aria-label="Mode d'affichage"><button type="button" data-mode="match" aria-pressed="true">Par match</button><button type="button" data-mode="90">Par 90 min</button></div></div>
-                    <div class="cockpit-kpis">
-                        @foreach(['matches_played'=>'Matchs','minutes_played'=>'Minutes','index_ksa'=>'Index KSA','goals'=>'Buts','expected_goals'=>'xG','passes_accuracy'=>'Précision passes'] as $key=>$label)
-                            @if($cockpitData[$key] !== null)<div class="cockpit-kpi"><div class="cockpit-kpi-label">{{ $label }}</div><div class="cockpit-kpi-value">{{ $formatGameValue($cockpitData[$key]) }}{{ $key === 'passes_accuracy' ? ' %' : '' }}</div></div>@endif
-                        @endforeach
-                    </div>
-                    <div class="cockpit-grid">
-                        <div class="cockpit-panel"><h4>Taux de réussite</h4><div class="cockpit-radar" data-radar></div></div>
-                        <div class="cockpit-panel">
-                            <h4>{{ __('player_cockpit.analysis_title') }}</h4>
-                            <div class="cockpit-insights" data-insights>
-                                @if($availableRates->isEmpty())
-                                    <div class="cockpit-unavailable">{{ __('player_cockpit.no_verified_rates') }}</div>
-                                @else
-                                    <div class="cockpit-insight">{{ __('player_cockpit.coverage', ['count' => $availableRates->count(), 'total' => count($radarRates)]) }}</div>
-                                    @foreach($availableRates as $key => $value)
-                                        <div class="cockpit-insight">{{ $rateLabels[$key] }} : {{ $formatRate($value) }} %</div>
-                                    @endforeach
-                                    @if($availableRates->count() >= 2)
-                                        <div class="cockpit-insight">{{ __('player_cockpit.highest', ['label' => $rateLabels[$highestRateKey], 'value' => $formatRate($availableRates[$highestRateKey])]) }}</div>
-                                        <div class="cockpit-insight">{{ __('player_cockpit.lowest', ['label' => $rateLabels[$lowestRateKey], 'value' => $formatRate($availableRates[$lowestRateKey])]) }}</div>
-                                        <div class="cockpit-insight">{{ __('player_cockpit.spread', ['value' => $formatRate($availableRates[$highestRateKey] - $availableRates[$lowestRateKey])]) }}</div>
-                                    @endif
-                                    <div class="cockpit-note">{{ __('player_cockpit.scope_note') }}</div>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="cockpit-panel"><h4>Attaque</h4><div data-bars='["goals","expected_goals","shots","shots_on_target"]'></div></div>
-                        <div class="cockpit-panel"><h4>Construction</h4><div data-bars='["passes_accuracy","progressive_passes_accurate","dribbles_successful"]'></div></div>
-                        <div class="cockpit-panel"><h4>Duels et défense</h4><div data-bars='["tackles_successful","challenges_won","aerial_challenges_won"]'></div></div>
-                        <div class="cockpit-panel"><h4>Discipline et erreurs</h4><div data-bars='["yellow_cards","red_cards"]'></div></div>
-                    </div>
-                    <script>
-                    (() => {
-                        const root = document.getElementById('cockpit-joueur');
-                        if (!root) return;
-                        const d = JSON.parse(root.dataset.cockpit || '{}');
-                        const rates = JSON.parse(root.dataset.radarRates || '{}');
-                        const labels = {
-                            goals: 'Buts', expected_goals: 'xG', shots: 'Tirs',
-                            shots_on_target: 'Tirs cadrés', passes_accuracy: 'Précision passes',
-                            progressive_passes_accurate: 'Passes progressives',
-                            dribbles_successful: 'Dribbles réussis', tackles_successful: 'Tacles réussis',
-                            challenges_won: 'Duels gagnés', aerial_challenges_won: 'Duels aériens',
-                            yellow_cards: 'Cartons jaunes', red_cards: 'Cartons rouges'
-                        };
-                        const keys = ['passes_accuracy', 'progressive_passes_accurate',
-                            'dribbles_successful', 'tackles_successful', 'challenges_won',
-                            'aerial_challenges_won'];
-                        const number = value => value === null || value === undefined || value === ''
-                            ? null : (Number.isFinite(Number(value)) ? Number(value) : null);
-                        const rate = key => {
-                            const value = number(rates[key]);
-                            return value !== null && value >= 0 && value <= 100 ? value : null;
-                        };
-                        const format = value => value.toLocaleString(document.documentElement.lang || 'fr', {
-                            maximumFractionDigits: 2
-                        });
-                        root.querySelectorAll('[data-bars]').forEach(el => {
-                            JSON.parse(el.dataset.bars).forEach(key => {
-                                const value = number(d[key]);
-                                if (value === null) return;
-                                const row = document.createElement('div');
-                                row.className = 'cockpit-bar';
-                                const label = document.createElement('span');
-                                label.textContent = labels[key];
-                                const track = document.createElement('span');
-                                track.className = 'cockpit-track';
-                                const fill = document.createElement('span');
-                                fill.className = 'cockpit-fill';
-                                const percent = rate(key);
-                                fill.style.width = percent === null ? '0%' : percent + '%';
-                                track.appendChild(fill);
-                                const display = document.createElement('strong');
-                                display.textContent = percent === null ? format(value) : format(percent) + ' %';
-                                row.append(label, track, display);
-                                el.appendChild(row);
-                            });
-                        });
-                        const available = keys.filter(key => rate(key) !== null);
-                        const radar = root.querySelector('[data-radar]');
-                        if (available.length === keys.length) {
-                            const svgNS = 'http://www.w3.org/2000/svg';
-                            const svg = document.createElementNS(svgNS, 'svg');
-                            svg.setAttribute('viewBox', '0 0 360 320');
-                            svg.setAttribute('width', '360');
-                            svg.setAttribute('height', '320');
-                            svg.setAttribute('role', 'img');
-                            svg.setAttribute('aria-label', keys.map(key => labels[key] + ' ' + format(rate(key)) + ' %').join(', '));
-                            const point = (index, radius) => {
-                                const angle = -Math.PI / 2 + index * 2 * Math.PI / keys.length;
-                                return [180 + Math.cos(angle) * radius, 150 + Math.sin(angle) * radius];
-                            };
-                            [25, 50, 75, 100].forEach(level => {
-                                const ring = document.createElementNS(svgNS, 'polygon');
-                                ring.setAttribute('points', keys.map((_, index) => point(index, level).join(',')).join(' '));
-                                ring.setAttribute('fill', 'none');
-                                ring.setAttribute('stroke', '#d1d5db');
-                                svg.appendChild(ring);
-                            });
-                            keys.forEach((key, index) => {
-                                const axis = document.createElementNS(svgNS, 'line');
-                                const [x, y] = point(index, 100);
-                                axis.setAttribute('x1', '180'); axis.setAttribute('y1', '150');
-                                axis.setAttribute('x2', x); axis.setAttribute('y2', y);
-                                axis.setAttribute('stroke', '#d1d5db');
-                                svg.appendChild(axis);
-                                const text = document.createElementNS(svgNS, 'text');
-                                const [tx, ty] = point(index, 130);
-                                text.setAttribute('x', tx); text.setAttribute('y', ty);
-                                text.setAttribute('text-anchor', 'middle');
-                                text.setAttribute('font-size', '10');
-                                text.setAttribute('fill', '#374151');
-                                text.textContent = labels[key];
-                                svg.appendChild(text);
-                            });
-                            const shape = document.createElementNS(svgNS, 'polygon');
-                            shape.setAttribute('points', keys.map((key, index) => point(index, rate(key)).join(',')).join(' '));
-                            shape.setAttribute('fill', 'rgba(59,130,246,.18)');
-                            shape.setAttribute('stroke', '#3b82f6');
-                            shape.setAttribute('stroke-width', '2');
-                            svg.appendChild(shape);
-                            radar.appendChild(svg);
-                        } else {
-                            radar.textContent = 'Radar disponible lorsque les six taux vérifiés sont présents.';
-                            radar.classList.add('cockpit-unavailable');
-                        }
-                        root.querySelectorAll('[data-mode]').forEach(button =>
-                            button.addEventListener('click', () =>
-                                root.querySelectorAll('[data-mode]').forEach(other =>
-                                    other.setAttribute('aria-pressed', other === button ? 'true' : 'false'))));
-                    })();
-                    </script>
-                </section>
-                @php
-                    $recordedKsaMetrics = collect($ksaMetrics ?? [])
-                        ->filter(fn ($metric) => data_get($metric, 'metric_value') !== null
-                            && is_numeric(data_get($metric, 'metric_value')));
-                    $gameGroups = $recordedKsaMetrics->groupBy(function ($metric) {
-                        $label = strtolower($metric->metric_name);
-                        if (str_contains($label, 'pass') || str_contains($label, 'cross')) return __('player_cockpit.group_passes');
-                        if (str_contains($label, 'challenge') || str_contains($label, 'tackle') || str_contains($label, 'interception')) return __('player_cockpit.group_defense');
-                        if (str_contains($label, 'dribbl')) return __('player_cockpit.group_dribbles');
-                        if (str_contains($label, 'card') || str_contains($label, 'foul')) return __('player_cockpit.group_discipline');
-                        if (str_contains($label, 'chance') || str_contains($label, 'goal') || str_contains($label, 'shot')) return __('player_cockpit.group_attack');
-                        return __('player_cockpit.group_other');
-                    });
-                @endphp
-                <section id="ksa-statistics" class="fifa-stat-card mt-6 mx-auto" style="max-width:1120px;" aria-labelledby="ksa-details-title">
-                    <h3 id="ksa-details-title">{{ __('player_cockpit.details_title') }} ({{ $recordedKsaMetrics->count() }})</h3>
-                    @forelse($gameGroups as $group => $groupMetrics)
-                        <h4 class="mt-4 mb-2 font-semibold">{{ $group }}</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                            @foreach($groupMetrics as $metric)
-                                @php
-                                    $unit = strtolower(trim((string) $metric->metric_unit));
-                                    $value = (float) $metric->metric_value;
-                                    $isRate = $unit === 'percent' && $value >= 0 && $value <= 1;
-                                    $displayValue = $isRate ? $formatGameValue($value * 100).' %' : $formatGameValue($value);
-                                    $displayUnit = $isRate ? '' : ($unit === 'count' ? '' : $metric->metric_unit);
-                                    $metricKey = strtolower(str_replace(' ', '_', trim((string) $metric->metric_name)));
-                                    $labelKey = 'player_cockpit.'.$metricKey;
-                                    $displayLabel = __($labelKey) === $labelKey
-                                        ? ucfirst(str_replace('_', ' ', $metric->metric_name))
-                                        : __($labelKey);
-                                @endphp
-                                <div class="fifa-stat-card">
-                                    <div class="fifa-stat-header">{{ $displayLabel }}</div>
-                                    <div class="fifa-stat-value">{{ $displayValue }}@if($displayUnit) <small>{{ $displayUnit }}</small>@endif</div>
-                                    <div class="text-xs opacity-70">
-                                        {{ $metric->source }}
-                                        @if($metric->season) · {{ $metric->season }} @endif
-                                        @if($metric->competition) · {{ $metric->competition }} @endif
-                                        @if($metric->measured_at) · {{ \Carbon\Carbon::parse($metric->measured_at)->format('d/m/Y') }} @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @empty
-                        <p>{{ __('player_cockpit.no_recorded_metrics') }}</p>
-                    @endforelse
-                </section>
-                @endif
+<script src="{{ asset('js/ksa-player-cockpit-adapter.js') }}"></script>
             </div>
         </div>
 
@@ -3436,7 +3188,7 @@ mountCockpit(document.getElementById("cockpit-joueur"),DATA);
                             new Chart(statsCtx, {
                                 type: 'bar',
                                 data: {
-                                    labels: [@json(__('Matchs')), @json(__('Minutes')), @json((int) $player->id === 853 ? __('Buts par match') : __('Buts')), @json(__('Passes décisives')), @json(__('Jaunes')), @json(__('Rouges'))],
+                                    labels: [@json(__('Matchs')), @json(__('Minutes')), @json($hasKsaCockpit ? __('Buts par match') : __('Buts')), @json(__('Passes décisives')), @json(__('Jaunes')), @json(__('Rouges'))],
                                     datasets: [
                                         {
                                             label: @json(__('Statistiques de saison')),
@@ -3770,5 +3522,6 @@ mountCockpit(document.getElementById("cockpit-joueur"),DATA);
                          console.log('✅ Graphiques Chart.js initialisés !');
                      }
                  </script>
+                 <script src="{{ asset('js/fit-player-navigation.js') }}"></script>
              </body>
              </html>

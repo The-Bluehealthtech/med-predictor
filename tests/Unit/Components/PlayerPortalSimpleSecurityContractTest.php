@@ -65,7 +65,7 @@ class PlayerPortalSimpleSecurityContractTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            'findOrFail((int) $user->player_id)',
+            'find((int) $user->player_id)',
             $controller
         );
     }

@@ -103,6 +103,17 @@ class PlayerPortalSimpleAccessTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_missing_and_invalid_player_id_show_a_quiet_not_found_page(): void
+    {
+        $this->bypassRouteAuthentication();
+        $this->authenticatedUser(['role' => 'system_admin']);
+
+        $this->get(route('test.portail.joueur.simple'))
+            ->assertNotFound()->assertSee('Player not found');
+        $this->get(route('test.portail.joueur.simple', ['player_id' => 'invalid']))
+            ->assertNotFound()->assertSee('Player not found');
+    }
+
     public function test_player_cannot_open_player_list_or_search(): void
     {
         $this->bypassRouteAuthentication();

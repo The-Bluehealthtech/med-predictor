@@ -522,10 +522,23 @@
                 </h3>
 
                 @php
+                    $ksaIndexMetric = collect($ksaMetrics ?? [])->first(fn ($metric) =>
+                        strtolower(str_replace(' ', '_', trim((string) data_get($metric, 'metric_name')))) === 'index_ksa'
+                        && data_get($metric, 'metric_value') !== null);
+                    $ksaIndex = $ksaIndexMetric
+                        && strtolower((string) data_get($ksaIndexMetric, 'metric_unit')) === 'ksa_index'
+                        && is_numeric(data_get($ksaIndexMetric, 'metric_value'))
+                        ? (float) data_get($ksaIndexMetric, 'metric_value')
+                        : null;
                     $fitStatCards = [
                         [
                             'label' => 'FIT',
                             'value' => $latestFitSnapshot?->fit_score,
+                        ],
+                        [
+                            'label' => __('Index KSA'),
+                            'value' => $ksaIndex,
+                            'is_ksa_index' => true,
                         ],
                         [
                             'label' => __('PHYSIQUE'),
@@ -556,18 +569,22 @@
                     <p class="text-xs text-yellow-300 mb-3">{{ __('Score calculé à partir de métriques fictives de test.') }}</p>
                 @endif
 
-                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+                <div class="grid grid-cols-2 md:grid-cols-3 {{ $ksaIndex !== null ? 'xl:grid-cols-7' : 'xl:grid-cols-6' }} gap-3">
                     @foreach($fitStatCards as $fitStat)
+                        @if(empty($fitStat['is_ksa_index']) || $ksaIndex !== null)
                         <div class="bg-white/10 rounded-lg p-3 text-center border border-white/10">
                             <div class="text-white font-bold text-lg">
                                 {{ $fitStat['value'] !== null
-                                    ? number_format((float) $fitStat['value'], 1)
+                                    ? (!empty($fitStat['is_ksa_index'])
+                                        ? str_replace('.', app()->getLocale() === 'fr' ? ',' : '.', rtrim(rtrim(number_format((float) $fitStat['value'], 2, '.', ''), '0'), '.'))
+                                        : number_format((float) $fitStat['value'], 1))
                                     : 'N/A' }}
                             </div>
                             <div class="text-gray-300 text-xs">
                                 {{ $fitStat['label'] }}
                             </div>
                         </div>
+                        @endif
                     @endforeach
                 </div>
             </div>

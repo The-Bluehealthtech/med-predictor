@@ -41,8 +41,10 @@
             await replacePage(html);
             return true;
         } catch (error) {
-            if (error.name !== 'AbortError') status.textContent = 'Données indisponibles pour le moment';
-            else overlay.remove();
+            if (error.name !== 'AbortError') {
+                if (document.body.contains(overlay)) status.textContent = 'Données indisponibles pour le moment';
+                else showMessage('Données indisponibles pour le moment');
+            } else overlay.remove();
             return false;
         } finally {
             if (pending === controller) pending = null;

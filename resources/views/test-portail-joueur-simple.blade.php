@@ -958,7 +958,7 @@ render();
 @if($player->position === \App\Models\Player::POSITION_GOALKEEPER)
 <script>window.FIT_GOALKEEPER_DATA = @json($goalkeeperCockpitData);</script>
 <script src="{{ asset('js/ksa-goalkeeper-cockpit.js') }}?v={{ filemtime(public_path('js/ksa-goalkeeper-cockpit.js')) }}"></script>
-@elseif(in_array($player->position, ['DEF', 'MID', 'FWD'], true))
+@elseif(in_array($player->position, ['DEF', 'MID', 'FWD', 'CB', 'LB', 'RB', 'DM', 'CM', 'AM', 'LW', 'RW', 'ST', 'CDM', 'LCB', 'RCB', 'LCM', 'CAM', 'RCAM', 'LAM', 'RAM', 'CF'], true))
 <script src="{{ asset('js/ksa-player-cockpit-adapter.js') }}?v={{ filemtime(public_path('js/ksa-player-cockpit-adapter.js')) }}"></script>
 @else
 <script>

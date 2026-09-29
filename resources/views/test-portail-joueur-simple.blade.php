@@ -949,7 +949,7 @@ render();
 }
 // Initialization is selected by the guarded adapter below.
 </script>
-<script src="{{ asset('js/ksa-player-cockpit-adapter.js') }}"></script>
+<script src="{{ asset('js/ksa-player-cockpit-adapter.js') }}?v={{ filemtime(public_path('js/ksa-player-cockpit-adapter.js')) }}"></script>
             </div>
         </div>
 

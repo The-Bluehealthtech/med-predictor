@@ -390,7 +390,7 @@
                                 @endphp
 
                                 @if($fitTotalMetricCount === 0)
-                                    <div class="mt-2 text-xs text-yellow-300">{{ __('Aucune métrique de performance enregistrée pour ce joueur.') }}</div>
+                                    <div class="mt-2 text-xs text-yellow-300">{{ __('Aucune métrique de Score FIT enregistrée pour ce joueur.') }}</div>
 
                                 @elseif($fitVerifiedMetricCount === 0)
                                     @if($fitRecentMetricCount > 0)
@@ -865,7 +865,7 @@
                                 <div class="fifa-stat-header"><span>{{ __('Tirs cadrés') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->shots_on_target }}</span></div>
                                 <div class="fifa-stat-header"><span>{{ __('Précision des passes') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->passes_attempted > 0 ? number_format(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1).'%' : 'Données non disponibles' }}</span></div>
                             @else
-                                <p>{{ __('Aucune statistique de match enregistrée.') }}</p>
+                                <p>{{ __('Aucune statistique de match détaillée enregistrée.') }}</p>
                             @endif
                         </div>
                     </div>

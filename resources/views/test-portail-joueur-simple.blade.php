@@ -715,61 +715,6 @@
                 @php
                     $seasonStat = $playerStats->first();
                 @endphp
-
-                <div class="fifa-health-grid">
-                    <div class="fifa-health-card">
-                        <h4>{{ __('⚽ Performance de Saison') }}</h4>
-                        <div class="fifa-health-stat">
-                            <div class="fifa-stat-header">
-                                <span>{{ __('Matchs joués') }}</span>
-                                <span class="fifa-stat-value highlight">{{ $seasonStat?->matches_played ?? __('Données non disponibles') }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>{{ __('Buts marqués') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->goals ?? __('Données non disponibles') }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>{{ __('Passes décisives') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->assists ?? __('Données non disponibles') }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>{{ __('Minutes jouées') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->minutes_played ?? __('Données non disponibles') }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>{{ __('Cartons jaunes') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->yellow_cards ?? __('Données non disponibles') }}</span>
-                            </div>
-                            <div class="fifa-stat-header">
-                                <span>{{ __('Cartons rouges') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->red_cards ?? __('Données non disponibles') }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="fifa-health-card">
-                        <h4>{{ __('📊 Statistiques avancées') }}</h4>
-                        <div class="fifa-health-stat">
-                            @if($latestMatchPerformance)
-                                @php
-                                    $matchExtras = json_decode($latestMatchPerformance->additional_metrics ?? '{}', true) ?: [];
-                                @endphp
-                                @if(str_contains($latestMatchPerformance->notes ?? '', 'synthetic_demo'))
-                                    <p>Match fictif de test du {{ \Carbon\Carbon::parse($latestMatchPerformance->match_date)->format('d/m/Y') }}.</p>
-                                @endif
-                                <div class="fifa-stat-header"><span>{{ __('Tacles gagnés') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->tackles_won }}</span></div>
-                                @if(isset($matchExtras['interceptions']))
-                                    <div class="fifa-stat-header"><span>Interceptions</span><span class="fifa-stat-value">{{ $matchExtras['interceptions'] }}</span></div>
-                                @endif
-                                <div class="fifa-stat-header"><span>{{ __('Tirs cadrés') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->shots_on_target }}</span></div>
-                                <div class="fifa-stat-header"><span>{{ __('Précision des passes') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->passes_attempted > 0 ? number_format(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1).'%' : 'Données non disponibles' }}</span></div>
-                            @else
-                                <p>{{ __('Aucune statistique de match enregistrée.') }}</p>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
                 @php
                     $seasonStat = $seasonStat ?? ($playerStats?->first());
                     $cockpitMetrics = collect($ksaMetrics ?? []);
@@ -860,6 +805,73 @@
                         'p' => collect($cockpitV2KeysP)->mapWithKeys(fn ($key) => [$key => $cockpitV2Value($key, 'percent')])->all(),
                     ];
                 @endphp
+                @endif
+                @php
+                    $seasonChartStats = (int) $player->id === 853 ? [
+                        'matches_played' => $cockpitV2Data['matches'],
+                        'minutes_played' => $cockpitV2Data['minutes'],
+                        'goals' => $cockpitV2Data['v']['goals'],
+                        'assists' => $seasonStat?->assists,
+                        'yellow_cards' => $seasonStat?->yellow_cards,
+                        'red_cards' => $seasonStat?->red_cards,
+                    ] : $seasonStat;
+                @endphp
+
+                <div class="fifa-health-grid">
+                    <div class="fifa-health-card">
+                        <h4>{{ __('⚽ Performance de Saison') }}</h4>
+                        <div class="fifa-health-stat">
+                            <div class="fifa-stat-header">
+                                <span>{{ __('Matchs joués') }}</span>
+                                <span class="fifa-stat-value highlight">{{ (int) $player->id === 853 ? ($cockpitV2Data['matches'] ?? __('Données non disponibles')) : ($seasonStat?->matches_played ?? __('Données non disponibles')) }}</span>
+                            </div>
+                            <div class="fifa-stat-header">
+                                <span>{{ (int) $player->id === 853 ? __('Buts par match') : __('Buts marqués') }}</span>
+                                <span class="fifa-stat-value">{{ (int) $player->id === 853 ? ($cockpitV2Data['v']['goals'] !== null ? $formatGameValue($cockpitV2Data['v']['goals']) : __('Données non disponibles')) : ($seasonStat?->goals ?? __('Données non disponibles')) }}</span>
+                            </div>
+                            <div class="fifa-stat-header">
+                                <span>{{ __('Passes décisives') }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->assists ?? __('Données non disponibles') }}</span>
+                            </div>
+                            <div class="fifa-stat-header">
+                                <span>{{ __('Minutes jouées') }}</span>
+                                <span class="fifa-stat-value">{{ (int) $player->id === 853 ? ($cockpitV2Data['minutes'] ?? __('Données non disponibles')) : ($seasonStat?->minutes_played ?? __('Données non disponibles')) }}</span>
+                            </div>
+                            <div class="fifa-stat-header">
+                                <span>{{ __('Cartons jaunes') }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->yellow_cards ?? __('Données non disponibles') }}</span>
+                            </div>
+                            <div class="fifa-stat-header">
+                                <span>{{ __('Cartons rouges') }}</span>
+                                <span class="fifa-stat-value">{{ $seasonStat?->red_cards ?? __('Données non disponibles') }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fifa-health-card">
+                        <h4>{{ __('📊 Statistiques avancées') }}</h4>
+                        <div class="fifa-health-stat">
+                            @if($latestMatchPerformance)
+                                @php
+                                    $matchExtras = json_decode($latestMatchPerformance->additional_metrics ?? '{}', true) ?: [];
+                                @endphp
+                                @if(str_contains($latestMatchPerformance->notes ?? '', 'synthetic_demo'))
+                                    <p>Match fictif de test du {{ \Carbon\Carbon::parse($latestMatchPerformance->match_date)->format('d/m/Y') }}.</p>
+                                @endif
+                                <div class="fifa-stat-header"><span>{{ __('Tacles gagnés') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->tackles_won }}</span></div>
+                                @if(isset($matchExtras['interceptions']))
+                                    <div class="fifa-stat-header"><span>Interceptions</span><span class="fifa-stat-value">{{ $matchExtras['interceptions'] }}</span></div>
+                                @endif
+                                <div class="fifa-stat-header"><span>{{ __('Tirs cadrés') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->shots_on_target }}</span></div>
+                                <div class="fifa-stat-header"><span>{{ __('Précision des passes') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->passes_attempted > 0 ? number_format(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1).'%' : 'Données non disponibles' }}</span></div>
+                            @else
+                                <p>{{ __('Aucune statistique de match enregistrée.') }}</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                @if((int) $player->id === 853)
                     @if(empty($cockpitV2Missing))
 <style>#cockpit-joueur{max-width:1080px;margin:0 auto;padding:20px 16px 40px}</style>
 <div id="cockpit-joueur"></div>
@@ -3398,7 +3410,7 @@ mountCockpit(document.getElementById("cockpit-joueur"),DATA);
                         // Graphique des statistiques de saison
                         const statsCtx = document.getElementById('statsChart');
                         if (statsCtx) {
-                            const seasonStats = @json($playerStats->first());
+                            const seasonStats = @json($seasonChartStats);
                             const nullableNumber = value =>
                                 value === null || value === undefined || value === ''
                                     ? null
@@ -3407,7 +3419,7 @@ mountCockpit(document.getElementById("cockpit-joueur"),DATA);
                             new Chart(statsCtx, {
                                 type: 'bar',
                                 data: {
-                                    labels: [@json(__('Matchs')), @json(__('Minutes')), @json(__('Buts')), @json(__('Passes')), @json(__('Jaunes')), @json(__('Rouges'))],
+                                    labels: [@json(__('Matchs')), @json(__('Minutes')), @json((int) $player->id === 853 ? __('Buts par match') : __('Buts')), @json(__('Passes décisives')), @json(__('Jaunes')), @json(__('Rouges'))],
                                     datasets: [
                                         {
                                             label: @json(__('Statistiques de saison')),

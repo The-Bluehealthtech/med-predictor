@@ -457,7 +457,7 @@
                             <span class="text-purple-200 text-sm">{{ __('competitions.squad_page.age_label') }}</span>
                             <span class="text-white font-medium">
                                 @if($player->date_of_birth)
-                                    {{ \Carbon\Carbon::parse($player->date_of_birth)->age }} ans
+                                    {{ \Carbon\Carbon::parse($player->date_of_birth)->age }} {{ __('ans') }}
                                 @else
                                     {{ $ksaSourceField('Age') !== null ? $ksaSourceField('Age').' (KSA)' : 'N/A' }}
                                 @endif
@@ -468,11 +468,11 @@
                             <span class="text-white font-medium">{{ $player->height ?? $ksaSourceField('Height') ?? 'N/A' }} cm{{ $player->height === null && $ksaSourceField('Height') !== null ? ' (KSA)' : '' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-purple-200 text-sm">Poids:</span>
+                            <span class="text-purple-200 text-sm">{{ __('Poids:') }}</span>
                             <span class="text-white font-medium">{{ $player->weight ?? $ksaSourceField('Weight') ?? 'N/A' }} kg{{ $player->weight === null && $ksaSourceField('Weight') !== null ? ' (KSA)' : '' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-purple-200 text-sm">Pied:</span>
+                            <span class="text-purple-200 text-sm">{{ __('Pied:') }}</span>
                             <span class="text-white font-medium">{{ match (strtolower($player->preferred_foot ?? '')) { 'left' => __('Gauche'), 'right' => __('Droit'), 'both' => __('Ambidextre'), default => $player->preferred_foot ?? 'N/A' } }}</span>
                         </div>
                     </div>
@@ -489,7 +489,7 @@
                     
                     <div class="space-y-2">
                         <div class="flex justify-between">
-                            <span class="text-orange-200 text-sm">Licence Club:</span>
+                            <span class="text-orange-200 text-sm">{{ __('Licence Club:') }}</span>
                             <span class="text-white font-medium">
                                 @php
                                     $activeLicense = $playerLicenses->firstWhere('status', 'active');
@@ -600,7 +600,7 @@
     <!-- 🔄 ONGLETS IDENTIQUES AU PORTAL FIFA (même structure) -->
     <!-- Onglets Principaux -->
     <div class="fifa-tabs">
-        <button class="fifa-tab-button active" onclick="showFIFATab('performances')">Performances</button>
+        <button class="fifa-tab-button active" onclick="showFIFATab('performances')">{{ __('Performances') }}</button>
         <button class="fifa-tab-button" onclick="showFIFATab('trends')">{{ __('navigation.performance_trends') }}</button>
         
         <!-- Nouveaux onglets FIFA -->
@@ -866,7 +866,7 @@
                                     <div class="fifa-stat-header"><span>Interceptions</span><span class="fifa-stat-value">{{ $matchExtras['interceptions'] }}</span></div>
                                 @endif
                                 <div class="fifa-stat-header"><span>{{ __('Tirs cadrés') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->shots_on_target }}</span></div>
-                                <div class="fifa-stat-header"><span>{{ __('Précision des passes') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->passes_attempted > 0 ? number_format(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1).'%' : 'Données non disponibles' }}</span></div>
+                                <div class="fifa-stat-header"><span>{{ __('Précision des passes') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->passes_attempted > 0 ? number_format(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1).'%' : __('Données non disponibles') }}</span></div>
                             @else
                                 <p>{{ __('Aucune statistique de match détaillée enregistrée.') }}</p>
                             @endif
@@ -965,9 +965,12 @@ render();
   const unknownPosition = document.getElementById('cockpit-joueur');
   if (unknownPosition) {
     unknownPosition.className = 'bg-white/10 rounded-lg p-4 border border-white/20 text-gray-300';
-    unknownPosition.textContent = 'Poste non renseigné';
+    unknownPosition.textContent = @json(__('Poste non renseigné'));
   }
 </script>
+@endif
+@if(app()->getLocale() === 'en')
+<script src="{{ asset('js/player-portal-cockpit-en.js') }}?v={{ filemtime(public_path('js/player-portal-cockpit-en.js')) }}"></script>
 @endif
             </div>
         </div>
@@ -1258,7 +1261,7 @@ render();
                                 <span style="color: #ffd700; font-weight: bold;">{{ $playerMedications->count() }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Type principal:</span>
+                                <span>{{ __('Type principal:') }}</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ ucfirst($playerMedications->first()->medication_type) }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
@@ -1267,7 +1270,7 @@ render();
                             </div>
                         @else
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Traitements:</span>
+                                <span>{{ __('Traitements:') }}</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ __('Aucun traitement actif enregistré') }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
@@ -1287,11 +1290,11 @@ render();
                                 $medicalAlerts = $playerNotifications->where('notification_type', 'medical_alert');
                             @endphp
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Alertes actives:</span>
+                                <span>{{ __('Alertes actives:') }}</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ $playerNotifications->count() }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Alertes performance:</span>
+                                <span>{{ __('Alertes performance:') }}</span>
                                 <span style="color: #87ceeb; font-weight: bold;">{{ $performanceAlerts->count() }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
@@ -1300,11 +1303,11 @@ render();
                             </div>
                         @else
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Forme physique:</span>
+                                <span>{{ __('Forme physique:') }}</span>
                                 <span style="color: #87ceeb; font-weight: bold;">{{ __('Aucune alerte active') }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Moral:</span>
+                                <span>{{ __('Moral:') }}</span>
                                 <span style="color: #87ceeb; font-weight: bold;">{{ __('Données non disponibles') }}</span>
                             </div>
                         @endif
@@ -1446,7 +1449,7 @@ render();
                     @if($playerNutrition)
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Hydratation</span>
+                                <span>{{ __('Hydratation') }}</span>
                                 <span class="fifa-stat-value">{{ $playerNutrition->hydration_score !== null ? $playerNutrition->hydration_score.'/100' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
@@ -1492,7 +1495,7 @@ render();
                     @else
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Hydratation</span>
+                                <span>{{ __('Hydratation') }}</span>
                                 <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
@@ -1769,7 +1772,7 @@ render();
                                 <span class="fifa-stat-value">{{ $playerVitalSigns->muscle_mass_percentage !== null ? $playerVitalSigns->muscle_mass_percentage.'%' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Hydratation</span>
+                                <span>{{ __('Hydratation') }}</span>
                                 <span class="fifa-stat-value">{{ $playerVitalSigns->hydration_percentage !== null ? $playerVitalSigns->hydration_percentage.'%' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
@@ -1788,7 +1791,7 @@ render();
                                 <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Masse Corporelle</span>
+                                <span>{{ __('Masse Corporelle') }}</span>
                                 <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
@@ -1800,7 +1803,7 @@ render();
                                 <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Hydratation</span>
+                                <span>{{ __('Hydratation') }}</span>
                                 <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
@@ -2057,16 +2060,16 @@ render();
         </div>
 
         <div class="fifa-medical-card mt-6">
-            <div class="fifa-stat-header"><span>RPM individuel</span><span class="text-xs opacity-70">Mesure la plus récente</span></div>
+            <div class="fifa-stat-header"><span>{{ __('RPM individuel') }}</span><span class="text-xs opacity-70">{{ __('Mesure la plus récente') }}</span></div>
             <div class="fifa-health-grid" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.75rem;width:100%;">
-                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Mesure</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->measurement_time ?? 'Données non disponibles' }}</strong></div></div>
-                <div class="fifa-health-card"><div class="fifa-health-stat"><span>FC</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->heart_rate ?? 'Données non disponibles' }}</strong></div></div>
-                <div class="fifa-health-card"><div class="fifa-health-stat"><span>SpO₂</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->oxygen_saturation ?? 'Données non disponibles' }}</strong></div></div>
-                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Température</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->temperature ?? 'Données non disponibles' }}</strong></div></div>
-                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Hydratation</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->hydration_level ?? 'Données non disponibles' }}</strong></div></div>
-                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Récupération</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->recovery_score ?? 'Données non disponibles' }}</strong></div></div>
-                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Readiness</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->readiness_score ?? 'Données non disponibles' }}</strong></div></div>
-                <div class="fifa-health-card"><div class="fifa-health-stat"><span>Source</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->data_source ?? 'Données non disponibles' }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Mesure') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->measurement_time ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('FC') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->heart_rate ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>SpO₂</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->oxygen_saturation ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Température') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->temperature ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Hydratation') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->hydration_level ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Récupération') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->recovery_score ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Readiness') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->readiness_score ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Source') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->data_source ?? __('Données non disponibles') }}</strong></div></div>
             </div>
         </div>
 
@@ -2635,10 +2638,10 @@ render();
                                             @endphp
                                             <div class="mb-2">
                                                 <div class="font-medium">
-                                                    {{ $typeIcon }} {{ $resource->resource_name }}
+                                                    {{ $typeIcon }} {{ __($resource->resource_name) }}
                                                 </div>
                                                 <div class="text-xs text-gray-600">
-                                                    {{ $resource->resource_description }}
+                                                    {{ __($resource->resource_description) }}
                                                 </div>
                                                 @if($resource->resource_url)
                                                     <div class="text-xs text-blue-600">
@@ -2652,7 +2655,7 @@ render();
                                         @if($complianceResources->count() > 4)
                                             <div class="text-xs text-blue-600 mt-2">
                                                 <a href="#" class="hover:underline">
-                                                    Voir toutes les ressources ({{ $complianceResources->count() }})
+                                                    {{ __('Voir toutes les ressources') }} ({{ $complianceResources->count() }})
                                                 </a>
                                             </div>
                                         @endif
@@ -2760,16 +2763,16 @@ render();
                                 <span>{{ __('Période de formation:') }}</span>
                                 <span>
                                     @if($playerLicenses && $playerLicenses->count() > 0)
-                                        {{ $playerLicenses->count() }} saison(s)
+                                        {{ __(':count saison(s)', ['count' => $playerLicenses->count()]) }}
                                     @else
-                                        Non définie
+                                        {{ __('Non définie') }}
                                     @endif
                                 </span>
                             </div>
                             <div class="fifa-compensation-stat">
                                 <span>{{ __('Prime simulée de test:') }}</span>
                                 <span class="fifa-compensation-amount">
-                                    {{ $playerTrainingCompensation !== null ? number_format((float) $playerTrainingCompensation, 0, ' ', ' ') . ' unités de test' : 'Aucune simulation enregistrée' }}
+                                    {{ $playerTrainingCompensation !== null ? number_format((float) $playerTrainingCompensation, 0, ' ', ' ') . ' ' . __('unités de test') : __('Aucune simulation enregistrée') }}
                                 </span>
                             </div>
                         </div>

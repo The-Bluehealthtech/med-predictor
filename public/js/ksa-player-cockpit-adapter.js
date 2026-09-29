@@ -52,6 +52,7 @@
         if (!blocks || !rows.length) return;
         const cards = new Map([...blocks.querySelectorAll('.card')].map(card =>
             [card.querySelector('h3')?.textContent, card]));
+        const touched = new Set();
         rows.forEach(row => {
             const title = groups[row.name] || 'Indicateurs KSA';
             let card = cards.get(title);
@@ -64,8 +65,10 @@
                 blocks.appendChild(card);
                 cards.set(title, card);
             }
+            touched.add(card);
             const line = document.createElement('div');
             line.className = 'row';
+            line.dataset.ksaUnit = row.unit;
             const label = document.createElement('span');
             label.textContent = row.label;
             const value = document.createElement('b');
@@ -76,6 +79,24 @@
                 + (row.unit === 'percent' ? ' %' : '');
             line.append(label, value);
             card.appendChild(line);
+        });
+        touched.forEach(card => {
+            const lines = [...card.querySelectorAll('.row')];
+            const amount = line => Number(line.querySelector('b')?.textContent.replace(',', '.').replace(' %', ''));
+            const counts = lines.filter(line => line.dataset.ksaUnit !== 'percent').map(amount).filter(finite);
+            const max = Math.max(0, ...counts);
+            lines.forEach(line => {
+                let track = line.querySelector('.tr');
+                if (!track) {
+                    track = document.createElement('div');
+                    track.className = 'tr';
+                    track.appendChild(document.createElement('i'));
+                    line.appendChild(track);
+                }
+                const n = amount(line);
+                const width = line.dataset.ksaUnit === 'percent' ? n : max > 0 ? n / max * 100 : 0;
+                track.querySelector('i').style.width = (finite(width) ? Math.max(0, Math.min(width, 100)) : 0) + '%';
+            });
         });
     }
 

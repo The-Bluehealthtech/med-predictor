@@ -70,13 +70,16 @@ for name, data, position in cases:
             indexText:root?.querySelectorAll('.kpi b')[2]?.textContent||'',
             hasYellow:text.includes('Yellow cards') && text.includes('0,5'),
             yellowInDiscipline:[...root.querySelectorAll('.blocks .card')].some(c=>c.querySelector('h3')?.textContent==='Discipline et erreurs' && c.textContent.includes('Yellow cards')),
+            yellowGauge:[...root.querySelectorAll('.row')].find(x=>x.textContent.includes('Yellow cards'))?.querySelector('.tr i')?.style.width||'',
             hasHeight:text.includes('Height')
         });
         if(CASE_NAME==='complete_other'){
             root.querySelector('button[data-m="90"]').click();
             queueMicrotask(()=>{results[results.length-1].yellowAfter90=[...root.querySelectorAll('.blocks .card')]
                 .find(c=>c.querySelector('h3')?.textContent==='Discipline et erreurs')
-                ?.textContent.includes('Yellow cards0,69')});
+                ?.textContent.includes('Yellow cards0,69');
+                results[results.length-1].yellowGauge90=[...root.querySelectorAll('.row')]
+                    .find(x=>x.textContent.includes('Yellow cards'))?.querySelector('.tr i')?.style.width||''});
         }
     }'''.replace('CASE_NAME', json.dumps(name)))
     parts.append('</script>')
@@ -97,7 +100,7 @@ with tempfile.TemporaryDirectory() as tmp:
     assert len(results)==len(cases),results
     assert all(x['noErrors'] and x['noBadText'] and x['titleCount']==1 for x in results),results
     assert results[0]['hash']==2820450506 and results[0]['length']==16859,results[0]
-    assert results[1]['hash']!=results[0]['hash'] and results[1]['hasYellow'] and results[1]['yellowInDiscipline'] and results[1]['yellowAfter90'] and not results[1]['hasHeight']
+    assert results[1]['hash']!=results[0]['hash'] and results[1]['hasYellow'] and results[1]['yellowInDiscipline'] and results[1]['yellowAfter90'] and float(results[1]['yellowGauge'].rstrip('%')) > 0 and float(results[1]['yellowGauge90'].rstrip('%')) > 0 and not results[1]['hasHeight']
     assert not results[2]['matchKpi'] and results[2]['radarAxes']==4
     assert results[3]['fallback'] and results[3]['disabled90']
     assert results[4]['disabled90'] and results[4]['shortNote']

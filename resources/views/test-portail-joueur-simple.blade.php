@@ -955,7 +955,20 @@ render();
 }
 // Initialization is selected by the guarded adapter below.
 </script>
+@if($player->position === \App\Models\Player::POSITION_GOALKEEPER)
+<script>window.FIT_GOALKEEPER_DATA = @json($goalkeeperCockpitData);</script>
+<script src="{{ asset('js/ksa-goalkeeper-cockpit.js') }}?v={{ filemtime(public_path('js/ksa-goalkeeper-cockpit.js')) }}"></script>
+@elseif(in_array($player->position, ['DEF', 'MID', 'FWD'], true))
 <script src="{{ asset('js/ksa-player-cockpit-adapter.js') }}?v={{ filemtime(public_path('js/ksa-player-cockpit-adapter.js')) }}"></script>
+@else
+<script>
+  const unknownPosition = document.getElementById('cockpit-joueur');
+  if (unknownPosition) {
+    unknownPosition.className = 'bg-white/10 rounded-lg p-4 border border-white/20 text-gray-300';
+    unknownPosition.textContent = 'Poste non renseigné';
+  }
+</script>
+@endif
             </div>
         </div>
 

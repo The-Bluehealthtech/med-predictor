@@ -95,7 +95,8 @@
                 }
                 const n = amount(line);
                 const width = line.dataset.ksaUnit === 'percent' ? n : max > 0 ? n / max * 100 : 0;
-                track.querySelector('i').style.width = (finite(width) ? Math.max(0, Math.min(width, 100)) : 0) + '%';
+                const visibleWidth = finite(width) ? Math.max(0, Math.min(width, 100)) : 0;
+                track.querySelector('i').style.width = (line.dataset.ksaUnit ? Math.max(visibleWidth, 1) : visibleWidth) + '%';
             });
         });
     }

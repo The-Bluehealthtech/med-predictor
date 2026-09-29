@@ -25,6 +25,7 @@ another = copy.deepcopy(baseline)
 another['index'] = 200
 another['v']['goals'] = 0.5
 another['extra'] = [{'name':'yellow_cards','label':'Yellow cards','value':0.5,'unit':'count'},
+                    {'name':'chances_successful','label':'Chances successful, %','value':0,'unit':'percent'},
                     {'name':'Height','label':'Height','value':'182','unit':'text'}]
 cases.append(('complete_other', another, 'CF'))
 missing = copy.deepcopy(baseline)
@@ -71,6 +72,7 @@ for name, data, position in cases:
             hasYellow:text.includes('Yellow cards') && text.includes('0,5'),
             yellowInDiscipline:[...root.querySelectorAll('.blocks .card')].some(c=>c.querySelector('h3')?.textContent==='Discipline et erreurs' && c.textContent.includes('Yellow cards')),
             yellowGauge:[...root.querySelectorAll('.row')].find(x=>x.textContent.includes('Yellow cards'))?.querySelector('.tr i')?.style.width||'',
+            zeroRateGauge:[...root.querySelectorAll('.row')].find(x=>x.textContent.includes('Chances successful, %'))?.querySelector('.tr i')?.style.width||'',
             hasHeight:text.includes('Height')
         });
         if(CASE_NAME==='complete_other'){
@@ -100,7 +102,7 @@ with tempfile.TemporaryDirectory() as tmp:
     assert len(results)==len(cases),results
     assert all(x['noErrors'] and x['noBadText'] and x['titleCount']==1 for x in results),results
     assert results[0]['hash']==2820450506 and results[0]['length']==16859,results[0]
-    assert results[1]['hash']!=results[0]['hash'] and results[1]['hasYellow'] and results[1]['yellowInDiscipline'] and results[1]['yellowAfter90'] and float(results[1]['yellowGauge'].rstrip('%')) > 0 and float(results[1]['yellowGauge90'].rstrip('%')) > 0 and not results[1]['hasHeight']
+    assert results[1]['hash']!=results[0]['hash'] and results[1]['hasYellow'] and results[1]['yellowInDiscipline'] and results[1]['yellowAfter90'] and results[1]['zeroRateGauge']=='1%' and float(results[1]['yellowGauge'].rstrip('%')) > 0 and float(results[1]['yellowGauge90'].rstrip('%')) > 0 and not results[1]['hasHeight']
     assert not results[2]['matchKpi'] and results[2]['radarAxes']==4
     assert results[3]['fallback'] and results[3]['disabled90']
     assert results[4]['disabled90'] and results[4]['shortNote']

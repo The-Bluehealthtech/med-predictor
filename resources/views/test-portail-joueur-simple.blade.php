@@ -836,6 +836,115 @@
                         'red_cards' => $seasonStat?->red_cards,
                     ];
                 @endphp
+                @if((int) $player->id === 853)
+                @php
+                    // DATA only: KSA records, with seven matches confirmed by the user.
+                    $cockpitV2KeysV = ["goals", "expected_goals", "shots", "shots_on_target", "chances", "chances_created", "key_passes", "passes_for_a_shot", "dribbling_in_the_final_third", "involvement_in_scoring_attacks", "passes", "short_passes", "long_passes", "progressive_passes", "progressive_open_passes", "passes_forward_to_the_final_third", "passes_into_the_penalty_box", "crosses", "tackles", "interceptions", "loose_ball_recoveries", "challenges", "defensive_challenges", "attacking_challenges", "aerial_challenges", "dribbles", "fouls_committed", "fouls_suffered", "mistakes_leading_to_chances", "mistakes_leading_to_goals"];
+                    $cockpitV2KeysP = ["passes_accuracy", "progressive_passes_accurate", "short_passes_accurate", "passes_into_the_penalty_box_accurate", "crosses_accurate", "challenges_won", "defensive_challenges_won", "attacking_challenges_won", "aerial_challenges_won", "tackles_successful", "dribbles_successful"];
+                    $cockpitV2Missing = [];
+                    $cockpitV2Value = function ($key, $unit = null) use ($metricRow, &$cockpitV2Missing) {
+                        $row = $metricRow([$key]);
+                        $value = data_get($row, 'metric_value');
+                        if (!is_numeric($value) || ($unit && strtolower((string) data_get($row, 'metric_unit')) !== $unit)
+                            || ($unit === 'percent' && ((float) $value < 0 || (float) $value > 1))) {
+                            $cockpitV2Missing[] = $key;
+                            return null;
+                        }
+                        return (float) $value;
+                    };
+                    $cockpitV2Data = [
+                        'minutes' => $cockpitV2Value('minutes_played', 'minutes'),
+                        'matches' => 7,
+                        'index' => $cockpitV2Value('index_ksa', 'ksa_index'),
+                        'v' => collect($cockpitV2KeysV)->mapWithKeys(fn ($key) => [$key => $cockpitV2Value($key)])->all(),
+                        'p' => collect($cockpitV2KeysP)->mapWithKeys(fn ($key) => [$key => $cockpitV2Value($key, 'percent')])->all(),
+                    ];
+                @endphp
+                    @if(empty($cockpitV2Missing))
+<style>#cockpit-joueur{max-width:1080px;margin:0 auto;padding:20px 16px 40px}</style>
+<div id="cockpit-joueur"></div>
+<script>
+/* ===== 1. DONNÉES : seul bloc à brancher sur les données réelles du site ===== */
+var DATA=@json($cockpitV2Data);
+
+/* ===== 2. COMPOSANT (isolé du CSS du site par Shadow DOM) ===== */
+function mountCockpit(host,D){
+var root=host.shadowRoot||host.attachShadow({mode:"open"});
+/* Variables : remplacer le 2e argument de var() par la variable du site, ex. var(--couleur-fond-carte) */
+var css=':host{display:block;--bg:var(--ck-bg,#111827);--card:var(--ck-card,rgba(255,255,255,.1));--ink:var(--ck-ink,#ffffff);--mute:var(--ck-mute,#9ca3af);--line:var(--ck-line,rgba(255,255,255,.2));--acc:var(--ck-acc,#326295);--warn:var(--ck-warn,#b4530a);--bad:var(--ck-bad,#a4262c);--rad:var(--ck-radius,8px);color:var(--ink);font-family:inherit;line-height:1.5}'
++'@media(prefers-color-scheme:dark){:host(:not([data-light])){--bg:var(--ck-bg,#111827);--card:var(--ck-card,rgba(255,255,255,.1));--ink:var(--ck-ink,#ffffff);--mute:var(--ck-mute,#9ca3af);--line:var(--ck-line,rgba(255,255,255,.2));--acc:var(--ck-acc,#6ea4de);--warn:var(--ck-warn,#e69a4d);--bad:var(--ck-bad,#ef7b80)}}'
++'*{box-sizing:border-box}h2,h3,p{margin:0}.top{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:flex-end;margin-bottom:14px}.top h2{font-size:1.6rem;line-height:1.15}.sub,.note{color:var(--mute);font-size:.9rem}'
++'.tog{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}.tog button{font:inherit;padding:6px 14px;border:0;background:var(--card);color:var(--ink);cursor:pointer}.tog button[aria-pressed=true]{background:var(--acc);color:#fff}button:focus-visible{outline:3px solid var(--warn);outline-offset:-3px}'
++'.card{background:var(--card);border:1px solid var(--line);border-radius:var(--rad);padding:18px;min-width:0}.card h3{font-size:1.05rem;margin-bottom:12px}'
++'.read{padding:22px;margin-bottom:14px;border-left:6px solid var(--acc)}.read .head{font-size:1.35rem;line-height:1.3;font-weight:700;margin-bottom:16px;max-width:60ch}.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}'
++'.col h3{display:flex;align-items:center;gap:8px;font-size:1rem;margin-bottom:8px}.col h3:before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c)}.col.ok{--c:var(--acc)}.col.w{--c:var(--warn)}.col.t{--c:var(--bad)}'
++'.col ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}.col li{padding-left:12px;border-left:2px solid var(--line)}.col li b{display:block}.col li span{color:var(--mute);font-size:.92rem}.col .none{color:var(--mute);font-size:.92rem}'
++'.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--rad);overflow:hidden;margin-bottom:14px}.kpi{background:var(--card);padding:10px 14px}.kpi b{display:block;font-size:1.7rem;line-height:1.15}.kpi span{color:var(--mute);font-size:.88rem}'
++'.grid{display:grid;grid-template-columns:1fr;gap:14px}@media(min-width:860px){.grid{grid-template-columns:400px 1fr}}'
++'svg{width:100%;height:auto;display:block}svg text{fill:var(--ink);font:inherit;font-size:11.5px}svg .m{fill:var(--mute)}'
++'.g{padding:7px 0;border-bottom:1px solid var(--line)}.g:last-child{border:0}.g .l{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.g .l small{color:var(--mute);font-size:.82rem}.g .l b{font-variant-numeric:tabular-nums}'
++'.tr{position:relative;height:6px;margin-top:5px;background:var(--bg);border-radius:3px}.tr i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}.tr u{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--mute);opacity:.5}'
++'.gh{font-size:.88rem;color:var(--mute);margin:12px 0 2px}.gh:first-of-type{margin-top:0}'
++'.blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;margin-top:14px}.row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:5px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}.row b{font-variant-numeric:tabular-nums}.row .tr{grid-column:1/-1;height:4px;margin:0}.row .tr i{background:var(--acc)}';
+
+var RT=[["Construction",[["passes_accuracy","Passes","passes"],["short_passes_accurate","Passes courtes","short_passes"],["progressive_passes_accurate","Passes progressives","progressive_passes"],["passes_into_the_penalty_box_accurate","Passes dans la surface","passes_into_the_penalty_box"],["crosses_accurate","Centres","crosses"]]],
+["Duels",[["challenges_won","Duels gagnés","challenges"],["attacking_challenges_won","Duels offensifs","attacking_challenges"],["defensive_challenges_won","Duels défensifs","defensive_challenges"],["aerial_challenges_won","Duels aériens","aerial_challenges"],["tackles_successful","Tacles réussis","tackles"]]],
+["Percussion",[["dribbles_successful","Dribbles réussis","dribbles"]]]];
+var G=[["Attaque",[["goals","Buts"],["expected_goals","Buts attendus (xG)"],["shots","Tirs"],["shots_on_target","Tirs cadrés"],["chances","Occasions"],["chances_created","Occasions créées"],["key_passes","Passes clés"],["passes_for_a_shot","Passes menant à un tir"],["dribbling_in_the_final_third","Dribbles dans le dernier tiers"],["involvement_in_scoring_attacks","Implication dans les actions de but"]]],
+["Construction",[["passes","Passes"],["short_passes","Passes courtes"],["long_passes","Passes longues"],["progressive_passes","Passes progressives"],["progressive_open_passes","Progressives (jeu ouvert)"],["passes_forward_to_the_final_third","Passes vers le dernier tiers"],["passes_into_the_penalty_box","Passes dans la surface"],["crosses","Centres"]]],
+["Duels et défense",[["challenges","Duels"],["attacking_challenges","Duels offensifs"],["defensive_challenges","Duels défensifs"],["aerial_challenges","Duels aériens"],["tackles","Tacles"],["interceptions","Interceptions"],["loose_ball_recoveries","Ballons libres récupérés"],["dribbles","Dribbles tentés"]]],
+["Discipline et erreurs",[["fouls_committed","Fautes commises"],["fouls_suffered","Fautes subies"],["mistakes_leading_to_chances","Erreurs menant à une occasion"],["mistakes_leading_to_goals","Erreurs menant à un but"]]]];
+var RAD=["passes_accuracy","progressive_passes_accurate","dribbles_successful","tackles_successful","challenges_won","aerial_challenges_won"];
+var mode=1,v=D.v,p=D.p;
+function fx(){return mode==1?1:90/(D.minutes/D.matches)}
+function n(x){var s=(Math.round(x*100)/100).toString().replace(".",",");return s}
+function pc(x){return Math.round(x*100)+" %"}
+function col(x){return x>=.75?"var(--acc)":x<.4?"var(--bad)":"var(--warn)"}
+var flat=[];RT.forEach(function(g){g[1].forEach(function(r){flat.push({k:r[0],l:r[1],a:v[r[2]],r:p[r[0]]})})});
+var rel=flat.filter(function(x){return x.a>=1&&x.r!=null});
+
+function reading(){
+var best=rel.slice().sort(function(a,b){return b.r-a.r})[0],worst=rel.slice().sort(function(a,b){return a.r-b.r})[0];
+var ok=[],w=[],t=[];
+rel.filter(function(x){return x.r>=.75}).sort(function(a,b){return b.r-a.r}).forEach(function(x){ok.push([x.l+" : "+pc(x.r),"Réussite élevée sur "+n(x.a*fx())+" tentative(s) "+(mode==1?"par match":"par 90 min")+"."])});
+if(v.expected_goals&&v.goals>v.expected_goals*1.3)ok.push(["Finition au-dessus des attentes","Buts "+n(v.goals*fx())+" pour "+n(v.expected_goals*fx())+" xG. À confirmer : sur un petit échantillon, cet écart dure rarement."]);
+var rec=v.tackles+v.interceptions+v.loose_ball_recoveries;
+if(rec>=8)ok.push(["Fort volume de récupération","Environ "+n(rec*fx())+" ballons récupérés (tacles, interceptions, ballons libres)."]);
+rel.filter(function(x){return x.r<.4&&x.r>0}).sort(function(a,b){return a.r-b.r}).forEach(function(x){w.push([x.l+" : "+pc(x.r),"Moins d'une réussite sur deux, sur "+n(x.a*fx())+" tentative(s)."])});
+if(p.passes_into_the_penalty_box_accurate<.5&&v.passes_into_the_penalty_box>=1)w.push(["Dernière passe dans la surface : "+pc(p.passes_into_the_penalty_box_accurate),"Le jeu progresse bien jusqu'au dernier tiers, mais la passe décisive manque de précision."]);
+if(v.mistakes_leading_to_goals>0)w.push(["Erreurs coûteuses","Une erreur menant à un but sur "+D.matches+" matchs, et autant menant à une occasion."]);
+if(v.crosses>=1&&p.crosses_accurate<.15)t.push(["Centres","0 centre précis sur "+n(v.crosses*fx())+" tenté(s) : revoir la décision (centrer ou non) et la technique de frappe."]);
+var wd=rel.filter(function(x){return x.k!="crosses_accurate"&&x.r<.4}).sort(function(a,b){return a.r-b.r});
+if(wd.length)t.push(["Duels","Gagner davantage de duels ("+pc(p.challenges_won)+" aujourd'hui) : placement avant contact et jeu aérien ("+pc(p.aerial_challenges_won)+")."]);
+if(p.passes_into_the_penalty_box_accurate<.5)t.push(["Passe dans la surface","Passer de "+pc(p.passes_into_the_penalty_box_accurate)+" à plus de 60 % en choisissant mieux le moment et l'angle."]);
+var head="Fiable dans les « "+best.l.toLowerCase()+" » ("+pc(best.r)+"), en difficulté dans les « "+worst.l.toLowerCase()+" » ("+pc(worst.r)+").";
+function col3(c,ti,a,e){return '<div class="col '+c+'"><h3>'+ti+'</h3>'+(a.length?'<ul>'+a.map(function(x){return '<li><b>'+x[0]+'</b><span>'+x[1]+'</span></li>'}).join("")+'</ul>':'<p class="none">'+e+'</p>')+'</div>'}
+return '<section class="card read"><h3>Lecture de la performance</h3><p class="head">'+head+'</p><div class="cols">'+col3("ok","Points forts",ok,"Aucun point fort net ressort.")+col3("w","À surveiller",w,"Rien d'alarmant.")+col3("t","Axes de travail",t,"Aucun axe prioritaire.")+'</div><p class="note" style="margin-top:14px">Seuils : réussite de 75 % ou plus, point fort ; moins de 40 %, point faible. Échantillon de '+D.matches+' matchs.</p></section>';
+}
+function kpis(){var k=[["Matchs",D.matches],["Minutes",D.minutes],["Index",D.index],["Buts",n(v.goals*fx())],["xG",n(v.expected_goals*fx())],["Passes réussies",pc(p.passes_accuracy)]];
+return '<section class="kpis">'+k.map(function(a){return '<div class="kpi"><b>'+a[1]+'</b><span>'+a[0]+'</span></div>'}).join("")+'</section>'}
+function radar(){var cx=180,cy=150,r=100,N=6,s="",lab={};flat.forEach(function(x){lab[x.k]=x.l});
+function pt(i,k){var a=-Math.PI/2+i*2*Math.PI/N;return [cx+Math.cos(a)*r*k,cy+Math.sin(a)*r*k]}
+[.25,.5,.75,1].forEach(function(k){s+='<polygon points="'+RAD.map(function(_,i){return pt(i,k).join(",")}).join(" ")+'" fill="none" stroke="var(--line)" stroke-width="'+(k==.5?1.4:.8)+'"/>'});
+s+='<text class="m" x="'+(cx+4)+'" y="'+(cy-r*.5+11)+'">50 %</text>';
+RAD.forEach(function(_,i){var q=pt(i,1);s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+q[0]+'" y2="'+q[1]+'" stroke="var(--line)" stroke-width=".8"/>'});
+s+='<polygon points="'+RAD.map(function(k,i){return pt(i,p[k]).join(",")}).join(" ")+'" fill="var(--acc)" fill-opacity=".22" stroke="var(--acc)" stroke-width="2" stroke-linejoin="round"/>';
+RAD.forEach(function(k,i){var q=pt(i,p[k]),o=pt(i,1.24),an=o[0]<cx-8?"end":o[0]>cx+8?"start":"middle";s+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="4" fill="var(--card)" stroke="'+col(p[k])+'" stroke-width="2.5"/><text x="'+o[0]+'" y="'+(o[1]-2)+'" text-anchor="'+an+'">'+lab[k]+'</text><text x="'+o[0]+'" y="'+(o[1]+12)+'" text-anchor="'+an+'" style="font-weight:700;fill:'+col(p[k])+'">'+pc(p[k])+'</text>'});
+return '<section class="card"><h3>Profil de réussite</h3><svg viewBox="0 0 360 310" role="img" aria-label="Radar des taux de réussite">'+s+'</svg><p class="note">Du centre (0 %) au bord (100 %). Couleur du point : bleu dès 75 %, rouge sous 40 %.</p></section>'}
+function gauges(){return '<section class="card"><h3>Réussite par action</h3>'+RT.map(function(g){return '<p class="gh">'+g[0]+'</p>'+g[1].map(function(r){var x=p[r[0]],a=v[r[2]];return '<div class="g"><div class="l"><span>'+r[1]+' <small>sur '+n(a*fx())+(mode==1?" par match":" par 90 min")+'</small></span><b style="color:'+col(x)+'">'+pc(x)+'</b></div><div class="tr"><i style="width:'+Math.max(x*100,1)+'%;background:'+col(x)+'"></i><u></u></div></div>'}).join("")}).join("")+'</section>'}
+function blocks(){return '<div class="blocks">'+G.map(function(g){var mx=Math.max.apply(null,g[1].map(function(r){return v[r[0]]}));return '<section class="card"><h3>'+g[0]+'</h3>'+g[1].map(function(r){var x=v[r[0]];return '<div class="row"><span>'+r[1]+'</span><b>'+n(x*fx())+'</b><div class="tr"><i style="width:'+(x/mx*100)+'%"></i></div></div>'}).join("")+'</section>'}).join("")+'</div>'}
+function render(){
+root.innerHTML='<style>'+css+'</style><div class="top"><div><h2>Cockpit performance joueur</h2><p class="sub">'+D.matches+' matchs, '+Math.round(D.minutes/D.matches)+' min de jeu en moyenne. Valeurs '+(mode==1?"par match":"ramenées à 90 min")+'.</p></div><div class="tog" role="group" aria-label="Base de calcul"><button data-m="1" aria-pressed="'+(mode==1)+'">Par match</button><button data-m="90" aria-pressed="'+(mode!=1)+'">Par 90 min</button></div></div>'+reading()+kpis()+'<div class="grid">'+radar()+gauges()+'</div>'+blocks();
+Array.prototype.forEach.call(root.querySelectorAll("button"),function(b){b.onclick=function(){mode=+b.getAttribute("data-m");render()}});
+}
+render();
+}
+mountCockpit(document.getElementById("cockpit-joueur"),DATA);
+</script>
+                    @else
+                        <p class="text-yellow-300">Cockpit indisponible : mesures KSA manquantes ou unité invalide : {{ implode(", ", $cockpitV2Missing) }}</p>
+                    @endif
+                @else
                 <section id="cockpit-joueur" class="fifa-stat-card mt-6 mx-auto" data-cockpit='@json($cockpitData)' data-radar-rates='@json($radarRates)' aria-labelledby="cockpit-title">
                     <style>
                         /* Scoped tokens from resources/css/fifa-design-system.css. */
@@ -1058,6 +1167,7 @@
                         <p>{{ __('player_cockpit.no_recorded_metrics') }}</p>
                     @endforelse
                 </section>
+                @endif
             </div>
         </div>
 

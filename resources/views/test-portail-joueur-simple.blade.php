@@ -96,6 +96,7 @@
         </div>
     </div>
     
+    @php $ksaSourceField = fn ($name) => collect($cockpitV2Data['extra'] ?? [])->firstWhere('name', $name)['value'] ?? null; @endphp
     <!-- 🆕 NOUVELLE HERO ZONE SIMPLE EN BLADE (remplace le JavaScript complexe) -->
     <div class="bg-gradient-to-br from-blue-900 to-indigo-900 p-6">
         <div class="max-w-7xl mx-auto">
@@ -126,8 +127,11 @@
                         {{ $player->first_name }} {{ $player->last_name }}
                     </h1>
                     <p class="text-xl text-blue-200 mb-4">
-                        {{ $player->position ?? __('Position non définie') }} •
+                        {{ $player->position ?? $ksaSourceField('Position') ?? __('Position non définie') }} •
                         {{ $player->club->name ?? __('Club non défini') }}
+                        @if($ksaSourceField('№') !== null)
+                            <span class="text-sm text-blue-200"> · № {{ $ksaSourceField('№') }} (KSA)</span>
+                        @endif
                     </p>
                     
                     <!-- Drapeau nationalité -->
@@ -140,11 +144,14 @@
                                 <img src="https://flagcdn.com/w40/{{ strtolower($countryCode) }}.png" 
                                      alt="Drapeau {{ $player->nationality }}" 
                                      class="h-8 w-12 object-cover rounded border-2 border-white shadow-lg">
+                                <span class="text-sm text-blue-200">{{ $player->nationality }}</span>
                             @else
                                 <span class="bg-gray-600 text-white px-3 py-1 rounded text-sm">
                                     {{ $player->nationality }}
                                 </span>
                             @endif
+                        @elseif($ksaSourceField('Nationality') !== null)
+                            <span class="text-sm text-blue-200">{{ $ksaSourceField('Nationality') }} (KSA)</span>
                         @endif
                     </div>
                 </div>
@@ -445,8 +452,6 @@
                     @if($profileSynthetic)
                         <p class="text-xs text-yellow-300 mb-2">{{ __('Profil fictif de test.') }}</p>
                     @endif
-                    @php $ksaSourceField = fn ($name) => collect($cockpitV2Data['extra'] ?? [])->firstWhere('name', $name)['value'] ?? null; @endphp
-
                     <div class="space-y-2">
                         <div class="flex justify-between">
                             <span class="text-purple-200 text-sm">{{ __('competitions.squad_page.age_label') }}</span>

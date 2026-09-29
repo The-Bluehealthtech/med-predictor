@@ -72,6 +72,12 @@ class KsaPlayerCockpitDataTest extends TestCase
                 + count(array_filter($data['p'], fn ($v) => $v !== null))
                 + (int) ($data['minutes'] !== null) + (int) ($data['index'] !== null);
             self::assertSame($numericHeaders, $displayed, $row['Player']);
+            $classified = ['assists', 'chances_successful', 'goals_by_head', 'free_kick_shots',
+                'free_kick_goals', 'key_passes_accurate', 'dribbling_in_the_final_third_successful',
+                'passes_accurate', 'long_passes_accurate', 'passes_forward_to_the_final_third_accurate',
+                'super_long_passes', 'super_long_passes_accurate', 'tackles_successful', 'yellow_cards', 'red_cards'];
+            $unclassified = array_diff(array_column(array_filter($data['extra'], fn ($item) => $item['unit'] !== 'text'), 'name'), $classified);
+            self::assertSame([], array_values($unclassified), $row['Player']);
             $checked++;
         }
         fclose($handle);

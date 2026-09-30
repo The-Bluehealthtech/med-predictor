@@ -1,6 +1,6 @@
 # Inventaire des interfaces vers la base principale
 
-Routes actives : 692. Routes de commande ou avec écriture directe repérée : 241.
+Routes actives : 692. Routes de commande ou avec écriture directe repérée : 247.
 
 Audit statique des méthodes réellement enregistrées. Les appels délégués nécessitent une vérification des services et un test de persistance. Une détection directe ne prouve pas que la transaction ou l'autorisation est correcte. Aucun scénario utilisateur n'est exécuté par cet audit.
 
@@ -87,6 +87,7 @@ Connexions nommées explicites repérées dans app : 0.
 | POST | api/modules/medical/injuries | Closure | écriture directe repérée |
 | PUT | api/modules/medical/{player_id}/current | Closure | écriture directe repérée |
 | POST | api/pcma/auto-save | Closure | délégation ou commande à examiner |
+| POST | api/pcma/pdf | App\Http\Controllers\PcmaDocumentController@generatePdf | délégation ou commande à examiner |
 | POST | api/pcma/store | App\Http\Controllers\PCMAController@store | écriture directe repérée |
 | POST | api/referee/events/{event}/confirm | App\Http\Controllers\RefereeController@confirmEvent | délégation ou commande à examiner |
 | POST | api/referee/events/{event}/contest | App\Http\Controllers\RefereeController@contestEvent | délégation ou commande à examiner |
@@ -130,6 +131,8 @@ Connexions nommées explicites repérées dans app : 0.
 | POST | api/v1/pcmas/whisper-transcribe | App\Http\Controllers\Api\V1\PCMAController@whisperTranscribe | délégation ou commande à examiner |
 | DELETE | api/v1/pcmas/{pcma} | App\Http\Controllers\Api\V1\PCMAController@destroy | écriture directe repérée |
 | PUT | api/v1/pcmas/{pcma} | App\Http\Controllers\Api\V1\PCMAController@update | écriture directe repérée |
+| POST | api/v1/pcmas/{pcma}/complete | App\Http\Controllers\PcmaStatusController@complete | délégation ou commande à examiner |
+| POST | api/v1/pcmas/{pcma}/fail | App\Http\Controllers\PcmaStatusController@fail | délégation ou commande à examiner |
 | POST | api/v3/analytics/export/schedule | Closure | délégation ou commande à examiner |
 | POST | api/v3/medical/wearables/player/{playerId}/sync | Closure | délégation ou commande à examiner |
 | POST | api/v3/security/gdpr/data-export/{userId} | Closure | délégation ou commande à examiner |
@@ -153,6 +156,7 @@ Connexions nommées explicites repérées dans app : 0.
 | POST | competitions/association/match/{id}/update | App\Http\Controllers\CompetitionController@updateAssociationMatch | écriture directe repérée |
 | POST | competitions/association/validate-all-engagements | App\Http\Controllers\CompetitionController@validateAllEngagements | délégation ou commande à examiner |
 | POST | competitions/association/validate-engagement/{clubId} | App\Http\Controllers\CompetitionController@validateEngagement | écriture directe repérée |
+| POST | competitions/sync-all | App\Http\Controllers\CompetitionManagementController@bulkSync | délégation ou commande à examiner |
 | DELETE | competitions/{competition} | App\Http\Controllers\CompetitionManagementController@destroy | écriture directe repérée |
 | PUT | competitions/{competition} | App\Http\Controllers\CompetitionManagementController@update | écriture directe repérée |
 | POST | competitions/{competition}/register-team | App\Http\Controllers\CompetitionManagementController@registerTeam | écriture directe repérée |
@@ -228,10 +232,12 @@ Connexions nommées explicites repérées dans app : 0.
 | POST | pcma/ai/scintigraphy | App\Http\Controllers\PCMAController@aiAnalyzeScintigraphy | écriture directe repérée |
 | POST | pcma/ai/ultrasound | App\Http\Controllers\PCMAController@aiAnalyzeUltrasound | écriture directe repérée |
 | POST | pcma/ai/xray | App\Http\Controllers\PCMAController@aiAnalyzeXray | écriture directe repérée |
+| POST | pcma/pdf | App\Http\Controllers\PcmaDocumentController@generatePdf | délégation ou commande à examiner |
 | DELETE | pcma/{pcma} | App\Http\Controllers\PCMAController@destroy | écriture directe repérée |
 | PUT | pcma/{pcma} | App\Http\Controllers\PCMAController@update | écriture directe repérée |
 | GET\|HEAD | pcma/{pcma}/complete | App\Http\Controllers\PCMAController@complete | écriture directe repérée |
 | GET\|HEAD | pcma/{pcma}/fail | App\Http\Controllers\PCMAController@fail | écriture directe repérée |
+| PUT | player-portal/profile | App\Http\Controllers\PlayerPortalAccountController@updateProfile | écriture directe repérée |
 | POST | player-registration | App\Http\Controllers\PlayerRegistrationController@store | écriture directe repérée |
 | POST | players | App\Http\Controllers\PlayerController@store | écriture directe repérée |
 | POST | players/bulk-import | App\Http\Controllers\PlayerController@bulkImport | écriture directe repérée |
@@ -253,21 +259,4 @@ Connexions nommées explicites repérées dans app : 0.
 
 ## Actions non résolues
 
-- `POST — api/pcma/pdf — App\Http\Controllers\PCMAController@generatePdf`
-- `POST — api/v1/pcmas/{pcma}/complete — App\Http\Controllers\Api\V1\PCMAController@complete`
-- `POST — api/v1/pcmas/{pcma}/fail — App\Http\Controllers\Api\V1\PCMAController@fail`
-- `GET|HEAD — api/club/eligible-players/{competition} — App\Http\Controllers\ClubManagementController@getEligiblePlayers`
-- `GET|HEAD — api/clubs/{club}/players/daily-passport — App\Http\Controllers\PassportController@clubPassport`
-- `GET|HEAD — api/federations/{federation}/daily-passport — App\Http\Controllers\PassportController@federationPassport`
-- `GET|HEAD — api/players/{player}/transfers — App\Http\Controllers\PassportController@playerTransfers`
-- `GET|HEAD — api/formation/barèmes — App\Http\Controllers\Controller@index`
-- `POST — competitions/sync-all — App\Http\Controllers\CompetitionManagementController@syncAll`
-- `POST — pcma/pdf — App\Http\Controllers\PCMAController@generatePdf`
-- `GET|HEAD — player-portal/profile — App\Http\Controllers\PlayerPortalController@profile`
-- `PUT — player-portal/profile — App\Http\Controllers\PlayerPortalController@updateProfile`
-- `GET|HEAD — player-portal/predictions — App\Http\Controllers\PlayerPortalController@predictions`
-- `GET|HEAD — player-portal/performances — App\Http\Controllers\PlayerPortalController@performances`
-- `GET|HEAD — player-portal/matches — App\Http\Controllers\PlayerPortalController@matches`
-- `GET|HEAD — player-portal/documents — App\Http\Controllers\PlayerPortalController@documents`
-- `GET|HEAD — player-portal/settings — App\Http\Controllers\PlayerPortalController@settings`
-- `GET|HEAD — player-portal/fifa-light — App\Http\Controllers\PlayerPortalController@fifaUltimateDashboard`
+Aucune.

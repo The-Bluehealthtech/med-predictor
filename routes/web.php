@@ -918,7 +918,7 @@ Route::prefix('api')->group(function () {
     // Statistiques des licences
     
     // Barèmes de formation FIFA
-    Route::get('/formation/barèmes', [App\Http\Controllers\Controller::class, 'index'])
+    Route::get('/formation/barèmes', [App\Http\Controllers\FormationRatesController::class, 'index'])
         ->name('api.formation.baremes');
 });
 
@@ -2109,7 +2109,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/competitions/{competition}', [CompetitionManagementController::class, 'update'])->name('competitions.update');
     Route::delete('/competitions/{competition}', [CompetitionManagementController::class, 'destroy'])->name('competitions.destroy');
     Route::post('/competitions/{competition}/sync', [CompetitionManagementController::class, 'sync'])->name('competitions.sync');
-    Route::post('/competitions/sync-all', [CompetitionManagementController::class, 'syncAll'])->name('competitions.sync-all');
+    Route::post('/competitions/sync-all', [CompetitionManagementController::class, 'bulkSync'])->name('competitions.sync-all');
     Route::get('/competitions/{competition}/standings', [CompetitionManagementController::class, 'standings'])->name('competitions.standings');
     Route::get('/competitions/{competition}/register-team-form', [CompetitionManagementController::class, 'showRegisterTeamForm'])->name('competitions.register-team-form');
     Route::post('/competitions/{competition}/register-team', [CompetitionManagementController::class, 'registerTeam'])->name('competitions.register-team');
@@ -3838,7 +3838,7 @@ Route::get('/test-pdf', function() {
 // Patient List API (accessible sans authentification pour test)
 
 // PDF generation routes (public access)
-Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->name('pcma.pdf.post')->middleware('api');
+Route::post('/pcma/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'generatePdf'])->name('pcma.pdf.post')->middleware('api');
 
 // Simple test route
 
@@ -3920,7 +3920,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pcma/ai/ct', [App\Http\Controllers\PCMAController::class, 'aiAnalyzeCt'])->name('pcma.ai.ct');
     Route::post('/pcma/ai/ultrasound', [App\Http\Controllers\PCMAController::class, 'aiAnalyzeUltrasound'])->name('pcma.ai.ultrasound');
     Route::post('/pcma/ai/fitness', [App\Http\Controllers\PCMAController::class, 'aiFitnessAssessment'])->name('pcma.ai.fitness');
-    Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->name('pcma.pdf.post');
+    Route::post('/pcma/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'generatePdf'])->name('pcma.pdf.post');
 });
 
 // Player Dashboard redirect (accessible après login)
@@ -3945,17 +3945,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/home', function () {
             return redirect()->route('admin.dashboard');
         })->name('dashboard');
-        Route::get('/profile', [App\Http\Controllers\PlayerPortalController::class, 'profile'])->name('profile');
-        Route::put('/profile', [App\Http\Controllers\PlayerPortalController::class, 'updateProfile'])->name('update-profile');
-        Route::get('/predictions', [App\Http\Controllers\PlayerPortalController::class, 'predictions'])->name('predictions');
-        Route::get('/performances', [App\Http\Controllers\PlayerPortalController::class, 'performances'])->name('performances');
-        Route::get('/matches', [App\Http\Controllers\PlayerPortalController::class, 'matches'])->name('matches');
-        Route::get('/documents', [App\Http\Controllers\PlayerPortalController::class, 'documents'])->name('documents');
-        Route::get('/settings', [App\Http\Controllers\PlayerPortalController::class, 'settings'])->name('settings');
+        Route::get('/profile', [App\Http\Controllers\PlayerPortalAccountController::class, 'profile'])->name('profile');
+        Route::put('/profile', [App\Http\Controllers\PlayerPortalAccountController::class, 'updateProfile'])->name('update-profile');
+        Route::get('/predictions', [App\Http\Controllers\PlayerPortalAccountController::class, 'predictions'])->name('predictions');
+        Route::get('/performances', [App\Http\Controllers\PlayerPortalAccountController::class, 'performances'])->name('performances');
+        Route::get('/matches', [App\Http\Controllers\PlayerPortalAccountController::class, 'matches'])->name('matches');
+        Route::get('/documents', [App\Http\Controllers\PlayerPortalAccountController::class, 'documents'])->name('documents');
+        Route::get('/settings', [App\Http\Controllers\PlayerPortalAccountController::class, 'settings'])->name('settings');
         Route::get('/fifa-ultimate', function () {
             return redirect()->route('portail.joueur');
         })->name('fifa-ultimate');
-    Route::get('/fifa-light', [App\Http\Controllers\PlayerPortalController::class, 'fifaUltimateDashboard'])->name('fifa-light');
+    Route::get('/fifa-light', [App\Http\Controllers\PlayerPortalAccountController::class, 'fifaUltimateDashboard'])->name('fifa-light');
     });
 });
 

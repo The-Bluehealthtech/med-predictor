@@ -307,11 +307,13 @@ class CompetitionManagementController extends Controller
     public function bulkSync()
     {
         $user = Auth::user();
-        $competitions = collect();
-
-        if ($user->role === 'association') {
-            $competitions = Competition::where('association_id', $user->association_id)->get();
+        abort_unless($user && ($user->isSystemAdmin() || $user->isAssociationUser()), 403);
+        $query = Competition::query();
+        if (!$user->isSystemAdmin()) {
+            abort_unless($user->association_id, 403);
+            $query->where('association_id', $user->association_id);
         }
+        $competitions = $query->get();
 
         $synced = 0;
         $failed = 0;

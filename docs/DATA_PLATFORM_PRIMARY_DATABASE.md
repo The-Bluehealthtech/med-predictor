@@ -29,3 +29,13 @@ L'audit réutilisable `scripts/audit-primary-database.php` inspecte les routes a
 18 actions de route ne se résolvent pas à une méthode existante ; elles sont listées dans l'inventaire. Les routes concernent notamment le portail joueur, des exports PCMA, des transitions PCMA, la synchronisation de compétitions et les passeports. Elles doivent être réparées selon leurs contrats actuels avant de déclarer l'ensemble des interfaces vérifié. Les délégations aux services et les fichiers joints nécessitent également des tests par scénario métier. La branche n'a pas été déployée et la connexion réellement hébergée en production n'a pas été inspectée.
 
 Vérification ciblée : 13 tests, 54 assertions réussies, comprenant calcul de score, provenance, absence de FIFA ID, indisponibilité de la base et absence de réexécution d'une écriture. Aucune donnée de démonstration n'a été reclassée comme donnée réelle.
+
+## Réparation des actions actives — 30 septembre 2026
+
+Les 18 actions auparavant introuvables sont reliées à des méthodes disponibles. L'audit statique des 692 routes ne relève plus d'action introuvable. Cela ne constitue pas une validation fonctionnelle exhaustive de toutes les pages.
+
+Les contacts du portail sont écrits uniquement pour players.id lié au compte, sans FIFA ID obligatoire. Les transitions PCMA utilisent la base principale et contrôlent le périmètre médical. Les passeports et transferts lisent les données persistées, sans inventer d'alertes réglementaires. Le PDF non enregistré est identifié comme brouillon, sans signature certifiée.
+
+Les barèmes de formation n'ont aucune source officielle configurée : la route répond explicitement 503, sans tarif fictif. Les calculs financiers correspondants restent à configurer. La synchronisation externe FIFA n'a pas été déclenchée lors des tests.
+
+Vérifications ciblées : résolution des actions, isolation du contact joueur, accès médical interclub, transitions PCMA en base de test, génération PDF et échappement des données, barèmes absents. Les tests ne couvrent pas encore tous les parcours navigateur ni les intégrations externes. Aucun déploiement de production effectué.

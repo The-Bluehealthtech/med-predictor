@@ -75,6 +75,10 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\TestFifaConnectivity::class,
         \App\Console\Commands\CheckFifaDataStandardCompliance::class,
         \App\Console\Commands\PrepareFifaDataStandardValidationBundle::class,
+        \App\Console\Commands\ImportKsaPlayerStatistics::class,
+        \App\Console\Commands\ImportRoleEvaluationDataCommand::class,
+        \App\Console\Commands\GenerateDemoDataCommand::class,
+        \App\Console\Commands\RoleEvaluationComputeCommand::class,
     ];
 
     /**

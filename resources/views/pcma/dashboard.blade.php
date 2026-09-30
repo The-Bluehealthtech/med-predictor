@@ -175,6 +175,11 @@
 <script>
 const { createApp } = Vue;
 
+const DASHBOARD_LABELS = {
+    notSpecifiedF: @json(__('Non spécifiée')),
+    notSpecifiedM: @json(__('Non spécifié')),
+};
+
 createApp({
     data() {
         return {
@@ -208,7 +213,7 @@ createApp({
             }
         },
         formatDate(dateString) {
-            return new Date(dateString).toLocaleDateString('fr-FR', {
+            return new Date(dateString).toLocaleDateString('en-GB', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',
@@ -252,7 +257,7 @@ createApp({
                 <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('pcma.loading_error') }}</h3>
                 <p class="text-gray-600 mb-4">@{{ error }}</p>
                 <button @click="loadSignedPcmas" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                    Réessayer
+                    {{ __('Réessayer') }}
                 </button>
             </div>
 
@@ -277,12 +282,12 @@ createApp({
                                 <div>
                                     <p><strong>Type:</strong> @{{ pcma.type ? pcma.type.charAt(0).toUpperCase() + pcma.type.slice(1) : 'Standard' }}</p>
                                     <p v-if="pcma.assessor"><strong>{{ __('pcma_extra.assessor_short') }}</strong> @{{ pcma.assessor.name }}</p>
-                                    <p><strong>{{ __('pcma.report_assessment_date_label') }}</strong> @{{ pcma.assessment_date ? formatDate(pcma.assessment_date) : 'Non spécifiée' }}</p>
+                                    <p><strong>{{ __('pcma.report_assessment_date_label') }}</strong> @{{ pcma.assessment_date ? formatDate(pcma.assessment_date) : ${JSON.stringify(DASHBOARD_LABELS.notSpecifiedF)} }}</p>
                                 </div>
                                 <div>
-                                    <p><strong>{{ __('pcma.report_signed_by_label') }}</strong> @{{ pcma.signed_by || 'Non spécifié' }}</p>
-                                    <p><strong>{{ __('pcma_extra.label_38aec7f0fe5a') }}</strong> @{{ pcma.license_number || 'Non spécifiée' }}</p>
-                                    <p><strong>{{ __('pcma.report_signature_date_label') }}</strong> @{{ pcma.signed_at ? formatDate(pcma.signed_at) : 'Non spécifiée' }}</p>
+                                    <p><strong>{{ __('pcma.report_signed_by_label') }}</strong> @{{ pcma.signed_by || ${JSON.stringify(DASHBOARD_LABELS.notSpecifiedM)} }}</p>
+                                    <p><strong>{{ __('pcma_extra.label_38aec7f0fe5a') }}</strong> @{{ pcma.license_number || ${JSON.stringify(DASHBOARD_LABELS.notSpecifiedF)} }}</p>
+                                    <p><strong>{{ __('pcma.report_signature_date_label') }}</strong> @{{ pcma.signed_at ? formatDate(pcma.signed_at) : ${JSON.stringify(DASHBOARD_LABELS.notSpecifiedF)} }}</p>
                                 </div>
                             </div>
                             

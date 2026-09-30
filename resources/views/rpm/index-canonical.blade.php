@@ -76,5 +76,31 @@
             </table>
         </div>
     </div>
+    <section class="rpm-team-data mt-6">
+        <div class="fifa-stat-card">
+            <div class="fifa-stat-header">
+                <span>Données de jeu · équipe</span>
+                <span class="text-xs opacity-70">Source KSA · affichage séparé du RPM</span>
+            </div>
+            <div class="grid gap-3 md:grid-cols-4 mt-4">
+                <div class="fifa-stat-card"><div class="text-xs opacity-70">Joueurs couverts</div><div class="fifa-stat-value">{{ $advancedMetrics->pluck('player_id')->filter()->unique()->count() ?: 'Non disponible' }}</div></div>
+                <div class="fifa-stat-card"><div class="text-xs opacity-70">Métriques renseignées</div><div class="fifa-stat-value">{{ $advancedMetrics->whereNotNull('metric_value')->count() ?: 'Non disponible' }}</div></div>
+                <div class="fifa-stat-card"><div class="text-xs opacity-70">Métriques suivies</div><div class="fifa-stat-value">{{ $advancedMetrics->pluck('metric_name')->unique()->count() }}</div></div>
+                <div class="fifa-stat-card"><div class="text-xs opacity-70">Source</div><div class="fifa-stat-value">KSA</div></div>
+            </div>
+            <div class="overflow-x-auto mt-5">
+                <table class="fifa-license-table w-full">
+                    <thead><tr><th>Joueur</th><th>Métrique</th><th>Valeur</th><th>Unité</th></tr></thead>
+                    <tbody>
+                    @forelse($advancedMetrics as $metric)
+                        <tr><td>{{ $metric->player_name ?? 'Équipe' }}</td><td>{{ $metric->metric_name }}</td><td>{{ $metric->metric_value ?? 'Non disponible' }}</td><td>{{ $metric->metric_unit ?: '—' }}</td></tr>
+                    @empty
+                        <tr><td colspan="4">Aucune donnée disponible.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
 </div>
 @endsection

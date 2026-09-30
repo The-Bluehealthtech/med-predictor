@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,7 +45,7 @@
                                 id="player_name" 
                                 v-model="formData.player_name"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Ex: Mohamed Ben Ali"
+                                placeholder="{{ __('pcma.voice_fallback_player_name_placeholder') }}"
                                 required
                             >
                         </div>
@@ -59,7 +59,7 @@
                                 id="age" 
                                 v-model="formData.age"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Ex: 24"
+                                placeholder="{{ __('pcma.voice_fallback_age_placeholder') }}"
                                 min="16" 
                                 max="50"
                                 required
@@ -204,7 +204,7 @@
                                 id="height" 
                                 v-model="formData.height"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Ex: 175"
+                                placeholder="{{ __('pcma.voice_fallback_height_placeholder') }}"
                                 min="150" 
                                 max="220"
                             >
@@ -219,7 +219,7 @@
                                 id="weight" 
                                 v-model="formData.weight"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Ex: 70"
+                                placeholder="{{ __('pcma.voice_fallback_weight_placeholder') }}"
                                 min="45" 
                                 max="150"
                             >
@@ -371,7 +371,7 @@
                         if (response.data.success) {
                             this.submissionResult = {
                                 success: true,
-                                message: 'Votre formulaire PCMA a été envoyé avec succès au système FIT.',
+                                message: @json(__('pcma.voice_fallback_submission_success')),
                                 reference: response.data.reference || 'N/A'
                             };
                             

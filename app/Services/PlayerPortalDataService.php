@@ -966,6 +966,14 @@ class PlayerPortalDataService
 
         $licenseRequests = $licenseRequestsQuery->get();
 
+        $ksaMetrics = DB::table('external_player_performance_metrics')
+            ->where('player_id', $playerId)
+            ->where('source', 'KSA')
+            ->orderBy('metric_name')
+            ->orderByDesc('measured_at')
+            ->orderByDesc('id')
+            ->get();
+
         return compact(
             'healthRecords',
             'playerStats',
@@ -995,6 +1003,7 @@ class PlayerPortalDataService
             'playerMedicalAptitude',
             'playerVitalSigns',
             'profileSynthetic',
+            'latestRealtime',
             'playerInjuriesDiseases',
             'sportsDevices',
             'behavioralData',
@@ -1007,7 +1016,8 @@ class PlayerPortalDataService
             'dopingAlerts',
             'complianceStatus',
             'complianceResources',
-            'licenseRequests'
+            'licenseRequests',
+            'ksaMetrics'
         );
     }
 

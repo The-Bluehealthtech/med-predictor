@@ -61,7 +61,22 @@ class RpmController extends Controller
             })->count(),
         ];
 
-        return view('rpm.index-canonical', compact('measurements', 'stats'));
+        $excludedKsaFields = ['№', 'Player', 'Age', 'Height', 'Weight', 'Nationality', 'Position', 'Minutes played', 'Goals', 'Assists', 'Yellow cards', 'Red cards', 'Fouls', 'Fouls suffered', 'Shots', 'Shots on target', 'Passes', 'Passes accurate', 'Passes accurate, %', 'Key passes', 'Crosses', 'Tackles', 'Tackles successful', 'Tackles successful, %', 'Interceptions', 'xG (expected goals)'];
+        $ksaCatalog = collect(config('ksa_portal_fields', []))
+            ->reject(fn ($label) => in_array($label, $excludedKsaFields, true))
+            ->map(fn ($label) => (object) ['metric_name' => $label, 'metric_value' => null, 'metric_unit' => null, 'source' => 'KSA'])
+            ->values();
+        $advancedMetrics = DB::table('external_player_performance_metrics as metrics')
+            ->join('players', 'players.id', '=', 'metrics.player_id')
+            ->where('metrics.source', 'KSA')
+            ->select('metrics.*', 'players.name as player_name')
+            ->orderBy('players.name')
+            ->orderBy('metrics.metric_name')
+            ->limit(500)
+            ->get();
+        $advancedMetrics = $advancedMetrics->isNotEmpty() ? $advancedMetrics : $ksaCatalog;
+
+        return view('rpm.index-canonical', compact('measurements', 'stats', 'advancedMetrics'));
     }
 
     private function scopeQuery(Builder $query): Builder

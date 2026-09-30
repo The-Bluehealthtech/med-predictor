@@ -700,5 +700,24 @@
             @endif
         @endif
     </div>
+    @if($selectedPlayer)
+        <section class="mt-6 rounded-lg border border-amber-300 bg-amber-50 p-5">
+            <h2 class="text-lg font-semibold">Statistiques Avancées</h2>
+            <p class="text-sm text-gray-600">Métriques externes associées au joueur sélectionné. Elles ne modifient pas les scores FIT.</p>
+            @if($advancedMetrics->isEmpty())
+                <p class="mt-3 text-sm">Aucune métrique avancée enregistrée.</p>
+            @else
+                <div class="mt-4 grid gap-3 md:grid-cols-3">
+                    @foreach($advancedMetrics as $metric)
+                        <div class="rounded bg-white p-3 shadow-sm">
+                            <div class="text-xs text-gray-500">{{ str_replace('_', ' ', $metric->metric_name) }}</div>
+                            <div class="font-semibold">{{ $metric->metric_value ?? 'Non disponible' }} {{ $metric->metric_unit }}</div>
+                            <div class="text-xs text-gray-500">Source : {{ $metric->source }}</div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+    @endif
 </div>
 @endsection

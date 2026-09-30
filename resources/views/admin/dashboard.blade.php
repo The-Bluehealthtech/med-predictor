@@ -230,15 +230,19 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                                     @if($player->club)
                                         <div class="flex items-center">
+                                            @php
+                                                $clubLogo = $player->club->logo_url
+                                                    ?: ($player->club->logo_path ? asset('storage/' . $player->club->logo_path) : null);
+                                            @endphp
                                             <div class="flex-shrink-0 h-8 w-8 mr-3">
-                                                @if($player->club->logo_path)
-                                                    <img class="h-8 w-8 rounded object-cover" 
-                                                         src="{{ asset('storage/' . $player->club->logo_path) }}" 
+                                                @if($clubLogo)
+                                                    <img class="h-8 w-8 rounded object-contain bg-white"
+                                                         src="{{ $clubLogo }}"
                                                          alt="Logo {{ $player->club->name }}"
                                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                                 @endif
                                                 <div class="h-8 w-8 rounded bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center" 
-                                                     style="display: {{ $player->club->logo_path ? 'none' : 'flex' }};">
+                                                     style="display: {{ $clubLogo ? 'none' : 'flex' }};">
                                                     <span class="text-white font-bold text-xs">🏟️</span>
                                                 </div>
                                             </div>
@@ -254,20 +258,30 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                                     @if($player->association)
                                         <div class="flex items-center">
+                                            @php
+                                                $associationLogo = $player->association->association_logo_url;
+                                                $associationLogo = $associationLogo && filter_var($associationLogo, FILTER_VALIDATE_URL)
+                                                    ? $associationLogo
+                                                    : ($associationLogo ? asset('storage/' . $associationLogo) : null);
+                                                $associationFlag = $player->association->nation_flag_url;
+                                                $associationFlag = $associationFlag && filter_var($associationFlag, FILTER_VALIDATE_URL)
+                                                    ? $associationFlag
+                                                    : ($associationFlag ? asset('storage/' . $associationFlag) : null);
+                                            @endphp
                                             <div class="flex-shrink-0 h-8 w-8 mr-3">
-                                                @if($player->association->association_logo_url)
-                                                    <img class="h-8 w-8 rounded object-cover" 
-                                                         src="{{ asset('storage/' . $player->association->association_logo_url) }}" 
+                                                @if($associationLogo)
+                                                    <img class="h-8 w-8 rounded object-contain bg-white"
+                                                         src="{{ $associationLogo }}"
                                                          alt="Logo {{ $player->association->name }}"
                                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                                @elseif($player->association->nation_flag_url)
+                                                @elseif($associationFlag)
                                                     <img class="h-8 w-8 rounded object-cover" 
-                                                         src="{{ asset('storage/' . $player->association->nation_flag_url) }}" 
+                                                         src="{{ $associationFlag }}"
                                                          alt="Drapeau {{ $player->association->country ?? 'N/A' }}"
                                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                                 @endif
                                                 <div class="h-8 w-8 rounded bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center" 
-                                                     style="display: {{ ($player->association->association_logo_url || $player->association->nation_flag_url) ? 'none' : 'flex' }};">
+                                                     style="display: {{ ($associationLogo || $associationFlag) ? 'none' : 'flex' }};">
                                                     <span class="text-white font-bold text-xs">🏆</span>
                                                 </div>
                                             </div>

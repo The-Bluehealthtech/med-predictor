@@ -918,7 +918,7 @@ Route::prefix('api')->group(function () {
     // Statistiques des licences
     
     // Barèmes de formation FIFA
-    Route::get('/formation/barèmes', [App\Http\Controllers\Controller::class, 'index'])
+    Route::get('/formation/barèmes', [App\Http\Controllers\FormationRatesController::class, 'index'])
         ->name('api.formation.baremes');
 });
 
@@ -2109,7 +2109,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/competitions/{competition}', [CompetitionManagementController::class, 'update'])->name('competitions.update');
     Route::delete('/competitions/{competition}', [CompetitionManagementController::class, 'destroy'])->name('competitions.destroy');
     Route::post('/competitions/{competition}/sync', [CompetitionManagementController::class, 'sync'])->name('competitions.sync');
-    Route::post('/competitions/sync-all', [CompetitionManagementController::class, 'syncAll'])->name('competitions.sync-all');
+    Route::post('/competitions/sync-all', [CompetitionManagementController::class, 'bulkSync'])->name('competitions.sync-all');
     Route::get('/competitions/{competition}/standings', [CompetitionManagementController::class, 'standings'])->name('competitions.standings');
     Route::get('/competitions/{competition}/register-team-form', [CompetitionManagementController::class, 'showRegisterTeamForm'])->name('competitions.register-team-form');
     Route::post('/competitions/{competition}/register-team', [CompetitionManagementController::class, 'registerTeam'])->name('competitions.register-team');
@@ -2385,50 +2385,7 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
     })->name('pcma.dashboard');
     
     // PCMA Create route (SPECIFIC ROUTE)
-    Route::get('/pcma/create', function () {
-        $athletes = collect([]);
-        $users = collect([]);
-        
-        // Try to get actual players if model exists
-        try {
-            if (class_exists('\App\Models\Player')) {
-                $athletes = \App\Models\Player::with('club')->orderBy('first_name')->get();
-            }
-        } catch (\Exception $e) {
-            // Player model might not exist or table is missing
-        }
-        
-        // Try to get actual users if model exists
-        try {
-            if (class_exists('\App\Models\User')) {
-                $users = \App\Models\User::orderBy('name')->get();
-            }
-        } catch (\Exception $e) {
-            // User model might not exist or table is missing
-        }
-        
-        // If no athletes found, create test data
-        if ($athletes->isEmpty()) {
-            $athletes = collect([
-                (object)['id' => 1, 'first_name' => 'Test', 'last_name' => 'Player 1', 'club_id' => 1],
-                (object)['id' => 2, 'first_name' => 'Test', 'last_name' => 'Player 2', 'club_id' => 1],
-                (object)['id' => 3, 'first_name' => 'Test', 'last_name' => 'Player 3', 'club_id' => 2],
-            ]);
-        }
-        
-        // If no users found, create test data
-        if ($users->isEmpty()) {
-            $users = collect([
-                (object)['id' => 1, 'name' => 'Test Assessor 1', 'email' => 'assessor1@test.com'],
-                (object)['id' => 2, 'name' => 'Test Assessor 2', 'email' => 'assessor2@test.com'],
-            ]);
-        }
-        
-        return view('pcma.create', [
-            'athletes' => $athletes,
-            'users' => $users
-        ]);
-    })->name('pcma.create');
+    Route::get('/pcma/create', [\App\Http\Controllers\PCMAController::class, 'create'])->name('pcma.create');
     
 
     
@@ -3446,8 +3403,15 @@ Route::get('/test-pdf', function() {
 
     
     Route::get('/modules/teams', function () {
-        $teams = \App\Models\Team::with(['club', 'club.association'])->orderBy('name')->get();
-        $clubs = \App\Models\Club::with('association')->orderBy('name')->get();
+        try {
+            $teams = \App\Models\Team::with(['club', 'club.association'])->orderBy('name')->get();
+            $clubs = \App\Models\Club::with('association')->orderBy('name')->get();
+        } catch (\Throwable $exception) {
+            report($exception);
+            $teams = collect();
+            $clubs = collect();
+        }
+
         return view('modules.teams.index', compact('teams', 'clubs'));
     })->name('modules.teams.index');
     
@@ -3831,7 +3795,7 @@ Route::get('/test-pdf', function() {
 // Patient List API (accessible sans authentification pour test)
 
 // PDF generation routes (public access)
-Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->name('pcma.pdf.post')->middleware('api');
+Route::post('/pcma/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'generatePdf'])->name('pcma.pdf.post')->middleware('api');
 
 // Simple test route
 
@@ -3913,7 +3877,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pcma/ai/ct', [App\Http\Controllers\PCMAController::class, 'aiAnalyzeCt'])->name('pcma.ai.ct');
     Route::post('/pcma/ai/ultrasound', [App\Http\Controllers\PCMAController::class, 'aiAnalyzeUltrasound'])->name('pcma.ai.ultrasound');
     Route::post('/pcma/ai/fitness', [App\Http\Controllers\PCMAController::class, 'aiFitnessAssessment'])->name('pcma.ai.fitness');
-    Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->name('pcma.pdf.post');
+    Route::post('/pcma/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'generatePdf'])->name('pcma.pdf.post');
 });
 
 // Player Dashboard redirect (accessible après login)
@@ -3938,17 +3902,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/home', function () {
             return redirect()->route('admin.dashboard');
         })->name('dashboard');
-        Route::get('/profile', [App\Http\Controllers\PlayerPortalController::class, 'profile'])->name('profile');
-        Route::put('/profile', [App\Http\Controllers\PlayerPortalController::class, 'updateProfile'])->name('update-profile');
-        Route::get('/predictions', [App\Http\Controllers\PlayerPortalController::class, 'predictions'])->name('predictions');
-        Route::get('/performances', [App\Http\Controllers\PlayerPortalController::class, 'performances'])->name('performances');
-        Route::get('/matches', [App\Http\Controllers\PlayerPortalController::class, 'matches'])->name('matches');
-        Route::get('/documents', [App\Http\Controllers\PlayerPortalController::class, 'documents'])->name('documents');
-        Route::get('/settings', [App\Http\Controllers\PlayerPortalController::class, 'settings'])->name('settings');
+        Route::get('/profile', [App\Http\Controllers\PlayerPortalAccountController::class, 'profile'])->name('profile');
+        Route::put('/profile', [App\Http\Controllers\PlayerPortalAccountController::class, 'updateProfile'])->name('update-profile');
+        Route::get('/predictions', [App\Http\Controllers\PlayerPortalAccountController::class, 'predictions'])->name('predictions');
+        Route::get('/performances', [App\Http\Controllers\PlayerPortalAccountController::class, 'performances'])->name('performances');
+        Route::get('/matches', [App\Http\Controllers\PlayerPortalAccountController::class, 'matches'])->name('matches');
+        Route::get('/documents', [App\Http\Controllers\PlayerPortalAccountController::class, 'documents'])->name('documents');
+        Route::get('/settings', [App\Http\Controllers\PlayerPortalAccountController::class, 'settings'])->name('settings');
         Route::get('/fifa-ultimate', function () {
             return redirect()->route('portail.joueur');
         })->name('fifa-ultimate');
-    Route::get('/fifa-light', [App\Http\Controllers\PlayerPortalController::class, 'fifaUltimateDashboard'])->name('fifa-light');
+    Route::get('/fifa-light', [App\Http\Controllers\PlayerPortalAccountController::class, 'fifaUltimateDashboard'])->name('fifa-light');
     });
 });
 

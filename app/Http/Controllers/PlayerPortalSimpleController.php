@@ -4,13 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Player;
 use App\Services\PlayerPortalDataService;
+use App\Services\KsaPlayerCockpitData;
+use App\Services\GoalkeeperCockpitData;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PlayerPortalSimpleController extends Controller
 {
     public function __construct(
-        private readonly PlayerPortalDataService $portalDataService
+        private readonly PlayerPortalDataService $portalDataService,
+        private readonly KsaPlayerCockpitData $cockpitDataService,
+        private readonly GoalkeeperCockpitData $goalkeeperCockpitData
     ) {
     }
 
@@ -29,11 +33,9 @@ class PlayerPortalSimpleController extends Controller
                 ['options' => ['min_range' => 1]]
             );
 
-            abort_if(
-                $validatedPlayerId === false,
-                404,
-                'Joueur introuvable.'
-            );
+            if ($validatedPlayerId === false) {
+                return $this->playerNotFound($request);
+            }
 
             $requestedPlayerId = (int) $validatedPlayerId;
         }
@@ -48,9 +50,12 @@ class PlayerPortalSimpleController extends Controller
                 'Aucun joueur associé à ce compte.'
             );
 
+            if ($requestedPlayerId === null) {
+                return $this->playerNotFound($request);
+            }
+
             abort_if(
-                $requestedPlayerId !== null
-                    && $requestedPlayerId !== (int) $user->player_id,
+                $requestedPlayerId !== (int) $user->player_id,
                 403,
                 'Accès non autorisé à ce joueur.'
             );
@@ -61,10 +66,10 @@ class PlayerPortalSimpleController extends Controller
              */
             $player = Player::withoutGlobalScopes()
                 ->with(['club', 'association'])
-                ->findOrFail((int) $user->player_id);
+                ->find((int) $user->player_id);
         } else {
             if ($requestedPlayerId === null) {
-                return redirect()->route('joueurs.selection');
+                return $this->playerNotFound($request);
             }
 
             abort_unless(
@@ -81,7 +86,11 @@ class PlayerPortalSimpleController extends Controller
              * que pour system_admin.
              */
             $player = Player::with(['club', 'association'])
-                ->findOrFail($requestedPlayerId);
+                ->find($requestedPlayerId);
+
+            if (!$player) {
+                return $this->playerNotFound($request);
+            }
 
             if ($user->isClubUser()) {
                 abort_unless(
@@ -104,11 +113,32 @@ class PlayerPortalSimpleController extends Controller
             }
         }
 
-        $portalData = $this->portalDataService->forPlayer($player);
+        if (!$player) {
+            return $this->playerNotFound($request);
+        }
+
+        try {
+            $portalData = $this->portalDataService->forPlayer($player);
+            $cockpitData = $this->cockpitDataService->fromMetrics($portalData['ksaMetrics']);
+            $goalkeeperData = $player->position === Player::POSITION_GOALKEEPER
+                ? $this->goalkeeperCockpitData->forPlayer($player, $portalData['playerStats']->first())
+                : null;
+        } catch (\Throwable $exception) {
+            report($exception);
+            return response()->view('player-data-unavailable', [], 503);
+        }
 
         return view('test-portail-joueur-simple', array_merge(
-            ['player' => $player],
+            ['player' => $player, 'cockpitV2Data' => $cockpitData, 'goalkeeperCockpitData' => $goalkeeperData],
             $portalData
         ));
+    }
+    private function playerNotFound(Request $request)
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Joueur introuvable'], 404);
+        }
+
+        return response()->view('player-not-found', [], 404);
     }
 }

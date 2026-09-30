@@ -2394,6 +2394,10 @@ const PCMA_LABELS = {
     recordingGoogleInProgress: @json(__('pcma.recording_google_in_progress')),
     voiceRecognitionInProgress: @json(__('pcma.voice_recognition_in_progress')),
     testInProgress: @json(__('pcma.test_in_progress')),
+    voiceStatusWaiting: @json(__('pcma.voice_status_waiting')),
+    voiceServiceAvailable: @json(__('pcma.voice_service_available')),
+    serviceInitializing: @json(__('pcma.service_initializing')),
+    serviceTesting: @json(__('pcma.service_testing')),
     confidenceLabel: @json(__('pcma.confidence_label')),
     confidenceHigh: @json(__('pcma.confidence_high')),
     confidenceMedium: @json(__('pcma.confidence_medium')),
@@ -3696,7 +3700,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialiser le service
         async function initService() {
             try {
-                showServiceStatus(' Initialisation du service...', 'info');
+                showServiceStatus(PCMA_LABELS.serviceInitializing, 'info');
                 
                 // Vérifier que la clé API est présente
                 if (!elements.apiKeyInput.value) {
@@ -3733,7 +3737,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Tester le service
         function testService() {
             try {
-                showServiceStatus(' Test du service...', 'info');
+                showServiceStatus(PCMA_LABELS.serviceTesting, 'info');
                 
                 const success = speechService.testAPIKey();
                 
@@ -6616,7 +6620,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     //  Réinitialiser l'affichage en temps réel
     function resetLiveVoiceDisplay() {
-        updateVoiceLiveStatus('En attente', 'bg-gray-100 text-gray-700');
+        updateVoiceLiveStatus(PCMA_LABELS.voiceStatusWaiting, 'bg-gray-100 text-gray-700');
         
         const confidenceElement = document.getElementById('voice-confidence');
         if (confidenceElement) {
@@ -6979,7 +6983,7 @@ hideVocalContentInManual() {
         this.checkCompleteEnvironment().then((result) => {
             if (result.success) {
                 if (serviceStatus) {
-                    serviceStatus.textContent = 'Service vocal disponible !';
+                    serviceStatus.textContent = PCMA_LABELS.voiceServiceAvailable;
                     serviceStatus.className = 'mt-2 text-sm text-green-600';
                 }
                 

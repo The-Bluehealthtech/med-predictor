@@ -96,6 +96,7 @@
         </div>
     </div>
     
+    @php $ksaSourceField = fn ($name) => collect($cockpitV2Data['extra'] ?? [])->firstWhere('name', $name)['value'] ?? null; @endphp
     <!-- 🆕 NOUVELLE HERO ZONE SIMPLE EN BLADE (remplace le JavaScript complexe) -->
     <div class="bg-gradient-to-br from-blue-900 to-indigo-900 p-6">
         <div class="max-w-7xl mx-auto">
@@ -126,8 +127,11 @@
                         {{ $player->first_name }} {{ $player->last_name }}
                     </h1>
                     <p class="text-xl text-blue-200 mb-4">
-                        {{ $player->position ?? __('Position non définie') }} •
+                        {{ $player->position ?? $ksaSourceField('Position') ?? __('Position non définie') }} •
                         {{ $player->club->name ?? __('Club non défini') }}
+                        @if($ksaSourceField('№') !== null)
+                            <span class="text-sm text-blue-200"> · № {{ $ksaSourceField('№') }} (KSA)</span>
+                        @endif
                     </p>
                     
                     <!-- Drapeau nationalité -->
@@ -140,11 +144,14 @@
                                 <img src="https://flagcdn.com/w40/{{ strtolower($countryCode) }}.png" 
                                      alt="Drapeau {{ $player->nationality }}" 
                                      class="h-8 w-12 object-cover rounded border-2 border-white shadow-lg">
+                                <span class="text-sm text-blue-200">{{ $player->nationality }}</span>
                             @else
                                 <span class="bg-gray-600 text-white px-3 py-1 rounded text-sm">
                                     {{ $player->nationality }}
                                 </span>
                             @endif
+                        @elseif($ksaSourceField('Nationality') !== null)
+                            <span class="text-sm text-blue-200">{{ $ksaSourceField('Nationality') }} (KSA)</span>
                         @endif
                     </div>
                 </div>
@@ -167,9 +174,13 @@
                             <!-- Club avec logo -->
                             <div class="flex items-center space-x-3 p-2 bg-white/5 rounded-lg">
                                 <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                    @if($player->club->logo_path)
-                                        <img src="/storage/{{ $player->club->logo_path }}" 
-                                             alt="Logo {{ $player->club->name }}" 
+                                    @php
+                                        $clubLogo = $player->club->logo_url
+                                            ?: ($player->club->logo_path ? asset('storage/' . $player->club->logo_path) : null);
+                                    @endphp
+                                    @if($clubLogo)
+                                        <img src="{{ $clubLogo }}"
+                                             alt="Logo {{ $player->club->name }}"
                                              class="w-6 h-6 object-contain">
                                     @else
                                         <i class="fas fa-shield-alt text-blue-600 text-sm"></i>
@@ -185,13 +196,22 @@
                                 <!-- Association avec logo -->
                                 <div class="flex items-center space-x-3 p-2 bg-white/5 rounded-lg">
                                     <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                                        @if($player->association->association_logo_url)
-                                            <img src="/storage/{{ $player->association->association_logo_url }}" 
-                                                 alt="Logo {{ $player->association->name }}" 
+                                        @php
+                                            $associationLogo = $player->association->association_logo_url;
+                                            $associationLogo = $associationLogo && filter_var($associationLogo, FILTER_VALIDATE_URL)
+                                                ? $associationLogo
+                                                : ($associationLogo ? asset('storage/' . $associationLogo) : null);
+                                            $associationFallback = $player->association->logo_path
+                                                ? asset('storage/' . $player->association->logo_path)
+                                                : null;
+                                        @endphp
+                                        @if($associationLogo)
+                                            <img src="{{ $associationLogo }}"
+                                                 alt="Logo {{ $player->association->name }}"
                                                  class="w-6 h-6 object-contain">
-                                        @elseif($player->association->logo_path)
-                                            <img src="/storage/{{ $player->association->logo_path }}" 
-                                                 alt="Logo {{ $player->association->name }}" 
+                                        @elseif($associationFallback)
+                                            <img src="{{ $associationFallback }}"
+                                                 alt="Logo {{ $player->association->name }}"
                                                  class="w-6 h-6 object-contain">
                                         @else
                                             <i class="fas fa-flag text-green-600 text-sm"></i>
@@ -207,7 +227,16 @@
                                     <!-- Confédération -->
                                     <div class="flex items-center space-x-3 p-2 bg-white/5 rounded-lg">
                                         <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                                            <i class="fas fa-globe text-purple-600 text-sm"></i>
+                                            @php
+                                                $confederationCode = $player->association->getRawOriginal('confederation');
+                                                $confederation = \App\Models\Confederation::where('short_name', $confederationCode)->first();
+                                                $confederationLogo = $confederation?->confederation_logo_url;
+                                            @endphp
+                                            @if($confederationLogo)
+                                                <img src="{{ $confederationLogo }}" alt="Logo {{ $confederation?->name }}" class="w-6 h-6 object-contain">
+                                            @else
+                                                <i class="fas fa-globe text-purple-600 text-sm"></i>
+                                            @endif
                                         </div>
                                         <div>
                                             <span class="text-purple-200 text-xs">{{ __('🌍 Confédération:') }}</span>
@@ -255,7 +284,7 @@
                             </div>
 
                             <div class="text-green-200 text-sm">
-                                Score FIT {{ $latestFitSnapshot->calculation_version }}
+                                {{ __('Score FIT') }} {{ $latestFitSnapshot->calculation_version }}
                             </div>
 
                             <div class="text-xs text-gray-300">
@@ -265,7 +294,7 @@
 
                             @if($fitConfidence !== null)
                                 <div class="text-xs text-gray-300">
-                                    Confiance : {{ number_format($fitConfidence, 1) }}%
+                                    {{ __('Confiance :') }} {{ number_format($fitConfidence, 1) }}%
                                 </div>
                             @endif
 
@@ -368,7 +397,7 @@
                                 @endphp
 
                                 @if($fitTotalMetricCount === 0)
-                                    <div class="mt-2 text-xs text-yellow-300">{{ __('Aucune métrique de performance enregistrée pour ce joueur.') }}</div>
+                                    <div class="mt-2 text-xs text-yellow-300">{{ __('Aucune métrique de Score FIT enregistrée pour ce joueur.') }}</div>
 
                                 @elseif($fitVerifiedMetricCount === 0)
                                     @if($fitRecentMetricCount > 0)
@@ -423,28 +452,27 @@
                     @if($profileSynthetic)
                         <p class="text-xs text-yellow-300 mb-2">{{ __('Profil fictif de test.') }}</p>
                     @endif
-
                     <div class="space-y-2">
                         <div class="flex justify-between">
                             <span class="text-purple-200 text-sm">{{ __('competitions.squad_page.age_label') }}</span>
                             <span class="text-white font-medium">
                                 @if($player->date_of_birth)
-                                    {{ \Carbon\Carbon::parse($player->date_of_birth)->age }} ans
+                                    {{ \Carbon\Carbon::parse($player->date_of_birth)->age }} {{ __('ans') }}
                                 @else
-                                    N/A
+                                    {{ $ksaSourceField('Age') !== null ? $ksaSourceField('Age').' (KSA)' : 'N/A' }}
                                 @endif
                             </span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-purple-200 text-sm">{{ __('health_records_edit.size') }}</span>
-                            <span class="text-white font-medium">{{ $player->height ?? 'N/A' }} cm</span>
+                            <span class="text-white font-medium">{{ $player->height ?? $ksaSourceField('Height') ?? 'N/A' }} cm{{ $player->height === null && $ksaSourceField('Height') !== null ? ' (KSA)' : '' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-purple-200 text-sm">Poids:</span>
-                            <span class="text-white font-medium">{{ $player->weight ?? 'N/A' }} kg</span>
+                            <span class="text-purple-200 text-sm">{{ __('Poids:') }}</span>
+                            <span class="text-white font-medium">{{ $player->weight ?? $ksaSourceField('Weight') ?? 'N/A' }} kg{{ $player->weight === null && $ksaSourceField('Weight') !== null ? ' (KSA)' : '' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-purple-200 text-sm">Pied:</span>
+                            <span class="text-purple-200 text-sm">{{ __('Pied:') }}</span>
                             <span class="text-white font-medium">{{ match (strtolower($player->preferred_foot ?? '')) { 'left' => __('Gauche'), 'right' => __('Droit'), 'both' => __('Ambidextre'), default => $player->preferred_foot ?? 'N/A' } }}</span>
                         </div>
                     </div>
@@ -461,7 +489,7 @@
                     
                     <div class="space-y-2">
                         <div class="flex justify-between">
-                            <span class="text-orange-200 text-sm">Licence Club:</span>
+                            <span class="text-orange-200 text-sm">{{ __('Licence Club:') }}</span>
                             <span class="text-white font-medium">
                                 @php
                                     $activeLicense = $playerLicenses->firstWhere('status', 'active');
@@ -500,10 +528,23 @@
                 </h3>
 
                 @php
+                    $ksaIndexMetric = collect($ksaMetrics ?? [])->first(fn ($metric) =>
+                        strtolower(str_replace(' ', '_', trim((string) data_get($metric, 'metric_name')))) === 'index_ksa'
+                        && data_get($metric, 'metric_value') !== null);
+                    $ksaIndex = $ksaIndexMetric
+                        && strtolower((string) data_get($ksaIndexMetric, 'metric_unit')) === 'ksa_index'
+                        && is_numeric(data_get($ksaIndexMetric, 'metric_value'))
+                        ? (float) data_get($ksaIndexMetric, 'metric_value')
+                        : null;
                     $fitStatCards = [
                         [
                             'label' => 'FIT',
                             'value' => $latestFitSnapshot?->fit_score,
+                        ],
+                        [
+                            'label' => __('Index KSA'),
+                            'value' => $ksaIndex,
+                            'is_ksa_index' => true,
                         ],
                         [
                             'label' => __('PHYSIQUE'),
@@ -534,18 +575,22 @@
                     <p class="text-xs text-yellow-300 mb-3">{{ __('Score calculé à partir de métriques fictives de test.') }}</p>
                 @endif
 
-                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+                <div class="grid grid-cols-2 md:grid-cols-3 {{ $ksaIndex !== null ? 'xl:grid-cols-7' : 'xl:grid-cols-6' }} gap-3">
                     @foreach($fitStatCards as $fitStat)
+                        @if(empty($fitStat['is_ksa_index']) || $ksaIndex !== null)
                         <div class="bg-white/10 rounded-lg p-3 text-center border border-white/10">
                             <div class="text-white font-bold text-lg">
                                 {{ $fitStat['value'] !== null
-                                    ? number_format((float) $fitStat['value'], 1)
+                                    ? (!empty($fitStat['is_ksa_index'])
+                                        ? str_replace('.', app()->getLocale() === 'fr' ? ',' : '.', rtrim(rtrim(number_format((float) $fitStat['value'], 2, '.', ''), '0'), '.'))
+                                        : number_format((float) $fitStat['value'], 1))
                                     : 'N/A' }}
                             </div>
                             <div class="text-gray-300 text-xs">
                                 {{ $fitStat['label'] }}
                             </div>
                         </div>
+                        @endif
                     @endforeach
                 </div>
             </div>
@@ -555,7 +600,7 @@
     <!-- 🔄 ONGLETS IDENTIQUES AU PORTAL FIFA (même structure) -->
     <!-- Onglets Principaux -->
     <div class="fifa-tabs">
-        <button class="fifa-tab-button active" onclick="showFIFATab('performances')">Performances</button>
+        <button class="fifa-tab-button active" onclick="showFIFATab('performances')">{{ __('Performances') }}</button>
         <button class="fifa-tab-button" onclick="showFIFATab('trends')">{{ __('navigation.performance_trends') }}</button>
         
         <!-- Nouveaux onglets FIFA -->
@@ -693,6 +738,87 @@
                 @php
                     $seasonStat = $playerStats->first();
                 @endphp
+                @php
+                    $seasonStat = $seasonStat ?? ($playerStats?->first());
+                    $cockpitMetrics = collect($ksaMetrics ?? []);
+                    $metricRow = function (array $names) use ($cockpitMetrics) {
+                        $normalized = array_map(fn ($name) => strtolower(str_replace(' ', '_', $name)), $names);
+                        return $cockpitMetrics->first(function ($item) use ($normalized) {
+                            $name = strtolower(str_replace(' ', '_', trim((string) data_get($item, 'metric_name', ''))));
+                            return in_array($name, $normalized, true) && data_get($item, 'metric_value') !== null;
+                        });
+                    };
+                    $metricValue = fn (array $names) => data_get($metricRow($names), 'metric_value');
+                    $metricRate = function (array $names) use ($metricRow) {
+                        $row = $metricRow($names);
+                        if (strtolower((string) data_get($row, 'metric_unit')) !== 'percent') return null;
+                        $value = data_get($row, 'metric_value');
+                        if (!is_numeric($value) || (float) $value < 0 || (float) $value > 1) return null;
+                        return round(100 * (float) $value, 2);
+                    };
+                    $passRate = $latestMatchPerformance && (int) $latestMatchPerformance->passes_attempted > 0
+                        ? round(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 2)
+                        : $metricRate(['passes_accuracy', 'passing_accuracy']);
+                    $radarRates = [
+                        'passes_accuracy' => $metricRate(['passes_accuracy', 'passing_accuracy']),
+                        'progressive_passes_accurate' => $metricRate(['progressive_passes_accurate']),
+                        'dribbles_successful' => $metricRate(['dribbles_successful']),
+                        'tackles_successful' => $metricRate(['tackles_successful']),
+                        'challenges_won' => $metricRate(['challenges_won']),
+                        'aerial_challenges_won' => $metricRate(['aerial_challenges_won']),
+                    ];
+                    $rateLabels = [
+                        'passes_accuracy' => __('player_cockpit.passes_accuracy'),
+                        'progressive_passes_accurate' => __('player_cockpit.progressive_passes_accurate'),
+                        'dribbles_successful' => __('player_cockpit.dribbles_successful'),
+                        'tackles_successful' => __('player_cockpit.tackles_successful'),
+                        'challenges_won' => __('player_cockpit.challenges_won'),
+                        'aerial_challenges_won' => __('player_cockpit.aerial_challenges_won'),
+                    ];
+                    $availableRates = collect($radarRates)->filter(fn ($value) => is_numeric($value) && $value >= 0 && $value <= 100);
+                    $sortedRates = $availableRates->sortDesc();
+                    $highestRateKey = $sortedRates->keys()->first();
+                    $lowestRateKey = $sortedRates->keys()->last();
+                    $formatRate = fn ($value) => number_format((float) $value, 2, app()->getLocale() === 'fr' ? ',' : '.', app()->getLocale() === 'fr' ? ' ' : ',');
+                    $formatGameValue = function ($value) {
+                        if (!is_numeric($value)) return (string) $value;
+                        $rounded = number_format((float) $value, 2, '.', '');
+                        $trimmed = rtrim(rtrim($rounded, '0'), '.');
+                        return app()->getLocale() === 'fr' ? str_replace('.', ',', $trimmed) : $trimmed;
+                    };
+                    $cockpitData = [
+                        'matches_played' => $seasonStat?->matches_played,
+                        'minutes_played' => $seasonStat?->minutes_played,
+                        'index_ksa' => $metricValue(['index ksa', 'ksa index']),
+                        'goals' => $seasonStat?->goals,
+                        'expected_goals' => $metricValue(['expected goals', 'xg']),
+                        'passes_accuracy' => $passRate,
+                        'progressive_passes_accurate' => $metricValue(['progressive passes accurate', 'progressive pass']),
+                        'dribbles_successful' => $metricValue(['dribbles successful', 'successful dribbles']),
+                        'tackles_successful' => $metricValue(['tackles successful', 'tackles won']),
+                        'challenges_won' => $metricValue(['challenges won', 'duels won']),
+                        'aerial_challenges_won' => $metricValue(['aerial challenges won', 'aerial duels won']),
+                        'shots' => $metricValue(['shots']),
+                        'shots_on_target' => $latestMatchPerformance?->shots_on_target,
+                        'yellow_cards' => $seasonStat?->yellow_cards,
+                        'red_cards' => $seasonStat?->red_cards,
+                    ];
+                @endphp
+                @php
+                    $hasKsaCockpit = collect($ksaMetrics ?? [])->contains(
+                        fn ($metric) => data_get($metric, 'metric_value') !== null
+                            && is_numeric(data_get($metric, 'metric_value'))
+                    );
+                    $ksaExtraValue = fn ($name) => collect($cockpitV2Data['extra'] ?? [])->firstWhere('name', $name)['value'] ?? null;
+                    $seasonChartStats = $hasKsaCockpit ? [
+                        'matches_played' => $cockpitV2Data['matches'],
+                        'minutes_played' => $cockpitV2Data['minutes'],
+                        'goals' => $cockpitV2Data['v']['goals'],
+                        'assists' => $ksaExtraValue('assists'),
+                        'yellow_cards' => $ksaExtraValue('yellow_cards'),
+                        'red_cards' => $ksaExtraValue('red_cards'),
+                    ] : $seasonStat;
+                @endphp
 
                 <div class="fifa-health-grid">
                     <div class="fifa-health-card">
@@ -700,27 +826,27 @@
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
                                 <span>{{ __('Matchs joués') }}</span>
-                                <span class="fifa-stat-value highlight">{{ $seasonStat?->matches_played ?? __('Données non disponibles') }}</span>
+                                <span class="fifa-stat-value highlight">{{ $hasKsaCockpit ? ($cockpitV2Data['matches'] ?? __('Données non disponibles')) : ($seasonStat?->matches_played ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>{{ __('Buts marqués') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->goals ?? __('Données non disponibles') }}</span>
+                                <span>{{ $hasKsaCockpit ? __('Buts par match') : __('Buts marqués') }}</span>
+                                <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($cockpitV2Data['v']['goals'] !== null ? $formatGameValue($cockpitV2Data['v']['goals']) : __('Données non disponibles')) : ($seasonStat?->goals ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>{{ __('Passes décisives') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->assists ?? __('Données non disponibles') }}</span>
+                                <span>{{ $hasKsaCockpit ? __('Passes décisives par match') : __('Passes décisives') }}</span>
+                                <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($ksaExtraValue('assists') !== null ? $formatGameValue($ksaExtraValue('assists')) : __('Données non disponibles')) : ($seasonStat?->assists ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>{{ __('Minutes jouées') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->minutes_played ?? __('Données non disponibles') }}</span>
+                                <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($cockpitV2Data['minutes'] ?? __('Données non disponibles')) : ($seasonStat?->minutes_played ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>{{ __('Cartons jaunes') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->yellow_cards ?? __('Données non disponibles') }}</span>
+                                <span>{{ $hasKsaCockpit ? __('Cartons jaunes par match') : __('Cartons jaunes') }}</span>
+                                <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($ksaExtraValue('yellow_cards') !== null ? $formatGameValue($ksaExtraValue('yellow_cards')) : __('Données non disponibles')) : ($seasonStat?->yellow_cards ?? __('Données non disponibles')) }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>{{ __('Cartons rouges') }}</span>
-                                <span class="fifa-stat-value">{{ $seasonStat?->red_cards ?? __('Données non disponibles') }}</span>
+                                <span>{{ $hasKsaCockpit ? __('Cartons rouges par match') : __('Cartons rouges') }}</span>
+                                <span class="fifa-stat-value">{{ $hasKsaCockpit ? ($ksaExtraValue('red_cards') !== null ? $formatGameValue($ksaExtraValue('red_cards')) : __('Données non disponibles')) : ($seasonStat?->red_cards ?? __('Données non disponibles')) }}</span>
                             </div>
                         </div>
                     </div>
@@ -733,20 +859,119 @@
                                     $matchExtras = json_decode($latestMatchPerformance->additional_metrics ?? '{}', true) ?: [];
                                 @endphp
                                 @if(str_contains($latestMatchPerformance->notes ?? '', 'synthetic_demo'))
-                                    <p>Match fictif de test du {{ \Carbon\Carbon::parse($latestMatchPerformance->match_date)->format('d/m/Y') }}.</p>
+                                    <p>{{ __('Match fictif de test du :date.', ['date' => \Carbon\Carbon::parse($latestMatchPerformance->match_date)->format('d/m/Y')]) }}</p>
                                 @endif
                                 <div class="fifa-stat-header"><span>{{ __('Tacles gagnés') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->tackles_won }}</span></div>
                                 @if(isset($matchExtras['interceptions']))
                                     <div class="fifa-stat-header"><span>Interceptions</span><span class="fifa-stat-value">{{ $matchExtras['interceptions'] }}</span></div>
                                 @endif
                                 <div class="fifa-stat-header"><span>{{ __('Tirs cadrés') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->shots_on_target }}</span></div>
-                                <div class="fifa-stat-header"><span>{{ __('Précision des passes') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->passes_attempted > 0 ? number_format(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1).'%' : 'Données non disponibles' }}</span></div>
+                                <div class="fifa-stat-header"><span>{{ __('Précision des passes') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->passes_attempted > 0 ? number_format(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1).'%' : __('Données non disponibles') }}</span></div>
                             @else
-                                <p>{{ __('Aucune statistique de match enregistrée.') }}</p>
+                                <p>{{ __('Aucune statistique de match détaillée enregistrée.') }}</p>
                             @endif
                         </div>
                     </div>
                 </div>
+
+<style>#cockpit-joueur{max-width:1080px;margin:0 auto;padding:20px 16px 40px}</style>
+<div id="cockpit-joueur" role="status" aria-live="polite" class="text-gray-300 p-4">{{ __('Chargement des performances…') }}</div>
+<script>
+/* ===== 1. DONNÉES : seul bloc à brancher sur les données réelles du site ===== */
+var DATA=@json($cockpitV2Data);
+var cockpitPosition=@json($player->position);
+
+/* ===== 2. COMPOSANT (isolé du CSS du site par Shadow DOM) ===== */
+function mountCockpit(host,D){
+var root=host.shadowRoot||host.attachShadow({mode:"open"});
+/* Variables : remplacer le 2e argument de var() par la variable du site, ex. var(--couleur-fond-carte) */
+var css=':host{display:block;--bg:var(--ck-bg,#111827);--card:var(--ck-card,rgba(255,255,255,.1));--ink:var(--ck-ink,#ffffff);--mute:var(--ck-mute,#9ca3af);--line:var(--ck-line,rgba(255,255,255,.2));--acc:var(--ck-acc,#326295);--warn:var(--ck-warn,#b4530a);--bad:var(--ck-bad,#a4262c);--rad:var(--ck-radius,8px);color:var(--ink);font-family:inherit;line-height:1.5}'
++'@media(prefers-color-scheme:dark){:host(:not([data-light])){--bg:var(--ck-bg,#111827);--card:var(--ck-card,rgba(255,255,255,.1));--ink:var(--ck-ink,#ffffff);--mute:var(--ck-mute,#9ca3af);--line:var(--ck-line,rgba(255,255,255,.2));--acc:var(--ck-acc,#6ea4de);--warn:var(--ck-warn,#e69a4d);--bad:var(--ck-bad,#ef7b80)}}'
++'*{box-sizing:border-box}h2,h3,p{margin:0}.top{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:flex-end;margin-bottom:14px}.top h2{font-size:1.6rem;line-height:1.15}.sub,.note{color:var(--mute);font-size:.9rem}'
++'.tog{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}.tog button{font:inherit;padding:6px 14px;border:0;background:var(--card);color:var(--ink);cursor:pointer}.tog button[aria-pressed=true]{background:var(--acc);color:#fff}button:focus-visible{outline:3px solid var(--warn);outline-offset:-3px}'
++'.card{background:var(--card);border:1px solid var(--line);border-radius:var(--rad);padding:18px;min-width:0}.card h3{font-size:1.05rem;margin-bottom:12px}'
++'.read{padding:22px;margin-bottom:14px;border-left:6px solid var(--acc)}.read .head{font-size:1.35rem;line-height:1.3;font-weight:700;margin-bottom:16px;max-width:60ch}.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}'
++'.col h3{display:flex;align-items:center;gap:8px;font-size:1rem;margin-bottom:8px}.col h3:before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c)}.col.ok{--c:var(--acc)}.col.w{--c:var(--warn)}.col.t{--c:var(--bad)}'
++'.col ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}.col li{padding-left:12px;border-left:2px solid var(--line)}.col li b{display:block}.col li span{color:var(--mute);font-size:.92rem}.col .none{color:var(--mute);font-size:.92rem}'
++'.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--rad);overflow:hidden;margin-bottom:14px}.kpi{background:var(--card);padding:10px 14px}.kpi b{display:block;font-size:1.7rem;line-height:1.15}.kpi span{color:var(--mute);font-size:.88rem}'
++'.grid{display:grid;grid-template-columns:1fr;gap:14px}@media(min-width:860px){.grid{grid-template-columns:400px 1fr}}'
++'svg{width:100%;height:auto;display:block}svg text{fill:var(--ink);font:inherit;font-size:11.5px}svg .m{fill:var(--mute)}'
++'.g{padding:7px 0;border-bottom:1px solid var(--line)}.g:last-child{border:0}.g .l{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.g .l small{color:var(--mute);font-size:.82rem}.g .l b{font-variant-numeric:tabular-nums}'
++'.tr{position:relative;height:6px;margin-top:5px;background:var(--bg);border-radius:3px}.tr i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}.tr u{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--mute);opacity:.5}'
++'.gh{font-size:.88rem;color:var(--mute);margin:12px 0 2px}.gh:first-of-type{margin-top:0}'
++'.blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;margin-top:14px}.row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:5px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}.row b{font-variant-numeric:tabular-nums}.row .tr{grid-column:1/-1;height:4px;margin:0}.row .tr i{background:var(--acc)}';
+
+var RT=[["Construction",[["passes_accuracy","Passes","passes"],["short_passes_accurate","Passes courtes","short_passes"],["progressive_passes_accurate","Passes progressives","progressive_passes"],["passes_into_the_penalty_box_accurate","Passes dans la surface","passes_into_the_penalty_box"],["crosses_accurate","Centres","crosses"]]],
+["Duels",[["challenges_won","Duels gagnés","challenges"],["attacking_challenges_won","Duels offensifs","attacking_challenges"],["defensive_challenges_won","Duels défensifs","defensive_challenges"],["aerial_challenges_won","Duels aériens","aerial_challenges"],["tackles_successful","Tacles réussis","tackles"]]],
+["Percussion",[["dribbles_successful","Dribbles réussis","dribbles"]]]];
+var G=[["Attaque",[["goals","Buts"],["expected_goals","Buts attendus (xG)"],["shots","Tirs"],["shots_on_target","Tirs cadrés"],["chances","Occasions"],["chances_created","Occasions créées"],["key_passes","Passes clés"],["passes_for_a_shot","Passes menant à un tir"],["dribbling_in_the_final_third","Dribbles dans le dernier tiers"],["involvement_in_scoring_attacks","Implication dans les actions de but"]]],
+["Construction",[["passes","Passes"],["short_passes","Passes courtes"],["long_passes","Passes longues"],["progressive_passes","Passes progressives"],["progressive_open_passes","Progressives (jeu ouvert)"],["passes_forward_to_the_final_third","Passes vers le dernier tiers"],["passes_into_the_penalty_box","Passes dans la surface"],["crosses","Centres"]]],
+["Duels et défense",[["challenges","Duels"],["attacking_challenges","Duels offensifs"],["defensive_challenges","Duels défensifs"],["aerial_challenges","Duels aériens"],["tackles","Tacles"],["interceptions","Interceptions"],["loose_ball_recoveries","Ballons libres récupérés"],["dribbles","Dribbles tentés"]]],
+["Discipline et erreurs",[["fouls_committed","Fautes commises"],["fouls_suffered","Fautes subies"],["mistakes_leading_to_chances","Erreurs menant à une occasion"],["mistakes_leading_to_goals","Erreurs menant à un but"]]]];
+var RAD=["passes_accuracy","progressive_passes_accurate","dribbles_successful","tackles_successful","challenges_won","aerial_challenges_won"];
+var mode=1,v=D.v,p=D.p;
+function fx(){return mode==1?1:90/(D.minutes/D.matches)}
+function n(x){var s=(Math.round(x*100)/100).toString().replace(".",",");return s}
+function pc(x){return Math.round(x*100)+" %"}
+function col(x){return x>=.75?"var(--acc)":x<.4?"var(--bad)":"var(--warn)"}
+var flat=[];RT.forEach(function(g){g[1].forEach(function(r){flat.push({k:r[0],l:r[1],a:v[r[2]],r:p[r[0]]})})});
+var rel=flat.filter(function(x){return x.a>=1&&x.r!=null});
+
+function reading(){
+var best=rel.slice().sort(function(a,b){return b.r-a.r})[0],worst=rel.slice().sort(function(a,b){return a.r-b.r})[0];
+var ok=[],w=[],t=[];
+rel.filter(function(x){return x.r>=.75}).sort(function(a,b){return b.r-a.r}).forEach(function(x){ok.push([x.l+" : "+pc(x.r),"Réussite élevée sur "+n(x.a*fx())+" tentative(s) "+(mode==1?"par match":"par 90 min")+"."])});
+if(v.expected_goals&&v.goals>v.expected_goals*1.3)ok.push(["Finition au-dessus des attentes","Buts "+n(v.goals*fx())+" pour "+n(v.expected_goals*fx())+" xG. À confirmer : sur un petit échantillon, cet écart dure rarement."]);
+var rec=v.tackles+v.interceptions+v.loose_ball_recoveries;
+if(rec>=8)ok.push(["Fort volume de récupération","Environ "+n(rec*fx())+" ballons récupérés (tacles, interceptions, ballons libres)."]);
+rel.filter(function(x){return x.r<.4&&x.r>0}).sort(function(a,b){return a.r-b.r}).forEach(function(x){w.push([x.l+" : "+pc(x.r),"Moins d'une réussite sur deux, sur "+n(x.a*fx())+" tentative(s)."])});
+if(p.passes_into_the_penalty_box_accurate<.5&&v.passes_into_the_penalty_box>=1)w.push(["Dernière passe dans la surface : "+pc(p.passes_into_the_penalty_box_accurate),"Le jeu progresse bien jusqu'au dernier tiers, mais la passe décisive manque de précision."]);
+if(v.mistakes_leading_to_goals>0)w.push(["Erreurs coûteuses","Une erreur menant à un but sur "+D.matches+" matchs, et autant menant à une occasion."]);
+if(v.crosses>=1&&p.crosses_accurate<.15)t.push(["Centres","0 centre précis sur "+n(v.crosses*fx())+" tenté(s) : revoir la décision (centrer ou non) et la technique de frappe."]);
+var wd=rel.filter(function(x){return x.k!="crosses_accurate"&&x.r<.4}).sort(function(a,b){return a.r-b.r});
+if(wd.length)t.push(["Duels","Gagner davantage de duels ("+pc(p.challenges_won)+" aujourd'hui) : placement avant contact et jeu aérien ("+pc(p.aerial_challenges_won)+")."]);
+if(p.passes_into_the_penalty_box_accurate<.5)t.push(["Passe dans la surface","Passer de "+pc(p.passes_into_the_penalty_box_accurate)+" à plus de 60 % en choisissant mieux le moment et l'angle."]);
+var head="Fiable dans les « "+best.l.toLowerCase()+" » ("+pc(best.r)+"), en difficulté dans les « "+worst.l.toLowerCase()+" » ("+pc(worst.r)+").";
+function col3(c,ti,a,e){return '<div class="col '+c+'"><h3>'+ti+'</h3>'+(a.length?'<ul>'+a.map(function(x){return '<li><b>'+x[0]+'</b><span>'+x[1]+'</span></li>'}).join("")+'</ul>':'<p class="none">'+e+'</p>')+'</div>'}
+return '<section class="card read"><h3>Lecture de la performance</h3><p class="head">'+head+'</p><div class="cols">'+col3("ok","Points forts",ok,"Aucun point fort net ressort.")+col3("w","À surveiller",w,"Rien d'alarmant.")+col3("t","Axes de travail",t,"Aucun axe prioritaire.")+'</div><p class="note" style="margin-top:14px">Seuils : réussite de 75 % ou plus, point fort ; moins de 40 %, point faible. Échantillon de '+D.matches+' matchs.</p></section>';
+}
+function kpis(){var k=[["Matchs",D.matches],["Minutes",D.minutes],["Index",D.index],["Buts",n(v.goals*fx())],["xG",n(v.expected_goals*fx())],["Passes réussies",pc(p.passes_accuracy)]];
+return '<section class="kpis">'+k.map(function(a){return '<div class="kpi"><b>'+a[1]+'</b><span>'+a[0]+'</span></div>'}).join("")+'</section>'}
+function radar(){var cx=180,cy=150,r=100,N=6,s="",lab={};flat.forEach(function(x){lab[x.k]=x.l});
+function pt(i,k){var a=-Math.PI/2+i*2*Math.PI/N;return [cx+Math.cos(a)*r*k,cy+Math.sin(a)*r*k]}
+[.25,.5,.75,1].forEach(function(k){s+='<polygon points="'+RAD.map(function(_,i){return pt(i,k).join(",")}).join(" ")+'" fill="none" stroke="var(--line)" stroke-width="'+(k==.5?1.4:.8)+'"/>'});
+s+='<text class="m" x="'+(cx+4)+'" y="'+(cy-r*.5+11)+'">50 %</text>';
+RAD.forEach(function(_,i){var q=pt(i,1);s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+q[0]+'" y2="'+q[1]+'" stroke="var(--line)" stroke-width=".8"/>'});
+s+='<polygon points="'+RAD.map(function(k,i){return pt(i,p[k]).join(",")}).join(" ")+'" fill="var(--acc)" fill-opacity=".22" stroke="var(--acc)" stroke-width="2" stroke-linejoin="round"/>';
+RAD.forEach(function(k,i){var q=pt(i,p[k]),o=pt(i,1.24),an=o[0]<cx-8?"end":o[0]>cx+8?"start":"middle";s+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="4" fill="var(--card)" stroke="'+col(p[k])+'" stroke-width="2.5"/><text x="'+o[0]+'" y="'+(o[1]-2)+'" text-anchor="'+an+'">'+lab[k]+'</text><text x="'+o[0]+'" y="'+(o[1]+12)+'" text-anchor="'+an+'" style="font-weight:700;fill:'+col(p[k])+'">'+pc(p[k])+'</text>'});
+return '<section class="card"><h3>Profil de réussite</h3><svg viewBox="0 0 360 310" role="img" aria-label="Radar des taux de réussite">'+s+'</svg><p class="note">Du centre (0 %) au bord (100 %). Couleur du point : bleu dès 75 %, rouge sous 40 %.</p></section>'}
+function gauges(){return '<section class="card"><h3>Réussite par action</h3>'+RT.map(function(g){return '<p class="gh">'+g[0]+'</p>'+g[1].map(function(r){var x=p[r[0]],a=v[r[2]];return '<div class="g"><div class="l"><span>'+r[1]+' <small>sur '+n(a*fx())+(mode==1?" par match":" par 90 min")+'</small></span><b style="color:'+col(x)+'">'+pc(x)+'</b></div><div class="tr"><i style="width:'+Math.max(x*100,1)+'%;background:'+col(x)+'"></i><u></u></div></div>'}).join("")}).join("")+'</section>'}
+function blocks(){return '<div class="blocks">'+G.map(function(g){var mx=Math.max.apply(null,g[1].map(function(r){return v[r[0]]}));return '<section class="card"><h3>'+g[0]+'</h3>'+g[1].map(function(r){var x=v[r[0]];return '<div class="row"><span>'+r[1]+'</span><b>'+n(x*fx())+'</b><div class="tr"><i style="width:'+(x/mx*100)+'%"></i></div></div>'}).join("")+'</section>'}).join("")+'</div>'}
+function render(){
+root.innerHTML='<style>'+css+'</style><div class="top"><div><h2>Cockpit performance joueur</h2><p class="sub">'+D.matches+' matchs, '+Math.round(D.minutes/D.matches)+' min de jeu en moyenne. Valeurs '+(mode==1?"par match":"ramenées à 90 min")+'.</p></div><div class="tog" role="group" aria-label="Base de calcul"><button data-m="1" aria-pressed="'+(mode==1)+'">Par match</button><button data-m="90" aria-pressed="'+(mode!=1)+'">Par 90 min</button></div></div>'+reading()+kpis()+'<div class="grid">'+radar()+gauges()+'</div>'+blocks();
+Array.prototype.forEach.call(root.querySelectorAll("button"),function(b){b.onclick=function(){mode=+b.getAttribute("data-m");render()}});
+}
+render();
+}
+// Initialization is selected by the guarded adapter below.
+</script>
+@if($player->position === \App\Models\Player::POSITION_GOALKEEPER)
+<script>window.FIT_GOALKEEPER_DATA = @json($goalkeeperCockpitData);</script>
+<script src="{{ asset('js/ksa-goalkeeper-cockpit.js') }}?v={{ filemtime(public_path('js/ksa-goalkeeper-cockpit.js')) }}"></script>
+@elseif(in_array($player->position, ['DEF', 'MID', 'FWD', 'CB', 'LB', 'RB', 'DM', 'CM', 'AM', 'LW', 'RW', 'ST', 'CDM', 'LCB', 'RCB', 'LCM', 'CAM', 'RCAM', 'LAM', 'RAM', 'CF'], true))
+<script src="{{ asset('js/ksa-player-cockpit-adapter.js') }}?v={{ filemtime(public_path('js/ksa-player-cockpit-adapter.js')) }}"></script>
+@else
+<script>
+  const unknownPosition = document.getElementById('cockpit-joueur');
+  if (unknownPosition) {
+    unknownPosition.className = 'bg-white/10 rounded-lg p-4 border border-white/20 text-gray-300';
+    unknownPosition.textContent = @json(__('Poste non renseigné'));
+  }
+</script>
+@endif
+@if(app()->getLocale() === 'en')
+<script src="{{ asset('js/player-portal-cockpit-en.js') }}?v={{ filemtime(public_path('js/player-portal-cockpit-en.js')) }}"></script>
+@endif
             </div>
         </div>
 
@@ -1032,12 +1257,12 @@
                     <div style="text-align: left; margin-top: 15px;">
                         @if($playerMedications && $playerMedications->count() > 0)
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Traitements actifs:</span>
+                                <span>{{ __('Traitements actifs:') }}</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ $playerMedications->count() }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Type principal:</span>
-                                <span style="color: #ffd700; font-weight: bold;">{{ ucfirst($playerMedications->first()->medication_type) }}</span>
+                                <span>{{ __('Type principal:') }}</span>
+                                <span style="color: #ffd700; font-weight: bold;">{{ __(ucfirst($playerMedications->first()->medication_type)) }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
                                 <span>{{ __('Dernier ajout:') }}</span>
@@ -1045,7 +1270,7 @@
                             </div>
                         @else
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Traitements:</span>
+                                <span>{{ __('Traitements:') }}</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ __('Aucun traitement actif enregistré') }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
@@ -1065,11 +1290,11 @@
                                 $medicalAlerts = $playerNotifications->where('notification_type', 'medical_alert');
                             @endphp
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Alertes actives:</span>
+                                <span>{{ __('Alertes actives:') }}</span>
                                 <span style="color: #ffd700; font-weight: bold;">{{ $playerNotifications->count() }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Alertes performance:</span>
+                                <span>{{ __('Alertes performance:') }}</span>
                                 <span style="color: #87ceeb; font-weight: bold;">{{ $performanceAlerts->count() }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
@@ -1078,11 +1303,11 @@
                             </div>
                         @else
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Forme physique:</span>
+                                <span>{{ __('Forme physique:') }}</span>
                                 <span style="color: #87ceeb; font-weight: bold;">{{ __('Aucune alerte active') }}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>Moral:</span>
+                                <span>{{ __('Moral:') }}</span>
                                 <span style="color: #87ceeb; font-weight: bold;">{{ __('Données non disponibles') }}</span>
                             </div>
                         @endif
@@ -1104,8 +1329,8 @@
                                         @endif">
                                         <div class="flex justify-between items-start">
                                             <div class="flex-1">
-                                                <div class="font-semibold text-gray-800">{{ $notification->title }}</div>
-                                                <div class="text-sm text-gray-600 mt-1">{{ $notification->message }}</div>
+                                                <div class="font-semibold text-gray-800">{{ __($notification->title) }}</div>
+                                                <div class="text-sm text-gray-600 mt-1">{{ __($notification->message) }}</div>
                                                 <div class="text-xs text-gray-500 mt-2">
                                                     {{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}
                                                 </div>
@@ -1224,7 +1449,7 @@
                     @if($playerNutrition)
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Hydratation</span>
+                                <span>{{ __('Hydratation') }}</span>
                                 <span class="fifa-stat-value">{{ $playerNutrition->hydration_score !== null ? $playerNutrition->hydration_score.'/100' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
@@ -1270,7 +1495,7 @@
                     @else
                         <div class="fifa-health-stat">
                             <div class="fifa-stat-header">
-                                <span>Hydratation</span>
+                                <span>{{ __('Hydratation') }}</span>
                                 <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-progress-bar">
@@ -1547,7 +1772,7 @@
                                 <span class="fifa-stat-value">{{ $playerVitalSigns->muscle_mass_percentage !== null ? $playerVitalSigns->muscle_mass_percentage.'%' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Hydratation</span>
+                                <span>{{ __('Hydratation') }}</span>
                                 <span class="fifa-stat-value">{{ $playerVitalSigns->hydration_percentage !== null ? $playerVitalSigns->hydration_percentage.'%' : __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
@@ -1566,7 +1791,7 @@
                                 <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Masse Corporelle</span>
+                                <span>{{ __('Masse Corporelle') }}</span>
                                 <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
@@ -1578,7 +1803,7 @@
                                 <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
-                                <span>Hydratation</span>
+                                <span>{{ __('Hydratation') }}</span>
                                 <span class="fifa-stat-value">{{ __('Données non disponibles') }}</span>
                             </div>
                             <div class="fifa-stat-header">
@@ -1833,6 +2058,21 @@
                 </div>
             </div>
         </div>
+
+        <div class="fifa-medical-card mt-6">
+            <div class="fifa-stat-header"><span>{{ __('RPM individuel') }}</span><span class="text-xs opacity-70">{{ __('Mesure la plus récente') }}</span></div>
+            <div class="fifa-health-grid" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0.75rem;width:100%;">
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Mesure') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->measurement_time ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('FC') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->heart_rate ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>SpO₂</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->oxygen_saturation ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Température') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->temperature ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Hydratation') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->hydration_level ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Récupération') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->recovery_score ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Readiness') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->readiness_score ?? __('Données non disponibles') }}</strong></div></div>
+                <div class="fifa-health-card"><div class="fifa-health-stat"><span>{{ __('Source') }}</span><strong style="margin-left:0.75rem;">{{ $latestRealtime?->data_source ?? __('Données non disponibles') }}</strong></div></div>
+            </div>
+        </div>
+
     </div>
 
     <div id="devices-tab" class="fifa-tab-content">
@@ -2065,7 +2305,7 @@
                                                 @else 🔄 En attente
                                                 @endif
                                             </div>
-                                            <div>Données: {{ implode(', ', $dataTypes) }}</div>
+                                            <div>{{ __('Données:') }} {{ implode(', ', $dataTypes) }}</div>
                                             <div class="text-xs text-{{ $color }}-600 mt-1">
                                                 Dernière sync: {{ \Carbon\Carbon::parse($api->last_sync)->diffForHumans() }}
                                             </div>
@@ -2398,10 +2638,10 @@
                                             @endphp
                                             <div class="mb-2">
                                                 <div class="font-medium">
-                                                    {{ $typeIcon }} {{ $resource->resource_name }}
+                                                    {{ $typeIcon }} {{ __($resource->resource_name) }}
                                                 </div>
                                                 <div class="text-xs text-gray-600">
-                                                    {{ $resource->resource_description }}
+                                                    {{ __($resource->resource_description) }}
                                                 </div>
                                                 @if($resource->resource_url)
                                                     <div class="text-xs text-blue-600">
@@ -2415,7 +2655,7 @@
                                         @if($complianceResources->count() > 4)
                                             <div class="text-xs text-blue-600 mt-2">
                                                 <a href="#" class="hover:underline">
-                                                    Voir toutes les ressources ({{ $complianceResources->count() }})
+                                                    {{ __('Voir toutes les ressources') }} ({{ $complianceResources->count() }})
                                                 </a>
                                             </div>
                                         @endif
@@ -2523,16 +2763,16 @@
                                 <span>{{ __('Période de formation:') }}</span>
                                 <span>
                                     @if($playerLicenses && $playerLicenses->count() > 0)
-                                        {{ $playerLicenses->count() }} saison(s)
+                                        {{ __(':count saison(s)', ['count' => $playerLicenses->count()]) }}
                                     @else
-                                        Non définie
+                                        {{ __('Non définie') }}
                                     @endif
                                 </span>
                             </div>
                             <div class="fifa-compensation-stat">
                                 <span>{{ __('Prime simulée de test:') }}</span>
                                 <span class="fifa-compensation-amount">
-                                    {{ $playerTrainingCompensation !== null ? number_format((float) $playerTrainingCompensation, 0, ' ', ' ') . ' unités de test' : 'Aucune simulation enregistrée' }}
+                                    {{ $playerTrainingCompensation !== null ? number_format((float) $playerTrainingCompensation, 0, ' ', ' ') . ' ' . __('unités de test') : __('Aucune simulation enregistrée') }}
                                 </span>
                             </div>
                         </div>
@@ -2962,7 +3202,7 @@
                         // Graphique des statistiques de saison
                         const statsCtx = document.getElementById('statsChart');
                         if (statsCtx) {
-                            const seasonStats = @json($playerStats->first());
+                            const seasonStats = @json($seasonChartStats);
                             const nullableNumber = value =>
                                 value === null || value === undefined || value === ''
                                     ? null
@@ -2971,10 +3211,10 @@
                             new Chart(statsCtx, {
                                 type: 'bar',
                                 data: {
-                                    labels: [@json(__('Matchs')), @json(__('Minutes')), @json(__('Buts')), @json(__('Passes')), @json(__('Jaunes')), @json(__('Rouges'))],
+                                    labels: [@json(__('Matchs')), @json(__('Minutes')), @json($hasKsaCockpit ? __('Buts par match') : __('Buts')), @json($hasKsaCockpit ? __('Passes décisives / match') : __('Passes décisives')), @json($hasKsaCockpit ? __('Jaunes / match') : __('Jaunes')), @json($hasKsaCockpit ? __('Rouges / match') : __('Rouges'))],
                                     datasets: [
                                         {
-                                            label: @json(__('Statistiques de saison')),
+                                            label: @json($hasKsaCockpit ? __('KSA par match (sauf matchs)') : __('Statistiques de saison')),
                                             data: seasonStats ? [
                                                 nullableNumber(seasonStats.matches_played),
                                                 null,
@@ -3305,5 +3545,6 @@
                          console.log('✅ Graphiques Chart.js initialisés !');
                      }
                  </script>
+                 <script src="{{ asset('js/fit-player-navigation.js') }}"></script>
              </body>
              </html>

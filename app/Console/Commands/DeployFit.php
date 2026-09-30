@@ -71,6 +71,14 @@ class DeployFit extends Command
                     $this->error('FIT demonstration fixtures failed.');
                     return self::FAILURE;
                 }
+                $ksaCountExitCode = $this->call('db:seed', [
+                    '--class' => \Database\Seeders\KsaConfirmedMatchCountsSeeder::class,
+                    '--force' => true,
+                ]);
+                if ($ksaCountExitCode !== self::SUCCESS) {
+                    $this->error('Confirmed KSA match counts could not be imported.');
+                    return self::FAILURE;
+                }
             }
 
             $snapshotArguments = [

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Détails PCMA - Med Predictor')
+@section('title', __('pcma.show_browser_title'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -471,7 +471,7 @@
                                     {{ ucfirst($pcma->result_json['physical_examination']['general_appearance'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -484,7 +484,7 @@
                                     {{ ucfirst($pcma->result_json['physical_examination']['skin_examination'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -494,10 +494,10 @@
                         <dd class="text-sm text-gray-900">
                             @if($pcma->result_json['physical_examination']['lymph_nodes'] ?? null)
                                 <span class="px-2 py-1 text-xs rounded-full {{ ($pcma->result_json['physical_examination']['lymph_nodes'] ?? '') === 'normal' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                    {{ ($pcma->result_json['physical_examination']['lymph_nodes'] ?? '') === 'normal' ? 'Normal' : 'Hypertrophiés' }}
+                                    {{ ($pcma->result_json['physical_examination']['lymph_nodes'] ?? '') === 'normal' ? 'Normal' : __('pcma.value_enlarged') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -510,7 +510,7 @@
                                     {{ ucfirst($pcma->result_json['physical_examination']['abdomen_examination'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -591,7 +591,7 @@
                                     {{ ucfirst($pcma->result_json['cardiovascular_assessment']['cardiac_rhythm'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -604,7 +604,7 @@
                                     {{ ($pcma->result_json['cardiovascular_assessment']['heart_murmur'] ?? '') === 'none' ? __('Aucun') : ucfirst($pcma->result_json['cardiovascular_assessment']['heart_murmur'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -638,7 +638,7 @@
                                     {{ ucfirst($pcma->result_json['neurological_assessment']['consciousness'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -651,7 +651,7 @@
                                     {{ ucfirst($pcma->result_json['neurological_assessment']['cranial_nerves'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -664,7 +664,7 @@
                                     {{ ucfirst($pcma->result_json['neurological_assessment']['motor_function'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -677,7 +677,7 @@
                                     {{ ucfirst($pcma->result_json['neurological_assessment']['sensory_function'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -701,7 +701,7 @@
                                     {{ ucfirst($pcma->result_json['musculoskeletal_assessment']['joint_mobility'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -714,7 +714,7 @@
                                     {{ ucfirst($pcma->result_json['musculoskeletal_assessment']['muscle_strength'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -730,7 +730,7 @@
                                     {{ ($pcma->result_json['musculoskeletal_assessment']['pain_assessment'] ?? '') === 'none' ? __('Aucune') : ucfirst($pcma->result_json['musculoskeletal_assessment']['pain_assessment'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -740,10 +740,10 @@
                         <dd class="text-sm text-gray-900">
                             @if($pcma->result_json['musculoskeletal_assessment']['range_of_motion'] ?? null)
                                 <span class="px-2 py-1 text-xs rounded-full {{ ($pcma->result_json['musculoskeletal_assessment']['range_of_motion'] ?? '') === 'full' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                    {{ ($pcma->result_json['musculoskeletal_assessment']['range_of_motion'] ?? '') === 'full' ? 'Complète' : ucfirst($pcma->result_json['musculoskeletal_assessment']['range_of_motion'] ?? '') }}
+                                    {{ ($pcma->result_json['musculoskeletal_assessment']['range_of_motion'] ?? '') === 'full' ? __('pcma.value_full') : ucfirst($pcma->result_json['musculoskeletal_assessment']['range_of_motion'] ?? '') }}
                                 </span>
                             @else
-                                Non renseigné
+                                {{ __('Non renseigné') }}
                             @endif
                         </dd>
                     </div>
@@ -893,11 +893,11 @@
                             <dl class="space-y-3">
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_2e52ab6b3b40') }}</dt>
-                                    <dd class="text-sm text-gray-900">{{ $pcma->signed_by ?? 'Non spécifié' }}</dd>
+                                    <dd class="text-sm text-gray-900">{{ $pcma->signed_by ?? __('Non spécifié') }}</dd>
                                 </div>
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_677132c8fabf') }}</dt>
-                                    <dd class="text-sm text-gray-900">{{ $pcma->license_number ?? 'Non spécifié' }}</dd>
+                                    <dd class="text-sm text-gray-900">{{ $pcma->license_number ?? __('Non spécifié') }}</dd>
                                 </div>
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_64722771a286') }}</dt>
@@ -905,7 +905,7 @@
                                         @if($pcma->signed_at)
                                             {{ \Carbon\Carbon::parse($pcma->signed_at)->format('d/m/Y H:i') }}
                                         @else
-                                            Non spécifiée
+                                            {{ __('Non spécifiée') }}
                                         @endif
                                     </dd>
                                 </div>

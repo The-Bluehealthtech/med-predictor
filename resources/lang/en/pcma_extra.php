@@ -20,7 +20,7 @@ return [
     'create_5139bfb2e856' => '🗑️ Clear',
     'create_584b9c37e014' => 'Dimensions:',
     'create_6ab4e93b4a8c' => 'Assessment Summary',
-    'create_97648c79c4ca' => 'Notes Cliniques',
+    'create_97648c79c4ca' => 'Clinical Notes',
     'create_9b6f3f076617' => 'Description:',
     'create_a9c75ed2faff' => 'Timestamp:',
     'create_b04ba49f8486' => 'Loading...',

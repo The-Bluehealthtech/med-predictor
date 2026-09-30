@@ -368,7 +368,7 @@ Route::middleware(['auth'])->get('/players/{player}/complete-profile', function 
 
 // PDF generation routes (public access)
 
-Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->middleware('auth:sanctum')->name('api.pcma.pdf');
+Route::post('/pcma/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'generatePdf'])->middleware('auth:sanctum')->name('api.pcma.pdf');
 Route::post('/pcma/store', [App\Http\Controllers\PCMAController::class, 'store'])->middleware('auth:sanctum')->name('api.pcma.store');
 
 // API Version 1 Routes
@@ -457,8 +457,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/{pcma}', [PCMAController::class, 'show']);
             Route::put('/{pcma}', [PCMAController::class, 'update']);
             Route::delete('/{pcma}', [PCMAController::class, 'destroy']);
-            Route::post('/{pcma}/complete', [PCMAController::class, 'complete']);
-            Route::post('/{pcma}/fail', [PCMAController::class, 'fail']);
+            Route::post('/{pcma}/complete', [\App\Http\Controllers\PcmaStatusController::class, 'complete']);
+            Route::post('/{pcma}/fail', [\App\Http\Controllers\PcmaStatusController::class, 'fail']);
             Route::post('/prefill-from-transcript', [PCMAController::class, 'prefillFromTranscript']);
         });
 
@@ -714,7 +714,7 @@ Route::prefix('calendar')->middleware(['auth:sanctum'])->group(function () {
 
 // Club Management API Routes
 Route::middleware(['auth:sanctum', 'role:club_admin,club_manager,club_medical'])->prefix('club')->group(function () {
-    Route::get('/eligible-players/{competition}', [App\Http\Controllers\ClubManagementController::class, 'getEligiblePlayers']);
+    Route::get('/eligible-players/{competition}', [App\Http\Controllers\ClubEligibilityController::class, 'getEligiblePlayers']);
     Route::post('/teams/{team}/players', [App\Http\Controllers\ClubManagementController::class, 'addPlayerToTeam']);
 });
 

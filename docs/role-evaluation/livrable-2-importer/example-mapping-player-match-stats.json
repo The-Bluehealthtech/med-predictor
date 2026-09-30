@@ -1,0 +1,32 @@
+{
+  "type": "player-match-stats",
+  "source_label": "Exemple fournisseur (fichier de démonstration du Livrable 2)",
+  "csv": { "delimiter": ",", "has_header": true },
+  "not_available_tokens": ["Données non disponibles", "N/A", "NA", ""],
+  "resolve": {
+    "match": {
+      "mode": "teams_and_date",
+      "home_team_column": "equipe_domicile",
+      "away_team_column": "equipe_exterieur",
+      "date_column": "date_match"
+    },
+    "player": { "mode": "fifa_connect_id", "column": "joueur_fifa_id" },
+    "team": { "mode": "name", "column": "equipe_joueur" }
+  },
+  "columns": [
+    { "source": "minutes_jouees", "target": "minutes_played", "kind": "minutes" },
+    { "source": "poste_ancien_referentiel", "target": "position_played", "kind": "legacy_position_code" },
+    { "source": "passes_tentees", "target": "passes_total", "kind": "count" },
+    { "source": "passes_reussies", "target": "passes_completed", "kind": "count" },
+    { "source": "tirs_tentes", "target": "shots_total", "kind": "count" },
+    { "source": "tirs_cadres", "target": "shots_on_target", "kind": "count" },
+    { "source": "buts_attendus", "target": "expected_goals", "kind": "decimal" },
+    { "source": "passes_progressives", "target": "progressive_passes", "kind": "count" },
+    { "source": "passes_progressives_reussies", "target": "progressive_passes_completed", "kind": "count" }
+  ],
+  "attempt_success_pairs": [
+    ["passes_tentees", "passes_reussies"],
+    ["tirs_tentes", "tirs_cadres"],
+    ["passes_progressives", "passes_progressives_reussies"]
+  ]
+}

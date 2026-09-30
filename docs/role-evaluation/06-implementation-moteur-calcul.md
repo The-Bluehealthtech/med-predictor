@@ -51,7 +51,7 @@ Documentée dans la proposition avant d'écrire le code, confirmée par l'implé
 
 ## Ce que je n'ai pas fait valider mot pour mot
 
-- **Le calcul exact de `role_fit_score`** : la proposition a fait valider le *format* (une ligne par famille comparée), pas la formule précise. J'ai choisi un écart signé (score de la famille comparée moins score de la famille jouée), qui répond directement à « quelle famille alternative conviendrait mieux », mais c'est mon interprétation, pas un choix que vous avez explicitement validé. À confirmer.
+- ~~Le calcul exact de `role_fit_score`~~ : validé le 30/09 (« écart ok ») — écart signé entre le score de la famille comparée et celui de la famille jouée.
 - **Caractéristique de performance** : ~74 secondes pour 440 joueurs (comparaison de familles voisines comprise) sur cette machine de validation. La complexité croît avec le nombre de joueurs × le nombre de comparaisons ; à surveiller si ce moteur est exécuté sur une population beaucoup plus grande.
 - `source_import_batch_id` / `source_demo_batch_id` restent `NULL` sur les lignes calculées : une évaluation peut agréger plusieurs lots d'import, et leur attribuer un lot unique n'est pas nécessaire pour que le bandeau « Données de démonstration » fonctionne (il ne dépend que de `is_demo`, toujours correctement renseigné). Limite documentée, pas un oubli.
 
@@ -63,6 +63,6 @@ Documentée dans la proposition avant d'écrire le code, confirmée par l'implé
 
 ## Prochaines étapes proposées
 
-1. Votre validation du calcul de `role_fit_score` (écart signé, ou une autre formule).
+1. ~~Validation du calcul de `role_fit_score`~~ — fait, le 30/09.
 2. Votre accord pour exécuter les deux migrations en attente (correctif FK joueurs/players, correctif des colonnes manquantes) — aucune des deux n'a encore touché votre base réelle.
 3. Le cas échéant, la mise en place d'une vraie version de configuration (poids réels) une fois de vraies données disponibles — jamais avant, conformément au mandat.

@@ -16,9 +16,8 @@ use App\Services\PerformanceScoreCalculator;
  *  - role_fit_score = écart (delta) entre le score de la famille comparée
  *    et le score de la famille réellement jouée. 0 pour la ligne "famille
  *    jouée" elle-même ; positif si le joueur "marquerait mieux" jugé sur la
- *    famille voisine, négatif sinon. Ce choix précis n'a pas été validé mot
- *    pour mot avec Izhar (seul le format "une ligne par famille" l'a été) —
- *    à confirmer, documenté au rapport.
+ *    famille voisine, négatif sinon. Formule validée mot pour mot le 30/09
+ *    (réponse "écart ok").
  *
  * LIMITE CONNUE, documentée au rapport : pour une famille candidate,
  * l'unique moyen de réutiliser PerformanceScoreCalculator sans le modifier

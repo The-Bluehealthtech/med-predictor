@@ -11,6 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Adopter sans perte une table historique déjà présente.
+        if (Schema::hasTable('tue_requests')) return;
         Schema::create('tue_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('athlete_id')->constrained()->onDelete('cascade');

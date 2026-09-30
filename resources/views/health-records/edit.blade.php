@@ -103,6 +103,7 @@
         <form action="{{ route('health-records.update', $healthRecord) }}" method="POST" class="space-y-8">
             @csrf
             @method('PUT')
+            @include('health-records.icd11')
             
             <!-- AI-Assisted Section -->
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">

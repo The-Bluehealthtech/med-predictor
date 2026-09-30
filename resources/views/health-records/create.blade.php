@@ -490,40 +490,7 @@
                                 </div>
                             </div>
 
-                            <!-- ICD-11 Search -->
-                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                                <h3 class="text-lg font-semibold text-blue-900 mb-4">{{ __('health_records_create.icd11_search_heading') }}</h3>
-                                <p class="text-blue-700 mb-4">{{ __('health_records_create.icd11_search_subtitle') }}</p>
-                                
-                                <div class="space-y-4">
-                                    <div>
-                                        <label for="icd11_search" class="block text-sm font-medium text-gray-700 mb-2">
-                                            {{ __('health_records_create.icd11_search_label') }}
-                                        </label>
-                                        <div class="relative">
-                                            <input 
-                                                type="text" 
-                                                id="icd11_search" 
-                                                placeholder="{{ __('health_records_create.icd11_search_placeholder') }}"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            >
-                                            <div id="icd11_results" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg hidden max-h-60 overflow-y-auto"></div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div id="selected_icd11" class="hidden">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('health_records_create.icd11_selected_label') }}</label>
-                                        <div class="flex items-center justify-between p-3 bg-blue-100 rounded-md">
-                                            <div>
-                                                <span id="selected_icd11_code" class="font-semibold text-blue-800"></span> - 
-                                                <span id="selected_icd11_label" class="text-blue-700"></span>
-                                            </div>
-                                            <button type="button" onclick="clearICD11Selection()" class="text-blue-600 hover:text-blue-800">×</button>
-                                        </div>
-                                        <input type="hidden" name="icd11_diagnostic" id="icd11_diagnostic" value="{{ old('icd11_diagnostic') }}">
-                                    </div>
-                                </div>
-                            </div>
+                            @include('health-records.icd11')
                         </div>
                     </div>
 

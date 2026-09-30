@@ -47,7 +47,7 @@ class HealthRecordController extends Controller
         $columns=Schema::getColumnListing($model->getTable()); $rules=[];
         foreach($model->getFillable() as $field){
             if(!$request->has($field) || !in_array($field,$columns,true)
-                || in_array($field,['user_id','player_id','visit_id','risk_score','prediction_confidence','bmi','status'],true)
+                || in_array($field,['icd11_diagnoses','user_id','player_id','visit_id','risk_score','prediction_confidence','bmi','status'],true)
                 || str_ends_with($field,'_path'))continue;
             $type=$casts[$field]??'string';
             $rules[$field]=match($type){
@@ -164,6 +164,7 @@ class HealthRecordController extends Controller
         ] + $this->extraRules($request));
 
         app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),Player::findOrFail($validated['player_id']),null);
+        $validated = array_replace($validated, app(\App\Services\HealthRecordIcd11::class)->resolve($request));
         // Check if there's an existing health record for this player
         $existingRecord = HealthRecord::where('player_id', $validated['player_id'])
             ->where('status', 'active')
@@ -293,6 +294,8 @@ class HealthRecordController extends Controller
             'record_date' => 'required|date',
             'next_checkup_date' => 'nullable|date|after:record_date',
         ] + $this->extraRules($request));
+
+        $validated = array_replace($validated, app(\App\Services\HealthRecordIcd11::class)->resolve($request));
 
         // Recalculer le BMI si nécessaire
         if (isset($validated['weight']) && isset($validated['height'])) {

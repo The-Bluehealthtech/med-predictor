@@ -14,6 +14,7 @@ class HealthRecord extends Model
     use HasFactory;
 
     protected $fillable = [
+        'icd11_diagnoses',
         'user_id',
         'player_id',
         'visit_id',
@@ -171,6 +172,7 @@ class HealthRecord extends Model
     ];
 
     protected $casts = [
+        'icd11_diagnoses' => 'array',
         'record_date' => 'datetime',
         'next_checkup_date' => 'datetime',
         'visit_date' => 'datetime',

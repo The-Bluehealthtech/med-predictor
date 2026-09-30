@@ -66,6 +66,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @section('content')
 <div class="health-record-page container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-4 my-4">
+        <a class="font-semibold" href="{{ route('medical-aut.index',$healthRecord->id) }}">{{ __('medical_aut.title') }}</a>
+        <h2 class="font-bold mt-4">{{ __('medical_aut.icd_title') }}</h2>
+        @forelse($healthRecord->icd11_diagnoses ?? [] as $entry)
+            <p>{{ $entry['code'] ?? '—' }} — {{ $entry['label'] ?? '—' }} · {{ $entry['release'] ?? '—' }} ({{ $entry['language'] ?? '—' }})</p>
+        @empty
+            <p>—</p>
+        @endforelse
+    </div>
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">

@@ -656,4 +656,128 @@ final class PcmaWorkflowRepairTest extends TestCase
         $this->get('/modules/medical')->assertOk()->assertDontSee('<script>alert(1)</script>',false);
         $this->get('/modules/medical/athlete/10')->assertOk()->assertDontSee('<script>alert(1)</script>',false);
     }
+    private function autSchema(): void
+    {
+        $this->healthcareSchema();
+        // Tester la migration depuis le schéma historique, sans duplicata de colonne.
+        Schema::table('health_records',fn(Blueprint $t)=>$t->dropColumn('icd11_diagnoses'));
+        $old=require dirname(__DIR__,2).'/database/migrations/2024_01_15_000006_create_tue_requests_table.php';
+        $old->up();
+        $migration=require dirname(__DIR__,2).'/database/migrations/2026_10_01_000001_add_icd11_and_aut_to_health_records.php';
+        $migration->up();
+        config()->set('medical_aut',require dirname(__DIR__,2).'/config/medical_aut.php');
+    }
+    public function test_health_record_who_codes_are_verified_preserved_and_clearable(): void
+    {
+        $this->healthcareSchema();$record=$this->healthRecord();$this->fakeWho();
+        $this->getJson('/api/health-records/icd11/search?q=hypertension&language=fr')
+            ->assertOk()->assertJsonPath('items.0.code','BA00');
+        $choice=json_encode([['id'=>'761947693','release'=>'2026-01','language'=>'fr']]);
+        $this->put('/health-records/'.$record->id,['record_date'=>'2026-09-30',
+            'icd11_selection'=>$choice])->assertRedirect();
+        self::assertSame('BA00',$record->fresh()->icd11_diagnoses[0]['code']);
+        self::assertSame('Hypertension essentielle',$record->fresh()->icd11_diagnoses[0]['label']);
+        $this->get('/health-records/'.$record->id)->assertOk()->assertSee('BA00');
+        $this->get('/health-records/'.$record->id.'/edit')->assertOk()->assertSee('medical-icd11.js');
+        $this->put('/health-records/'.$record->id,['record_date'=>'2026-09-30','diagnosis'=>'Independent text'])->assertRedirect();
+        self::assertCount(1,$record->fresh()->icd11_diagnoses);
+        $this->putJson('/health-records/'.$record->id,['record_date'=>'2026-09-30',
+            'icd11_selection'=>'[{"id":"1","release":"2026-01","language":"fr","label":"FORGED"}]'])->assertStatus(422);
+        $this->put('/health-records/'.$record->id,['record_date'=>'2026-09-30','icd11_selection'=>'[]'])->assertRedirect();
+        self::assertSame([],$record->fresh()->icd11_diagnoses);
+        $foreign=$this->healthRecord(20);
+        $this->putJson('/health-records/'.$foreign->id,['record_date'=>'2026-09-30','icd11_selection'=>$choice])->assertForbidden();
+    }
+    public function test_aut_form_source_and_drafts_use_primary_player_without_fifa_id(): void
+    {
+        $this->autSchema();$record=$this->healthRecord();
+        $this->get('/health-records/'.$record->id.'/aut/create?lang=fr')->assertOk()
+            ->assertSee('1. Informations')->assertSee('7. Déclaration')->assertSee('Je certifie')
+            ->assertSee('Déclaration de confidentialité');
+        $source=$this->get('/health-records/'.$record->id.'/aut/source')->assertOk();
+        self::assertSame('81e6a40e372ae3fec7886901c0befe43afcb1e7749815acaa4e041109bf73dec',
+            hash_file('sha256',$source->baseResponse->getFile()->getPathname()));
+        $this->post('/health-records/'.$record->id.'/aut',['form'=>['surname'=>'Fixture',
+            'substance_1'=>'Fixture substance','diagnosis'=>'Fixture medical reason',
+            'retroactive'=>'no'],'status'=>'approved','player_id'=>20])->assertRedirect();
+        $item=\App\Models\TUERequest::firstOrFail();
+        self::assertSame(10,(int)$item->player_id);self::assertSame($record->id,(int)$item->health_record_id);
+        self::assertSame('pending',$item->status);self::assertNull($item->athlete_id);
+        self::assertNull($item->approved_date);self::assertNull($item->approved_by);
+        self::assertSame('FIFA-2024-annexe-2-fr',$item->aut_form_data['version']);
+        $this->get('/health-records/'.$record->id.'/aut')->assertOk()->assertSee('Fixture substance');
+        $this->put('/health-records/'.$record->id.'/aut/'.$item->id,
+            ['form'=>['diagnosis'=>'Updated fixture','substance_1'=>'Updated substance']])->assertRedirect();
+        self::assertSame('Updated fixture',$item->fresh()->reason);
+        $this->get('/health-records/'.$record->id.'/aut/'.$item->id.'/edit?lang=en')
+            ->assertOk()->assertSee('Therapeutic Use Exemption')->assertSee('7. Player declaration');
+    }
+    public function test_aut_documents_are_encrypted_and_cross_club_operations_refused(): void
+    {
+        $this->autSchema();$record=$this->healthRecord();$foreign=$this->healthRecord(20);
+        $file=\Illuminate\Http\UploadedFile::fake()->createWithContent('fixture.pdf',"%PDF-1.4\nFixture private document\n%%EOF");
+        $this->post('/health-records/'.$record->id.'/aut',['form'=>['surname'=>'Fixture'],'documents'=>[$file]])->assertRedirect();
+        $item=\App\Models\TUERequest::firstOrFail();
+        $raw=DB::table('medical_aut_documents')->value('content');
+        self::assertStringNotContainsString('Fixture private document',$raw);
+        $this->get('/health-records/'.$record->id.'/aut/'.$item->id.'/documents/0')
+            ->assertOk()->assertSee('Fixture private document')->assertHeader('Cache-Control','no-store, private');
+        $this->get('/health-records/'.$foreign->id.'/aut')->assertNotFound();
+        $this->postJson('/health-records/'.$foreign->id.'/aut',['form'=>['surname'=>'Foreign']])->assertNotFound();
+        $this->get('/health-records/'.$foreign->id.'/aut/'.$item->id.'/documents/0')->assertNotFound();
+        $this->get('/health-records/'.$record->id.'/aut/'.$item->id.'/documents/99')->assertNotFound();
+        $this->postJson('/health-records/'.$record->id.'/aut',['form'=>['invented'=>'x']])->assertStatus(422);
+        $this->putJson('/health-records/'.$record->id.'/aut/'.$item->id,['form'=>['retroactive'=>'invented']])->assertStatus(422);
+        self::assertSame(1,\App\Models\TUERequest::count());
+        auth()->user()->forceFill(['role'=>'player']);
+        $this->get('/health-records/'.$record->id.'/aut')->assertForbidden();
+        $this->getJson('/api/health-records/icd11/search?q=hypertension&language=fr')->assertForbidden();
+    }
+    public function test_health_record_creation_saves_who_metadata_and_failures_do_not_write(): void
+    {
+        $this->healthcareSchema();$this->fakeWho();
+        $choice=json_encode([['id'=>'761947693','release'=>'2026-01','language'=>'fr']]);
+        $this->post('/health-records',['player_id'=>10,'visit_date'=>'2026-09-30',
+            'doctor_name'=>'Fixture doctor','visit_type'=>'consultation','record_date'=>'2026-09-30',
+            'icd11_selection'=>$choice])->assertRedirect();
+        $record=\App\Models\HealthRecord::firstOrFail();
+        self::assertSame('WHO ICD-11 API',$record->icd11_diagnoses[0]['source']);
+        self::assertSame('2026-01',$record->icd11_diagnoses[0]['release']);
+        $this->get('/health-records/create?player_id=10')->assertOk()->assertSee('medical-icd11.js');
+        Http::swap(new \Illuminate\Http\Client\Factory());Http::preventStrayRequests();
+        Http::fake(['https://id.who.int/*'=>Http::response([],503)]);
+        $this->putJson('/health-records/'.$record->id,['record_date'=>'2026-09-30',
+            'diagnosis'=>'Should not be stored','icd11_selection'=>'[{"id":"123","release":"2026-01","language":"fr"}]'])->assertStatus(503);
+        self::assertNotSame('Should not be stored',$record->fresh()->diagnosis);
+        self::assertSame('BA00',$record->fresh()->icd11_diagnoses[0]['code']);
+    }
+    public function test_aut_external_decisions_cannot_be_overwritten_and_invalid_upload_is_rejected(): void
+    {
+        $this->autSchema();$record=$this->healthRecord();
+        $item=\App\Models\TUERequest::create(['player_id'=>10,'health_record_id'=>$record->id,
+            'physician_id'=>1,'request_date'=>'2026-09-30','status'=>'approved']);
+        $this->get('/health-records/'.$record->id.'/aut/'.$item->id.'/edit')->assertStatus(409);
+        $this->putJson('/health-records/'.$record->id.'/aut/'.$item->id,['form'=>['diagnosis'=>'Overwrite']])->assertStatus(409);
+        $bad=\Illuminate\Http\UploadedFile::fake()->createWithContent('fixture.html','<script>alert(1)</script>');
+        $this->post('/health-records/'.$record->id.'/aut',['form'=>['surname'=>'Fixture'],'documents'=>[$bad]])
+            ->assertSessionHasErrors('documents.0');
+        self::assertSame(1,\App\Models\TUERequest::count());
+        self::assertSame(0,\App\Models\MedicalAutDocument::count());
+        $this->get('/health-records/'.$record->id.'/aut?lang=fr')->assertOk()->assertSee('Approbation historique');
+    }
+    public function test_aut_migration_adopts_legacy_table_and_render_applies_new_schema(): void
+    {
+        $this->autSchema();
+        // La migration historique ne recrée pas la table et ne détruit aucune ligne.
+        DB::table('tue_requests')->insert(['physician_id'=>1,'request_date'=>'2026-09-30','status'=>'pending']);
+        $old=require dirname(__DIR__,2).'/database/migrations/2024_01_15_000006_create_tue_requests_table.php';
+        $old->up();
+        self::assertSame(1,DB::table('tue_requests')->count());
+        self::assertTrue(Schema::hasColumn('health_records','icd11_diagnoses'));
+        self::assertTrue(Schema::hasColumn('tue_requests','player_id'));
+        self::assertTrue(Schema::hasTable('medical_aut_documents'));
+        $command=new \ReflectionClass(\App\Console\Commands\DeployFit::class);
+        self::assertContains('database/migrations/2026_10_01_000001_add_icd11_and_aut_to_health_records.php',
+            $command->getConstant('MIGRATIONS'));
+    }
 }

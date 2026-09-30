@@ -713,6 +713,8 @@ Route::get('/account-request/fifa-connect-types', function () {
 Route::get('/api/google-speech-key', fn () => response()->json([
     'success' => false, 'message' => __('pcma_workflow.service_unavailable')
 ], 503))->middleware('auth')->name('api.google.speech.key');
+Route::get('/api/health-records/icd11/search', [App\Http\Controllers\PcmaIcd11Controller::class, 'search'])
+    ->middleware(['auth', 'throttle:60,1'])->name('health-records.icd11.search');
 Route::get('/api/pcma/icd11/search', [App\Http\Controllers\PcmaIcd11Controller::class, 'search'])
     ->middleware(['auth', 'throttle:60,1'])->name('pcma.icd11.search');
 
@@ -1983,6 +1985,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/health-records/generate-hl7-cda', [App\Http\Controllers\HealthRecordController::class, 'generateHl7Cda'])->name('health-records.generate-hl7-cda');
     
     // Health Records routes with parameters (must come AFTER specific routes)
+    // Demandes AUT privées, liées au dossier et au joueur canoniques.
+    Route::get('/health-records/{record}/aut', [App\Http\Controllers\MedicalAutController::class, 'index'])->name('medical-aut.index');
+    Route::get('/health-records/{record}/aut/create', [App\Http\Controllers\MedicalAutController::class, 'create'])->name('medical-aut.create');
+    Route::get('/health-records/{record}/aut/source', [App\Http\Controllers\MedicalAutController::class, 'source'])->name('medical-aut.source');
+    Route::post('/health-records/{record}/aut', [App\Http\Controllers\MedicalAutController::class, 'store'])->name('medical-aut.store');
+    Route::get('/health-records/{record}/aut/{aut}/edit', [App\Http\Controllers\MedicalAutController::class, 'edit'])->name('medical-aut.edit');
+    Route::put('/health-records/{record}/aut/{aut}', [App\Http\Controllers\MedicalAutController::class, 'update'])->name('medical-aut.update');
+    Route::get('/health-records/{record}/aut/{aut}/documents/{index}', [App\Http\Controllers\MedicalAutController::class, 'document'])->name('medical-aut.document');
+
     Route::get('/health-records/{healthRecord}', [App\Http\Controllers\HealthRecordController::class, 'show'])->name('health-records.show');
     Route::get('/health-records/{healthRecord}/edit', [App\Http\Controllers\HealthRecordController::class, 'edit'])->name('health-records.edit');
     Route::put('/health-records/{healthRecord}', [App\Http\Controllers\HealthRecordController::class, 'update'])->name('health-records.update');

@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TUERequest extends Model
 {
     use HasFactory;
+    protected $table = 'tue_requests';
 
     protected $fillable = [
+        'player_id', 'health_record_id', 'aut_form_data',
         'athlete_id',
         'medication',
         'reason',
@@ -27,6 +29,7 @@ class TUERequest extends Model
     ];
 
     protected $casts = [
+        'aut_form_data' => 'array',
         'request_date' => 'date',
         'approved_date' => 'date',
         'expiry_date' => 'date',
@@ -39,6 +42,9 @@ class TUERequest extends Model
     /**
      * Get the athlete that this TUE request belongs to.
      */
+    public function player(): BelongsTo { return $this->belongsTo(Player::class); }
+    public function healthRecord(): BelongsTo { return $this->belongsTo(HealthRecord::class); }
+
     public function athlete(): BelongsTo
     {
         return $this->belongsTo(Athlete::class);
@@ -148,7 +154,7 @@ class TUERequest extends Model
     {
         return [
             'id' => $this->id,
-            'athlete_name' => $this->athlete->name,
+            'athlete_name' => $this->player?->full_name ?? $this->athlete?->name,
             'medication' => $this->medication,
             'reason' => $this->reason,
             'status' => $this->status,

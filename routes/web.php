@@ -3032,66 +3032,16 @@ Route::get('/test-pdf', function() {
         return view('modules.license-requests.show');
     })->name('license-requests.show');
     
-    // Medical Predictions routes
-    Route::get('/medical-predictions', function () {
-        return view('modules.medical-predictions.index');
-    })->name('medical-predictions.index');
-    
-    Route::get('/medical-predictions/create', function () {
-        $players = collect([]); // Empty collection for now
-        $predictionTypes = [
-            'injury_risk' => 'Risque de Blessure',
-            'performance_prediction' => 'Prédiction de Performance',
-            'recovery_time' => 'Temps de Récupération',
-            'fitness_level' => 'Niveau de Forme',
-            'health_status' => 'État de Santé'
-        ];
-        $selectedPlayer = null;
-        
-        // Try to get actual players if model exists
-        try {
-            if (class_exists('\App\Models\Player')) {
-                $players = \App\Models\Player::with('club')->orderBy('first_name')->get();
-            }
-        } catch (\Exception $e) {
-            // Player model might not exist or table is missing
-        }
-        
-        return view('medical-predictions.create', [
-            'players' => $players,
-            'predictionTypes' => $predictionTypes,
-            'selectedPlayer' => $selectedPlayer
-        ]);
-    })->name('medical-predictions.create');
-    
-    Route::post('/medical-predictions', function () {
-        return redirect()->route('medical-predictions.index')->with('success', 'Medical prediction created successfully');
-    })->name('medical-predictions.store');
-    
-    Route::get('/medical-predictions/{prediction}', function ($prediction) {
-        return view('medical-predictions.show', [
-            'medicalPrediction' => $prediction
-        ]);
-    })->name('medical-predictions.show');
-    
-    Route::get('/medical-predictions/{prediction}/edit', function ($prediction) {
-        return view('medical-predictions.edit', [
-            'medicalPrediction' => $prediction
-        ]);
-    })->name('medical-predictions.edit');
-    
-    Route::put('/medical-predictions/{prediction}', function ($prediction) {
-        return redirect()->route('medical-predictions.index')->with('success', 'Medical prediction updated successfully');
-    })->name('medical-predictions.update');
-    
-    Route::delete('/medical-predictions/{prediction}', function ($prediction) {
-        return redirect()->route('medical-predictions.index')->with('success', 'Medical prediction deleted successfully');
-    })->name('medical-predictions.destroy');
-    
-    Route::get('/medical-predictions/dashboard', function () {
-        return view('medical-predictions.dashboard');
-    })->name('medical-predictions.dashboard');
-    
+    // Historique médical protégé ; aucun succès fictif.
+    Route::get('/medical-predictions', [App\Http\Controllers\HealthcareController::class, 'predictions'])->name('medical-predictions.index');
+    Route::get('/medical-predictions/dashboard', [App\Http\Controllers\HealthcareController::class, 'predictions'])->name('medical-predictions.dashboard');
+    Route::get('/medical-predictions/create', [App\Http\Controllers\MedicalModuleController::class, 'unavailable'])->name('medical-predictions.create');
+    Route::post('/medical-predictions', [App\Http\Controllers\MedicalModuleController::class, 'unavailable'])->name('medical-predictions.store');
+    Route::get('/medical-predictions/{prediction}/edit', [App\Http\Controllers\MedicalModuleController::class, 'unavailable'])->name('medical-predictions.edit');
+    Route::get('/medical-predictions/{prediction}', [App\Http\Controllers\MedicalModuleController::class, 'prediction'])->name('medical-predictions.show');
+    Route::put('/medical-predictions/{prediction}', [App\Http\Controllers\MedicalModuleController::class, 'unavailable'])->name('medical-predictions.update');
+    Route::delete('/medical-predictions/{prediction}', [App\Http\Controllers\MedicalModuleController::class, 'unavailable'])->name('medical-predictions.destroy');
+
     // Healthcare Records routes
     Route::get('/healthcare/records/{record}', [App\Http\Controllers\HealthcareController::class, 'show'])->name('healthcare.records.show');
     
@@ -3176,59 +3126,10 @@ Route::get('/test-pdf', function() {
     
     // Module routes
     
-    Route::get('/modules/medical/athlete/{id}', function ($id) {
-        $player = null;
-        
-        // Get the real player from database
-        try {
-            if (class_exists('\App\Models\Player')) {
-                $player = \App\Models\Player::with(['club', 'healthRecords'])->find($id);
-            }
-        } catch (\Exception $e) {
-            // Player model might not exist or table is missing
-            \Log::error('Error fetching player: ' . $e->getMessage());
-        }
-        
-        return view('modules.medical.athlete', [
-            'player' => $player,
-            'footballType' => 'association'
-        ]);
-    })->name('modules.medical.athlete');
-    
-    Route::get('/modules/medical', function () {
-        $players = \App\Models\Player::with(['club'])
-            ->orderBy('last_name')
-            ->orderBy('first_name')
-            ->paginate(25);
+    Route::get('/modules/medical/athlete/{id}/edit', [App\Http\Controllers\MedicalModuleController::class, 'edit'])->name('modules.medical.athlete.edit');
+    Route::get('/modules/medical/athlete/{id}', [App\Http\Controllers\MedicalModuleController::class, 'show'])->name('modules.medical.athlete');
+    Route::get('/modules/medical', [App\Http\Controllers\MedicalModuleController::class, 'index'])->name('modules.medical.index');
 
-        // Statistiques calculees a partir des vraies donnees medicales
-        // (App\Models\MedicalPrediction). "verified" = clearance confirmee
-        // par un professionnel ; "active" = prediction en attente de revue ;
-        // "risque eleve" = derniere prediction avec risk_probability >= 0.7,
-        // utilise comme proxy pour une suspension medicale potentielle
-        // (aucun statut "suspension" n'existe dans le schema actuel).
-        $stats = [
-            'activeClearances' => \App\Models\MedicalPrediction::where('status', 'verified')
-                ->distinct('player_id')->count('player_id'),
-            'pendingAssessments' => \App\Models\MedicalPrediction::where('status', 'active')->count(),
-            'medicalSuspensions' => \App\Models\MedicalPrediction::where('status', 'active')
-                ->where('risk_probability', '>=', 0.7)
-                ->distinct('player_id')->count('player_id'),
-        ];
-
-        $recentActivities = \App\Models\MedicalPrediction::with('player')
-            ->orderByDesc('prediction_date')
-            ->limit(5)
-            ->get();
-
-        return view('modules.medical.index', [
-            'footballType' => 'association',
-            'players' => $players,
-            'stats' => $stats,
-            'recentActivities' => $recentActivities,
-        ]);
-    })->name('modules.medical.index');
-    
     Route::get('/modules/healthcare', [App\Http\Controllers\HealthcareController::class, 'index'])->name('modules.healthcare.index');
     
     Route::get('/modules/competitions', [App\Http\Controllers\CompetitionController::class, 'moduleDashboard'])->name('modules.competitions.index');

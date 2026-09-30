@@ -595,4 +595,65 @@ final class PcmaWorkflowRepairTest extends TestCase
         $this->get('/health-records/'.$record->id)->assertOk()->assertSee('Fixture medication');
         $this->get('/healthcare/records/'.$record->id)->assertOk()->assertSee('Fixture medication')->assertSee('health-record-page')->assertSee('id="medical-tab"',false);
     }
+    public function test_medical_module_scope_dates_links_and_translations(): void
+    {
+        $this->healthcareSchema();
+        $own=$this->healthRecord();
+        $own->update(['record_date'=>null]);
+        $foreign=$this->healthRecord(20);
+        $foreign->update(['diagnosis'=>'Foreign confidential fixture']);
+        $this->record();
+        $this->record(['player_id'=>20]);
+        $page=$this->get('/modules/medical?lang=fr')->assertOk();
+        $page->assertSee('Module médical')->assertSee('Dossiers PCMA');
+        $page->assertViewHas('stats',fn($s)=>$s===['records'=>1,'pcmas'=>1,'pending'=>1]);
+        $page->assertDontSee('Foreign confidential fixture');
+        $this->get('/modules/medical?lang=en')->assertOk()->assertSee('Medical module');
+        $this->get('/modules/medical/athlete/10')->assertOk()->assertSee('Fixture clinical note');
+        $this->get('/modules/medical/athlete/20')->assertNotFound();
+        $this->get('/modules/medical/athlete/999')->assertNotFound();
+        $this->get('/modules/medical/athlete/10/edit')->assertRedirect(route('health-records.edit',$own));
+        $this->get('/modules/medical?q=B')->assertOk()->assertViewHas('players',fn($p)=>$p->total()===0);
+        $this->get('/health-records?player_id=20')->assertNotFound();
+    }
+    public function test_medical_module_refuses_non_medical_roles(): void
+    {
+        $this->healthcareSchema();
+        auth()->user()->forceFill(['role'=>'player','club_id'=>null]);
+        $this->get('/modules/medical')->assertForbidden();
+        $this->get('/modules/medical/athlete/20')->assertForbidden();
+        $this->get('/medical-predictions/create')->assertForbidden();
+    }
+    public function test_medical_predictions_never_claim_a_fake_write(): void
+    {
+        $this->healthcareSchema();
+        $this->postJson('/medical-predictions',['player_id'=>10])->assertStatus(503);
+        $this->assertDatabaseCount('medical_predictions',0);
+        $this->postJson('/medical-predictions',['player_id'=>20])->assertNotFound();
+        $this->get('/medical-predictions/create')->assertOk()->assertSee(__('healthcare_repair.unvalidated'));
+        $this->get('/medical-predictions/dashboard')->assertOk();
+        $this->get('/medical-predictions/999')->assertNotFound();
+        $this->get('/medical-predictions')->assertOk();
+    }
+    public function test_medical_history_is_scoped_and_player_text_is_escaped(): void
+    {
+        $this->healthcareSchema();
+        $own=$this->healthRecord(); $other=$this->healthRecord(20);
+        $foreign=\App\Models\MedicalPrediction::create(['player_id'=>20,'health_record_id'=>$other->id,
+            'prediction_type'=>'FOREIGN-FIXTURE','status'=>'verified']);
+        $item=\App\Models\MedicalPrediction::create(['player_id'=>10,'health_record_id'=>$own->id,
+            'prediction_type'=>'OWN-FIXTURE','status'=>'active']);
+        $this->get('/medical-predictions')->assertOk()->assertSee('OWN-FIXTURE')->assertDontSee('FOREIGN-FIXTURE');
+        $this->get('/medical-predictions/'.$foreign->id)->assertNotFound();
+        $this->get('/medical-predictions/'.$foreign->id.'/edit')->assertNotFound();
+        $this->putJson('/medical-predictions/'.$foreign->id,[])->assertNotFound();
+        $this->deleteJson('/medical-predictions/'.$foreign->id)->assertNotFound();
+        $this->get('/medical-predictions/'.$item->id)->assertOk()->assertSee('OWN-FIXTURE');
+        $this->putJson('/medical-predictions/'.$item->id,[])->assertStatus(503);
+        $this->deleteJson('/medical-predictions/'.$item->id)->assertStatus(503);
+        $this->assertDatabaseCount('medical_predictions',2);
+        DB::table('players')->where('id',10)->update(['first_name'=>'<script>alert(1)</script>']);
+        $this->get('/modules/medical')->assertOk()->assertDontSee('<script>alert(1)</script>',false);
+        $this->get('/modules/medical/athlete/10')->assertOk()->assertDontSee('<script>alert(1)</script>',false);
+    }
 }

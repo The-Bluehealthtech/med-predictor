@@ -1,0 +1,21 @@
+<?php
+return [
+    'title' => 'Module médical',
+    'scope' => 'Dossiers accessibles dans votre périmètre médical. Les prédictions ne constituent ni une autorisation ni une suspension.',
+    'records' => 'Dossiers de santé',
+    'pcmas' => 'Dossiers PCMA',
+    'pending' => 'PCMA en attente',
+    'create' => 'Nouveau dossier médical',
+    'history' => 'Historique des prédictions',
+    'search' => 'Rechercher un joueur',
+    'player' => 'Joueur',
+    'club' => 'Club',
+    'actions' => 'Actions',
+    'view' => 'Consulter',
+    'edit' => 'Modifier le dossier',
+    'empty' => 'Aucun dossier ou joueur disponible',
+    'recent' => 'Dossiers récents',
+    'profile' => 'Profil médical du joueur',
+    'back' => 'Retour au module médical',
+    'position' => 'Poste',
+];

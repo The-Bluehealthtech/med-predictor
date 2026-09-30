@@ -1,0 +1,21 @@
+<?php
+return [
+    'title' => 'Medical module',
+    'scope' => 'Records within your medical access scope. Predictions are neither clearances nor suspensions.',
+    'records' => 'Health records',
+    'pcmas' => 'PCMA records',
+    'pending' => 'Pending PCMAs',
+    'create' => 'New medical record',
+    'history' => 'Prediction history',
+    'search' => 'Search players',
+    'player' => 'Player',
+    'club' => 'Club',
+    'actions' => 'Actions',
+    'view' => 'View',
+    'edit' => 'Edit record',
+    'empty' => 'No records or players available',
+    'recent' => 'Recent records',
+    'profile' => 'Player medical profile',
+    'back' => 'Back to medical module',
+    'position' => 'Position',
+];

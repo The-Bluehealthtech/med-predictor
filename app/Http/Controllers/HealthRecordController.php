@@ -61,7 +61,10 @@ class HealthRecordController extends Controller
 
     public function index(): View
     {
-        $healthRecords = app(HealthcareController::class)->query()->with(['user', 'player'])
+        $healthRecords = app(HealthcareController::class)->query()->when(request()->filled('player_id'), function($query){
+                $player=$this->playersQuery()->findOrFail(request('player_id'));
+                $query->where('player_id',$player->id);
+            })->with(['user', 'player'])
             ->orderBy('record_date', 'desc')
             ->paginate(15);
 

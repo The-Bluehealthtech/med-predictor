@@ -350,3 +350,11 @@ Vérification du code au commit 3ebcdfd. Aucun correctif métier effectué.
 - Correction : sérialiser les valeurs structurées avant l'échappement HTML, préserver les chaînes et les valeurs manquantes, gérer aussi une valeur scalaire à la place d'une liste. Les PCMA sont désormais pris dans la collection déjà chargée par le contrôleur.
 - Nouveau test de rendu avec listes mixtes, codes structurés et PCMA présent ; 52 tests et 399 assertions réussis.
 - Aucun accès au contenu clinique du dossier 237, aucune modification de cette ligne. La cause exacte et le rendu de cette fiche en production restent à confirmer dans la session 2Key.
+
+### Medical — audit ciblé du 30 septembre
+
+- `/modules/medical` : 200 local, y compris avec un rôle joueur ; activités cliniques d'un autre club affichées. Contrôles de rôle et de périmètre insuffisants.
+- `/modules/medical/athlete/{id}` : 200 local pour un autre joueur avec rôle player ; 500 reproduite lorsqu'un dossier associé a record_date=null.
+- `/modules/medical/athlete/{id}/edit` : 404 locale, lien présent sans route.
+- Statistiques medical_predictions utilisées comme autorisations/suspensions à tort ; actions POST de prédiction sans écriture. Aucun correctif applicatif effectué ici.
+- Rapport : MEDICAL_MODULE_AUDIT_2026-09-30.md. Tests sur données fictives isolées, pas de validation du contenu médical de production.

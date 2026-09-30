@@ -15,6 +15,10 @@ final class PcmaCreatePageTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Charger aussi les traductions du worktree testé, pas celles du dépôt principal.
+        $this->app->instance('translation.loader', new \Illuminate\Translation\FileLoader(
+            $this->app['files'], dirname(__DIR__, 2).'/resources/lang'));
+        $this->app->forgetInstance('translator');
         app('view')->getFinder()->setPaths([dirname(__DIR__, 2).'/resources/views']);
         // Tester les routes réelles : le bootstrap de test utilise sinon routes/testing.php.
         Route::middleware('web')->group(dirname(__DIR__, 2).'/routes/web.php');
@@ -52,6 +56,7 @@ final class PcmaCreatePageTest extends TestCase
             $this->withoutMiddleware()->actingAs($user)->get('/pcma/create')
                 ->assertOk()->assertSee('id="pcma-form"', false)
                 ->assertSee('name="player_id"', false)
+                ->assertSee('>PCMA</option>', false)
                 ->assertSee('enctype="multipart/form-data"', false)
                 ->assertViewIs('pcma.create')
                 ->assertViewHas('teamDoctorRegistration', null)
@@ -76,6 +81,7 @@ final class PcmaCreatePageTest extends TestCase
         self::assertStringContainsString('id="pcma-edit-form"', $html);
         self::assertStringContainsString('name="player_id"', $html);
         self::assertStringContainsString('value="60"', $html);
+        self::assertStringContainsString('>PCMA</option>', $html);
     }
     public function test_system_admin_receives_persisted_players(): void
     {

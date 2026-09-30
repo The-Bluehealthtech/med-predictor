@@ -12,7 +12,7 @@
 @endif
 <table>
 @foreach($formData as $key => $value)
-<tr><td>{{ str_replace('_', ' ', $key) }}</td><td><pre>{{ is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) : ($value ?? '—') }}</pre></td></tr>
+<tr><td>{{ str_replace('_', ' ', $key) }}</td><td><pre>{{ is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) : ($key === 'type' && $value === 'bpma' ? __('pcma_workflow.type_pcma') : ($value ?? '—')) }}</pre></td></tr>
 @endforeach
 </table>
 <p>{{ $generatedAt->format('Y-m-d H:i') }}</p>

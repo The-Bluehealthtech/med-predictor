@@ -110,7 +110,7 @@
                                             </span>
                                         </div>
                                         <p class="text-sm text-gray-600 mt-1">
-                                            Type: <span class="font-medium">{{ ucfirst($pcma->type ?? 'standard') }}</span>
+                                            Type: <span class="font-medium">{{ $pcma->type === 'bpma' ? __('pcma_workflow.type_pcma') : ucfirst($pcma->type ?? 'standard') }}</span>
                                             @if($pcma->assessor)
                                                 {{ __('• Assesseur:') }} <span class="font-medium">{{ $pcma->assessor->name }}</span>
                                             @endif
@@ -275,7 +275,7 @@ createApp({
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                                 <div>
-                                    <p><strong>Type:</strong> @{{ pcma.type ? pcma.type.charAt(0).toUpperCase() + pcma.type.slice(1) : 'Standard' }}</p>
+                                    <p><strong>Type:</strong> @{{ pcma.type === 'bpma' ? 'PCMA' : (pcma.type ? pcma.type.charAt(0).toUpperCase() + pcma.type.slice(1) : 'Standard') }}</p>
                                     <p v-if="pcma.assessor"><strong>{{ __('pcma_extra.assessor_short') }}</strong> @{{ pcma.assessor.name }}</p>
                                     <p><strong>{{ __('pcma.report_assessment_date_label') }}</strong> @{{ pcma.assessment_date ? formatDate(pcma.assessment_date) : 'Non spécifiée' }}</p>
                                 </div>

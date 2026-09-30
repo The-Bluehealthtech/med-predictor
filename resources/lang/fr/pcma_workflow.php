@@ -1,5 +1,6 @@
 <?php
 return [
+    'type_pcma' => 'PCMA',
     'draft_saved' => 'Brouillon enregistré.',
     'draft_preview' => '— Aperçu brouillon',
     'assessor' => 'Médecin évaluateur',

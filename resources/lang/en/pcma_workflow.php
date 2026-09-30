@@ -1,5 +1,6 @@
 <?php
 return [
+    'type_pcma' => 'PCMA',
     'draft_saved' => 'Draft saved.',
     'draft_preview' => '— Draft preview',
     'assessor' => 'Medical assessor',

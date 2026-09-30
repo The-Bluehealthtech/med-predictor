@@ -37,6 +37,7 @@
                     <label for="type" class="block text-sm font-medium text-gray-700 mb-2">Type</label>
                     <select name="type" id="type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">{{ __('clinical.all_types') }}</option>
+                        <option value="bpma" {{ request('type') === 'bpma' ? 'selected' : '' }}>{{ __('pcma_workflow.type_pcma') }}</option>
                         <option value="cardio" {{ request('type') === 'cardio' ? 'selected' : '' }}>{{ __('pcma.type_cardio') }}</option>
                         <option value="neurological" {{ request('type') === 'neurological' ? 'selected' : '' }}>{{ __('pcma.type_neurological') }}</option>
                         <option value="musculoskeletal" {{ request('type') === 'musculoskeletal' ? 'selected' : '' }}>{{ __('pcma_extra.label_0e9d59cbb955') }}</option>
@@ -110,7 +111,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                                        {{ ucfirst($pcma->type) }}
+                                        {{ $pcma->type === 'bpma' ? __('pcma_workflow.type_pcma') : ucfirst($pcma->type) }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">

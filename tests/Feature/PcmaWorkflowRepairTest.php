@@ -15,6 +15,10 @@ final class PcmaWorkflowRepairTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Charger aussi les traductions du worktree testé, pas celles du dépôt principal.
+        $this->app->instance('translation.loader', new \Illuminate\Translation\FileLoader(
+            $this->app['files'], dirname(__DIR__, 2).'/resources/lang'));
+        $this->app->forgetInstance('translator');
         app('view')->getFinder()->setPaths([dirname(__DIR__, 2).'/resources/views']);
         Route::middleware('api')->prefix('api')->group(dirname(__DIR__, 2).'/routes/api.php');
         Route::middleware('web')->group(dirname(__DIR__, 2).'/routes/web.php');

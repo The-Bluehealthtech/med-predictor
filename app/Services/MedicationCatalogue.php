@@ -24,11 +24,8 @@ final class MedicationCatalogue
     }
     public function search(string $term): array
     {
-        $term = strtolower(Str::ascii(trim($term)));
-        $term = str_replace(['%','_'], '', $term);
-        if (strlen($term) < 2) return [];
-        return DB::table('medication_catalogue')->where('search_text','like','%'.$term.'%')
-            ->orderBy('name')->limit(20)->get()->map(fn ($r)=>$this->product($r))->all();
+        if (strlen(trim(str_replace(['%','_'], '', $term))) < 2) return [];
+        return app(RxNorm::class)->search($term);
     }
     public function forEditing(array $items): array
     {
@@ -37,6 +34,11 @@ final class MedicationCatalogue
             ->get()->keyBy('product_id');
         $result=[];
         foreach($items as $item) {
+            if (($item['source']??null)==='RxNorm' || preg_match('/^[0-9]+$/',(string)($item['id']??''))) {
+                // Lecture du traitement enregistré sans dépendre de la disponibilité du fournisseur.
+                $result[]=array_merge(['name'=>$item['id'],'presentations'=>[],'substances'=>[]],$item);
+                continue;
+            }
             if (!isset($rows[$item['id']])) continue;
             $result[]=array_merge($this->product($rows[$item['id']]),[
                 'presentation_id'=>$item['presentation_id'] ?? $item['presentation']['id'] ?? null,
@@ -58,30 +60,31 @@ final class MedicationCatalogue
         $result=is_array($result) ? $result : [];
         if ($previous) $result=array_replace_recursive($previous,$result);
         if (!is_array($result['medical_history'] ?? null)) $result['medical_history']=[];
-        $result['medical_history']['medication_products']=$this->selections($data['medication_selection'] ?? '[]');
+        $result['medical_history']['medication_products']=$this->selections($data['medication_selection'] ?? '[]', $previous['medical_history']['medication_products'] ?? []);
         unset($data['medication_selection']);
         $data['result_json']=$result;
         return $data;
     }
-    public function selections(string $json): array
+    public function selections(string $json, array $previous = []): array
     {
-        $items = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        Validator::make(['items'=>$items], ['items'=>'array',
+        $items = json_decode($json, true);
+        Validator::make(['items'=>$items], ['items'=>'present|array|max:30',
             'items.*'=>'array', 'items.*.id'=>'required|string|max:40',
             'items.*.presentation_id'=>'nullable|string|max:40',
             'items.*.dose'=>'nullable|string|max:200', 'items.*.route'=>'nullable|string|max:200',
             'items.*.frequency'=>'nullable|string|max:200'])->validate();
         $selected = [];
         foreach ($items as $item) {
-            $row = DB::table('medication_catalogue')->where('product_id',$item['id'])->first();
-            abort_unless($row,422,'Médicament absent du catalogue.');
-            $product=$this->product($row);
-            $presentation=null;
-            if (!empty($item['presentation_id'])) {
-                foreach ($product['presentations'] as $p) if ($p['id']===$item['presentation_id']) $presentation=$p;
-                abort_unless($presentation,422,'Présentation absente du médicament sélectionné.');
+            $legacy=collect($previous)->first(fn($p)=>($p['id']??null)===$item['id'] && ($p['source']??null)!=='RxNorm');
+            if ($legacy) {
+                // Seules les références historiques déjà présentes dans CE dossier sont conservables.
+                $product=$legacy; $presentation=$legacy['presentation']??null;
+            } else {
+                abort_unless(empty($item['presentation_id']),422,'Présentation RxNorm non reconnue.');
+                $product=app(RxNorm::class)->resolve($item['id']); $presentation=null;
             }
-            $selected[]=['id'=>$product['id'],'name'=>$product['name'],'substances'=>$product['substances'],
+            $selected[]=['id'=>$product['id'],'rxcui'=>$product['rxcui']??null,'tty'=>$product['tty']??null,
+                'name'=>$product['name'],'substances'=>$product['substances']??[],
                 'presentation'=>$presentation, 'atc'=>null, 'source'=>$product['source'],'version'=>$product['version'],
                 'dose'=>$item['dose']??null,'route'=>$item['route']??null,'frequency'=>$item['frequency']??null];
         }

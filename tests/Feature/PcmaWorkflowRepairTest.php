@@ -134,6 +134,14 @@ final class PcmaWorkflowRepairTest extends TestCase
         $migration->up();
         $catalogue=app(\App\Services\MedicationCatalogue::class);
         self::assertSame(3516, $catalogue->import());
+        Http::fake([
+            'rxnav.nlm.nih.gov/REST/drugs.json*'=>Http::response(['drugGroup'=>['conceptGroup'=>[
+                ['conceptProperties'=>[['rxcui'=>'12345','name'=>'Fixture RxNorm medicine','tty'=>'SCD']]]
+            ]]]),
+            'rxnav.nlm.nih.gov/REST/rxcui/12345/properties.json'=>Http::response(['properties'=>[
+                'rxcui'=>'12345','name'=>'Fixture RxNorm medicine','tty'=>'SCD']]),
+            'rxnav.nlm.nih.gov/REST/version.json'=>Http::response(['version'=>'TEST-ONLY']),
+        ]);
         return $catalogue;
     }
     public function test_supplied_catalogue_import_search_and_access(): void
@@ -144,8 +152,7 @@ final class PcmaWorkflowRepairTest extends TestCase
         $products=$catalogue->search('paracetamol');
         self::assertNotEmpty($products);
         foreach($products as $product) {
-            self::assertNull($product['atc']);
-            self::assertSame('2609A',$product['version']);
+            self::assertSame('RxNorm',$product['source']);
         }
         $this->getJson('/api/pcma/medications?q=paracetamol')->assertOk()->assertJson(['success'=>true]);
         $this->getJson('/api/pcma/medications?q=a')->assertStatus(422);
@@ -157,7 +164,7 @@ final class PcmaWorkflowRepairTest extends TestCase
     {
         $catalogue=$this->importMedicationCatalogue();
         $product=$catalogue->search('paracetamol')[0];
-        $selection=[['id'=>$product['id'],'presentation_id'=>$product['presentations'][0]['id'],
+        $selection=[['id'=>$product['id'],'presentation_id'=>null,
             'name'=>'<script>Forged</script>','atc'=>'INVENTED','dose'=>null,'route'=>null,'frequency'=>null]];
         $first=app(PcmaDraftController::class)->save($this->request($this->input([
             'medication_selection'=>json_encode($selection),'medications'=>'Note technique'
@@ -800,5 +807,81 @@ final class PcmaWorkflowRepairTest extends TestCase
         $migration->up();
         self::assertSame(1,DB::table('tue_requests')->count());
         self::assertTrue(Schema::hasColumn('health_records','icd11_diagnoses'));
+    }
+    public function test_rxnorm_provider_failure_does_not_write_pcma(): void
+    {
+        $this->importMedicationCatalogue();
+        Http::swap(new \Illuminate\Http\Client\Factory());
+        Http::preventStrayRequests();
+        Http::fake(['rxnav.nlm.nih.gov/*'=>Http::response([],503)]);
+        $this->postJson('/api/pcma/auto-save',$this->input([
+            'medication_selection'=>'[{"id":"12345"}]']))->assertStatus(503);
+        self::assertSame(0,PCMA::count());
+    }
+    public function test_rxnorm_and_legacy_records_keep_separate_sources(): void
+    {
+        $catalogue=$this->importMedicationCatalogue();
+        $row=DB::table('medication_catalogue')->first();
+        $product=json_decode($row->payload,true);
+        $old=['id'=>$product['id'],'name'=>$product['name'],'substances'=>$product['substances'],
+            'source'=>'csv4Emd_Fr_2609A.zip','version'=>'2609A'];
+        $saved=$catalogue->selections(json_encode([['id'=>$old['id']]]),[$old]);
+        self::assertSame($old['source'],$saved[0]['source']);
+        self::assertSame($old['name'],$saved[0]['name']);
+        $rx=$catalogue->selections('[{"id":"12345","name":"FORGED"}]');
+        self::assertSame('Fixture RxNorm medicine',$rx[0]['name']);
+        self::assertSame('12345',$rx[0]['rxcui']);
+        self::assertSame('TEST-ONLY',$rx[0]['version']);
+    }
+    public function test_health_record_rxnorm_selection_roundtrip_and_free_text(): void
+    {
+        $this->importMedicationCatalogue();
+        $this->healthcareSchema();
+        $record=$this->healthRecord();
+        $this->put('/health-records/'.$record->id,[
+            'player_id'=>10,'rxnorm_selection'=>'[{"id":"12345"}]',
+            'medications'=>json_encode(['Note technique']),'diagnosis'=>'Fixture','record_date'=>'2026-09-30'
+        ])->assertRedirect();
+        $meds=$record->fresh()->medications;
+        self::assertSame('Note technique',$meds[0]);
+        self::assertSame('RxNorm',$meds[1]['source']);
+        self::assertSame('12345',$meds[1]['rxcui']);
+        $this->get('/health-records/'.$record->id.'/edit')->assertOk()->assertSee('rxnorm_selection',false);
+    }
+    public function test_aut_reference_preserves_version_and_exceptions_without_matching_drugs(): void
+    {
+        $this->autSchema();$record=$this->healthRecord();
+        $service=app(\App\Services\AutSubstanceReference::class);
+        $data=$service->data();
+        self::assertSame('2025',$data['version']);
+        self::assertCount(233,$data['entries']);
+        self::assertFalse(collect($data['entries'])->contains(fn($e)=>str_contains($e['label'],'caféine')));
+        self::assertStringContainsString('ne sont pas considérées comme des substances interdites',json_encode($data,JSON_UNESCAPED_UNICODE));
+        $this->get('/health-records/'.$record->id.'/aut/create')->assertOk()->assertSee('aut-substances',false);
+        $this->post('/health-records/'.$record->id.'/aut',['form'=>['substance_1'=>'salbutamol']])->assertRedirect();
+        $item=\App\Models\TUERequest::first();
+        self::assertSame(176,$item->aut_form_data['substance_reference']['substance_1']['row']);
+        self::assertSame('2025',$item->aut_form_data['substance_reference']['substance_1']['version']);
+        self::assertSame([],$service->provenance(['substance_1'=>'Fixture RxNorm medicine']));
+    }
+
+    public function test_rxnorm_empty_concept_and_invalid_json_are_rejected(): void
+    {
+        $this->importMedicationCatalogue();
+        Http::swap(new \Illuminate\Http\Client\Factory());
+        Http::preventStrayRequests();
+        Http::fake(['rxnav.nlm.nih.gov/*'=>Http::response(['properties'=>null])]);
+        $this->postJson('/api/pcma/auto-save',$this->input([
+            'medication_selection'=>'[{"id":"12345"}]']))->assertStatus(422);
+        $this->postJson('/api/pcma/auto-save',$this->input([
+            'medication_selection'=>'{bad-json']))->assertStatus(422);
+        self::assertSame(0,PCMA::count());
+    }
+    public function test_health_record_api_cannot_forge_rxnorm_label(): void
+    {
+        $this->importMedicationCatalogue();$this->healthcareSchema();$record=$this->healthRecord();
+        $this->putJson('/health-records/'.$record->id,['record_date'=>'2026-09-30',
+            'medications'=>[['id'=>'12345','source'=>'RxNorm','name'=>'FORGED']]])->assertRedirect();
+        self::assertSame('Fixture RxNorm medicine',$record->fresh()->medications[0]['name']);
     }
 }

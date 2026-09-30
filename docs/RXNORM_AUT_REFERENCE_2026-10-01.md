@@ -1,0 +1,24 @@
+# Médicaments RxNorm et référence AUT fournie
+- Branche : feature/medical-icd11-aut-20261001 ; aucune modification du checkout concurrent.
+- Recherche PCMA et dossier médical : API NLM RxNorm /drugs.json.
+- Sauvegarde : résolution serveur /rxcui/{id}/properties.json et version /version.json.
+- Données : identifiant RxCUI, libellé NLM, type TTY, source/version et prescription saisie.
+- Pas de conversion ATC ni de correspondance automatique avec une substance interdite.
+- Les médicaments historiques CSV restent identifiés par leur source d’origine.
+- L’import CSV automatique au déploiement est supprimé ; les lignes existantes restent intactes.
+- Sélecteur RxNorm ajouté au dossier médical ; texte historique conservé séparément.
+- Les médicaments sont stockés dans les champs existants de la base principale.
+- Fournisseur indisponible : réponse 503, aucune sauvegarde du nouveau traitement.
+- Fichier AUT : liste-des-medicaments-et-des-substances-dopantes-2024(1).xlsx.
+- SHA256 : e89b26e70c04091b84249d31b59f05d34dcf1498a01a7351235410f5e569b2e0.
+- Contenu : Liste des interdictions 2025, applicable au 1er janvier 2025 ; pas 2026.
+- Texte intégral conservé dans resources/medical-forms/aut-reference-2025.json.gz.
+- 233 noms énumérés individuellement proposés dans les trois champs substance.
+- Les exemples regroupés, méthodes, conditions et exceptions restent dans le texte intégral.
+- Les paragraphes ne sont pas découpés arbitrairement en médicaments.
+- Référence d’une suggestion choisie enregistrée dans aut_form_data : version, fichier, feuille, ligne et hash.
+- Pas de décision automatique d’interdiction, d’obligation AUT, de consentement ou d’approbation.
+- Tests : 78 tests, 550 assertions réussis, avec doubles HTTP NLM et base SQLite isolée.
+- Vérification réelle de /version.json depuis le Mac : version 08-Sep-2026, API 3.1.355.
+- Limites : pas de contrôle visuel authentifié en production (2Key) ni de preuve Render Live.
+- Source française conservée telle quelle dans l’interface anglaise pour éviter une traduction réglementaire inventée.

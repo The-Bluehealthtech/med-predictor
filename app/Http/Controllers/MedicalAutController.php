@@ -65,6 +65,7 @@ final class MedicalAutController extends Controller
             $metadata['version']=config('medical_aut.form_version');
             $metadata['source_sha256']=config('medical_aut.source_sha256');
             $metadata['fields']=$data['form'];
+            $metadata['substance_reference']=app(\App\Services\AutSubstanceReference::class)->provenance($data['form']);
             $metadata['updated_by']=auth()->id();
             // Aucun consentement, signature ou dépôt externe déduit des champs saisis.
             $item->fill(['player_id'=>$record->player_id,'health_record_id'=>$record->id,

@@ -491,6 +491,7 @@
                             </div>
 
                             @include('health-records.icd11')
+                            @include('health-records.medications')
                         </div>
                     </div>
 

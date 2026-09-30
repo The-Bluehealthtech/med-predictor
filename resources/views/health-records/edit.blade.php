@@ -372,18 +372,7 @@
                             >{{ old('allergies', is_array($healthRecord->allergies) ? json_encode($healthRecord->allergies, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) : $healthRecord->allergies) }}</textarea>
                         </div>
                         
-                        <div>
-                            <label for="medications" class="block text-sm font-medium text-gray-700 mb-2">
-                                {{ __('health_records_edit.current_medications_2') }}
-                            </label>
-                            <textarea 
-                                id="medications" 
-                                name="medications" 
-                                rows="3"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="{{ __('health_records_edit.current_medications') }}"
-                            >{{ old('medications', is_array($healthRecord->medications) ? json_encode($healthRecord->medications, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) : $healthRecord->medications) }}</textarea>
-                        </div>
+                        @include('health-records.medications')
                     </div>
 
                     <!-- Medical History and Symptoms -->

@@ -6,6 +6,6 @@
     @foreach(['dose','route','frequency'] as $field)
         <p>{{ __('pcma_medications.'.$field) }} : {{ $medication[$field] ?? '—' }}</p>
     @endforeach
-    <p class="text-xs text-gray-500">{{ __('pcma_medications.no_atc') }}</p>
+    <p class="text-xs text-gray-500">{{ $medication['source'] ?? '—' }} · {{ $medication['rxcui'] ?? $medication['id'] ?? '—' }} · {{ $medication['version'] ?? '—' }}</p>
 </div>
 @endforeach

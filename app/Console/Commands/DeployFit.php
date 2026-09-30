@@ -77,8 +77,7 @@ class DeployFit extends Command
                 return self::SUCCESS;
             }
 
-            $catalogueCount = app(\App\Services\MedicationCatalogue::class)->import();
-            $this->info("Medication reference catalogue imported: {$catalogueCount} products.");
+            // RxNorm est interrogé à la demande ; conserver seulement le catalogue historique existant.
 
             if ($this->option('demo-data')) {
                 $seedExitCode = $this->call('db:seed', [

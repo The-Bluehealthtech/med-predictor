@@ -36,6 +36,9 @@ $values=old('form',$item?->aut_form_data['fields'] ?? $prefill);
 <a href="{{ route('health-records.edit',$healthRecord->id) }}">{{ __('medical_aut.search') }}</a>
 </div>
 @endif
+@if($section['key']==='treatment')
+@include('health-records.aut-substances')
+@endif
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 @foreach($section['fields'] as $field)
 @php($value=$values[$field[0]] ?? '')
@@ -50,7 +53,7 @@ $values=old('form',$item?->aut_form_data['fields'] ?? $prefill);
 </select>
 @else
 <input class="w-full border rounded p-2" id="aut-{{ $field[0] }}" name="form[{{ $field[0] }}]"
- type="{{ $field[3]??'text' }}" value="{{ $value }}">
+ type="{{ $field[3]??'text' }}" value="{{ $value }}" @if(str_starts_with($field[0],'substance_')) list="aut-substances" @endif>
 @endif
 </div>
 @endforeach

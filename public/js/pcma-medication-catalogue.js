@@ -1,4 +1,4 @@
-// Recherche sur le référentiel local ; aucun texte externe n'est inséré comme HTML.
+// Recherche RxNorm via FIT ; aucun texte externe n'est inséré comme HTML.
 document.addEventListener('DOMContentLoaded', () => {
     const root=document.getElementById('pcma-medication-catalogue');
     if (!root) return;
@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         items.forEach((p,index)=>{
             const card=element('div',null,'border border-gray-300 rounded-md p-3');
             card.append(element('strong',p.name));
+            card.append(element('p',[p.source,p.rxcui||p.id,p.version].filter(Boolean).join(' · '),'text-xs text-gray-500'));
             card.append(element('p',(p.substances||[]).join(', '),'text-xs text-gray-500'));
             const remove=element('button',labels.remove,'ml-3 text-red-600');remove.type='button';
             remove.addEventListener('click',()=>{items.splice(index,1);render();sync();});card.append(remove);

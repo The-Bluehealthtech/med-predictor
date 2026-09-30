@@ -1,0 +1,4 @@
+date_match,club_domicile_fifa_id,club_exterieur_fifa_id,joueur_fifa_id,club_joueur_fifa_id,minutes_jouees,poste_ancien_referentiel,passes_tentees,passes_reussies,tirs_tentes,tirs_cadres,buts_attendus,passes_progressives,passes_progressives_reussies
+2026-08-01,CLUB-FIFA-001,CLUB-FIFA-002,FIFA-000123,CLUB-FIFA-001,90,DM,48,41,1,0,0.05,6,4
+2026-08-01,CLUB-FIFA-001,CLUB-FIFA-002,FIFA-000456,CLUB-FIFA-001,82,RB,30,22,0,0,Données non disponibles,3,2
+2026-08-01,CLUB-FIFA-001,CLUB-FIFA-002,FIFA-000789,CLUB-FIFA-002,90,CB,25,10,3,5,0.4,2,1

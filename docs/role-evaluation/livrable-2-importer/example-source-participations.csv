@@ -1,0 +1,5 @@
+date_match,club_domicile_fifa_id,club_exterieur_fifa_id,joueur_fifa_id,club_joueur_fifa_id,poste_detaille,titulaire,minute_entree,minute_sortie,numero_maillot
+2026-08-01,CLUB-FIFA-001,CLUB-FIFA-002,FIFA-000123,CLUB-FIFA-001,CDM,oui,0,90,6
+2026-08-01,CLUB-FIFA-001,CLUB-FIFA-002,FIFA-000456,CLUB-FIFA-001,RB,oui,0,Données non disponibles,2
+2026-08-01,CLUB-FIFA-001,CLUB-FIFA-002,FIFA-000789,CLUB-FIFA-002,ZZZ,oui,0,90,9
+2026-08-01,CLUB-FIFA-001,CLUB-FIFA-002,FIFA-000999,CLUB-FIFA-002,CF,oui,0,190,11

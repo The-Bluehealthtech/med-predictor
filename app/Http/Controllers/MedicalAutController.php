@@ -49,22 +49,28 @@ final class MedicalAutController extends Controller
         abort_unless($item->status==='pending',409,__('medical_aut.locked'));
         return $this->save($request,$healthRecord,$item);
     }
-    private function save(Request $request,HealthRecord $record,?TUERequest $item=null)
+    public function validateDraft(Request $request,string $formKey='form',string $documentKey='documents'): array
     {
         $fields=collect(config('medical_aut.sections'))->flatMap(fn($s)=>$s['fields']);
         $keys=$fields->map(fn($f)=>$f[0])->all();
-        $rules=['form'=>'required|array:'.implode(',',$keys),
-            'documents'=>'nullable|array|max:10','documents.*'=>'file|mimes:pdf,png,jpg,jpeg|max:'.config('medical_aut.max_file_kb')];
+        $rules=[$formKey=>'required|array:'.implode(',',$keys),
+            $documentKey=>'nullable|array|max:10',$documentKey.'.*'=>'file|mimes:pdf,png,jpg,jpeg|max:'.config('medical_aut.max_file_kb')];
         foreach($fields as $f){
             $type=$f[3]??'text';
-            $rules['form.'.$f[0]]=match($type){
+            $rules[$formKey.'.'.$f[0]]=match($type){
                 'date'=>'nullable|date','email'=>'nullable|email|max:255',
                 'select'=>'nullable|in:'.implode(',',array_keys($f[4])),
                 default=>'nullable|string|max:20000',
             };
         }
         $data=$request->validate($rules);
-        DB::transaction(function()use($request,$record,$item,$data){
+        return ['form'=>$data[$formKey],'documents_key'=>$documentKey];
+    }
+    public function persistDraft(Request $request,HealthRecord $record,array $data,?TUERequest $item=null): TUERequest
+    {
+        app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),$record->player,null);
+        if($item)abort_unless($item->status==='pending' && (int)$item->health_record_id===(int)$record->id,409,__('medical_aut.locked'));
+        return DB::transaction(function()use($request,$record,$item,$data){
             $item=$item??new TUERequest;
             $metadata=$item->aut_form_data??[];
             $metadata['source']=config('medical_aut.source');
@@ -79,7 +85,7 @@ final class MedicalAutController extends Controller
                 'aut_form_data'=>$metadata]);
             if(!$item->exists)$item->fill(['status'=>'pending','physician_id'=>auth()->id(),'request_date'=>today()]);
             $item->save();$documents=$item->supporting_documents??[];
-            foreach($request->file('documents',[]) as $file){
+            foreach($request->file($data['documents_key'],[]) as $file){
                 $bytes=$file->get();
                 $document=MedicalAutDocument::create(['tue_request_id'=>$item->id,
                     'original_name'=>mb_substr($file->getClientOriginalName(),0,255),
@@ -90,6 +96,10 @@ final class MedicalAutController extends Controller
             $item->supporting_documents=$documents;$item->save();return $item;
         });
 
+    }
+    private function save(Request $request,HealthRecord $record,?TUERequest $item=null)
+    {
+        $this->persistDraft($request,$record,$this->validateDraft($request),$item);
         return redirect()->route('medical-aut.index',$record->id)->with('success',__('medical_aut.saved'));
     }
     public function document($record,$aut,$index)
@@ -112,6 +122,12 @@ final class MedicalAutController extends Controller
         return json_decode(file_get_contents(config('medical_aut.source_directory').'/fifa-aut-fr-2024-text.json'),true);
     }
 
+    public function blankSource(Request $request)
+    {
+        app(\App\Services\MedicalRecordAccess::class)->authorizeRole($request->user());
+        return response()->download(config('medical_aut.source_directory').'/fifa-aut-fr-2024.pdf','FIFA-AUT-FR-2024.pdf',
+            ['Cache-Control'=>'private, no-store','X-Content-Type-Options'=>'nosniff']);
+    }
     public function source($record)
     {
         $this->record($record);

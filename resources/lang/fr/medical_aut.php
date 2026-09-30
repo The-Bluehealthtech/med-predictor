@@ -1,5 +1,7 @@
 <?php
 return [
+    'embedded_help'=>'Le formulaire AUT est enregistré avec ce dossier médical, pour le joueur sélectionné. Il reste un brouillon préparatoire.',
+    'embedded_enable'=>'Préparer et enregistrer une demande AUT avec ce dossier',
     'title'=>'Autorisation d’usage à des fins thérapeutiques (AUT)',
     'icd_title'=>'Diagnostics CIM‑11 — OMS',
     'icd_help'=>'Choisissez un code vérifié auprès de l’OMS. Le texte clinique reste indépendant du codage.',

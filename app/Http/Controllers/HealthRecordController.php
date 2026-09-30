@@ -166,30 +166,43 @@ class HealthRecordController extends Controller
         app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),Player::findOrFail($validated['player_id']),null);
         $validated = array_replace($validated, app(\App\Services\HealthRecordIcd11::class)->resolve($request),
             app(\App\Services\HealthRecordMedication::class)->resolve($request));
-        // Check if there's an existing health record for this player
-        $existingRecord = HealthRecord::where('player_id', $validated['player_id'])
-            ->where('status', 'active')
-            ->first();
+        $request->validate(['prepare_aut'=>'sometimes|boolean']);
+        $autController=app(MedicalAutController::class);
+        $autData=$request->boolean('prepare_aut')
+            ?$autController->validateDraft($request,'aut_form','aut_documents'):null;
+        // Dossier et AUT forment une seule écriture : une erreur annule les deux.
+        [$healthRecord,$message]=\Illuminate\Support\Facades\DB::transaction(function()use($request,$validated,$autController,$autData){
+            // Check if there's an existing health record for this player
+            $existingRecord = HealthRecord::where('player_id', $validated['player_id'])
+                ->where('status', 'active')
+                ->first();
 
-        if ($existingRecord) {
-            // Update existing record with new visit data
-            $this->updateExistingRecord($existingRecord, $validated);
-            $healthRecord = $existingRecord;
-            $message = 'Dossier médical mis à jour avec succès.';
-        } else {
-            // Create new health record for this player
-            $validated['user_id'] = auth()->id();
-            $validated['status'] = 'active';
-            
-            // Calculate BMI if weight and height are provided
-            if (isset($validated['weight']) && isset($validated['height'])) {
-                $heightInMeters = $validated['height'] / 100;
-                $validated['bmi'] = round($validated['weight'] / ($heightInMeters * $heightInMeters), 2);
+            if ($existingRecord) {
+                // Update existing record with new visit data
+                $this->updateExistingRecord($existingRecord, $validated);
+                $healthRecord = $existingRecord;
+                $message = 'Dossier médical mis à jour avec succès.';
+            } else {
+                // Create new health record for this player
+                $validated['user_id'] = auth()->id();
+                $validated['status'] = 'active';
+
+                // Calculate BMI if weight and height are provided
+                if (isset($validated['weight']) && isset($validated['height'])) {
+                    $heightInMeters = $validated['height'] / 100;
+                    $validated['bmi'] = round($validated['weight'] / ($heightInMeters * $heightInMeters), 2);
+                }
+
+                $healthRecord = HealthRecord::create($validated);
+                $message = 'Nouveau dossier médical créé avec succès.';
             }
 
-            $healthRecord = HealthRecord::create($validated);
-            $message = 'Nouveau dossier médical créé avec succès.';
-        }
+            if($autData!==null){
+                $autController->persistDraft($request,$healthRecord,$autData);
+                $message.=' '.__('medical_aut.saved');
+            }
+            return [$healthRecord,$message];
+        });
 
         // Broadcast health record created/updated event
         event(new HealthRecordCreated($healthRecord));
@@ -614,7 +627,7 @@ class HealthRecordController extends Controller
             return response($content)
                 ->header('Content-Type', 'application/xml')
                 ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
-                
+
         } catch (\Illuminate\Validation\ValidationException|\Symfony\Component\HttpKernel\Exception\HttpException|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             throw $e;
         } catch (\Exception $e) {
@@ -651,7 +664,7 @@ class HealthRecordController extends Controller
             
             return response($htmlContent)
                 ->header('Content-Type', 'text/html');
-                
+
         } catch (\Illuminate\Validation\ValidationException|\Symfony\Component\HttpKernel\Exception\HttpException|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             throw $e;
         } catch (\Exception $e) {

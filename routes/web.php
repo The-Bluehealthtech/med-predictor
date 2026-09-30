@@ -1988,6 +1988,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Health Records routes with parameters (must come AFTER specific routes)
     // Demandes AUT privées, liées au dossier et au joueur canoniques.
+    Route::get('/medical-aut/source', [App\Http\Controllers\MedicalAutController::class, 'blankSource'])->name('medical-aut.blank-source');
     Route::get('/medical-aut', [App\Http\Controllers\MedicalAutController::class, 'choose'])->name('medical-aut.choose');
     Route::get('/health-records/{record}/aut', [App\Http\Controllers\MedicalAutController::class, 'index'])->name('medical-aut.index');
     Route::get('/health-records/{record}/aut/create', [App\Http\Controllers\MedicalAutController::class, 'create'])->name('medical-aut.create');

@@ -193,14 +193,14 @@
             <p class="text-gray-600 mt-2">{{ __('health_records_create.subtitle') }}</p>
         </div>
 
-        <form action="{{ route("health-records.store") }}" method="POST" class="space-y-8">
+        <form action="{{ route("health-records.store") }}" method="POST" enctype="multipart/form-data" class="space-y-8">
             @csrf
 
             <!-- Interface à Onglets -->
             <div id="health-records-tabs" class="bg-white rounded-lg shadow-lg">
                 <!-- Barre de navigation des onglets -->
                 <div class="tabs-nav">
-                    <button 
+                    <button type="button"
                         v-for="tab in tabs" 
                         :key="tab.id"
                         @click="activeTab = tab.id" 
@@ -874,6 +874,7 @@
                     <!-- Onglet 5: Contrôle Anti-Dopage -->
                     <div v-show="activeTab === 'doping-control'" class="tab-panel">
                         <div class="space-y-6">
+                            @include('health-records.aut-embedded')
                             <div class="bg-red-50 border border-red-200 rounded-lg p-6">
                                 <h3 class="text-lg font-semibold text-red-900 mb-4">{{ __('health_records_create.doping_control_heading') }}</h3>
                                 <p class="text-red-700 mb-4">{{ __('health_records_create.doping_control_subtitle') }}</p>
@@ -1866,7 +1867,8 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         const app = createApp({
             setup() {
-                const activeTab = ref('general');
+                const autEnabled = ref(@json((bool) old('prepare_aut', false)));
+                const activeTab = ref(@json(old('prepare_aut') ? 'doping-control' : 'general'));
                 
                 // Données pour le diagramme dentaire interactif
                 const selectedDentalTooth = ref(null);
@@ -2106,6 +2108,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 return {
                     tabs,
+                    autEnabled,
                     activeTab,
                     selectedDentalTooth,
                     dentalToothStatus,

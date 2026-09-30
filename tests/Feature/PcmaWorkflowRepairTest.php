@@ -17,6 +17,7 @@ final class PcmaWorkflowRepairTest extends TestCase
         parent::setUp();
         config()->set('pcma_icd11', require dirname(__DIR__,2).'/config/pcma_icd11.php');
         $this->app->useDatabasePath(dirname(__DIR__,2).'/database');
+        config(['medical_aut'=>require dirname(__DIR__,2).'/config/medical_aut.php']);
         // Charger aussi les traductions du worktree testé, pas celles du dépôt principal.
         $this->app->instance('translation.loader', new \Illuminate\Translation\FileLoader(
             $this->app['files'], dirname(__DIR__, 2).'/resources/lang'));
@@ -958,4 +959,79 @@ final class PcmaWorkflowRepairTest extends TestCase
         $this->actingAs((new User(['role'=>'player']))->forceFill(['tenant_id'=>1]));
         $this->get('/medical-aut')->assertForbidden();
     }
+    private function embeddedAutInput(): array
+    {
+        return ['player_id'=>10,'visit_date'=>'2026-09-30','record_date'=>'2026-09-30',
+            'doctor_name'=>'Fixture Doctor','visit_type'=>'consultation','prepare_aut'=>1,
+            'aut_form'=>['diagnosis'=>'Fixture AUT diagnosis','substance_1'=>'salbutamol']];
+    }
+    public function test_aut_full_form_is_inside_antidoping_tab_without_nested_forms(): void
+    {
+        $this->autSchema();
+        $response=$this->get('/health-records/create?player_id=10')->assertOk()
+            ->assertSee('aut_form[substance_1]',false)->assertSee('aut_documents[]',false)
+            ->assertSee('multipart/form-data',false)->assertSee('7. Player declaration');
+        $html=$response->getContent();
+        $start=strpos($html,"activeTab === 'doping-control'");
+        $end=strpos($html,"activeTab === 'physical-assessments'",$start);
+        self::assertStringContainsString('id="embedded-aut"',substr($html,$start,$end-$start));
+        $previous=libxml_use_internal_errors(true);$dom=new \DOMDocument;
+        $dom->loadHTML($html,LIBXML_NONET);libxml_clear_errors();libxml_use_internal_errors($previous);
+        $xpath=new \DOMXPath($dom);
+        self::assertSame(1,$xpath->query('//*[@id="embedded-aut"]/ancestor::form')->length);
+        self::assertSame(0,$xpath->query('//*[@id="embedded-aut"]//form')->length);
+        file_put_contents('/tmp/fit-health-create-fixture.html',$html);
+        self::assertStringContainsString('autEnabled',$html);
+        $this->get('/medical-aut/source')->assertOk()->assertDownload('FIFA-AUT-FR-2024.pdf');
+        $this->get('/health-records/create?player_id=')->assertOk()->assertSee('aut_form[substance_1]',false);
+    }
+    public function test_embedded_aut_is_saved_with_new_record_and_private_attachment(): void
+    {
+        $this->autSchema();
+        $data=$this->embeddedAutInput();
+        $data['aut_documents']=[\Illuminate\Http\UploadedFile::fake()->createWithContent(
+            'fixture.pdf',"%PDF-1.4\nFixture private document\n%%EOF")];
+        $this->post('/health-records',$data)->assertRedirect();
+        $record=\App\Models\HealthRecord::firstOrFail();
+        $aut=\App\Models\TUERequest::firstOrFail();
+        self::assertSame((int)$record->id,(int)$aut->health_record_id);
+        self::assertSame(10,(int)$aut->player_id);
+        self::assertSame('pending',$aut->status);
+        self::assertSame('Fixture AUT diagnosis',$aut->reason);
+        self::assertSame(176,$aut->aut_form_data['substance_reference']['substance_1']['row']);
+        self::assertSame(1,\App\Models\MedicalAutDocument::count());
+        self::assertStringNotContainsString('Fixture private document',DB::table('medical_aut_documents')->value('content'));
+    }
+    public function test_embedded_aut_validation_preserves_existing_record_and_refuses_foreign_player(): void
+    {
+        $this->autSchema();$record=$this->healthRecord();
+        $data=$this->embeddedAutInput();$data['aut_form']['previous_date']='invalid-date';
+        $this->postJson('/health-records',$data)->assertStatus(422);
+        self::assertSame('Fixture clinical note',$record->fresh()->diagnosis);
+        self::assertSame(0,\App\Models\TUERequest::count());
+        $data=$this->embeddedAutInput();$data['player_id']=20;
+        $this->postJson('/health-records',$data)->assertNotFound();
+        self::assertSame(1,\App\Models\HealthRecord::count());
+    }
+    public function test_embedded_aut_is_optional_and_does_not_create_blank_requests(): void
+    {
+        $this->autSchema();$data=$this->embeddedAutInput();unset($data['prepare_aut']);
+        $this->post('/health-records',$data)->assertRedirect();
+        self::assertSame(1,\App\Models\HealthRecord::count());
+        self::assertSame(0,\App\Models\TUERequest::count());
+    }
+    public function test_embedded_aut_failure_rolls_back_medical_update(): void
+    {
+        $this->autSchema();$record=$this->healthRecord();$data=$this->embeddedAutInput();
+        $data['diagnosis']='Changed clinical note';
+        $data['aut_documents']=[\Illuminate\Http\UploadedFile::fake()->createWithContent(
+            'fixture.pdf',"%PDF-1.4\nFixture document\n%%EOF")];
+        \App\Models\MedicalAutDocument::creating(function(){throw new \RuntimeException('Fixture storage failure');});
+        try {
+            $this->postJson('/health-records',$data)->assertStatus(500);
+            self::assertSame('Fixture clinical note',$record->fresh()->diagnosis);
+            self::assertSame(0,\App\Models\TUERequest::count());
+        } finally {\App\Models\MedicalAutDocument::flushEventListeners();}
+    }
+
 }

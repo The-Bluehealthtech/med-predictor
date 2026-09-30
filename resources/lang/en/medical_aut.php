@@ -1,5 +1,7 @@
 <?php
 return [
+    'embedded_help'=>'The TUE form is saved with this medical record for the selected player. It remains a preparatory draft.',
+    'embedded_enable'=>'Prepare and save a TUE application with this record',
     'title'=>'Therapeutic Use Exemption (TUE)',
     'icd_title'=>'ICD‑11 diagnoses — WHO',
     'icd_help'=>'Select a code verified with WHO. Clinical text remains separate from coding.',

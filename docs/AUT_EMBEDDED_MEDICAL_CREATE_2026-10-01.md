@@ -1,0 +1,23 @@
+# AUT dans l’onglet Contrôle antidopage
+- Page : /health-records/create?player_id=...
+- Formulaire complet placé dans le panneau doping-control, avant les champs de contrôle existants.
+- Réutilisation des sept sections du formulaire FIFA existant via aut-fields.blade.php.
+- Déclarations, confidentialité et instructions originales conservées ; suggestions de la référence 2025 inchangées.
+- Case « Préparer et enregistrer une demande AUT avec ce dossier » : active les champs du brouillon.
+- Aucun brouillon AUT vide n’est créé lorsque cette option n’est pas activée.
+- Les champs AUT sont séparés des données cliniques par aut_form et aut_documents.
+- Pas de formulaire HTML imbriqué ; le formulaire médical principal transmet les fichiers en multipart.
+- Les boutons d’onglet sont de type button, pour éviter une soumission involontaire.
+- Après erreur de validation, les valeurs sont conservées et l’onglet antidopage est sélectionné.
+- Le joueur vient uniquement du player_id autorisé du dossier médical ; aucune identité déduite du nom de l’AUT.
+- Création/mise à jour du dossier médical et création du brouillon AUT dans une transaction commune.
+- Échec de stockage de la pièce : retour arrière des deux écritures.
+- Pièces toujours chiffrées dans la base principale ; aucune transmission externe ni signature automatique.
+- Nouveau téléchargement protégé du formulaire vierge : GET /medical-aut/source.
+- Les écrans AUT séparés existants utilisent la même validation, la même sauvegarde et le même fragment de champs.
+- Tests : 88 tests, 624 assertions réussis (PCMA, Healthcare, AUT, portail, scores).
+- Vérifications spécifiques : formulaire dans le bon onglet, absence de formulaire imbriqué, joueur absent, sauvegarde jointe, chiffrement, accès inter-clubs, caractère optionnel et retour arrière.
+- Vérification Vue : compilation des onglets et rendu SSR du formulaire activé/désactivé, sans avertissement.
+- Script tests/Deployment/aut_tabs_vue_test.mjs ; HTML de fixture généré par le test PHP dans /tmp/fit-health-create-fixture.html.
+- Dépendances Vue existantes utilisées ; aucune bibliothèque ajoutée.
+- Limite : contrôle authentifié du rendu en production et statut Render Live non vérifiés.

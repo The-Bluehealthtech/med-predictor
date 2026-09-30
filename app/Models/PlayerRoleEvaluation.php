@@ -27,7 +27,7 @@ class PlayerRoleEvaluation extends Model
     protected $fillable = [
         'player_id', 'match_id', 'period_start', 'period_end',
         'position_family_evaluated', 'role_config_version_id', 'model_version',
-        'score', 'reliability', 'interval_low', 'interval_high', 'role_fit_score',
+        'score', 'reliability', 'interval_low', 'interval_high', 'role_fit_score', 'dimension_breakdown',
         'is_demo', 'source_import_batch_id', 'source_demo_batch_id', 'computed_at',
     ];
 
@@ -39,6 +39,7 @@ class PlayerRoleEvaluation extends Model
         'interval_low' => 'decimal:2',
         'interval_high' => 'decimal:2',
         'role_fit_score' => 'decimal:2',
+        'dimension_breakdown' => 'array',
         'is_demo' => 'boolean',
         'computed_at' => 'datetime',
     ];

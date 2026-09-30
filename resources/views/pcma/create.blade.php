@@ -348,7 +348,7 @@
         <div id="manual-mode-section" class="mode-section">
             <!-- Formulaire Principal PCMA -->
             <div id="formulaire-principal" class="form-section">
-                <form action="{{ route('pcma.store') }}" method="POST" class="space-y-8">
+                <form id="pcma-form" enctype="multipart/form-data" action="{{ route('pcma.store') }}" method="POST" class="space-y-8">
                     @csrf
                     
                     <!-- AI-Assisted Section -->
@@ -714,18 +714,18 @@
                             
                             <!-- Athlète -->
                             <div>
-                                <label for="athlete_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="player_id" class="block text-sm font-medium text-gray-700 mb-2">
                                     {{ __('pcma.athlete_label') }}
                                 </label>
                                 <select 
-                                    id="athlete_id" 
-                                    name="athlete_id" 
+                                    id="player_id"
+                                    name="player_id"
                                     required
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
                                     <option value="">{{ __('pcma.select_athlete_placeholder') }}</option>
                                     @foreach($athletes as $athlete)
-                                        <option value="{{ $athlete->id }}" {{ old('athlete_id') == $athlete->id ? 'selected' : '' }}>
+                                        <option value="{{ $athlete->id }}" {{ old('player_id') == $athlete->id ? 'selected' : '' }}>
                                             {{ $athlete->name }} - {{ $athlete->fifa_connect_id ?? __('pcma.no_fifa_id') }}
                                         </option>
                                     @endforeach
@@ -2451,7 +2451,7 @@ window.generatePDF = async function() {
         const formData = new FormData();
         
         // Get all form inputs
-        const pdfForm = document.querySelector('form');
+        const pdfForm = document.querySelector('#pcma-form');
         const formElements = pdfForm.elements;
         
         // Add all form fields to FormData
@@ -2470,7 +2470,7 @@ window.generatePDF = async function() {
         console.log(' Total form fields collected:', formData.entries().length);
         
         // Aucune valeur médicale ou identité ne doit être fabriquée pour produire le PDF.
-        if (!formData.get('athlete_id') || !formData.get('type') || !formData.get('assessor_id') || !formData.get('assessment_date')) {
+        if (!formData.get('player_id') || !formData.get('type') || !formData.get('assessor_id') || !formData.get('assessment_date')) {
             alert(@json(__('pcma.err_pdf_required_fields')));
             return;
         }
@@ -2619,7 +2619,7 @@ window.printReport = function() {
         const printWindow = window.open('', '_blank', 'width=800,height=600');
         
         // Get form data
-        const printForm = document.querySelector('form');
+        const printForm = document.querySelector('#pcma-form');
         const formData = new FormData(printForm);
         const formDataObj = {};
         
@@ -2658,7 +2658,7 @@ window.printReport = function() {
                     <h3>{{ __('pcma.report_patient_info_title') }}</h3>
                     <div class="field">
                         <label>{{ __('pcma.report_athlete_label') }}</label>
-                        <value>${formDataObj.athlete_id || @json(__('pcma.report_not_specified'))}</value>
+                        <value>${formDataObj.player_id || @json(__('pcma.report_not_specified'))}</value>
                     </div>
                     <div class="field">
                         <label>{{ __('pcma.report_assessment_type_label') }}</label>
@@ -2888,7 +2888,7 @@ window.openDoctorSignoff = function() {
     console.log('🚪 openDoctorSignoff function called');
     try {
         // Get form data for the signoff
-        const signoffForm = document.querySelector('form');
+        const signoffForm = document.querySelector('#pcma-form');
         const formData = new FormData(signoffForm);
         const formDataObj = {};
         
@@ -2897,7 +2897,7 @@ window.openDoctorSignoff = function() {
         }
         
         // Get athlete information
-        const athleteSelect = document.getElementById('athlete_id');
+        const athleteSelect = document.getElementById('player_id');
         const selectedAthlete = athleteSelect.options[athleteSelect.selectedIndex];
         const athleteName = selectedAthlete ? selectedAthlete.text : @json(__('pcma.athlete_not_specified'));
         
@@ -3276,10 +3276,10 @@ function handleSignoff(signoffData) {
 function saveSignedPCMA(signedData) {
     console.log('🔄 Saving signed PCMA with data:', signedData);
     // Get form data
-    const saveForm = document.querySelector('form');
+    const saveForm = document.querySelector('#pcma-form');
     
     // Set default values in the form elements BEFORE creating FormData
-    const athleteSelect = saveForm.querySelector('select[name="athlete_id"]');
+    const athleteSelect = saveForm.querySelector('select[name="player_id"]');
     const typeSelect = saveForm.querySelector('select[name="type"]');
     const assessorSelect = saveForm.querySelector('select[name="assessor_id"]');
     const assessmentDateInput = saveForm.querySelector('input[name="assessment_date"]');
@@ -3295,7 +3295,7 @@ function saveSignedPCMA(signedData) {
     
     // Debug: Log the form values after setting defaults
     console.log(' Form values after setting defaults:', {
-        athlete_id: athleteSelect ? athleteSelect.value : 'null',
+        player_id: athleteSelect ? athleteSelect.value : 'null',
         type: typeSelect ? typeSelect.value : 'null',
         assessor_id: assessorSelect ? assessorSelect.value : 'null',
         assessment_date: assessmentDateInput ? assessmentDateInput.value : 'null',
@@ -3335,7 +3335,7 @@ function saveSignedPCMA(signedData) {
         
         // Only add default values if the fields are actually empty (not just missing)
         // This ensures we don't override actual form data with defaults
-        const saveForm2 = document.querySelector('form');
+        const saveForm2 = document.querySelector('#pcma-form');
         const allFormElements = saveForm2.querySelectorAll('input, select, textarea');
         
         // Add all form elements to FormData, including empty ones
@@ -3418,7 +3418,7 @@ function saveSignedPCMA(signedData) {
 
 // Disable form editing after signing
 function disableFormEditing() {
-    const disableForm = document.querySelector('form');
+    const disableForm = document.querySelector('#pcma-form');
     const inputs = disableForm.querySelectorAll('input, textarea, select, button[type="submit"]');
     
     inputs.forEach(input => {
@@ -3460,7 +3460,7 @@ window.generateFitnessAssessment = async function() {
     
     try {
         // Get form data
-        const fitnessForm = document.querySelector('form');
+        const fitnessForm = document.querySelector('#pcma-form');
         const formData = new FormData(fitnessForm);
         
         // Add required fields if missing
@@ -5485,9 +5485,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // 2. Mettre à jour le champ Athlète (si c'est un select)
                 const athleteFields = [
-                    'select[name="athlete_id"]',
                     'select[name="player_id"]',
-                    '#athlete_id',
+                    'select[name="player_id"]',
+                    '#player_id',
                     '#player_id'
                 ];
                 

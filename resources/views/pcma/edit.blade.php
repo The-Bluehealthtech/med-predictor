@@ -20,7 +20,7 @@
                                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                                 {{ __('pcma_extra.label_54a3dea01ab8') }}
                             </a>
-                            <a href="{{ route('pcma.view.pdf', $pcma) }}" 
+                            <a href="{{ route('pcma.pdf', $pcma) }}"
                                class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                                 {{ __('pcma_extra.label_26d5eac2bb68') }}
                             </a>
@@ -38,7 +38,7 @@
                 <p class="text-gray-600 mt-2">{{ __('pcma_extra.label_fd521e60706f') }}</p>
             </div>
 
-            <form action="{{ route('pcma.update', $pcma) }}" method="POST" class="space-y-8">
+            <form id="pcma-edit-form" enctype="multipart/form-data" action="{{ route('pcma.update', $pcma) }}" method="POST" class="space-y-8">
             @csrf
             @method('PUT')
             
@@ -51,16 +51,16 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="athlete_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="player_id" class="block text-sm font-medium text-gray-700 mb-2">
                                 {{ __('pcma.athlete_label') }}
                             </label>
-                            <select id="athlete_id" 
-                                    name="athlete_id" 
+                            <select id="player_id"
+                                    name="player_id"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     required>
                                 <option value="">{{ __('pcma.select_athlete_placeholder') }}</option>
                                 @foreach($athletes as $athlete)
-                                    <option value="{{ $athlete->id }}" {{ old('athlete_id', $pcma->athlete_id) == $athlete->id ? 'selected' : '' }}>
+                                    <option value="{{ $athlete->id }}" {{ old('player_id', $pcma->player_id) == $athlete->id ? 'selected' : '' }}>
                                         {{ $athlete->name }}
                                     </option>
                                 @endforeach
@@ -646,7 +646,7 @@
                         {{ __('health_records_create.save_button') }}
                     </button>
                     
-                    <a href="{{ route('pcma.view.pdf', $pcma) }}" 
+                    <a href="{{ route('pcma.pdf', $pcma) }}"
                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                         {{ __('pcma_extra.label_0eb5fff4ce15') }}
                     </a>
@@ -660,7 +660,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Form validation
-    const form = document.querySelector('form');
+    const form = document.querySelector('#pcma-edit-form');
     form.addEventListener('submit', function(e) {
         const requiredFields = form.querySelectorAll('[required]');
         let isValid = true;

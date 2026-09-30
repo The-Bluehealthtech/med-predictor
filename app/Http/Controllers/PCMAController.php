@@ -91,18 +91,6 @@ class PCMAController extends Controller
 
     public function store(Request $request)
     {
-        // Debug: Log all incoming data
-        Log::info('PCMA Store - Incoming request data', [
-            'all_data' => $request->all(),
-            'has_signature_data' => $request->has('signature_data'),
-            'has_is_signed' => $request->has('is_signed'),
-            'athlete_id' => $request->get('athlete_id'),
-            'type' => $request->get('type'),
-            'assessor_id' => $request->get('assessor_id'),
-            'assessment_date' => $request->get('assessment_date'),
-            'status' => $request->get('status'),
-        ]);
-        
         try {
             $validated = $request->validate([
                 'player_id' => 'required|exists:players,id',
@@ -137,6 +125,7 @@ class PCMAController extends Controller
                 'weight' => 'nullable|numeric|min:0|max:500',
                 // Medical History
                 'medical_history' => 'nullable|string',
+            'cardiovascular_history' => 'nullable|string',
                 'surgical_history' => 'nullable|string',
                 'medications' => 'nullable|string',
                 'allergies' => 'nullable|string',
@@ -182,10 +171,7 @@ class PCMAController extends Controller
                 'signature_data' => 'nullable|json',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('PCMA Store - Validation failed', [
-                'errors' => $e->errors(),
-                'request_data' => $request->all()
-            ]);
+            // Ne pas journaliser les données médicales de la requête.
             
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json([
@@ -281,6 +267,7 @@ class PCMAController extends Controller
                     ]);
                 }
                 
+                $validated = $this->preserveClinicalFields($validated);
                 $pcma = PCMA::create($validated);
 
         // Return JSON response for API calls
@@ -305,17 +292,16 @@ class PCMAController extends Controller
 
     public function edit(PCMA $pcma): View
     {
-        $athletes = Athlete::orderBy('name')->get();
-        $players = Player::orderBy('name')->get();
-        
-        return view('pcma.edit', compact('pcma', 'athletes', 'players'));
+        // Réutiliser exactement le périmètre de joueurs autorisé à la création.
+        $data = $this->create()->getData();
+        return view('pcma.edit', array_merge($data, ['pcma' => $pcma]));
     }
 
     public function update(Request $request, PCMA $pcma): RedirectResponse
     {
         $validated = $request->validate([
-            'athlete_id' => 'required|exists:athletes,id',
-            'type' => 'required|in:cardio,neurological,musculoskeletal,general',
+            'player_id' => 'required|exists:players,id',
+            'type' => 'required|in:bpma,cardio,dental,neurological,orthopedic',
             'assessor_id' => 'required|exists:users,id',
             'assessment_date' => 'required|date',
             'result_json' => 'nullable|json',
@@ -344,6 +330,7 @@ class PCMAController extends Controller
             'weight' => 'nullable|numeric|min:0|max:500',
             // Medical History
             'medical_history' => 'nullable|string',
+            'cardiovascular_history' => 'nullable|string',
             'surgical_history' => 'nullable|string',
             'medications' => 'nullable|string',
             'allergies' => 'nullable|string',
@@ -400,6 +387,7 @@ class PCMAController extends Controller
             }
         }
 
+        $validated = $this->preserveClinicalFields($validated, $pcma->result_json);
         $pcma->update($validated);
 
         return redirect()->route('pcma.show', $pcma)
@@ -489,6 +477,56 @@ class PCMAController extends Controller
         return $pdf->download("PCMA-{$pcma->id}-{$athleteName}.pdf");
     }
 
+    // Conserver les champs validés sans colonne dédiée dans le JSON existant.
+    private function preserveClinicalFields(array $validated, $previous = null): array
+    {
+        $result = $validated['result_json'] ?? $previous ?? [];
+        if (is_string($result)) { $result = json_decode($result, true); }
+        $result = is_array($result) ? $result : [];
+        $groups = [
+            'abdomen_examination' => 'physical_examination',
+            'allergies' => 'medical_history',
+            'blood_pressure' => 'vital_signs',
+            'blood_pressure_exercise' => 'cardiovascular_assessment',
+            'blood_pressure_rest' => 'cardiovascular_assessment',
+            'cardiac_rhythm' => 'cardiovascular_assessment',
+            'cardiovascular_history' => 'medical_history',
+            'consciousness' => 'neurological_assessment',
+            'cranial_nerves' => 'neurological_assessment',
+            'general_appearance' => 'physical_examination',
+            'heart_murmur' => 'cardiovascular_assessment',
+            'heart_rate' => 'vital_signs',
+            'joint_mobility' => 'musculoskeletal_assessment',
+            'lymph_nodes' => 'physical_examination',
+            'medications' => 'medical_history',
+            'motor_function' => 'neurological_assessment',
+            'muscle_strength' => 'musculoskeletal_assessment',
+            'oxygen_saturation' => 'vital_signs',
+            'pain_assessment' => 'musculoskeletal_assessment',
+            'range_of_motion' => 'musculoskeletal_assessment',
+            'respiratory_rate' => 'vital_signs',
+            'sensory_function' => 'neurological_assessment',
+            'skin_examination' => 'physical_examination',
+            'surgical_history' => 'medical_history',
+            'temperature' => 'vital_signs',
+            'weight' => 'vital_signs',
+        ];
+        foreach ($groups as $field => $group) {
+            if (array_key_exists($field, $validated)) {
+                if (!is_array($result[$group] ?? null)) { $result[$group] = []; }
+                $result[$group][$field] = $validated[$field];
+                unset($validated[$field]);
+            }
+        }
+        if (array_key_exists('medical_history', $validated)) {
+            if (!is_array($result['medical_history'] ?? null)) { $result['medical_history'] = []; }
+            $result['medical_history']['cardiovascular_history'] = $validated['medical_history'];
+            $validated['medical_history'] = $result['medical_history'];
+        }
+        $validated['result_json'] = $result;
+        return $validated;
+    }
+
     private function normalizeFifaIdentifierInput(
         array $validated
     ): array {
@@ -537,6 +575,10 @@ class PCMAController extends Controller
                 'analysis' => $result['analysis'] ?? $result
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false,
+                'message' => 'Données fournies invalides.',
+                'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('ECG Analysis Error: ' . $e->getMessage());
             
@@ -588,6 +630,10 @@ class PCMAController extends Controller
                 'analysis' => $combinedAnalysis
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false,
+                'message' => 'Données fournies invalides.',
+                'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('MRI Analysis Error: ' . $e->getMessage());
             
@@ -623,6 +669,10 @@ class PCMAController extends Controller
                 'analysis' => $result['analysis'] ?? $result
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false,
+                'message' => 'Données fournies invalides.',
+                'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('X-Ray Analysis Error: ' . $e->getMessage());
             
@@ -663,6 +713,10 @@ class PCMAController extends Controller
                 'analysis' => $result['analysis'] ?? $result
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false,
+                'message' => 'Données fournies invalides.',
+                'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('ECG Effort Analysis Error: ' . $e->getMessage());
             
@@ -698,6 +752,10 @@ class PCMAController extends Controller
                 'analysis' => $result['analysis'] ?? $result
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false,
+                'message' => 'Données fournies invalides.',
+                'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('Scintigraphy Analysis Error: ' . $e->getMessage());
             
@@ -761,6 +819,10 @@ class PCMAController extends Controller
                 'analysis' => $result['analysis'] ?? $result
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false,
+                'message' => 'Données fournies invalides.',
+                'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('SCAT Analysis Error: ' . $e->getMessage());
             
@@ -783,6 +845,12 @@ class PCMAController extends Controller
                 'xray_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
             ]);
 
+            // Ne jamais conclure à une aptitude en l'absence de données médicales.
+            if (!$request->hasFile('ecg_file') && !$request->hasFile('mri_files')
+                && !$request->hasFile('ct_files') && !$request->hasFile('xray_file')) {
+                return response()->json(['success' => false,
+                    'message' => 'Aucune pièce médicale fournie pour l’analyse.'], 422);
+            }
             $analyses = [];
             $tempFiles = [];
 
@@ -872,6 +940,10 @@ class PCMAController extends Controller
                 'analysis' => array_merge($analyses, ['overall_assessment' => $overallAssessment])
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false,
+                'message' => 'Données fournies invalides.',
+                'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('Complete Analysis Error: ' . $e->getMessage());
             
@@ -907,6 +979,10 @@ class PCMAController extends Controller
                 'analysis' => $result
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false,
+                'message' => 'Données fournies invalides.',
+                'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('CT Analysis Error: ' . $e->getMessage());
 
@@ -942,6 +1018,10 @@ class PCMAController extends Controller
                 'analysis' => $result
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false,
+                'message' => 'Données fournies invalides.',
+                'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('Ultrasound Analysis Error: ' . $e->getMessage());
 
@@ -991,6 +1071,10 @@ class PCMAController extends Controller
                 ], 503);
             }
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false,
+                'message' => 'Données fournies invalides.',
+                'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('Fitness Assessment Error: ' . $e->getMessage());
 
@@ -1121,7 +1205,7 @@ class PCMAController extends Controller
         $prompt .= "Provide a comprehensive evaluation with the following structure:\n\n";
         
         $prompt .= "FORM DATA SUMMARY:\n";
-        $prompt .= "- Athlete Information: " . ($formData['athlete_id'] ?? 'Not specified') . "\n";
+        $prompt .= "- Athlete Information: " . ($formData['player_id'] ?? 'Not specified') . "\n";
         $prompt .= "- Assessment Type: " . ($formData['type'] ?? 'Not specified') . "\n";
         $prompt .= "- Assessment Date: " . ($formData['assessment_date'] ?? 'Not specified') . "\n";
         $prompt .= "- Assessor: " . ($formData['assessor_id'] ?? 'Not specified') . "\n\n";
@@ -1253,6 +1337,15 @@ Format the response as JSON with fields: concussion_risk, severity_classificatio
 
     private function generateOverallAssessment(array $analyses): array
     {
+        // Une réponse vide ou en échec ne constitue pas une observation médicale.
+        if (!$analyses || collect($analyses)->contains(fn ($a) =>
+            !is_array($a) || ($a['success'] ?? null) !== true || ($a['mockMode'] ?? false)
+            || !is_string($a['abnormalities'] ?? null) || trim($a['abnormalities']) === ''
+            || ($a['analysis']['mockMode'] ?? false))) {
+            return ['medical_status' => 'Données insuffisantes',
+                'sports_eligibility' => 'Pending medical clearance',
+                'recommendations' => 'Une évaluation médicale est nécessaire.'];
+        }
         $hasAbnormalities = false;
         $recommendations = [];
 

@@ -15,8 +15,9 @@ final class PcmaCreatePageTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        app('view')->getFinder()->setPaths([dirname(__DIR__, 2).'/resources/views']);
         // Tester les routes réelles : le bootstrap de test utilise sinon routes/testing.php.
-        Route::middleware('web')->group(base_path('routes/web.php'));
+        Route::middleware('web')->group(dirname(__DIR__, 2).'/routes/web.php');
         Route::getRoutes()->refreshNameLookups();
         $this->previousConnection = DB::getDefaultConnection();
         config()->set('database.connections.pcma_create_test', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
@@ -45,12 +46,32 @@ final class PcmaCreatePageTest extends TestCase
         foreach (['fr', 'en'] as $locale) {
             app()->setLocale($locale);
             $this->withoutMiddleware()->actingAs($user)->get('/pcma/create')
-                ->assertOk()->assertViewIs('pcma.create')
+                ->assertOk()->assertSee('id="pcma-form"', false)
+                ->assertSee('name="player_id"', false)
+                ->assertSee('enctype="multipart/form-data"', false)
+                ->assertViewIs('pcma.create')
                 ->assertViewHas('teamDoctorRegistration', null)
                 ->assertViewHas('athletes', fn ($rows) => $rows->isEmpty())
                 ->assertViewHas('users', fn ($rows) => $rows->isEmpty())
                 ->assertDontSee('Test Assessor')->assertDontSee('Test Player');
         }
+    }
+    public function test_edit_renders_with_the_same_player_scope_and_assessors(): void
+    {
+        DB::table('players')->insert(['id' => 10, 'first_name' => 'Fixture',
+            'last_name' => 'Only', 'name' => 'Fixture Only', 'club_id' => 1]);
+        $this->actingAs(new User(['role' => 'system_admin']));
+        $pcma = new \App\Models\PCMA(['player_id' => 10, 'type' => 'bpma',
+            'assessment_date' => '2026-09-30', 'status' => 'pending',
+            'result_json' => ['vital_signs' => ['heart_rate' => 60]]]);
+        $pcma->forceFill(['id' => 99, 'created_at' => now(), 'updated_at' => now()]);
+        $view = app(PCMAController::class)->edit($pcma);
+        self::assertSame([10], $view->getData()['athletes']->pluck('id')->all());
+        self::assertArrayHasKey('users', $view->getData());
+        $html = $view->render();
+        self::assertStringContainsString('id="pcma-edit-form"', $html);
+        self::assertStringContainsString('name="player_id"', $html);
+        self::assertStringContainsString('value="60"', $html);
     }
     public function test_system_admin_receives_persisted_players(): void
     {

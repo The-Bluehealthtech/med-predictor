@@ -15,6 +15,7 @@ final class PcmaWorkflowRepairTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->app->useDatabasePath(dirname(__DIR__,2).'/database');
         // Charger aussi les traductions du worktree testé, pas celles du dépôt principal.
         $this->app->instance('translation.loader', new \Illuminate\Translation\FileLoader(
             $this->app['files'], dirname(__DIR__, 2).'/resources/lang'));
@@ -107,6 +108,66 @@ final class PcmaWorkflowRepairTest extends TestCase
         self::assertSame(1, PCMA::count());
         self::assertFalse(PCMA::first()->is_signed);
         self::assertFalse(PCMA::first()->fifa_compliant);
+    }
+    private function importMedicationCatalogue(): \App\Services\MedicationCatalogue
+    {
+        $migration=require dirname(__DIR__,2).'/database/migrations/2026_09_30_110000_create_medication_catalogue_table.php';
+        $migration->up();
+        $catalogue=app(\App\Services\MedicationCatalogue::class);
+        self::assertSame(3516, $catalogue->import());
+        return $catalogue;
+    }
+    public function test_supplied_catalogue_import_search_and_access(): void
+    {
+        $catalogue=$this->importMedicationCatalogue();
+        self::assertSame(3516,$catalogue->import());
+        self::assertSame(3516,DB::table('medication_catalogue')->count());
+        $products=$catalogue->search('paracetamol');
+        self::assertNotEmpty($products);
+        foreach($products as $product) {
+            self::assertNull($product['atc']);
+            self::assertSame('2609A',$product['version']);
+        }
+        $this->getJson('/api/pcma/medications?q=paracetamol')->assertOk()->assertJson(['success'=>true]);
+        $this->getJson('/api/pcma/medications?q=a')->assertStatus(422);
+        self::assertSame([],$catalogue->search('%%'));
+        $this->actingAs((new User(['role'=>'player']))->forceFill(['tenant_id'=>1]));
+        $this->getJson('/api/pcma/medications?q=paracetamol')->assertForbidden();
+    }
+    public function test_selected_medicine_roundtrip_uses_catalogue_identity_and_can_be_removed(): void
+    {
+        $catalogue=$this->importMedicationCatalogue();
+        $product=$catalogue->search('paracetamol')[0];
+        $selection=[['id'=>$product['id'],'presentation_id'=>$product['presentations'][0]['id'],
+            'name'=>'<script>Forged</script>','atc'=>'INVENTED','dose'=>null,'route'=>null,'frequency'=>null]];
+        $first=app(PcmaDraftController::class)->save($this->request($this->input([
+            'medication_selection'=>json_encode($selection),'medications'=>'Note technique'
+        ])))->getData(true);
+        $pcma=PCMA::findOrFail($first['pcma_id']);
+        $saved=$pcma->result_json['medical_history']['medication_products'];
+        self::assertSame($product['name'],$saved[0]['name']);
+        self::assertNull($saved[0]['atc']); self::assertNull($saved[0]['dose']);
+        self::assertSame('Note technique',$pcma->result_json['medical_history']['medications']);
+        $html=view('pcma.partials.medication-summary',compact('pcma'))->render();
+        self::assertStringNotContainsString('<script>Forged',$html);
+        self::assertStringContainsString(e($product['name']),$html);
+        self::assertCount(count($product['presentations']),$catalogue->forEditing($saved)[0]['presentations']);
+        $edit=view('pcma.partials.medications',compact('pcma'))->render();
+        self::assertStringContainsString('name="medication_selection"',$edit);
+        app(PcmaDraftController::class)->save($this->request($this->input([
+            'pcma_id'=>$pcma->id,'medication_selection'=>'[]'])));
+        self::assertSame([],$pcma->fresh()->result_json['medical_history']['medication_products']);
+        self::assertSame(60,$pcma->fresh()->result_json['vital_signs']['heart_rate']);
+        $api=$catalogue->applySelection(['medication_selection'=>json_encode($selection)],[]);
+        self::assertSame($product['name'],$api['result_json']['medical_history']['medication_products'][0]['name']);
+    }
+    public function test_catalogue_rejects_unknown_medicines_and_presentations(): void
+    {
+        $catalogue=$this->importMedicationCatalogue();$product=$catalogue->search('paracetamol')[0];
+        foreach([[['id'=>'not-in-catalogue']],[['id'=>$product['id'],'presentation_id'=>'unknown']]] as $items) {
+            try{$catalogue->selections(json_encode($items));self::fail('Référence inconnue rejetée.');}
+            catch(HttpException $e){self::assertSame(422,$e->getStatusCode());}
+        }
     }
     public function test_pcma_write_is_read_by_the_portal_on_the_same_connection(): void
     {

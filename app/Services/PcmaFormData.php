@@ -45,6 +45,7 @@ final class PcmaFormData
                 'cardiovascular_history' => 'nullable|string',
                 'surgical_history' => 'nullable|string',
                 'medications' => 'nullable|string',
+                'medication_selection' => 'nullable|json|max:20000',
                 'allergies' => 'nullable|string',
                 // Physical Examination
                 'general_appearance' => 'nullable|in:normal,abnormal',
@@ -157,6 +158,11 @@ final class PcmaFormData
             if (!is_array($result['medical_history'] ?? null)) { $result['medical_history'] = []; }
             $result['medical_history']['cardiovascular_history'] = $validated['medical_history'];
             $validated['medical_history'] = $result['medical_history'];
+        }
+        if (array_key_exists('medication_selection', $validated)) {
+            $result['medical_history']['medication_products'] = app(MedicationCatalogue::class)
+                ->selections($validated['medication_selection'] ?? '[]');
+            unset($validated['medication_selection']);
         }
         $validated['result_json'] = $result;
         return $validated;

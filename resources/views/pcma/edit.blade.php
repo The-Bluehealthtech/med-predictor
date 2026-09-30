@@ -269,14 +269,7 @@
                         </div>
                         
                         <div>
-                            <label for="medications" class="block text-sm font-medium text-gray-700 mb-2">
-                                {{ __('pcma.medications_label') }}
-                            </label>
-                            <textarea id="medications" 
-                                      name="medications" 
-                                      rows="3"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                      placeholder="Traitements en cours...">{{ old('medications', $pcma->result_json['medical_history']['medications'] ?? '') }}</textarea>
+                            @include('pcma.partials.medications')
                         </div>
                         
                         <div>

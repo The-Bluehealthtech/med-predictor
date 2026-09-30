@@ -973,22 +973,10 @@
                                 </div>
                                 
                                 <div>
-                                    <label for="medications" class="block text-sm font-medium text-gray-700 mb-2">
-                                        {{ __('pcma.medications_label') }}
-                                    </label>
-                                    <div class="relative">
-                                        <input type="text" 
-                                               id="medication_search" 
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                               placeholder="{{ __('pcma.medication_search_placeholder') }}"
-                                               autocomplete="off">
-                                        <div id="medication_results" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
-                                        <input type="hidden" id="medications" name="medications" value="{{ old('medications') }}">
-                                        <div id="medication_selected" class="mt-2 space-y-1"></div>
-                                    </div>
-                                </div>
-                                
-                                <div>
+                            @include('pcma.partials.medications')
+                        </div>
+
+                        <div>
                                     <label for="allergies" class="block text-sm font-medium text-gray-700 mb-2">
                                         {{ __('pcma.allergies_label') }}
                                     </label>

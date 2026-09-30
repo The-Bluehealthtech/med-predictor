@@ -444,7 +444,8 @@
                     
                     <div>
                         <dt class="text-sm font-medium text-gray-500">{{ __('pcma.medications_label') }}</dt>
-                        <dd class="text-sm text-gray-900">{{ $pcma->result_json['medical_history']['medications'] ?? __('pcma_extra.not_recorded') }}</dd>
+                        <dd class="text-sm text-gray-900">{{ $pcma->result_json['medical_history']['medications'] ?? __('pcma_extra.not_recorded') }}
+                        @include('pcma.partials.medication-summary')</dd>
                     </div>
                     
                     <div>

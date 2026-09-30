@@ -10,6 +10,7 @@ class DeployFit extends Command
     private const LOCK_NAME = 'med_predictor_fit_deploy';
 
     private const MIGRATIONS = [
+        'database/migrations/2026_09_30_110000_create_medication_catalogue_table.php',
         'database/migrations/2026_09_24_160000_create_fit_score_snapshots_table.php',
         'database/migrations/2026_09_24_170000_add_tenant_id_to_fit_score_snapshots_table.php',
         'database/migrations/2026_09_24_171000_add_input_signature_to_fit_score_snapshots_table.php',
@@ -61,6 +62,9 @@ class DeployFit extends Command
 
                 return self::FAILURE;
             }
+
+            $catalogueCount = app(\App\Services\MedicationCatalogue::class)->import();
+            $this->info("Medication reference catalogue imported: {$catalogueCount} products.");
 
             if ($this->option('demo-data')) {
                 $seedExitCode = $this->call('db:seed', [

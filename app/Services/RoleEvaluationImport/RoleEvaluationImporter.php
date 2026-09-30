@@ -146,10 +146,35 @@ class RoleEvaluationImporter
             }
         }
 
+        $isHome = null;
         if (in_array($this->mapping->type, ['participations', 'player-match-stats', 'team-stats'], true)) {
-            [$teamId, $err] = $this->resolver->resolveTeam($this->mapping->resolve, $row);
-            if ($err) {
-                $errors[] = "équipe : {$err}";
+            if (isset($this->mapping->resolve['club'])) {
+                // Approche recommandée (décision du 30/09) : équipe déduite du
+                // club (FIFA Connect ID) + du match déjà résolu, jamais du nom
+                // d'équipe (voir EntityResolver::resolveTeamForMatch).
+                if ($matchId === null) {
+                    $errors[] = 'équipe : résolution impossible, le match lui-même est introuvable';
+                } else {
+                    [$teamId, $isHome, $err] = $this->resolver->resolveTeamForMatch(
+                        $matchId,
+                        $this->mapping->resolve['club']['column'],
+                        $row
+                    );
+                    if ($err) {
+                        $errors[] = "équipe : {$err}";
+                    }
+                }
+            } elseif (isset($this->mapping->resolve['team'])) {
+                // Mode hérité (id direct ou nom d'équipe) : conservé pour un
+                // fournisseur qui ne peut vraiment pas donner de FIFA Connect
+                // ID club, mais déconseillé (voir docs/role-evaluation/
+                // 03-implementation-livrable-2.md).
+                [$teamId, $err] = $this->resolver->resolveTeam($this->mapping->resolve, $row);
+                if ($err) {
+                    $errors[] = "équipe : {$err}";
+                }
+            } else {
+                $errors[] = "équipe : mapping incomplet (ni 'resolve.club' ni 'resolve.team')";
             }
         }
 
@@ -219,6 +244,12 @@ class RoleEvaluationImporter
         }
         if ($this->mapping->type === 'events' && $recipientPlayerId !== null) {
             $target['recipient_player_id'] = $recipientPlayerId;
+        }
+        if ($this->mapping->type === 'team-stats' && $isHome !== null) {
+            // is_home déduit de la résolution club->équipe plutôt que d'une
+            // colonne source déclarative, pour éviter une incohérence entre
+            // ce que dit la source et ce que confirme matches.home_club_id.
+            $target['is_home'] = $isHome;
         }
 
         try {

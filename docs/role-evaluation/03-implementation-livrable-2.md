@@ -5,6 +5,13 @@ Branche `feature/role-evaluation-schema`, proposition de commit local à la fin 
 
 ---
 
+## Mise à jour du 30/09 — deux décisions prises
+
+1. **Identifiant imposé au fournisseur : le FIFA Connect ID des clubs.** Vous avez tranché : "on imposera au fournisseur l'utilisation d'un type d'identifiant, en théorie tout vrai club a des FIFA Connect ID." Ça a changé la conception de la résolution match/équipe (voir section dédiée ci-dessous) : j'ai vérifié en base que `teams.name` vaut "First Team"/"Reserve Team"/"Youth Academy" pour **tous** les clubs — un nom d'équipe seul aurait donc été ambigu. La résolution passe désormais par `clubs.fifa_connect_id` (rempli sur vos vraies fiches club), jamais par le nom.
+2. **Déduplication des événements de match : option A confirmée** ("pour [les événements de] match, va sur option A") — l'empreinte du contenu de la ligne, sans la variante hybride que je proposais en complément. La limite reste donc valable telle que documentée plus bas : si un fournisseur corrige une ligne déjà importée, une nouvelle ligne sera créée plutôt qu'une mise à jour. À surveiller si ce cas se présente en pratique ; on pourra revenir dessus si besoin.
+
+---
+
 ## Ce qui a été fait
 
 ### 1. Une commande d'import générique, pilotée par mapping
@@ -42,6 +49,16 @@ Et `app/Console/Commands/ImportRoleEvaluationDataCommand.php` pour la commande e
 | Tests unitaires | `tests/Unit/RoleEvaluationImport/` (logique pure) + `tests/Feature/RoleEvaluationImportCommandTest.php` (bout en bout) |
 | Fichier d'exemple de format | `docs/role-evaluation/livrable-2-importer/example-*.json` et `.csv` (2 jeux : participations, stats joueur) |
 
+### 2bis. Résolution du match et de l'équipe par club (FIFA Connect ID)
+
+Conséquence directe de la décision du 30/09. La résolution ne se fait plus par nom d'équipe :
+
+- **Match** : nouveau mode `clubs_and_date` — le mapping déclare la colonne du FIFA Connect ID du club domicile, celle du club extérieur, et la date. Résolu via `clubs.fifa_connect_id` puis `matches.home_club_id`/`away_club_id` (remplis à 100 % sur les 34 matchs actuels, vérifié).
+- **Équipe** : elle n'est plus résolue directement. Une fois le match trouvé, l'équipe d'une ligne (`match_participations.team_id`, etc.) est **déduite** : le club du joueur (par FIFA Connect ID) est comparé à `home_club_id`/`away_club_id` du match déjà résolu, ce qui donne directement la bonne équipe ET le camp (domicile/extérieur) — sans jamais comparer de noms.
+- Les anciens modes (nom d'équipe, identifiant interne direct) restent disponibles dans le code pour un fournisseur qui ne pourrait vraiment pas donner de FIFA Connect ID, mais ne sont plus ceux des fichiers d'exemple.
+
+Revalidé avec la même méthode que le Livrable 1 (simulation Python sur copie jetable de la base) — avec un scénario volontairement piégeux : les deux équipes du match test portent le même nom ("First Team" des deux côtés, comme en vraie base). Résultat : le joueur du club domicile est bien rattaché à l'équipe domicile malgré le nom identique, confirmant que la résolution par club fonctionne là où celle par nom aurait échoué.
+
 ### 3. Une migration supplémentaire (13e, après les 12 du Livrable 1)
 
 `2026_09_30_100000_add_import_traceability_for_role_evaluation.php` — ajoute `source_row_hash` aux 4 tables cibles (traçabilité/déduplication) et `rows_read`/`rows_imported`/`rows_rejected`/`report` à `import_batches`. Toujours additif, aucune donnée existante touchée.
@@ -74,8 +91,8 @@ Cette simulation suit fidèlement la logique du code PHP (mêmes règles, même 
 
 ## Hypothèses posées
 
-1. **Résolution des entités** : deux modes supportés (identifiant interne direct, ou identifiant FIFA Connect / nom d'équipe + date). D'autres modes de résolution (ex. code externe spécifique à un fournisseur) demanderaient d'étendre `EntityResolver`, non fait ici faute de connaître un fournisseur réel.
-2. **Déduplication des événements de match** : pas de clé métier naturelle n'existant en base pour `match_events` (plusieurs événements peuvent partager match/joueur/type), j'ai utilisé un hash du contenu de la ligne source comme clé de ré-import. **Limite documentée** : si le fournisseur modifie le contenu d'une ligne déjà importée (correction), le hash change et une NOUVELLE ligne sera créée plutôt qu'une mise à jour de l'ancienne — contrairement aux 3 autres types, qui ont une vraie clé métier et gèrent cette correction proprement. À db1attre avec vous si les événements doivent être rejoués plus finement.
+1. **Résolution des entités — tranchée le 30/09** : FIFA Connect ID imposé au fournisseur, pour les clubs (résolution match + équipe, voir section 2bis) comme pour les joueurs. Les anciens modes (nom d'équipe, identifiant interne direct) restent dans le code par prudence, mais ne sont plus la voie recommandée ni celle des exemples.
+2. **Déduplication des événements de match — tranchée le 30/09 : option A** (empreinte du contenu de la ligne), sans la variante hybride que je proposais. Pas de clé métier naturelle n'existant en base pour `match_events` (plusieurs événements peuvent partager match/joueur/type). **Limite qui reste donc valable** : si le fournisseur modifie le contenu d'une ligne déjà importée (correction), l'empreinte change et une NOUVELLE ligne sera créée plutôt qu'une mise à jour de l'ancienne — contrairement aux 3 autres types, qui ont une vraie clé métier et gèrent cette correction proprement. Accepté comme compromis raisonnable ; à revoir si ce cas se présente en pratique.
 3. **`taux entre 0 et 1`** : règle implémentée et testée (`RowValidator::validateRate`), mais aucune colonne du Livrable 1 n'est actuellement de type "taux" au sens strict — le mandat demande des valeurs BRUTES, pas des moyennes, donc je n'ai mappé aucune colonne de taux dans l'exemple. La règle reste disponible si un futur mapping en a besoin.
 4. Le format source est CSV avec en-tête. Le mapping JSON prévoit un indicateur `csv.has_header`, mais seul `true` est actuellement supporté — un fichier sans en-tête serait refusé avec un message clair plutôt que mal interprété.
 5. Les rejets par ligne accumulent TOUTES les erreurs trouvées sur cette ligne (pas seulement la première), pour un rapport de qualité plus utile en un seul passage.

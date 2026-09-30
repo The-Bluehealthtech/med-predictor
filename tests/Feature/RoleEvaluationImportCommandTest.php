@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Club;
 use App\Models\MatchModel;
 use App\Models\Player;
 use App\Models\Team;
@@ -45,12 +46,21 @@ class RoleEvaluationImportCommandTest extends TestCase
      */
     private function seedFixturesMatchingExampleFile(): MatchModel
     {
-        $home = Team::factory()->create(['name' => 'AS Exemple']);
-        $away = Team::factory()->create(['name' => 'FC Demonstration']);
+        // Le mapping d'exemple résout le match et l'équipe via le FIFA
+        // Connect ID des CLUBS (décision du 30/09 : identifiant imposé aux
+        // fournisseurs), jamais via le nom d'équipe ("First Team" existe
+        // pour tous les clubs en base, donc ambigu).
+        $homeClub = Club::factory()->create(['fifa_connect_id' => 'CLUB-FIFA-001']);
+        $awayClub = Club::factory()->create(['fifa_connect_id' => 'CLUB-FIFA-002']);
+
+        $home = Team::factory()->create(['club_id' => $homeClub->id]);
+        $away = Team::factory()->create(['club_id' => $awayClub->id]);
 
         $match = MatchModel::factory()->create([
             'home_team_id' => $home->id,
             'away_team_id' => $away->id,
+            'home_club_id' => $homeClub->id,
+            'away_club_id' => $awayClub->id,
             'match_date' => '2026-08-01',
         ]);
 
@@ -151,11 +161,15 @@ class RoleEvaluationImportCommandTest extends TestCase
     {
         // Match et équipes présents, mais AUCUN joueur créé : toutes les
         // lignes doivent être rejetées avec une raison "joueur : ...".
-        $home = Team::factory()->create(['name' => 'AS Exemple']);
-        $away = Team::factory()->create(['name' => 'FC Demonstration']);
+        $homeClub = Club::factory()->create(['fifa_connect_id' => 'CLUB-FIFA-001']);
+        $awayClub = Club::factory()->create(['fifa_connect_id' => 'CLUB-FIFA-002']);
+        $home = Team::factory()->create(['club_id' => $homeClub->id]);
+        $away = Team::factory()->create(['club_id' => $awayClub->id]);
         MatchModel::factory()->create([
             'home_team_id' => $home->id,
             'away_team_id' => $away->id,
+            'home_club_id' => $homeClub->id,
+            'away_club_id' => $awayClub->id,
             'match_date' => '2026-08-01',
         ]);
 

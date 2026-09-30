@@ -10,8 +10,8 @@ return new class extends Migration
      * Livrable 1, §3 : table normalisée (une ligne par équipe par match),
      * pour permettre un contrôle générique "somme des stats joueurs == stats
      * équipe" sans distinguer home/away à chaque requête. Les colonnes
-     * home_*/away_* existantes de "matches" ne sont pas touchées ni dépréciées
-     * ici (dépréciation à discuter séparément, cf. Livrable 1 §3).
+     * home_ et away_ existantes de "matches" ne sont pas touchées ni
+     * dépréciées ici (dépréciation à discuter séparément, cf. Livrable 1 §3).
      */
     public function up(): void
     {

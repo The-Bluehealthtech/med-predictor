@@ -334,3 +334,11 @@ Vérification du code au commit 3ebcdfd. Aucun correctif métier effectué.
 - HealthRecord et PCMA utilisent la connexion Eloquent par défaut ; le portail lit health_records et pcmas par player_id sur la connexion DB par défaut. Tables distinctes, lien existant depuis HealthRecordController::show vers les PCMA du joueur. CIM-11 PCMA stockée dans pcmas.result_json, sans copie automatique vers health_records.
 - Contrôles production sans session : huit GET (module, liste, création, détail, modification, prédictions, export) retournent 401. Ces réponses vérifient l'authentification et ne prouvent pas le rendu après connexion.
 - Vues Healthcare partiellement non traduites ; risque nul confondu avec donnée absente dans la liste et date non protégée contre null.
+
+### Healthcare — correctifs locaux vérifiés le 30 septembre
+
+- `/healthcare/predictions` et `/healthcare/export` : rendu HTTP 200 en français et en anglais dans la base de test après correction ; export CSV réel filtré par droits. Pas encore de validation du rendu authentifié en production.
+- `/healthcare/records/{record}` et `/edit` : dossier réellement chargé, sans valeurs de démonstration ; GET propre testé. PUT/DELETE persistent leurs mutations et refusent les autres clubs.
+- `/health-records/create`, `/health-records`, `/health-records/{healthRecord}` et `/edit` : contrôles médicaux ajoutés, erreurs Blade et quatre liens vers routes IA corrigés ; pages testées avec listes JSON et dates absentes.
+- Rapports CDA : deux routes manquantes de lecture/téléchargement rétablies et contrôlées ; nouveaux fichiers privés. Les anciens fichiers publics ne sont pas migrés.
+- 51 tests et 397 assertions réussis sur le périmètre PCMA/Healthcare/portail. Aucun test clinique destructif en production. Détails et limites : HEALTHCARE_REPAIR_2026-09-30.md.

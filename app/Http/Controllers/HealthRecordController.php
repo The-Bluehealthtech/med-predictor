@@ -14,9 +14,54 @@ use Illuminate\Support\Facades\Schema;
 
 class HealthRecordController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function($request,$next){
+            app(\App\Services\MedicalRecordAccess::class)->authorizeRole($request->user());
+            return $next($request);
+        });
+    }
+    private function authorizeRecord(HealthRecord $record): void
+    {
+        app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),$record->player,null);
+    }
+    private function playersQuery()
+    {
+        return app(\App\Services\MedicalRecordAccess::class)->scopePlayers(auth()->user(),Player::query());
+    }
+    private function normalizeLists(Request $request): void
+    {
+        foreach((new HealthRecord)->getCasts() as $field=>$cast){
+            if($cast!=='array' || !$request->has($field) || !is_string($request->input($field))) continue;
+            $text=trim($request->input($field));
+            $decoded=json_decode($text,true);
+            $request->merge([$field=>$text===''?[]:(is_array($decoded)?$decoded:preg_split('/\r?\n/',$text))]);
+        }
+    }
+
+    // Accepter les champs cliniques présents dans le schéma principal, selon leurs casts.
+    // Les identifiants, scores calculés et chemins de fichiers restent protégés.
+    private function extraRules(Request $request): array
+    {
+        $model=new HealthRecord; $casts=$model->getCasts();
+        $columns=Schema::getColumnListing($model->getTable()); $rules=[];
+        foreach($model->getFillable() as $field){
+            if(!$request->has($field) || !in_array($field,$columns,true)
+                || in_array($field,['user_id','player_id','visit_id','risk_score','prediction_confidence','bmi','status'],true)
+                || str_ends_with($field,'_path'))continue;
+            $type=$casts[$field]??'string';
+            $rules[$field]=match($type){
+                'array'=>'nullable|array', 'integer'=>'nullable|integer',
+                'float'=>'nullable|numeric', 'boolean'=>'nullable|boolean',
+                'datetime','date'=>'nullable|date', default=>'nullable|string|max:60000',
+            };
+        }
+        return $rules;
+    }
+
     public function index(): View
     {
-        $healthRecords = HealthRecord::with(['user', 'player'])
+        $healthRecords = app(HealthcareController::class)->query()->with(['user', 'player'])
             ->orderBy('record_date', 'desc')
             ->paginate(15);
 
@@ -25,7 +70,7 @@ class HealthRecordController extends Controller
 
     public function create(Request $request): View
     {
-        $players = Player::orderBy('name')->get();
+        $players = $this->playersQuery()->orderBy('name')->get();
         $visit = null;
         $selectedPlayer = null;
         $isDemo = false;
@@ -36,47 +81,23 @@ class HealthRecordController extends Controller
             $selectedPlayer = Player::with(['club'])->find($playerId);
         }
         
-        // Fallback: if no player found but a FIFA Connect ID is provided, try to resolve by multiple possible columns
-        if (!$selectedPlayer && $request->filled('fifa_connect_id')) {
-            $fifaId = $request->get('fifa_connect_id');
-            $query = Player::with(['club']);
-            $hasAny = false;
-            if (Schema::hasColumn('players', 'fifa_connect_id')) { $query->orWhere('fifa_connect_id', $fifaId); $hasAny = true; }
-            if (Schema::hasColumn('players', 'fifa_id')) { $query->orWhere('fifa_id', $fifaId); $hasAny = true; }
-            if (Schema::hasColumn('players', 'fifa_connect_code')) { $query->orWhere('fifa_connect_code', $fifaId); $hasAny = true; }
-            if ($hasAny) {
-                $selectedPlayer = $query->first();
-            }
+        if ($request->filled('player_id')) {
+            abort_unless($selectedPlayer,404);
+            app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),$selectedPlayer,null);
         }
-
-        // Fallback: try resolving by name when provided
-        if (!$selectedPlayer && ($request->filled('first_name') || $request->filled('last_name'))) {
-            $first = trim((string) $request->get('first_name'));
-            $last = trim((string) $request->get('last_name'));
-            $full = trim($first.' '.$last);
-            $selectedPlayer = Player::with(['club'])
-                ->when($first && $last, function ($q) use ($first, $last) {
-                    $q->where(function ($qq) use ($first, $last) {
-                        $qq->where('first_name', $first)->where('last_name', $last);
-                    });
-                })
-                ->when(!$first || !$last, function ($q) use ($full) {
-                    if ($full) {
-                        $q->orWhere('name', $full);
-                    }
-                })
-                ->first();
-        }
-        
         // Si un visit_id est fourni, récupérer les données de la visite
         if ($request->has('visit_id')) {
             $visit = \App\Models\Visit::with(['athlete', 'doctor'])->find($request->visit_id);
+            abort_unless($visit,404);
+            app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),$visit->athlete?->player,$visit->athlete);
         }
         
         // Si un appointment_id est fourni, récupérer les données du rendez-vous
         $appointment = null;
         if ($request->has('appointment_id')) {
             $appointment = \App\Models\Appointment::with(['athlete'])->find($request->appointment_id);
+            abort_unless($appointment,404);
+            app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),$appointment->athlete?->player,$appointment->athlete);
         }
         
         // If no appointment is provided but an appointment_type comes from the query (e.g., clinician portal), use it as defaults
@@ -108,6 +129,7 @@ class HealthRecordController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->normalizeLists($request);
         $validated = $request->validate([
             'player_id' => 'required|exists:players,id',
             'visit_date' => 'required|date',
@@ -136,8 +158,9 @@ class HealthRecordController extends Controller
             'prescriptions' => 'nullable|string',
             'follow_up_instructions' => 'nullable|string',
             'visit_notes' => 'nullable|string',
-        ]);
+        ] + $this->extraRules($request));
 
+        app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),Player::findOrFail($validated['player_id']),null);
         // Check if there's an existing health record for this player
         $existingRecord = HealthRecord::where('player_id', $validated['player_id'])
             ->where('status', 'active')
@@ -166,8 +189,7 @@ class HealthRecordController extends Controller
         // Broadcast health record created/updated event
         event(new HealthRecordCreated($healthRecord));
 
-        // Generate medical prediction
-        $this->generateMedicalPrediction($healthRecord);
+        // Aucun pronostic n'est créé sans modèle médical validé.
 
         return redirect()->route('health-records.show', $healthRecord)
             ->with('success', $message);
@@ -193,7 +215,7 @@ class HealthRecordController extends Controller
         ];
 
         // Update basic health data if provided
-        $healthData = array_filter([
+        $healthData = [
             'blood_pressure_systolic' => $newData['blood_pressure_systolic'] ?? null,
             'blood_pressure_diastolic' => $newData['blood_pressure_diastolic'] ?? null,
             'heart_rate' => $newData['heart_rate'] ?? null,
@@ -208,7 +230,9 @@ class HealthRecordController extends Controller
             'diagnosis' => $newData['diagnosis'] ?? null,
             'treatment_plan' => $newData['treatment_plan'] ?? null,
             'next_checkup_date' => $newData['next_checkup_date'] ?? null,
-        ]);
+        ];
+        $healthData = array_intersect_key($healthData,$newData);
+        $healthData['record_date'] = $newData['record_date'];
 
         // Calculate BMI if weight and height are provided
         if (isset($newData['weight']) && isset($newData['height'])) {
@@ -217,13 +241,14 @@ class HealthRecordController extends Controller
         }
 
         // Merge all data
-        $updateData = array_merge($visitData, $healthData);
+        $updateData = array_replace($newData, $visitData, $healthData);
         
         $record->update($updateData);
     }
 
     public function show(HealthRecord $healthRecord): View
     {
+        $this->authorizeRecord($healthRecord);
         $healthRecord->load(['user', 'player', 'predictions']);
         
         // Load PCMA records for this player
@@ -237,12 +262,16 @@ class HealthRecordController extends Controller
 
     public function edit(HealthRecord $healthRecord): View
     {
-        $players = Player::orderBy('name')->get();
+        $this->authorizeRecord($healthRecord);
+        $players = $this->playersQuery()->orderBy('name')->get();
         return view('health-records.edit', compact('healthRecord', 'players'));
     }
 
     public function update(Request $request, HealthRecord $healthRecord): RedirectResponse
     {
+        $this->authorizeRecord($healthRecord);
+        $this->normalizeLists($request);
+        abort_if($request->has('player_id') && (int)$request->player_id !== (int)$healthRecord->player_id,422,'Le joueur du dossier ne peut pas être remplacé.');
         $validated = $request->validate([
             'player_id' => 'nullable|exists:players,id',
             'blood_pressure_systolic' => 'nullable|integer|min:70|max:200',
@@ -260,7 +289,7 @@ class HealthRecordController extends Controller
             'treatment_plan' => 'nullable|string',
             'record_date' => 'required|date',
             'next_checkup_date' => 'nullable|date|after:record_date',
-        ]);
+        ] + $this->extraRules($request));
 
         // Recalculer le BMI si nécessaire
         if (isset($validated['weight']) && isset($validated['height'])) {
@@ -276,6 +305,7 @@ class HealthRecordController extends Controller
 
     public function destroy(HealthRecord $healthRecord): RedirectResponse
     {
+        $this->authorizeRecord($healthRecord);
         $healthRecord->delete();
         return redirect()->route('health-records.index')
             ->with('success', 'Dossier médical supprimé avec succès.');
@@ -283,170 +313,13 @@ class HealthRecordController extends Controller
 
     public function generatePrediction(HealthRecord $healthRecord): JsonResponse
     {
-        $prediction = $this->generateMedicalPrediction($healthRecord);
-        
-        return response()->json([
-            'success' => true,
-            'prediction' => $prediction,
-            'message' => 'Prédiction médicale générée avec succès.'
-        ]);
-    }
-
-    private function generateMedicalPrediction(HealthRecord $healthRecord): MedicalPrediction
-    {
-        // Logique de prédiction médicale basée sur les données
-        $riskFactors = $this->calculateRiskFactors($healthRecord);
-        $predictedCondition = $this->predictCondition($healthRecord);
-        $riskProbability = $this->calculateRiskProbability($riskFactors);
-        $confidenceScore = $this->calculateConfidenceScore($healthRecord);
-
-        return MedicalPrediction::create([
-            'health_record_id' => $healthRecord->id,
-            'player_id' => $healthRecord->player_id,
-            'user_id' => auth()->id(),
-            'prediction_type' => 'health_condition',
-            'predicted_condition' => $predictedCondition,
-            'risk_probability' => $riskProbability,
-            'confidence_score' => $confidenceScore,
-            'prediction_factors' => $riskFactors,
-            'recommendations' => $this->generateRecommendations($riskFactors, $predictedCondition),
-            'prediction_date' => now(),
-            'valid_until' => now()->addDays(30),
-            'status' => 'active',
-            'ai_model_version' => '1.0',
-            'prediction_notes' => [
-                'generated_at' => now()->toISOString(),
-                'model_version' => '1.0',
-                'data_points_analyzed' => count($riskFactors)
-            ]
-        ]);
-    }
-
-    private function calculateRiskFactors(HealthRecord $healthRecord): array
-    {
-        $factors = [];
-
-        // Analyse de la pression artérielle
-        if ($healthRecord->blood_pressure_systolic && $healthRecord->blood_pressure_diastolic) {
-            if ($healthRecord->blood_pressure_systolic > 140 || $healthRecord->blood_pressure_diastolic > 90) {
-                $factors[] = 'hypertension';
-            }
-        }
-
-        // Analyse du rythme cardiaque
-        if ($healthRecord->heart_rate) {
-            if ($healthRecord->heart_rate > 100) {
-                $factors[] = 'tachycardie';
-            } elseif ($healthRecord->heart_rate < 60) {
-                $factors[] = 'bradycardie';
-            }
-        }
-
-        // Analyse du BMI
-        if ($healthRecord->bmi) {
-            if ($healthRecord->bmi > 30) {
-                $factors[] = 'obésité';
-            } elseif ($healthRecord->bmi > 25) {
-                $factors[] = 'surpoids';
-            } elseif ($healthRecord->bmi < 18.5) {
-                $factors[] = 'insuffisance_pondérale';
-            }
-        }
-
-        // Analyse de la température
-        if ($healthRecord->temperature) {
-            if ($healthRecord->temperature > 38) {
-                $factors[] = 'fièvre';
-            }
-        }
-
-        return $factors;
-    }
-
-    private function predictCondition(HealthRecord $healthRecord): string
-    {
-        $riskFactors = $this->calculateRiskFactors($healthRecord);
-        
-        if (in_array('hypertension', $riskFactors)) {
-            return 'Risque cardiovasculaire';
-        }
-        
-        if (in_array('obésité', $riskFactors)) {
-            return 'Risque métabolique';
-        }
-        
-        if (in_array('fièvre', $riskFactors)) {
-            return 'Infection possible';
-        }
-        
-        if (empty($riskFactors)) {
-            return 'État de santé normal';
-        }
-        
-        return 'Surveillance recommandée';
-    }
-
-    private function calculateRiskProbability(array $riskFactors): float
-    {
-        $baseRisk = 0.1;
-        $riskPerFactor = 0.15;
-        
-        return min(1.0, $baseRisk + (count($riskFactors) * $riskPerFactor));
-    }
-
-    private function calculateConfidenceScore(HealthRecord $healthRecord): float
-    {
-        $dataPoints = 0;
-        $totalPoints = 8; // Nombre total de points de données possibles
-        
-        if ($healthRecord->blood_pressure_systolic) $dataPoints++;
-        if ($healthRecord->blood_pressure_diastolic) $dataPoints++;
-        if ($healthRecord->heart_rate) $dataPoints++;
-        if ($healthRecord->temperature) $dataPoints++;
-        if ($healthRecord->weight) $dataPoints++;
-        if ($healthRecord->height) $dataPoints++;
-        if ($healthRecord->blood_type) $dataPoints++;
-        if ($healthRecord->medical_history) $dataPoints++;
-        
-        return round($dataPoints / $totalPoints, 4);
-    }
-
-    private function generateRecommendations(array $riskFactors, string $predictedCondition): array
-    {
-        $recommendations = [];
-        
-        if (in_array('hypertension', $riskFactors)) {
-            $recommendations[] = 'Surveillance régulière de la pression artérielle';
-            $recommendations[] = 'Consultation cardiologique recommandée';
-        }
-        
-        if (in_array('obésité', $riskFactors)) {
-            $recommendations[] = 'Programme de perte de poids supervisé';
-            $recommendations[] = 'Consultation nutritionnelle';
-        }
-        
-        if (in_array('fièvre', $riskFactors)) {
-            $recommendations[] = 'Surveillance de la température';
-            $recommendations[] = 'Consultation médicale si persistance';
-        }
-        
-        if (empty($recommendations)) {
-            $recommendations[] = 'Maintenir les bonnes pratiques de santé';
-            $recommendations[] = 'Contrôle médical annuel recommandé';
-        }
-        
-        return $recommendations;
+        $this->authorizeRecord($healthRecord);
+        return response()->json(['success'=>false,'message'=>__('healthcare_repair.unvalidated')],503);
     }
 
     public function generateHl7Cda(Request $request): JsonResponse
     {
         try {
-            \Log::info('HL7 CDA Generation Request received', [
-                'request_data' => $request->all(),
-                'has_analysis_data' => $request->has('analysis_data'),
-                'analysis_data_type' => gettype($request->input('analysis_data'))
-            ]);
-            
             $request->validate([
                 'analysis_data' => 'required|array',
                 'player_id' => 'required|integer|exists:players,id',
@@ -457,6 +330,7 @@ class HealthRecordController extends Controller
 
             $analysisData = $request->input('analysis_data');
             $player = Player::findOrFail($request->input('player_id'));
+            app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),$player,null);
             
             // Generate HL7 CDA XML
             $hl7CdaXml = $this->generateHl7CdaXml($analysisData, $player, $request->all());
@@ -476,33 +350,27 @@ class HealthRecordController extends Controller
                 'message' => 'Rapport HL7 CDA généré avec succès'
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException|\Symfony\Component\HttpKernel\Exception\HttpException|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (\Exception $e) {
             \Log::error('HL7 CDA Generation Error: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de la génération du rapport HL7 CDA: ' . $e->getMessage()
+                'message' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }
 
     private function generateHl7CdaXml(array $analysisData, Player $player, array $requestData): string
     {
-        \Log::info('HL7 CDA XML Generation - Analysis Data:', [
-            'analysisData' => $analysisData,
-            'player' => $player->toArray(),
-            'requestData' => $requestData
-        ]);
+
         
         $analysisType = $analysisData['type'] ?? 'Unknown';
         $analysis = $analysisData['analysis'] ?? [];
         $timestamp = $analysisData['timestamp'] ?? now()->toISOString();
         
-        \Log::info('HL7 CDA XML Generation - Processed Data:', [
-            'analysisType' => $analysisType,
-            'analysis' => $analysis,
-            'timestamp' => $timestamp
-        ]);
+
         
         // Create HL7 CDA XML structure with better formatting
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -653,10 +521,7 @@ class HealthRecordController extends Controller
         $xml .= '  </component>' . "\n";
         $xml .= '</ClinicalDocument>';
         
-        \Log::info('HL7 CDA XML Generated:', [
-            'xml_length' => strlen($xml),
-            'xml_preview' => substr($xml, 0, 500) . '...'
-        ]);
+
         
         return $xml;
     }
@@ -693,7 +558,7 @@ class HealthRecordController extends Controller
         $filename = $reportId . '.xml';
         $filePath = 'hl7_reports/' . $filename;
         
-        \Storage::disk('public')->put($filePath, $xmlContent);
+        \Storage::disk('local')->put($filePath, $xmlContent);
         
         // Store report metadata in database (you might want to create a dedicated table for this)
         // For now, we'll store it in the health_records table as a JSON field
@@ -706,6 +571,7 @@ class HealthRecordController extends Controller
                     'report_id' => $reportId,
                     'report_type' => $analysisData['type'] ?? 'AI Analysis',
                     'file_path' => $filePath,
+                    'storage_disk' => 'local',
                     'analysis_data' => $analysisData,
                     'generated_at' => now()->toISOString(),
                     'player_id' => $player->id,
@@ -725,26 +591,30 @@ class HealthRecordController extends Controller
                 ->whereJsonContains('treatment_plan->report_id', $reportId)
                 ->firstOrFail();
             
+            $this->authorizeRecord($healthRecord);
             $reportData = json_decode($healthRecord->treatment_plan, true);
             $filePath = $reportData['file_path'] ?? null;
             
-            if (!$filePath || !\Storage::disk('public')->exists($filePath)) {
+            $disk=($reportData['storage_disk']??'public')==='local'?'local':'public';
+            if (!$filePath || !\Storage::disk($disk)->exists($filePath)) {
                 throw new \Exception('Rapport HL7 CDA non trouvé');
             }
             
-            $content = \Storage::disk('public')->get($filePath);
+            $content = \Storage::disk($disk)->get($filePath);
             $filename = $reportId . '.xml';
             
             return response($content)
                 ->header('Content-Type', 'application/xml')
                 ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
                 
+        } catch (\Illuminate\Validation\ValidationException|\Symfony\Component\HttpKernel\Exception\HttpException|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (\Exception $e) {
             \Log::error('HL7 CDA Download Error: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors du téléchargement du rapport HL7 CDA: ' . $e->getMessage()
+                'message' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }
@@ -757,27 +627,31 @@ class HealthRecordController extends Controller
                 ->whereJsonContains('treatment_plan->report_id', $reportId)
                 ->firstOrFail();
             
+            $this->authorizeRecord($healthRecord);
             $reportData = json_decode($healthRecord->treatment_plan, true);
             $filePath = $reportData['file_path'] ?? null;
             
-            if (!$filePath || !\Storage::disk('public')->exists($filePath)) {
+            $disk=($reportData['storage_disk']??'public')==='local'?'local':'public';
+            if (!$filePath || !\Storage::disk($disk)->exists($filePath)) {
                 throw new \Exception('Rapport HL7 CDA non trouvé');
             }
             
-            $xmlContent = \Storage::disk('public')->get($filePath);
+            $xmlContent = \Storage::disk($disk)->get($filePath);
             
             // Convert XML to HTML for better viewing
-            $htmlContent = $this->convertXmlToHtml($xmlContent, $reportData);
+            $htmlContent = '<!doctype html><html><meta charset="utf-8"><body><pre>'.htmlspecialchars($xmlContent, ENT_QUOTES|ENT_SUBSTITUTE, 'UTF-8').'</pre></body></html>';
             
             return response($htmlContent)
                 ->header('Content-Type', 'text/html');
                 
+        } catch (\Illuminate\Validation\ValidationException|\Symfony\Component\HttpKernel\Exception\HttpException|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (\Exception $e) {
             \Log::error('HL7 CDA View Error: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'affichage du rapport HL7 CDA: ' . $e->getMessage()
+                'message' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }

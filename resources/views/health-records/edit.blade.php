@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '{{ __('health_records_edit.edit_medical_record') }} - Med Predictor')
+@section('title', __('health_records_edit.edit_medical_record').' - Med Predictor')
 
 @push('scripts')
 <!-- Vue.js for Postural Assessment Component -->
@@ -368,7 +368,7 @@
                                 rows="3"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="{{ __('health_records_edit.list_of_known_allergies') }}"
-                            >{{ old('allergies', $healthRecord->allergies) }}</textarea>
+                            >{{ old('allergies', is_array($healthRecord->allergies) ? json_encode($healthRecord->allergies, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) : $healthRecord->allergies) }}</textarea>
                         </div>
                         
                         <div>
@@ -381,7 +381,7 @@
                                 rows="3"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="{{ __('health_records_edit.current_medications') }}"
-                            >{{ old('medications', $healthRecord->medications) }}</textarea>
+                            >{{ old('medications', is_array($healthRecord->medications) ? json_encode($healthRecord->medications, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) : $healthRecord->medications) }}</textarea>
                         </div>
                     </div>
 
@@ -397,7 +397,7 @@
                                 rows="4"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="{{ __('health_records_edit.important_medical_history') }}"
-                            >{{ old('medical_history', $healthRecord->medical_history) }}</textarea>
+                            >{{ old('medical_history', is_array($healthRecord->medical_history) ? json_encode($healthRecord->medical_history, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) : $healthRecord->medical_history) }}</textarea>
                         </div>
                         
                         <div>
@@ -410,7 +410,7 @@
                                 rows="4"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="{{ __('health_records_edit.symptoms_reported_by_the_patient') }}"
-                            >{{ old('symptoms', $healthRecord->symptoms) }}</textarea>
+                            >{{ old('symptoms', is_array($healthRecord->symptoms) ? json_encode($healthRecord->symptoms, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) : $healthRecord->symptoms) }}</textarea>
                         </div>
                     </div>
 
@@ -3747,7 +3747,7 @@ document.addEventListener('DOMContentLoaded', function() {
         aiAnalysisResults.classList.add('hidden');
 
         try {
-            const response = await fetch('{{ route("pcma.ai-analyze-ecg-effort") }}', {
+            const response = await fetch('{{ route("pcma.ai.ecg-effort") }}', {
                 method: 'POST',
                 body: formData
             });
@@ -3791,7 +3791,7 @@ document.addEventListener('DOMContentLoaded', function() {
         aiAnalysisResults.classList.add('hidden');
 
         try {
-            const response = await fetch('{{ route("pcma.ai-analyze-scintigraphy") }}', {
+            const response = await fetch('{{ route("pcma.ai.scintigraphy") }}', {
                 method: 'POST',
                 body: formData
             });
@@ -3861,7 +3861,7 @@ document.addEventListener('DOMContentLoaded', function() {
         aiAnalysisResults.classList.add('hidden');
 
         try {
-            const response = await fetch('{{ route("pcma.ai-analyze-scat") }}', {
+            const response = await fetch('{{ route("pcma.ai.scat") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -3935,7 +3935,7 @@ document.addEventListener('DOMContentLoaded', function() {
         aiAnalysisResults.classList.add('hidden');
 
         try {
-            const response = await fetch('{{ route("pcma.ai-analyze-complete") }}', {
+            const response = await fetch('{{ route("pcma.ai.complete") }}', {
                 method: 'POST',
                 body: formData
             });

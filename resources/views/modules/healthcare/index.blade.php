@@ -9,6 +9,7 @@
         <p class="text-gray-600 mt-2">{{ __('healthcare.records_description') }}</p>
     </div>
 
+    <div class="flex gap-4 mb-4"><a href="{{ route('health-records.create') }}">{{ __('healthcare.new_record_button') }}</a><a href="{{ route('healthcare.predictions') }}">{{ __('healthcare.medical_predictions') }}</a><a href="{{ route('healthcare.export') }}">{{ __('healthcare_repair.export') }}</a><a href="{{ route('pcma.index') }}">PCMA</a></div>
     @if(session('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
             {{ session('success') }}
@@ -68,7 +69,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $record->record_date->format('d/m/Y') }}
+                                    {{ $record->record_date?->format('d/m/Y') ?? __('healthcare.na') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
@@ -78,26 +79,16 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($record->risk_score)
-                                        <div class="flex items-center">
-                                            <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                                                <div class="bg-{{ $record->risk_score > 0.7 ? 'red' : ($record->risk_score > 0.4 ? 'yellow' : 'green') }}-500 h-2 rounded-full" 
-                                                     style="width: {{ $record->risk_score * 100 }}%"></div>
-                                            </div>
-                                            <span class="text-sm text-gray-600">{{ number_format($record->risk_score * 100, 0) }}%</span>
-                                        </div>
-                                    @else
-                                        <span class="text-gray-400">{{ __('healthcare.na') }}</span>
-                                    @endif
+                                    <span class="text-gray-400" title="{{ __('healthcare_repair.unvalidated') }}">{{ __('healthcare.na') }}</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $record->predictions->count() }} {{ __('healthcare.prediction_count') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <a href="{{ route('healthcare.records.show', ['record' => $record->id ?? 1]) }}" 
+                                        <a href="{{ route('healthcare.records.show', ['record' => $record->id]) }}"
                                            class="text-blue-600 hover:text-blue-900">{{ __('clinical.view_button') }}</a>
-                                        <a href="{{ route('healthcare.records.edit', ['record' => $record->id ?? 1]) }}" 
+                                        <a href="{{ route('healthcare.records.edit', ['record' => $record->id]) }}"
                                            class="text-indigo-600 hover:text-indigo-900">{{ __('common.edit') }}</a>
                                     </div>
                                 </td>
@@ -108,7 +99,7 @@
             </div>
             
             <div class="px-6 py-4 border-t border-gray-200">
-                <!-- Pagination removed - using Collection instead of paginated results -->
+                {{ $healthRecords->links() }}
             </div>
         @else
             <div class="px-6 py-8 text-center">

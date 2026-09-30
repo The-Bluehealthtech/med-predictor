@@ -1975,6 +1975,8 @@ Route::middleware(['auth'])->group(function () {
     })->name('player-passports.index');
     
     // Health Records routes
+    Route::get('/health-records/download-hl7-cda/{reportId}', [App\Http\Controllers\HealthRecordController::class, 'downloadHl7Cda'])->name('health-records.download-hl7-cda');
+    Route::get('/health-records/view-hl7-cda/{reportId}', [App\Http\Controllers\HealthRecordController::class, 'viewHl7Cda'])->name('health-records.view-hl7-cda');
     Route::get('/health-records', [App\Http\Controllers\HealthRecordController::class, 'index'])->name('health-records.index');
     Route::get('/health-records/create', [App\Http\Controllers\HealthRecordController::class, 'create'])->name('health-records.create');
     Route::post('/health-records', [App\Http\Controllers\HealthRecordController::class, 'store'])->name('health-records.store');
@@ -2268,33 +2270,11 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
     })->name('device-connections.oauth2.tokens');
     
     // Healthcare routes
-    Route::get('/healthcare', function () {
-        $user = auth()->user();
-        abort_unless($user->hasAnyRole(['system_admin', 'super_admin', 'association_medical', 'club_medical', 'doctor', 'medical_staff']), 403);
-
-        $query = \App\Models\HealthRecord::with(['player', 'user', 'predictions']);
-        if (!$user->isSystemAdmin()) {
-            if ($user->club_id) {
-                $query->whereHas('player', fn ($player) => $player->where('club_id', $user->club_id));
-            } elseif ($user->association_id) {
-                $query->whereHas('player', fn ($player) => $player->where('association_id', $user->association_id));
-            } else {
-                $query->whereRaw('1 = 0');
-            }
-        }
-
-        $healthRecords = $query->orderByDesc('record_date')->get();
-
-        return view('modules.healthcare.index', compact('healthRecords'));
-    })->name('healthcare.index');
+    Route::get('/healthcare', [App\Http\Controllers\HealthcareController::class, 'index'])->name('healthcare.index');
     
-    Route::get('/healthcare/predictions', function () {
-        return view('modules.healthcare.predictions');
-    })->name('healthcare.predictions');
+    Route::get('/healthcare/predictions', [App\Http\Controllers\HealthcareController::class, 'predictions'])->name('healthcare.predictions');
     
-    Route::get('/healthcare/export', function () {
-        return view('modules.healthcare.export');
-    })->name('healthcare.export');
+    Route::get('/healthcare/export', [App\Http\Controllers\HealthcareController::class, 'export'])->name('healthcare.export');
     
     // PCMA Dashboard routes (SPECIFIC ROUTES FIRST)
     Route::get('/pcma/dashboard', function () {
@@ -3113,25 +3093,13 @@ Route::get('/test-pdf', function() {
     })->name('medical-predictions.dashboard');
     
     // Healthcare Records routes
-    Route::get('/healthcare/records/{record}', function ($record) {
-        return view('modules.healthcare.records.show', [
-            'record' => $record
-        ]);
-    })->name('healthcare.records.show');
+    Route::get('/healthcare/records/{record}', [App\Http\Controllers\HealthcareController::class, 'show'])->name('healthcare.records.show');
     
-    Route::get('/healthcare/records/{record}/edit', function ($record) {
-        return view('modules.healthcare.records.edit', [
-            'record' => $record
-        ]);
-    })->name('healthcare.records.edit');
+    Route::get('/healthcare/records/{record}/edit', [App\Http\Controllers\HealthcareController::class, 'edit'])->name('healthcare.records.edit');
     
-    Route::put('/healthcare/records/{record}', function ($record) {
-        return redirect()->route('modules.healthcare.index')->with('success', 'Dossier médical mis à jour avec succès');
-    })->name('healthcare.records.update');
+    Route::put('/healthcare/records/{record}', [App\Http\Controllers\HealthcareController::class, 'update'])->name('healthcare.records.update');
     
-    Route::delete('/healthcare/records/{record}', function ($record) {
-        return redirect()->back()->with('success', 'Record deleted successfully');
-    })->name('healthcare.records.destroy');
+    Route::delete('/healthcare/records/{record}', [App\Http\Controllers\HealthcareController::class, 'destroy'])->name('healthcare.records.destroy');
     
     // Admin Account Requests routes
     Route::get('/admin/account-requests', function (\Illuminate\Http\Request $request) {
@@ -3261,31 +3229,7 @@ Route::get('/test-pdf', function() {
         ]);
     })->name('modules.medical.index');
     
-    Route::get('/modules/healthcare', function () {
-        // Meme logique reelle que la route /healthcare (HealthRecordController) -
-        // remplace les 3 patients factices (Ahmed Benali, Fatima Kadri, Omar Tazi)
-        // codes en dur qui s'affichaient ici avant.
-        $user = auth()->user();
-        abort_unless($user->hasAnyRole(['system_admin', 'super_admin', 'association_medical', 'club_medical', 'doctor', 'medical_staff']), 403);
-
-        $query = \App\Models\HealthRecord::with(['player', 'user', 'predictions']);
-        if (!$user->isSystemAdmin()) {
-            if ($user->club_id) {
-                $query->whereHas('player', fn ($player) => $player->where('club_id', $user->club_id));
-            } elseif ($user->association_id) {
-                $query->whereHas('player', fn ($player) => $player->where('association_id', $user->association_id));
-            } else {
-                $query->whereRaw('1 = 0');
-            }
-        }
-
-        $healthRecords = $query->orderByDesc('record_date')->get();
-
-        return view('modules.healthcare.index', [
-            'footballType' => 'association',
-            'healthRecords' => $healthRecords
-        ]);
-    })->name('modules.healthcare.index');
+    Route::get('/modules/healthcare', [App\Http\Controllers\HealthcareController::class, 'index'])->name('modules.healthcare.index');
     
     Route::get('/modules/competitions', [App\Http\Controllers\CompetitionController::class, 'moduleDashboard'])->name('modules.competitions.index');
     

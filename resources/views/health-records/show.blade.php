@@ -69,15 +69,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h1 class="text-3xl font-bold text-gray-900">🏥 {{ __('health_records.show_page.heading') }}</h1>
                 <p class="text-gray-600 mt-2">
                     {{ $healthRecord->player ? $healthRecord->player->full_name : __('healthcare.anonymous_patient') }}
-                    - {{ $healthRecord->record_date->format('d/m/Y') }}
+                    - {{ $healthRecord->record_date?->format('d/m/Y') ?? __('healthcare.na') }}
                 </p>
             </div>
             <div class="flex space-x-4">
-                <a href="{{ route('health-records.edit', $healthRecord) }}" 
+                <a href="{{ route('health-records.edit', $healthRecord) }}"
                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                     ✏️ {{ __('healthcare.edit') }}
                 </a>
-                <a href="{{ route('health-records.index') }}" 
+                <a href="{{ route('health-records.index') }}"
                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
                     ← {{ __('health_records.show_page.back_button') }}
                 </a>
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.registration_date_label') }}</label>
-                                <p class="mt-1 text-sm text-gray-900">{{ $healthRecord->record_date->format('d/m/Y H:i') }}</p>
+                                <p class="mt-1 text-sm text-gray-900">{{ $healthRecord->record_date?->format('d/m/Y H:i') ?? __('healthcare.na') }}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.next_visit_label') }}</label>
@@ -345,7 +345,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="px-6 py-4 border-b border-gray-200">
                             <div class="flex justify-between items-center">
                                 <h2 class="text-xl font-semibold text-gray-800">📊 {{ __('health_records.show_page.pcma_heading') }}</h2>
-                                <a href="{{ route('pcma.create', ['player_id' => $healthRecord->player_id]) }}" 
+                                <a href="{{ route('pcma.create', ['player_id' => $healthRecord->player_id]) }}"
                                    class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                                     ➕ {{ __('health_records.show_page.new_pcma_button') }}
                                 </a>
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                         <h5 class="font-medium text-gray-900">PCMA #{{ $pcma->id }}</h5>
                                         <p class="text-sm text-gray-600">
 
-                                                            {{ __('health_records.show_page.pcma_date_label') }} {{ $pcma->assessment_date ? $pcma->assessment_date->format('d/m/Y') : __('healthcare.na') }} •                                                            {{ __('health_records.show_page.pcma_status_label') }} {{ ucfirst(\$pcma->status) }}
+                                                            {{ __('health_records.show_page.pcma_date_label') }} {{ $pcma->assessment_date ? $pcma->assessment_date->format('d/m/Y') : __('healthcare.na') }} •                                                            {{ __('health_records.show_page.pcma_status_label') }} {{ ucfirst($pcma->status) }}
                                         </p>
                                                         <div class="flex items-center space-x-4 mt-1">
                                                             <span class="px-2 py-1 text-xs rounded-full 
@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                                                 <div class="flex space-x-2">
                                                     <a href="{{ route('pcma.show', $pcma) }}" class="text-blue-600 hover:text-blue-800 text-sm">{{ __('health_records.show_page.pcma_view_details') }}</a>
-                                                    <a href="{{ route('pcma.edit', \$pcma) }}" class="text-green-600 hover:text-green-800 text-sm">{{ __('healthcare.edit') }}</a>
+                                                    <a href="{{ route('pcma.edit', $pcma) }}" class="text-green-600 hover:text-green-800 text-sm">{{ __('healthcare.edit') }}</a>
                                                     <a href="{{ route('pcma.pdf', $pcma) }}" class="text-purple-600 hover:text-purple-800 text-sm">PDF</a>
                                 </div>
                                 </div>
@@ -399,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <div class="text-gray-400 text-6xl mb-4">📋</div>
                                     <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('health_records.show_page.no_pcma_heading') }}</h3>
                                     <p class="text-gray-600 mb-4">{{ __('health_records.show_page.no_pcma_desc') }}</p>
-                                    <a href="{{ route('pcma.create', ['player_id' => $healthRecord->player_id]) }}" 
+                                    <a href="{{ route('pcma.create', ['player_id' => $healthRecord->player_id]) }}"
                                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                                         ➕ {{ __('health_records.show_page.create_first_pcma') }}
                                     </a>
@@ -485,24 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h3 class="text-lg font-semibold text-gray-800">⚠️ {{ __('health_records.show_page.risk_score_heading') }}</h3>
                     </div>
                     <div class="p-6">
-                        @if($healthRecord->risk_score)
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-{{ $healthRecord->risk_score > 0.7 ? 'red' : ($healthRecord->risk_score > 0.4 ? 'yellow' : 'green') }}-600">
-                                    {{ number_format($healthRecord->risk_score * 100, 0) }}%
-                                </div>
-                                <div class="text-sm text-gray-600 mt-2">
-                                    {{ __('health_records.show_page.risk_level_label') }} {{ $healthRecord->risk_level }}
-                                </div>
-                                <div class="mt-4">
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-{{ $healthRecord->risk_score > 0.7 ? 'red' : ($healthRecord->risk_score > 0.4 ? 'yellow' : 'green') }}-500 h-2 rounded-full" 
-                                             style="width: {{ $healthRecord->risk_score * 100 }}%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        @else
-                            <p class="text-gray-500 text-center">{{ __('health_records.show_page.score_not_calculated') }}</p>
-                        @endif
+                        <p>{{ __('healthcare_repair.unvalidated') }}</p>
                     </div>
                 </div>
 
@@ -517,21 +500,21 @@ document.addEventListener('DOMContentLoaded', function() {
                                 @foreach($healthRecord->predictions->take(3) as $prediction)
                                     <div class="border-l-4 border-blue-500 pl-4">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{ $prediction->predicted_condition }}
+                                            {{ __('healthcare_repair.historical') }}
                                         </div>
                                         <div class="text-xs text-gray-500">
-                                            {{ $prediction->prediction_date->format('d/m/Y') }}
+                                            {{ $prediction->prediction_date?->format('d/m/Y') ?? __('healthcare.na') }}
                                         </div>
                                         <div class="text-xs text-gray-600 mt-1">
-                                            {{ __('health_records.show_page.confidence_label') }} {{ number_format(\$prediction->confidence_score * 100, 0) }}%
+                                            {{ __('healthcare_repair.unvalidated') }}
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
                             @if($healthRecord->predictions->count() > 3)
                                 <div class="mt-4 text-center">
-                                    <a href="{{ route('medical-predictions.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">
-                                        {{ __('health_records.show_page.view_all_predictions') }} ({{ \$healthRecord->predictions->count() }})
+                                    <a href="{{ route('healthcare.predictions') }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                                        {{ __('health_records.show_page.view_all_predictions') }} ({{ $healthRecord->predictions->count() }})
                                     </a>
                                 </div>
                             @endif
@@ -540,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         @endif
                         
                         <div class="mt-4">
-                            <button onclick="generatePrediction()" 
+                            <button disabled title="{{ __('healthcare_repair.unvalidated') }}"
                                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                                 🔮 {{ __('health_records.show_page.generate_prediction_button') }}
                             </button>
@@ -554,12 +537,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h3 class="text-lg font-semibold text-gray-800">⚡ {{ __('healthcare.actions') }}</h3>
                     </div>
                     <div class="p-6 space-y-3">
-                        <a href="{{ route('health-records.edit', $healthRecord) }}" 
+                        <a href="{{ route('health-records.edit', $healthRecord) }}"
                            class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                             ✏️ {{ __('health_records.show_page.edit_record_button') }}
                         </a>
 
-                        <a href="{{ route('medical-predictions.create') }}" 
+                        <a href="{{ route('healthcare.predictions') }}"
                            class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                             🔮 {{ __('health_records.show_page.new_prediction_button') }}
                         </a>

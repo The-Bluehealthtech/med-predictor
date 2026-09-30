@@ -255,32 +255,32 @@
                 @endif
 
                 <!-- Healthcare KPI Card -->
-                @if(auth()->user() && auth()->user()->canAccessModule('healthcare'))
+                @if(auth()->user() && auth()->user()->hasAnyRole(['system_admin','association_medical','club_medical','doctor','team_doctor','medical_staff']))
                 <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-lg overflow-hidden">
                     <div class="p-6 text-white">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xl font-bold">Healthcare</h3>
+                            <h3 class="text-xl font-bold"><a href="{{ route('modules.healthcare.index') }}">Healthcare</a></h3>
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                             </svg>
                         </div>
-                        <p class="text-red-100 mb-4">Health monitoring and medical predictions</p>
+                        <p class="text-red-100 mb-4">{{ __('healthcare_repair.card_description') }}</p>
                         
                         <!-- KPI Metrics -->
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div class="text-center">
-                                <div class="text-2xl font-bold">{{ $stats['total_health_records'] ?? 0 }}</div>
-                                <div class="text-xs text-red-200">Health Records</div>
+                                <div class="text-2xl font-bold">{{ $stats['total_health_records'] ?? '—' }}</div>
+                                <div class="text-xs text-red-200">{{ __('healthcare_repair.records_count') }}</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-2xl font-bold">{{ $medicalAlerts->count() ?? 0 }}</div>
-                                <div class="text-xs text-red-200">Medical Alerts</div>
+                                <div class="text-2xl font-bold">{{ $healthcareAlertsCount ?? '—' }}</div>
+                                <div class="text-xs text-red-200">{{ __('healthcare_repair.alerts') }}</div>
                             </div>
                         </div>
                         
                         <!-- Health Status Chart -->
                         <div class="bg-white bg-opacity-10 rounded-lg p-3">
-                            <div class="text-sm font-semibold mb-2">Health Status</div>
+                            <div class="text-sm font-semibold mb-2">{{ __('healthcare_repair.health_status') }}</div>
                             <div class="space-y-2">
                                 @php
                                     $totalHealthRecords = $stats['total_health_records'] ?: 1;
@@ -299,7 +299,7 @@
                                 </div>
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
-                                        <span class="text-blue-800 font-semibold">Pending</span>
+                                        <span class="text-blue-800 font-semibold">{{ __('healthcare.status_pending') }}</span>
                                         <span class="font-bold text-blue-800">{{ $healthRecordsByStatus['pending'] ?? 0 }}</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">
@@ -308,7 +308,7 @@
                                 </div>
                                 <div class="space-y-1">
                                     <div class="flex justify-between text-xs">
-                                        <span class="text-blue-800 font-semibold">Archived</span>
+                                        <span class="text-blue-800 font-semibold">{{ __('healthcare.status_archived') }}</span>
                                         <span class="font-bold text-blue-800">{{ $healthRecordsByStatus['archived'] ?? 0 }}</span>
                                     </div>
                                     <div class="w-full bg-white bg-opacity-20 rounded-full h-1">

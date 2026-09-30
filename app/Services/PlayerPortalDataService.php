@@ -87,6 +87,7 @@ class PlayerPortalDataService
             ->get();
 
         $medicalPredictionsRaw = DB::table('medical_predictions')
+            ->whereIn('ai_model_version', config('healthcare.validated_prediction_models', []))
             ->where('player_id', $playerId)
             ->orderByDesc('prediction_date')
             ->get();

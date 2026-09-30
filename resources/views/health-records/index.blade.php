@@ -84,17 +84,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($record->risk_score)
-                                        <div class="flex items-center">
-                                            <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                                                <div class="bg-{{ $record->risk_score > 0.7 ? 'red' : ($record->risk_score > 0.4 ? 'yellow' : 'green') }}-500 h-2 rounded-full" 
-                                                     style="width: {{ $record->risk_score * 100 }}%"></div>
-                                            </div>
-                                            <span class="text-sm text-gray-600">{{ number_format($record->risk_score * 100, 0) }}%</span>
-                                        </div>
-                                    @else
-                                        <span class="text-gray-400">{{ __('healthcare.na') }}</span>
-                                    @endif
+                                    <span title="{{ __('healthcare_repair.unvalidated') }}">{{ __('healthcare.na') }}</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $record->predictions ? $record->predictions->count() : 0 }} {{ __('healthcare.prediction_count') }}

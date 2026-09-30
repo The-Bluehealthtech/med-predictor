@@ -465,4 +465,119 @@ final class PcmaWorkflowRepairTest extends TestCase
         $this->postJson('/api/pcma/auto-save',$this->input(['allergies_icd11_selection'=>$choice]))->assertStatus(422);
         self::assertSame(0,PCMA::count());
     }
+    private function healthcareSchema(): void
+    {
+        Schema::create('health_records',function(Blueprint $t){
+            $t->id();
+            foreach((new \App\Models\HealthRecord)->getFillable() as $field)$t->text($field)->nullable();
+            $t->timestamps();
+        });
+        Schema::create('medical_predictions',function(Blueprint $t){
+            $t->id();
+            foreach((new \App\Models\MedicalPrediction)->getFillable() as $field)$t->text($field)->nullable();
+            $t->timestamps();
+        });
+        \Illuminate\Support\Facades\Event::fake([\App\Events\HealthRecordCreated::class]);
+    }
+    private function healthRecord(int $player=10): \App\Models\HealthRecord
+    {
+        return \App\Models\HealthRecord::create(['player_id'=>$player,'user_id'=>1,
+            'status'=>'active','record_date'=>'2026-09-30','diagnosis'=>'Fixture clinical note']);
+    }
+    public function test_healthcare_lists_real_records_and_blocks_cross_club_operations(): void
+    {
+        $this->healthcareSchema();$own=$this->healthRecord();$other=$this->healthRecord(20);
+        $this->get('/modules/healthcare')->assertOk()->assertSee('Fixture A')->assertDontSee('Fixture B')->assertDontSee('Patient Example');
+        $this->get('/healthcare/records/'.$own->id)->assertOk()->assertSee('Fixture clinical note')->assertDontSee('45%');
+        $this->get('/healthcare/records/'.$other->id)->assertNotFound();
+        $this->get('/healthcare/records/'.$other->id.'/edit')->assertNotFound();
+        $this->putJson('/healthcare/records/'.$other->id,['record_date'=>'2026-09-30'])->assertNotFound();
+        $this->deleteJson('/healthcare/records/'.$other->id)->assertNotFound();
+        $this->getJson('/health-records/'.$other->id)->assertForbidden();
+        $this->actingAs((new User(['role'=>'player']))->forceFill(['tenant_id'=>1]));
+        $this->getJson('/modules/healthcare')->assertForbidden();
+        $this->getJson('/healthcare/predictions')->assertForbidden();
+        $this->getJson('/healthcare/export?download=1')->assertForbidden();
+    }
+    public function test_healthcare_update_and_delete_persist_and_do_not_reassign_player(): void
+    {
+        $this->healthcareSchema();$record=$this->healthRecord();
+        $this->put('/healthcare/records/'.$record->id,['record_date'=>'2026-09-29',
+            'diagnosis'=>'Updated fixture','allergies'=>"First\nSecond",'aut_notes'=>'Fixture AUT note','dental_records'=>'["Fixture dental observation"]'])->assertRedirect();
+        self::assertSame('Updated fixture',$record->fresh()->diagnosis);
+        self::assertSame('Fixture AUT note',$record->fresh()->aut_notes);
+        self::assertSame(['Fixture dental observation'],$record->fresh()->dental_records);
+        self::assertSame(['First','Second'],$record->fresh()->allergies);
+        self::assertSame('2026-09-29',$record->fresh()->record_date->format('Y-m-d'));
+        $this->putJson('/healthcare/records/'.$record->id,['player_id'=>20,'record_date'=>'2026-09-30'])->assertStatus(422);
+        self::assertSame(10,(int)$record->fresh()->player_id);
+        $this->delete('/healthcare/records/'.$record->id)->assertRedirect();
+        self::assertFalse(\App\Models\HealthRecord::whereKey($record->id)->exists());
+    }
+    public function test_healthcare_predictions_and_export_render_and_csv_is_scoped(): void
+    {
+        $this->healthcareSchema();$this->healthRecord();$this->healthRecord(20);
+        $this->get('/healthcare/predictions')->assertOk()->assertSee(__('healthcare_repair.unvalidated'));
+        $this->get('/healthcare/export')->assertOk()->assertSee('download=1');
+        $response=$this->get('/healthcare/export?download=1')->assertOk();
+        $csv=$response->streamedContent();
+        self::assertStringContainsString('record_id,player_id',$csv);
+        self::assertStringContainsString(',10,',$csv);
+        self::assertStringNotContainsString(',20,',$csv);
+        $record=\App\Models\HealthRecord::first();$record->update(['diagnosis'=>'=FORMULA']);
+        $csv=$this->get('/healthcare/export?download=1')->assertOk()->streamedContent();
+        self::assertStringContainsString("'=FORMULA",$csv);
+    }
+    public function test_healthcare_creation_without_fifa_does_not_generate_fake_prediction(): void
+    {
+        $this->healthcareSchema();
+        $data=['player_id'=>10,'visit_date'=>'2026-09-30','record_date'=>'2026-09-30',
+            'doctor_name'=>'Fixture Doctor','visit_type'=>'consultation','allergies'=>'[]'];
+        $this->post('/health-records',$data)->assertRedirect();
+        $record=\App\Models\HealthRecord::firstOrFail();
+        self::assertSame(10,(int)$record->player_id);
+        self::assertSame(0,\App\Models\MedicalPrediction::count());
+        $this->postJson('/health-records/'.$record->id.'/generate-prediction')->assertStatus(503);
+        self::assertSame(0,\App\Models\MedicalPrediction::count());
+        $data['player_id']=20;
+        $this->postJson('/health-records',$data)->assertNotFound();
+        self::assertSame(1,\App\Models\HealthRecord::count());
+    }
+    public function test_healthcare_canonical_edit_and_null_date_render_without_error(): void
+    {
+        $this->withoutExceptionHandling();
+        $this->healthcareSchema();$record=$this->healthRecord();
+        $record->update(['allergies'=>['Fixture allergy'],'medications'=>['Fixture medication'],'record_date'=>null]);
+        $this->get('/modules/healthcare')->assertOk();
+        $this->get('/health-records/'.$record->id)->assertOk();
+        $this->get('/healthcare/records/'.$record->id.'/edit')->assertOk()->assertSee('Fixture allergy');
+    }
+    public function test_healthcare_hl7_export_is_private_and_medically_scoped(): void
+    {
+        $this->healthcareSchema();
+        $input=['player_id'=>10,'record_date'=>'2026-09-30',
+            'analysis_data'=>['type'=>'Fixture','analysis'=>['note'=>'Fixture content <script>unsafe</script>']]];
+        $response=$this->postJson('/health-records/generate-hl7-cda',$input)->assertOk();
+        $id=$response->json('report_id');
+        Storage::disk('local')->assertExists('hl7_reports/'.$id.'.xml');
+        Storage::disk('public')->assertMissing('hl7_reports/'.$id.'.xml');
+        $this->get('/health-records/download-hl7-cda/'.$id)->assertOk()->assertHeader('Content-Type','application/xml');
+        $this->get('/health-records/view-hl7-cda/'.$id)->assertOk()->assertDontSee('<script>unsafe</script>',false);
+        $this->actingAs(User::findOrFail(1)->forceFill(['club_id'=>2,'tenant_id'=>1]));
+        $this->getJson('/health-records/download-hl7-cda/'.$id)->assertForbidden();
+        $this->getJson('/health-records/view-hl7-cda/'.$id)->assertForbidden();
+    }
+    public function test_healthcare_create_list_edit_and_export_render_in_both_languages(): void
+    {
+        $this->healthcareSchema();$record=$this->healthRecord();
+        foreach(['fr','en'] as $lang){
+            $this->get('/modules/healthcare?lang='.$lang)->assertOk();
+            $this->get('/health-records?lang='.$lang)->assertOk();
+            $this->get('/health-records/create?player_id=10&lang='.$lang)->assertOk();
+            $this->get('/healthcare/records/'.$record->id.'/edit?lang='.$lang)->assertOk();
+            $this->get('/healthcare/predictions?lang='.$lang)->assertOk();
+            $this->get('/healthcare/export?lang='.$lang)->assertOk();
+        }
+        $this->getJson('/health-records/create?player_id=20')->assertNotFound();
+    }
 }

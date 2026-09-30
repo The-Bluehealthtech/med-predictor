@@ -55,7 +55,7 @@ class DashboardController extends Controller
             'upcoming_competitions' => 0,
             'completed_competitions' => 0,
             'total_competitions' => 0,
-            'total_health_records' => 0,
+            'total_health_records' => null,
             'fifa_connect_status' => 'Connected',
         ];
         
@@ -81,7 +81,7 @@ class DashboardController extends Controller
         
         try {
             if (class_exists('\App\Models\HealthRecord')) {
-                $stats['total_health_records'] = \App\Models\HealthRecord::count();
+                $stats['total_health_records'] = app(HealthcareController::class)->query()->count();
             }
         } catch (\Exception $e) {
             // Model doesn't exist or table doesn't exist
@@ -94,6 +94,12 @@ class DashboardController extends Controller
             'pending' => 0,
         ];
         
+        try {
+            $healthRecordsByStatus = array_replace($healthRecordsByStatus, app(HealthcareController::class)->query()->select('status', \DB::raw('count(*) as aggregate'))->groupBy('status')->pluck('aggregate','status')->all());
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            // Un rôle non médical ne reçoit aucune statistique médicale.
+        }
+
         $predictionsByType = [
             'Blessure' => 0,
             'Performance' => 0,

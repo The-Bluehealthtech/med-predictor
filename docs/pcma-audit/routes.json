@@ -1,0 +1,785 @@
+[
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/pcma\/pdf",
+        "name": "api.pcma.pdf",
+        "action": "App\\Http\\Controllers\\PCMAController@generatePdf",
+        "exists": false,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/pcma\/store",
+        "name": "api.pcma.store",
+        "action": "App\\Http\\Controllers\\PCMAController@store",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "api\/v1\/pcmas",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@index",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/pcmas",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@store",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "api\/v1\/pcmas\/{pcma}",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@show",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "PUT"
+        ],
+        "uri": "api\/v1\/pcmas\/{pcma}",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@update",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "DELETE"
+        ],
+        "uri": "api\/v1\/pcmas\/{pcma}",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@destroy",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/pcmas\/{pcma}\/complete",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@complete",
+        "exists": false,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/pcmas\/{pcma}\/fail",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@fail",
+        "exists": false,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/pcmas\/prefill-from-transcript",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@prefillFromTranscript",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "api\/v1\/pcmas\/player\/{player}",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@getPlayerPCMAs",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "api\/v1\/pcmas\/fifa-connect\/{fifaConnectId}",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@getFifaConnectPCMAs",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "api\/v1\/pcmas\/signed",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@getSignedPCMAs",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/pcmas\/whisper-transcribe",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@whisperTranscribe",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/pcmas\/fetch-fhir-data",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@fetchFhirData",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/pcmas\/ocr-extract",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@ocrExtract",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/pcmas\/ai-analyze-ecg",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@aiAnalyzeEcg",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/pcmas\/ai-analyze-mri",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@aiAnalyzeMri",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/pcmas\/ai-analyze-complete",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@aiAnalyzeComplete",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/pcmas\/dicom-viewer\/process",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@processDicomFile",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "api\/v1\/pcmas\/dicom-viewer\/metadata\/{file}",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@getDicomMetadata",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "api\/v1\/athletes\/{athlete}\/pcmas",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@getAthletePCMAs",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "api\/v1\/athletes\/{athlete}\/pcmas\/statistics",
+        "name": null,
+        "action": "App\\Http\\Controllers\\Api\\V1\\PCMAController@getAthletePCMAStats",
+        "exists": true,
+        "middleware": [
+            "api",
+            "auth:sanctum"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "api\/pcma\/doctor-signoff-demo",
+        "name": "pcma.doctor-signoff-demo",
+        "action": "Closure",
+        "exists": null,
+        "middleware": [
+            "api"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/google-assistant\/submit-pcma",
+        "name": null,
+        "action": "App\\Http\\Controllers\\GoogleAssistantController@submitPcmaToFit",
+        "exists": true,
+        "middleware": [
+            "api"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "pcma\/voice-fallback",
+        "name": "pcma.voice-fallback",
+        "action": "Closure",
+        "exists": null,
+        "middleware": [
+            "web"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/pcma\/auto-save",
+        "name": "api.pcma.auto.save",
+        "action": "Closure",
+        "exists": null,
+        "middleware": [
+            "web"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "api\/signed-pcmas",
+        "name": "api.signed-pcmas",
+        "action": "Closure",
+        "exists": null,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/clinical\/analyze-pcma\/{pCMAId}",
+        "name": "clinical.analyze.pcma",
+        "action": "App\\Http\\Controllers\\ClinicalDataSupportController@analyzePCMA",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "api\/v1\/clinical\/batch-analyze-pcma",
+        "name": "clinical.batch.analyze.pcma",
+        "action": "App\\Http\\Controllers\\ClinicalDataSupportController@batchAnalyzePCMA",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "pcma\/dashboard",
+        "name": "pcma.dashboard",
+        "action": "Closure",
+        "exists": null,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "pcma\/create",
+        "name": "pcma.create",
+        "action": "App\\Http\\Controllers\\PCMAController@create",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma",
+        "name": "pcma.store",
+        "action": "App\\Http\\Controllers\\PCMAController@store",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "pcma\/{pcma}",
+        "name": "pcma.show",
+        "action": "App\\Http\\Controllers\\PCMAController@show",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "pcma\/{pcma}\/edit",
+        "name": "pcma.edit",
+        "action": "App\\Http\\Controllers\\PCMAController@edit",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "PUT"
+        ],
+        "uri": "pcma\/{pcma}",
+        "name": "pcma.update",
+        "action": "App\\Http\\Controllers\\PCMAController@update",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "DELETE"
+        ],
+        "uri": "pcma\/{pcma}",
+        "name": "pcma.destroy",
+        "action": "App\\Http\\Controllers\\PCMAController@destroy",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "pcma\/pdf",
+        "name": null,
+        "action": "Closure",
+        "exists": null,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "pcma",
+        "name": "pcma.index",
+        "action": "App\\Http\\Controllers\\PCMAController@index",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai-analyze-ecg",
+        "name": "pcma.ai-analyze-ecg",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeEcg",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai-analyze-mri",
+        "name": "pcma.ai-analyze-mri",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeMri",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai-analyze-xray",
+        "name": "pcma.ai-analyze-xray",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeXray",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai-analyze-ct",
+        "name": "pcma.ai-analyze-ct",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeCt",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai-analyze-ultrasound",
+        "name": "pcma.ai-analyze-ultrasound",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeUltrasound",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai-fitness-assessment",
+        "name": "pcma.ai-fitness-assessment",
+        "action": "App\\Http\\Controllers\\PCMAController@aiFitnessAssessment",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/pdf",
+        "name": "pcma.pdf.post",
+        "action": "App\\Http\\Controllers\\PCMAController@generatePdf",
+        "exists": false,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "pcma\/{pcma}\/complete",
+        "name": "pcma.complete",
+        "action": "App\\Http\\Controllers\\PCMAController@complete",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "pcma\/{pcma}\/fail",
+        "name": "pcma.fail",
+        "action": "App\\Http\\Controllers\\PCMAController@fail",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "GET",
+            "HEAD"
+        ],
+        "uri": "pcma\/{pcma}\/pdf",
+        "name": "pcma.pdf",
+        "action": "App\\Http\\Controllers\\PCMAController@exportPdf",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai\/ecg",
+        "name": "pcma.ai.ecg",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeEcg",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai\/mri",
+        "name": "pcma.ai.mri",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeMri",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai\/xray",
+        "name": "pcma.ai.xray",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeXray",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai\/ecg-effort",
+        "name": "pcma.ai.ecg-effort",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeEcgEffort",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai\/scintigraphy",
+        "name": "pcma.ai.scintigraphy",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeScintigraphy",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai\/scat",
+        "name": "pcma.ai.scat",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeScat",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai\/complete",
+        "name": "pcma.ai.complete",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeComplete",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai\/ct",
+        "name": "pcma.ai.ct",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeCt",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai\/ultrasound",
+        "name": "pcma.ai.ultrasound",
+        "action": "App\\Http\\Controllers\\PCMAController@aiAnalyzeUltrasound",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    },
+    {
+        "methods": [
+            "POST"
+        ],
+        "uri": "pcma\/ai\/fitness",
+        "name": "pcma.ai.fitness",
+        "action": "App\\Http\\Controllers\\PCMAController@aiFitnessAssessment",
+        "exists": true,
+        "middleware": [
+            "web",
+            "auth"
+        ]
+    }
+]

@@ -1,0 +1,28 @@
+/pcma -> App\Http\Controllers\PCMAController@index
+/pcma/create -> App\Http\Controllers\PCMAController@create
+/pcma/42/edit -> App\Http\Controllers\PCMAController@edit
+/api/v1/pcmas/signed -> App\Http\Controllers\Api\V1\PCMAController@show
+POST /pcma -> App\Http\Controllers\PCMAController@store
+PCMA_ROUTES=59 MISSING_ACTIONS=4
+MISSING api/pcma/pdf App\Http\Controllers\PCMAController@generatePdf
+MISSING api/v1/pcmas/{pcma}/complete App\Http\Controllers\Api\V1\PCMAController@complete
+MISSING api/v1/pcmas/{pcma}/fail App\Http\Controllers\Api\V1\PCMAController@fail
+MISSING pcma/pdf App\Http\Controllers\PCMAController@generatePdf
+EMPTY_ASSESSMENT={"medical_status":"Normal","sports_eligibility":"Cleared for sports","recommendations":"All assessments within normal limits"}
+EMPTY_COMPLETE_HTTP=200 BODY={"success":true,"analysis":{"overall_assessment":{"medical_status":"Normal","sports_eligibility":"Cleared for sports","recommendations":"All assessments within normal limits"}}}
+CREATE_RENDER_fr=418250
+CREATE_RENDER_en=415082
+LOCAL_COUNT players=825
+LOCAL_COUNT athletes=0
+LOCAL_COUNT pcmas=0
+LOCAL_COUNT medical_predictions=0
+PDF_VIEW_DEPLOYED=no
+FORM_STORE_HTTP=422 ERRORS=["player_id"]
+EMPTY_ECG_HTTP=500
+FITNESS_NODE_CONTRACT_HTTP=503
+AUTO_SAVE_SUCCESS=true DB_CHANGE=0
+VIEW_index_OK=28452
+VIEW_dashboard_OK=36074
+VIEW_edit_ERROR=Undefined variable $users (View: /private/tmp/fit-pcma-render-20260930/resources/views/pcma/edit.blade.php)
+VIEW_pcma.show_OK=42642
+VIEW_pcma.voice-fallback_OK=21933

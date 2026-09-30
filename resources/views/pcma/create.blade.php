@@ -941,22 +941,10 @@
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                            @include('pcma.partials.cardiovascular-history')
+                            @include('pcma.partials.icd11-history', ['section'=>'cardiovascular','textField'=>'cardiovascular_history','label'=>'pcma.cardiovascular_history_label'])
                         </div>
                         <div>
-                                    <label for="surgical_history" class="block text-sm font-medium text-gray-700 mb-2">
-                                        {{ __('pcma.surgical_history_label') }}
-                                    </label>
-                                    <div class="relative">
-                                        <input type="text" 
-                                               id="surgical_search" 
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                               placeholder="{{ __('pcma.surgical_search_placeholder') }}"
-                                               autocomplete="off">
-                                        <div id="surgical_results" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
-                                        <input type="hidden" id="surgical_history" name="surgical_history" value="{{ old('surgical_history') }}">
-                                        <div id="surgical_selected" class="mt-2 space-y-1"></div>
-                                    </div>
+                                    @include('pcma.partials.icd11-history', ['section'=>'surgical','textField'=>'surgical_history','label'=>'pcma.surgical_history_label'])
                                 </div>
                                 
                                 <div>
@@ -964,19 +952,7 @@
                         </div>
 
                         <div>
-                                    <label for="allergies" class="block text-sm font-medium text-gray-700 mb-2">
-                                        {{ __('pcma.allergies_label') }}
-                                    </label>
-                                    <div class="relative">
-                                        <input type="text" 
-                                               id="allergy_search" 
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                               placeholder="{{ __('pcma.allergy_search_placeholder') }}"
-                                               autocomplete="off">
-                                        <div id="allergy_results" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
-                                        <input type="hidden" id="allergies" name="allergies" value="{{ old('allergies') }}">
-                                        <div id="allergy_selected" class="mt-2 space-y-1"></div>
-                                    </div>
+                                    @include('pcma.partials.icd11-history', ['section'=>'allergies','textField'=>'allergies','label'=>'pcma.allergies_label'])
                                 </div>
                             </div>
                         </div>

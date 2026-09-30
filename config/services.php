@@ -101,9 +101,10 @@ return [
     ],
 
     'icd11' => [
+        'release' => env('ICD11_RELEASE', '2026-01'),
         'client_id' => env('ICD11_CLIENT_ID'),
         'client_secret' => env('ICD11_CLIENT_SECRET'),
-        'base_url' => env('ICD11_BASE_URL', 'https://icd.who.int/icdapi'),
+        'base_url' => env('ICD11_BASE_URL', 'https://id.who.int'),
         'timeout' => env('ICD11_TIMEOUT', 30),
         'cache_ttl' => env('ICD11_CACHE_TTL', 3600),
         'retry_attempts' => env('ICD11_RETRY_ATTEMPTS', 3),

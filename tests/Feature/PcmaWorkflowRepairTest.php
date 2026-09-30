@@ -364,4 +364,105 @@ final class PcmaWorkflowRepairTest extends TestCase
         $signed=Route::getRoutes()->match(Request::create('/api/v1/pcmas/signed'));
         self::assertStringEndsWith('@getSignedPCMAs',$signed->getActionName());
     }
+    private function fakeWho(): void
+    {
+        config()->set('services.icd11', ['client_id'=>'test-only','client_secret'=>'test-only',
+            'base_url'=>'https://id.who.int','release'=>'2026-01','timeout'=>2,'cache_ttl'=>60]);
+        \Illuminate\Support\Facades\Cache::flush();
+        // Réponses simulées du contrat OMS : aucune observation de joueur.
+        Http::fake([
+            'https://icdaccessmanagement.who.int/connect/token'=>Http::response(['access_token'=>'test-token','expires_in'=>3600]),
+            'https://id.who.int/*/search*'=>Http::response(['destinationEntities'=>[
+                ['id'=>'http://id.who.int/icd/entity/761947693','theCode'=>'BA00','title'=>'<em>Hypertension</em>','isLeaf'=>false],
+                ['id'=>'https://evil.example/1','theCode'=>'FAKE','title'=>'Rejected'],
+                ['id'=>'http://id.who.int/icd/entity/2','title'=>'No code'],
+            ]]),
+            'https://id.who.int/icd/release/11/*/mms/761947693'=>Http::response([
+                '@id'=>'http://id.who.int/icd/release/11/2026-01/mms/761947693',
+                'code'=>'BA00','title'=>['@value'=>'Hypertension essentielle']]),
+        ]);
+    }
+    public function test_who_search_checks_access_and_returns_plain_official_labels(): void
+    {
+        $this->fakeWho();
+        $this->getJson('/api/pcma/icd11/search?q=hypertension&language=fr')->assertOk()
+            ->assertJsonCount(1,'items')->assertJsonPath('items.0.code','BA00')
+            ->assertJsonPath('items.0.label','Hypertension');
+        Http::assertSent(fn($r)=>str_contains($r->url(),'/mms/search')
+            && $r->hasHeader('API-Version','v2') && $r->hasHeader('Accept-Language','fr'));
+        $this->getJson('/api/pcma/icd11/search?q=x&language=fr')->assertStatus(422);
+        $this->actingAs((new User(['role'=>'player']))->forceFill(['tenant_id'=>1]));
+        $this->getJson('/api/pcma/icd11/search?q=hypertension&language=fr')->assertForbidden();
+    }
+    public function test_who_codes_roundtrip_all_history_sections_without_client_labels(): void
+    {
+        $this->fakeWho();
+        $choice=json_encode([['id'=>'761947693','release'=>'2026-01','language'=>'fr','code'=>'FORGED','label'=>'FORGED']]);
+        $fields=[];
+        foreach(['cardiovascular','surgical','allergies'] as $section)$fields[$section.'_icd11_selection']=$choice;
+        $id=$this->postJson('/api/pcma/auto-save',$this->input($fields+['allergies'=>'Notes conservées']))
+            ->assertOk()->json('pcma_id');
+        $pcma=PCMA::findOrFail($id);
+        foreach(['cardiovascular','surgical','allergies'] as $section){
+            $entry=$pcma->result_json['medical_history'][$section.'_icd11_codes'][0];
+            self::assertSame('BA00',$entry['code']); self::assertSame('Hypertension essentielle',$entry['label']);
+            $html=view('pcma.partials.icd11-history',['pcma'=>$pcma,'section'=>$section,
+                'textField'=>$section==='cardiovascular'?'cardiovascular_history':($section==='surgical'?'surgical_history':'allergies'),
+                'label'=>'pcma.allergies_label'])->render();
+            self::assertStringContainsString('BA00',$html);
+        }
+        self::assertFalse($pcma->is_signed); self::assertNull($pcma->final_statement);
+        $this->postJson('/api/pcma/auto-save',$this->input(['pcma_id'=>$id,'allergies_icd11_selection'=>'[]']))->assertOk();
+        self::assertSame([],$pcma->fresh()->result_json['medical_history']['allergies_icd11_codes']);
+        self::assertSame('Notes conservées',$pcma->fresh()->result_json['medical_history']['allergies']);
+        self::assertSame(60,$pcma->fresh()->result_json['vital_signs']['heart_rate']);
+        self::assertCount(1,$pcma->fresh()->result_json['medical_history']['surgical_icd11_codes']);
+    }
+    public function test_who_unavailable_credentials_and_provider_failures_are_503(): void
+    {
+        config()->set('services.icd11',['base_url'=>'https://id.who.int','release'=>'2026-01']);
+        $this->getJson('/api/pcma/icd11/search?q=allergie&language=fr')->assertStatus(503);
+        Http::assertNothingSent();
+        $this->fakeWho();
+        Http::swap(new \Illuminate\Http\Client\Factory());
+        Http::preventStrayRequests();
+        Http::fake(['https://icdaccessmanagement.who.int/connect/token'=>Http::response(['access_token'=>'test-token']),
+            'https://id.who.int/*'=>Http::response('unavailable',503)]);
+        $this->getJson('/api/pcma/icd11/search?q=allergie&language=en')->assertStatus(503);
+    }
+    public function test_who_rejects_arbitrary_entity_urls_without_network_request(): void
+    {
+        $choice=json_encode([['id'=>'https://evil.example/1','release'=>'2026-01','language'=>'fr']]);
+        $this->postJson('/api/pcma/auto-save',$this->input(['allergies_icd11_selection'=>$choice]))->assertStatus(422);
+        self::assertSame(0,PCMA::count()); Http::assertNothingSent();
+    }
+    public function test_who_refreshes_token_once_after_401(): void
+    {
+        $this->fakeWho();
+        Http::swap(new \Illuminate\Http\Client\Factory());
+        Http::preventStrayRequests();
+        Http::fake([
+            'https://icdaccessmanagement.who.int/connect/token'=>Http::sequence()
+                ->push(['access_token'=>'old','expires_in'=>3600])->push(['access_token'=>'new','expires_in'=>3600]),
+            'https://id.who.int/*'=>Http::sequence()->push([],401)->push(['destinationEntities'=>[]]),
+        ]);
+        $this->getJson('/api/pcma/icd11/search?q=allergie&language=en')->assertOk()->assertJsonPath('items',[]);
+        Http::assertSentCount(4);
+    }
+    public function test_who_timeout_malformed_response_and_unknown_entity_have_clear_errors(): void
+    {
+        $this->fakeWho();
+        Http::swap(new \Illuminate\Http\Client\Factory()); Http::preventStrayRequests();
+        Http::fake(['https://icdaccessmanagement.who.int/connect/token'=>Http::response(['access_token'=>'test-token']),
+            'https://id.who.int/*'=>function(){throw new \Illuminate\Http\Client\ConnectionException('Simulated timeout');}]);
+        $this->getJson('/api/pcma/icd11/search?q=allergie&language=fr')->assertStatus(503);
+        Http::swap(new \Illuminate\Http\Client\Factory()); Http::preventStrayRequests();
+        Http::fake(['https://id.who.int/*'=>Http::response(['unexpected'=>true])]);
+        $this->getJson('/api/pcma/icd11/search?q=allergie&language=fr')->assertStatus(503);
+        Http::swap(new \Illuminate\Http\Client\Factory()); Http::preventStrayRequests();
+        Http::fake(['https://id.who.int/*'=>Http::response([],404)]);
+        $choice=json_encode([['id'=>'999999999','release'=>'2026-01','language'=>'fr']]);
+        $this->postJson('/api/pcma/auto-save',$this->input(['allergies_icd11_selection'=>$choice]))->assertStatus(422);
+        self::assertSame(0,PCMA::count());
+    }
 }

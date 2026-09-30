@@ -47,6 +47,9 @@ final class PcmaFormData
                 'surgical_history' => 'nullable|string',
                 'medications' => 'nullable|string',
                 'medication_selection' => 'nullable|json|max:20000',
+                'cardiovascular_icd11_selection' => 'nullable|json|max:20000',
+                'surgical_icd11_selection' => 'nullable|json|max:20000',
+                'allergies_icd11_selection' => 'nullable|json|max:20000',
                 'allergies' => 'nullable|string',
                 // Physical Examination
                 'general_appearance' => 'nullable|in:normal,abnormal',
@@ -171,7 +174,7 @@ final class PcmaFormData
             unset($validated['cardiovascular_icd11']);
         }
         $validated['result_json'] = $result;
-        return $validated;
+        return app(WhoIcd11::class)->applySelections($validated);
     }
 
 }

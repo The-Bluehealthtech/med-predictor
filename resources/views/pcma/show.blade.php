@@ -437,12 +437,12 @@
                         <dd class="text-sm text-gray-900">{{ $pcma->result_json['medical_history']['cardiovascular_history'] ?? __('pcma_extra.not_recorded') }}
                             @if($pcma->result_json['medical_history']['cardiovascular_icd11'] ?? null)
                             <p>{{ $pcma->result_json['medical_history']['cardiovascular_icd11']['code'] }} — {{ $pcma->result_json['medical_history']['cardiovascular_icd11'][app()->getLocale() === 'en' ? 'label_en' : 'label_fr'] }}</p>
-                            @endif</dd>
+                            @endif@include('pcma.partials.icd11-summary', ['onlySection'=>'cardiovascular'])</dd>
                     </div>
                     
                     <div>
                         <dt class="text-sm font-medium text-gray-500">{{ __('pcma.surgical_history_label') }}</dt>
-                        <dd class="text-sm text-gray-900">{{ $pcma->result_json['medical_history']['surgical_history'] ?? __('pcma_extra.not_recorded') }}</dd>
+                        <dd class="text-sm text-gray-900">{{ $pcma->result_json['medical_history']['surgical_history'] ?? __('pcma_extra.not_recorded') }}@include('pcma.partials.icd11-summary', ['onlySection'=>'surgical'])</dd>
                     </div>
                     
                     <div>
@@ -453,7 +453,7 @@
                     
                     <div>
                         <dt class="text-sm font-medium text-gray-500">Allergies</dt>
-                        <dd class="text-sm text-gray-900">{{ $pcma->result_json['medical_history']['allergies'] ?? __('pcma_extra.not_recorded') }}</dd>
+                        <dd class="text-sm text-gray-900">{{ $pcma->result_json['medical_history']['allergies'] ?? __('pcma_extra.not_recorded') }}@include('pcma.partials.icd11-summary', ['onlySection'=>'allergies'])</dd>
                     </div>
                 </div>
             </div>

@@ -105,6 +105,7 @@ class PCMAController extends Controller
             
             // Create PCMA
             $validatedData = app(\App\Services\MedicationCatalogue::class)->applySelection($validatedData);
+            $validatedData = app(\App\Services\WhoIcd11::class)->applySelections($validatedData);
             $pcma = PCMA::create($validatedData);
 
             // Dispatch event for cardio PCMAs
@@ -187,6 +188,7 @@ class PCMAController extends Controller
             }
 
             $validatedData = app(\App\Services\MedicationCatalogue::class)->applySelection($validatedData, $pcma->result_json);
+            $validatedData = app(\App\Services\WhoIcd11::class)->applySelections($validatedData, $pcma->result_json);
             $pcma->update($validatedData);
 
             // Une complétude de formulaire ne constitue pas une certification FIFA.

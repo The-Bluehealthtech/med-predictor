@@ -59,6 +59,9 @@ class StoreFifaCompliantPCMARequest extends FormRequest
             
             // Medical History (Player Questionnaire)
             'medication_selection' => 'nullable|json|max:20000',
+                'cardiovascular_icd11_selection' => 'nullable|json|max:20000',
+                'surgical_icd11_selection' => 'nullable|json|max:20000',
+                'allergies_icd11_selection' => 'nullable|json|max:20000',
             'medical_history' => 'nullable|array',
             'medical_history.personal_details' => 'nullable|array',
             'medical_history.personal_details.name' => 'nullable|string|max:100',

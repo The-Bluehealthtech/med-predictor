@@ -247,17 +247,10 @@
                 <div class="p-6">
                     <div class="space-y-6">
                         <div>
-                            @include('pcma.partials.cardiovascular-history')
+                            @include('pcma.partials.icd11-history', ['section'=>'cardiovascular','textField'=>'cardiovascular_history','label'=>'pcma.cardiovascular_history_label'])
                         </div>
                         <div>
-                            <label for="surgical_history" class="block text-sm font-medium text-gray-700 mb-2">
-                                {{ __('pcma.surgical_history_label') }}
-                            </label>
-                            <textarea id="surgical_history" 
-                                      name="surgical_history" 
-                                      rows="3"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                      placeholder="Interventions chirurgicales...">{{ old('surgical_history', $pcma->result_json['medical_history']['surgical_history'] ?? '') }}</textarea>
+                            @include('pcma.partials.icd11-history', ['section'=>'surgical','textField'=>'surgical_history','label'=>'pcma.surgical_history_label'])
                         </div>
                         
                         <div>
@@ -265,14 +258,7 @@
                         </div>
                         
                         <div>
-                            <label for="allergies" class="block text-sm font-medium text-gray-700 mb-2">
-                                Allergies
-                            </label>
-                            <textarea id="allergies" 
-                                      name="allergies" 
-                                      rows="3"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                      placeholder="{{ __('pcma_extra.label_bb42e72e109b') }}">{{ old('allergies', $pcma->result_json['medical_history']['allergies'] ?? '') }}</textarea>
+                            @include('pcma.partials.icd11-history', ['section'=>'allergies','textField'=>'allergies','label'=>'pcma.allergies_label'])
                         </div>
                     </div>
                 </div>

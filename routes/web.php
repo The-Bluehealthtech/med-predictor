@@ -713,6 +713,9 @@ Route::get('/account-request/fifa-connect-types', function () {
 Route::get('/api/google-speech-key', fn () => response()->json([
     'success' => false, 'message' => __('pcma_workflow.service_unavailable')
 ], 503))->middleware('auth')->name('api.google.speech.key');
+Route::get('/api/pcma/icd11/search', [App\Http\Controllers\PcmaIcd11Controller::class, 'search'])
+    ->middleware(['auth', 'throttle:60,1'])->name('pcma.icd11.search');
+
 Route::get('/api/pcma/medications', [App\Http\Controllers\PcmaMedicationController::class, 'search'])
     ->middleware(['auth', 'throttle:60,1'])->name('pcma.medications.search');
 Route::post('/api/pcma/auto-save', [App\Http\Controllers\PcmaDraftController::class, 'save'])

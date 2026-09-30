@@ -6,6 +6,7 @@ use App\Models\Player;
 use App\Services\PlayerPortalDataService;
 use App\Services\KsaPlayerCockpitData;
 use App\Services\GoalkeeperCockpitData;
+use App\Services\RoleEvaluationCockpitData;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -14,7 +15,8 @@ class PlayerPortalSimpleController extends Controller
     public function __construct(
         private readonly PlayerPortalDataService $portalDataService,
         private readonly KsaPlayerCockpitData $cockpitDataService,
-        private readonly GoalkeeperCockpitData $goalkeeperCockpitData
+        private readonly GoalkeeperCockpitData $goalkeeperCockpitData,
+        private readonly RoleEvaluationCockpitData $roleEvaluationCockpitData
     ) {
     }
 
@@ -123,13 +125,19 @@ class PlayerPortalSimpleController extends Controller
             $goalkeeperData = $player->position === Player::POSITION_GOALKEEPER
                 ? $this->goalkeeperCockpitData->forPlayer($player, $portalData['playerStats']->first())
                 : null;
+            $roleEvaluationCockpit = $this->roleEvaluationCockpitData->forPlayer($player);
         } catch (\Throwable $exception) {
             report($exception);
             return response()->view('player-data-unavailable', [], 503);
         }
 
         return view('test-portail-joueur-simple', array_merge(
-            ['player' => $player, 'cockpitV2Data' => $cockpitData, 'goalkeeperCockpitData' => $goalkeeperData],
+            [
+                'player' => $player,
+                'cockpitV2Data' => $cockpitData,
+                'goalkeeperCockpitData' => $goalkeeperData,
+                'roleEvaluationCockpit' => $roleEvaluationCockpit,
+            ],
             $portalData
         ));
     }

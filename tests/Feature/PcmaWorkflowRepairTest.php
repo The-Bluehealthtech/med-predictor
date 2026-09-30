@@ -593,5 +593,6 @@ final class PcmaWorkflowRepairTest extends TestCase
         ]);
         $this->record();
         $this->get('/health-records/'.$record->id)->assertOk()->assertSee('Fixture medication');
+        $this->get('/healthcare/records/'.$record->id)->assertOk()->assertSee('Fixture medication')->assertSee('health-record-page')->assertSee('id="medical-tab"',false);
     }
 }

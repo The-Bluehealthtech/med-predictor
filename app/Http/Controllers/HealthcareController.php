@@ -20,9 +20,7 @@ final class HealthcareController extends Controller
     }
     public function show($record)
     {
-        $healthRecord=$this->query()->with(['player','user'])->findOrFail($record);
-        $pcmaRecords=\App\Models\PCMA::where('player_id',$healthRecord->player_id)->orderByDesc('assessment_date')->get();
-        return view('modules.healthcare.records.show',compact('healthRecord','pcmaRecords'));
+        return app(HealthRecordController::class)->show($this->query()->findOrFail($record));
     }
     public function edit($record)
     {

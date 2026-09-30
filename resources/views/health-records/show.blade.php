@@ -41,27 +41,31 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 @endpush
 
+@push('styles')
 <style>
-.tab-button {
-    @apply px-4 py-2 text-sm font-medium border-b-2 border-transparent;
-    transition: all 0.2s ease-in-out;
+.health-record-page .tab-button {
+    padding: .5rem 1rem;
+    font-size: .875rem;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 150ms ease, border-color 150ms ease;
 }
-
-.tab-button:hover {
-    @apply text-gray-700 border-gray-300;
+.health-record-page .tab-button:hover {
+    color: var(--fifa-gray-700);
+    border-bottom-color: var(--fifa-gray-300);
 }
-
-.tab-button.active {
-    @apply text-blue-600 border-blue-600;
+.health-record-page .tab-button.active {
+    color: var(--fifa-blue-secondary);
+    border-bottom-color: var(--fifa-blue-secondary);
 }
-
-.tab-content {
-    @apply space-y-6;
-}
+.health-record-page nav { overflow-x: auto; }
+.health-record-page p { overflow-wrap: anywhere; }
 </style>
+@endpush
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="health-record-page container mx-auto px-4 py-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">

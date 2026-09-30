@@ -43,3 +43,10 @@ providers IA, la validation clinique de modèles et la migration des anciens
 rapports publics ne sont pas vérifiés. Les pièces jointes des nombreux sousmodules
 du formulaire complet ne font pas l'objet d'une validation fonctionnelle globale.
 Le CSV Healthcare ne comprend pas les PCMA : leur source reste pcmas.
+
+## Ajustement visuel après signalement de la fiche 237
+- CSS de production vérifié : app.css et fifa-design-system.css en HTTP 200 ; utilitaires Tailwind présents dans app.css.
+- La fiche du module Healthcare utilisait une vue simplifiée. Elle utilise maintenant la fiche complète health-records.show, comme /health-records/{id}. La vue simplifiée retirée ne peut plus diverger.
+- Styles d'onglets corrigés : les directives @apply du CSS inline, non compilées, sont remplacées par du CSS explicite limité à .health-record-page, avec les variables FIFA existantes. Styles insérés dans la pile styles du layout.
+- 52 tests, 403 assertions réussis ; test de rendu sur les deux adresses avec données structurées. Test ciblé répété après insertion des styles dans le head.
+- Pas de validation visuelle dans la session authentifiée de production ; aucune modification des données du dossier 237.

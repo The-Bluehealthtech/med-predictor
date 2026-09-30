@@ -763,15 +763,181 @@
                         @endif
                     </div>
 
-                    @if($roleEval['comparisons']->isNotEmpty())
-                        <h5 class="font-semibold mb-2">{{ __('Adéquation aux familles voisines') }}</h5>
-                        <div class="fifa-medical-stat">
-                            @foreach($roleEval['comparisons'] as $comparison)
-                                <div class="fifa-stat-header">
-                                    <span>{{ $comparison->position_family_evaluated }}</span>
-                                    <span class="fifa-stat-value">{{ (float) $comparison->role_fit_score > 0 ? '+' : '' }}{{ number_format((float) $comparison->role_fit_score, 1) }}</span>
-                                </div>
+                    @php
+                        $rcDimLabels = [
+                            'finition_creation' => 'Finition / Création',
+                            'construction' => 'Construction',
+                            'progression_dribbles' => 'Progression / Dribbles',
+                            'duels' => 'Duels',
+                            'recuperation' => 'Récupération',
+                            'discipline' => 'Discipline',
+                            'progression_avancee' => 'Progression avancée',
+                            'arrets_buts_evites' => 'Arrêts / Buts évités',
+                            'gestion_surface' => 'Gestion de la surface',
+                            'jeu_au_pied' => 'Jeu au pied',
+                            'securite' => 'Sécurité',
+                        ];
+                        $rcDims = collect($roleEval['dimensionBreakdown'] ?? [])
+                            ->filter(fn ($rcVal, $rcKey) => isset($rcDimLabels[$rcKey]) && is_array($rcVal) && isset($rcVal['z']))
+                            ->map(function ($rcVal, $rcKey) use ($rcDimLabels) {
+                                $rcZ = max(-2.5, min(2.5, (float) $rcVal['z']));
+                                return [
+                                    'key' => $rcKey,
+                                    'label' => $rcDimLabels[$rcKey],
+                                    'value' => (($rcZ + 2.5) / 5) * 100,
+                                ];
+                            })
+                            ->values();
+                        $rcRadarReady = $rcDims->count() >= 3;
+                        if ($rcRadarReady) {
+                            $rcN = $rcDims->count();
+                            $rcCx = 110; $rcCy = 110; $rcR = 85;
+                            $rcPoints = [];
+                            $rcLabelPoints = [];
+                            foreach ($rcDims as $rcI => $rcD) {
+                                $rcAngle = (M_PI * 2 * $rcI / $rcN) - (M_PI / 2);
+                                $rcRadius = ($rcD['value'] / 100) * $rcR;
+                                $rcPoints[] = round($rcCx + $rcRadius * cos($rcAngle), 1) . ',' . round($rcCy + $rcRadius * sin($rcAngle), 1);
+                                $rcLabelPoints[] = [
+                                    'x' => round($rcCx + ($rcR + 22) * cos($rcAngle), 1),
+                                    'y' => round($rcCy + ($rcR + 22) * sin($rcAngle), 1),
+                                    'label' => $rcD['label'],
+                                ];
+                            }
+                            $rcPolygon = implode(' ', $rcPoints);
+                            $rcGridLevels = [0.25, 0.5, 0.75, 1.0];
+                        }
+                    @endphp
+                    @if($rcRadarReady)
+                        <h5 class="section">{{ __('Profil par dimension') }}</h5>
+                        <svg viewBox="0 0 220 220" width="100%" height="220" role="img" aria-label="{{ __('Radar du profil par dimension') }}">
+                            @foreach($rcGridLevels as $rcLevel)
+                                @php
+                                    $rcGridPts = [];
+                                    for ($rcGi = 0; $rcGi < $rcN; $rcGi++) {
+                                        $rcGa = (M_PI * 2 * $rcGi / $rcN) - (M_PI / 2);
+                                        $rcGr = $rcLevel * $rcR;
+                                        $rcGridPts[] = round($rcCx + $rcGr * cos($rcGa), 1) . ',' . round($rcCy + $rcGr * sin($rcGa), 1);
+                                    }
+                                @endphp
+                                <polygon points="{{ implode(' ', $rcGridPts) }}" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
                             @endforeach
+                            @for ($rcAi = 0; $rcAi < $rcN; $rcAi++)
+                                @php
+                                    $rcAa = (M_PI * 2 * $rcAi / $rcN) - (M_PI / 2);
+                                    $rcAx = round($rcCx + $rcR * cos($rcAa), 1);
+                                    $rcAy = round($rcCy + $rcR * sin($rcAa), 1);
+                                @endphp
+                                <line x1="{{ $rcCx }}" y1="{{ $rcCy }}" x2="{{ $rcAx }}" y2="{{ $rcAy }}" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
+                            @endfor
+                            <polygon points="{{ $rcPolygon }}" fill="rgba(57,135,229,0.35)" stroke="#3987e5" stroke-width="2" />
+                            @foreach($rcLabelPoints as $rcLp)
+                                <text x="{{ $rcLp['x'] }}" y="{{ $rcLp['y'] }}" font-size="9" fill="#cfd8e3" text-anchor="middle" dominant-baseline="middle">{{ $rcLp['label'] }}</text>
+                            @endforeach
+                        </svg>
+                    @endif
+
+                    @if($roleEval['comparisons']->isNotEmpty())
+                        <h5 class="section">{{ __('Adéquation aux familles voisines') }}</h5>
+                        @php
+                            $rcMaxAbs = max(1, $roleEval['comparisons']->max(fn ($rcC) => abs((float) $rcC->role_fit_score)));
+                            $rcBarScale = 90 / $rcMaxAbs;
+                            $rcCompH = 26 * $roleEval['comparisons']->count() + 10;
+                        @endphp
+                        <svg viewBox="0 0 240 {{ $rcCompH }}" width="100%" height="{{ $rcCompH }}" role="img" aria-label="{{ __('Comparaison aux familles voisines') }}">
+                            <line x1="120" y1="0" x2="120" y2="{{ $rcCompH }}" stroke="rgba(255,255,255,0.25)" stroke-width="1" />
+                            @foreach($roleEval['comparisons'] as $rcIdx => $comparison)
+                                @php
+                                    $rcVal = (float) $comparison->role_fit_score;
+                                    $rcW = abs($rcVal) * $rcBarScale;
+                                    $rcY = $rcIdx * 26 + 4;
+                                    $rcColor = $rcVal >= 0 ? '#3987e5' : '#e66767';
+                                    $rcX = $rcVal >= 0 ? 120 : 120 - $rcW;
+                                @endphp
+                                <rect x="{{ $rcX }}" y="{{ $rcY }}" width="{{ max($rcW, 0.5) }}" height="16" fill="{{ $rcColor }}" rx="2" />
+                                <text x="4" y="{{ $rcY + 12 }}" font-size="10" fill="#cfd8e3">{{ $comparison->position_family_evaluated }}</text>
+                                <text x="{{ $rcVal >= 0 ? $rcX + $rcW + 4 : $rcX - 4 }}" y="{{ $rcY + 12 }}" font-size="10" fill="{{ $rcColor }}" text-anchor="{{ $rcVal >= 0 ? 'start' : 'end' }}">{{ $rcVal > 0 ? '+' : '' }}{{ number_format($rcVal, 1) }}</text>
+                            @endforeach
+                        </svg>
+                    @endif
+
+                    @php
+                        $rcTrend = $roleEval['trend'] ?? collect();
+                    @endphp
+                    @if($rcTrend->count() >= 2)
+                        <h5 class="section">{{ __('Évolution du score') }}</h5>
+                        @php
+                            $rcTMin = $rcTrend->min('score');
+                            $rcTMax = $rcTrend->max('score');
+                            $rcTRange = max(1, $rcTMax - $rcTMin);
+                            $rcTW = 240; $rcTH = 110; $rcTPad = 20;
+                            $rcTN = $rcTrend->count();
+                            $rcTPts = [];
+                            foreach ($rcTrend->values() as $rcTi => $rcTRow) {
+                                $rcTx = $rcTPad + ($rcTi / max(1, $rcTN - 1)) * ($rcTW - 2 * $rcTPad);
+                                $rcTy = ($rcTH - 15) - ((($rcTRow->score - $rcTMin) / $rcTRange) * ($rcTH - 30));
+                                $rcTPts[] = round($rcTx, 1) . ',' . round($rcTy, 1);
+                            }
+                            $rcTLine = implode(' ', $rcTPts);
+                            $rcTArea = $rcTLine . ' ' . round($rcTW - $rcTPad, 1) . ',' . ($rcTH - 15) . ' ' . $rcTPad . ',' . ($rcTH - 15);
+                        @endphp
+                        <svg viewBox="0 0 {{ $rcTW }} {{ $rcTH }}" width="100%" height="{{ $rcTH }}" role="img" aria-label="{{ __('Évolution du score dans le temps') }}">
+                            <polygon points="{{ $rcTArea }}" fill="rgba(57,135,229,0.20)" stroke="none" />
+                            <polyline points="{{ $rcTLine }}" fill="none" stroke="#3987e5" stroke-width="2" />
+                            @foreach($rcTPts as $rcTPt)
+                                @php [$rcPx, $rcPy] = explode(',', $rcTPt); @endphp
+                                <circle cx="{{ $rcPx }}" cy="{{ $rcPy }}" r="2.5" fill="#3987e5" />
+                            @endforeach
+                            <text x="{{ $rcTPad }}" y="{{ $rcTH - 2 }}" font-size="9" fill="#9ca3af">{{ \Carbon\Carbon::parse($rcTrend->first()->period_end)->format('d/m') }}</text>
+                            <text x="{{ $rcTW - $rcTPad }}" y="{{ $rcTH - 2 }}" font-size="9" fill="#9ca3af" text-anchor="end">{{ \Carbon\Carbon::parse($rcTrend->last()->period_end)->format('d/m') }}</text>
+                        </svg>
+                    @endif
+
+                    @php
+                        $rcMinutes = $roleEval['minutesByPosition'] ?? collect();
+                    @endphp
+                    @if($rcMinutes->isNotEmpty())
+                        <h5 class="section">{{ __('Répartition des minutes par poste') }}</h5>
+                        @php
+                            $rcColors = ['#3987e5', '#d95926', '#199e70', '#5b6684', '#9085e9'];
+                            $rcTotalMin = $rcMinutes->sum('total_minutes');
+                            $rcCx2 = 60; $rcCy2 = 60; $rcR2 = 50; $rcR2inner = 28;
+                            $rcStart = -90;
+                            $rcSlices = [];
+                            foreach ($rcMinutes->values() as $rcMi => $rcMRow) {
+                                $rcShare = $rcTotalMin > 0 ? $rcMRow->total_minutes / $rcTotalMin : 0;
+                                $rcSweep = $rcShare * 360;
+                                $rcEnd = $rcStart + $rcSweep;
+                                $rcA0 = deg2rad($rcStart); $rcA1 = deg2rad($rcEnd);
+                                $rcX0 = round($rcCx2 + $rcR2 * cos($rcA0), 1); $rcY0 = round($rcCy2 + $rcR2 * sin($rcA0), 1);
+                                $rcX1 = round($rcCx2 + $rcR2 * cos($rcA1), 1); $rcY1 = round($rcCy2 + $rcR2 * sin($rcA1), 1);
+                                $rcXi0 = round($rcCx2 + $rcR2inner * cos($rcA1), 1); $rcYi0 = round($rcCy2 + $rcR2inner * sin($rcA1), 1);
+                                $rcXi1 = round($rcCx2 + $rcR2inner * cos($rcA0), 1); $rcYi1 = round($rcCy2 + $rcR2inner * sin($rcA0), 1);
+                                $rcLargeArc = $rcSweep > 180 ? 1 : 0;
+                                $rcPath = "M {$rcX0} {$rcY0} A {$rcR2} {$rcR2} 0 {$rcLargeArc} 1 {$rcX1} {$rcY1} L {$rcXi0} {$rcYi0} A {$rcR2inner} {$rcR2inner} 0 {$rcLargeArc} 0 {$rcXi1} {$rcYi1} Z";
+                                $rcSlices[] = [
+                                    'path' => $rcPath,
+                                    'color' => $rcColors[$rcMi % count($rcColors)],
+                                    'label' => $rcMRow->family,
+                                    'pct' => round($rcShare * 100),
+                                ];
+                                $rcStart = $rcEnd;
+                            }
+                        @endphp
+                        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                            <svg viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="{{ __('Répartition des minutes jouées par poste') }}">
+                                @foreach($rcSlices as $rcSlice)
+                                    <path d="{{ $rcSlice['path'] }}" fill="{{ $rcSlice['color'] }}" />
+                                @endforeach
+                            </svg>
+                            <div style="font-size:0.8rem;">
+                                @foreach($rcSlices as $rcSlice)
+                                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                                        <span style="width:10px;height:10px;border-radius:2px;background:{{ $rcSlice['color'] }};display:inline-block;"></span>
+                                        <span>{{ $rcSlice['label'] }} — {{ $rcSlice['pct'] }}%</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     @endif
 

@@ -82,7 +82,7 @@ final class RoleFitEvaluator
                 continue; // fiabilité insuffisante ou aucun indicateur exploitable : pas de ligne
             }
 
-            $rows[] = $this->toRow($playerId, $played['famille'], $played, roleFitScore: 0.0);
+            $rows[] = $this->toRow($playerId, $played['famille'], $played, roleFitScore: 0.0, includeDimensions: true);
 
             if ($played['famille'] === 'goalkeeper') {
                 continue; // jamais de comparaison transversale pour les gardiens
@@ -158,7 +158,7 @@ final class RoleFitEvaluator
         return $score === null ? null : (float) $score;
     }
 
-    private function toRow(int $playerId, string $englishFamily, array $result, float $roleFitScore): array
+    private function toRow(int $playerId, string $englishFamily, array $result, float $roleFitScore, bool $includeDimensions = false): array
     {
         return [
             'player_id' => $playerId,
@@ -171,6 +171,30 @@ final class RoleFitEvaluator
             'interval_low' => $result['intervalle_80'][0] ?? null,
             'interval_high' => $result['intervalle_80'][1] ?? null,
             'role_fit_score' => $roleFitScore,
+            'dimension_breakdown' => $includeDimensions ? $this->dimensionBreakdown($result) : null,
         ];
+    }
+
+    /**
+     * Profil par dimension pour le cockpit (radar) — voir migration
+     * 2026_10_01_090000. N'appelle rien de nouveau dans
+     * PerformanceScoreCalculator : ne relit que $result['dimensions'],
+     * déjà calculé et déjà renvoyé par calculate()/finalize().
+     */
+    private function dimensionBreakdown(array $result): ?string
+    {
+        if (!isset($result['dimensions']) || !is_array($result['dimensions']) || $result['dimensions'] === []) {
+            return null;
+        }
+
+        $breakdown = [];
+        foreach ($result['dimensions'] as $dimensionKey => $dimension) {
+            $breakdown[$dimensionKey] = [
+                'z' => isset($dimension['z']) ? round((float) $dimension['z'], 3) : null,
+                'fiabilite' => isset($dimension['fiabilite']) ? round((float) $dimension['fiabilite'], 2) : null,
+            ];
+        }
+
+        return json_encode($breakdown);
     }
 }

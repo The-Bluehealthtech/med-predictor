@@ -79,6 +79,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\ImportRoleEvaluationDataCommand::class,
         \App\Console\Commands\GenerateDemoDataCommand::class,
         \App\Console\Commands\RoleEvaluationComputeCommand::class,
+        \App\Console\Commands\RoleEvaluationComputeHistoryCommand::class,
     ];
 
     /**

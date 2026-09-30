@@ -168,14 +168,28 @@ class HealthRecordController extends Controller
             app(\App\Services\HealthRecordMedication::class)->resolve($request));
         $request->validate(['prepare_aut'=>'sometimes|boolean']);
         $autController=app(MedicalAutController::class);
+        // Le formulaire utilise des noms distincts du stockage canonique.
+        $testInput = $request->validate([
+            'doping_test_date'=>'nullable|date',
+            'doping_test_type'=>'nullable|in:urine,blood,hair',
+            'doping_test_result'=>'nullable|in:negative,positive,pending,invalid',
+        ]);
+        $hasDopingTest = $request->filled('doping_test_type') || $request->filled('doping_test_result');
         $autData=$request->boolean('prepare_aut')
             ?$autController->validateDraft($request,'aut_form','aut_documents'):null;
         // Dossier et AUT forment une seule écriture : une erreur annule les deux.
-        [$healthRecord,$message]=\Illuminate\Support\Facades\DB::transaction(function()use($request,$validated,$autController,$autData){
+        [$healthRecord,$message]=\Illuminate\Support\Facades\DB::transaction(function()use($request,$validated,$autController,$autData,$testInput,$hasDopingTest){
             // Check if there's an existing health record for this player
             $existingRecord = HealthRecord::where('player_id', $validated['player_id'])
                 ->where('status', 'active')
-                ->first();
+                ->lockForUpdate()->first();
+            if ($hasDopingTest) {
+                $validated['doping_tests'] = array_merge($existingRecord?->doping_tests ?? [], [[
+                    'date'=>$testInput['doping_test_date'] ?? null,
+                    'type'=>$testInput['doping_test_type'] ?? null,
+                    'result'=>$testInput['doping_test_result'] ?? null,
+                ]]);
+            }
 
             if ($existingRecord) {
                 // Update existing record with new visit data
@@ -275,7 +289,13 @@ class HealthRecordController extends Controller
             ->orderBy('assessment_date', 'desc')
             ->get();
         
-        return view('health-records.show', compact('healthRecord', 'pcmaRecords'));
+        // Historique du même joueur, après contrôle de ses droits médicaux.
+        $dopingRecords = HealthRecord::where('player_id', $healthRecord->player_id)
+            ->orderByDesc('record_date')->get();
+        $autRequests = Schema::hasTable('tue_requests') && Schema::hasColumn('tue_requests', 'player_id')
+            ? \App\Models\TUERequest::where('player_id', $healthRecord->player_id)->orderByDesc('request_date')->get()
+            : collect();
+        return view('health-records.show', compact('healthRecord', 'pcmaRecords', 'dopingRecords', 'autRequests'));
     }
 
     public function edit(HealthRecord $healthRecord): View

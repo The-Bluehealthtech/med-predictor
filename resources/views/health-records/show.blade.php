@@ -36,7 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
     window.showTab = showTab;
     
     // Show first tab by default
-    showTab('general');
+    const initialTab = new URLSearchParams(window.location.search).get('tab');
+    showTab(['general','vitals','medical','pcma','dental','codes','doping'].includes(initialTab) ? initialTab : 'general');
 });
 </script>
 @endpush
@@ -122,6 +123,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     </button>
                     <button onclick="showTab('dental')" class="tab-button">
                         🦷 {{ __('health_records.show_page.tab_dental') }}
+                    </button>
+                    <button type="button" onclick="showTab('doping')" class="tab-button">
+                        {{ __('medical_doping.tab') }}
                     </button>
                     <button onclick="showTab('codes')" class="tab-button">
                         🏷️ {{ __('health_records.show_page.tab_codes') }}
@@ -433,6 +437,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         </div>
                         </div>
+
+                <div id="doping-tab" class="tab-content hidden">
+                    @include('health-records.doping')
+                </div>
 
                 <!-- Codes Tab -->
                 <div id="codes-tab" class="tab-content hidden">

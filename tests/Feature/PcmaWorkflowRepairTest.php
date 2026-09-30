@@ -477,6 +477,44 @@ final class PcmaWorkflowRepairTest extends TestCase
         $this->postJson('/api/pcma/auto-save',$this->input(['allergies_icd11_selection'=>$choice]))->assertStatus(422);
         self::assertSame(0,PCMA::count());
     }
+    public function test_doping_tab_shows_player_history_aut_and_never_invents_clearance(): void
+    {
+        $this->autSchema(); $record=$this->healthRecord(); $other=$this->healthRecord(20);
+        $record->update(['doping_tests'=>[['date'=>'2026-09-29','type'=>'urine','result'=>'pending']],
+            'doping_test_lab'=>'Fixture laboratory']);
+        $other->update(['doping_test_lab'=>'Private foreign laboratory']);
+        $this->post('/health-records/'.$record->id.'/aut',['form'=>[
+            'substance_1'=>'Fixture AUT substance','diagnosis'=>'Fixture reason']])->assertRedirect();
+        foreach(['/health-records/','/healthcare/records/'] as $prefix){
+            foreach(['fr','en'] as $lang){
+                $this->get($prefix.$record->id.'?tab=doping&lang='.$lang)->assertOk()
+                    ->assertSee('doping-tab')->assertSee('Fixture laboratory')
+                    ->assertSee('Fixture AUT substance')->assertSee('2026-09-29')
+                    ->assertSee(route('medical-aut.create',$record->id),false)
+                    ->assertDontSee('Private foreign laboratory')->assertDontSee('medical_doping.');
+            }
+        }
+        $this->get('/healthcare/records/'.$other->id)->assertNotFound();
+    }
+
+    public function test_doping_creation_persists_test_and_preserves_history_without_default_tests(): void
+    {
+        $this->healthcareSchema(); $record=$this->healthRecord();
+        $payload=['player_id'=>10,'visit_date'=>'2026-09-30','record_date'=>'2026-09-30',
+            'doctor_name'=>'Fixture collector','visit_type'=>'consultation'];
+        $this->post('/health-records',$payload+['doping_test_date'=>'2026-09-30'])->assertRedirect();
+        self::assertEmpty($record->fresh()->doping_tests);
+        $this->get('/health-records/'.$record->id.'?lang=fr')->assertOk()
+            ->assertSee('Aucun contrôle antidopage renseigné.');
+        $this->post('/health-records',$payload+['doping_test_date'=>'2026-09-29',
+            'doping_test_type'=>'blood','doping_test_result'=>'positive'])->assertRedirect();
+        self::assertSame([['date'=>'2026-09-29','type'=>'blood','result'=>'positive']],$record->fresh()->doping_tests);
+        $this->post('/health-records',$payload+['doping_test_type'=>'urine','doping_test_result'=>'pending'])->assertRedirect();
+        self::assertCount(2,$record->fresh()->doping_tests);
+        $this->postJson('/health-records',$payload+['doping_test_result'=>'invented'])->assertUnprocessable();
+        self::assertCount(2,$record->fresh()->doping_tests);
+    }
+
     private function healthcareSchema(): void
     {
         Schema::create('health_records',function(Blueprint $t){

@@ -15,6 +15,7 @@ final class PcmaCreatePageTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        config()->set('pcma_icd11', require dirname(__DIR__,2).'/config/pcma_icd11.php');
         // Charger aussi les traductions du worktree testé, pas celles du dépôt principal.
         $this->app->instance('translation.loader', new \Illuminate\Translation\FileLoader(
             $this->app['files'], dirname(__DIR__, 2).'/resources/lang'));

@@ -15,6 +15,7 @@ final class PcmaWorkflowRepairTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        config()->set('pcma_icd11', require dirname(__DIR__,2).'/config/pcma_icd11.php');
         $this->app->useDatabasePath(dirname(__DIR__,2).'/database');
         // Charger aussi les traductions du worktree testé, pas celles du dépôt principal.
         $this->app->instance('translation.loader', new \Illuminate\Translation\FileLoader(
@@ -108,6 +109,24 @@ final class PcmaWorkflowRepairTest extends TestCase
         self::assertSame(1, PCMA::count());
         self::assertFalse(PCMA::first()->is_signed);
         self::assertFalse(PCMA::first()->fifa_compliant);
+    }
+    public function test_verified_icd11_selection_is_saved_without_diagnosis_or_signature(): void
+    {
+        $this->postJson('/api/pcma/auto-save',$this->input(['cardiovascular_icd11'=>'INVENTED']))->assertStatus(422);
+        self::assertSame(0,PCMA::count());
+        $saved=$this->postJson('/api/pcma/auto-save',$this->input(['cardiovascular_icd11'=>'BA00']))
+            ->assertOk()->json('pcma_id');
+        $pcma=PCMA::findOrFail($saved);
+        $entry=$pcma->result_json['medical_history']['cardiovascular_icd11'];
+        self::assertSame('BA00',$entry['code']);
+        self::assertSame('2025-01',$entry['release']);
+        self::assertSame('Essential hypertension',$entry['label_en']);
+        self::assertFalse($pcma->is_signed);
+        self::assertNull($pcma->final_statement);
+        $html=view('pcma.partials.cardiovascular-history',compact('pcma'))->render();
+        self::assertStringContainsString('BA00',$html);
+        $this->postJson('/api/pcma/auto-save',$this->input(['pcma_id'=>$saved,'cardiovascular_icd11'=>'']))->assertOk();
+        self::assertNull($pcma->fresh()->result_json['medical_history']['cardiovascular_icd11']);
     }
     private function importMedicationCatalogue(): \App\Services\MedicationCatalogue
     {

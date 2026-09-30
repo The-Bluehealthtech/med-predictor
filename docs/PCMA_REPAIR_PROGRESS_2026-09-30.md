@@ -50,3 +50,14 @@ Branche : fix/pcma-workflow-20260930. Base déployée : a099e3e ; audit : d78b11
 - Vérification : 28 tests Laravel, 203 assertions, réussis ; compilation de la vue portail et syntaxe PHP réussies.
 - Test intégré : écriture via contrôleur PCMA puis lecture SQL par player_id et projection portail, même PDO, valeurs zéro/null, absence de fuite vers un autre joueur.
 - Le rendu complet en navigateur authentifié de production n'est toujours pas vérifié.
+
+## Premier sous-ensemble CIM-11 cardiovasculaire
+- Ajout explicite d'une catégorie vérifiée : BA00 / Essential hypertension, libellé français Hypertension essentielle.
+- Source OMS : https://icdcdn.who.int/icd11referenceguide/en-2025-01/refguide.pdf ; version de référence 2025-01 ; URI http://id.who.int/icd/entity/761947693.
+- Configuration versionnée pcma_icd11 ; sélection dans les formulaires création et édition, avec texte clinique libre conservé.
+- Validation serveur contre les codes du sous-ensemble ; code/libellés/version/source conservés dans result_json.medical_history.cardiovascular_icd11.
+- Consultation et PDF lisent les données enregistrées ; retrait explicite conserve null.
+- Aucun code assigné automatiquement, aucun diagnostic inféré de mesures et aucune signature générée.
+- 32 tests Laravel, 279 assertions réussies ; codes inconnus rejetés, enregistrement/relecture/retrait testés.
+- Sous-ensemble limité à une catégorie, pas un catalogue CIM-11 complet ni un moteur de postcoordination ; aucun référentiel chirurgical/allergies ajouté dans ce lot.
+- Le rendu connecté en production reste à confirmer.

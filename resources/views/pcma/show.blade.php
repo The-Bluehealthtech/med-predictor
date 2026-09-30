@@ -434,7 +434,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <dt class="text-sm font-medium text-gray-500">{{ __('pcma.cardiovascular_history_label') }}</dt>
-                        <dd class="text-sm text-gray-900">{{ $pcma->result_json['medical_history']['cardiovascular_history'] ?? __('pcma_extra.not_recorded') }}</dd>
+                        <dd class="text-sm text-gray-900">{{ $pcma->result_json['medical_history']['cardiovascular_history'] ?? __('pcma_extra.not_recorded') }}
+                            @if($pcma->result_json['medical_history']['cardiovascular_icd11'] ?? null)
+                            <p>{{ $pcma->result_json['medical_history']['cardiovascular_icd11']['code'] }} — {{ $pcma->result_json['medical_history']['cardiovascular_icd11'][app()->getLocale() === 'en' ? 'label_en' : 'label_fr'] }}</p>
+                            @endif</dd>
                     </div>
                     
                     <div>

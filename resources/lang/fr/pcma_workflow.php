@@ -1,5 +1,6 @@
 <?php
 return [
+    'icd11_subset' => 'Sous-ensemble initial : 1 catégorie CIM-11 vérifiée. Sélection manuelle, aucun diagnostic automatique.',
     'medical_decision' => 'Conclusion médicale enregistrée',
     'decision_fit' => 'APTE',
     'decision_not_fit' => 'NON APTE',

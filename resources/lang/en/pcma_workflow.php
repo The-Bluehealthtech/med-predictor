@@ -1,5 +1,6 @@
 <?php
 return [
+    'icd11_subset' => 'Initial subset: 1 verified ICD-11 category. Manual selection; no automatic diagnosis.',
     'medical_decision' => 'Recorded medical decision',
     'decision_fit' => 'FIT',
     'decision_not_fit' => 'NOT FIT',

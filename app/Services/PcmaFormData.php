@@ -43,6 +43,7 @@ final class PcmaFormData
                 // Medical History
                 'medical_history' => 'nullable|string',
                 'cardiovascular_history' => 'nullable|string',
+                'cardiovascular_icd11' => ['nullable', \Illuminate\Validation\Rule::in(array_keys(config('pcma_icd11.cardiovascular', [])))],
                 'surgical_history' => 'nullable|string',
                 'medications' => 'nullable|string',
                 'medication_selection' => 'nullable|json|max:20000',
@@ -163,6 +164,11 @@ final class PcmaFormData
             $result['medical_history']['medication_products'] = app(MedicationCatalogue::class)
                 ->selections($validated['medication_selection'] ?? '[]');
             unset($validated['medication_selection']);
+        }
+        if (array_key_exists('cardiovascular_icd11', $validated)) {
+            $result['medical_history']['cardiovascular_icd11'] = $validated['cardiovascular_icd11']
+                ? config('pcma_icd11.cardiovascular.'.$validated['cardiovascular_icd11']) : null;
+            unset($validated['cardiovascular_icd11']);
         }
         $validated['result_json'] = $result;
         return $validated;

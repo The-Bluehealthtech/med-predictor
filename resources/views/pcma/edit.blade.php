@@ -247,16 +247,8 @@
                 <div class="p-6">
                     <div class="space-y-6">
                         <div>
-                            <label for="medical_history" class="block text-sm font-medium text-gray-700 mb-2">
-                                {{ __('pcma.cardiovascular_history_label') }}
-                            </label>
-                            <textarea id="medical_history" 
-                                      name="medical_history" 
-                                      rows="3"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                      placeholder="{{ __('pcma_extra.label_22cb543e6dee') }}">{{ old('medical_history', $pcma->result_json['medical_history']['cardiovascular_history'] ?? '') }}</textarea>
+                            @include('pcma.partials.cardiovascular-history')
                         </div>
-                        
                         <div>
                             <label for="surgical_history" class="block text-sm font-medium text-gray-700 mb-2">
                                 {{ __('pcma.surgical_history_label') }}

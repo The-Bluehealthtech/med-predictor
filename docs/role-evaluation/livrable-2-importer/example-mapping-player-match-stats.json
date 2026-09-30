@@ -5,13 +5,13 @@
   "not_available_tokens": ["Données non disponibles", "N/A", "NA", ""],
   "resolve": {
     "match": {
-      "mode": "teams_and_date",
-      "home_team_column": "equipe_domicile",
-      "away_team_column": "equipe_exterieur",
+      "mode": "clubs_and_date",
+      "home_club_column": "club_domicile_fifa_id",
+      "away_club_column": "club_exterieur_fifa_id",
       "date_column": "date_match"
     },
     "player": { "mode": "fifa_connect_id", "column": "joueur_fifa_id" },
-    "team": { "mode": "name", "column": "equipe_joueur" }
+    "club": { "column": "club_joueur_fifa_id" }
   },
   "columns": [
     { "source": "minutes_jouees", "target": "minutes_played", "kind": "minutes" },

@@ -13,6 +13,12 @@ final class MedicalAutController extends Controller
     {
         return TUERequest::where('health_record_id',$record->id)->where('player_id',$record->player_id)->findOrFail($id);
     }
+    public function choose()
+    {
+        $records=app(HealthcareController::class)->query()->with('player.club')
+            ->orderByDesc('record_date')->orderByDesc('id')->paginate(25);
+        return view('health-records.aut-choose',compact('records'));
+    }
     public function index($record)
     {
         $healthRecord=$this->record($record);

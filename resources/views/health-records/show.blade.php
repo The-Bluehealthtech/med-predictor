@@ -67,7 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
 @section('content')
 <div class="health-record-page container mx-auto px-4 py-8">
     <div class="bg-white rounded-lg shadow-md p-4 my-4">
-        <a class="font-semibold" href="{{ route('medical-aut.index',$healthRecord->id) }}">{{ __('medical_aut.title') }}</a>
+        <a class="inline-block bg-blue-600 text-white rounded px-4 py-2" href="{{ route('medical-aut.create',$healthRecord->id) }}">{{ __('medical_aut.title') }} — {{ app()->getLocale()==='fr'?'Ouvrir le formulaire':'Open form' }}</a>
+        <a class="ml-4" href="{{ route('medical-aut.index',$healthRecord->id) }}">{{ app()->getLocale()==='fr'?'Demandes existantes':'Existing applications' }}</a>
         <h2 class="font-bold mt-4">{{ __('medical_aut.icd_title') }}</h2>
         @forelse($healthRecord->icd11_diagnoses ?? [] as $entry)
             <p>{{ $entry['code'] ?? '—' }} — {{ $entry['label'] ?? '—' }} · {{ $entry['release'] ?? '—' }} ({{ $entry['language'] ?? '—' }})</p>
@@ -328,8 +329,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="mt-1 flex flex-wrap gap-2">
                                     @foreach(is_array($healthRecord->medications) ? $healthRecord->medications : [$healthRecord->medications] as $medication)
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            {{ is_array($medication) ? json_encode($medication, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_INVALID_UTF8_SUBSTITUTE) : ($medication ?? '—') }}
+                                            {{ is_array($medication) ? json_encode(array_diff_key($medication,['antidoping'=>true]), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_INVALID_UTF8_SUBSTITUTE) : ($medication ?? '—') }}
                                         </span>
+                                        @if(is_array($medication) && ($medication['source']??null)==='RxNorm')
+                                            @include('health-records.medication-antidoping')
+                                        @endif
                                     @endforeach
                                 </div>
                             </div>

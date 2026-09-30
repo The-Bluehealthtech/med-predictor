@@ -86,6 +86,7 @@ final class MedicationCatalogue
             $selected[]=['id'=>$product['id'],'rxcui'=>$product['rxcui']??null,'tty'=>$product['tty']??null,
                 'name'=>$product['name'],'substances'=>$product['substances']??[],
                 'presentation'=>$presentation, 'atc'=>null, 'source'=>$product['source'],'version'=>$product['version'],
+                'antidoping'=>$product['antidoping']??['status'=>'unresolved','version'=>'2025','matches'=>[]],
                 'dose'=>$item['dose']??null,'route'=>$item['route']??null,'frequency'=>$item['frequency']??null];
         }
         return $selected;

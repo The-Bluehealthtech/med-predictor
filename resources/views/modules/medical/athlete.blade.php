@@ -20,6 +20,7 @@
 <p>{{ $record->diagnosis ?? '—' }}</p>
 <p class="whitespace-pre-line">{{ $record->notes ?? '—' }}</p>
 <a href="{{ route('health-records.show',$record->id) }}">{{ __('medical_module.view') }}</a>
+<a class="ml-4 bg-blue-600 text-white rounded px-4 py-2" href="{{ route('medical-aut.create',$record->id) }}">{{ __('medical_aut.title') }}</a>
 </div>
 @empty
 <p>{{ __('medical_module.empty') }}</p>

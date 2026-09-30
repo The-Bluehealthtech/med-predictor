@@ -134,7 +134,11 @@ final class PcmaWorkflowRepairTest extends TestCase
         $migration->up();
         $catalogue=app(\App\Services\MedicationCatalogue::class);
         self::assertSame(3516, $catalogue->import());
+        config(['medical_aut.source_directory'=>dirname(__DIR__,2).'/resources/medical-forms']);
         Http::fake([
+            'rxnav.nlm.nih.gov/REST/rxcui/*/related.json*'=>Http::response(['relatedGroup'=>['conceptGroup'=>[
+                ['tty'=>'IN','conceptProperties'=>[['rxcui'=>'99','name'=>'dexamethasone']]]
+            ]]]),
             'rxnav.nlm.nih.gov/REST/drugs.json*'=>Http::response(['drugGroup'=>['conceptGroup'=>[
                 ['conceptProperties'=>[['rxcui'=>'12345','name'=>'Fixture RxNorm medicine','tty'=>'SCD']]]
             ]]]),
@@ -883,5 +887,75 @@ final class PcmaWorkflowRepairTest extends TestCase
         $this->putJson('/health-records/'.$record->id,['record_date'=>'2026-09-30',
             'medications'=>[['id'=>'12345','source'=>'RxNorm','name'=>'FORGED']]])->assertRedirect();
         self::assertSame('Fixture RxNorm medicine',$record->fresh()->medications[0]['name']);
+    }
+    public function test_antidoping_alert_uses_rxnorm_ingredient_and_preserves_route_exceptions(): void
+    {
+        $this->importMedicationCatalogue();
+        $response=$this->getJson('/api/pcma/medications/12345/antidoping')->assertOk();
+        $alert=$response->json();
+        self::assertSame('mentions_found',$alert['status']);
+        self::assertSame('2025',$alert['version']);
+        self::assertSame('dexamethasone',$alert['matches'][0]['ingredient']['name']);
+        $text=json_encode($alert,JSON_UNESCAPED_UNICODE);
+        self::assertStringContainsString('GLUCOCORTICO',$text);
+        self::assertStringContainsString('par inhalation',$text);
+        self::assertStringContainsString('INTERDITES EN COMPÉTITION',$text);
+        $saved=app(\App\Services\MedicationCatalogue::class)->selections('[{"id":"12345"}]');
+        self::assertSame('mentions_found',$saved[0]['antidoping']['status']);
+        $this->actingAs((new User(['role'=>'player']))->forceFill(['tenant_id'=>1]));
+        $this->getJson('/api/pcma/medications/12345/antidoping')->assertForbidden();
+    }
+    public function test_antidoping_does_not_guess_synonyms_or_match_substrings(): void
+    {
+        $this->autSchema();
+        $service=app(\App\Services\MedicationAntidopingAlert::class);
+        foreach(['albuterol','dex','Unknown ingredient'] as $name){
+            $alert=$service->check([['rxcui'=>'1','name'=>$name]]);
+            self::assertSame('unresolved',$alert['status']);
+            self::assertSame([],$alert['matches']);
+        }
+        $alert=$service->check([['rxcui'=>'1','name'=>'caféine']]);
+        self::assertSame('mentions_found',$alert['status']);
+        self::assertStringContainsString('ne sont pas considérées comme des substances interdites',json_encode($alert,JSON_UNESCAPED_UNICODE));
+    }
+    public function test_antidoping_provider_outage_is_explicit_without_blocking_verified_medicine(): void
+    {
+        $this->importMedicationCatalogue();
+        Http::swap(new \Illuminate\Http\Client\Factory());Http::preventStrayRequests();
+        Http::fake([
+            'rxnav.nlm.nih.gov/REST/rxcui/*/related.json*'=>Http::response([],503),
+            'rxnav.nlm.nih.gov/REST/rxcui/12345/properties.json'=>Http::response(['properties'=>[
+                'rxcui'=>'12345','name'=>'Fixture RxNorm medicine','tty'=>'SCD']]),
+            'rxnav.nlm.nih.gov/REST/version.json'=>Http::response(['version'=>'TEST-ONLY']),
+        ]);
+        $this->getJson('/api/pcma/medications/12345/antidoping')->assertOk()->assertJson(['status'=>'unavailable']);
+        $saved=app(\App\Services\MedicationCatalogue::class)->selections('[{"id":"12345"}]');
+        self::assertSame('unavailable',$saved[0]['antidoping']['status']);
+        self::assertSame('RxNorm',$saved[0]['source']);
+        $this->getJson('/api/pcma/medications/not-an-id/antidoping')->assertStatus(422);
+    }
+    public function test_antidoping_alert_is_shown_on_health_record_and_escapes_provider_text(): void
+    {
+        $this->importMedicationCatalogue();$this->healthcareSchema();$record=$this->healthRecord();
+        $record->update(['medications'=>app(\App\Services\MedicationCatalogue::class)->selections('[{"id":"12345"}]')]);
+        $this->get('/health-records/'.$record->id)->assertOk()->assertSee(__('pcma_medications.alert_title'))->assertSee('2025')->assertSee('GLUCOCORTICO');
+        $medication=$record->fresh()->medications[0];
+        $medication['antidoping']['matches'][0]['ingredient']['name']='<script>forged</script>';
+        $html=view('health-records.medication-antidoping',compact('medication'))->render();
+        self::assertStringNotContainsString('<script>forged</script>',$html);
+        self::assertStringContainsString('&lt;script&gt;',$html);
+    }
+
+    public function test_aut_form_is_discoverable_and_record_picker_is_scoped(): void
+    {
+        $this->autSchema();$own=$this->healthRecord();$foreign=$this->healthRecord(20);
+        $this->get('/medical-aut')->assertOk()
+            ->assertSee('/health-records/'.$own->id.'/aut/create',false)
+            ->assertDontSee('/health-records/'.$foreign->id.'/aut/create',false);
+        $this->get('/modules/medical')->assertOk()->assertSee('/medical-aut',false);
+        $this->get('/health-records')->assertOk()->assertSee('/medical-aut',false);
+        $this->get('/health-records/'.$own->id)->assertOk()->assertSee('/health-records/'.$own->id.'/aut/create',false);
+        $this->actingAs((new User(['role'=>'player']))->forceFill(['tenant_id'=>1]));
+        $this->get('/medical-aut')->assertForbidden();
     }
 }

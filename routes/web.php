@@ -718,6 +718,8 @@ Route::get('/api/health-records/icd11/search', [App\Http\Controllers\PcmaIcd11Co
 Route::get('/api/pcma/icd11/search', [App\Http\Controllers\PcmaIcd11Controller::class, 'search'])
     ->middleware(['auth', 'throttle:60,1'])->name('pcma.icd11.search');
 
+Route::get('/api/pcma/medications/{rxcui}/antidoping', [App\Http\Controllers\PcmaMedicationController::class, 'antidoping'])
+    ->middleware(['auth','throttle:60,1'])->name('pcma.medications.antidoping');
 Route::get('/api/pcma/medications', [App\Http\Controllers\PcmaMedicationController::class, 'search'])
     ->middleware(['auth', 'throttle:60,1'])->name('pcma.medications.search');
 Route::post('/api/pcma/auto-save', [App\Http\Controllers\PcmaDraftController::class, 'save'])
@@ -1986,6 +1988,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Health Records routes with parameters (must come AFTER specific routes)
     // Demandes AUT privées, liées au dossier et au joueur canoniques.
+    Route::get('/medical-aut', [App\Http\Controllers\MedicalAutController::class, 'choose'])->name('medical-aut.choose');
     Route::get('/health-records/{record}/aut', [App\Http\Controllers\MedicalAutController::class, 'index'])->name('medical-aut.index');
     Route::get('/health-records/{record}/aut/create', [App\Http\Controllers\MedicalAutController::class, 'create'])->name('medical-aut.create');
     Route::get('/health-records/{record}/aut/source', [App\Http\Controllers\MedicalAutController::class, 'source'])->name('medical-aut.source');

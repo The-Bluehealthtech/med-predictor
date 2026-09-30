@@ -9,6 +9,7 @@
             <h1 class="text-3xl font-bold text-gray-900">🏥 {{ __('healthcare.records_title') }}</h1>
             <p class="text-gray-600 mt-2">{{ __('healthcare.management_subtitle') }}</p>
         </div>
+        <a href="{{ route('medical-aut.choose') }}" class="bg-blue-600 text-white rounded-lg py-2 px-4">{{ __('medical_aut.title') }}</a>
         <a href="{{ route('health-records.create') }}" 
            class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
             {{ __('healthcare.new_record_button') }}

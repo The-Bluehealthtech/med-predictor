@@ -1,0 +1,23 @@
+# Alerte sur médicament et accès AUT
+- Référence fournie 2025 maintenue sur instruction explicite de l’utilisateur.
+- RxNorm : récupération des ingrédients IN via /rxcui/{id}/related.json?tty=IN.
+- Comparaison textuelle sur le texte intégral fourni : casse/accents normalisés, frontières de mots.
+- Aucune traduction, équivalence de synonymes ou conclusion d’interdiction inventée.
+- Mention détectée : alerte jaune avec substance, catégorie, conditions et exceptions intégrales.
+- Contexte incluant les définitions et l’interdiction permanente/en compétition/dans certains sports du document.
+- Une mention dans une exception déclenche une revue du texte, pas une déclaration « interdit ».
+- Pas de correspondance, ingrédient absent ou médicament historique : vérification non concluante.
+- Fournisseur indisponible : message explicite ; une prescription RxNorm déjà vérifiée reste enregistrable.
+- L’absence de correspondance ne garantit jamais que le médicament est autorisé.
+- Sélecteurs PCMA et dossier médical : alerte à la sélection, requête dédupliquée par médicament.
+- Les réponses tardives ne modifient pas un médicament retiré ni une carte déconnectée.
+- Sauvegarde : nouvelle vérification serveur, résultat source/version enregistré dans la base principale.
+- Alerte également affichée sur le résumé PCMA et le dossier médical.
+- Aucun envoi externe ni décision AUT automatique ; aucun texte fournisseur inséré comme HTML.
+- GET /api/pcma/medications/{rxcui}/antidoping : rôle médical, authentification et limitation de fréquence.
+- GET /medical-aut : choix du dossier dans le périmètre autorisé ; aucune création implicite.
+- Boutons AUT ajoutés au module médical, Healthcare, liste et fiche des dossiers.
+- Accès direct existant : /health-records/{id}/aut/create.
+- Tests : 83 tests, 592 assertions réussis ; validation syntaxique PHP et JS.
+- Vérifiés : conditions de voie, exceptions, synonymes non devinés, sous-chaînes refusées, panne fournisseur, échappement HTML et accès inter-clubs.
+- Limites : détection textuelle non exhaustive entre français/anglais ; pas de vérification visuelle authentifiée en production ni de preuve Render Live.

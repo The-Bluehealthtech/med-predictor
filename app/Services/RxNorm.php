@@ -34,6 +34,26 @@ final class RxNorm
         }
         return array_values($result);
     }
+    public function antidoping(string $id): array
+    {
+        abort_unless(preg_match('/^[0-9]{1,20}$/',$id),422,'Identifiant RxNorm invalide.');
+        try {
+            $data=$this->get('rxcui/'.$id.'/related.json',['tty'=>'IN']);
+            $ingredients=[];
+            foreach($data['relatedGroup']['conceptGroup']??[] as $group){
+                if(($group['tty']??null)!=='IN')continue;
+                foreach($group['conceptProperties']??[] as $p){
+                    if(!empty($p['name']) && preg_match('/^[0-9]+$/',(string)($p['rxcui']??''))){
+                        $ingredients[]=['rxcui'=>(string)$p['rxcui'],'name'=>$p['name']];
+                    }
+                }
+            }
+            return app(MedicationAntidopingAlert::class)->check($ingredients);
+        } catch(\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            if($e->getStatusCode()!==503)throw $e;
+            return ['status'=>'unavailable','version'=>'2025','matches'=>[]];
+        }
+    }
     public function resolve(string $id): array
     {
         abort_unless(preg_match('/^[0-9]{1,20}$/',$id),422,'Identifiant RxNorm invalide.');
@@ -44,6 +64,7 @@ final class RxNorm
         $version=$this->get('version.json');
         abort_unless(is_string($version['version']??null) && $version['version']!=='',503,'Version RxNorm indisponible.');
         $product['version']=$version['version'];
+        $product['antidoping']=$this->antidoping($id);
         return $product;
     }
 }

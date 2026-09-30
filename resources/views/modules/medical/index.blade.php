@@ -12,6 +12,7 @@
 <div class="bg-white rounded-lg shadow-md p-6 my-6 flex flex-wrap gap-4">
 <a href="{{ route('health-records.create') }}">{{ __('medical_module.create') }}</a>
 <a href="{{ route('pcma.create') }}">PCMA</a>
+<a class="bg-blue-600 text-white rounded px-4 py-2" href="{{ route('medical-aut.choose') }}">{{ __('medical_aut.title') }}</a>
 <a href="{{ route('health-records.index') }}">{{ __('medical_module.records') }}</a>
 <a href="{{ route('medical-predictions.index') }}">{{ __('medical_module.history') }}</a>
 </div>

@@ -9,7 +9,7 @@
         <p class="text-gray-600 mt-2">{{ __('healthcare.records_description') }}</p>
     </div>
 
-    <div class="flex gap-4 mb-4"><a href="{{ route('health-records.create') }}">{{ __('healthcare.new_record_button') }}</a><a href="{{ route('healthcare.predictions') }}">{{ __('healthcare.medical_predictions') }}</a><a href="{{ route('healthcare.export') }}">{{ __('healthcare_repair.export') }}</a><a href="{{ route('pcma.index') }}">PCMA</a></div>
+    <div class="flex gap-4 mb-4"><a href="{{ route('health-records.create') }}">{{ __('healthcare.new_record_button') }}</a><a href="{{ route('healthcare.predictions') }}">{{ __('healthcare.medical_predictions') }}</a><a href="{{ route('healthcare.export') }}">{{ __('healthcare_repair.export') }}</a><a href="{{ route('pcma.index') }}">PCMA</a><a class="bg-blue-600 text-white rounded px-4 py-2" href="{{ route('medical-aut.choose') }}">{{ __('medical_aut.title') }}</a></div>
     @if(session('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
             {{ session('success') }}

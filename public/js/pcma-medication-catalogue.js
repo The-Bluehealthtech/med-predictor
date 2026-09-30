@@ -12,6 +12,38 @@ document.addEventListener('DOMContentLoaded', () => {
         presentation_id:p.presentation_id ?? p.presentation?.id ?? null,
         dose:p.dose??null,route:p.route??null,frequency:p.frequency??null})));
         hidden.dispatchEvent(new Event('change',{bubbles:true}));};
+    const checks=new Map();
+    const paintAlert=(node,a)=>{
+        node.replaceChildren();node.setAttribute('role','status');
+        const hit=a?.status==='mentions_found';
+        node.className='border rounded-md p-3 mt-2 '+(hit?'border-yellow-500 bg-yellow-50':'border-gray-300');
+        node.append(element('strong',hit?labels.alert_title:(a?.status==='unavailable'?labels.alert_unavailable:labels.alert_unresolved)));
+        if(hit){
+            node.append(element('p',labels.alert_note,'text-sm'));
+            (a.matches||[]).forEach(m=>{
+                const details=element('details',null,'mt-2');
+                details.append(element('summary',m.ingredient.name+' — '+m.category+' · '+labels.alert_context));
+                (m.context||[]).forEach(r=>details.append(element('p',r.text,'text-sm')));
+                node.append(details);
+            });
+        }
+    };
+    const checkAlert=async(p,node)=>{
+        if(p.source!=='RxNorm'){paintAlert(node,{status:'unresolved'});return;}
+        if(p.antidoping)paintAlert(node,p.antidoping);
+        else node.append(element('p',labels.alert_loading));
+        if(!checks.has(p.id))checks.set(p.id,(async()=>{
+            try{
+                const response=await fetch(root.dataset.endpoint+'/'+encodeURIComponent(p.id)+'/antidoping',
+                    {headers:{Accept:'application/json'},credentials:'same-origin'});
+                if(!response.ok)throw new Error('Unavailable');
+                return await response.json();
+            }catch{return {status:'unavailable',version:'2025',matches:[]};}
+        })());
+        const result=await checks.get(p.id);
+        p.antidoping=result;
+        if(node.isConnected&&items.includes(p))paintAlert(node,result);
+    };
     const render=()=>{
         selected.replaceChildren();
         items.forEach((p,index)=>{
@@ -38,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 label.append(input);card.append(label);
             });
             selected.append(card);
+            const alert=element('div',null);card.append(alert);checkAlert(p,alert);
         });
     };
     search.addEventListener('input',()=>{

@@ -77,7 +77,7 @@ class PCMAController extends Controller
             ->orderBy('first_name')
             ->orderBy('last_name')
             ->get();
-        } elseif (in_array($user->role, ['admin', 'super_admin'])) {
+        } elseif ($user->isSystemAdmin() || in_array($user->role, ['admin', 'super_admin'], true)) {
             $athletes = Player::orderBy('first_name')->orderBy('last_name')->get();
         }
         

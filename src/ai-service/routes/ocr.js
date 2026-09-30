@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
-const medGeminiService = require('../services/medGeminiService');
+const medGeminiService = new (require('../services/medGeminiService'))();
 
 // Configure multer for image file uploads
 const storage = multer.diskStorage({
@@ -70,13 +70,13 @@ router.post('/extract', upload.single('image'), async (req, res) => {
                 success: true,
                 message: 'Text extracted successfully from image',
                 extracted_text: ocrResult.extracted_text,
-                confidence: ocrResult.confidence || 0.0,
+                confidence: ocrResult.confidence ?? null,
                 language: language,
                 word_count: ocrResult.word_count || 0,
                 is_medical_document: isMedicalDocument
             });
         } else {
-            return res.status(500).json({
+            return res.status(503).json({
                 success: false,
                 message: 'OCR extraction failed',
                 error: ocrResult.error
@@ -91,7 +91,7 @@ router.post('/extract', upload.single('image'), async (req, res) => {
             fs.unlinkSync(req.file.path);
         }
 
-        return res.status(500).json({
+        return res.status(503).json({
             success: false,
             message: 'Internal server error during OCR extraction',
             error: error.message
@@ -99,4 +99,4 @@ router.post('/extract', upload.single('image'), async (req, res) => {
     }
 });
 
-module.exports = router; 
+module.exports = router;

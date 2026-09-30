@@ -103,7 +103,7 @@
                                     <div class="flex-1">
                                         <div class="flex items-center space-x-3">
                                             <h3 class="text-lg font-medium text-gray-900">
-                                                {{ $pcma->athlete->name ?? __('pcma_extra.unknown_athlete') }}
+                                                {{ ($pcma->player ?? $pcma->athlete)->name ?? __('pcma_extra.unknown_athlete') }}
                                             </h3>
                                             <span class="px-2 py-1 text-xs rounded-full {{ $pcma->status === 'completed' ? 'bg-green-100 text-green-800' : ($pcma->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
                                                 {{ ucfirst($pcma->status ?? 'pending') }}
@@ -327,4 +327,4 @@ createApp({
 }).mount('#signed-pcmas-app');
 </script>
 @endpush
-@endsection 
+@endsection

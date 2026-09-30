@@ -66,7 +66,7 @@ app.use(compression());
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
 // Body parsing
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: process.env.AI_MAX_REQUEST_SIZE || '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Authentication middleware for protected routes
@@ -81,7 +81,7 @@ app.use('/api/ai/medical-notes', medicalNoteRoutes);
 app.use('/api/ai/compliance', complianceRoutes);
 app.use('/api/ai/whisper', whisperRoutes);
 app.use('/api/ai/ocr', ocrRoutes);
-app.use('/api/v1/med-gemini', medGeminiRoutes);
+app.use('/api/v1/med-gemini', authMiddleware, medGeminiRoutes);
 app.use('/health', healthRoutes);
 
 // Root endpoint
@@ -149,4 +149,4 @@ app.listen(PORT, () => {
   logger.info(`Health check available at: http://localhost:${PORT}/health`);
 });
 
-module.exports = app; 
+module.exports = app;

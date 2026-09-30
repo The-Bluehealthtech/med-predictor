@@ -26,6 +26,10 @@ final class PcmaCreatePageTest extends TestCase
             $table->uuid('id')->primary(); $table->string('type'); $table->morphs('notifiable');
             $table->text('data'); $table->timestamp('read_at')->nullable(); $table->timestamps();
         });
+        Schema::create('clubs', function (Blueprint $table) {
+            $table->id(); $table->unsignedBigInteger('association_id')->nullable();
+        });
+        DB::table('clubs')->insert([['id' => 1, 'association_id' => 1], ['id' => 2, 'association_id' => 2]]);
         Schema::create('players', function (Blueprint $table) {
             $table->id(); $table->string('first_name'); $table->string('last_name');
             $table->string('name')->nullable(); $table->unsignedBigInteger('club_id')->nullable();
@@ -52,7 +56,7 @@ final class PcmaCreatePageTest extends TestCase
                 ->assertViewIs('pcma.create')
                 ->assertViewHas('teamDoctorRegistration', null)
                 ->assertViewHas('athletes', fn ($rows) => $rows->isEmpty())
-                ->assertViewHas('users', fn ($rows) => $rows->isEmpty())
+                ->assertViewHas('users', fn ($rows) => $rows->pluck('id')->all() === [9001])
                 ->assertDontSee('Test Assessor')->assertDontSee('Test Player');
         }
     }
@@ -91,7 +95,6 @@ final class PcmaCreatePageTest extends TestCase
         $view = app(PCMAController::class)->create();
         self::assertSame([10], $view->getData()['athletes']->pluck('id')->all());
         self::assertNull($view->getData()['teamDoctorRegistration']);
-        self::assertTrue($view->getData()['users']->isEmpty());
+        self::assertSame('club_medical', $view->getData()['users']->first()->role);
     }
 }
-

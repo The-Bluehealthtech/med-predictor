@@ -35,8 +35,8 @@ class StoreFifaCompliantPCMARequest extends FormRequest
     {
         return [
             // Basic PCMA fields
-            'athlete_id' => 'required|exists:athletes,id',
-            'player_id' => 'nullable|exists:players,id',
+            'athlete_id' => 'nullable|required_without:player_id|exists:athletes,id',
+            'player_id' => 'nullable|required_without:athlete_id|exists:players,id',
             'fifa_connect_record_id' => 'nullable|exists:fifa_connect_ids,id',
             // Legacy form alias for the official FIFAIdentifier.
             'fifa_connect_id' => [
@@ -304,4 +304,4 @@ class StoreFifaCompliantPCMARequest extends FormRequest
             'anatomical_annotations' => 'annotations anatomiques',
         ];
     }
-} 
+}

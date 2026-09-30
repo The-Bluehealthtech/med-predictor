@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
-const medGeminiService = require('../services/medGeminiService');
+const medGeminiService = new (require('../services/medGeminiService'))();
 
 // Configure multer for audio file uploads
 const storage = multer.diskStorage({
@@ -26,7 +26,7 @@ const upload = multer({
         fileSize: 10 * 1024 * 1024 // 10MB limit
     },
     fileFilter: (req, file, cb) => {
-        const allowedTypes = ['audio/wav', 'audio/mp3', 'audio/m4a', 'audio/mpeg'];
+        const allowedTypes = ['audio/wav', 'audio/mp3', 'audio/m4a', 'audio/mpeg', 'audio/mp4', 'audio/webm', 'audio/ogg', 'audio/x-wav'];
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
@@ -70,12 +70,12 @@ router.post('/transcribe', upload.single('audio'), async (req, res) => {
                 success: true,
                 message: 'Audio transcribed successfully',
                 transcription: transcriptionResult.transcription,
-                confidence: transcriptionResult.confidence || 0.0,
+                confidence: transcriptionResult.confidence ?? null,
                 language: language,
                 model: model
             });
         } else {
-            return res.status(500).json({
+            return res.status(503).json({
                 success: false,
                 message: 'Transcription failed',
                 error: transcriptionResult.error
@@ -90,7 +90,7 @@ router.post('/transcribe', upload.single('audio'), async (req, res) => {
             fs.unlinkSync(req.file.path);
         }
 
-        return res.status(500).json({
+        return res.status(503).json({
             success: false,
             message: 'Internal server error during transcription',
             error: error.message
@@ -98,4 +98,4 @@ router.post('/transcribe', upload.single('audio'), async (req, res) => {
     }
 });
 
-module.exports = router; 
+module.exports = router;

@@ -57,11 +57,11 @@
                                 <dt class="text-sm font-medium text-gray-500">{{ __('secretary.col_athlete') }}</dt>
                                 <dd class="text-sm text-gray-900">
                                     <div class="flex items-center space-x-3">
-                                        <span>{{ $pcma->athlete->name ?? 'N/A' }}</span>
-                                        @if($pcma->athlete)
+                                        <span>{{ ($pcma->player ?? $pcma->athlete)->name ?? 'N/A' }}</span>
+                                        @if(($pcma->player ?? $pcma->athlete))
                                             <x-flag-logo-display 
-                                                :nationality="$pcma->athlete->nationality"
-                                                :association="$pcma->athlete->association"
+                                                :nationality="($pcma->player ?? $pcma->athlete)->nationality"
+                                                :association="($pcma->player ?? $pcma->athlete)->association"
                                                 size="small"
                                             />
                                         @endif
@@ -153,7 +153,7 @@
         </div>
 
         <!-- Athlete Information with Flags and Logos -->
-        @if($pcma->athlete)
+        @if(($pcma->player ?? $pcma->athlete))
         <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-800">{{ __('pcma_extra.label_1e41ecaaf9c1') }}</h2>
@@ -166,25 +166,25 @@
                         <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('pcma_extra.label_3138be1c280f') }}</h3>
                         <div class="mb-4">
                             <x-flag-logo-display 
-                                :nationality="$pcma->athlete->nationality"
-                                :association="$pcma->athlete->association"
+                                :nationality="($pcma->player ?? $pcma->athlete)->nationality"
+                                :association="($pcma->player ?? $pcma->athlete)->association"
                                 size="large"
                             />
                         </div>
                         <div class="space-y-2">
-                            <p class="text-lg font-semibold text-gray-900">{{ $pcma->athlete->name }}</p>
-                            <p class="text-sm text-gray-600">{{ $pcma->athlete->position ?? __('pcma_extra.undefined_position') }}</p>
-                            <p class="text-sm text-gray-600">{{ $pcma->athlete->age ?? __('pcma_extra.undefined_age') }} {{ __('pcma_extra.years') }}</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ ($pcma->player ?? $pcma->athlete)->name }}</p>
+                            <p class="text-sm text-gray-600">{{ ($pcma->player ?? $pcma->athlete)->position ?? __('pcma_extra.undefined_position') }}</p>
+                            <p class="text-sm text-gray-600">{{ ($pcma->player ?? $pcma->athlete)->age ?? __('pcma_extra.undefined_age') }} {{ __('pcma_extra.years') }}</p>
                         </div>
                     </div>
                     
                     <!-- Club Information -->
                     <div>
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Club</h3>
-                        @if($pcma->athlete->club)
+                        @if(($pcma->player ?? $pcma->athlete)->club)
                             <div class="mb-4">
                                 <x-club-logo 
-                                    :club="$pcma->athlete->club" 
+                                    :club="($pcma->player ?? $pcma->athlete)->club"
                                     size="medium" 
                                     :showName="true" 
                                     :showCountry="true"
@@ -193,11 +193,11 @@
                             <dl class="space-y-3">
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_aa40e08a0d95') }}</dt>
-                                    <dd class="text-sm text-gray-900">{{ $pcma->athlete->club->name }}</dd>
+                                    <dd class="text-sm text-gray-900">{{ ($pcma->player ?? $pcma->athlete)->club->name }}</dd>
                                 </div>
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_d482782c346b') }}</dt>
-                                    <dd class="text-sm text-gray-900">{{ $pcma->athlete->club->country ?? __('pcma_extra.not_recorded') }}</dd>
+                                    <dd class="text-sm text-gray-900">{{ ($pcma->player ?? $pcma->athlete)->club->country ?? __('pcma_extra.not_recorded') }}</dd>
                                 </div>
                             </dl>
                         @else
@@ -209,14 +209,14 @@
                     <div>
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Association</h3>
                         <dl class="space-y-3">
-                            @if($pcma->athlete->association)
+                            @if(($pcma->player ?? $pcma->athlete)->association)
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_c2351a5b7050') }}</dt>
-                                    <dd class="text-sm text-gray-900">{{ $pcma->athlete->association->name }}</dd>
+                                    <dd class="text-sm text-gray-900">{{ ($pcma->player ?? $pcma->athlete)->association->name }}</dd>
                                 </div>
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_49b18e300c98') }}</dt>
-                                    <dd class="text-sm text-gray-900">{{ $pcma->athlete->association->country ?? __('pcma_extra.not_recorded') }}</dd>
+                                    <dd class="text-sm text-gray-900">{{ ($pcma->player ?? $pcma->athlete)->association->country ?? __('pcma_extra.not_recorded') }}</dd>
                                 </div>
                             @else
                                 <p class="text-sm text-gray-500">{{ __('pcma_extra.label_f7c3fd1b8115') }}</p>
@@ -765,7 +765,7 @@
                         <div class="space-y-2">
                             <div>
                                 <span class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_720601ed64d2') }}</span>
-                                <span class="text-sm text-gray-900">{{ $pcma->ecg_file ?? __('pcma_extra.not_recorded') }}</span>
+                                <span class="text-sm text-gray-900">@if($pcma->ecg_file)<a href="{{ route('pcma.file', [$pcma, 'ecg_file']) }}">{{ basename($pcma->ecg_file) }}</a>@else{{ __('pcma_extra.not_recorded') }}@endif</span>
                             </div>
                             @if($pcma->result_json['medical_imaging']['ecg_date'] ?? null)
                                 <div>
@@ -794,7 +794,7 @@
                         <div class="space-y-2">
                             <div>
                                 <span class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_720601ed64d2') }}</span>
-                                <span class="text-sm text-gray-900">{{ $pcma->mri_file ?? __('pcma_extra.not_recorded') }}</span>
+                                <span class="text-sm text-gray-900">@if($pcma->mri_file)<a href="{{ route('pcma.file', [$pcma, 'mri_file']) }}">{{ basename($pcma->mri_file) }}</a>@else{{ __('pcma_extra.not_recorded') }}@endif</span>
                             </div>
                             @if($pcma->result_json['medical_imaging']['mri_date'] ?? null)
                                 <div>
@@ -924,7 +924,7 @@
                             <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('pcma_extra.label_4341b5cb4b5f') }}</h3>
                             @if($pcma->signature_image)
                                 <div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                                    <img src="{{ asset('storage/' . $pcma->signature_image) }}" 
+                                    <img src="{{ route('pcma.file', [$pcma, 'signature_image']) }}"
                                          alt="{{ __('pcma.report_signature_alt') }}"
                                          class="max-w-full h-auto max-h-48 object-contain">
                                 </div>
@@ -963,4 +963,4 @@
         @endif
     </div>
 </div>
-@endsection 
+@endsection

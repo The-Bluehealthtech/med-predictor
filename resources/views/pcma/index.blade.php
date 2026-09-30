@@ -97,13 +97,13 @@
                                         <div class="flex-shrink-0 h-10 w-10">
                                             <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
                                                 <span class="text-blue-600 font-medium text-sm">
-                                                    {{ substr($pcma->athlete->name ?? 'A', 0, 1) }}
+                                                    {{ substr(($pcma->player ?? $pcma->athlete)->name ?? 'A', 0, 1) }}
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900">
-                                                {{ $pcma->athlete->name ?? __('pcma_extra.unknown_athlete') }}
+                                                {{ ($pcma->player ?? $pcma->athlete)->name ?? __('pcma_extra.unknown_athlete') }}
                                             </div>
                                         </div>
                                     </div>
@@ -174,4 +174,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

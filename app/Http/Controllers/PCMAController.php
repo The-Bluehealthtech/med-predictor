@@ -21,6 +21,23 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class PCMAController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            app(\App\Services\MedicalRecordAccess::class)->authorizeRole($request->user());
+            return $next($request);
+        });
+    }
+    private function scopedRecords()
+    {
+        return app(\App\Services\MedicalRecordAccess::class)->scope(auth()->user(), PCMA::query());
+    }
+    public function signed()
+    {
+        return response()->json(['success' => true, 'pcmas' => $this->scopedRecords()
+            ->with(['player', 'athlete', 'assessor'])->where('is_signed', true)->orderByDesc('signed_at')->get()]);
+    }
+
     private function activeTeamDoctorRegistration(User $user): ?FifaRegistration
     {
         $fifaId = $user->fifa_connect_id;
@@ -48,7 +65,7 @@ class PCMAController extends Controller
 
     public function index(): View
     {
-        $pcmas = PCMA::with(['athlete', 'assessor'])
+        $pcmas = $this->scopedRecords()->with(['player', 'athlete', 'assessor'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
@@ -62,29 +79,14 @@ class PCMAController extends Controller
         
         abort_unless($user, 401);
         
-        // Récupérer les joueurs selon le rôle de l'utilisateur
-        $athletes = collect();
-        
-        if (in_array($user->role, ['club_admin', 'club_manager', 'club_medical'])) {
-            $athletes = Player::where('club_id', $user->club_id)
-                ->orderBy('first_name')
-                ->orderBy('last_name')
-                ->get();
-        } elseif (in_array($user->role, ['association_admin', 'association_registrar', 'association_medical'])) {
-            $athletes = Player::whereHas('club', function ($query) use ($user) {
-                $query->where('association_id', $user->association_id);
-            })
-            ->orderBy('first_name')
-            ->orderBy('last_name')
-            ->get();
-        } elseif ($user->isSystemAdmin() || in_array($user->role, ['admin', 'super_admin'], true)) {
-            $athletes = Player::orderBy('first_name')->orderBy('last_name')->get();
-        }
+        $athletes = app(\App\Services\MedicalRecordAccess::class)
+            ->scopePlayers($user, Player::query())->orderBy('first_name')->orderBy('last_name')->get();
         
         // Seul le médecin connecté, identifié par FIFA et inscrit TeamDoctor,
         // peut signer. Les autres utilisateurs ne sont pas proposés comme signataires.
         $teamDoctorRegistration = $this->activeTeamDoctorRegistration($user);
-        $users = $teamDoctorRegistration ? collect([$user]) : collect();
+        // Un médecin peut préparer un brouillon ; seul TeamDoctor peut signer.
+        $users = collect([$user]);
         
         return view('pcma.create', compact('athletes', 'users', 'teamDoctorRegistration'));
     }
@@ -92,84 +94,8 @@ class PCMAController extends Controller
     public function store(Request $request)
     {
         try {
-            $validated = $request->validate([
-                'player_id' => 'required|exists:players,id',
-                'type' => 'required|in:bpma,cardio,dental,neurological,orthopedic',
-                'assessor_id' => 'required|exists:users,id',
-                'assessment_date' => 'required|date',
-                'result_json' => 'nullable|json',
-                'status' => 'required|in:pending,completed,failed',
-                'notes' => 'nullable|string',
-                'final_statement' => 'required|array',
-                'final_statement.overall_decision' => 'required|in:FIT,NOT_FIT,CONDITIONAL',
-                // FIFA Compliance Fields
-                'fifa_connect_id' => [
-                    'nullable',
-                    new FifaIdentifier(),
-                ],
-                'fifa_id' => [
-                    'nullable',
-                    new FifaIdentifier(),
-                ],
-                'competition_name' => 'nullable|string|max:255',
-                'competition_date' => 'nullable|date',
-                'team_name' => 'nullable|string|max:255',
-                'position' => 'nullable|in:goalkeeper,defender,midfielder,forward',
-                'fifa_compliant' => 'nullable|boolean',
-                // Vital Signs
-                'blood_pressure' => 'nullable|string|max:255',
-                'heart_rate' => 'nullable|integer|min:0|max:300',
-                'temperature' => 'nullable|numeric|min:30|max:45',
-                'respiratory_rate' => 'nullable|integer|min:0|max:100',
-                'oxygen_saturation' => 'nullable|integer|min:0|max:100',
-                'weight' => 'nullable|numeric|min:0|max:500',
-                // Medical History
-                'medical_history' => 'nullable|string',
-            'cardiovascular_history' => 'nullable|string',
-                'surgical_history' => 'nullable|string',
-                'medications' => 'nullable|string',
-                'allergies' => 'nullable|string',
-                // Physical Examination
-                'general_appearance' => 'nullable|in:normal,abnormal',
-                'skin_examination' => 'nullable|in:normal,abnormal',
-                'lymph_nodes' => 'nullable|in:normal,enlarged',
-                'abdomen_examination' => 'nullable|in:normal,abnormal',
-                // Cardiovascular Assessment
-                'cardiac_rhythm' => 'nullable|in:sinus,irregular,arrhythmia',
-                'heart_murmur' => 'nullable|in:none,systolic,diastolic',
-                'blood_pressure_rest' => 'nullable|string|max:255',
-                'blood_pressure_exercise' => 'nullable|string|max:255',
-                // Neurological Assessment
-                'consciousness' => 'nullable|in:alert,confused,drowsy',
-                'cranial_nerves' => 'nullable|in:normal,abnormal',
-                'motor_function' => 'nullable|in:normal,weakness,paralysis',
-                'sensory_function' => 'nullable|in:normal,decreased,absent',
-                // Musculoskeletal Assessment
-                'joint_mobility' => 'nullable|in:normal,limited,restricted',
-                'muscle_strength' => 'nullable|in:normal,reduced,weak',
-                'pain_assessment' => 'nullable|in:none,mild,moderate,severe',
-                'range_of_motion' => 'nullable|in:full,limited,restricted',
-                // Medical Imaging
-                'ecg_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
-                'ecg_date' => 'nullable|date',
-                'ecg_interpretation' => 'nullable|in:normal,sinus_bradycardia,sinus_tachycardia,atrial_fibrillation,ventricular_tachycardia,st_elevation,st_depression,qt_prolongation,abnormal',
-                'ecg_notes' => 'nullable|string',
-                'mri_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
-                'mri_date' => 'nullable|date',
-                'mri_type' => 'nullable|in:brain,spine,knee,shoulder,ankle,hip,cardiac,other',
-                'mri_findings' => 'nullable|in:normal,mild_abnormality,moderate_abnormality,severe_abnormality,fracture,tumor,inflammation,degenerative,other',
-                'mri_notes' => 'nullable|string',
-                'xray_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
-                'ct_scan_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
-                'ultrasound_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
-                // Signature fields
-                'is_signed' => 'nullable|boolean',
-                'signed_at' => 'nullable|date',
-                'signed_by' => 'nullable|string|max:255',
-                'license_number' => 'nullable|string|max:255',
-                'signature_image' => 'nullable|string',
-                'signature_data' => 'nullable|json',
-            ]);
+            $validated = $request->validate(app(\App\Services\PcmaFormData::class)->rules());
+            $validated = app(\App\Services\MedicalRecordAccess::class)->input($request->user(), $validated);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Ne pas journaliser les données médicales de la requête.
             
@@ -191,6 +117,7 @@ class PCMAController extends Controller
         // La sélection client ne constitue pas une preuve d'identité du signataire.
 
         // La vérification du médecin ne certifie pas le PCMA comme objet FIFA Connect.
+        $validated = app(\App\Services\PcmaFormData::class)->withoutSignature($validated);
         $validated['fifa_compliant'] = false;
 
                         // Handle signature data
@@ -218,7 +145,7 @@ class PCMAController extends Controller
                     $signaturePayload['teamDoctorRegistrationId'] = $registration->id;
                     $signaturePayload['finalStatement'] = $validated['final_statement'];
                     $signaturePayload['signedAt'] = $validated['signed_at']->toISOString();
-                    $validated['signature_data'] = json_encode($signaturePayload);
+                    $validated['signature_data'] = $signaturePayload;
                     
                     // Add default result_json if not provided
                     if (!isset($validated['result_json'])) {
@@ -234,14 +161,17 @@ class PCMAController extends Controller
             // Handle signature image (base64 data)
             if ($request->has('signature_image')) {
                 $signatureData = $request->signature_image;
-                if (strpos($signatureData, 'data:image') === 0) {
-                    // Extract base64 data
-                    $imageData = base64_decode(explode(',', $signatureData)[1]);
-                    $filename = 'signature_' . time() . '.png';
+                if (is_string($signatureData) && str_starts_with($signatureData, 'data:image/png;base64,')) {
+                    $imageData = base64_decode(substr($signatureData, 22), true);
+                    if (!$imageData || !str_starts_with($imageData, "\x89PNG\r\n\x1a\n")) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            'signature_image' => 'Image de signature PNG invalide.']);
+                    }
+                    $filename = 'signature_' . \Illuminate\Support\Str::uuid() . '.png';
                     $path = 'signatures/' . $filename;
                     
                     // Store the signature image
-                    Storage::disk('public')->put($path, $imageData);
+                    Storage::disk('local')->put($path, $imageData);
                     $validated['signature_image'] = $path;
                 }
             }
@@ -253,7 +183,7 @@ class PCMAController extends Controller
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
                 $filename = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('medical_imaging', $filename, 'public');
+                $path = $file->store('medical_imaging', 'local');
                 $validated[$field] = $path;
             }
         }
@@ -267,8 +197,19 @@ class PCMAController extends Controller
                     ]);
                 }
                 
-                $validated = $this->preserveClinicalFields($validated);
-                $pcma = PCMA::create($validated);
+                $pcma = \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request) {
+                    $record = !empty($validated['pcma_id'])
+                        ? PCMA::lockForUpdate()->findOrFail($validated['pcma_id']) : new PCMA();
+                    if ($record->exists) {
+                        app(\App\Services\MedicalRecordAccess::class)->record($request->user(), $record, true);
+                        abort_unless($record->status === 'pending'
+                            && (int) $record->player_id === (int) $validated['player_id'], 409);
+                    }
+                    $payload = $this->preserveClinicalFields($validated, $record->result_json);
+                    unset($payload['pcma_id'], $payload['draft_token']);
+                    $record->fill($payload)->save();
+                    return $record;
+                });
 
         // Return JSON response for API calls
         if ($request->expectsJson() || $request->is('api/*')) {
@@ -285,13 +226,15 @@ class PCMAController extends Controller
 
     public function show(PCMA $pcma): View
     {
-        $pcma->load(['athlete', 'assessor']);
+        app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma);
+        $pcma->load(['player', 'athlete', 'assessor']);
         
         return view('pcma.show', compact('pcma'));
     }
 
     public function edit(PCMA $pcma): View
     {
+        app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma);
         // Réutiliser exactement le périmètre de joueurs autorisé à la création.
         $data = $this->create()->getData();
         return view('pcma.edit', array_merge($data, ['pcma' => $pcma]));
@@ -299,82 +242,20 @@ class PCMAController extends Controller
 
     public function update(Request $request, PCMA $pcma): RedirectResponse
     {
-        $validated = $request->validate([
-            'player_id' => 'required|exists:players,id',
-            'type' => 'required|in:bpma,cardio,dental,neurological,orthopedic',
-            'assessor_id' => 'required|exists:users,id',
-            'assessment_date' => 'required|date',
-            'result_json' => 'nullable|json',
-            'status' => 'required|in:pending,completed,failed',
-            'notes' => 'nullable|string',
-            // FIFA Compliance Fields
-            'fifa_connect_id' => [
-                'nullable',
-                new FifaIdentifier(),
-            ],
-            'fifa_id' => [
-                'nullable',
-                new FifaIdentifier(),
-            ],
-            'competition_name' => 'nullable|string|max:255',
-            'competition_date' => 'nullable|date',
-            'team_name' => 'nullable|string|max:255',
-            'position' => 'nullable|in:goalkeeper,defender,midfielder,forward',
-            'fifa_compliant' => 'nullable|boolean',
-            // Vital Signs
-            'blood_pressure' => 'nullable|string|max:255',
-            'heart_rate' => 'nullable|integer|min:0|max:300',
-            'temperature' => 'nullable|numeric|min:30|max:45',
-            'respiratory_rate' => 'nullable|integer|min:0|max:100',
-            'oxygen_saturation' => 'nullable|integer|min:0|max:100',
-            'weight' => 'nullable|numeric|min:0|max:500',
-            // Medical History
-            'medical_history' => 'nullable|string',
-            'cardiovascular_history' => 'nullable|string',
-            'surgical_history' => 'nullable|string',
-            'medications' => 'nullable|string',
-            'allergies' => 'nullable|string',
-            // Physical Examination
-            'general_appearance' => 'nullable|in:normal,abnormal',
-            'skin_examination' => 'nullable|in:normal,abnormal',
-            'lymph_nodes' => 'nullable|in:normal,enlarged',
-            'abdomen_examination' => 'nullable|in:normal,abnormal',
-            // Cardiovascular Assessment
-            'cardiac_rhythm' => 'nullable|in:sinus,irregular,arrhythmia',
-            'heart_murmur' => 'nullable|in:none,systolic,diastolic',
-            'blood_pressure_rest' => 'nullable|string|max:255',
-            'blood_pressure_exercise' => 'nullable|string|max:255',
-            // Neurological Assessment
-            'consciousness' => 'nullable|in:alert,confused,drowsy',
-            'cranial_nerves' => 'nullable|in:normal,abnormal',
-            'motor_function' => 'nullable|in:normal,weakness,paralysis',
-            'sensory_function' => 'nullable|in:normal,decreased,absent',
-            // Musculoskeletal Assessment
-            'joint_mobility' => 'nullable|in:normal,limited,restricted',
-            'muscle_strength' => 'nullable|in:normal,reduced,weak',
-            'pain_assessment' => 'nullable|in:none,mild,moderate,severe',
-            'range_of_motion' => 'nullable|in:full,limited,restricted',
-            // Medical Imaging
-            'ecg_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
-            'ecg_date' => 'nullable|date',
-            'ecg_interpretation' => 'nullable|in:normal,sinus_bradycardia,sinus_tachycardia,atrial_fibrillation,ventricular_tachycardia,st_elevation,st_depression,qt_prolongation,abnormal',
-            'ecg_notes' => 'nullable|string',
-            'mri_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
-            'mri_date' => 'nullable|date',
-            'mri_type' => 'nullable|in:brain,spine,knee,shoulder,ankle,hip,cardiac,other',
-            'mri_findings' => 'nullable|in:normal,mild_abnormality,moderate_abnormality,severe_abnormality,fracture,tumor,inflammation,degenerative,other',
-            'mri_notes' => 'nullable|string',
-            'xray_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
-            'ct_scan_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
-            'ultrasound_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm|max:10240',
-        ]);
+        app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma, true);
+        $validated = $request->validate(app(\App\Services\PcmaFormData::class)->rules(false));
+        $validated = app(\App\Services\MedicalRecordAccess::class)->input($request->user(), $validated);
+
 
         $validated = $this->normalizeFifaIdentifierInput(
             $validated
         );
 
         // Handle FIFA compliant checkbox
-        $validated['fifa_compliant'] = $request->has('fifa_compliant');
+        $validated = app(\App\Services\PcmaFormData::class)->withoutSignature($validated);
+        abort_unless((int) $validated['player_id'] === (int) $pcma->player_id,
+            409, 'Le joueur d’un dossier existant ne peut pas être changé.');
+        $validated['fifa_compliant'] = false;
         
         // Handle file uploads
         $fileFields = ['ecg_file', 'mri_file', 'xray_file', 'ct_scan_file', 'ultrasound_file'];
@@ -382,7 +263,7 @@ class PCMAController extends Controller
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
                 $filename = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('medical_imaging', $filename, 'public');
+                $path = $file->store('medical_imaging', 'local');
                 $validated[$field] = $path;
             }
         }
@@ -396,6 +277,7 @@ class PCMAController extends Controller
 
     public function destroy(PCMA $pcma): RedirectResponse
     {
+        app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma, true);
         $pcma->delete();
 
         return redirect()->route('pcma.index')
@@ -404,6 +286,7 @@ class PCMAController extends Controller
 
     public function complete(PCMA $pcma): RedirectResponse
     {
+        app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma, true);
         $pcma->update([
             'status' => 'completed',
             'completed_at' => now(),
@@ -415,6 +298,7 @@ class PCMAController extends Controller
 
     public function fail(PCMA $pcma): RedirectResponse
     {
+        app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma, true);
         $pcma->update([
             'status' => 'failed',
             'completed_at' => now(),
@@ -427,13 +311,13 @@ class PCMAController extends Controller
     public function dashboard(): View
     {
         $stats = [
-            'total_pcmas' => PCMA::count(),
-            'pending_pcmas' => PCMA::where('status', 'pending')->count(),
-            'completed_pcmas' => PCMA::where('status', 'completed')->count(),
-            'failed_pcmas' => PCMA::where('status', 'failed')->count(),
+            'total_pcmas' => $this->scopedRecords()->count(),
+            'pending_pcmas' => $this->scopedRecords()->where('status', 'pending')->count(),
+            'completed_pcmas' => $this->scopedRecords()->where('status', 'completed')->count(),
+            'failed_pcmas' => $this->scopedRecords()->where('status', 'failed')->count(),
         ];
 
-        $recentPcmas = PCMA::with(['athlete', 'assessor'])
+        $recentPcmas = $this->scopedRecords()->with(['player', 'athlete', 'assessor'])
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
@@ -443,88 +327,12 @@ class PCMAController extends Controller
 
     public function exportPdf(PCMA $pcma)
     {
-        $pcma->load(['athlete', 'assessor']);
-        
-        // Préparer les données pour la vue PDF
-        $formData = [
-            'type' => $pcma->type ?? 'standard',
-            'assessment_date' => $pcma->assessment_date ?? now()->format('Y-m-d'),
-            'assessment_id' => $pcma->id,
-            'blood_pressure' => $pcma->blood_pressure ?? 'Non mesuré',
-            'heart_rate' => $pcma->heart_rate ?? 'Non mesuré',
-            'temperature' => $pcma->temperature ?? 'Non mesuré',
-            'oxygen_saturation' => $pcma->oxygen_saturation ?? 'Non mesuré',
-            'respiratory_rate' => $pcma->respiratory_rate ?? 'Non mesuré',
-            'weight' => $pcma->weight ?? 'Non mesuré',
-            'cardiovascular_history' => $pcma->cardiovascular_history ?? 'Aucun',
-            'surgical_history' => $pcma->surgical_history ?? 'Aucun',
-            'medications' => $pcma->current_medications ?? 'Aucun',
-            'allergies' => $pcma->allergies ?? 'Aucune',
-            'general_appearance' => $pcma->general_appearance ?? 'Non évalué',
-            'skin_examination' => $pcma->skin_examination ?? 'Non évalué',
-            'cardiac_rhythm' => $pcma->cardiac_rhythm ?? 'Non évalué',
-            'heart_murmur' => $pcma->heart_murmur ?? 'Non évalué',
-            'fifa_connect_id' => $pcma->fifa_id ?? 'Non spécifié',
-            'status' => $pcma->status ?? 'pending'
-        ];
-        
-        $athlete = $pcma->athlete;
-        $generatedAt = now();
-        
-        $pdf = Pdf::loadView('pcma.pdf', compact('pcma', 'formData', 'athlete', 'generatedAt'));
-        
-        $athleteName = $pcma->athlete->name ?? 'unknown';
-        return $pdf->download("PCMA-{$pcma->id}-{$athleteName}.pdf");
+        return app(PcmaDocumentController::class)->export($pcma);
     }
 
-    // Conserver les champs validés sans colonne dédiée dans le JSON existant.
-    private function preserveClinicalFields(array $validated, $previous = null): array
+    private function preserveClinicalFields(array $data, $previous = null): array
     {
-        $result = $validated['result_json'] ?? $previous ?? [];
-        if (is_string($result)) { $result = json_decode($result, true); }
-        $result = is_array($result) ? $result : [];
-        $groups = [
-            'abdomen_examination' => 'physical_examination',
-            'allergies' => 'medical_history',
-            'blood_pressure' => 'vital_signs',
-            'blood_pressure_exercise' => 'cardiovascular_assessment',
-            'blood_pressure_rest' => 'cardiovascular_assessment',
-            'cardiac_rhythm' => 'cardiovascular_assessment',
-            'cardiovascular_history' => 'medical_history',
-            'consciousness' => 'neurological_assessment',
-            'cranial_nerves' => 'neurological_assessment',
-            'general_appearance' => 'physical_examination',
-            'heart_murmur' => 'cardiovascular_assessment',
-            'heart_rate' => 'vital_signs',
-            'joint_mobility' => 'musculoskeletal_assessment',
-            'lymph_nodes' => 'physical_examination',
-            'medications' => 'medical_history',
-            'motor_function' => 'neurological_assessment',
-            'muscle_strength' => 'musculoskeletal_assessment',
-            'oxygen_saturation' => 'vital_signs',
-            'pain_assessment' => 'musculoskeletal_assessment',
-            'range_of_motion' => 'musculoskeletal_assessment',
-            'respiratory_rate' => 'vital_signs',
-            'sensory_function' => 'neurological_assessment',
-            'skin_examination' => 'physical_examination',
-            'surgical_history' => 'medical_history',
-            'temperature' => 'vital_signs',
-            'weight' => 'vital_signs',
-        ];
-        foreach ($groups as $field => $group) {
-            if (array_key_exists($field, $validated)) {
-                if (!is_array($result[$group] ?? null)) { $result[$group] = []; }
-                $result[$group][$field] = $validated[$field];
-                unset($validated[$field]);
-            }
-        }
-        if (array_key_exists('medical_history', $validated)) {
-            if (!is_array($result['medical_history'] ?? null)) { $result['medical_history'] = []; }
-            $result['medical_history']['cardiovascular_history'] = $validated['medical_history'];
-            $validated['medical_history'] = $result['medical_history'];
-        }
-        $validated['result_json'] = $result;
-        return $validated;
+        return app(\App\Services\PcmaFormData::class)->preserve($data, $previous);
     }
 
     private function normalizeFifaIdentifierInput(
@@ -580,12 +388,12 @@ class PCMAController extends Controller
                 'message' => 'Données fournies invalides.',
                 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('ECG Analysis Error: ' . $e->getMessage());
+            Log::error('PCMA AI service unavailable');
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'analyse ECG: ' . $e->getMessage()
-            ], 500);
+                'message' => __('pcma_workflow.service_unavailable')
+            ], 503);
         }
     }
 
@@ -635,12 +443,12 @@ class PCMAController extends Controller
                 'message' => 'Données fournies invalides.',
                 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('MRI Analysis Error: ' . $e->getMessage());
+            Log::error('PCMA AI service unavailable');
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'analyse IRM: ' . $e->getMessage()
-            ], 500);
+                'message' => __('pcma_workflow.service_unavailable')
+            ], 503);
         }
     }
 
@@ -674,7 +482,7 @@ class PCMAController extends Controller
                 'message' => 'Données fournies invalides.',
                 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('X-Ray Analysis Error: ' . $e->getMessage());
+            Log::error('PCMA AI service unavailable');
             
             // Clean up temporary file if it exists
             if (isset($path) && Storage::disk('local')->exists($path)) {
@@ -683,8 +491,8 @@ class PCMAController extends Controller
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'analyse radiographie: ' . $e->getMessage()
-            ], 500);
+                'message' => __('pcma_workflow.service_unavailable')
+            ], 503);
         }
     }
 
@@ -718,12 +526,12 @@ class PCMAController extends Controller
                 'message' => 'Données fournies invalides.',
                 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('ECG Effort Analysis Error: ' . $e->getMessage());
+            Log::error('PCMA AI service unavailable');
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'analyse ECG d\'Effort: ' . $e->getMessage()
-            ], 500);
+                'message' => __('pcma_workflow.service_unavailable')
+            ], 503);
         }
     }
 
@@ -757,12 +565,12 @@ class PCMAController extends Controller
                 'message' => 'Données fournies invalides.',
                 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('Scintigraphy Analysis Error: ' . $e->getMessage());
+            Log::error('PCMA AI service unavailable');
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'analyse Scintigraphie: ' . $e->getMessage()
-            ], 500);
+                'message' => __('pcma_workflow.service_unavailable')
+            ], 503);
         }
     }
 
@@ -824,12 +632,12 @@ class PCMAController extends Controller
                 'message' => 'Données fournies invalides.',
                 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('SCAT Analysis Error: ' . $e->getMessage());
+            Log::error('PCMA AI service unavailable');
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'analyse SCAT: ' . $e->getMessage()
-            ], 500);
+                'message' => __('pcma_workflow.service_unavailable')
+            ], 503);
         }
     }
 
@@ -945,12 +753,12 @@ class PCMAController extends Controller
                 'message' => 'Données fournies invalides.',
                 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('Complete Analysis Error: ' . $e->getMessage());
+            Log::error('PCMA AI service unavailable');
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'analyse complète: ' . $e->getMessage()
-            ], 500);
+                'message' => __('pcma_workflow.service_unavailable')
+            ], 503);
         }
     }
 
@@ -984,7 +792,7 @@ class PCMAController extends Controller
                 'message' => 'Données fournies invalides.',
                 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('CT Analysis Error: ' . $e->getMessage());
+            Log::error('PCMA AI service unavailable');
 
             return response()->json([
                 'success' => false,
@@ -1023,7 +831,7 @@ class PCMAController extends Controller
                 'message' => 'Données fournies invalides.',
                 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('Ultrasound Analysis Error: ' . $e->getMessage());
+            Log::error('PCMA AI service unavailable');
 
             return response()->json([
                 'success' => false,
@@ -1038,20 +846,17 @@ class PCMAController extends Controller
             // Collect all form data for comprehensive analysis
             $formData = $request->all();
             $aiAnalysisResults = $request->input('ai_analysis_results');
-            
-            Log::info('Fitness Assessment Request', [
-                'form_data_keys' => array_keys($formData),
-                'has_ai_results' => !empty($aiAnalysisResults),
-                'user_id' => auth()->id()
-            ]);
+            $clinicalKeys = ['blood_pressure', 'heart_rate', 'temperature', 'respiratory_rate',
+                'oxygen_saturation', 'weight', 'medical_history', 'cardiovascular_history',
+                'surgical_history', 'medications', 'allergies', 'clinical_notes'];
+            $hasData = collect($clinicalKeys)->contains(fn ($key) =>
+                array_key_exists($key, $formData) && $formData[$key] !== null && $formData[$key] !== '');
+            if (!$hasData) return response()->json(['success' => false,
+                'message' => 'Aucune donnée clinique fournie.'], 422);
+
             
             // Create a comprehensive prompt for fitness assessment
             $fitnessPrompt = $this->getFitnessAssessmentPrompt($formData, $aiAnalysisResults);
-            
-            Log::info('Fitness Assessment Prompt Created', [
-                'prompt_length' => strlen($fitnessPrompt),
-                'prompt_preview' => substr($fitnessPrompt, 0, 200) . '...'
-            ]);
             
             // Call the AI service for fitness assessment
             $result = $this->callMedGeminiAI('fitness_assessment', null, $fitnessPrompt);
@@ -1063,7 +868,7 @@ class PCMAController extends Controller
                     'assessment' => $result['analysis']
                 ]);
             } else {
-                Log::warning('AI fitness assessment unavailable', ['result' => $result]);
+                Log::warning('AI fitness assessment unavailable');
 
                 return response()->json([
                     'success' => false,
@@ -1076,7 +881,7 @@ class PCMAController extends Controller
                 'message' => 'Données fournies invalides.',
                 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('Fitness Assessment Error: ' . $e->getMessage());
+            Log::error('PCMA AI service unavailable');
 
             return response()->json([
                 'success' => false,
@@ -1088,60 +893,24 @@ class PCMAController extends Controller
     private function callMedGeminiAI(string $analysisType, ?string $filePath = null, ?string $customPrompt = null): array
     {
         try {
-            $aiServiceUrl = env('AI_SERVICE_URL', 'http://localhost:3001');
-            
-            if ($analysisType === 'scat_analysis') {
-                // SCAT analysis doesn't require a file
-                $prompt = $customPrompt ?? $this->getAnalysisPrompt($analysisType);
-                
-                $response = Http::timeout(30)->post($aiServiceUrl . '/api/v1/med-gemini/analyze', [
-                    'analysis_type' => $analysisType,
-                    'prompt' => $prompt
-                ]);
-            } elseif ($analysisType === 'fitness_assessment') {
-                $prompt = $customPrompt ?? $this->getAnalysisPrompt($analysisType);
-
-                $response = Http::timeout(30)->post($aiServiceUrl . '/api/v1/med-gemini/analyze', [
-                    'analysis_type' => $analysisType,
-                    'prompt' => $prompt,
-                ]);
-            } else {
-                // File-based analysis
-                if (!$filePath) {
-                    throw new \Exception('File path is required for file-based analysis');
-                }
-                
-                $fileContent = Storage::disk('local')->get($filePath);
-                $base64Content = base64_encode($fileContent);
-
-                $prompt = $customPrompt ?? $this->getAnalysisPrompt($analysisType);
-            
-                $response = Http::timeout(30)->post($aiServiceUrl . '/api/v1/med-gemini/analyze', [
-                    'analysis_type' => $analysisType,
-                    'file_content' => $base64Content,
-                    'file_type' => pathinfo($filePath, PATHINFO_EXTENSION),
-                    'prompt' => $prompt
-                ]);
-            }
-
-            if ($response->successful()) {
-                $result = $response->json();
-                Log::info('AI service response successful', ['analysis_type' => $analysisType, 'result' => $result]);
-                
-                // Return the API response directly, including errors
-                return $result;
-            } else {
-                Log::error('AI service HTTP error', [
-                    'analysis_type' => $analysisType, 
-                    'status' => $response->status(), 
-                    'body' => $response->body(),
-                    'url' => $aiServiceUrl . '/api/v1/med-gemini/analyze'
-                ]);
-                throw new \Exception('AI service HTTP error: ' . $response->status() . ' - ' . $response->body());
-            }
-        } catch (\Exception $e) {
-            Log::error('AI service error', ['analysis_type' => $analysisType, 'error' => $e->getMessage()]);
-            throw $e; // Re-throw to let the calling method handle it
+        $payload = ['analysis_type' => $analysisType,
+            'prompt' => $customPrompt ?? $this->getAnalysisPrompt($analysisType)];
+        if (!in_array($analysisType, ['scat_analysis', 'fitness_assessment'], true)) {
+            if (!$filePath) throw new \RuntimeException('Medical file required');
+            $payload['file_content'] = base64_encode(Storage::disk('local')->get($filePath));
+            $payload['file_type'] = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        }
+        $client = Http::timeout(config('services.ai.timeout', 30));
+        if (config('services.ai.api_key')) $client = $client->withToken(config('services.ai.api_key'));
+        $response = $client->post(rtrim(config('services.ai.base_url'), '/').'/api/v1/med-gemini/analyze', $payload);
+        if ($response->status() === 422) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'analysis' => 'Données manquantes ou format non pris en charge par le service IA.']);
+        }
+        if (!$response->successful()) throw new \RuntimeException('AI service unavailable');
+        return app(\App\Services\MedicalAiResult::class)->normalize($response->json() ?? []);
+        } finally {
+            if ($filePath) Storage::disk('local')->delete($filePath);
         }
     }
 
@@ -1337,44 +1106,14 @@ Format the response as JSON with fields: concussion_risk, severity_classificatio
 
     private function generateOverallAssessment(array $analyses): array
     {
-        // Une réponse vide ou en échec ne constitue pas une observation médicale.
-        if (!$analyses || collect($analyses)->contains(fn ($a) =>
-            !is_array($a) || ($a['success'] ?? null) !== true || ($a['mockMode'] ?? false)
-            || !is_string($a['abnormalities'] ?? null) || trim($a['abnormalities']) === ''
-            || ($a['analysis']['mockMode'] ?? false))) {
-            return ['medical_status' => 'Données insuffisantes',
-                'sports_eligibility' => 'Pending medical clearance',
-                'recommendations' => 'Une évaluation médicale est nécessaire.'];
+        $available = $analyses !== [];
+        foreach ($analyses as $analysis) {
+            try { app(\App\Services\MedicalAiResult::class)->normalize($analysis); }
+            catch (\Throwable $e) { $available = false; }
         }
-        $hasAbnormalities = false;
-        $recommendations = [];
-
-        if (isset($analyses['ecg'])) {
-            if (strpos(strtolower($analyses['ecg']['abnormalities'] ?? ''), 'none') === false) {
-                $hasAbnormalities = true;
-                $recommendations[] = 'ECG abnormalities detected - cardiology consultation recommended';
-            }
-        }
-
-        if (isset($analyses['mri'])) {
-            if (strpos(strtolower($analyses['mri']['abnormalities'] ?? ''), 'none') === false) {
-                $hasAbnormalities = true;
-                $recommendations[] = 'MRI abnormalities detected - orthopedic consultation recommended';
-            }
-        }
-
-        if (isset($analyses['xray'])) {
-            if (strpos(strtolower($analyses['xray']['abnormalities'] ?? ''), 'none') === false) {
-                $hasAbnormalities = true;
-                $recommendations[] = 'X-ray abnormalities detected - orthopedic consultation recommended';
-            }
-        }
-
-        return [
-            'medical_status' => $hasAbnormalities ? 'Requires further evaluation' : 'Normal',
-            'sports_eligibility' => $hasAbnormalities ? 'Pending medical clearance' : 'Cleared for sports',
-            'recommendations' => empty($recommendations) ? 'All assessments within normal limits' : implode('; ', $recommendations)
-        ];
+        return ['medical_status' => $available ? 'Analyse à valider' : 'Données insuffisantes',
+            'sports_eligibility' => 'Pending medical clearance',
+            'recommendations' => 'Une évaluation et une conclusion du médecin sont nécessaires.'];
     }
 
     private function combineMultipleAnalyses(array $analyses, string $type): array
@@ -1417,4 +1156,4 @@ Format the response as JSON with fields: concussion_risk, severity_classificatio
 
         return $combinedAnalysis;
     }
-} 
+}

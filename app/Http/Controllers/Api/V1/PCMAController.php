@@ -17,12 +17,24 @@ use Illuminate\Support\Facades\Http;
 
 class PCMAController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            app(\App\Services\MedicalRecordAccess::class)->authorizeRole($request->user());
+            return $next($request);
+        });
+    }
+    private function scopedRecords()
+    {
+        return app(\App\Services\MedicalRecordAccess::class)->scope(auth()->user(), PCMA::query());
+    }
+
     /**
      * Display a listing of PCMAs.
      */
     public function index(Request $request): JsonResponse
     {
-        $query = PCMA::with(['athlete', 'assessor']);
+        $query = $this->scopedRecords()->with(['player', 'athlete', 'assessor']);
 
         // Apply filters
         if ($request->has('status')) {
@@ -68,6 +80,8 @@ class PCMAController extends Controller
     {
         try {
             $validatedData = $request->validated();
+            $validatedData = app(\App\Services\MedicalRecordAccess::class)->input($request->user(), $validatedData);
+            $validatedData['fifa_compliant'] = false;
 
             $fifaId = $validatedData['fifa_id'] ?? null;
             unset($validatedData['fifa_connect_id']);
@@ -77,26 +91,14 @@ class PCMAController extends Controller
             $validatedData['form_version'] = $validatedData['form_version'] ?? '1.0';
             $validatedData['last_updated_at'] = now();
             
-            // Link to the local player only when an authoritative
-            // FIFAIdentifier is supplied. The legacy form alias has already
-            // been normalized to fifa_id by the request.
-            if ($fifaId) {
-                $player = Player::query()
-                    ->where('fifa_connect_id', $fifaId)
-                    ->first();
-
-                if ($player) {
-                    $validatedData['player_id'] = $player->id;
-                }
-            }
-            
+            // Le lien interne validé est conservé ; le FIFA ID ne remplace jamais le joueur.
             // Handle file uploads
             $fileFields = ['ecg_file', 'mri_file', 'xray_file', 'ct_scan_file', 'ultrasound_file'];
             foreach ($fileFields as $field) {
                 if ($request->hasFile($field)) {
                     $file = $request->file($field);
                     $filename = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
-                    $path = $file->storeAs('medical_imaging', $filename, 'public');
+                    $path = $file->store('medical_imaging', 'local');
                     $validatedData[$field] = $path;
                 }
             }
@@ -109,24 +111,26 @@ class PCMAController extends Controller
                 CardioPCMASubmitted::dispatch($pcma);
             }
 
-            // Mark as FIFA compliant if all required fields are present
-            if ($this->isFifaCompliant($pcma)) {
-                $pcma->markAsFifaCompliant($request->user()->name ?? 'System');
-            }
+            // Une complétude de formulaire ne constitue pas une certification FIFA.
 
             return response()->json([
                 'success' => true,
                 'message' => 'PCMA créé avec succès',
-                'data' => $pcma->load(['athlete', 'assessor'])
+                'data' => $pcma->load(['player', 'athlete', 'assessor'])
             ], 201);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Erreur lors de la création du PCMA: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la création du PCMA',
-                'error' => $e->getMessage()
+                'error' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }
@@ -136,41 +140,7 @@ class PCMAController extends Controller
      */
     public function storeDraft(Request $request): JsonResponse
     {
-        try {
-            $validatedData = $request->validate([
-                'athlete_id' => 'required|exists:athletes,id',
-                'type' => 'required|string',
-                'assessor_id' => 'required|exists:users,id',
-                'assessment_date' => 'required|date',
-                'medical_history' => 'nullable|array',
-                'physical_examination' => 'nullable|array',
-                'cardiovascular_investigations' => 'nullable|array',
-                'final_statement' => 'nullable|array',
-                'scat_assessment' => 'nullable|array',
-                'anatomical_annotations' => 'nullable|array',
-            ]);
-
-            $validatedData['status'] = 'draft';
-            $validatedData['form_version'] = $validatedData['form_version'] ?? '1.0';
-            $validatedData['last_updated_at'] = now();
-
-            $pcma = PCMA::create($validatedData);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Brouillon PCMA sauvegardé',
-                'data' => $pcma->load(['athlete', 'assessor'])
-            ], 201);
-
-        } catch (\Exception $e) {
-            Log::error('Erreur lors de la sauvegarde du brouillon PCMA: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la sauvegarde du brouillon',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return app(\App\Http\Controllers\PcmaDraftController::class)->save($request);
     }
 
     /**
@@ -178,7 +148,8 @@ class PCMAController extends Controller
      */
     public function show(PCMA $pcma): JsonResponse
     {
-        $pcma->load(['athlete', 'assessor']);
+        app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma);
+        $pcma->load(['player', 'athlete', 'assessor']);
 
         return response()->json([
             'success' => true,
@@ -191,8 +162,15 @@ class PCMAController extends Controller
      */
     public function update(StoreFifaCompliantPCMARequest $request, PCMA $pcma): JsonResponse
     {
+        app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma, true);
         try {
             $validatedData = $request->validated();
+            $validatedData = app(\App\Services\MedicalRecordAccess::class)->input($request->user(), $validatedData);
+            $validatedData = app(\App\Services\PcmaFormData::class)->withoutSignature($validatedData);
+            abort_if(isset($validatedData['player_id'])
+                && (int) $validatedData['player_id'] !== (int) $pcma->player_id, 409,
+                'Le joueur d’un dossier existant ne peut pas être changé.');
+            $validatedData['fifa_compliant'] = false;
             unset($validatedData['fifa_connect_id']);
             $validatedData['last_updated_at'] = now();
 
@@ -202,31 +180,33 @@ class PCMAController extends Controller
                 if ($request->hasFile($field)) {
                     $file = $request->file($field);
                     $filename = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
-                    $path = $file->storeAs('medical_imaging', $filename, 'public');
+                    $path = $file->store('medical_imaging', 'local');
                     $validatedData[$field] = $path;
                 }
             }
 
             $pcma->update($validatedData);
 
-            // Update FIFA compliance status
-            if ($this->isFifaCompliant($pcma)) {
-                $pcma->markAsFifaCompliant($request->user()->name ?? 'System');
-            }
+            // Une complétude de formulaire ne constitue pas une certification FIFA.
 
             return response()->json([
                 'success' => true,
                 'message' => 'PCMA mis à jour avec succès',
-                'data' => $pcma->load(['athlete', 'assessor'])
+                'data' => $pcma->load(['player', 'athlete', 'assessor'])
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Erreur lors de la mise à jour du PCMA: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la mise à jour du PCMA',
-                'error' => $e->getMessage()
+                'error' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }
@@ -236,6 +216,7 @@ class PCMAController extends Controller
      */
     public function destroy(PCMA $pcma): JsonResponse
     {
+        app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma, true);
         try {
             $pcma->delete();
 
@@ -244,13 +225,18 @@ class PCMAController extends Controller
                 'message' => 'PCMA supprimé avec succès'
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Erreur lors de la suppression du PCMA: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la suppression du PCMA',
-                'error' => $e->getMessage()
+                'error' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }
@@ -310,18 +296,7 @@ class PCMAController extends Controller
 
     private function authorizeAthleteMedicalAccess(Athlete $athlete): void
     {
-        $user = request()->user();
-        abort_unless($user && $user->hasAnyRole(['system_admin', 'association_medical', 'club_medical', 'doctor', 'medical_staff']), 403);
-
-        if ($user->isSystemAdmin()) {
-            return;
-        }
-
-        $athlete->loadMissing('team.club');
-        $club = $athlete->team?->club;
-        $inClub = $user->club_id && $club && (int) $club->id === (int) $user->club_id;
-        $inAssociation = $user->association_id && $club && (int) $club->association_id === (int) $user->association_id;
-        abort_unless($inClub || $inAssociation, 403);
+        app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(), null, $athlete);
     }
 
     /**
@@ -329,6 +304,7 @@ class PCMAController extends Controller
      */
     public function getPlayerPCMAs(Player $player): JsonResponse
     {
+        app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(), $player, null);
         try {
             $pcmas = $player->pcmas()
                 ->with(['assessor', 'athlete'])
@@ -352,13 +328,18 @@ class PCMAController extends Controller
                 'pcmas' => $pcmas
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération des PCMA du joueur: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la récupération des PCMA du joueur',
-                'error' => $e->getMessage()
+                'error' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }
@@ -380,13 +361,18 @@ class PCMAController extends Controller
 
             return $this->getPlayerPCMAs($player);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération des PCMA FIFA Connect: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la récupération des PCMA FIFA Connect',
-                'error' => $e->getMessage()
+                'error' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }
@@ -396,6 +382,7 @@ class PCMAController extends Controller
      */
     public function addAnatomicalAnnotation(Request $request, PCMA $pcma): JsonResponse
     {
+        app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma, true);
         $request->validate([
             'view' => 'required|in:anterior,posterior',
             'x' => 'required|integer|min:0|max:1000',
@@ -417,13 +404,18 @@ class PCMAController extends Controller
                 'data' => $pcma->getAnatomicalAnnotations($request->view)
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Erreur lors de l\'ajout d\'annotation: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de l\'ajout d\'annotation',
-                'error' => $e->getMessage()
+                'error' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }
@@ -433,6 +425,7 @@ class PCMAController extends Controller
      */
     public function removeAnatomicalAnnotation(Request $request, PCMA $pcma): JsonResponse
     {
+        app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma, true);
         $request->validate([
             'view' => 'required|in:anterior,posterior',
             'annotation_id' => 'required|string',
@@ -450,13 +443,18 @@ class PCMAController extends Controller
                 'data' => $pcma->getAnatomicalAnnotations($request->view)
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Erreur lors de la suppression d\'annotation: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la suppression d\'annotation',
-                'error' => $e->getMessage()
+                'error' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }
@@ -466,24 +464,9 @@ class PCMAController extends Controller
      */
     public function markAsFifaCompliant(Request $request, PCMA $pcma): JsonResponse
     {
-        try {
-            $pcma->markAsFifaCompliant($request->user()->name ?? 'System');
-
-            return response()->json([
-                'success' => true,
-                'message' => 'PCMA marqué comme conforme FIFA',
-                'data' => $pcma->getFifaComplianceStatus()
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Erreur lors du marquage FIFA: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors du marquage FIFA',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        app(\App\Services\MedicalRecordAccess::class)->record($request->user(), $pcma);
+        return response()->json(['success' => false,
+            'message' => 'La certification FIFA doit être vérifiée ; elle ne peut pas être déclarée automatiquement.'], 409);
     }
 
     /**
@@ -493,29 +476,41 @@ class PCMAController extends Controller
     {
         $request->validate([
             'transcript' => 'required|string|max:2000',
-            'athlete_id' => 'required|exists:athletes,id',
+            'athlete_id' => 'nullable|required_without:player_id|exists:athletes,id',
+            'player_id' => 'nullable|required_without:athlete_id|exists:players,id',
             'pcma_type' => 'required|string|in:bpma,cardio,dental,neurological,orthopedic',
         ]);
 
+        app(\App\Services\MedicalRecordAccess::class)->input($request->user(),
+            array_merge($request->only(['player_id', 'athlete_id']), ['assessor_id' => $request->user()->id]));
         try {
-            $response = Http::post(config('services.ai.base_url') . '/api/ai/pcma-extractor/extract-pcma-data', [
+            $response = Http::timeout(config('services.ai.timeout', 30))->withToken(config('services.ai.api_key', ''))->post(config('services.ai.base_url') . '/api/ai/pcma-extractor/extract-pcma-data', [
                 'transcript' => $request->transcript,
-                'athlete_id' => $request->athlete_id,
+                ...$request->only(['athlete_id', 'player_id']),
                 'pcma_type' => $request->pcma_type,
             ]);
 
             if ($response->successful()) {
                 $data = $response->json();
+                app(\App\Services\MedicalAiResult::class)->rejectSimulated($data ?? []);
+                if (($data['success'] ?? null) !== true || !is_array($data['data'] ?? null))
+                    throw new \RuntimeException('Invalid extraction response');
+
                 return response()->json([
                     'success' => true,
                     'data' => $data['data'] ?? [],
-                    'confidence_score' => $data['confidence_score'] ?? 0.7,
+                    'confidence_score' => $data['confidence_score'] ?? null,
                     'extracted_fields' => $data['extracted_fields'] ?? []
                 ]);
             } else {
                 throw new \Exception('AI service failed to extract data from transcript');
             }
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Exception during ' . $request->pcma_type . ' extraction: ' . $e->getMessage());
 
@@ -532,14 +527,14 @@ class PCMAController extends Controller
     public function whisperTranscribe(Request $request): JsonResponse
     {
         $request->validate([
-            'audio' => 'required|file|mimes:wav,mp3,m4a,mpeg|max:10240', // 10MB max
+            'audio' => 'required|file|mimes:wav,mp3,m4a,mpeg,webm,ogg|max:10240', // 10MB max
         ]);
 
         try {
             $audioFile = $request->file('audio');
             $tempPath = $audioFile->storeAs('temp/whisper', uniqid() . '.' . $audioFile->getClientOriginalExtension());
 
-            $response = Http::attach(
+            $response = Http::timeout(config('services.ai.timeout', 30))->withToken(config('services.ai.api_key', ''))->attach(
                 'audio',
                 Storage::get($tempPath),
                 $audioFile->getClientOriginalName()
@@ -553,24 +548,33 @@ class PCMAController extends Controller
 
             if ($response->successful()) {
                 $data = $response->json();
+                app(\App\Services\MedicalAiResult::class)->rejectSimulated($data ?? []);
+                if (($data['success'] ?? null) !== true || !is_string($data['transcription'] ?? null)
+                    || trim($data['transcription']) === '') throw new \RuntimeException('Empty extraction');
+
                 return response()->json([
                     'success' => true,
                     'transcription' => $data['transcription'] ?? '',
-                    'confidence' => $data['confidence'] ?? 0.0,
+                    'confidence' => $data['confidence'] ?? null,
                     'language' => $data['language'] ?? 'fr',
                 ]);
             } else {
                 throw new \Exception('Whisper transcription failed');
             }
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Whisper transcription error: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la transcription audio',
-                'error' => $e->getMessage()
-            ], 500);
+                'error' => __('pcma_workflow.service_unavailable')
+            ], 503);
         }
     }
 
@@ -585,16 +589,19 @@ class PCMAController extends Controller
             'resource_type' => 'required|string|in:Patient,Observation,Condition,Procedure,MedicationRequest',
         ]);
 
+        $configured = rtrim(config('services.fhir.base_url', ''), '/');
+        abort_unless($configured && rtrim($request->server_url, '/') === $configured,
+            422, 'Le serveur FHIR doit correspondre à la configuration de la plateforme.');
         try {
-            $fhirUrl = $request->server_url . '/Patient/' . $request->patient_id;
-            $response = Http::get($fhirUrl);
+            $fhirUrl = $configured . '/Patient/' . rawurlencode($request->patient_id);
+            $response = Http::timeout(config('services.fhir.timeout', 30))->withOptions(['allow_redirects' => false])->get($fhirUrl);
 
             if ($response->successful()) {
                 $patientData = $response->json();
                 
                 // Fetch related resources
-                $resourcesUrl = $request->server_url . '/' . $request->resource_type . '?patient=' . $request->patient_id;
-                $resourcesResponse = Http::get($resourcesUrl);
+                $resourcesUrl = $configured . '/' . $request->resource_type . '?patient=' . rawurlencode($request->patient_id);
+                $resourcesResponse = Http::timeout(config('services.fhir.timeout', 30))->withOptions(['allow_redirects' => false])->get($resourcesUrl);
                 
                 $resources = [];
                 if ($resourcesResponse->successful()) {
@@ -603,7 +610,7 @@ class PCMAController extends Controller
 
                 return response()->json([
                     'success' => true,
-                    'patient_name' => $patientData['name'][0]['text'] ?? 'N/A',
+                    'patient_name' => $patientData['name'][0]['text'] ?? null,
                     'resources_count' => count($resources),
                     'resources' => $resources,
                 ]);
@@ -611,14 +618,19 @@ class PCMAController extends Controller
                 throw new \Exception('Failed to fetch FHIR data');
             }
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('FHIR fetch error: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la récupération des données FHIR',
-                'error' => $e->getMessage()
-            ], 500);
+                'error' => __('pcma_workflow.service_unavailable')
+            ], 503);
         }
     }
 
@@ -635,7 +647,7 @@ class PCMAController extends Controller
             $imageFile = $request->file('image');
             $tempPath = $imageFile->storeAs('temp/ocr', uniqid() . '.' . $imageFile->getClientOriginalExtension());
 
-            $response = Http::attach(
+            $response = Http::timeout(config('services.ai.timeout', 30))->withToken(config('services.ai.api_key', ''))->attach(
                 'image',
                 Storage::get($tempPath),
                 $imageFile->getClientOriginalName()
@@ -649,24 +661,33 @@ class PCMAController extends Controller
 
             if ($response->successful()) {
                 $data = $response->json();
+                app(\App\Services\MedicalAiResult::class)->rejectSimulated($data ?? []);
+                if (($data['success'] ?? null) !== true || !is_string($data['extracted_text'] ?? null)
+                    || trim($data['extracted_text']) === '') throw new \RuntimeException('Empty extraction');
+
                 return response()->json([
                     'success' => true,
                     'extracted_text' => $data['extracted_text'] ?? '',
-                    'confidence' => $data['confidence'] ?? 0.0,
+                    'confidence' => $data['confidence'] ?? null,
                     'word_count' => $data['word_count'] ?? 0,
                 ]);
             } else {
                 throw new \Exception('OCR extraction failed');
             }
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('OCR extraction error: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de l\'extraction OCR',
-                'error' => $e->getMessage()
-            ], 500);
+                'error' => __('pcma_workflow.service_unavailable')
+            ], 503);
         }
     }
 
@@ -707,48 +728,7 @@ class PCMAController extends Controller
      */
     public function aiAnalyzeEcg(Request $request): JsonResponse
     {
-        try {
-            $request->validate([
-                'ecg_file' => 'required|file|mimes:pdf,jpg,jpeg,png,dcm,bmp,tiff,tif|max:10240',
-            ]);
-
-            $ecgFile = $request->file('ecg_file');
-            $extension = strtolower($ecgFile->getClientOriginalExtension());
-            $isDicom = $extension === 'dcm';
-            
-            $tempPath = $ecgFile->store('temp/ai-analysis');
-
-            // Determine analysis type based on file type
-            $analysisType = $isDicom ? 'ecg_dicom' : 'ecg_image';
-            $aiResponse = $this->callMedGeminiAI($analysisType, $tempPath);
-
-            // Add file type information to analysis
-            $aiResponse['file_type'] = $isDicom ? 'DICOM' : 'Image';
-            $aiResponse['file_extension'] = $extension;
-            $aiResponse['analysis_type'] = $analysisType;
-
-            // Clean up temp file
-            Storage::delete($tempPath);
-
-            return response()->json([
-                'success' => true,
-                'analysis' => $aiResponse,
-                'file_info' => [
-                    'is_dicom' => $isDicom,
-                    'extension' => $extension,
-                    'file_type' => $this->getFileType($extension)
-                ]
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('ECG AI analysis error: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de l\'analyse ECG par IA',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return app(\App\Http\Controllers\PCMAController::class)->aiAnalyzeEcg($request);
     }
 
     /**
@@ -756,48 +736,10 @@ class PCMAController extends Controller
      */
     public function aiAnalyzeMri(Request $request): JsonResponse
     {
-        try {
-            $request->validate([
-                'mri_file' => 'required|file|mimes:pdf,jpg,jpeg,png,dcm,bmp,tiff,tif|max:10240',
-            ]);
-
-            $mriFile = $request->file('mri_file');
-            $extension = strtolower($mriFile->getClientOriginalExtension());
-            $isDicom = $extension === 'dcm';
-            
-            $tempPath = $mriFile->store('temp/ai-analysis');
-
-            // Determine analysis type based on file type
-            $analysisType = $isDicom ? 'mri_dicom_bone_age' : 'mri_image_bone_age';
-            $aiResponse = $this->callMedGeminiAI($analysisType, $tempPath);
-
-            // Add file type information to analysis
-            $aiResponse['file_type'] = $isDicom ? 'DICOM' : 'Image';
-            $aiResponse['file_extension'] = $extension;
-            $aiResponse['analysis_type'] = $analysisType;
-
-            // Clean up temp file
-            Storage::delete($tempPath);
-
-            return response()->json([
-                'success' => true,
-                'analysis' => $aiResponse,
-                'file_info' => [
-                    'is_dicom' => $isDicom,
-                    'extension' => $extension,
-                    'file_type' => $this->getFileType($extension)
-                ]
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('MRI AI analysis error: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de l\'analyse IRM par IA',
-                'error' => $e->getMessage()
-            ], 500);
+        if ($request->hasFile('mri_file') && !$request->hasFile('mri_files')) {
+            $request->files->set('mri_files', [$request->file('mri_file')]);
         }
+        return app(\App\Http\Controllers\PCMAController::class)->aiAnalyzeMri($request);
     }
 
     /**
@@ -805,176 +747,14 @@ class PCMAController extends Controller
      */
     public function aiAnalyzeComplete(Request $request): JsonResponse
     {
-        try {
-            $request->validate([
-                'ecg_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm,bmp,tiff,tif|max:10240',
-                'mri_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,dcm,bmp,tiff,tif|max:10240',
-            ]);
-
-            $analysis = [];
-            $fileInfo = [];
-
-            // Analyze ECG if provided
-            if ($request->hasFile('ecg_file')) {
-                $ecgFile = $request->file('ecg_file');
-                $ecgExtension = strtolower($ecgFile->getClientOriginalExtension());
-                $ecgIsDicom = $ecgExtension === 'dcm';
-                $ecgAnalysisType = $ecgIsDicom ? 'ecg_dicom' : 'ecg_image';
-                
-                $ecgTempPath = $ecgFile->store('temp/ai-analysis');
-                $ecgAnalysis = $this->callMedGeminiAI($ecgAnalysisType, $ecgTempPath);
-                
-                $ecgAnalysis['file_type'] = $ecgIsDicom ? 'DICOM' : 'Image';
-                $ecgAnalysis['file_extension'] = $ecgExtension;
-                $ecgAnalysis['analysis_type'] = $ecgAnalysisType;
-                
-                $analysis['ecg_analysis'] = $ecgAnalysis;
-                $fileInfo['ecg'] = [
-                    'is_dicom' => $ecgIsDicom,
-                    'extension' => $ecgExtension,
-                    'file_type' => $this->getFileType($ecgExtension)
-                ];
-                Storage::delete($ecgTempPath);
-            }
-
-            // Analyze MRI if provided
-            if ($request->hasFile('mri_file')) {
-                $mriFile = $request->file('mri_file');
-                $mriExtension = strtolower($mriFile->getClientOriginalExtension());
-                $mriIsDicom = $mriExtension === 'dcm';
-                $mriAnalysisType = $mriIsDicom ? 'mri_dicom_bone_age' : 'mri_image_bone_age';
-                
-                $mriTempPath = $mriFile->store('temp/ai-analysis');
-                $mriAnalysis = $this->callMedGeminiAI($mriAnalysisType, $mriTempPath);
-                
-                $mriAnalysis['file_type'] = $mriIsDicom ? 'DICOM' : 'Image';
-                $mriAnalysis['file_extension'] = $mriExtension;
-                $mriAnalysis['analysis_type'] = $mriAnalysisType;
-                
-                $analysis['mri_analysis'] = $mriAnalysis;
-                $fileInfo['mri'] = [
-                    'is_dicom' => $mriIsDicom,
-                    'extension' => $mriExtension,
-                    'file_type' => $this->getFileType($mriExtension)
-                ];
-                Storage::delete($mriTempPath);
-            }
-
-            // Generate overall assessment if both analyses are available
-            if (isset($analysis['ecg_analysis']) && isset($analysis['mri_analysis'])) {
-                $analysis['overall_assessment'] = $this->generateOverallAssessment($analysis);
-            }
-
-            return response()->json([
-                'success' => true,
-                'analysis' => $analysis,
-                'file_info' => $fileInfo
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Complete AI analysis error: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de l\'analyse complète par IA',
-                'error' => $e->getMessage()
-            ], 500);
+        if ($request->hasFile('mri_file') && !$request->hasFile('mri_files')) {
+            $request->files->set('mri_files', [$request->file('mri_file')]);
         }
+        return app(\App\Http\Controllers\PCMAController::class)->aiAnalyzeComplete($request);
     }
 
     /**
      * Call Med-Gemini AI service for medical image analysis.
-     */
-    private function callMedGeminiAI(string $analysisType, string $filePath): array
-    {
-        try {
-            $aiServiceUrl = env('AI_SERVICE_URL', 'http://localhost:3001');
-            $fileContent = Storage::get($filePath);
-            $base64Content = base64_encode($fileContent);
-
-            $prompt = $this->getAnalysisPrompt($analysisType);
-            
-            $response = Http::post($aiServiceUrl . '/api/v1/med-gemini/analyze', [
-                'analysis_type' => $analysisType,
-                'file_content' => $base64Content,
-                'file_type' => pathinfo($filePath, PATHINFO_EXTENSION),
-                'prompt' => $prompt
-            ]);
-
-            if ($response->successful()) {
-                return $response->json();
-            }
-
-            throw new \RuntimeException(
-                'AI service HTTP error: ' . $response->status()
-            );
-
-        } catch (\Exception $e) {
-            Log::error('AI service unavailable', [
-                'analysis_type' => $analysisType,
-                'error' => $e->getMessage(),
-            ]);
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Get analysis prompt based on type.
-     */
-    private function getAnalysisPrompt(string $analysisType): string
-    {
-        switch ($analysisType) {
-            case 'ecg_dicom':
-                return "Analyze this DICOM ECG file and provide detailed medical interpretation including: rhythm, heart rate, any abnormalities, ST segment changes, T wave abnormalities, QRS complex analysis, and clinical recommendations. This is a DICOM medical image file with enhanced metadata. Format the response as JSON with fields: rhythm, heart_rate, abnormalities, recommendations, dicom_metadata.";
-            
-            case 'ecg_image':
-                return "Analyze this ECG image (non-DICOM format) and provide detailed medical interpretation including: rhythm, heart rate, any abnormalities, ST segment changes, T wave abnormalities, QRS complex analysis, and clinical recommendations. Format the response as JSON with fields: rhythm, heart_rate, abnormalities, recommendations.";
-            
-            case 'mri_dicom_bone_age':
-                return "Analyze this DICOM MRI file for bone age assessment. Evaluate skeletal maturity, estimate bone age, compare with chronological age, identify any growth abnormalities, and provide clinical recommendations. This is a DICOM medical image file with enhanced metadata. Format the response as JSON with fields: bone_age, chronological_age, age_difference, skeletal_maturity, abnormalities, recommendations, dicom_metadata.";
-            
-            case 'mri_image_bone_age':
-                return "Analyze this MRI image (non-DICOM format) for bone age assessment. Evaluate skeletal maturity, estimate bone age, compare with chronological age, identify any growth abnormalities, and provide clinical recommendations. Format the response as JSON with fields: bone_age, chronological_age, age_difference, skeletal_maturity, abnormalities, recommendations.";
-            
-            case 'ecg':
-                return "Analyze this ECG image and provide detailed medical interpretation including: rhythm, heart rate, any abnormalities, ST segment changes, T wave abnormalities, QRS complex analysis, and clinical recommendations. Format the response as JSON with fields: rhythm, heart_rate, abnormalities, recommendations.";
-            
-            case 'mri_bone_age':
-                return "Analyze this MRI image for bone age assessment. Evaluate skeletal maturity, estimate bone age, compare with chronological age, identify any growth abnormalities, and provide clinical recommendations. Format the response as JSON with fields: bone_age, chronological_age, age_difference, skeletal_maturity, abnormalities, recommendations.";
-            
-            default:
-                return "Analyze this medical image and provide a comprehensive medical assessment.";
-        }
-    }
-
-    /**
-     * Generate overall assessment from individual analyses.
-     */
-    private function generateOverallAssessment(array $analyses): array
-    {
-        $ecgStatus = $analyses['ecg_analysis']['abnormalities'] ?? 'None detected';
-        $mriStatus = $analyses['mri_analysis']['abnormalities'] ?? 'None detected';
-        
-        $medicalStatus = 'Cleared';
-        $sportsEligibility = 'Eligible';
-        $recommendations = 'Cleared for sports participation';
-
-        if ($ecgStatus !== 'None detected' || $mriStatus !== 'None detected') {
-            $medicalStatus = 'Requires further evaluation';
-            $sportsEligibility = 'Conditional';
-            $recommendations = 'Further medical evaluation recommended before sports participation';
-        }
-
-        return [
-            'medical_status' => $medicalStatus,
-            'sports_eligibility' => $sportsEligibility,
-            'recommendations' => $recommendations
-        ];
-    }
-
-    /**
-     * Process medical imaging file for viewer (DICOM and non-DICOM)
      */
     public function processDicomFile(Request $request): JsonResponse
     {
@@ -1022,13 +802,18 @@ class PCMAController extends Controller
                 'is_dicom' => $isDicom
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Medical file processing error: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors du traitement du fichier médical',
-                'error' => $e->getMessage()
+                'error' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }
@@ -1085,7 +870,12 @@ class PCMAController extends Controller
                     $metadata['image_dimensions'] = $imageInfo[0] . ' × ' . $imageInfo[1] . ' pixels';
                     $metadata['image_type'] = $imageInfo[2]; // IMAGETYPE_* constant
                 }
-            } catch (\Exception $e) {
+            } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
+        } catch (\Exception $e) {
                 $metadata['image_dimensions'] = 'Impossible de lire les dimensions';
             }
         }
@@ -1161,13 +951,18 @@ class PCMAController extends Controller
                 'data' => $metadata
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('DICOM metadata extraction error: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de l\'extraction des métadonnées',
-                'error' => $e->getMessage()
+                'error' => __('pcma_workflow.service_unavailable')
             ], 500);
         }
     }
@@ -1209,6 +1004,11 @@ class PCMAController extends Controller
             } else {
                 $metadata['is_dicom'] = false;
             }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Données invalides.',
+                'errors' => $e->errors()], 422);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
             $metadata['is_dicom'] = false;
             $metadata['error'] = 'Impossible de lire le fichier DICOM';
@@ -1222,7 +1022,7 @@ class PCMAController extends Controller
      */
     public function getSignedPCMAs(): JsonResponse
     {
-        $pcmas = PCMA::with(['athlete', 'assessor'])
+        $pcmas = $this->scopedRecords()->with(['player', 'athlete', 'assessor'])
             ->where('is_signed', true)
             ->orderBy('signed_at', 'desc')
             ->get();
@@ -1232,4 +1032,4 @@ class PCMAController extends Controller
             'pcmas' => $pcmas
         ]);
     }
-} 
+}

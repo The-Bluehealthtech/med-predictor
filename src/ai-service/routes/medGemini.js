@@ -12,45 +12,25 @@ const medGeminiService = new MedGeminiService();
  * @access Public
  */
 router.post('/analyze', async (req, res) => {
+    const { analysis_type, file_content, file_type, prompt } = req.body;
+    const textOnly = ['fitness_assessment', 'scat_analysis'].includes(analysis_type);
+    if (!analysis_type || typeof prompt !== 'string' || !prompt.trim() || (!textOnly && !file_content)) {
+        return res.status(422).json({ success: false, message: 'Missing analysis data' });
+    }
+    const mime = {jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',pdf:'application/pdf'};
+    if (!textOnly && !mime[file_type]) {
+        return res.status(422).json({ success: false, message: 'Unsupported analysis file format' });
+    }
     try {
-        const { analysis_type, file_content, file_type, prompt } = req.body;
-
-        // Validate required fields
-        if (!analysis_type || !file_content || !prompt) {
-            return res.status(400).json({
-                success: false,
-                message: 'Missing required fields: analysis_type, file_content, prompt'
-            });
-        }
-
-        logger.info(`Starting ${analysis_type} analysis with Med-Gemini`);
-
-        // Decode base64 file content
-        const fileBuffer = Buffer.from(file_content, 'base64');
-
-        // Analyze with Med-Gemini
-        const analysisResult = await medGeminiService.analyzeMedicalImage(
-            prompt,
-            fileBuffer,
-            `image/${file_type}`,
-            analysis_type
-        );
-
-        logger.info(`${analysis_type} analysis completed successfully`);
-
-        return res.json({
-            success: true,
-            analysis: analysisResult
-        });
-
+        const result = textOnly ? await medGeminiService.analyze(prompt)
+            : await medGeminiService.analyzeMedicalImage(prompt, Buffer.from(file_content, 'base64'),
+                mime[file_type], analysis_type);
+        const analysis = require('../utils/medicalResult').normalizeMedicalResult(result);
+        return res.json({ success: true, analysis, model: result.model,
+            requires_medical_review: true });
     } catch (error) {
-        logger.error(`Med-Gemini analysis error: ${error.message}`);
-        
-        return res.status(500).json({
-            success: false,
-            message: 'Error during Med-Gemini analysis',
-            error: error.message
-        });
+        logger.warn('Structured medical analysis unavailable');
+        return res.status(503).json({ success: false, message: 'AI analysis unavailable' });
     }
 });
 
@@ -89,13 +69,13 @@ router.post('/analyze-ecg', async (req, res) => {
 
         return res.json({
             success: true,
-            analysis: analysisResult
+            analysis: require('../utils/medicalResult').normalizeMedicalResult(analysisResult)
         });
 
     } catch (error) {
         logger.error(`ECG analysis error: ${error.message}`);
         
-        return res.status(500).json({
+        return res.status(503).json({
             success: false,
             message: 'Error during ECG analysis',
             error: error.message
@@ -139,13 +119,13 @@ router.post('/analyze-mri-bone-age', async (req, res) => {
 
         return res.json({
             success: true,
-            analysis: analysisResult
+            analysis: require('../utils/medicalResult').normalizeMedicalResult(analysisResult)
         });
 
     } catch (error) {
         logger.error(`MRI bone age analysis error: ${error.message}`);
         
-        return res.status(500).json({
+        return res.status(503).json({
             success: false,
             message: 'Error during MRI bone age analysis',
             error: error.message
@@ -167,4 +147,4 @@ router.get('/health', (req, res) => {
     });
 });
 
-module.exports = router; 
+module.exports = router;

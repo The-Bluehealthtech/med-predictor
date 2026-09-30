@@ -368,7 +368,7 @@ Route::middleware(['auth'])->get('/players/{player}/complete-profile', function 
 
 // PDF generation routes (public access)
 
-Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->middleware('auth:sanctum')->name('api.pcma.pdf');
+Route::post('/pcma/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'generatePdf'])->middleware('auth:sanctum')->name('api.pcma.pdf');
 Route::post('/pcma/store', [App\Http\Controllers\PCMAController::class, 'store'])->middleware('auth:sanctum')->name('api.pcma.store');
 
 // API Version 1 Routes
@@ -454,11 +454,12 @@ Route::prefix('v1')->group(function () {
         Route::prefix('pcmas')->group(function () {
             Route::get('/', [PCMAController::class, 'index']);
             Route::post('/', [PCMAController::class, 'store']);
-            Route::get('/{pcma}', [PCMAController::class, 'show']);
+            Route::get('/signed', [PCMAController::class, 'getSignedPCMAs']);
+            Route::get('/{pcma}', [PCMAController::class, 'show'])->whereNumber('pcma');
             Route::put('/{pcma}', [PCMAController::class, 'update']);
             Route::delete('/{pcma}', [PCMAController::class, 'destroy']);
-            Route::post('/{pcma}/complete', [PCMAController::class, 'complete']);
-            Route::post('/{pcma}/fail', [PCMAController::class, 'fail']);
+            Route::post('/{pcma}/complete', [App\Http\Controllers\PcmaStatusController::class, 'complete']);
+            Route::post('/{pcma}/fail', [App\Http\Controllers\PcmaStatusController::class, 'fail']);
             Route::post('/prefill-from-transcript', [PCMAController::class, 'prefillFromTranscript']);
         });
 
@@ -466,7 +467,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('pcmas')->group(function () {
             Route::get('/player/{player}', [PCMAController::class, 'getPlayerPCMAs']);
             Route::get('/fifa-connect/{fifaConnectId}', [PCMAController::class, 'getFifaConnectPCMAs']);
-            Route::get('/signed', [PCMAController::class, 'getSignedPCMAs']);
+
             Route::post('/prefill-from-transcript', [PCMAController::class, 'prefillFromTranscript']);
             Route::post('/whisper-transcribe', [PCMAController::class, 'whisperTranscribe']);
             Route::post('/fetch-fhir-data', [PCMAController::class, 'fetchFhirData']);

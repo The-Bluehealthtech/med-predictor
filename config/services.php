@@ -22,7 +22,7 @@ return [
     ],
 
     'ai' => [
-        'base_url' => env('AI_BASE_URL', 'http://localhost:3001'),
+        'base_url' => env('AI_SERVICE_URL', env('AI_BASE_URL', 'http://localhost:3001')),
         'timeout' => env('AI_TIMEOUT', 30),
         'api_key' => env('AI_API_KEY'),
     ],

@@ -1,27 +1,40 @@
-# PCMA : suivi des corrections, 30 septembre 2026
-Branche : fix/pcma-workflow-20260930.
-Base : audit d78b11f, application déployée a099e3e.
-## Lot vérifié
-- Création et édition utilisent players.id / player_id, sans FIFA ID obligatoire du joueur.
-- Scripts de création et édition ciblent le formulaire PCMA, jamais celui de langue.
-- Formulaires multipart pour transmettre les fichiers.
-- Édition : même liste de joueurs que la création, variable users fournie, types cohérents.
-- Liens d'édition vers la route PDF réellement déclarée ; export encore non réparé.
-- Champs cliniques validés conservés dans result_json selon les groupes lus par la vue d'édition.
-- Valeurs nulles et zéro conservées ; aucune valeur clinique inventée.
-- Suppression des logs contenant le corps médical de la requête store.
-- Analyse complète sans fichier : HTTP 422, aucun appel au service IA.
-- Échecs de validation IA : HTTP 422 plutôt que 500.
-- Synthèse vide, en échec, simulée ou sans anomalies structurées : données insuffisantes, attente de validation médicale.
-- Contrôle FIFA ID + TeamDoctor du médecin signataire conservé.
-## Vérifications
-PHPUnit 10.5.53 / PHP 8.4.10 : 9 tests, 55 assertions, tous réussis.
-Tests : PcmaCreatePageTest, PcmaAnalysisSafetyTest.
-Sources app et vues chargées depuis le worktree de réparation ; vendor du dépôt principal.
-Rendu création FR/EN, édition, scope de sélection club, zéro/null, écriture et relecture SQLite isolée.
-Aucun appel IA externe ni écriture dans les données opérationnelles.
-## Non validé / restant
-Export PDF, autosauvegarde effective, contrôle d'accès de chaque dossier et immutabilité serveur des signatures.
-Contrat Node/PHP, transcription/OCR réels, FHIR et disponibilité réelle du fournisseur IA.
-Workflow complet en navigateur authentifié, ergonomie mobile et rendu visuel de production.
-Ce lot ne constitue pas une validation médicale ou prédictive du service IA, ni un déploiement.
+# PCMA : corrections vérifiées, 30 septembre 2026
+Branche : fix/pcma-workflow-20260930. Base déployée : a099e3e ; audit : d78b11f.
+## Corrections
+- Identité du joueur : players.id / player_id ; FIFA ID facultatif pour le joueur.
+- Médecin signataire : contrôles FIFA ID et inscription active TeamDoctor conservés.
+- Création/édition : formulaire PCMA ciblé, multipart, listes de joueurs limitées au périmètre autorisé.
+- Données cliniques conservées dans la base opérationnelle, avec zéro et null distincts.
+- Autosauvegarde persistante et idempotente ; finalisation du même brouillon, sans doublon.
+- Accès médical contrôlé sur listes, dossiers, PDF, fichiers et API ; dossiers signés immuables via Eloquent.
+- Champs de signature/certification fournis par le navigateur neutralisés hors parcours vérifié.
+- Clôture d'un dossier : conclusion médicale requise, y compris sur mise à jour directe.
+- PDF réel : aperçu sans sauvegarde et export du dossier enregistré ; textes échappés, aucune absence clinique inventée.
+- Nouvelles pièces médicales privées ; téléchargement soumis aux droits du dossier.
+- Routes complete/fail en POST ; actions absentes remplacées ; route signed non masquée par un identifiant.
+- Contrat PHP/Node unifié : résultat structuré requis, simulations et replis fictifs refusés.
+- Validation invalide : 422 ; service IA indisponible : 503 ; aucune autorisation médicale automatique.
+- Transcription et OCR : octets du document transmis au fournisseur ; confiance non mesurée = null.
+- Clé interne IA obligatoire côté Node ; aucune clé fournisseur exposée au navigateur.
+- Double chargement du script de reconnaissance vocale supprimé.
+## Tests exécutés
+- PHP 8.4.10 / PHPUnit 10.5.53 : 26 tests, 179 assertions, tous réussis.
+- Node 24.4.1 : 6 tests de contrat, tous réussis, après npm ci depuis le verrou existant.
+- Sources, routes et vues du worktree ; dépendances PHP du dépôt principal ; SQLite isolée.
+- Tests HTTP de droits, sauvegarde, PDF, fichiers privés, routes IA et signature falsifiée.
+- Rendu serveur FR/EN et édition vérifiés ; aucun appel fournisseur réel ni écriture opérationnelle.
+## Limites et vérifications restantes
+- Pas de déploiement de ce lot, ni de recette complète dans le navigateur de production authentifié.
+- Modes OCR/FHIR : doublons de contrôles et gestionnaires historiques identifiés ; recette visuelle/interactions encore requise.
+- Fournisseurs réels et qualité clinique/prédictive non validés ; les tests simulent uniquement les contrats réseau.
+- Configuration nécessaire sans secrets dans Git : AI_SERVICE_URL (ou AI_BASE_URL), AI_API_KEY partagé, GEMINI_API_KEY, MED_GEMINI_MODEL ; OPENAI_API_KEY pour transcription.
+- DICOM : conservation possible ; analyse directe non prise en charge par le contrat image/PDF, renvoie une validation explicite.
+- FHIR : URL limitée au serveur configuré ; correspondance patient/joueur et transfert clinique complet encore à valider.
+- Les anciens fichiers publics ne sont pas migrés par ce lot ; le viewer DICOM historique nécessite une revue propre.
+- Immutabilité Eloquent testée ; concurrence signature/édition simultanée sur tous les anciens écrivains non vérifiée.
+- Aucune dépendance installée dans node_modules n'est incluse dans le commit ; installation standard npm ci nécessaire.
+## Suivi des erreurs HTTP 500
+- /pcma/create : correctif a099e3e déjà déployé précédemment ; utilisateur avait confirmé l'ouverture.
+- Branche : inventaire des routes PCMA sans action de contrôleur manquante ; 7 endpoints IA à entrée vide renvoient 422, sans 500.
+- PDF et autosauvegarde : réponses testées sur le code de branche ; état de production après ce lot non vérifié.
+- Les autres routes historiquement signalées (/dtn, /rpm, /test-referee-assignments) ne sont pas retestées dans ce lot PCMA.

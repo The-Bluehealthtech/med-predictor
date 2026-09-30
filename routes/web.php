@@ -709,56 +709,12 @@ Route::get('/account-request/fifa-connect-types', function () {
 // Test PCMA simple - Route manquante pour l'Assistant Vocal
 
 // Route pour récupérer la clé API Google Speech-to-Text
-Route::get('/api/google-speech-key', function () {
-    $apiKey = env('GOOGLE_SPEECH_API_KEY');
-    if (!$apiKey) {
-        return response()->json(['error' => 'Clé API non configurée'], 404);
-    }
-    $maskedKey = substr($apiKey, 0, 8) . '...' . substr($apiKey, -4);
-    return response()->json([
-        'apiKey' => $apiKey,
-        'maskedKey' => $maskedKey,
-        'status' => 'success'
-    ]);
-})->name('api.google.speech.key');
-
-// Route pour la sauvegarde automatique des données PCMA
-Route::post('/api/pcma/auto-save', function (Request $request) {
-    try {
-        $data = $request->validate([
-            'player_name' => 'required|string|max:255',
-            'age' => 'required|integer|min:10|max:100',
-            'position' => 'required|string|max:255',
-            'club' => 'required|string|max:255',
-            'confidence' => 'string|max:50'
-        ]);
-        
-        // Simuler la sauvegarde en base de données
-        // Ici vous pourriez ajouter la logique de sauvegarde réelle
-        $savedData = [
-            'id' => uniqid('pcma_'),
-            'player_name' => $data['player_name'],
-            'age' => $data['age'],
-            'position' => $data['position'],
-            'club' => $data['club'],
-            'confidence' => $data['confidence'] ?? 'high',
-            'created_at' => now()->toISOString(),
-            'status' => 'saved'
-        ];
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Données PCMA sauvegardées avec succès',
-            'data' => $savedData
-        ]);
-        
-    } catch (Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur lors de la sauvegarde: ' . $e->getMessage()
-        ], 400);
-    }
-})->name('api.pcma.auto.save');
+// La clé du fournisseur reste sur le serveur.
+Route::get('/api/google-speech-key', fn () => response()->json([
+    'success' => false, 'message' => __('pcma_workflow.service_unavailable')
+], 503))->middleware('auth')->name('api.google.speech.key');
+Route::post('/api/pcma/auto-save', [App\Http\Controllers\PcmaDraftController::class, 'save'])
+    ->middleware('auth')->name('api.pcma.auto.save');
 
 // Test du composant dans le contexte du portail
 
@@ -1567,25 +1523,8 @@ Route::middleware('guest')->group(function () {
 // Test page for JavaScript debugging
 
 // Get signed PCMAs for dashboard (public route)
-Route::get('/api/signed-pcmas', function () {
-    try {
-        $pcmas = \App\Models\PCMA::with(['athlete', 'assessor'])
-            ->where('is_signed', true)
-            ->orderBy('signed_at', 'desc')
-            ->get();
-        
-        return response()->json([
-            'success' => true,
-            'pcmas' => $pcmas
-        ]);
-    } catch (\Exception $e) {
-        \Log::error('Error fetching signed PCMAs: ' . $e->getMessage());
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur lors du chargement des PCMAs signés'
-        ], 500);
-    }
-})->middleware(['auth'])->name('api.signed-pcmas');
+Route::get('/api/signed-pcmas', [App\Http\Controllers\PCMAController::class, 'signed'])
+    ->middleware('auth')->name('api.signed-pcmas');
 
 // Dashboard Routes (protected by auth)
 Route::middleware(['auth'])->group(function () {
@@ -3795,7 +3734,7 @@ Route::get('/test-pdf', function() {
 // Patient List API (accessible sans authentification pour test)
 
 // PDF generation routes (public access)
-Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->name('pcma.pdf.post')->middleware('api');
+Route::post('/pcma/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'generatePdf'])->name('pcma.pdf.post')->middleware(['web', 'auth']);
 
 // Simple test route
 
@@ -3858,9 +3797,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pcma/{pcma}/edit', [App\Http\Controllers\PCMAController::class, 'edit'])->name('pcma.edit');
     Route::put('/pcma/{pcma}', [App\Http\Controllers\PCMAController::class, 'update'])->name('pcma.update');
     Route::delete('/pcma/{pcma}', [App\Http\Controllers\PCMAController::class, 'destroy'])->name('pcma.destroy');
-    Route::get('/pcma/{pcma}/complete', [App\Http\Controllers\PCMAController::class, 'complete'])->name('pcma.complete');
-    Route::get('/pcma/{pcma}/fail', [App\Http\Controllers\PCMAController::class, 'fail'])->name('pcma.fail');
-    Route::get('/pcma/{pcma}/pdf', [App\Http\Controllers\PCMAController::class, 'exportPdf'])->name('pcma.pdf');
+    Route::post('/pcma/{pcma}/complete', [App\Http\Controllers\PcmaStatusController::class, 'complete'])->name('pcma.complete');
+    Route::post('/pcma/{pcma}/fail', [App\Http\Controllers\PcmaStatusController::class, 'fail'])->name('pcma.fail');
+    Route::get('/pcma/{pcma}/files/{field}', [App\Http\Controllers\PcmaDocumentController::class, 'file'])
+        ->name('pcma.file');
+    Route::get('/pcma/{pcma}/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'export'])->name('pcma.pdf');
 });
 
 
@@ -3877,7 +3818,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pcma/ai/ct', [App\Http\Controllers\PCMAController::class, 'aiAnalyzeCt'])->name('pcma.ai.ct');
     Route::post('/pcma/ai/ultrasound', [App\Http\Controllers\PCMAController::class, 'aiAnalyzeUltrasound'])->name('pcma.ai.ultrasound');
     Route::post('/pcma/ai/fitness', [App\Http\Controllers\PCMAController::class, 'aiFitnessAssessment'])->name('pcma.ai.fitness');
-    Route::post('/pcma/pdf', [App\Http\Controllers\PCMAController::class, 'generatePdf'])->name('pcma.pdf.post');
+    Route::post('/pcma/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'generatePdf'])->name('pcma.pdf.post');
 });
 
 // Player Dashboard redirect (accessible après login)

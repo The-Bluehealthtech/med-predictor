@@ -92,6 +92,27 @@ class PCMA extends Model
         'updated_at' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        // Aucun point d'entrée ne peut clôturer un dossier sans conclusion humaine.
+        static::saving(function (PCMA $record) {
+            if ($record->status !== 'completed' || !$record->isDirty('status')) return;
+            $final = $record->final_statement ?? [];
+            abort_unless(in_array($final['overall_decision'] ?? null, ['FIT', 'NOT_FIT', 'CONDITIONAL'], true)
+                || !empty($final['cleared_for_competition']) || !empty($final['cleared_with_restrictions'])
+                || !empty($final['not_cleared']), 422, 'La conclusion du médecin est requise.');
+        });
+        // Protection commune à tous les points d'écriture Eloquent.
+        static::updating(function (PCMA $record) {
+            abort_if((bool) $record->getOriginal('is_signed'), 409,
+                'Un PCMA signé ne peut plus être modifié.');
+        });
+        static::deleting(function (PCMA $record) {
+            abort_if((bool) $record->getOriginal('is_signed'), 409,
+                'Un PCMA signé ne peut plus être supprimé.');
+        });
+    }
+
     /**
      * Get the athlete that this PCMA belongs to.
      */
@@ -360,4 +381,4 @@ class PCMA extends Model
     {
         $this->update(['final_statement' => $statementData]);
     }
-} 
+}

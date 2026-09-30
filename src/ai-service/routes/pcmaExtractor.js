@@ -9,9 +9,10 @@ const medGeminiService = new MedGeminiService();
 // Validation schema for PCMA data extraction
 const pcmaExtractionSchema = Joi.object({
     transcript: Joi.string().required().max(10000),
-    athlete_id: Joi.number().integer().required(),
-    pcma_type: Joi.string().valid('cardio', 'neurological', 'musculoskeletal', 'general').required()
-});
+    athlete_id: Joi.number().integer(),
+    player_id: Joi.number().integer(),
+    pcma_type: Joi.string().valid('bpma', 'cardio', 'dental', 'neurological', 'orthopedic').required()
+}).or('player_id', 'athlete_id');
 
 /**
  * Extract structured PCMA data from transcript using Med-Gemini
@@ -29,7 +30,7 @@ router.post('/extract-pcma-data', async (req, res) => {
             });
         }
 
-        const { transcript, athlete_id, pcma_type } = value;
+        const { transcript, athlete_id, player_id, pcma_type } = value;
         
         console.log(`Extracting PCMA data for athlete ${athlete_id}, type: ${pcma_type}`);
 
@@ -41,13 +42,14 @@ router.post('/extract-pcma-data', async (req, res) => {
 
         if (result.success) {
             const extractedData = result.structuredData || {};
-            const confidenceScore = result.confidence || 0.7;
+            const confidenceScore = result.confidence ?? null;
             const extractedFields = Object.keys(extractedData);
 
             console.log(`Successfully extracted ${extractedFields.length} fields with confidence: ${confidenceScore}`);
 
             res.json({
-                ...extractedData,
+                success: true,
+                data: extractedData,
                 confidence_score: confidenceScore,
                 extracted_fields: extractedFields,
                 processing_time: result.processingTime,
@@ -57,7 +59,7 @@ router.post('/extract-pcma-data', async (req, res) => {
         } else {
             console.error(`Failed to extract PCMA data for athlete ${athlete_id}:`, result.error);
             
-            res.status(500).json({
+            res.status(503).json({
                 success: false,
                 message: 'Failed to extract PCMA data from transcript',
                 error: result.error,
@@ -68,7 +70,7 @@ router.post('/extract-pcma-data', async (req, res) => {
 
     } catch (error) {
         console.error('Error extracting PCMA data:', error);
-        res.status(500).json({
+        res.status(503).json({
             success: false,
             message: 'Internal server error during data extraction',
             error: error.message
@@ -172,7 +174,7 @@ router.get('/health', async (req, res) => {
             responseTime: healthStatus.responseTime
         });
     } catch (error) {
-        res.status(500).json({
+        res.status(503).json({
             service: 'PCMA Data Extraction',
             status: 'unhealthy',
             error: error.message
@@ -180,4 +182,4 @@ router.get('/health', async (req, res) => {
     }
 });
 
-module.exports = router; 
+module.exports = router;

@@ -17,21 +17,17 @@ const logger = winston.createLogger({
 class MedGeminiService {
     constructor() {
         this.apiKey = process.env.GEMINI_API_KEY;
-        this.modelName = process.env.MED_GEMINI_MODEL || 'gemini-1.5-flash';
-        this.mockMode = !this.apiKey;
+        this.modelName = process.env.MED_GEMINI_MODEL || null;
+        this.mockMode = !this.apiKey || !this.modelName || this.apiKey === 'your_gemini_api_key_here';
         
         // Check if we're in production and API key is missing
         if (process.env.NODE_ENV === 'production' && !this.apiKey) {
             logger.error('FATAL ERROR: GEMINI_API_KEY is not defined in production environment');
-            process.exit(1);
+            // Le service reste disponible pour répondre 503 sans résultat simulé.
         }
         
-        if (!this.apiKey || this.apiKey === 'your_gemini_api_key_here') {
-            logger.warn('GEMINI_API_KEY is not set - running in mock mode');
-            logger.warn('To enable Med-Gemini API analysis:');
-            logger.warn('1. Get your API key from: https://aistudio.google.com/app/apikey');
-            logger.warn('2. Update the GEMINI_API_KEY in your .env file');
-            logger.warn('3. Restart the AI service');
+        if (this.mockMode) {
+            logger.warn('Analyse IA indisponible : GEMINI_API_KEY et MED_GEMINI_MODEL doivent être configurés.');
         } else {
             try {
                 this.genAI = new GoogleGenerativeAI(this.apiKey);
@@ -44,7 +40,7 @@ class MedGeminiService {
             }
         }
         
-        logger.info(`MedGeminiService initialized with model: ${this.modelName}, mock mode: ${this.mockMode}`);
+        logger.info(`MedGeminiService initialized with model: ${this.modelName}, provider unavailable: ${this.mockMode}`);
     }
 
     /**
@@ -65,24 +61,7 @@ class MedGeminiService {
             const startTime = Date.now();
             
             if (this.mockMode) {
-                // Return mock response for testing
-                const mockResponse = this.generateMockResponse(prompt, data);
-                const processingTime = Date.now() - startTime;
-                
-                logger.info('Med-Gemini analysis completed (mock mode)', {
-                    processingTime,
-                    responseLength: mockResponse.text.length,
-                    model: this.modelName
-                });
-
-                return {
-                    success: true,
-                    text: mockResponse.text,
-                    processingTime,
-                    model: this.modelName,
-                    timestamp: new Date().toISOString(),
-                    mockMode: true
-                };
+                return {success:false, error:'AI provider is not configured', model:this.modelName};
             }
 
             // Prepare the content parts
@@ -137,29 +116,9 @@ class MedGeminiService {
 
         } catch (error) {
             logger.error('Med-Gemini analysis failed', {
-                error: error.message,
-                stack: error.stack,
+                error: 'Provider unavailable',
                 model: this.modelName
             });
-
-            // Handle rate limit errors gracefully
-            if (error.message.includes('429') || error.message.includes('Too Many Requests') || error.message.includes('quota')) {
-                logger.warn('Rate limit exceeded, providing fallback response', {
-                    model: this.modelName
-                });
-
-                // Generate a fallback response based on the analysis type
-                const fallbackResponse = this.generateFallbackResponse(prompt, data);
-                
-                return {
-                    success: true,
-                    text: fallbackResponse,
-                    processingTime: Date.now() - startTime,
-                    model: this.modelName,
-                    timestamp: new Date().toISOString(),
-                    note: 'Rate limit exceeded - using fallback response'
-                };
-            }
 
             return {
                 success: false,
@@ -336,49 +295,11 @@ In production with a valid API key, this would be a real Med-Gemini analysis.`
      */
     async extractStructuredData(prompt, text) {
         try {
-            const result = await this.analyze(prompt, { text });
-            
-            if (!result.success) {
-                return result;
-            }
-
-            // Try to parse JSON from the response
-            try {
-                const jsonMatch = result.text.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    const structuredData = JSON.parse(jsonMatch[0]);
-                    return {
-                        ...result,
-                        structuredData,
-                        confidence: this.calculateConfidence(result.text)
-                    };
-                }
-            } catch (parseError) {
-                logger.warn('Failed to parse JSON from Med-Gemini response', {
-                    error: parseError.message,
-                    response: result.text.substring(0, 200)
-                });
-            }
-
-            // Return the raw text if JSON parsing fails
-            return {
-                ...result,
-                structuredData: null,
-                confidence: this.calculateConfidence(result.text)
-            };
-
+            const result = await this.analyze(prompt, {text});
+            const structuredData = require('../utils/medicalResult').normalizeMedicalResult(result);
+            return {...result, structuredData, confidence:null};
         } catch (error) {
-            logger.error('Structured data extraction failed', {
-                error: error.message,
-                prompt: prompt.substring(0, 100)
-            });
-
-            return {
-                success: false,
-                error: error.message,
-                structuredData: null,
-                confidence: 0
-            };
+            return {success:false, error:'Structured extraction unavailable', confidence:null};
         }
     }
 
@@ -446,113 +367,53 @@ Format the response as a clear, professional medical note.`;
      * @param {string} response - The model response
      * @returns {number} - Confidence score (0-1)
      */
-    calculateConfidence(response) {
-        let score = 0.5; // Base score
+    calculateConfidence(response) { return null; }
 
-        // Bonus for detailed responses
-        if (response.length > 200) score += 0.2;
-        if (response.length > 500) score += 0.1;
-
-        // Bonus for structured responses
-        if (response.includes('{') && response.includes('}')) score += 0.1;
-        if (response.includes('[') && response.includes(']')) score += 0.1;
-
-        // Bonus for medical terminology
-        const medicalTerms = ['diagnosis', 'symptoms', 'treatment', 'assessment', 'clinical', 'patient'];
-        const termCount = medicalTerms.filter(term => response.toLowerCase().includes(term)).length;
-        score += (termCount / medicalTerms.length) * 0.1;
-
-        return Math.min(Math.max(score, 0.0), 1.0);
-    }
-
-    /**
-     * Detect MIME type from base64 string
-     * @param {string} base64String - Base64 encoded image
-     * @returns {string} - MIME type
-     */
-    detectMimeType(base64String) {
-        // Simple MIME type detection based on base64 header
-        if (base64String.startsWith('/9j/')) return 'image/jpeg';
-        if (base64String.startsWith('iVBORw0KGgo')) return 'image/png';
-        if (base64String.startsWith('R0lGODlh')) return 'image/gif';
-        if (base64String.startsWith('UklGR')) return 'image/webp';
-        
-        return 'image/jpeg'; // Default
-    }
-
-    /**
-     * Transcribe audio using Whisper
-     */
-    async transcribeAudio({ audioFilePath, language = 'fr', model = 'whisper-1' }) {
+    // Transcription réelle via le fournisseur déjà prévu dans la configuration du service.
+    async transcribeAudio({ audioFilePath, language = 'fr' }) {
+        const key = process.env.OPENAI_API_KEY;
+        if (!key || key.startsWith('your-')) return {success:false, error:'Transcription provider not configured'};
         try {
-            if (this.mockMode) {
-                console.log('Mock mode: Simulating Whisper transcription');
-                return {
-                    success: true,
-                    transcription: 'Patient présente une tension artérielle de 120/80 mmHg, fréquence cardiaque de 65 bpm au repos. Pas d\'antécédents cardiovasculaires. Examen neurologique normal. Pas de douleurs musculo-squelettiques.',
-                    confidence: 0.85
-                };
-            }
-
-            // In a real implementation, this would call the Whisper API
-            // For now, we'll simulate the transcription
-            console.log(`Transcribing audio file: ${audioFilePath}`);
-            console.log(`Language: ${language}, Model: ${model}`);
-
-            // Simulate processing time
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            return {
-                success: true,
-                transcription: 'Patient présente une tension artérielle de 120/80 mmHg, fréquence cardiaque de 65 bpm au repos. Pas d\'antécédents cardiovasculaires. Examen neurologique normal. Pas de douleurs musculo-squelettiques.',
-                confidence: 0.85
-            };
-
+            const fs = require('fs/promises');
+            const path = require('path');
+            const body = new FormData();
+            body.append('file', new Blob([await fs.readFile(audioFilePath)]), path.basename(audioFilePath));
+            body.append('model', process.env.WHISPER_MODEL || 'whisper-1');
+            body.append('response_format', 'json');
+            if (/^[a-z]{2}$/i.test(language)) body.append('language', language);
+            const base = (process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/$/, '');
+            const response = await fetch(base + '/audio/transcriptions', {
+                method:'POST', headers:{Authorization:'Bearer ' + key}, body,
+                signal:AbortSignal.timeout(30000)
+            });
+            if (!response.ok) throw new Error('Transcription provider unavailable');
+            const data = await response.json();
+            if (typeof data.text !== 'string' || !data.text.trim()) throw new Error('Empty transcription');
+            return {success:true, transcription:data.text, confidence:null,
+                model:process.env.WHISPER_MODEL || 'whisper-1'};
         } catch (error) {
-            console.error('Error in audio transcription:', error);
-            return {
-                success: false,
-                error: error.message
-            };
+            return {success:false, error:'Transcription unavailable'};
         }
     }
 
-    /**
-     * Extract text from image using OCR
-     */
-    async extractTextFromImage({ imageFilePath, language = 'fra', isMedicalDocument = true }) {
+    // Extraire uniquement le texte de la pièce ; ne jamais inventer une observation clinique.
+    async extractTextFromImage({ imageFilePath }) {
         try {
-            if (this.mockMode) {
-                console.log('Mock mode: Simulating OCR extraction');
-                return {
-                    success: true,
-                    extracted_text: 'ÉVALUATION MÉDICALE PRÉ-COMPÉTITION\n\nPatient: Jean Dupont\nDate: 15/01/2025\n\nVITAL SIGNS:\n- Tension artérielle: 120/80 mmHg\n- Fréquence cardiaque: 65 bpm\n- Température: 36.8°C\n- Poids: 75 kg\n- Taille: 180 cm\n\nEXAMEN CARDIOVASCULAIRE:\n- ECG: Normal\n- Pouls: Régulier\n- Pas de souffle cardiaque\n\nEXAMEN NEUROLOGIQUE:\n- Conscience: Alerte\n- Fonctions motrices: Normales\n- Coordination: Bonne\n\nCONCLUSION:\nPatient apte pour la compétition.',
-                    confidence: 0.90,
-                    word_count: 45
-                };
+            const fs = require('fs/promises');
+            const ext = require('path').extname(imageFilePath).slice(1).toLowerCase();
+            const mime = {jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',pdf:'application/pdf'}[ext];
+            if (!mime) return {success:false,error:'Unsupported document format'};
+            const result = await this.analyzeMedicalImage(
+                'Transcribe only text visible in this document. Do not infer missing text or clinical findings. Return JSON with the single field extracted_text. If no text is legible, use an empty string.',
+                await fs.readFile(imageFilePath), mime);
+            const data = require('../utils/medicalResult').normalizeMedicalResult(result);
+            if (typeof data.extracted_text !== 'string' || !data.extracted_text.trim()) {
+                return {success:false,error:'No legible text extracted'};
             }
-
-            // In a real implementation, this would call an OCR service
-            // For now, we'll simulate the text extraction
-            console.log(`Extracting text from image: ${imageFilePath}`);
-            console.log(`Language: ${language}, Medical Document: ${isMedicalDocument}`);
-
-            // Simulate processing time
-            await new Promise(resolve => setTimeout(resolve, 3000));
-
-            return {
-                success: true,
-                extracted_text: 'ÉVALUATION MÉDICALE PRÉ-COMPÉTITION\n\nPatient: Jean Dupont\nDate: 15/01/2025\n\nVITAL SIGNS:\n- Tension artérielle: 120/80 mmHg\n- Fréquence cardiaque: 65 bpm\n- Température: 36.8°C\n- Poids: 75 kg\n- Taille: 180 cm\n\nEXAMEN CARDIOVASCULAIRE:\n- ECG: Normal\n- Pouls: Régulier\n- Pas de souffle cardiaque\n\nEXAMEN NEUROLOGIQUE:\n- Conscience: Alerte\n- Fonctions motrices: Normales\n- Coordination: Bonne\n\nCONCLUSION:\nPatient apte pour la compétition.',
-                confidence: 0.90,
-                word_count: 45
-            };
-
+            return {success:true, extracted_text:data.extracted_text, confidence:null,
+                word_count:data.extracted_text.trim().split(/\s+/).length};
         } catch (error) {
-            console.error('Error in OCR extraction:', error);
-            return {
-                success: false,
-                error: error.message
-            };
+            return {success:false,error:'OCR unavailable'};
         }
     }
 
@@ -585,4 +446,4 @@ Format the response as a clear, professional medical note.`;
     }
 }
 
-module.exports = MedGeminiService; 
+module.exports = MedGeminiService;

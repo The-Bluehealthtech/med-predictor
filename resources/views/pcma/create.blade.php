@@ -350,6 +350,9 @@
             <div id="formulaire-principal" class="form-section">
                 <form id="pcma-form" enctype="multipart/form-data" action="{{ route('pcma.store') }}" method="POST" class="space-y-8">
                     @csrf
+                    <input type="hidden" name="pcma_id" id="pcma_id" value="">
+                    <input type="hidden" name="draft_token" value="">
+
                     
                     <!-- AI-Assisted Section -->
                     <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
@@ -2448,26 +2451,8 @@ const PCMA_LABELS = {
 window.generatePDF = async function() {
     try {
         // Collect all form data
-        const formData = new FormData();
-        
-        // Get all form inputs
-        const pdfForm = document.querySelector('#pcma-form');
-        const formElements = pdfForm.elements;
-        
-        // Add all form fields to FormData
-        console.log(' Collecting form data...');
-        console.log(' Form elements found:', formElements.length);
-        
-        for (let element of formElements) {
-            console.log(' Element:', element.name, '=', element.value, 'type:', element.type);
-            if (element.name) {
-                formData.append(element.name, element.value || '');
-                console.log(' Added field:', element.name, '=', element.value || '');
-            } else {
-                console.log(' Skipped field without name:', element.id || element.type);
-            }
-        }
-        console.log(' Total form fields collected:', formData.entries().length);
+        const pdfForm = document.getElementById('pcma-form');
+        const formData = new FormData(pdfForm);
         
         // Aucune valeur médicale ou identité ne doit être fabriquée pour produire le PDF.
         if (!formData.get('player_id') || !formData.get('type') || !formData.get('assessor_id') || !formData.get('assessment_date')) {
@@ -4949,59 +4934,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Sauvegarde automatique des données
+        let draftSave = Promise.resolve();
+        let draftPlayer = null;
         function autoSaveData(extractedData) {
-            console.log('💾 Sauvegarde automatique des données...');
-            
-            try {
-                // Préparer les données pour la sauvegarde
-                const formData = new FormData();
-                
-                // Ajouter les données extraites
-                if (extractedData.player_name) formData.append('player_name', extractedData.player_name);
-                if (extractedData.age) formData.append('age', extractedData.age);
-                if (extractedData.position) formData.append('position', extractedData.position);
-                if (extractedData.club) formData.append('club', extractedData.club);
-                
-                // Ajouter un timestamp
-                formData.append('voice_extraction_timestamp', new Date().toISOString());
-                formData.append('voice_extraction_confidence', extractedData.confidence);
-                
-                // Ajouter les notes cliniques si disponibles
-                const notesField = document.getElementById('clinical_notes');
-                if (notesField && notesField.value) {
-                    formData.append('clinical_notes', notesField.value);
-                }
-                
-                // Envoyer les données au serveur
-                fetch('/api/pcma/auto-save', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(Object.fromEntries(formData))
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log(' Données sauvegardées automatiquement:', data);
-                        showSaveStatus(PCMA_LABELS.savedAutomaticallySuccess, 'success');
-                        
-                        // Mettre à jour l'interface
-                        updateSaveStatus(data);
-                    } else {
-                        throw new Error(data.message || PCMA_LABELS.errSave);
-                    }
-                })
-                .catch(error => {
-                    console.error('❌ Erreur de sauvegarde automatique:', error);
-                    showSaveStatus(PCMA_LABELS.errSaveAlert + error.message, 'error');
-                });
-                
-            } catch (error) {
-                console.error('❌ Erreur lors de la sauvegarde automatique:', error);
-                showSaveStatus(PCMA_LABELS.errSaveAlert + error.message, 'error');
+            const form = document.getElementById('pcma-form');
+            const player = form.elements.player_id.value;
+            if (!player || !form.elements.type.value || !form.elements.assessment_date.value) {
+                showSaveStatus(@json(__('pcma_workflow.select_player')), 'error');
+                return;
             }
+            if (draftPlayer !== player) {
+                form.elements.pcma_id.value = '';
+                form.elements.draft_token.value = crypto.randomUUID();
+                draftPlayer = player;
+            }
+            // Sérialiser les sauvegardes ; transmettre les valeurs du formulaire réel.
+            draftSave = draftSave.catch(() => {}).then(async () => {
+                if (form.elements.player_id.value !== player) return;
+                const payload = new FormData(form);
+                payload.set('status', 'pending');
+                payload.set('assessor_id', @json(auth()->id()));
+                const response = await fetch(@json(route('api.pcma.auto.save')), {
+                    method: 'POST', body: payload,
+                    headers: {'Accept': 'application/json', 'X-CSRF-TOKEN': form.elements._token.value}
+                });
+                const data = await response.json();
+                if (!response.ok || !data.success) throw new Error(data.message || PCMA_LABELS.errSave);
+                if (form.elements.player_id.value !== player) return;
+                form.elements.pcma_id.value = data.pcma_id;
+                showSaveStatus(data.message, 'success');
+                updateSaveStatus(data);
+            }).catch(error => showSaveStatus(error.message, 'error'));
         }
 
         // Afficher le statut de sauvegarde
@@ -6766,7 +6729,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="/js/SpeechRecognitionService-laravel.js"></script>
         <script src="/js/ServiceVocal.js"></script>
-        <script src="/js/SpeechRecognitionService-laravel.js"></script>
+
 
 <!-- Système de modes sécurisé -->
 <script>
@@ -7641,4 +7604,4 @@ if (document.readyState === 'loading') {
 }
 </script>
 @endpush
-@endsection 
+@endsection

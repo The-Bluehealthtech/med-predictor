@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier PCMA - Med Predictor')
+@section('title', __('pcma.edit_browser_title'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -14,7 +14,7 @@
                     </svg>
                     <div>
                         <h2 class="text-xl font-semibold text-red-800">{{ __('pcma_extra.label_e775b01919c9') }}</h2>
-                        <p class="text-red-700 mt-2">{{ __('pcma_extra.label_ca8b981d7b2b') }} <strong>{{ $pcma->signed_by }}</strong> le {{ \Carbon\Carbon::parse($pcma->signed_at)->format('d/m/Y H:i') }} et ne peut plus être modifié.</p>
+                        <p class="text-red-700 mt-2">{!! __('pcma.edit_signed_banner_text', ['name' => '<strong>' . e($pcma->signed_by) . '</strong>', 'date' => \Carbon\Carbon::parse($pcma->signed_at)->format('d/m/Y H:i')]) !!}</p>
                         <div class="mt-4 flex space-x-4">
                             <a href="{{ route('pcma.show', $pcma) }}" 
                                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
@@ -150,7 +150,7 @@
                         
                         <div>
                             <label for="clinical_notes" class="block text-sm font-medium text-gray-700 mb-2">
-                                {{ __('pcma.clinical_notes_label') }}
+                                {{ __('pcma.edit_clinical_notes_label') }}
                             </label>
                             <textarea id="clinical_notes" 
                                       name="clinical_notes" 
@@ -162,7 +162,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label for="blood_pressure" class="block text-sm font-medium text-gray-700 mb-2">
-                                    {{ __('Tension Artérielle') }}
+                                    {{ __('pcma.vitals_blood_pressure') }}
                                 </label>
                                 <input type="text" 
                                        id="blood_pressure" 
@@ -265,7 +265,7 @@
                                       name="surgical_history" 
                                       rows="3"
                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                      placeholder="Interventions chirurgicales...">{{ old('surgical_history', $pcma->result_json['medical_history']['surgical_history'] ?? '') }}</textarea>
+                                      placeholder="{{ __('pcma.medhist_surgical_placeholder') }}">{{ old('surgical_history', $pcma->result_json['medical_history']['surgical_history'] ?? '') }}</textarea>
                         </div>
                         
                         <div>
@@ -276,7 +276,7 @@
                                       name="medications" 
                                       rows="3"
                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                      placeholder="Traitements en cours...">{{ old('medications', $pcma->result_json['medical_history']['medications'] ?? '') }}</textarea>
+                                      placeholder="{{ __('pcma.medhist_medications_placeholder') }}">{{ old('medications', $pcma->result_json['medical_history']['medications'] ?? '') }}</textarea>
                         </div>
                         
                         <div>
@@ -594,7 +594,7 @@
                                    name="competition_name" 
                                    value="{{ $pcma->competition_name ?? '' }}"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   placeholder="Championnat National">
+                                   placeholder="{{ __('pcma.edit_competition_placeholder') }}">
                         </div>
                         
                         <div>

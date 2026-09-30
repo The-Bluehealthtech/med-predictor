@@ -1,5 +1,10 @@
 <?php
 return [
+    'medical_decision' => 'Recorded medical decision',
+    'decision_fit' => 'FIT',
+    'decision_not_fit' => 'NOT FIT',
+    'decision_conditional' => 'FIT WITH CONDITIONS',
+    'unsigned' => 'Unsigned assessment',
     'type_pcma' => 'PCMA',
     'draft_saved' => 'Draft saved.',
     'draft_preview' => '— Draft preview',

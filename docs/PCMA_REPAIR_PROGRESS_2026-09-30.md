@@ -38,3 +38,15 @@ Branche : fix/pcma-workflow-20260930. Base déployée : a099e3e ; audit : d78b11
 - Branche : inventaire des routes PCMA sans action de contrôleur manquante ; 7 endpoints IA à entrée vide renvoient 422, sans 500.
 - PDF et autosauvegarde : réponses testées sur le code de branche ; état de production après ce lot non vérifié.
 - Les autres routes historiquement signalées (/dtn, /rpm, /test-referee-assignments) ne sont pas retestées dans ce lot PCMA.
+
+## Alignement portail / dossier opérationnel
+- PlayerPortalDataService lit toujours pcmas sur la connexion Laravel principale, filtrée par player_id.
+- Projection commune PlayerPcmaData depuis la ligne enregistrée : final_statement.overall_decision, sans conclusion déduite du seul statut completed/approved.
+- FIT / NOT_FIT / CONDITIONAL : décision médicale affichée explicitement ; statut non signé conservé et aucune certification automatique.
+- Anciens drapeaux explicites de décision reconnus seulement si un seul est actif ; contradictions = valeur manquante.
+- Prochaine date issue uniquement de result_json.next_assessment_date ; suppression du repli automatique assessment_date + 1 an.
+- Carte PCMA et résumé de conformité utilisent la même projection ; labels de conclusion FR/EN.
+- Dernier dossier : tri assessment_date puis id pour une sélection déterministe.
+- Vérification : 28 tests Laravel, 203 assertions, réussis ; compilation de la vue portail et syntaxe PHP réussies.
+- Test intégré : écriture via contrôleur PCMA puis lecture SQL par player_id et projection portail, même PDO, valeurs zéro/null, absence de fuite vers un autre joueur.
+- Le rendu complet en navigateur authentifié de production n'est toujours pas vérifié.

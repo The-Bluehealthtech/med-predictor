@@ -1,5 +1,10 @@
 <?php
 return [
+    'medical_decision' => 'Conclusion médicale enregistrée',
+    'decision_fit' => 'APTE',
+    'decision_not_fit' => 'NON APTE',
+    'decision_conditional' => 'APTE SOUS CONDITIONS',
+    'unsigned' => 'Évaluation non signée',
     'type_pcma' => 'PCMA',
     'draft_saved' => 'Brouillon enregistré.',
     'draft_preview' => '— Aperçu brouillon',

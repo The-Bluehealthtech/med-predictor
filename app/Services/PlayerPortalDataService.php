@@ -51,6 +51,7 @@ class PlayerPortalDataService
         $latestPcma = DB::table('pcmas')
             ->where('player_id', $playerId)
             ->orderByDesc('assessment_date')
+            ->orderByDesc('id')
             ->first();
 
         $latestPerformance = DB::table('player_performances')
@@ -489,47 +490,7 @@ class PlayerPortalDataService
         $playerPcma = null;
 
         if ($latestPcma) {
-            $pcmaResults = $this->json($latestPcma->result_json);
-
-            $rawStatus = $latestPcma->status;
-
-            $status = match ($rawStatus) {
-                'approved' => 'cleared',
-                'rejected' => 'not_cleared',
-                default => $rawStatus ?: null,
-            };
-
-            $playerPcma = (object) [
-                'pcma_status' => $status,
-                'is_signed' => (bool) $latestPcma->is_signed,
-                'synthetic_test' => (bool) data_get($pcmaResults, 'synthetic_demo'),
-
-                'pcma_score' =>
-                    data_get($pcmaResults, 'pcma_score')
-                    ?? data_get($pcmaResults, 'overall_score'),
-
-                'cardiovascular_fitness' =>
-                    data_get($pcmaResults, 'cardiovascular_fitness'),
-
-                'respiratory_fitness' =>
-                    data_get($pcmaResults, 'respiratory_fitness'),
-
-                'musculoskeletal_fitness' =>
-                    data_get($pcmaResults, 'musculoskeletal_fitness'),
-
-                'neurological_fitness' =>
-                    data_get($pcmaResults, 'neurological_fitness'),
-
-                'next_assessment_date' =>
-                    data_get($pcmaResults, 'next_assessment_date')
-                    ?? (
-                        $latestPcma->assessment_date
-                            ? Carbon::parse($latestPcma->assessment_date)
-                                ->addYear()
-                                ->toDateString()
-                            : null
-                    ),
-            ];
+            $playerPcma = app(PlayerPcmaData::class)->fromRecord($latestPcma);
         }
 
         /*
@@ -859,7 +820,7 @@ class PlayerPortalDataService
 
         if ($latestPcma) {
             $pcmaStatus = $latestPcma->is_signed
-                ? $latestPcma->status
+                ? ($playerPcma->pcma_status ?? 'unknown')
                 : 'pending';
 
             $complianceStatus->push((object) [
@@ -869,9 +830,10 @@ class PlayerPortalDataService
                 'summary' => match ($pcmaStatus) {
                     'cleared' => 'Aptitude médicale : APTE',
                     'not_cleared' => 'Aptitude médicale : NON APTE',
+                    'conditional' => __('pcma_workflow.decision_conditional'),
                     'pending' => $latestPcma->is_signed
                         ? 'Évaluation en attente'
-                        : 'Évaluation non signée (test non officiel)',
+                        : __('pcma_workflow.unsigned'),
                     'failed' => 'Évaluation non aboutie',
                     'completed' => 'Évaluation terminée',
                     default => ucfirst(str_replace('_', ' ', $pcmaStatus)),

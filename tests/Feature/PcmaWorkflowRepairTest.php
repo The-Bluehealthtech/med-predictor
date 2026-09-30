@@ -108,6 +108,49 @@ final class PcmaWorkflowRepairTest extends TestCase
         self::assertFalse(PCMA::first()->is_signed);
         self::assertFalse(PCMA::first()->fifa_compliant);
     }
+    public function test_pcma_write_is_read_by_the_portal_on_the_same_connection(): void
+    {
+        $response=app(PCMAController::class)->store($this->request($this->input([
+            'final_statement'=>['overall_decision'=>'CONDITIONAL'],
+            'result_json'=>json_encode(['pcma_score'=>0, 'cardiovascular_fitness'=>null])
+        ]), '/pcma'))->getData(true);
+        $record=PCMA::findOrFail($response['pcma_id']);
+        self::assertSame(DB::connection()->getPdo(), $record->getConnection()->getPdo());
+        // Même requête et même projection que PlayerPortalDataService.
+        $row=DB::table('pcmas')->where('player_id',10)
+            ->orderByDesc('assessment_date')->orderByDesc('id')->first();
+        $portal=app(\App\Services\PlayerPcmaData::class)->fromRecord($row);
+        self::assertSame($record->id, $portal->pcma_id);
+        self::assertSame(10, $portal->player_id);
+        self::assertSame('CONDITIONAL', $portal->medical_decision);
+        self::assertFalse($portal->is_signed);
+        self::assertSame('pending', $portal->pcma_status);
+        self::assertSame(0, $portal->pcma_score);
+        self::assertNull($portal->cardiovascular_fitness);
+        self::assertNull($portal->next_assessment_date);
+        self::assertNull(DB::table('pcmas')->where('player_id',20)->first());
+    }
+    public function test_portal_projects_signed_decisions_and_only_explicit_dates(): void
+    {
+        $projector=app(\App\Services\PlayerPcmaData::class);
+        foreach (['FIT'=>'cleared','NOT_FIT'=>'not_cleared','CONDITIONAL'=>'conditional'] as $decision=>$status) {
+            $row=(object)['id'=>1,'player_id'=>10,'status'=>'completed','is_signed'=>true,
+                'final_statement'=>json_encode(['overall_decision'=>$decision]),
+                'result_json'=>json_encode(['next_assessment_date'=>'2027-03-10'])];
+            $data=$projector->fromRecord($row);
+            self::assertSame($status, $data->pcma_status);
+            self::assertSame('2027-03-10', $data->next_assessment_date);
+        }
+        $row->final_statement=null; $row->result_json=null; $row->status='approved';
+        $data=$projector->fromRecord($row);
+        self::assertNull($data->medical_decision);
+        self::assertNull($data->pcma_status);
+        self::assertNull($data->next_assessment_date);
+        $row->final_statement=['cleared_for_competition'=>true,'not_cleared'=>true];
+        self::assertNull($projector->fromRecord($row)->medical_decision);
+        $row->final_statement=['cleared_with_restrictions'=>true];
+        self::assertSame('CONDITIONAL', $projector->fromRecord($row)->medical_decision);
+    }
     public function test_edit_cannot_forge_a_medical_signature(): void
     {
         $pcma = $this->record();

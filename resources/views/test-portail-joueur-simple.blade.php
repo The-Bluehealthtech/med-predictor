@@ -1827,7 +1827,7 @@ render();
                                 @php
                                     $pcmaColor = match ($playerPcma->pcma_status) {
                                     'cleared', 'approved' => '#51cf66',
-                                    'pending' => '#ffd700',
+                                    'pending', 'conditional' => '#ffd700',
                                     'completed' => '#4dabf7',
                                     'not_cleared', 'failed', 'rejected' => '#ff6b6b',
                                     default => '#6c757d',
@@ -1839,11 +1839,12 @@ render();
                                 $pcmaText = !$playerPcma->is_signed
                                     ? __('Évaluation non signée')
                                     : match ($playerPcma->pcma_status) {
-                                    'cleared' => '✅ APTE',
+                                    'cleared' => '✅ ' . __('pcma_workflow.decision_fit'),
+                                    'conditional' => '⚠️ ' . __('pcma_workflow.decision_conditional'),
                                     'approved' => '✅ APPROUVÉ',
                                     'pending' => '⏳ EN ATTENTE',
                                     'completed' => 'ℹ️ TERMINÉ',
-                                    'not_cleared' => '❌ NON APTE',
+                                    'not_cleared' => '❌ ' . __('pcma_workflow.decision_not_fit'),
                                     'failed' => '❌ ÉCHEC',
                                     'rejected' => '❌ REJETÉ',
                                     null => __('Données non disponibles'),
@@ -1851,6 +1852,15 @@ render();
                                 };
                                 @endphp
                                 <span class="fifa-stat-value positive" style="color: {{ $pcmaColor }};">{{ $pcmaText }}</span>
+                            </div>
+                            <div class="fifa-stat-header">
+                                <span>{{ __('pcma_workflow.medical_decision') }}</span>
+                                <span class="fifa-stat-value">{{ match ($playerPcma->medical_decision) {
+                                    'FIT' => __('pcma_workflow.decision_fit'),
+                                    'NOT_FIT' => __('pcma_workflow.decision_not_fit'),
+                                    'CONDITIONAL' => __('pcma_workflow.decision_conditional'),
+                                    default => '—',
+                                } }}</span>
                             </div>
                             <div class="fifa-stat-header">
                                 <span>{{ __('Score Global PCMA') }}</span>

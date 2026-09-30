@@ -22,6 +22,8 @@ class DeployFit extends Command
 
     protected $signature = 'fit:deploy
         {--days=30 : FIT metric lookback window in days}
+        {--schema-only : Apply required schema without imports or snapshots}
+        {--refresh-only : Refresh data after successful schema preparation}
         {--demo-data : Populate repeatable demonstration fixtures}
         {--strict-snapshots : Fail if FIT snapshot generation reports an error}';
 
@@ -29,6 +31,11 @@ class DeployFit extends Command
 
     public function handle(): int
     {
+        if ($this->option('schema-only') && $this->option('refresh-only')) {
+            $this->error('Choose either schema-only or refresh-only.');
+            return self::FAILURE;
+        }
+
         $days = filter_var(
             $this->option('days'),
             FILTER_VALIDATE_INT,
@@ -54,15 +61,20 @@ class DeployFit extends Command
         try {
             $this->info("FIT deployment lock acquired ({$driver}).");
 
-            $migrationExitCode = $this->call('migrate', [
-                '--force' => true,
-                '--path' => self::MIGRATIONS,
-            ]);
-
-            if ($migrationExitCode !== self::SUCCESS) {
-                $this->error('FIT migrations failed.');
-
-                return self::FAILURE;
+            if (!$this->option('refresh-only')) {
+                $this->info('Applying required schema migrations...');
+                $migrationExitCode = $this->call('migrate', [
+                    '--force' => true,
+                    '--path' => self::MIGRATIONS,
+                ]);
+                if ($migrationExitCode !== self::SUCCESS) {
+                    $this->error('FIT migrations failed.');
+                    return self::FAILURE;
+                }
+            }
+            if ($this->option('schema-only')) {
+                $this->info('FIT schema preparation completed.');
+                return self::SUCCESS;
             }
 
             $catalogueCount = app(\App\Services\MedicationCatalogue::class)->import();

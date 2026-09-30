@@ -780,4 +780,25 @@ final class PcmaWorkflowRepairTest extends TestCase
         self::assertContains('database/migrations/2026_10_01_000001_add_icd11_and_aut_to_health_records.php',
             $command->getConstant('MIGRATIONS'));
     }
+    public function test_schema_only_does_not_run_imports_or_snapshots(): void
+    {
+        $command=$this->getMockBuilder(\App\Console\Commands\DeployFit::class)
+            ->onlyMethods(['call'])->getMock();
+        $command->setLaravel($this->app);
+        $command->expects(self::once())->method('call')->with('migrate',self::callback(
+            fn($a)=>$a['--force']===true && in_array('database/migrations/2026_10_01_000001_add_icd11_and_aut_to_health_records.php',$a['--path'],true)
+        ))->willReturn(0);
+        $result=$command->run(new \Symfony\Component\Console\Input\ArrayInput(['--schema-only'=>true]),
+            new \Symfony\Component\Console\Output\BufferedOutput());
+        self::assertSame(0,$result);
+    }
+    public function test_aut_schema_retry_preserves_existing_rows(): void
+    {
+        $this->autSchema();
+        DB::table('tue_requests')->insert(['physician_id'=>1,'request_date'=>'2026-09-30','status'=>'pending']);
+        $migration=require dirname(__DIR__,2).'/database/migrations/2026_10_01_000001_add_icd11_and_aut_to_health_records.php';
+        $migration->up();
+        self::assertSame(1,DB::table('tue_requests')->count());
+        self::assertTrue(Schema::hasColumn('health_records','icd11_diagnoses'));
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -92,19 +93,57 @@ return new class extends Migration
      * (INSERT avec player_id inexistant dans players rejeté par SQLite,
      * PRAGMA foreign_keys=ON). Voir le rapport pour le détail.
      *
-     * NON EXÉCUTÉE sur votre base réelle : comme toutes les migrations de ce
-     * mandat, cette proposition attend votre validation avant
-     * `php artisan migrate` (RÈGLE globale : aucune modification d'une
-     * table ou contrainte existante sans accord écrit).
+     * EXÉCUTÉE sur votre base réelle locale (SQLite) le 30/09, avec succès et
+     * vérification bit-à-bit (voir docs/role-evaluation/06-implementation-
+     * moteur-calcul.md).
+     *
+     * BRANCHE POSTGRESQL/MYSQL ajoutée le 30/09 en vue du déploiement Render
+     * (base PostgreSQL) : sur ces moteurs, Schema::dropForeign()/foreign()
+     * fonctionnent nativement (c'est UNIQUEMENT SQLite qui refuse
+     * dropForeign(), d'où la reconstruction manuelle ci-dessous, conservée
+     * intacte pour ce driver). Le nom de contrainte par défaut
+     * "player_match_detailed_stats_player_id_foreign" est déduit par
+     * Laravel à partir de la colonne, pas de la table cible : vérifié en
+     * relisant la migration de création d'origine
+     * (2025_08_12_000005_create_player_match_detailed_stats_table.php,
+     * `$table->foreignId('player_id')->constrained('joueurs')` — pas de
+     * nom personnalisé), donc dropForeign(['player_id']) doit retrouver la
+     * même contrainte quel que soit le moteur.
+     *
+     * IMPORTANT — non vérifié par exécution réelle : contrairement à la
+     * branche SQLite (validée sur une copie jetable de la vraie base
+     * locale), cette branche PostgreSQL n'a PAS pu être testée sur une
+     * copie de la vraie base Render (aucun accès depuis cette session).
+     * Elle repose sur l'analyse ci-dessus et sur le comportement standard
+     * documenté de Laravel/PostgreSQL, pas sur une exécution constatée.
+     * À exécuter sur Render avec une sauvegarde préalable de la base.
      */
     public function up(): void
     {
-        $this->rebuildForeignKey(from: 'joueurs', to: 'players');
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            $this->rebuildForeignKey(from: 'joueurs', to: 'players');
+
+            return;
+        }
+
+        Schema::table('player_match_detailed_stats', function (Blueprint $table) {
+            $table->dropForeign(['player_id']);
+            $table->foreign('player_id')->references('id')->on('players')->cascadeOnDelete();
+        });
     }
 
     public function down(): void
     {
-        $this->rebuildForeignKey(from: 'players', to: 'joueurs');
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            $this->rebuildForeignKey(from: 'players', to: 'joueurs');
+
+            return;
+        }
+
+        Schema::table('player_match_detailed_stats', function (Blueprint $table) {
+            $table->dropForeign(['player_id']);
+            $table->foreign('player_id')->references('id')->on('joueurs')->cascadeOnDelete();
+        });
     }
 
     private function rebuildForeignKey(string $from, string $to): void

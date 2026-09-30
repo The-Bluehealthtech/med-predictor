@@ -57,7 +57,7 @@ Documentée dans la proposition avant d'écrire le code, confirmée par l'implé
 
 ## Ce que je n'ai pas pu vérifier
 
-- Le comportement de ce moteur sur MySQL/PostgreSQL (développé et validé uniquement sur SQLite, comme le reste du mandat).
+- ~~Le comportement de ce moteur sur PostgreSQL~~ : validé le 30/09, en vue du déploiement Render — historique complet des migrations rejoué sur un vrai serveur PostgreSQL 16, y compris la branche PostgreSQL ajoutée à la migration du correctif FK (cycle up/down/up vérifié), puis les 71 tests du domaine (3034 assertions) exécutés avec succès contre cette base. Le comportement sur MySQL reste, lui, non vérifié (non utilisé par vos environnements actuels à ma connaissance).
 - Le comportement à l'échelle de votre volumétrie réelle (des centaines ou milliers de joueurs) — seule une échelle de démonstration (440 joueurs) a été testée.
 - L'exactitude sportive des résultats : impossible à juger sans vraies données ni expertise football, et de toute façon hors de portée tant que seuls des poids arbitraires existent (règle du mandat).
 

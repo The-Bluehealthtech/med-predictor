@@ -53,6 +53,8 @@ final class RepairedRouteActionsTest extends TestCase
 
     public function test_all_registered_controller_actions_exist(): void
     {
+        // Charger aussi les routes web actives, absentes du bootstrap de test léger.
+        Route::middleware('web')->group(base_path('routes/web.php'));
         foreach (Route::getRoutes() as $route) {
             $action = $route->getActionName();
             if (!str_contains($action, '@')) continue;

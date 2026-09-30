@@ -2385,50 +2385,7 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
     })->name('pcma.dashboard');
     
     // PCMA Create route (SPECIFIC ROUTE)
-    Route::get('/pcma/create', function () {
-        $athletes = collect([]);
-        $users = collect([]);
-        
-        // Try to get actual players if model exists
-        try {
-            if (class_exists('\App\Models\Player')) {
-                $athletes = \App\Models\Player::with('club')->orderBy('first_name')->get();
-            }
-        } catch (\Exception $e) {
-            // Player model might not exist or table is missing
-        }
-        
-        // Try to get actual users if model exists
-        try {
-            if (class_exists('\App\Models\User')) {
-                $users = \App\Models\User::orderBy('name')->get();
-            }
-        } catch (\Exception $e) {
-            // User model might not exist or table is missing
-        }
-        
-        // If no athletes found, create test data
-        if ($athletes->isEmpty()) {
-            $athletes = collect([
-                (object)['id' => 1, 'first_name' => 'Test', 'last_name' => 'Player 1', 'club_id' => 1],
-                (object)['id' => 2, 'first_name' => 'Test', 'last_name' => 'Player 2', 'club_id' => 1],
-                (object)['id' => 3, 'first_name' => 'Test', 'last_name' => 'Player 3', 'club_id' => 2],
-            ]);
-        }
-        
-        // If no users found, create test data
-        if ($users->isEmpty()) {
-            $users = collect([
-                (object)['id' => 1, 'name' => 'Test Assessor 1', 'email' => 'assessor1@test.com'],
-                (object)['id' => 2, 'name' => 'Test Assessor 2', 'email' => 'assessor2@test.com'],
-            ]);
-        }
-        
-        return view('pcma.create', [
-            'athletes' => $athletes,
-            'users' => $users
-        ]);
-    })->name('pcma.create');
+    Route::get('/pcma/create', [\App\Http\Controllers\PCMAController::class, 'create'])->name('pcma.create');
     
 
     

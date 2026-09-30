@@ -320,3 +320,17 @@ Cet audit initial conserve ses 147 chemins GET et 38 requêtes mutantes en erreu
 - `/dashboard-test` : un 500 transitoire introduit par la traduction Blade a été corrigé dans `7390e65` ; contrôle HTTP authentifié en ligne : 200 en français et en anglais.
 - `/match-sheet` : l'ancien contrôleur renvoyait des collections vides malgré les lignes en base. Il lit désormais les feuilles et matchs avec restriction par rôle et périmètre. Contrôle en ligne administrateur : 24 feuilles, 10 matchs récents, détail `/match-sheet/24` accessible (200).
 - Les 24 rencontres et 48 événements de but proviennent du seeder idempotent `FitDemoFixturesSeeder` exécuté au démarrage Render. Ils sont des données de démonstration et leurs feuilles restent non signées.
+
+## Healthcare — vérification du 30 septembre 2026
+
+Vérification du code au commit 3ebcdfd. Aucun correctif métier effectué.
+- `/healthcare/predictions` : rendu local reproduit en erreur `Undefined variable $predictions` ; la route ne fournit aucune donnée à la vue. À corriger. Pas de confirmation d'une 500 en session de production.
+- `/healthcare/export` : vue `modules.healthcare.export` inexistante, route toujours active. À corriger. Pas de confirmation d'une 500 en session de production.
+- `/modules/healthcare` et `/healthcare` : liste issue de health_records, avec restriction explicite de rôle et de club/association.
+- `/healthcare/records/{record}` et `/edit` : routes transmettant seulement l'identifiant à des vues contenant Patient Example, date 2024-08-01 et risque 45 %. Le dossier demandé n'est pas chargé.
+- PUT et DELETE `/healthcare/records/{record}` : redirections avec message de succès, sans écriture/suppression en base. Le formulaire de modification utilise action="#".
+- `HealthRecordController` : absence de contrôle médical et de propriétaire explicite sur les opérations ; les routes utilisent auth et le modèle un scope de tenant. L'isolation médicale par club reste à tester et corriger, sans conclure à une fuite déjà observée.
+- Prédictions : génération automatique à l'enregistrement par règles fixes (risque de base 0.1 + 0.15 par facteur, confiance selon champs présents), présentées avec ai_model_version 1.0 ; aucun modèle validé identifié dans ce parcours. Une absence de facteurs produit État de santé normal, y compris en l'absence de mesures.
+- HealthRecord et PCMA utilisent la connexion Eloquent par défaut ; le portail lit health_records et pcmas par player_id sur la connexion DB par défaut. Tables distinctes, lien existant depuis HealthRecordController::show vers les PCMA du joueur. CIM-11 PCMA stockée dans pcmas.result_json, sans copie automatique vers health_records.
+- Contrôles production sans session : huit GET (module, liste, création, détail, modification, prédictions, export) retournent 401. Ces réponses vérifient l'authentification et ne prouvent pas le rendu après connexion.
+- Vues Healthcare partiellement non traduites ; risque nul confondu avec donnée absente dans la liste et date non protégée contre null.

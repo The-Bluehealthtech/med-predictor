@@ -730,6 +730,61 @@
                     <p>{{ __('Aucune évaluation de performance enregistrée.') }}</p>
                 @endif
             </div>
+
+            <div id="role-evaluation-cockpit" class="fifa-medical-card">
+                <h4>{{ __('🎯 Rôle et apport') }}</h4>
+                @php
+                    $roleEval = $roleEvaluationCockpit ?? ['hasEvaluation' => false];
+                @endphp
+                @if($roleEval['hasEvaluation'])
+                    @if($roleEval['isDemo'])
+                        <p>{{ __('Données de démonstration') }}</p>
+                    @endif
+                    <div class="fifa-medical-stat">
+                        <div class="fifa-stat-header">
+                            <span>{{ __('Famille de poste évaluée') }}</span>
+                            <span class="fifa-stat-value">{{ $roleEval['played']->position_family_evaluated }}</span>
+                        </div>
+                        <div class="fifa-stat-header">
+                            <span>{{ __('Score') }}</span>
+                            <span class="fifa-stat-value">{{ number_format((float) $roleEval['played']->score, 1) }}</span>
+                        </div>
+                        @if($roleEval['played']->reliability !== null)
+                            <div class="fifa-stat-header">
+                                <span>{{ __('Fiabilité') }}</span>
+                                <span class="fifa-stat-value">{{ number_format((float) $roleEval['played']->reliability * 100, 0) }}%</span>
+                            </div>
+                        @endif
+                        @if($roleEval['played']->interval_low !== null && $roleEval['played']->interval_high !== null)
+                            <div class="fifa-stat-header">
+                                <span>{{ __('Intervalle (80%)') }}</span>
+                                <span class="fifa-stat-value">{{ number_format((float) $roleEval['played']->interval_low, 1) }} – {{ number_format((float) $roleEval['played']->interval_high, 1) }}</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    @if($roleEval['comparisons']->isNotEmpty())
+                        <h5 class="font-semibold mb-2">{{ __('Adéquation aux familles voisines') }}</h5>
+                        <div class="fifa-medical-stat">
+                            @foreach($roleEval['comparisons'] as $comparison)
+                                <div class="fifa-stat-header">
+                                    <span>{{ $comparison->position_family_evaluated }}</span>
+                                    <span class="fifa-stat-value">{{ (float) $comparison->role_fit_score > 0 ? '+' : '' }}{{ number_format((float) $comparison->role_fit_score, 1) }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <p>
+                        {{ __('Calculé le :date', ['date' => \Carbon\Carbon::parse($roleEval['computedAt'])->format('d/m/Y H:i')]) }}
+                        @if($roleEval['configLabel'])
+                            &middot; {{ $roleEval['configLabel'] }}@if($roleEval['configStatus'] === 'draft') ({{ __('brouillon') }})@endif
+                        @endif
+                    </p>
+                @else
+                    <p>{{ __("Aucune évaluation rôle et apport disponible pour ce joueur.") }}</p>
+                @endif
+            </div>
         </div>
 
         <div id="match-stats-sub-tab" class="fifa-sub-tab-content">

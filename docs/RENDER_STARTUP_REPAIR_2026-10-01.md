@@ -25,3 +25,5 @@ Syntaxes PHP, shell et git diff --check réussies.
 ## Limites
 Pas de session Render permettant de lire les verrous de la base réelle ou l'état du déploiement.
 L'état Live et le fonctionnement médical authentifié en production restent à confirmer.
+
+Validation après conservation des nouveaux changements de cockpit (92afa8b et 2c54d88) : 72 tests / 556 assertions réussis, incluant PerformanceScoreCalculatorTest. Aucun conflit de fusion.

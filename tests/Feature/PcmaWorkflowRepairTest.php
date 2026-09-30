@@ -580,4 +580,18 @@ final class PcmaWorkflowRepairTest extends TestCase
         }
         $this->getJson('/health-records/create?player_id=20')->assertNotFound();
     }
+    public function test_healthcare_record_with_structured_medications_and_codes_renders(): void
+    {
+        $this->withoutExceptionHandling();
+        $this->healthcareSchema();$record=$this->healthRecord();
+        $record->update([
+            'allergies'=>[['code'=>'fixture-code','label'=>'Fixture allergy']],
+            'medications'=>[['name'=>'Fixture medication','dose'=>'Fixture dose']],
+            'icd_10_codes'=>[['code'=>'fixture-code','label'=>'Fixture label']],
+            'snomed_ct_codes'=>['fixture-string',null],
+            'loinc_codes'=>[['code'=>'fixture-loinc']],
+        ]);
+        $this->record();
+        $this->get('/health-records/'.$record->id)->assertOk()->assertSee('Fixture medication');
+    }
 }

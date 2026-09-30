@@ -300,9 +300,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="mt-6">
                                 <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.allergies_label') }}</label>
                                 <div class="mt-1 flex flex-wrap gap-2">
-                                    @foreach($healthRecord->allergies as $allergy)
+                                    @foreach(is_array($healthRecord->allergies) ? $healthRecord->allergies : [$healthRecord->allergies] as $allergy)
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                            {{ $allergy }}
+                                            {{ is_array($allergy) ? json_encode($allergy, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_INVALID_UTF8_SUBSTITUTE) : ($allergy ?? '—') }}
                                         </span>
                                     @endforeach
                                 </div>
@@ -313,9 +313,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="mt-6">
                                 <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.medications_label') }}</label>
                                 <div class="mt-1 flex flex-wrap gap-2">
-                                    @foreach($healthRecord->medications as $medication)
+                                    @foreach(is_array($healthRecord->medications) ? $healthRecord->medications : [$healthRecord->medications] as $medication)
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            {{ $medication }}
+                                            {{ is_array($medication) ? json_encode($medication, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_INVALID_UTF8_SUBSTITUTE) : ($medication ?? '—') }}
                                         </span>
                                     @endforeach
                                 </div>
@@ -352,11 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                     </div>
                     <div class="p-6">
-                            @php
-                                $pcmas = \App\Models\PCMA::where('player_id', $healthRecord->player_id)
-                                    ->orderBy('assessment_date', 'desc')
-                                    ->get();
-                            @endphp
+                            @php($pcmas = $pcmaRecords)
                             
                             @if($pcmas->count() > 0)
                         <div class="space-y-4">
@@ -434,9 +430,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div>
                             <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.icd10_label') }}</label>
                             <div class="mt-1 flex flex-wrap gap-2">
-                                @foreach($healthRecord->icd_10_codes as $code)
+                                @foreach(is_array($healthRecord->icd_10_codes) ? $healthRecord->icd_10_codes : [$healthRecord->icd_10_codes] as $code)
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        {{ $code }}
+                                        {{ is_array($code) ? json_encode($code, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_INVALID_UTF8_SUBSTITUTE) : ($code ?? '—') }}
                                     </span>
                                 @endforeach
                             </div>
@@ -447,9 +443,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div>
                                         <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.snomed_label') }}</label>
                             <div class="mt-1 flex flex-wrap gap-2">
-                                @foreach($healthRecord->snomed_ct_codes as $code)
+                                @foreach(is_array($healthRecord->snomed_ct_codes) ? $healthRecord->snomed_ct_codes : [$healthRecord->snomed_ct_codes] as $code)
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                        {{ $code }}
+                                        {{ is_array($code) ? json_encode($code, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_INVALID_UTF8_SUBSTITUTE) : ($code ?? '—') }}
                                     </span>
                                 @endforeach
                             </div>
@@ -460,9 +456,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div>
                             <label class="block text-sm font-medium text-gray-700">{{ __('health_records.show_page.loinc_label') }}</label>
                             <div class="mt-1 flex flex-wrap gap-2">
-                                @foreach($healthRecord->loinc_codes as $code)
+                                @foreach(is_array($healthRecord->loinc_codes) ? $healthRecord->loinc_codes : [$healthRecord->loinc_codes] as $code)
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                        {{ $code }}
+                                        {{ is_array($code) ? json_encode($code, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_INVALID_UTF8_SUBSTITUTE) : ($code ?? '—') }}
                                     </span>
                                 @endforeach
                             </div>

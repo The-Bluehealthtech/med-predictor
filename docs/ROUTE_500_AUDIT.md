@@ -342,3 +342,11 @@ Vérification du code au commit 3ebcdfd. Aucun correctif métier effectué.
 - `/health-records/create`, `/health-records`, `/health-records/{healthRecord}` et `/edit` : contrôles médicaux ajoutés, erreurs Blade et quatre liens vers routes IA corrigés ; pages testées avec listes JSON et dates absentes.
 - Rapports CDA : deux routes manquantes de lecture/téléchargement rétablies et contrôlées ; nouveaux fichiers privés. Les anciens fichiers publics ne sont pas migrés.
 - 51 tests et 397 assertions réussis sur le périmètre PCMA/Healthcare/portail. Aucun test clinique destructif en production. Détails et limites : HEALTHCARE_REPAIR_2026-09-30.md.
+
+### Healthcare — fiche 237 signalée le 30 septembre
+
+- L'utilisateur signale une 500 en production sur `/health-records/237`.
+- Reproduction locale dans la même vue avec médicaments/allergies/codes structurés : `htmlspecialchars(): array given`. Les tests précédents couvraient des listes de chaînes, pas des objets structurés.
+- Correction : sérialiser les valeurs structurées avant l'échappement HTML, préserver les chaînes et les valeurs manquantes, gérer aussi une valeur scalaire à la place d'une liste. Les PCMA sont désormais pris dans la collection déjà chargée par le contrôleur.
+- Nouveau test de rendu avec listes mixtes, codes structurés et PCMA présent ; 52 tests et 399 assertions réussis.
+- Aucun accès au contenu clinique du dossier 237, aucune modification de cette ligne. La cause exacte et le rendu de cette fiche en production restent à confirmer dans la session 2Key.

@@ -1,0 +1,24 @@
+{
+  "type": "participations",
+  "source_label": "Exemple fournisseur (fichier de démonstration du Livrable 2)",
+  "csv": { "delimiter": ",", "has_header": true },
+  "not_available_tokens": ["Données non disponibles", "N/A", "NA", ""],
+  "resolve": {
+    "match": {
+      "mode": "teams_and_date",
+      "home_team_column": "equipe_domicile",
+      "away_team_column": "equipe_exterieur",
+      "date_column": "date_match"
+    },
+    "player": { "mode": "fifa_connect_id", "column": "joueur_fifa_id" },
+    "team": { "mode": "name", "column": "equipe_joueur" }
+  },
+  "columns": [
+    { "source": "poste_detaille", "target": "detailed_position", "kind": "position_code" },
+    { "source": "titulaire", "target": "is_starter", "kind": "boolean" },
+    { "source": "minute_entree", "target": "minute_in", "kind": "minutes" },
+    { "source": "minute_sortie", "target": "minute_out", "kind": "minutes" },
+    { "source": "numero_maillot", "target": "jersey_number", "kind": "count" }
+  ],
+  "attempt_success_pairs": []
+}

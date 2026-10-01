@@ -336,6 +336,10 @@ class HealthRecordController extends Controller
     public function update(Request $request, HealthRecord $healthRecord): RedirectResponse
     {
         $this->authorizeRecord($healthRecord);
+
+        if ($request->input('workflow') === 'visit' && $request->filled('visit_date')) {
+            $request->merge(['record_date' => $request->input('visit_date')]);
+        }
         $this->normalizeLists($request);
         $sections = app(\App\Services\HealthRecordSections::class)->prepare($request);
         abort_if($request->has('player_id') && (int)$request->player_id !== (int)$healthRecord->player_id,422,'Le joueur du dossier ne peut pas être remplacé.');

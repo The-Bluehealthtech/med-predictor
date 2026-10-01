@@ -6,7 +6,7 @@
 <div class="container mx-auto px-4 py-8 max-w-6xl">
     <div class="mb-6 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         <div>
-            <a href="{{ route('health-records.index') }}" class="text-sm text-blue-600 hover:text-blue-800">← Dossiers médicaux</a>
+            <a href="{{ route('health-records.index') }}" class="text-sm text-blue-600 hover:text-blue-800">← Poste de travail médical</a>
             <h1 class="text-3xl font-bold text-gray-900 mt-2">Nouvelle visite médicale</h1>
             <p class="text-gray-600 mt-1">Documentez la consultation du jour. Les examens spécialisés peuvent être ajoutés ensuite si nécessaire.</p>
         </div>
@@ -20,6 +20,53 @@
         @csrf
         <input type="hidden" name="workflow" value="visit">
         @if(request('visit_id'))<input type="hidden" name="visit_id" value="{{ request('visit_id') }}">@endif
+
+        @if($visit)
+            @php
+                $preIntake = data_get($visit->administrative_data, 'pre_intake', []);
+            @endphp
+            <section class="bg-amber-50/60 border border-amber-200 rounded-2xl overflow-hidden">
+                <div class="px-5 py-4 border-b border-amber-200 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <div>
+                        <div class="text-xs uppercase tracking-wide font-semibold text-amber-700">Transmission du secrétariat</div>
+                        <h2 class="font-semibold text-slate-900 mt-1">Pré-accueil terminé</h2>
+                    </div>
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white text-amber-800 border border-amber-200">
+                        À confirmer médicalement
+                    </span>
+                </div>
+                <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <div class="text-xs uppercase tracking-wide font-semibold text-slate-400">Motif confirmé</div>
+                        <div class="mt-1 text-slate-800">{{ data_get($preIntake,'reason_confirmed') ?: $visit->appointment?->reason ?: 'Non précisé' }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs uppercase tracking-wide font-semibold text-slate-400">Symptômes rapportés</div>
+                        <div class="mt-1 text-slate-800">{{ data_get($preIntake,'symptoms_summary') ?: 'Non renseignés' }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs uppercase tracking-wide font-semibold text-slate-400">Allergies déclarées</div>
+                        <div class="mt-1 text-slate-800">{{ data_get($preIntake,'patient_reported_allergies') ?: 'Non renseignées' }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs uppercase tracking-wide font-semibold text-slate-400">Traitements déclarés</div>
+                        <div class="mt-1 text-slate-800">{{ data_get($preIntake,'patient_reported_medications') ?: 'Non renseignés' }}</div>
+                    </div>
+                </div>
+                @if($visit->documents->count())
+                    <div class="px-5 py-4 border-t border-amber-200 bg-white/60">
+                        <div class="text-xs uppercase tracking-wide font-semibold text-slate-400 mb-2">Documents reçus à l’accueil</div>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($visit->documents as $document)
+                                <span class="inline-flex px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-xs text-slate-700">
+                                    {{ $document->file_name }}
+                                </span>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </section>
+        @endif
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="px-6 py-4 border-b bg-slate-50">

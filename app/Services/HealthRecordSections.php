@@ -28,6 +28,7 @@ final class HealthRecordSections
             $rules['section_source.'.$section]=in_array($section,['biological','laboratory'],true)?'required|string|max:1000':'nullable|string|max:1000';
             $rules['section_values.'.$section]='nullable|array';
             foreach($def['fields'] as $field=>$type) {
+                $control = config('medical_sections.ui.'.$section.'.controls.'.$field.'.type');
                 $rules[$field]=match($type) {
                     'number'=>'nullable|numeric','nonnegative_integer'=>'nullable|integer|min:0',
                     'symptom'=>'nullable|integer|min:0|max:6',
@@ -37,13 +38,17 @@ final class HealthRecordSections
                     default=>'nullable|string|max:60000',
                 };
                 if ($type==='list') $rules[$field.'.*']='nullable|string|max:1000';
-                // normalizeLists a déjà converti les anciens JSON : accepter ces tableaux.
                 if ($type==='text' && is_array($request->input($field))) $rules[$field]='nullable|array';
                 if ($type==='json' && is_array($request->input($field))) $rules[$field]='nullable|array';
-                $rules['section_values.'.$section.'.'.$field]=$rules[$field];
-                if($type==='list') {
-                    // Le formulaire simplifié fournit une entrée par ligne.
-                    $rules['section_values.'.$section.'.'.$field]='nullable|string|max:60000';
+
+                if ($control === 'multiselect') {
+                    $rules['section_values.'.$section.'.'.$field]='nullable|array|max:50';
+                    $rules['section_values.'.$section.'.'.$field.'.*']='nullable|string|max:1000';
+                } else {
+                    $rules['section_values.'.$section.'.'.$field]=$rules[$field];
+                    if($type==='list') {
+                        $rules['section_values.'.$section.'.'.$field]='nullable|string|max:60000';
+                    }
                 }
             }
             if(in_array($section,['biological','laboratory'],true)) {

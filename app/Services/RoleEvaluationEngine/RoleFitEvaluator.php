@@ -82,7 +82,7 @@ final class RoleFitEvaluator
                 continue; // fiabilité insuffisante ou aucun indicateur exploitable : pas de ligne
             }
 
-            $rows[] = $this->toRow($playerId, $played['famille'], $played, roleFitScore: 0.0, includeDimensions: true);
+            $rows[] = $this->toRow($playerId, $played['famille'], $played, roleFitScore: 0.0, dimensionsCfg: $cfg);
 
             if ($played['famille'] === 'goalkeeper') {
                 continue; // jamais de comparaison transversale pour les gardiens
@@ -158,7 +158,7 @@ final class RoleFitEvaluator
         return $score === null ? null : (float) $score;
     }
 
-    private function toRow(int $playerId, string $englishFamily, array $result, float $roleFitScore, bool $includeDimensions = false): array
+    private function toRow(int $playerId, string $englishFamily, array $result, float $roleFitScore, ?array $dimensionsCfg = null): array
     {
         return [
             'player_id' => $playerId,
@@ -171,7 +171,7 @@ final class RoleFitEvaluator
             'interval_low' => $result['intervalle_80'][0] ?? null,
             'interval_high' => $result['intervalle_80'][1] ?? null,
             'role_fit_score' => $roleFitScore,
-            'dimension_breakdown' => $includeDimensions ? $this->dimensionBreakdown($result) : null,
+            'dimension_breakdown' => $dimensionsCfg !== null ? $this->dimensionBreakdown($result, $dimensionsCfg) : null,
         ];
     }
 
@@ -180,8 +180,15 @@ final class RoleFitEvaluator
      * 2026_10_01_090000. N'appelle rien de nouveau dans
      * PerformanceScoreCalculator : ne relit que $result['dimensions'],
      * déjà calculé et déjà renvoyé par calculate()/finalize().
+     *
+     * calculate() ne renvoie pas le z par dimension (il reste interne à
+     * scorePlayer() et finalize() le retire) mais son score 0-100, soit
+     * score_center + score_scale × z borné à [0, 100]. Le z est donc
+     * retrouvé par l'opération inverse, avec la même configuration que le
+     * calculateur ; exact sauf aux bornes (|z| > 3,33), bien au-delà du
+     * ±2,5 auquel le radar le borne de toute façon.
      */
-    private function dimensionBreakdown(array $result): ?string
+    private function dimensionBreakdown(array $result, array $cfg): ?string
     {
         if (!isset($result['dimensions']) || !is_array($result['dimensions']) || $result['dimensions'] === []) {
             return null;
@@ -190,7 +197,9 @@ final class RoleFitEvaluator
         $breakdown = [];
         foreach ($result['dimensions'] as $dimensionKey => $dimension) {
             $breakdown[$dimensionKey] = [
-                'z' => isset($dimension['z']) ? round((float) $dimension['z'], 3) : null,
+                'z' => isset($dimension['score'])
+                    ? round(((float) $dimension['score'] - $cfg['score_center']) / $cfg['score_scale'], 3)
+                    : null,
                 'fiabilite' => isset($dimension['fiabilite']) ? round((float) $dimension['fiabilite'], 2) : null,
             ];
         }

@@ -1,127 +1,92 @@
 @extends('layouts.app')
 
-@section('title', __('healthcare.records_page_title'))
+@section('title', 'Dossiers médicaux - Med Predictor')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-8">
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">🏥 {{ __('healthcare.records_title') }}</h1>
-            <p class="text-gray-600 mt-2">{{ __('healthcare.management_subtitle') }}</p>
+            <h1 class="text-3xl font-bold text-gray-900">Dossiers médicaux</h1>
+            <p class="text-gray-600 mt-2">Un dossier par joueur. Les consultations restent distinctes dans la chronologie.</p>
         </div>
-        <a href="{{ route('medical-aut.choose') }}" class="bg-blue-600 text-white rounded-lg py-2 px-4">{{ __('medical_aut.title') }}</a>
-        <a href="{{ route('health-records.create') }}" 
-           class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-            {{ __('healthcare.new_record_button') }}
-        </a>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('medical-aut.choose') }}" class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700">AUT</a>
+            <a href="{{ route('health-records.create') }}"
+               class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+                + Nouvelle visite
+            </a>
+        </div>
     </div>
 
     @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">
             {{ session('success') }}
         </div>
     @endif
 
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-800">{{ __('healthcare.records_list') }}</h2>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b bg-slate-50">
+            <h2 class="font-semibold text-gray-900">Patients suivis</h2>
         </div>
-        
-        @if($healthRecords->count() > 0)
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('healthcare.patient') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('healthcare.date') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('healthcare.status') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('healthcare.risk') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('healthcare.predictions') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('healthcare.actions') }}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($healthRecords as $record)
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                                <span class="text-blue-600 font-semibold">
-                                                    {{ $record->player ? substr($record->player->first_name, 0, 1) . substr($record->player->last_name, 0, 1) : __('healthcare.na') }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">
-                                                {{ $record->player ? $record->player->full_name : __('healthcare.anonymous_patient') }}
-                                            </div>
-                                            <div class="text-sm text-gray-500">
-                                                {{ $record->user ? $record->user->name : __('healthcare.na') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $record->record_date ? $record->record_date->format('d/m/Y') : __('healthcare.na') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                                        {{ $record->status === 'active' ? 'bg-green-100 text-green-800' : 
-                                           ($record->status === 'archived' ? 'bg-gray-100 text-gray-800' : 'bg-yellow-100 text-yellow-800') }}">
-                                        {{ __('healthcare.status_' . $record->status) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span title="{{ __('healthcare_repair.unvalidated') }}">{{ __('healthcare.na') }}</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $record->predictions ? $record->predictions->count() : 0 }} {{ __('healthcare.prediction_count') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <a href="{{ route('health-records.show', $record) }}" 
-                                           class="text-blue-600 hover:text-blue-900">{{ __('healthcare.view') }}</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+
+        @if($patients->count())
+            <div class="divide-y">
+                @foreach($patients as $player)
+                    @php($latest = $player->latestHealthRecord)
+                    <div class="p-5 grid grid-cols-1 lg:grid-cols-[minmax(240px,1fr)_180px_170px_170px_auto] gap-4 items-center hover:bg-slate-50">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <div class="w-12 h-12 rounded-full bg-blue-50 border flex items-center justify-center overflow-hidden shrink-0">
+                                @if($player->player_picture_url)
+                                    <img src="{{ $player->player_picture_url }}" alt="" class="w-full h-full object-cover">
+                                @else
+                                    <span class="font-semibold text-blue-700">{{ mb_substr($player->full_name ?? $player->name ?? 'P',0,1) }}</span>
+                                @endif
+                            </div>
+                            <div class="min-w-0">
+                                <div class="font-semibold text-gray-900 truncate">{{ $player->full_name ?? $player->name }}</div>
+                                <div class="text-sm text-gray-500 truncate">
+                                    {{ $player->club?->name ?? 'Club non renseigné' }}
+                                    @if($player->position) · {{ $player->position }} @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-xs uppercase tracking-wide text-gray-400">Dernière visite</div>
+                            <div class="text-sm text-gray-800 mt-1">{{ $latest?->visit_date?->format('d/m/Y') ?? $latest?->record_date?->format('d/m/Y') ?? '—' }}</div>
+                        </div>
+
+                        <div>
+                            <div class="text-xs uppercase tracking-wide text-gray-400">Motif</div>
+                            <div class="text-sm text-gray-800 mt-1 line-clamp-2">{{ $latest?->chief_complaint ?: $latest?->diagnosis ?: '—' }}</div>
+                        </div>
+
+                        <div>
+                            <div class="text-xs uppercase tracking-wide text-gray-400">Historique</div>
+                            <div class="text-sm text-gray-800 mt-1">{{ $player->health_records_count }} visite(s)</div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 lg:justify-end">
+                            @if($latest)
+                                <a href="{{ route('health-records.show', $latest) }}" class="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-white">Ouvrir</a>
+                            @endif
+                            <a href="{{ route('health-records.create', ['player_id'=>$player->id]) }}" class="px-3 py-2 rounded-lg bg-blue-600 text-sm text-white font-medium">Nouvelle visite</a>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-            
-            <div class="px-6 py-4 border-t border-gray-200">
-                @if(method_exists($healthRecords, 'links'))
-                    {{ $healthRecords->links() }}
-                @endif
+
+            <div class="px-6 py-4 border-t">
+                {{ $patients->links() }}
             </div>
         @else
-            <div class="px-6 py-12 text-center">
-                <div class="text-gray-400 mb-4">
-                    <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('healthcare.no_records') }}</h3>
-                <p class="text-gray-500 mb-6">{{ __('healthcare.no_records_description') }}</p>
-                <a href="{{ route('health-records.create') }}" 
-                   class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                    {{ __('healthcare.create_first_record') }}
-                </a>
+            <div class="px-6 py-14 text-center">
+                <div class="text-gray-400 text-4xl mb-3">🩺</div>
+                <h3 class="text-lg font-medium text-gray-900">Aucun dossier médical</h3>
+                <p class="text-gray-500 mt-2 mb-5">Commencez par enregistrer une première visite.</p>
+                <a href="{{ route('health-records.create') }}" class="inline-flex px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold">Créer une visite</a>
             </div>
         @endif
     </div>
 </div>
-@endsection 
+@endsection

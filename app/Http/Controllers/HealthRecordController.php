@@ -83,7 +83,7 @@ class HealthRecordController extends Controller
         }
         // Si un visit_id est fourni, récupérer les données de la visite
         if ($request->has('visit_id')) {
-            $visit = \App\Models\Visit::with(['athlete', 'doctor'])->find($request->visit_id);
+            $visit = \App\Models\Visit::with(['athlete.player', 'doctor', 'documents', 'appointment'])->find($request->visit_id);
             abort_unless($visit,404);
             app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),$visit->athlete?->player,$visit->athlete);
         }
@@ -111,7 +111,11 @@ class HealthRecordController extends Controller
             'visit_date' => $appointment ? $appointment->appointment_date->format('Y-m-d') : old('visit_date', date('Y-m-d')),
             'doctor_name' => old('doctor_name', auth()->user()->name ?? ''),
             // Prefer explicit appointment_type from query when no appointment is loaded
-            'visit_type' => $appointment ? $appointment->appointment_type : old('visit_type', $request->get('appointment_type')),
+            'visit_type' => $appointment
+                ? (in_array($appointment->appointment_type, ['consultation','emergency','follow_up','pre_season','post_match','rehabilitation'], true)
+                    ? $appointment->appointment_type
+                    : 'consultation')
+                : old('visit_type', $request->get('appointment_type')),
             // If no selected player, build a name from query params as a non-blocking display default
             'patient_name' => $selectedPlayer ? ($selectedPlayer->full_name ?? $selectedPlayer->name) : old('patient_name', trim(($request->get('first_name') ?? '').' '.($request->get('last_name') ?? '')) ?: null),
             'patient_birth_date' => $selectedPlayer ? $selectedPlayer->date_of_birth : old('patient_birth_date', $request->get('date_of_birth')),

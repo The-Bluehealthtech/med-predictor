@@ -1570,6 +1570,7 @@
                 </div>
             </div>
 
+            @include('health-records.sections-capture',['sectionValues'=>session()->getOldInput()])
             <!-- Boutons de soumission -->
             <div class="flex justify-between items-center pt-6 border-t border-gray-200">
                 <button 
@@ -2090,6 +2091,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     if (dentalDataField) {
                         dentalDataField.value = JSON.stringify(dentalData.value);
+                        dentalDataField.dispatchEvent(new Event('change',{bubbles:true}));
                     }
                     
                     if (selectedToothField && selectedDentalTooth.value) {
@@ -2243,6 +2245,18 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        const selectedFile=document.getElementById('imaging_file')?.files?.[0];
+        if(selectedFile) {
+            let bank=document.getElementById('medical-imaging-file-bank');
+            if(!bank) {
+                bank=document.createElement('input');bank.type='file';bank.multiple=true;
+                bank.hidden=true;bank.id='medical-imaging-file-bank';bank.name='medical_files[imaging][]';
+                document.getElementById('imaging_file').closest('form').appendChild(bank);
+            }
+            const transfer=new DataTransfer();
+            Array.from(bank.files).forEach(file=>transfer.items.add(file));transfer.items.add(selectedFile);
+            bank.files=transfer.files;formData.attachment_name=selectedFile.name;
+        }
         imagingRecords.push(formData);
         updateImagingList();
         updateImagingData();
@@ -2279,31 +2293,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateImagingList() {
-        const list = document.getElementById('imaging-list');
-        if (!list) return;
-        
-        list.innerHTML = '';
-        
-        imagingRecords.forEach((record, index) => {
-            const div = document.createElement('div');
-            div.className = 'flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200';
-            div.innerHTML = `
-                <div class="flex-1">
-                    <div class="font-medium text-gray-800">${getImagingTypeDisplayName(record.imaging_type)}</div>
-                    <div class="text-sm text-gray-600">
-                        Date: ${formatDate(record.imaging_date)} | 
-                        ${record.imaging_facility ? `${HRC_LABELS.cdaThFacility}: ${record.imaging_facility}` : ''}
-                    </div>
-                    <div class="text-xs text-gray-500 mt-1">
-                        ${record.imaging_findings.substring(0, 100)}${record.imaging_findings.length > 100 ? '...' : ''}
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <button onclick="editImagingRecord(${index})" class="text-blue-600 hover:text-blue-800 text-sm">✏️</button>
-                    <button onclick="deleteImagingRecord(${index})" class="text-red-600 hover:text-red-800 text-sm">🗑️</button>
-                </div>
-            `;
-            list.appendChild(div);
+        const list=document.getElementById('imaging-list');
+        if(!list) return;
+        list.replaceChildren();
+        imagingRecords.forEach((record,index)=>{
+            const row=document.createElement('div');
+            row.className='flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200';
+            const body=document.createElement('div');body.className='flex-1';
+            [getImagingTypeDisplayName(record.imaging_type),record.imaging_date,
+                record.imaging_facility,record.imaging_findings].forEach(value=>{
+                const text=document.createElement('p');text.textContent=value || '—';body.appendChild(text);
+            });
+            row.appendChild(body);
+            [['✏️',()=>editImagingRecord(index)],['🗑️',()=>deleteImagingRecord(index)]].forEach(([label,action])=>{
+                const button=document.createElement('button');button.type='button';
+                button.textContent=label;button.className='text-blue-600 px-2';
+                button.addEventListener('click',action);row.appendChild(button);
+            });
+            list.appendChild(row);
         });
     }
 
@@ -2357,6 +2364,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function deleteImagingRecord(index) {
         if (confirm(HRC_LABELS.confirmDeleteImaging)) {
             imagingRecords.splice(index, 1);
+            const bank=document.getElementById('medical-imaging-file-bank');
+            if(bank) {
+                const transfer=new DataTransfer();
+                Array.from(bank.files).filter(file=>imagingRecords.some(record=>record.attachment_name===file.name)).forEach(file=>transfer.items.add(file));
+                bank.files=transfer.files;
+            }
             updateImagingList();
             updateImagingData();
         }
@@ -2366,6 +2379,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const imagingDataField = document.getElementById('imaging_data');
         if (imagingDataField) {
             imagingDataField.value = JSON.stringify(imagingRecords);
+            imagingDataField.dispatchEvent(new Event('change',{bubbles:true}));
         }
         updateImagingSummary();
     }

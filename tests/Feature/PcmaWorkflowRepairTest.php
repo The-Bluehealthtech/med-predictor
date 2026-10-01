@@ -17,7 +17,8 @@ final class PcmaWorkflowRepairTest extends TestCase
         parent::setUp();
         config()->set('pcma_icd11', require dirname(__DIR__,2).'/config/pcma_icd11.php');
         $this->app->useDatabasePath(dirname(__DIR__,2).'/database');
-        config(['medical_aut'=>require dirname(__DIR__,2).'/config/medical_aut.php']);
+        config(['medical_aut'=>require dirname(__DIR__,2).'/config/medical_aut.php',
+            'medical_sections'=>require dirname(__DIR__,2).'/config/medical_sections.php']);
         // Charger aussi les traductions du worktree testé, pas celles du dépôt principal.
         $this->app->instance('translation.loader', new \Illuminate\Translation\FileLoader(
             $this->app['files'], dirname(__DIR__, 2).'/resources/lang'));
@@ -515,6 +516,150 @@ final class PcmaWorkflowRepairTest extends TestCase
         self::assertCount(2,$record->fresh()->doping_tests);
     }
 
+    private function clinicalDocumentsSchema(): void
+    {
+        (require dirname(__DIR__,2).'/database/migrations/2026_10_01_000002_create_health_record_documents.php')->up();
+    }
+    private function clinicalPayload(): array
+    {
+        return ['player_id'=>10,'visit_date'=>'2026-10-01','record_date'=>'2026-10-01',
+            'doctor_name'=>'Fixture collector','visit_type'=>'consultation'];
+    }
+    public function test_clinical_sections_roundtrip_all_supported_mappings_and_histories(): void
+    {
+        $this->healthcareSchema(); $record=$this->healthRecord();
+        $examples=[
+            'dental'=>['dental_data'=>json_encode(['11'=>['status'=>'recorded','notes'=>'Fixture tooth']])],
+            'scat'=>['scat_headache'=>3,'scat_red_flags'=>['Fixture sign'],'scat_diagnosis'=>'Fixture observation'],
+            'mapa'=>['mapa_pas_24h'=>123,'mapa_pad_night'=>71,'mapa_device'=>'Fixture device'],
+            'imaging'=>['imaging_data'=>json_encode([['imaging_type'=>'mri_knee','imaging_date'=>'2026-09-28','imaging_findings'=>'Fixture image report']])],
+            'mri'=>['mri_results'=>'Fixture MRI'],
+            'ecg_effort'=>['ecg_effort_max_fc'=>170,'ecg_effort_results'=>'Fixture ECG'],
+            'scintigraphy'=>['scintigraphy_results'=>'Fixture scintigraphy'],
+            'fmarc'=>['injury_location'=>'Fixture location','injury_mechanism'=>'Fixture mechanism'],
+            'illness'=>['diagnosis'=>'Fixture illness','symptoms'=>['Fixture symptom']],
+            'laboratory'=>['blood_test_result_value'=>'7','blood_test_reference'=>'Fixture report'],
+        ];
+        foreach($examples as $section=>$fields){
+            $this->post('/health-records',$this->clinicalPayload()+$fields+[
+                'capture'=>[$section=>1],'section_dates'=>[$section=>'2026-09-28'],
+                'section_source'=>[$section=>'Fixture source']])->assertRedirect();
+            $column=config('medical_sections.sections.'.$section.'.column');
+            $stored=$record->fresh()->$column;
+            if(is_string($stored)) $stored=json_decode($stored,true);
+            self::assertCount(1,$stored);
+            self::assertSame('2026-09-28',$stored[0]['date']);
+            self::assertSame(1,$stored[0]['recorded_by']);
+            foreach($fields as $field=>$value) self::assertArrayHasKey($field,$stored[0]['values']);
+        }
+        $this->put('/health-records/'.$record->id,['record_date'=>'2026-10-01','capture'=>['mapa'=>1],
+            'section_dates'=>['mapa'=>'2026-10-01'],'mapa_pas_24h'=>125])->assertRedirect();
+        self::assertCount(2,$record->fresh()->mapa_results);
+        foreach(['fr','en'] as $lang) {
+            $response=$this->get('/health-records/'.$record->id.'?lang='.$lang)->assertOk();
+            file_put_contents('/tmp/fit-clinical-show-fixture.html',$response->getContent());
+            $response->assertSee('Fixture image report')->assertSee('Fixture source')->assertSee('2026-09-28')
+                ->assertSee('Fixture tooth')->assertSee('Fixture ECG')->assertDontSee('medical_sections.');
+            $this->get('/healthcare/records/'.$record->id.'?lang='.$lang)->assertOk()->assertSee('Fixture device');
+            $this->get('/health-records/'.$record->id.'/edit?lang='.$lang)->assertOk()->assertSee('125');
+        }
+    }
+    public function test_biological_longitudinal_results_keep_provenance_zero_and_null(): void
+    {
+        $this->healthcareSchema();$record=$this->healthRecord();
+        foreach(['2026-09-20','2026-09-28'] as $date) {
+            $row=['analyte'=>'Fixture marker','value'=>'0','laboratory'=>'Fixture lab','report_id'=>'Fixture report '.$date,
+                'sample_date'=>$date,'unit'=>null,'reference'=>null];
+            $this->post('/health-records',$this->clinicalPayload()+['capture'=>['biological'=>1],
+                'section_dates'=>['biological'=>$date],'section_source'=>['biological'=>'Fixture lab report'],
+                'lab_rows'=>['biological'=>[$row]]])->assertRedirect();
+        }
+        $data=$record->fresh()->biological_profile;
+        self::assertCount(2,$data);self::assertSame('0',$data[0]['values']['lab_rows'][0]['value']);
+        self::assertArrayNotHasKey('unit',$data[0]['values']['lab_rows'][0]);
+        $this->get('/health-records/'.$record->id)->assertOk()->assertSee('Fixture marker')->assertSee('Fixture report 2026-09-20');
+        $this->postJson('/health-records',$this->clinicalPayload()+['capture'=>['biological'=>1],
+            'section_dates'=>['biological'=>'2026-10-01'],'section_source'=>['biological'=>'Fixture lab'],
+            'lab_rows'=>['biological'=>[['analyte'=>'Fixture marker','value'=>'5']]]])->assertUnprocessable();
+        self::assertCount(2,$record->fresh()->biological_profile);
+    }
+    public function test_clinical_invalid_dates_values_and_foreign_writes_never_modify_records(): void
+    {
+        $this->healthcareSchema();$record=$this->healthRecord();
+        $base=$this->clinicalPayload()+['capture'=>['scat'=>1],'scat_headache'=>2];
+        $this->postJson('/health-records',$base)->assertUnprocessable();
+        $this->postJson('/health-records',array_replace($base,['scat_headache'=>99,'section_dates'=>['scat'=>'2026-10-01']]))->assertUnprocessable();
+        $this->postJson('/health-records',array_replace($base,['player_id'=>20,'section_dates'=>['scat'=>'2026-10-01']]))->assertNotFound();
+        self::assertNull($record->fresh()->scat_assessments);
+        $this->post('/health-records',$this->clinicalPayload()+['capture'=>['mapa'=>1],
+            'section_dates'=>['mapa'=>'2026-10-01'],'mapa_pas_24h'=>0])->assertRedirect();
+        self::assertSame(0,$record->fresh()->mapa_results[0]['values']['mapa_pas_24h']);
+        self::assertArrayNotHasKey('mapa_pad_24h',$record->fresh()->mapa_results[0]['values']);
+    }
+    public function test_clinical_files_are_encrypted_in_primary_database_and_player_access_is_private(): void
+    {
+        $this->healthcareSchema();$this->clinicalDocumentsSchema();$record=$this->healthRecord();$foreign=$this->healthRecord(20);
+        $file=\Illuminate\Http\UploadedFile::fake()->createWithContent('fixture-report.pdf',"%PDF-1.4\nFixture clinical bytes");
+        $this->post('/health-records',$this->clinicalPayload()+['capture'=>['mri'=>1],
+            'section_dates'=>['mri'=>'2026-09-28'],'mri_results'=>'Fixture private MRI',
+            'medical_files'=>['mri'=>[$file]]])->assertRedirect();
+        $document=\App\Models\HealthRecordDocument::firstOrFail();
+        self::assertSame(10,(int)$document->player_id);
+        self::assertStringNotContainsString('Fixture clinical bytes',DB::table('health_record_documents')->value('content'));
+        $this->get('/player-portal/medical-records/'.$record->id.'/documents/'.$document->id)->assertOk();
+        $this->actingAs(User::findOrFail(1)->forceFill(['role'=>'player','player_id'=>10,'tenant_id'=>1]));
+        $portalResponse=$this->get('/player-portal/medical-records/'.$record->id);
+        $portalResponse->assertOk()->assertSee('Fixture private MRI')->assertDontSee('name="capture[',false);
+        $this->get('/player-portal/medical-records/'.$foreign->id)->assertNotFound();
+        $this->get('/player-portal/medical-records/'.$foreign->id.'/documents/'.$document->id)->assertNotFound();
+        $this->get('/player-portal/medical-records/invalid')->assertNotFound();
+        $this->get('/health-records/'.$record->id.'/edit')->assertForbidden();
+        $this->actingAs(User::findOrFail(1)->forceFill(['role'=>'club_admin','tenant_id'=>1]));
+        $this->get('/player-portal/medical-records/'.$record->id)->assertForbidden();
+    }
+    public function test_clinical_document_failure_rolls_back_the_entire_visit_and_histories(): void
+    {
+        $this->healthcareSchema();$this->clinicalDocumentsSchema();$record=$this->healthRecord();
+        \App\Models\HealthRecordDocument::creating(fn()=>throw new \RuntimeException('Fixture storage failure'));
+        try {
+            $this->post('/health-records',$this->clinicalPayload()+['capture'=>['mri'=>1],
+                'section_dates'=>['mri'=>'2026-10-01'],'mri_results'=>'Fixture rolled back',
+                'diagnosis'=>'Fixture changed','medical_files'=>['mri'=>[
+                    \Illuminate\Http\UploadedFile::fake()->createWithContent('fixture.pdf',"%PDF-1.4\nFixture")]]])->assertStatus(500);
+            self::assertNull($record->fresh()->mri_results);
+            self::assertSame('Fixture clinical note',$record->fresh()->diagnosis);
+        } finally {\App\Models\HealthRecordDocument::flushEventListeners();}
+    }
+    public function test_fmarc_document_fields_are_structured_without_inventing_clinical_codes(): void
+    {
+        $this->healthcareSchema();$record=$this->healthRecord();
+        $data=['context'=>'training','match_minute'=>null,'injury_type'=>'Fixture injury',
+            'injury_location'=>'Fixture body site','absence_cause'=>'Fixture cause','absence_days'=>5,
+            'expected_return_date'=>'2026-10-05'];
+        $this->post('/health-records',$this->clinicalPayload()+['capture'=>['fmarc'=>1],
+            'section_dates'=>['fmarc'=>'2026-09-30'],'section_values'=>['fmarc'=>$data]])->assertRedirect();
+        $values=$record->fresh()->fifa_fmarc_assessments[0]['values'];
+        self::assertSame(5,$values['absence_days']);self::assertArrayNotHasKey('match_minute',$values);
+        self::assertSame('2026-10-05',$values['expected_return_date']);
+        $this->get('/health-records/'.$record->id)->assertOk()->assertSee('Fixture cause')->assertSee('2026-10-05');
+        $pcma=$this->post('/pcma',$this->input(['type'=>'bpma','final_statement'=>['overall_decision'=>'FIT']]))->assertRedirect();
+        self::assertSame('bpma',PCMA::firstOrFail()->type);
+        // La base ne définit pas de types distincts standard/advanced : aucun mappage inventé.
+        $this->postJson('/pcma',$this->input(['type'=>'advanced']))->assertUnprocessable();
+    }
+    public function test_medical_storage_audit_is_read_only_and_system_admin_only(): void
+    {
+        $this->healthcareSchema();$record=$this->healthRecord();
+        $record->update(['mapa_results'=>[['fixture'=>'stored']]]);
+        $this->get('/medical/storage-audit')->assertForbidden();
+        $this->actingAs(User::findOrFail(1)->forceFill(['role'=>'system_admin']));
+        $this->get('/medical/storage-audit')->assertOk()->assertJson([
+            'players'=>2,'players_with_medical_record'=>1,'players_without_medical_record'=>1,
+            'players_with_data_by_section'=>['mapa'=>1],'read_only'=>true])
+            ->assertDontSee('Fixture clinical note')->assertDontSee('Fixture Doctor');
+        self::assertSame(1,\App\Models\HealthRecord::count());
+        self::assertSame([['fixture'=>'stored']],$record->fresh()->mapa_results);
+    }
     private function healthcareSchema(): void
     {
         Schema::create('health_records',function(Blueprint $t){

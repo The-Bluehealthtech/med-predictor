@@ -133,6 +133,7 @@ class HealthRecordController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $this->normalizeLists($request);
+        $sections = app(\App\Services\HealthRecordSections::class)->prepare($request);
         $validated = $request->validate([
             'player_id' => 'required|exists:players,id',
             'visit_date' => 'required|date',
@@ -166,6 +167,7 @@ class HealthRecordController extends Controller
         app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),Player::findOrFail($validated['player_id']),null);
         $validated = array_replace($validated, app(\App\Services\HealthRecordIcd11::class)->resolve($request),
             app(\App\Services\HealthRecordMedication::class)->resolve($request));
+        $validated = app(\App\Services\HealthRecordSections::class)->protectedColumns($validated,$sections);
         $request->validate(['prepare_aut'=>'sometimes|boolean']);
         $autController=app(MedicalAutController::class);
         // Le formulaire utilise des noms distincts du stockage canonique.
@@ -178,7 +180,7 @@ class HealthRecordController extends Controller
         $autData=$request->boolean('prepare_aut')
             ?$autController->validateDraft($request,'aut_form','aut_documents'):null;
         // Dossier et AUT forment une seule écriture : une erreur annule les deux.
-        [$healthRecord,$message]=\Illuminate\Support\Facades\DB::transaction(function()use($request,$validated,$autController,$autData,$testInput,$hasDopingTest){
+        [$healthRecord,$message]=\Illuminate\Support\Facades\DB::transaction(function()use($request,$validated,$autController,$autData,$testInput,$hasDopingTest,$sections){
             // Check if there's an existing health record for this player
             $existingRecord = HealthRecord::where('player_id', $validated['player_id'])
                 ->where('status', 'active')
@@ -211,6 +213,7 @@ class HealthRecordController extends Controller
                 $message = 'Nouveau dossier médical créé avec succès.';
             }
 
+            app(\App\Services\HealthRecordSections::class)->persist($healthRecord,$sections);
             if($autData!==null){
                 $autController->persistDraft($request,$healthRecord,$autData);
                 $message.=' '.__('medical_aut.saved');
@@ -272,6 +275,8 @@ class HealthRecordController extends Controller
             $healthData['bmi'] = round($newData['weight'] / ($heightInMeters * $heightInMeters), 2);
         }
 
+        // Une section omise ne doit pas effacer les résultats d'une visite précédente.
+        $visitData = array_intersect_key($visitData,$newData);
         // Merge all data
         $updateData = array_replace($newData, $visitData, $healthData);
         
@@ -295,20 +300,25 @@ class HealthRecordController extends Controller
         $autRequests = Schema::hasTable('tue_requests') && Schema::hasColumn('tue_requests', 'player_id')
             ? \App\Models\TUERequest::where('player_id', $healthRecord->player_id)->orderByDesc('request_date')->get()
             : collect();
-        return view('health-records.show', compact('healthRecord', 'pcmaRecords', 'dopingRecords', 'autRequests'));
+        $sectionHistory = app(\App\Services\HealthRecordSections::class)->history($dopingRecords);
+        $sectionDocuments = Schema::hasTable('health_record_documents')
+            ? \App\Models\HealthRecordDocument::where('player_id',$healthRecord->player_id)->get() : collect();
+        return view('health-records.show', compact('healthRecord', 'pcmaRecords', 'dopingRecords', 'autRequests', 'sectionHistory', 'sectionDocuments'));
     }
 
     public function edit(HealthRecord $healthRecord): View
     {
         $this->authorizeRecord($healthRecord);
         $players = $this->playersQuery()->orderBy('name')->get();
-        return view('health-records.edit', compact('healthRecord', 'players'));
+        $sectionValues = array_replace(app(\App\Services\HealthRecordSections::class)->formValues($healthRecord),session()->getOldInput());
+        return view('health-records.edit', compact('healthRecord', 'players','sectionValues'));
     }
 
     public function update(Request $request, HealthRecord $healthRecord): RedirectResponse
     {
         $this->authorizeRecord($healthRecord);
         $this->normalizeLists($request);
+        $sections = app(\App\Services\HealthRecordSections::class)->prepare($request);
         abort_if($request->has('player_id') && (int)$request->player_id !== (int)$healthRecord->player_id,422,'Le joueur du dossier ne peut pas être remplacé.');
         $validated = $request->validate([
             'player_id' => 'nullable|exists:players,id',
@@ -331,6 +341,7 @@ class HealthRecordController extends Controller
 
         $validated = array_replace($validated, app(\App\Services\HealthRecordIcd11::class)->resolve($request),
             app(\App\Services\HealthRecordMedication::class)->resolve($request));
+        $validated = app(\App\Services\HealthRecordSections::class)->protectedColumns($validated,$sections);
 
         // Recalculer le BMI si nécessaire
         if (isset($validated['weight']) && isset($validated['height'])) {
@@ -338,7 +349,11 @@ class HealthRecordController extends Controller
             $validated['bmi'] = round($validated['weight'] / ($heightInMeters * $heightInMeters), 2);
         }
 
-        $healthRecord->update($validated);
+        \Illuminate\Support\Facades\DB::transaction(function()use($healthRecord,$validated,$sections){
+            $locked = HealthRecord::lockForUpdate()->findOrFail($healthRecord->id);
+            $locked->update($validated);
+            app(\App\Services\HealthRecordSections::class)->persist($locked,$sections);
+        });
 
         return redirect()->route('health-records.show', $healthRecord)
             ->with('success', 'Dossier médical mis à jour avec succès.');

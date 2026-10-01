@@ -1978,6 +1978,12 @@ Route::middleware(['auth'])->group(function () {
         return view('modules.player-passports.index', compact('passports'));
     })->name('player-passports.index');
     
+    Route::get('/player-portal/medical-records/{record}', [App\Http\Controllers\PlayerMedicalRecordController::class,'show'])->whereNumber('record')->name('player-medical.show');
+    Route::get('/player-portal/medical-records/{record}/documents/{document}', [App\Http\Controllers\PlayerMedicalRecordController::class,'document'])->whereNumber('record')->whereNumber('document')->name('player-medical.document');
+    Route::get('/medical/storage-audit', function(){
+        abort_unless(auth()->user()?->isSystemAdmin(),403);
+        return response()->json(app(App\Services\MedicalStorageAudit::class)->run());
+    })->name('medical-storage.audit');
     // Health Records routes
     Route::get('/health-records/download-hl7-cda/{reportId}', [App\Http\Controllers\HealthRecordController::class, 'downloadHl7Cda'])->name('health-records.download-hl7-cda');
     Route::get('/health-records/view-hl7-cda/{reportId}', [App\Http\Controllers\HealthRecordController::class, 'viewHl7Cda'])->name('health-records.view-hl7-cda');

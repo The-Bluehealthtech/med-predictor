@@ -1840,6 +1840,11 @@ render();
     <div id="medical-tab" class="fifa-tab-content">
         <h2>{{ __('Médical') }}</h2>
         <div id="medical-content">
+            @if(auth()->user()->isPlayer() || auth()->user()->hasAnyRole(['system_admin','association_medical','club_medical','doctor','team_doctor','medical_staff']))
+                @foreach($healthRecords as $clinicalRecord)
+                    <p class="mb-3"><a class="underline" href="{{ route('player-medical.show',$clinicalRecord->id) }}">{{ __('medical_sections.portal_open') }} · {{ $clinicalRecord->record_date ?? '—' }}</a></p>
+                @endforeach
+            @endif
             <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE (5 cartes) -->
             <div class="fifa-medical-grid space-y-4">
                 <!-- Carte État Général de Santé -->

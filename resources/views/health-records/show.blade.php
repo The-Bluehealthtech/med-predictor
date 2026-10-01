@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Show first tab by default
     const initialTab = new URLSearchParams(window.location.search).get('tab');
-    showTab(['general','vitals','medical','pcma','dental','codes','doping'].includes(initialTab) ? initialTab : 'general');
+    showTab(['general','vitals','medical','pcma','dental','codes','doping','scat','mapa','imaging','followup'].includes(initialTab) ? initialTab : 'general');
 });
 </script>
 @endpush
@@ -124,6 +124,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button onclick="showTab('dental')" class="tab-button">
                         🦷 {{ __('health_records.show_page.tab_dental') }}
                     </button>
+                    @foreach(['scat','mapa','imaging','followup'] as $clinicalTab)
+                    <button type="button" onclick="showTab('{{ $clinicalTab }}')" class="tab-button">{{ __('medical_sections.'.$clinicalTab) }}</button>
+                    @endforeach
                     <button type="button" onclick="showTab('doping')" class="tab-button">
                         {{ __('medical_doping.tab') }}
                     </button>
@@ -433,11 +436,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h2 class="text-xl font-semibold text-gray-800">🦷 {{ __('health_records.show_page.dental_heading') }}</h2>
                     </div>
                         <div class="p-6">
-                            <p class="text-gray-600">{{ __('health_records.show_page.dental_placeholder') }}</p>
+                            @include('health-records.section-history',['onlySection'=>'dental'])
                         </div>
                         </div>
                         </div>
 
+                @foreach(['scat','mapa','imaging','followup'] as $clinicalTab)
+                <div id="{{ $clinicalTab }}-tab" class="tab-content hidden">
+                    @include('health-records.section-history',['onlySections'=>match($clinicalTab){
+                        'scat'=>['scat'],'mapa'=>['mapa'],'imaging'=>['imaging','mri','ecg_effort','scintigraphy'],
+                        default=>['fmarc','illness','biological','laboratory']}])
+                </div>
+                @endforeach
                 <div id="doping-tab" class="tab-content hidden">
                     @include('health-records.doping')
                 </div>

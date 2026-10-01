@@ -100,7 +100,7 @@
             <p class="text-gray-600 mt-2">{{ __('health_records_edit.edit_the_existing_medical_record') }}</p>
         </div>
 
-        <form action="{{ route('health-records.update', $healthRecord) }}" method="POST" class="space-y-8">
+        <form enctype="multipart/form-data" action="{{ route('health-records.update', $healthRecord) }}" method="POST" class="space-y-8">
             @csrf
             @method('PUT')
             @include('health-records.icd11')
@@ -2276,55 +2276,55 @@
                                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                                         <div class="text-sm">{{ __('health_records_edit.headache') }}</div>
                                                         <div class="flex items-center space-x-2">
-                                                            <input type="range" min="0" max="6" value="0" class="w-full" name="scat_headache" id="scat_headache">
-                                                            <span class="text-xs w-8 text-center" id="scat_headache_value">0</span>
+                                                            <input type="number" min="0" max="6" value="" class="w-full" name="scat_headache" id="scat_headache">
+                                                            <span class="text-xs w-8 text-center" id="scat_headache_value">—</span>
                                                         </div>
-                                                        <div class="text-xs text-center" id="scat_headache_score">0</div>
+                                                        <div class="text-xs text-center" id="scat_headache_score">—</div>
                                                     </div>
                                                     
                                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                                         <div class="text-sm">{{ __('health_records_edit.nausea') }}</div>
                                                         <div class="flex items-center space-x-2">
-                                                            <input type="range" min="0" max="6" value="0" class="w-full" name="scat_nausea" id="scat_nausea">
-                                                            <span class="text-xs w-8 text-center" id="scat_nausea_value">0</span>
+                                                            <input type="number" min="0" max="6" value="" class="w-full" name="scat_nausea" id="scat_nausea">
+                                                            <span class="text-xs w-8 text-center" id="scat_nausea_value">—</span>
                                                         </div>
-                                                        <div class="text-xs text-center" id="scat_nausea_score">0</div>
+                                                        <div class="text-xs text-center" id="scat_nausea_score">—</div>
                                                     </div>
                                                     
                                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                                         <div class="text-sm">{{ __('health_records_edit.dizziness') }}</div>
                                                         <div class="flex items-center space-x-2">
-                                                            <input type="range" min="0" max="6" value="0" class="w-full" name="scat_dizziness" id="scat_dizziness">
-                                                            <span class="text-xs w-8 text-center" id="scat_dizziness_value">0</span>
+                                                            <input type="number" min="0" max="6" value="" class="w-full" name="scat_dizziness" id="scat_dizziness">
+                                                            <span class="text-xs w-8 text-center" id="scat_dizziness_value">—</span>
                                                         </div>
-                                                        <div class="text-xs text-center" id="scat_dizziness_score">0</div>
+                                                        <div class="text-xs text-center" id="scat_dizziness_score">—</div>
                                                     </div>
                                                     
                                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                                         <div class="text-sm">Fatigue</div>
                                                         <div class="flex items-center space-x-2">
-                                                            <input type="range" min="0" max="6" value="0" class="w-full" name="scat_fatigue" id="scat_fatigue">
-                                                            <span class="text-xs w-8 text-center" id="scat_fatigue_value">0</span>
+                                                            <input type="number" min="0" max="6" value="" class="w-full" name="scat_fatigue" id="scat_fatigue">
+                                                            <span class="text-xs w-8 text-center" id="scat_fatigue_value">—</span>
                                                         </div>
-                                                        <div class="text-xs text-center" id="scat_fatigue_score">0</div>
+                                                        <div class="text-xs text-center" id="scat_fatigue_score">—</div>
                                                     </div>
                                                     
                                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                                         <div class="text-sm">{{ __('health_records_edit.sensitivity_to_light') }}</div>
                                                         <div class="flex items-center space-x-2">
-                                                            <input type="range" min="0" max="6" value="0" class="w-full" name="scat_light_sensitivity" id="scat_light_sensitivity">
-                                                            <span class="text-xs w-8 text-center" id="scat_light_sensitivity_value">0</span>
+                                                            <input type="number" min="0" max="6" value="" class="w-full" name="scat_light_sensitivity" id="scat_light_sensitivity">
+                                                            <span class="text-xs w-8 text-center" id="scat_light_sensitivity_value">—</span>
                                                         </div>
-                                                        <div class="text-xs text-center" id="scat_light_sensitivity_score">0</div>
+                                                        <div class="text-xs text-center" id="scat_light_sensitivity_score">—</div>
                                                     </div>
                                                     
                                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                                         <div class="text-sm">{{ __('health_records_edit.sensitivity_to_noise') }}</div>
                                                         <div class="flex items-center space-x-2">
-                                                            <input type="range" min="0" max="6" value="0" class="w-full" name="scat_noise_sensitivity" id="scat_noise_sensitivity">
-                                                            <span class="text-xs w-8 text-center" id="scat_noise_sensitivity_value">0</span>
+                                                            <input type="number" min="0" max="6" value="" class="w-full" name="scat_noise_sensitivity" id="scat_noise_sensitivity">
+                                                            <span class="text-xs w-8 text-center" id="scat_noise_sensitivity_value">—</span>
                                                         </div>
-                                                        <div class="text-xs text-center" id="scat_noise_sensitivity_score">0</div>
+                                                        <div class="text-xs text-center" id="scat_noise_sensitivity_score">—</div>
                                                     </div>
                                                 </div>
                                                 
@@ -3142,6 +3142,7 @@
                 </div>
             </div>
 
+            @include('health-records.sections-capture')
             <!-- Submit Buttons -->
             <div class="flex justify-between items-center">
                 <a href="{{ route('health-records.index') }}" 

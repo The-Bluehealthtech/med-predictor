@@ -14,7 +14,7 @@
                     </div>
                     <h1 class="text-3xl font-bold tracking-tight text-slate-950">Poste de travail médical</h1>
                     <p class="mt-2 text-slate-600 max-w-2xl">
-                        Recherchez un joueur, ouvrez son dossier longitudinal ou démarrez directement une nouvelle consultation.
+                        Recherchez un joueur, ouvrez son tableau de bord santé ou initialisez son dossier médical de base.
                     </p>
                 </div>
 
@@ -22,7 +22,7 @@
                     <a href="{{ route('health-records.create') }}"
                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold shadow-sm hover:bg-blue-700">
                         <span class="text-lg leading-none">+</span>
-                        Nouvelle consultation
+                        Initialiser un dossier
                     </a>
                 </div>
             </div>
@@ -105,6 +105,7 @@
 
                 @forelse($players as $player)
                     @php
+                        $dossier = $player->baseHealthRecord;
                         $latest = $player->latestHealthRecord;
                         $allergies = $latest?->allergies ?? [];
                         $allergyLabel = '';
@@ -129,7 +130,7 @@
                                     @endif
                                 </div>
                                 <div class="min-w-0">
-                                    <a href="{{ $latest ? route('health-records.show', $latest) : route('modules.medical.athlete', $player->id) }}"
+                                    <a href="{{ $dossier ? route('health-records.show', $dossier) : route('health-records.create', ['player_id' => $player->id]) }}"
                                        class="font-semibold text-slate-950 truncate hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
                                         {{ $player->full_name ?? $player->name }}
                                     </a>
@@ -182,14 +183,21 @@
                             </div>
 
                             <div class="flex flex-wrap gap-2 lg:justify-self-end">
-                                <a href="{{ $latest ? route('health-records.show', $latest) : route('modules.medical.athlete', $player->id) }}"
+                                <a href="{{ $dossier ? route('health-records.show', $dossier) : route('health-records.create', ['player_id' => $player->id]) }}"
                                    class="inline-flex justify-center px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50">
                                     Dossier
                                 </a>
-                                <a href="{{ route('health-records.create', ['player_id' => $player->id]) }}"
-                                   class="inline-flex justify-center px-3.5 py-2 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700">
-                                    + Consultation
-                                </a>
+                                @if($dossier)
+                                    <a href="{{ route('health-records.show', $dossier) }}"
+                                       class="inline-flex justify-center px-3.5 py-2 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700">
+                                        Tableau de bord santé
+                                    </a>
+                                @else
+                                    <a href="{{ route('health-records.create', ['player_id' => $player->id]) }}"
+                                       class="inline-flex justify-center px-3.5 py-2 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700">
+                                        Initialiser le dossier
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </article>

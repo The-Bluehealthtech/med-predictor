@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Show first tab by default
     const initialTab = new URLSearchParams(window.location.search).get('tab');
-    showTab(['general','vitals','medical','pcma','dental','codes','doping','scat','mapa','imaging','followup'].includes(initialTab) ? initialTab : 'general');
+    showTab(['general','vitals','medical','pcma','dental','postural','codes','doping','scat','mapa','imaging','followup'].includes(initialTab) ? initialTab : 'general');
 });
 </script>
 @endpush
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button onclick="showTab('dental')" class="tab-button">
                         🦷 {{ __('health_records.show_page.tab_dental') }}
                     </button>
-                    <button onclick="showTab('postural')" class="tab-button">
+                    <button type="button" onclick="showTab('postural')" class="tab-button">
                         🧍 Posture
                     </button>
                     @foreach(['scat','mapa','imaging','followup'] as $clinicalTab)

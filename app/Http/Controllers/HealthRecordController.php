@@ -59,17 +59,9 @@ class HealthRecordController extends Controller
         return $rules;
     }
 
-    public function index(): View
+    public function index(): RedirectResponse
     {
-        $patients = $this->playersQuery()
-            ->whereHas('healthRecords')
-            ->when(request()->filled('player_id'), fn($query) => $query->whereKey(request('player_id')))
-            ->with(['club', 'latestHealthRecord'])
-            ->withCount('healthRecords')
-            ->orderBy('name')
-            ->paginate(15);
-
-        return view('health-records.index', compact('patients'));
+        return redirect()->route('modules.medical.index', request()->only('q'));
     }
 
     public function create(Request $request): View
@@ -318,6 +310,17 @@ class HealthRecordController extends Controller
         $sectionHistory = app(\App\Services\HealthRecordSections::class)->history($dopingRecords);
         $sectionDocuments = Schema::hasTable('health_record_documents')
             ? \App\Models\HealthRecordDocument::where('player_id',$healthRecord->player_id)->orderByDesc('exam_date')->get() : collect();
+
+        $intakeDocuments = collect();
+        if (Schema::hasTable('documents') && Schema::hasTable('visits') && Schema::hasTable('athletes')) {
+            $intakeDocuments = \App\Models\Document::whereHas('visit.athlete', function ($query) use ($healthRecord) {
+                    $query->where('player_id', $healthRecord->player_id);
+                })
+                ->with(['visit.appointment', 'uploadedBy'])
+                ->orderByDesc('created_at')
+                ->get();
+        }
+
         $posturalAssessments = collect();
         if (Schema::hasTable('postural_assessments')) {
             $posturalQuery = \App\Models\PosturalAssessment::where('player_id', $healthRecord->player_id)
@@ -347,6 +350,7 @@ class HealthRecordController extends Controller
             'autRequests',
             'sectionHistory',
             'sectionDocuments',
+            'intakeDocuments',
             'posturalAssessments'
         ));
     }

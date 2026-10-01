@@ -127,7 +127,9 @@ class HealthRecordController extends Controller
             'patient_nationality' => $selectedPlayer ? $selectedPlayer->nationality : old('patient_nationality'),
         ];
         
-        return view('health-records.create', compact('players', 'visit', 'selectedPlayer', 'isDemo', 'defaultValues', 'appointment'));
+        $view = $request->boolean('advanced') ? 'health-records.create' : 'health-records.create-visit';
+
+        return view($view, compact('players', 'visit', 'selectedPlayer', 'isDemo', 'defaultValues', 'appointment'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -136,6 +138,7 @@ class HealthRecordController extends Controller
         $sections = app(\App\Services\HealthRecordSections::class)->prepare($request);
         $validated = $request->validate([
             'player_id' => 'required|exists:players,id',
+            'visit_id' => 'nullable|exists:visits,id',
             'visit_date' => 'required|date',
             'doctor_name' => 'required|string|max:255',
             'visit_type' => 'required|string|in:consultation,emergency,follow_up,pre_season,post_match,rehabilitation',
@@ -179,39 +182,27 @@ class HealthRecordController extends Controller
         $hasDopingTest = $request->filled('doping_test_type') || $request->filled('doping_test_result');
         $autData=$request->boolean('prepare_aut')
             ?$autController->validateDraft($request,'aut_form','aut_documents'):null;
-        // Dossier et AUT forment une seule écriture : une erreur annule les deux.
+        // Une nouvelle consultation crée toujours un nouvel épisode clinique.
+        // Le dossier longitudinal est l'agrégation des épisodes du joueur.
         [$healthRecord,$message]=\Illuminate\Support\Facades\DB::transaction(function()use($request,$validated,$autController,$autData,$testInput,$hasDopingTest,$sections){
-            // Check if there's an existing health record for this player
-            $existingRecord = HealthRecord::where('player_id', $validated['player_id'])
-                ->where('status', 'active')
-                ->lockForUpdate()->first();
             if ($hasDopingTest) {
-                $validated['doping_tests'] = array_merge($existingRecord?->doping_tests ?? [], [[
+                $validated['doping_tests'] = [[
                     'date'=>$testInput['doping_test_date'] ?? null,
                     'type'=>$testInput['doping_test_type'] ?? null,
                     'result'=>$testInput['doping_test_result'] ?? null,
-                ]]);
+                ]];
             }
 
-            if ($existingRecord) {
-                // Update existing record with new visit data
-                $this->updateExistingRecord($existingRecord, $validated);
-                $healthRecord = $existingRecord;
-                $message = 'Dossier médical mis à jour avec succès.';
-            } else {
-                // Create new health record for this player
-                $validated['user_id'] = auth()->id();
-                $validated['status'] = 'active';
+            $validated['user_id'] = auth()->id();
+            $validated['status'] = 'active';
 
-                // Calculate BMI if weight and height are provided
-                if (isset($validated['weight']) && isset($validated['height'])) {
-                    $heightInMeters = $validated['height'] / 100;
-                    $validated['bmi'] = round($validated['weight'] / ($heightInMeters * $heightInMeters), 2);
-                }
-
-                $healthRecord = HealthRecord::create($validated);
-                $message = 'Nouveau dossier médical créé avec succès.';
+            if (isset($validated['weight']) && isset($validated['height'])) {
+                $heightInMeters = $validated['height'] / 100;
+                $validated['bmi'] = round($validated['weight'] / ($heightInMeters * $heightInMeters), 2);
             }
+
+            $healthRecord = HealthRecord::create($validated);
+            $message = 'Visite médicale enregistrée avec succès.';
 
             app(\App\Services\HealthRecordSections::class)->persist($healthRecord,$sections);
             if($autData!==null){
@@ -309,8 +300,22 @@ class HealthRecordController extends Controller
             : collect();
         $sectionHistory = app(\App\Services\HealthRecordSections::class)->history($dopingRecords);
         $sectionDocuments = Schema::hasTable('health_record_documents')
-            ? \App\Models\HealthRecordDocument::where('player_id',$healthRecord->player_id)->get() : collect();
-        return view('health-records.show', compact('healthRecord', 'pcmaRecords', 'dopingRecords', 'autRequests', 'sectionHistory', 'sectionDocuments'));
+            ? \App\Models\HealthRecordDocument::where('player_id',$healthRecord->player_id)->orderByDesc('exam_date')->get() : collect();
+        $posturalAssessments = \App\Models\PosturalAssessment::where('player_id',$healthRecord->player_id)
+            ->with(['findings','measurements','clinician'])
+            ->orderByDesc('assessment_date')->get();
+
+        $view = request()->boolean('legacy') ? 'health-records.show' : 'health-records.workspace';
+
+        return view($view, compact(
+            'healthRecord',
+            'pcmaRecords',
+            'dopingRecords',
+            'autRequests',
+            'sectionHistory',
+            'sectionDocuments',
+            'posturalAssessments'
+        ));
     }
 
     public function edit(HealthRecord $healthRecord): View

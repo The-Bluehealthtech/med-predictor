@@ -1979,6 +1979,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/health-records/{record}/aut/{aut}', [App\Http\Controllers\MedicalAutController::class, 'update'])->name('medical-aut.update');
     Route::get('/health-records/{record}/aut/{aut}/documents/{index}', [App\Http\Controllers\MedicalAutController::class, 'document'])->name('medical-aut.document');
 
+    Route::get('/health-records/{healthRecord}/modules/{module}', [App\Http\Controllers\HealthRecordController::class, 'module'])
+        ->name('health-records.modules.show');
+    Route::post('/health-records/{healthRecord}/modules/{module}', [App\Http\Controllers\HealthRecordController::class, 'storeModule'])
+        ->name('health-records.modules.store');
     Route::get('/health-records/{healthRecord}', [App\Http\Controllers\HealthRecordController::class, 'show'])->name('health-records.show');
     Route::get('/health-records/{healthRecord}/edit', [App\Http\Controllers\HealthRecordController::class, 'edit'])->name('health-records.edit');
     Route::put('/health-records/{healthRecord}', [App\Http\Controllers\HealthRecordController::class, 'update'])->name('health-records.update');

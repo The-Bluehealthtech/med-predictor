@@ -842,7 +842,7 @@
                         @php
                             $rcMaxAbs = max(1, $roleEval['comparisons']->max(fn ($rcC) => abs((float) $rcC->role_fit_score)));
                             $rcBarScale = 90 / $rcMaxAbs;
-                            $rcCompH = 26 * $roleEval['comparisons']->count() + 10;
+                            $rcCompH = 32 * $roleEval['comparisons']->count() + 6;
                         @endphp
                         <svg viewBox="0 0 240 {{ $rcCompH }}" width="100%" height="{{ $rcCompH }}" role="img" aria-label="{{ __('Comparaison aux familles voisines') }}">
                             <line x1="120" y1="0" x2="120" y2="{{ $rcCompH }}" stroke="rgba(255,255,255,0.25)" stroke-width="1" />
@@ -850,13 +850,13 @@
                                 @php
                                     $rcVal = (float) $comparison->role_fit_score;
                                     $rcW = abs($rcVal) * $rcBarScale;
-                                    $rcY = $rcIdx * 26 + 4;
+                                    $rcY = $rcIdx * 32 + 4;
                                     $rcColor = $rcVal >= 0 ? '#3987e5' : '#e66767';
                                     $rcX = $rcVal >= 0 ? 120 : 120 - $rcW;
                                 @endphp
-                                <rect x="{{ $rcX }}" y="{{ $rcY }}" width="{{ max($rcW, 0.5) }}" height="16" fill="{{ $rcColor }}" rx="2" />
-                                <text x="4" y="{{ $rcY + 12 }}" font-size="10" fill="#cfd8e3">{{ $comparison->position_family_evaluated }}</text>
-                                <text x="{{ $rcVal >= 0 ? $rcX + $rcW + 4 : $rcX - 4 }}" y="{{ $rcY + 12 }}" font-size="10" fill="{{ $rcColor }}" text-anchor="{{ $rcVal >= 0 ? 'start' : 'end' }}">{{ $rcVal > 0 ? '+' : '' }}{{ number_format($rcVal, 1) }}</text>
+                                <text x="4" y="{{ $rcY + 9 }}" font-size="10" fill="#cfd8e3">{{ $comparison->position_family_evaluated }}</text>
+                                <rect x="{{ $rcX }}" y="{{ $rcY + 13 }}" width="{{ max($rcW, 0.5) }}" height="12" fill="{{ $rcColor }}" rx="2" />
+                                <text x="{{ $rcVal >= 0 ? $rcX + $rcW + 4 : $rcX - 4 }}" y="{{ $rcY + 23 }}" font-size="10" fill="{{ $rcColor }}" text-anchor="{{ $rcVal >= 0 ? 'start' : 'end' }}">{{ $rcVal > 0 ? '+' : '' }}{{ number_format($rcVal, 1) }}</text>
                             @endforeach
                         </svg>
                     @endif
@@ -900,12 +900,12 @@
                         <h5 class="section">{{ __('Répartition des minutes par poste') }}</h5>
                         @php
                             $rcColors = ['#3987e5', '#d95926', '#199e70', '#5b6684', '#9085e9'];
-                            $rcTotalMin = $rcMinutes->sum('total_minutes');
+                            $rcTotalMin = $rcMinutes->sum('minutes');
                             $rcCx2 = 60; $rcCy2 = 60; $rcR2 = 50; $rcR2inner = 28;
                             $rcStart = -90;
                             $rcSlices = [];
                             foreach ($rcMinutes->values() as $rcMi => $rcMRow) {
-                                $rcShare = $rcTotalMin > 0 ? $rcMRow->total_minutes / $rcTotalMin : 0;
+                                $rcShare = $rcTotalMin > 0 ? $rcMRow->minutes / $rcTotalMin : 0;
                                 $rcSweep = $rcShare * 360;
                                 $rcEnd = $rcStart + $rcSweep;
                                 $rcA0 = deg2rad($rcStart); $rcA1 = deg2rad($rcEnd);

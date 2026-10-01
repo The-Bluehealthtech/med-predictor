@@ -171,7 +171,7 @@ final class RoleFitEvaluator
             'interval_low' => $result['intervalle_80'][0] ?? null,
             'interval_high' => $result['intervalle_80'][1] ?? null,
             'role_fit_score' => $roleFitScore,
-            'dimension_breakdown' => $dimensionsCfg !== null ? $this->dimensionBreakdown($result, $dimensionsCfg) : null,
+            'dimension_breakdown' => $dimensionsCfg !== null ? $this->dimensionBreakdown($result, $englishFamily, $dimensionsCfg) : null,
         ];
     }
 
@@ -187,15 +187,25 @@ final class RoleFitEvaluator
      * retrouvé par l'opération inverse, avec la même configuration que le
      * calculateur ; exact sauf aux bornes (|z| > 3,33), bien au-delà du
      * ±2,5 auquel le radar le borne de toute façon.
+     *
+     * calculate() regroupe les dimensions par nom sur tous les matchs,
+     * quelle que soit la famille jouée : un joueur de champ passé un match
+     * dans les buts remonte aussi les dimensions gardien (et inversement).
+     * Seules les dimensions de la famille évaluée sont conservées.
      */
-    private function dimensionBreakdown(array $result, array $cfg): ?string
+    private function dimensionBreakdown(array $result, string $englishFamily, array $cfg): ?string
     {
         if (!isset($result['dimensions']) || !is_array($result['dimensions']) || $result['dimensions'] === []) {
             return null;
         }
 
+        $familyDimensions = $cfg['dimensions'][$englishFamily === 'goalkeeper' ? 'goalkeeper' : 'field'];
+
         $breakdown = [];
         foreach ($result['dimensions'] as $dimensionKey => $dimension) {
+            if (!isset($familyDimensions[$dimensionKey])) {
+                continue;
+            }
             $breakdown[$dimensionKey] = [
                 'z' => isset($dimension['score'])
                     ? round(((float) $dimension['score'] - $cfg['score_center']) / $cfg['score_scale'], 3)
@@ -204,6 +214,6 @@ final class RoleFitEvaluator
             ];
         }
 
-        return json_encode($breakdown);
+        return $breakdown === [] ? null : json_encode($breakdown);
     }
 }

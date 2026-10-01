@@ -286,9 +286,6 @@ class HealthRecordController extends Controller
             'user',
             'player',
             'predictions',
-            'posturalAssessments.findings',
-            'posturalAssessments.measurements',
-            'posturalAssessments.clinician',
         ]);
         
         // Load PCMA records for this player
@@ -306,9 +303,25 @@ class HealthRecordController extends Controller
         $sectionHistory = app(\App\Services\HealthRecordSections::class)->history($dopingRecords);
         $sectionDocuments = Schema::hasTable('health_record_documents')
             ? \App\Models\HealthRecordDocument::where('player_id',$healthRecord->player_id)->orderByDesc('exam_date')->get() : collect();
-        $posturalAssessments = \App\Models\PosturalAssessment::where('player_id',$healthRecord->player_id)
-            ->with(['findings','measurements','clinician'])
-            ->orderByDesc('assessment_date')->get();
+        $posturalAssessments = collect();
+        if (Schema::hasTable('postural_assessments')) {
+            $posturalQuery = \App\Models\PosturalAssessment::where('player_id', $healthRecord->player_id)
+                ->with('clinician')
+                ->orderByDesc('assessment_date');
+
+            $posturalRelations = [];
+            if (Schema::hasTable('postural_findings')) {
+                $posturalRelations[] = 'findings';
+            }
+            if (Schema::hasTable('postural_measurements')) {
+                $posturalRelations[] = 'measurements';
+            }
+            if ($posturalRelations) {
+                $posturalQuery->with($posturalRelations);
+            }
+
+            $posturalAssessments = $posturalQuery->get();
+        }
 
         $view = request()->boolean('legacy') ? 'health-records.show' : 'health-records.workspace';
 

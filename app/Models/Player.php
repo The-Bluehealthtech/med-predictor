@@ -206,6 +206,16 @@ class Player extends Model
         return $this->hasOne(HealthRecord::class)->latestOfMany('record_date');
     }
 
+    /**
+     * Dossier médical de base du joueur.
+     * La première visite médicale initialise ce dossier ; les modules spécialisés
+     * viennent ensuite s'y rattacher.
+     */
+    public function baseHealthRecord(): HasOne
+    {
+        return $this->hasOne(HealthRecord::class)->oldestOfMany('record_date');
+    }
+
     public function medicalPredictions(): HasMany
     {
         return $this->hasMany(MedicalPrediction::class);

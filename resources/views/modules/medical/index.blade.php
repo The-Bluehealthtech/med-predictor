@@ -230,10 +230,6 @@
                             </div>
 
                             <div class="flex flex-wrap gap-2 lg:justify-self-end">
-                                <a href="{{ $dossier ? route('health-records.show', $dossier) : route('health-records.create', ['player_id' => $player->id]) }}"
-                                   class="inline-flex justify-center px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50">
-                                    Dossier
-                                </a>
                                 @if($dossier)
                                     <a href="{{ route('health-records.show', $dossier) }}"
                                        class="inline-flex justify-center px-3.5 py-2 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700">

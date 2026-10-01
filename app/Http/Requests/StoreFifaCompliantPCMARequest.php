@@ -44,7 +44,7 @@ class StoreFifaCompliantPCMARequest extends FormRequest
                 new FifaIdentifier(),
                 'same:fifa_id',
             ],
-            'type' => ['required', Rule::in(['bpma', 'cardio', 'dental', 'neurological', 'orthopedic'])],
+            'type' => ['required', Rule::in(['pcma', 'cardio', 'dental', 'neurological', 'orthopedic'])],
             'status' => ['required', Rule::in(['pending', 'completed', 'failed', 'cleared', 'not_cleared'])],
             'assessor_id' => 'required|exists:users,id',
             'assessment_date' => 'required|date',

@@ -2348,7 +2348,7 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
             $validated = $request->validate([
                 'athlete_id' => 'required|exists:athletes,id',
                 'fifa_connect_id' => ['nullable', new \App\Rules\FifaIdentifier()],
-                'type' => 'required|in:bpma,cardio,dental,neurological,orthopedic',
+                'type' => 'required|in:pcma,cardio,dental,neurological,orthopedic',
                 'assessor_id' => 'required|exists:users,id',
                 'assessment_date' => 'required|date',
                 'status' => 'required|in:pending,completed,failed',
@@ -2622,7 +2622,7 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
             $validated = $request->validate([
                 'athlete_id' => 'required|exists:athletes,id',
                 'fifa_connect_id' => ['nullable', new \App\Rules\FifaIdentifier()],
-                'type' => 'required|in:bpma,cardio,dental,neurological,orthopedic',
+                'type' => 'required|in:pcma,cardio,dental,neurological,orthopedic',
                 'assessor_id' => 'required|exists:users,id',
                 'assessment_date' => 'required|date',
                 'status' => 'required|in:pending,completed,failed',
@@ -2776,7 +2776,7 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
             }
             
             if ($request->filled('type')) {
-                $query->where('type', $request->type);
+                $query->byType($request->type);
             }
             
             if ($request->filled('search')) {

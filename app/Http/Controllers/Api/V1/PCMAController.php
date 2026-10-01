@@ -42,7 +42,7 @@ class PCMAController extends Controller
         }
 
         if ($request->has('type')) {
-            $query->where('type', $request->type);
+            $query->byType($request->type);
         }
 
         if ($request->has('athlete_id')) {
@@ -276,7 +276,7 @@ class PCMAController extends Controller
             'pending_pcmas' => $athlete->pcmas()->where('status', 'pending')->count(),
             'failed_pcmas' => $athlete->pcmas()->where('status', 'failed')->count(),
             'by_type' => [
-                'bpma' => $athlete->pcmas()->where('type', 'bpma')->count(),
+                'pcma' => $athlete->pcmas()->byType('pcma')->count(),
                 'cardio' => $athlete->pcmas()->where('type', 'cardio')->count(),
                 'dental' => $athlete->pcmas()->where('type', 'dental')->count(),
             ],
@@ -285,7 +285,7 @@ class PCMAController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->first(),
             'compliance_status' => [
-                'has_bpma' => $athlete->pcmas()->where('type', 'bpma')->where('status', 'completed')->exists(),
+                'has_pcma' => $athlete->pcmas()->byType('pcma')->where('status', 'completed')->exists(),
                 'has_cardio' => $athlete->pcmas()->where('type', 'cardio')->where('status', 'completed')->exists(),
                 'has_dental' => $athlete->pcmas()->where('type', 'dental')->where('status', 'completed')->exists(),
                 'fully_compliant' => $athlete->pcmas()->where('status', 'completed')->where('fifa_compliant', true)->exists(),
@@ -482,7 +482,7 @@ class PCMAController extends Controller
             'transcript' => 'required|string|max:2000',
             'athlete_id' => 'nullable|required_without:player_id|exists:athletes,id',
             'player_id' => 'nullable|required_without:athlete_id|exists:players,id',
-            'pcma_type' => 'required|string|in:bpma,cardio,dental,neurological,orthopedic',
+            'pcma_type' => 'required|string|in:pcma,cardio,dental,neurological,orthopedic',
         ]);
 
         app(\App\Services\MedicalRecordAccess::class)->input($request->user(),

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pcmas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('athlete_id')->constrained()->onDelete('cascade');
-            $table->enum('type', ['bpma', 'cardio', 'dental', 'neurological', 'orthopedic']);
+            $table->enum('type', ['pcma', 'cardio', 'dental', 'neurological', 'orthopedic']);
             $table->json('result_json');
             $table->enum('status', ['pending', 'completed', 'failed', 'cleared', 'not_cleared'])->default('pending');
             $table->timestamp('completed_at')->nullable();

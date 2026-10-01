@@ -30,9 +30,14 @@ Le détail médical restitue les observations structurées et datées. Le portai
 - Tests des historiques, dates, valeurs manquantes et zéro explicite, provenance, transactions, pièces chiffrées, accès propre joueur et refus des dossiers étrangers.
 - Audit en lecture seule : commande medical:audit-storage et route /medical/storage-audit réservée au system_admin. Sortie agrégée, sans données nominatives.
 - Base connectée sur le Mac : SQLite, 825 joueurs, aucun dossier médical. Ce constat ne décrit pas la base du déploiement FIT. Il ne permet pas de certifier que chaque joueur de production dispose de toutes les observations.
-- Le type PCMA existant est bpma. Les autres types existants sont cardio, dental, neurological et orthopedic. Aucune variante standard/avancée persistée n'a été trouvée ; le document ne définit pas une distinction technique suffisante. Aucun code de variante n'a été inventé.
+- Le type canonique est pcma (PCMA). La migration 000003 normalise les anciennes valeurs bpma ; les observations et signatures sont conservées. Les autres types existants sont cardio, dental, neurological et orthopedic. Aucune variante standard/avancée persistée n'a été trouvée ; le document ne définit pas une distinction technique suffisante. Aucun code de variante n'a été inventé.
 - F-MARC : collecte et restitution des champs explicitement visibles dans le document ; aucune certification officielle du parcours n'est affirmée.
 - Transmission AUT : non démontrée ; la gestion locale d'un dossier ne constitue pas une transmission ni une autorisation.
 - Interopérabilité FHIR/HIE : certification et échange réel non démontrés.
 - Modèles IA : aucune validation clinique ou nouvelle prédiction n'est revendiquée.
 - Le contrôle navigateur et l'audit de la base de production restent à effectuer après le déploiement ; les tests isolés ne les remplacent pas.
+
+## Correction de nomenclature PCMA
+
+Les formulaires, validations, filtres, exports et statistiques API utilisent pcma ; BPMA n'est pas un type médical. Les anciennes valeurs restent lisibles et filtrables jusqu'à leur migration. La migration 000003 normalise uniquement la colonne type, y compris pour les dossiers signés, sans modifier les observations, signatures ou dates. Elle est enregistrée dans le parcours de déploiement.
+Vérification : 84 tests PCMA, 762 assertions réussis ; migration SQLite depuis une colonne enum historique, conservation du contenu signé et seconde exécution sans effet. Tests JavaScript/Vue et contrôle de syntaxe réussis. Les chemins PostgreSQL/MySQL n'ont pas été exécutés dans cet environnement ; le déploiement effectif et la migration de production restent à confirmer.

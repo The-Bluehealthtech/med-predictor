@@ -72,7 +72,7 @@
                                 <dt class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_c6f1e645013d') }}</dt>
                                 <dd class="text-sm text-gray-900">
                                     <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                                        {{ $pcma->type === 'bpma' ? __('pcma_workflow.type_pcma') : ucfirst($pcma->type) }}
+                                        {{ $pcma->type === 'pcma' ? __('pcma_workflow.type_pcma') : ucfirst($pcma->type) }}
                                     </span>
                                 </dd>
                             </div>

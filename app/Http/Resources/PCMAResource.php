@@ -60,7 +60,7 @@ class PCMAResource extends JsonResource
     private function getTypeDisplayName(): string
     {
         return match ($this->type) {
-            'bpma' => 'Basic Pre-Competition Medical Assessment',
+            'pcma' => 'Pre-Competition Medical Assessment',
             'cardio' => 'Cardiovascular Assessment',
             'dental' => 'Dental Assessment',
             default => ucfirst($this->type),

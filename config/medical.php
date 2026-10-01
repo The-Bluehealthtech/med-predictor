@@ -17,7 +17,7 @@ return [
 
     // PCMA Compliance Settings
     'pcma_annual_requirement' => true,
-    'pcma_types_required' => ['bpma', 'cardio', 'dental'],
+    'pcma_types_required' => ['pcma', 'cardio', 'dental'],
     'pcma_expiry_days' => 365,
 
     // Injury Reporting Settings

@@ -921,7 +921,7 @@ export default {
 
     getPCMAIcon(type) {
       const icons = {
-        bpma: '📋',
+        pcma: '📋',
         cardio: '❤️',
         dental: '🦷'
       }

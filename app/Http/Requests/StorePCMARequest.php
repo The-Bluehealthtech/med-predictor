@@ -23,7 +23,7 @@ class StorePCMARequest extends FormRequest
     {
         return [
             'athlete_id' => 'required|exists:athletes,id',
-            'type' => 'required|in:bpma,cardio,dental',
+            'type' => 'required|in:pcma,cardio,dental',
             'result_json' => 'required|array',
             'status' => 'sometimes|in:pending,completed,failed,cancelled',
             'completed_at' => 'nullable|date',
@@ -42,7 +42,7 @@ class StorePCMARequest extends FormRequest
             'athlete_id.required' => 'The athlete is required.',
             'athlete_id.exists' => 'The selected athlete does not exist.',
             'type.required' => 'The PCMA type is required.',
-            'type.in' => 'The PCMA type must be bpma, cardio, or dental.',
+            'type.in' => 'The PCMA type must be pcma, cardio, or dental.',
             'result_json.required' => 'The assessment results are required.',
             'result_json.array' => 'The assessment results must be in JSON format.',
             'status.in' => 'The status must be pending, completed, failed, or cancelled.',

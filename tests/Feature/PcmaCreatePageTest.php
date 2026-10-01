@@ -71,7 +71,7 @@ final class PcmaCreatePageTest extends TestCase
         DB::table('players')->insert(['id' => 10, 'first_name' => 'Fixture',
             'last_name' => 'Only', 'name' => 'Fixture Only', 'club_id' => 1]);
         $this->actingAs(new User(['role' => 'system_admin']));
-        $pcma = new \App\Models\PCMA(['player_id' => 10, 'type' => 'bpma',
+        $pcma = new \App\Models\PCMA(['player_id' => 10, 'type' => 'pcma',
             'assessment_date' => '2026-09-30', 'status' => 'pending',
             'result_json' => ['vital_signs' => ['heart_rate' => 60]]]);
         $pcma->forceFill(['id' => 99, 'created_at' => now(), 'updated_at' => now()]);

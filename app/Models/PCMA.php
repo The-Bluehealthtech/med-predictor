@@ -16,6 +16,18 @@ class PCMA extends Model
 
     protected $table = 'pcmas';
 
+    // Compatibilité de lecture des anciens dossiers, sans exposer l'ancien libellé.
+    public function getTypeAttribute($value): ?string
+    {
+        return $value === 'bpma' ? 'pcma' : $value;
+    }
+
+    public function setTypeAttribute($value): void
+    {
+        $this->attributes['type'] = $value === 'bpma' ? 'pcma' : $value;
+    }
+
+
     protected $fillable = [
         'athlete_id',
         'player_id', // Link to Player model
@@ -161,7 +173,9 @@ class PCMA extends Model
      */
     public function scopeByType($query, $type)
     {
-        return $query->where('type', $type);
+        return in_array($type, ['pcma', 'bpma'], true)
+            ? $query->whereIn('type', ['pcma', 'bpma'])
+            : $query->where('type', $type);
     }
 
     /**

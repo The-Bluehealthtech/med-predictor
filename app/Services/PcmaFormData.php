@@ -10,7 +10,7 @@ final class PcmaFormData
                 'player_id' => 'required|exists:players,id',
                 'pcma_id' => 'nullable|integer',
                 'draft_token' => 'nullable|uuid',
-                'type' => 'required|in:bpma,cardio,dental,neurological,orthopedic',
+                'type' => 'required|in:pcma,cardio,dental,neurological,orthopedic',
                 'assessor_id' => 'required|exists:users,id',
                 'assessment_date' => 'required|date',
                 'result_json' => 'nullable|json',

@@ -10,6 +10,7 @@ class DeployFit extends Command
     private const LOCK_NAME = 'med_predictor_fit_deploy';
 
     private const MIGRATIONS = [
+        'database/migrations/2026_10_01_000003_normalize_pcma_type.php',
         'database/migrations/2024_01_15_000006_create_tue_requests_table.php',
         'database/migrations/2026_10_01_000001_add_icd11_and_aut_to_health_records.php',
         'database/migrations/2026_10_01_000002_create_health_record_documents.php',

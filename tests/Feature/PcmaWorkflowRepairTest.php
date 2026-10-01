@@ -11,6 +11,29 @@ use Tests\TestCase;
 
 final class PcmaWorkflowRepairTest extends TestCase
 {
+    public function test_pcma_nomenclature_migrates_legacy_enum_without_changing_signed_content(): void
+    {
+        Schema::drop('pcmas');
+        Schema::create('pcmas', function (Blueprint $t) {
+            $t->id(); $t->enum('type', ['bpma', 'cardio', 'dental']);
+            $t->text('result_json'); $t->boolean('is_signed'); $t->text('signature_data');
+        });
+        DB::table('pcmas')->insert(['id'=>1,'type'=>'bpma','result_json'=>'{"existing":true}',
+            'is_signed'=>true,'signature_data'=>'{"signature":"unchanged"}']);
+        $legacy=PCMA::findOrFail(1);
+        self::assertSame('pcma', $legacy->type);
+        self::assertSame(1, PCMA::byType('pcma')->count());
+        $migration=require dirname(__DIR__,2).'/database/migrations/2026_10_01_000003_normalize_pcma_type.php';
+        $migration->up(); $migration->up();
+        $row=DB::table('pcmas')->first();
+        self::assertSame('pcma',$row->type);
+        self::assertSame('{"existing":true}',$row->result_json);
+        self::assertSame('{"signature":"unchanged"}',$row->signature_data);
+        self::assertSame(1,(int)$row->is_signed);
+        $new=new PCMA(['type'=>'bpma']);
+        self::assertSame('pcma',$new->getAttributes()['type']);
+    }
+
     private string $previous;
     protected function setUp(): void
     {
@@ -80,7 +103,7 @@ final class PcmaWorkflowRepairTest extends TestCase
     }
     private function input(array $extra = []): array
     {
-        return array_replace(['player_id'=>10,'type'=>'bpma','assessor_id'=>1,
+        return array_replace(['player_id'=>10,'type'=>'pcma','assessor_id'=>1,
             'assessment_date'=>'2026-09-30','status'=>'pending','heart_rate'=>60,
             'draft_token'=>'12345678-1234-4234-8234-123456789012'], $extra);
     }
@@ -91,7 +114,7 @@ final class PcmaWorkflowRepairTest extends TestCase
     }
     private function record(array $extra=[]): PCMA
     {
-        return PCMA::create(array_replace(['player_id'=>10,'assessor_id'=>1,'type'=>'bpma',
+        return PCMA::create(array_replace(['player_id'=>10,'assessor_id'=>1,'type'=>'pcma',
             'assessment_date'=>'2026-09-30','status'=>'pending',
             'result_json'=>['vital_signs'=>['heart_rate'=>60]]], $extra));
     }
@@ -642,8 +665,8 @@ final class PcmaWorkflowRepairTest extends TestCase
         self::assertSame(5,$values['absence_days']);self::assertArrayNotHasKey('match_minute',$values);
         self::assertSame('2026-10-05',$values['expected_return_date']);
         $this->get('/health-records/'.$record->id)->assertOk()->assertSee('Fixture cause')->assertSee('2026-10-05');
-        $pcma=$this->post('/pcma',$this->input(['type'=>'bpma','final_statement'=>['overall_decision'=>'FIT']]))->assertRedirect();
-        self::assertSame('bpma',PCMA::firstOrFail()->type);
+        $pcma=$this->post('/pcma',$this->input(['type'=>'pcma','final_statement'=>['overall_decision'=>'FIT']]))->assertRedirect();
+        self::assertSame('pcma',PCMA::firstOrFail()->type);
         // La base ne définit pas de types distincts standard/advanced : aucun mappage inventé.
         $this->postJson('/pcma',$this->input(['type'=>'advanced']))->assertUnprocessable();
     }

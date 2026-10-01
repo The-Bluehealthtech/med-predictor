@@ -1,0 +1,109 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
+
+class CoachCockpitTest extends TestCase
+{
+    use DatabaseTransactions;
+
+    /** @var array<int, int> */
+    private array $clubIds = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Championnat démo de 4 clubs : double aller-retour, 6 matchs par équipe.
+        $this->artisan('role-eval:generate-demo', ['--seed' => 7, '--clubs' => 4])->assertExitCode(0);
+        $competitionId = DB::table('matches')->max('competition_id');
+        $this->clubIds = DB::table('matches')->where('competition_id', $competitionId)
+            ->pluck('home_club_id')->unique()->sort()->values()->map(fn ($id) => (int) $id)->all();
+        $this->assertCount(4, $this->clubIds);
+    }
+
+    /** Un tenant_id est requis pour tout rôle hors system_admin (middleware TenantEnforcer). */
+    private function actingAsRole(string $role, ?int $clubId = null): void
+    {
+        $user = new User();
+        $user->forceFill([
+            'id' => 900101, 'name' => 'Coach Cockpit Test', 'email' => 'coach-cockpit-test@example.invalid',
+            'role' => $role, 'club_id' => $clubId, 'player_id' => null, 'association_id' => null, 'tenant_id' => 1, 'status' => 'active',
+        ]);
+        $user->exists = true;
+        $this->actingAs($user);
+    }
+
+    public function test_admin_sees_the_cockpit_of_the_selected_team_with_model_inputs(): void
+    {
+        $this->actingAsRole('system_admin');
+        $clubId = $this->clubIds[1];
+
+        $response = $this->get(route('modules.coach-cockpit', ['club_id' => $clubId]));
+
+        $response->assertOk();
+        $response->assertSee('window.COACH_COCKPIT_DATA', false);
+        $cockpit = $response->viewData('cockpit');
+        $this->assertSame($clubId, $cockpit['club']['id']);
+        $this->assertCount(6, $cockpit['matches']);
+        $this->assertCount(4, $cockpit['table']);
+        // 12 matchs : 3 points par match décidé, 2 par nul ; chaque nul est compté par les deux équipes.
+        $this->assertSame(36, array_sum(array_column($cockpit['table'], 'pts')) + intdiv(array_sum(array_column($cockpit['table'], 'd')), 2));
+
+        $squadIds = DB::table('players')->where('club_id', $clubId)->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $model = $cockpit['model'];
+        $this->assertEqualsCanonicalizing(
+            array_values(array_intersect($squadIds, array_unique(array_column($cockpit['pm'], 0)))),
+            array_map('intval', array_keys($model['players'])),
+            'chaque joueur ayant joué reçoit ses caractéristiques'
+        );
+        $first = reset($model['players']);
+        $this->assertSame($model['fams'], array_keys($first), 'une entrée par famille de poste');
+        foreach ($model['feats'] as $feature) {
+            if (!str_starts_with($feature, 'pos_') && !str_starts_with($feature, 'opp_') && !str_starts_with($feature, 'own_') && $feature !== 'home') {
+                $this->assertArrayHasKey($feature, $first['milieu relayeur'], "caractéristique {$feature} calculée");
+            }
+        }
+        $this->assertCount(4, $model['opponents']);
+    }
+
+    public function test_team_selector_lists_every_team_with_match_data_for_an_admin(): void
+    {
+        $this->actingAsRole('system_admin');
+
+        $clubs = $this->get(route('modules.coach-cockpit'))->assertOk()->viewData('clubs');
+
+        foreach ($this->clubIds as $clubId) {
+            $this->assertTrue($clubs->contains('id', $clubId));
+        }
+    }
+
+    public function test_club_user_only_sees_their_own_club(): void
+    {
+        $own = $this->clubIds[2];
+        $this->actingAsRole('club_admin', $own);
+
+        $response = $this->get(route('modules.coach-cockpit'));
+        $response->assertOk();
+        $this->assertSame($own, $response->viewData('cockpit')['club']['id']);
+        $this->assertSame([$own], $response->viewData('clubs')->pluck('id')->map(fn ($id) => (int) $id)->all());
+
+        $this->get(route('modules.coach-cockpit', ['club_id' => $this->clubIds[0]]))->assertNotFound();
+    }
+
+    public function test_player_accounts_cannot_open_the_cockpit(): void
+    {
+        $this->actingAsRole('player');
+
+        $this->get(route('modules.coach-cockpit'))->assertForbidden();
+    }
+
+    public function test_guests_are_redirected_to_login(): void
+    {
+        $this->get(route('modules.coach-cockpit'))->assertRedirect(route('login'));
+    }
+}

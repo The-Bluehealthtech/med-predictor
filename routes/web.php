@@ -1244,6 +1244,15 @@ Route::middleware(['auth'])->group(function () {
                         'category' => 'analytics'
                     ],
                     [
+                        'name' => 'Cockpit entraîneur',
+                        'description' => 'Performance de l\'équipe, pronostic du prochain match, onze optimal et grille des postes',
+                        'icon' => '🧭',
+                        'route' => 'modules.coach-cockpit',
+                        'status' => 'active',
+                        'color' => 'green',
+                        'category' => 'analytics'
+                    ],
+                    [
                         'name' => 'FIT Metrics',
                         'description' => 'Saisie et vérification des métriques du score FIT canonique',
                         'icon' => '🎯',
@@ -2973,6 +2982,12 @@ Route::get('/test-pdf', function() {
         'auth.unified',
         'permission.unified:record-performance-metrics',
     ])->name('performances.fit-metrics');
+
+    // Cockpit entraîneur (Analytics & Performance)
+    Route::get(
+        '/modules/coach-cockpit',
+        [\App\Http\Controllers\CoachCockpitController::class, 'show']
+    )->name('modules.coach-cockpit');
 
     // Performances Analytics routes
     Route::get(

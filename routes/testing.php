@@ -70,6 +70,17 @@ Route::get(
     'permission.unified:record-performance-metrics',
 ])->name('performances.fit-metrics');
 
+// Cockpit entraîneur : même contrôleur et même middleware qu'en production.
+Route::get(
+    '/modules/coach-cockpit',
+    [\App\Http\Controllers\CoachCockpitController::class, 'show']
+)->middleware(['auth'])->name('modules.coach-cockpit');
+
+// Minimal language switch target required by the application layout during tests.
+Route::post('/language', function () {
+    return redirect()->back();
+})->name('language.update');
+
 // Minimal modules target required by the application layout during tests.
 Route::get('/modules', function () {
     return response()->json(['status' => 'ok']);

@@ -286,7 +286,14 @@ class HealthRecordController extends Controller
     public function show(HealthRecord $healthRecord): View
     {
         $this->authorizeRecord($healthRecord);
-        $healthRecord->load(['user', 'player', 'predictions']);
+        $healthRecord->load([
+            'user',
+            'player',
+            'predictions',
+            'posturalAssessments.findings',
+            'posturalAssessments.measurements',
+            'posturalAssessments.clinician',
+        ]);
         
         // Load PCMA records for this player
         $pcmaRecords = \App\Models\PCMA::where('player_id', $healthRecord->player_id)

@@ -14,44 +14,14 @@ final class MedicalModuleController extends Controller
     }
     public function index(Request $request)
     {
-        $search = trim((string) $request->query('q', ''));
-
-        $query = $this->players()
-            ->with(['club', 'baseHealthRecord', 'latestHealthRecord'])
-            ->withCount('healthRecords');
-
-        if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'like', '%' . $search . '%')
-                    ->orWhere('last_name', 'like', '%' . $search . '%')
-                    ->orWhere('name', 'like', '%' . $search . '%');
-            });
-        }
-
-        $players = $query
-            ->orderBy('last_name')
-            ->orderBy('first_name')
-            ->paginate(20)
-            ->withQueryString();
-
-        $records = app(HealthcareController::class)->query();
-
-        $todayVisits = (clone $records)
-            ->whereDate('visit_date', now()->toDateString())
-            ->count();
-
-        $followUpsDue = (clone $records)
-            ->whereNotNull('next_checkup_date')
-            ->whereDate('next_checkup_date', '<=', now()->toDateString())
-            ->count();
-
-        $patientsFollowed = (clone $records)
-            ->distinct('player_id')
-            ->count('player_id');
-
         $allowedPlayerIds = $this->players()->select('players.id');
 
-        $waitingAppointments = Appointment::with(['athlete.player.club', 'visit.documents'])
+        $waitingAppointments = Appointment::with([
+                'athlete.player.club',
+                'athlete.player.baseHealthRecord',
+                'visit.documents',
+                'doctor',
+            ])
             ->whereHas('athlete', fn ($athlete) => $athlete->whereIn('player_id', $allowedPlayerIds))
             ->where('status', 'Enregistré')
             ->orderBy('appointment_date')
@@ -59,15 +29,9 @@ final class MedicalModuleController extends Controller
             ->filter(fn ($appointment) => $appointment->athlete?->player !== null)
             ->values();
 
-        return view('modules.medical.index', compact(
-            'players',
-            'search',
-            'todayVisits',
-            'followUpsDue',
-            'patientsFollowed',
-            'waitingAppointments'
-        ));
+        return view('modules.medical.index', compact('waitingAppointments'));
     }
+
     public function show($id)
     {
         $player=$this->players()->with('club')->findOrFail($id);

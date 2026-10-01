@@ -4,6 +4,8 @@
         <h3 class="text-lg font-semibold text-purple-900 mb-4">{{ __('health_records_extra.label_3600b18e620d') }}</h3>
         <p class="text-purple-700 mb-4">{{ __('health_records_edit.use_the_interactive_tool_to_analyze_the_') }}</p>
         
+        @include('health-records.partials.postural-axis-map')
+
         <div class="bg-white border border-gray-200 rounded-lg p-4">
             <div class="mb-4">
                 <ul class="text-sm text-gray-600 space-y-1 mb-4">
@@ -228,7 +230,8 @@ function initializePosturalAssessment() {
         markers: [],
         angles: [],
         anglePoints: [],
-        showPlumbLine: false
+        showPlumbLine: false,
+        guidedMeasurementKey: null
     };
 
     // Get DOM elements
@@ -242,6 +245,26 @@ function initializePosturalAssessment() {
     const svgContent = document.getElementById('postural-svg-content');
     const annotationsSvg = document.getElementById('postural-annotations');
 
+    document.getElementById('postural-axis-map')?.addEventListener('postural-axis-selected', function(e) {
+        const detail = e.detail || {};
+        posturalState.guidedMeasurementKey = detail.measurement_key || null;
+
+        if (detail.view) {
+            const legacyView = detail.view.includes('lateral') ? 'lateral' : detail.view;
+            viewSelector.value = legacyView;
+            posturalState.currentView = legacyView;
+            loadPosturalView(legacyView);
+        }
+
+        if (detail.measurement_key && detail.measurement_key.includes('angle')) {
+            selectTool('angle', angleTool);
+        } else {
+            selectTool('marker', markerTool);
+        }
+
+        updatePosturalSummary();
+    });
+
     // View selector event
     viewSelector.addEventListener('change', function(e) {
         posturalState.currentView = e.target.value;
@@ -250,9 +273,9 @@ function initializePosturalAssessment() {
     });
 
     // Tool selection events
-    markerTool.addEventListener('click', () => selectTool('marker'));
-    angleTool.addEventListener('click', () => selectTool('angle'));
-    plumbTool.addEventListener('click', () => selectTool('plumb'));
+    markerTool.addEventListener('click', () => selectTool('marker', markerTool));
+    angleTool.addEventListener('click', () => selectTool('angle', angleTool));
+    plumbTool.addEventListener('click', () => selectTool('plumb', plumbTool));
 
     // Color palette events
     colorPalette.querySelectorAll('button').forEach(button => {
@@ -263,7 +286,7 @@ function initializePosturalAssessment() {
     });
 
     // Tool selection function
-    function selectTool(tool) {
+    function selectTool(tool, sourceButton = null) {
         posturalState.currentTool = tool;
         
         // Update tool buttons
@@ -272,8 +295,11 @@ function initializePosturalAssessment() {
             btn.classList.add('bg-gray-200', 'text-gray-700');
         });
         
-        event.target.classList.remove('bg-gray-200', 'text-gray-700');
-        event.target.classList.add('bg-blue-500', 'text-white');
+        const activeButton = sourceButton || window.event?.target;
+        if (activeButton) {
+            activeButton.classList.remove('bg-gray-200', 'text-gray-700');
+            activeButton.classList.add('bg-blue-500', 'text-white');
+        }
         
         // Show/hide color palette
         if (tool === 'marker') {
@@ -322,7 +348,8 @@ function initializePosturalAssessment() {
             x: x,
             y: y,
             color: posturalState.selectedColor,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            measurement_key: posturalState.guidedMeasurementKey
         });
         updatePosturalSummary();
         updatePosturalDisplay();
@@ -358,7 +385,8 @@ function initializePosturalAssessment() {
         posturalState.angles.push({
             points: [...posturalState.anglePoints],
             angle: angle,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            measurement_key: posturalState.guidedMeasurementKey
         });
         
         updatePosturalSummary();

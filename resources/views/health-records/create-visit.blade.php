@@ -93,8 +93,10 @@
                                 <option>Tête / cou</option>
                                 <option>Épaule</option>
                                 <option>Bras / coude</option>
+                                <option>Avant-bras</option>
                                 <option>Poignet / main</option>
                                 <option>Thorax</option>
+                                <option>Abdomen</option>
                                 <option>Dos / rachis</option>
                                 <option>Bassin / hanche</option>
                                 <option>Cuisse</option>
@@ -407,6 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const complaint = [
             value('complaint-type'),
             value('complaint-region'),
+            value('complaint-anatomical-detail') ? 'Zone: ' + value('complaint-anatomical-detail') : '',
             value('complaint-side'),
             value('complaint-context') ? 'Contexte: ' + value('complaint-context') : '',
             value('complaint-detail')

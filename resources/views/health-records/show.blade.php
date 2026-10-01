@@ -109,6 +109,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button onclick="showTab('dental')" class="tab-button">
                         🦷 {{ __('health_records.show_page.tab_dental') }}
                     </button>
+                    <button onclick="showTab('postural')" class="tab-button">
+                        🧍 Posture
+                    </button>
                     <button onclick="showTab('codes')" class="tab-button">
                         🏷️ {{ __('health_records.show_page.tab_codes') }}
                     </button>
@@ -420,6 +423,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         </div>
                         </div>
+
+                <!-- Postural Tab -->
+                <div id="postural-tab" class="tab-content hidden">
+                    @include('health-records.partials.tab-postural-v1')
+                </div>
 
                 <!-- Codes Tab -->
                 <div id="codes-tab" class="tab-content hidden">

@@ -55,6 +55,7 @@
                 </div>
                 <div></div>
                 <div class="md:col-span-2 space-y-4">
+                    @include('health-records.partials.clinical-body-map')
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Motif principal</label>

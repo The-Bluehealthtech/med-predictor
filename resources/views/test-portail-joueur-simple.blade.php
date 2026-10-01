@@ -791,7 +791,7 @@
                         $rcRadarReady = $rcDims->count() >= 3;
                         if ($rcRadarReady) {
                             $rcN = $rcDims->count();
-                            $rcCx = 110; $rcCy = 110; $rcR = 85;
+                            $rcCx = 160; $rcCy = 128; $rcR = 85;
                             $rcPoints = [];
                             $rcLabelPoints = [];
                             foreach ($rcDims as $rcI => $rcD) {
@@ -809,8 +809,9 @@
                         }
                     @endphp
                     @if($rcRadarReady)
+                        <div class="fifa-stat-card rc-chart-card">
                         <h5 class="section">{{ __('Profil par dimension') }}</h5>
-                        <svg viewBox="0 0 220 220" width="100%" height="220" role="img" aria-label="{{ __('Radar du profil par dimension') }}">
+                        <svg class="rc-chart" viewBox="0 0 320 260" width="100%" role="img" aria-label="{{ __('Radar du profil par dimension') }}">
                             @foreach($rcGridLevels as $rcLevel)
                                 @php
                                     $rcGridPts = [];
@@ -832,71 +833,88 @@
                             @endfor
                             <polygon points="{{ $rcPolygon }}" fill="rgba(57,135,229,0.35)" stroke="#3987e5" stroke-width="2" />
                             @foreach($rcLabelPoints as $rcLp)
-                                <text x="{{ $rcLp['x'] }}" y="{{ $rcLp['y'] }}" font-size="9" fill="#cfd8e3" text-anchor="middle" dominant-baseline="middle">{{ $rcLp['label'] }}</text>
+                                <text x="{{ $rcLp['x'] }}" y="{{ $rcLp['y'] }}" font-size="10" fill="#cfd8e3" text-anchor="middle" dominant-baseline="middle">{{ $rcLp['label'] }}</text>
                             @endforeach
                         </svg>
+                        </div>
                     @endif
 
                     @if($roleEval['comparisons']->isNotEmpty())
+                        <div class="fifa-stat-card rc-chart-card">
                         <h5 class="section">{{ __('Adéquation aux familles voisines') }}</h5>
                         @php
                             $rcMaxAbs = max(1, $roleEval['comparisons']->max(fn ($rcC) => abs((float) $rcC->role_fit_score)));
-                            $rcBarScale = 90 / $rcMaxAbs;
+                            $rcBarScale = 120 / $rcMaxAbs;
                             $rcCompH = 32 * $roleEval['comparisons']->count() + 6;
                         @endphp
-                        <svg viewBox="0 0 240 {{ $rcCompH }}" width="100%" height="{{ $rcCompH }}" role="img" aria-label="{{ __('Comparaison aux familles voisines') }}">
-                            <line x1="120" y1="0" x2="120" y2="{{ $rcCompH }}" stroke="rgba(255,255,255,0.25)" stroke-width="1" />
+                        <svg class="rc-chart" viewBox="0 0 320 {{ $rcCompH }}" width="100%" role="img" aria-label="{{ __('Comparaison aux familles voisines') }}">
+                            <line x1="160" y1="0" x2="160" y2="{{ $rcCompH }}" stroke="rgba(255,255,255,0.25)" stroke-width="1" />
                             @foreach($roleEval['comparisons'] as $rcIdx => $comparison)
                                 @php
                                     $rcVal = (float) $comparison->role_fit_score;
                                     $rcW = abs($rcVal) * $rcBarScale;
                                     $rcY = $rcIdx * 32 + 4;
                                     $rcColor = $rcVal >= 0 ? '#3987e5' : '#e66767';
-                                    $rcX = $rcVal >= 0 ? 120 : 120 - $rcW;
+                                    $rcX = $rcVal >= 0 ? 160 : 160 - $rcW;
                                 @endphp
                                 <text x="4" y="{{ $rcY + 9 }}" font-size="10" fill="#cfd8e3">{{ $comparison->position_family_evaluated }}</text>
                                 <rect x="{{ $rcX }}" y="{{ $rcY + 13 }}" width="{{ max($rcW, 0.5) }}" height="12" fill="{{ $rcColor }}" rx="2" />
                                 <text x="{{ $rcVal >= 0 ? $rcX + $rcW + 4 : $rcX - 4 }}" y="{{ $rcY + 23 }}" font-size="10" fill="{{ $rcColor }}" text-anchor="{{ $rcVal >= 0 ? 'start' : 'end' }}">{{ $rcVal > 0 ? '+' : '' }}{{ number_format($rcVal, 1) }}</text>
                             @endforeach
                         </svg>
+                        </div>
                     @endif
 
                     @php
                         $rcTrend = $roleEval['trend'] ?? collect();
                     @endphp
                     @if($rcTrend->count() >= 2)
+                        <div class="fifa-stat-card rc-chart-card">
                         <h5 class="section">{{ __('Évolution du score') }}</h5>
                         @php
-                            $rcTMin = $rcTrend->min('score');
-                            $rcTMax = $rcTrend->max('score');
-                            $rcTRange = max(1, $rcTMax - $rcTMin);
-                            $rcTW = 240; $rcTH = 110; $rcTPad = 20;
+                            // Échelle à paliers de 10 couvrant au moins 20 points (bornée à
+                            // 0-100) : une échelle min-max ferait d'un écart d'un point une
+                            // forte hausse ou chute apparente.
+                            $rcTMin = (float) $rcTrend->min('score');
+                            $rcTMax = (float) $rcTrend->max('score');
+                            $rcTLo = max(0, floor((($rcTMin + $rcTMax) / 2 - 10) / 10) * 10);
+                            $rcTHi = min(100, max($rcTLo + 20, ceil($rcTMax / 10) * 10));
+                            $rcTLo = min($rcTLo, floor($rcTMin / 10) * 10);
+                            $rcTW = 320; $rcTH = 150;
+                            $rcTLeft = 30; $rcTRight = $rcTW - 12; $rcTTop = 10; $rcTBottom = $rcTH - 20;
+                            $rcTY = fn ($rcV) => round($rcTBottom - (($rcV - $rcTLo) / max(1, $rcTHi - $rcTLo)) * ($rcTBottom - $rcTTop), 1);
+                            $rcTGrid = range($rcTLo, $rcTHi, 10);
                             $rcTN = $rcTrend->count();
                             $rcTPts = [];
                             foreach ($rcTrend->values() as $rcTi => $rcTRow) {
-                                $rcTx = $rcTPad + ($rcTi / max(1, $rcTN - 1)) * ($rcTW - 2 * $rcTPad);
-                                $rcTy = ($rcTH - 15) - ((($rcTRow->score - $rcTMin) / $rcTRange) * ($rcTH - 30));
-                                $rcTPts[] = round($rcTx, 1) . ',' . round($rcTy, 1);
+                                $rcTx = $rcTLeft + ($rcTi / max(1, $rcTN - 1)) * ($rcTRight - $rcTLeft);
+                                $rcTPts[] = round($rcTx, 1) . ',' . $rcTY((float) $rcTRow->score);
                             }
                             $rcTLine = implode(' ', $rcTPts);
-                            $rcTArea = $rcTLine . ' ' . round($rcTW - $rcTPad, 1) . ',' . ($rcTH - 15) . ' ' . $rcTPad . ',' . ($rcTH - 15);
+                            $rcTArea = $rcTLine . ' ' . $rcTRight . ',' . $rcTBottom . ' ' . $rcTLeft . ',' . $rcTBottom;
                         @endphp
-                        <svg viewBox="0 0 {{ $rcTW }} {{ $rcTH }}" width="100%" height="{{ $rcTH }}" role="img" aria-label="{{ __('Évolution du score dans le temps') }}">
+                        <svg class="rc-chart" viewBox="0 0 {{ $rcTW }} {{ $rcTH }}" width="100%" role="img" aria-label="{{ __('Évolution du score dans le temps') }}">
+                            @foreach($rcTGrid as $rcTG)
+                                <line x1="{{ $rcTLeft }}" y1="{{ $rcTY($rcTG) }}" x2="{{ $rcTRight }}" y2="{{ $rcTY($rcTG) }}" stroke="rgba(255,255,255,0.12)" stroke-width="1" />
+                                <text x="{{ $rcTLeft - 6 }}" y="{{ $rcTY($rcTG) + 3 }}" font-size="9" fill="#9ca3af" text-anchor="end">{{ (int) $rcTG }}</text>
+                            @endforeach
                             <polygon points="{{ $rcTArea }}" fill="rgba(57,135,229,0.20)" stroke="none" />
                             <polyline points="{{ $rcTLine }}" fill="none" stroke="#3987e5" stroke-width="2" />
                             @foreach($rcTPts as $rcTPt)
                                 @php [$rcPx, $rcPy] = explode(',', $rcTPt); @endphp
                                 <circle cx="{{ $rcPx }}" cy="{{ $rcPy }}" r="2.5" fill="#3987e5" />
                             @endforeach
-                            <text x="{{ $rcTPad }}" y="{{ $rcTH - 2 }}" font-size="9" fill="#9ca3af">{{ \Carbon\Carbon::parse($rcTrend->first()->period_end)->format('d/m') }}</text>
-                            <text x="{{ $rcTW - $rcTPad }}" y="{{ $rcTH - 2 }}" font-size="9" fill="#9ca3af" text-anchor="end">{{ \Carbon\Carbon::parse($rcTrend->last()->period_end)->format('d/m') }}</text>
+                            <text x="{{ $rcTLeft }}" y="{{ $rcTH - 4 }}" font-size="9" fill="#9ca3af">{{ \Carbon\Carbon::parse($rcTrend->first()->period_end)->format('d/m') }}</text>
+                            <text x="{{ $rcTRight }}" y="{{ $rcTH - 4 }}" font-size="9" fill="#9ca3af" text-anchor="end">{{ \Carbon\Carbon::parse($rcTrend->last()->period_end)->format('d/m') }}</text>
                         </svg>
+                        </div>
                     @endif
 
                     @php
                         $rcMinutes = $roleEval['minutesByPosition'] ?? collect();
                     @endphp
                     @if($rcMinutes->isNotEmpty())
+                        <div class="fifa-stat-card rc-chart-card">
                         <h5 class="section">{{ __('Répartition des minutes par poste') }}</h5>
                         @php
                             $rcColors = ['#3987e5', '#d95926', '#199e70', '#5b6684', '#9085e9'];
@@ -924,8 +942,8 @@
                                 $rcStart = $rcEnd;
                             }
                         @endphp
-                        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-                            <svg viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="{{ __('Répartition des minutes jouées par poste') }}">
+                        <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+                            <svg viewBox="0 0 120 120" width="150" height="150" role="img" aria-label="{{ __('Répartition des minutes jouées par poste') }}">
                                 @foreach($rcSlices as $rcSlice)
                                     <path d="{{ $rcSlice['path'] }}" fill="{{ $rcSlice['color'] }}" />
                                 @endforeach
@@ -939,12 +957,13 @@
                                 @endforeach
                             </div>
                         </div>
+                        </div>
                     @endif
 
-                    <p>
+                    <p class="rc-footnote">
                         {{ __('Calculé le :date', ['date' => \Carbon\Carbon::parse($roleEval['computedAt'])->format('d/m/Y H:i')]) }}
                         @if($roleEval['configLabel'])
-                            &middot; {{ $roleEval['configLabel'] }}@if($roleEval['configStatus'] === 'draft') ({{ __('brouillon') }})@endif
+                            &middot; {{ $roleEval['configLabel'] }}@if($roleEval['configStatus'] === 'draft' && !\Illuminate\Support\Str::contains(mb_strtolower($roleEval['configLabel']), 'brouillon')) ({{ __('brouillon') }})@endif
                         @endif
                     </p>
                 @else
@@ -3135,6 +3154,39 @@ render();
             backdrop-filter: blur(10px);
         }
         
+        /* Cockpit « Rôle et apport » : colonne limitée et centrée, une
+           sous-carte (.fifa-stat-card) par graphique, SVG à pleine largeur. */
+        #role-evaluation-cockpit {
+            max-width: 520px;
+            margin: 20px auto 0;
+        }
+
+        #role-evaluation-cockpit .rc-chart-card {
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        #role-evaluation-cockpit .rc-chart-card h5 {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: #b9c2d4;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        #role-evaluation-cockpit svg.rc-chart {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        #role-evaluation-cockpit .rc-footnote {
+            margin: 14px 0 0 0;
+            font-size: 0.74rem;
+            color: #8b97ae;
+        }
+
         .fifa-medical-grid, .fifa-health-grid, .fifa-devices-grid, .fifa-doping-grid {
             display: flex;
             flex-direction: column;

@@ -62,7 +62,7 @@ final class MedicalSecretaryController extends Controller
             'athlete_id' => 'required|exists:athletes,id',
             'appointment_date' => 'required|date',
             'appointment_time' => 'required|date_format:H:i',
-            'appointment_type' => 'required|in:consultation,examination,follow_up,emergency',
+            'appointment_type' => 'required|in:consultation,follow_up,emergency,pre_season,post_match,rehabilitation,routine_checkup,injury_assessment,cardiac_evaluation,concussion_assessment',
             'doctor_id' => 'nullable|exists:users,id',
             'doctor_name' => 'nullable|string|max:255',
             'reason' => 'nullable|string|max:1000',
@@ -216,7 +216,10 @@ final class MedicalSecretaryController extends Controller
     {
         return match ($type) {
             'consultation' => 'Consultation médicale',
-            'examination' => 'Examen spécialisé',
+            'routine_checkup' => 'Contrôle médical',
+            'injury_assessment' => 'Évaluation de blessure',
+            'cardiac_evaluation' => 'Évaluation cardiaque',
+            'concussion_assessment' => 'Évaluation commotion',
             'follow_up' => 'Suivi médical',
             'emergency' => 'Consultation urgente',
             default => 'Rendez-vous médical',

@@ -36,8 +36,8 @@ final class MedicalSecretaryController extends Controller
 
         $stats = [
             'today' => $appointments->filter(fn ($a) => $a->appointment_date?->between($today, $tomorrow, false))->count(),
-            'waiting' => $appointments->where('status', 'waiting')->count(),
-            'in_consultation' => $appointments->where('status', 'in_progress')->count(),
+            'waiting' => $appointments->where('status', 'Enregistré')->count(),
+            'in_consultation' => $appointments->where('status', 'En cours')->count(),
             'documents_pending' => $recentDocuments->where('status', 'pending')->count(),
         ];
 
@@ -74,19 +74,16 @@ final class MedicalSecretaryController extends Controller
 
         Appointment::create([
             'athlete_id' => $athlete->id,
-            'fifa_connect_id' => $athlete->fifa_id,
             'doctor_id' => $validated['doctor_id'] ?? null,
-            'title' => $this->appointmentTitle($validated['appointment_type']),
-            'description' => $validated['reason'] ?? null,
+            'created_by' => auth()->id(),
             'appointment_date' => $appointmentAt,
-            'status' => 'scheduled',
-            'type' => $validated['appointment_type'],
-            'location' => 'Centre médical',
+            'duration_minutes' => 30,
+            'appointment_type' => $validated['appointment_type'],
+            'status' => 'Planifié',
+            'reason' => $validated['reason'] ?? null,
             'notes' => $validated['notes'] ?? null,
-            'metadata' => [
-                'created_by_secretary' => auth()->id(),
+            'reminder_settings' => [
                 'doctor_name' => $validated['doctor_name'] ?? null,
-                'reason' => $validated['reason'] ?? null,
                 'player_id' => $athlete->player_id,
             ],
         ]);
@@ -127,8 +124,8 @@ final class MedicalSecretaryController extends Controller
                 'athlete_id' => $appointment->athlete_id,
                 'doctor_id' => $appointment->doctor_id,
                 'visit_date' => $appointment->appointment_date,
-                'visit_type' => $appointment->type ?: 'consultation',
-                'status' => 'waiting',
+                'visit_type' => $appointment->appointment_type ?: 'consultation',
+                'status' => 'Enregistré',
                 'notes' => $validated['secretary_notes'] ?? null,
                 'administrative_data' => [
                     'checked_in_at' => now()->toIso8601String(),
@@ -146,14 +143,14 @@ final class MedicalSecretaryController extends Controller
             ]);
             $visit->save();
 
-            $metadata = $appointment->metadata ?? [];
-            $metadata['checked_in_at'] = now()->toIso8601String();
-            $metadata['dossier_state'] = $dossier ? 'existing' : 'to_initialize';
-            $metadata['visit_id'] = $visit->id;
+            $settings = $appointment->reminder_settings ?? [];
+            $settings['checked_in_at'] = now()->toIso8601String();
+            $settings['dossier_state'] = $dossier ? 'existing' : 'to_initialize';
+            $settings['visit_id'] = $visit->id;
 
             $appointment->update([
-                'status' => 'waiting',
-                'metadata' => $metadata,
+                'status' => 'Enregistré',
+                'reminder_settings' => $settings,
             ]);
         });
 
@@ -170,8 +167,8 @@ final class MedicalSecretaryController extends Controller
         abort_unless($visit, 422, 'Le pré-accueil doit être terminé avant la consultation.');
 
         DB::transaction(function () use ($appointment, $visit) {
-            $visit->update(['status' => 'in_progress']);
-            $appointment->update(['status' => 'in_progress']);
+            $visit->update(['status' => 'En cours']);
+            $appointment->update(['status' => 'En cours']);
         });
 
         return redirect()->route('health-records.create', [

@@ -96,7 +96,11 @@ final class MedicalVigilanceModelRegistry
         $missing = [];
 
         foreach ($required as $key => $label) {
-            (!empty($availability[$key]) ? $present : $missing)[] = $label;
+            if (!empty($availability[$key])) {
+                $present[] = $label;
+            } else {
+                $missing[] = $label;
+            }
         }
 
         $total = max(1, count($required));

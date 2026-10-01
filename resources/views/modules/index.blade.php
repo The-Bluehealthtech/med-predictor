@@ -433,6 +433,7 @@ function handleModuleClick(route, moduleName, event) {
         'analytics.digital-twin': '/analytics/digital-twin',
         'performances.analytics': '/performances/analytics',
         'performances.fit-metrics': '/performances/fit-metrics',
+        'modules.coach-cockpit': '/modules/coach-cockpit',
         'dtn.index': '/dtn',
         'rpm.index': '/rpm',
         'gemini.index': '/gemini',

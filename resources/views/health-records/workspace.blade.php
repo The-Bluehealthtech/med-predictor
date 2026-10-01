@@ -72,6 +72,7 @@
         @php
             $vigilanceStyles = [
                 'clear' => ['bg'=>'bg-emerald-50','border'=>'border-emerald-200','text'=>'text-emerald-800','badge'=>'bg-emerald-100 text-emerald-800','label'=>'Cohérent'],
+                'incomplete' => ['bg'=>'bg-sky-50','border'=>'border-sky-200','text'=>'text-sky-900','badge'=>'bg-sky-100 text-sky-900','label'=>'Données insuffisantes'],
                 'review' => ['bg'=>'bg-amber-50','border'=>'border-amber-200','text'=>'text-amber-900','badge'=>'bg-amber-100 text-amber-900','label'=>'À vérifier'],
                 'attention' => ['bg'=>'bg-red-50','border'=>'border-red-200','text'=>'text-red-900','badge'=>'bg-red-100 text-red-900','label'=>'Attention'],
             ];
@@ -107,18 +108,37 @@
                                     $flagClass = match($flag['severity']) {
                                         'attention' => 'text-red-800',
                                         'review' => 'text-amber-900',
+                                        'incomplete' => 'text-sky-900',
                                         default => 'text-slate-600',
                                     };
                                 @endphp
                                 <div class="flex gap-2 text-sm {{ $flagClass }}">
-                                    <span class="mt-0.5">{{ $flag['severity']==='attention' ? '!' : ($flag['severity']==='review' ? '•' : 'i') }}</span>
-                                    <span>{{ $flag['label'] }}</span>
+                                    <span class="mt-0.5">{{ $flag['severity']==='attention' ? '!' : ($flag['severity']==='review' ? '•' : ($flag['severity']==='incomplete' ? '○' : 'i')) }}</span>
+                                    <span>
+                                        {{ $flag['label'] }}
+                                        @if(!empty($flag['source']))
+                                            <span class="block mt-0.5 text-[11px] text-slate-500">Source de règle : {{ $flag['source'] }}</span>
+                                        @endif
+                                    </span>
                                 </div>
                             @endforeach
                             @foreach($axis['confirmed'] as $item)
                                 <div class="flex gap-2 text-sm text-emerald-800"><span>✓</span><span>{{ $item }}</span></div>
                             @endforeach
                             <p class="text-xs text-slate-500 leading-5 pt-2">{{ $axis['notice'] }}</p>
+                            @if(!empty($axis['references']))
+                                <div class="pt-3 border-t border-black/5">
+                                    <div class="text-[11px] uppercase tracking-wide font-semibold text-slate-500 mb-2">Référentiels externes</div>
+                                    <div class="space-y-1.5">
+                                        @foreach($axis['references'] as $reference)
+                                            <a href="{{ $reference['url'] }}" target="_blank" rel="noopener noreferrer"
+                                               class="block text-xs text-blue-700 hover:text-blue-900 hover:underline">
+                                                {{ $reference['title'] }} ↗
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </details>
                 @endforeach

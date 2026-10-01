@@ -10,7 +10,7 @@
             <h1 class="text-3xl font-bold text-gray-900 mt-2">Nouvelle visite médicale</h1>
             <p class="text-gray-600 mt-1">Documentez la consultation du jour. Les examens spécialisés peuvent être ajoutés ensuite si nécessaire.</p>
         </div>
-        <a href="{{ route('health-records.create-legacy', request()->query()) }}"
+        <a href="{{ route('health-records.create', array_merge(request()->query(), ['advanced' => 1])) }}"
            class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
             Mode avancé / ancien formulaire
         </a>

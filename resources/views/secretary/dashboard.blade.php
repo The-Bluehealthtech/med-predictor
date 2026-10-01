@@ -1,288 +1,171 @@
 @extends('layouts.secretary')
 
-@section('title', __('secretary.dashboard_title'))
+@section('title', 'Secrétariat médical')
 
 @section('content')
-<div id="secretary-dashboard">
-    <!-- En-tête -->
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">{{ __('secretary.dashboard_heading') }}</h1>
-        <p class="text-gray-600 mt-2">{{ __('secretary.dashboard_subtitle') }}</p>
-    </div>
+<div class="max-w-7xl mx-auto space-y-6">
+    <header class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+        <div>
+            <div class="text-xs uppercase tracking-[0.14em] font-semibold text-blue-700">Parcours patient</div>
+            <h1 class="text-3xl font-bold text-slate-950 mt-2">Secrétariat médical</h1>
+            <p class="text-slate-600 mt-2 max-w-2xl">Organiser l’arrivée du joueur, préparer son dossier et assurer le passage de relais au médecin.</p>
+        </div>
+        <button type="button" onclick="document.getElementById('new-appointment-panel').classList.toggle('hidden')"
+                class="px-4 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">
+            + Nouveau rendez-vous
+        </button>
+    </header>
 
-    <!-- Statistiques -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                    <i class="fas fa-calendar-alt text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">{{ __('secretary.stat_appointments') }}</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_appointments'] }}</p>
-                </div>
+    @if(session('success'))
+        <div class="px-4 py-3 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm">{{ session('success') }}</div>
+    @endif
+
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="bg-white border rounded-2xl p-4">
+            <div class="text-xs uppercase tracking-wide text-slate-400 font-semibold">Aujourd’hui</div>
+            <div class="mt-1 text-2xl font-bold text-slate-950">{{ $stats['today'] }}</div>
+            <div class="text-sm text-slate-500">rendez-vous</div>
+        </div>
+        <div class="bg-white border rounded-2xl p-4">
+            <div class="text-xs uppercase tracking-wide text-slate-400 font-semibold">Salle d’attente</div>
+            <div class="mt-1 text-2xl font-bold text-amber-700">{{ $stats['waiting'] }}</div>
+            <div class="text-sm text-slate-500">joueur(s)</div>
+        </div>
+        <div class="bg-white border rounded-2xl p-4">
+            <div class="text-xs uppercase tracking-wide text-slate-400 font-semibold">Chez le médecin</div>
+            <div class="mt-1 text-2xl font-bold text-blue-700">{{ $stats['in_consultation'] }}</div>
+            <div class="text-sm text-slate-500">consultation(s)</div>
+        </div>
+        <div class="bg-white border rounded-2xl p-4">
+            <div class="text-xs uppercase tracking-wide text-slate-400 font-semibold">Documents</div>
+            <div class="mt-1 text-2xl font-bold text-slate-950">{{ $stats['documents_pending'] }}</div>
+            <div class="text-sm text-slate-500">à intégrer</div>
+        </div>
+    </section>
+
+    <section id="new-appointment-panel" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b">
+            <h2 class="font-semibold text-slate-900">Planifier un rendez-vous médical</h2>
+            <p class="text-sm text-slate-500 mt-1">Le motif du rendez-vous oriente le parcours, sans créer encore d’acte médical.</p>
+        </div>
+        <form method="POST" action="{{ route('secretary.appointments.store') }}" class="p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            @csrf
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Joueur</label>
+                <select name="athlete_id" required class="w-full rounded-xl border-slate-300">
+                    <option value="">Sélectionner</option>
+                    @foreach($athletes as $athlete)
+                        <option value="{{ $athlete->id }}">{{ $athlete->name }}</option>
+                    @endforeach
+                </select>
             </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-green-100 text-green-600">
-                    <i class="fas fa-clock text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">{{ __('secretary.stat_upcoming') }}</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ $stats['upcoming_appointments'] }}</p>
-                </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                <input type="date" name="appointment_date" required class="w-full rounded-xl border-slate-300">
             </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                    <i class="fas fa-file-medical text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">{{ __('secretary.stat_documents') }}</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_documents'] }}</p>
-                </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Heure</label>
+                <input type="time" name="appointment_time" required class="w-full rounded-xl border-slate-300">
             </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                    <i class="fas fa-hourglass-half text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">{{ __('secretary.stat_pending') }}</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ $stats['pending_documents'] }}</p>
-                </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Objet</label>
+                <select name="appointment_type" required class="w-full rounded-xl border-slate-300">
+                    <option value="consultation">Consultation</option>
+                    <option value="follow_up">Suivi</option>
+                    <option value="examination">Examen spécialisé</option>
+                    <option value="emergency">Urgence</option>
+                </select>
             </div>
-        </div>
-    </div>
-
-    <!-- Actions Rapides -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                <i class="fas fa-plus-circle text-blue-600 mr-2"></i>
-                {{ __('secretary.quick_actions') }}
-            </h3>
-            <div class="space-y-3">
-                <button @click="showAppointmentModal = true" 
-                        class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-                    <i class="fas fa-calendar-plus mr-2"></i>
-                    {{ __('secretary.new_appointment') }}
-                </button>
-                <button @click="showDocumentModal = true" 
-                        class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
-                    <i class="fas fa-upload mr-2"></i>
-                    {{ __('secretary.upload_document') }}
-                </button>
-                <button @click="showAthleteSearch = true" 
-                        class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
-                    <i class="fas fa-search mr-2"></i>
-                    {{ __('secretary.search_athlete') }}
-                </button>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Motif administratif</label>
+                <input name="reason" class="w-full rounded-xl border-slate-300" placeholder="Ex. douleur genou, contrôle pré-compétition, suivi…">
             </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                <i class="fas fa-chart-line text-green-600 mr-2"></i>
-                {{ __('secretary.today') }}
-            </h3>
-            <div class="space-y-2">
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600">{{ __('secretary.appointments_today') }}</span>
-                    <span class="text-sm font-medium text-gray-900">{{ $stats['upcoming_appointments'] }}</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600">{{ __('secretary.documents_pending') }}</span>
-                    <span class="text-sm font-medium text-gray-900">{{ $stats['pending_documents'] }}</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600">{{ __('secretary.ai_analyses') }}</span>
-                    <span class="text-sm font-medium text-gray-900">0</span>
-                </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Médecin</label>
+                <select name="doctor_id" class="w-full rounded-xl border-slate-300">
+                    <option value="">À attribuer</option>
+                    @foreach($doctors as $doctor)<option value="{{ $doctor->id }}">{{ $doctor->name }}</option>@endforeach
+                </select>
             </div>
-        </div>
-    </div>
+            <div class="flex items-end">
+                <button class="w-full px-4 py-2.5 rounded-xl bg-slate-900 text-white font-semibold">Enregistrer le rendez-vous</button>
+            </div>
+        </form>
+    </section>
 
-    <!-- Rendez-vous Récents -->
-    <div class="bg-white rounded-lg shadow mb-8">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">
-                <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>
-                {{ __('secretary.recent_appointments') }}
-            </h3>
+    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b">
+            <h2 class="font-semibold text-slate-950">Flux des patients</h2>
+            <p class="text-sm text-slate-500 mt-1">Le statut indique l’étape réelle du parcours de soins.</p>
         </div>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_athlete') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_date') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_type') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_status') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_actions') }}</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($recentAppointments as $appointment)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10">
-                                    <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                        <i class="fas fa-user text-gray-600"></i>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ $appointment->athlete->name ?? __('secretary.unknown_player') }}</div>
-                                    <div class="text-sm text-gray-500">{{ $appointment->athlete->fifa_id ?? 'N/A' }}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {{ $appointment->appointment_date ? $appointment->appointment_date->format('d/m/Y H:i') : __('secretary.date_undefined') }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
-                                {{ $appointment->type === 'consultation' ? 'bg-blue-100 text-blue-800' : 
-                                   ($appointment->type === 'examination' ? 'bg-green-100 text-green-800' : 
-                                   ($appointment->type === 'emergency' ? 'bg-red-100 text-red-800' : 
-                                   ($appointment->type === 'follow_up' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'))) }}">
-                                {{ ucfirst($appointment->type ?? __('secretary.undefined')) }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
-                                {{ $appointment->status === 'confirmed' ? 'bg-green-100 text-green-800' : 
-                                   ($appointment->status === 'scheduled' ? 'bg-yellow-100 text-yellow-800' : 
-                                   ($appointment->status === 'cancelled' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')) }}">
-                                {{ ucfirst($appointment->status ?? __('secretary.undefined')) }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button class="text-blue-600 hover:text-blue-900 mr-2">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-900">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                            {{ __('secretary.no_upcoming_appointments') }}
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
 
-    <!-- Documents Récents -->
-    <div class="bg-white rounded-lg shadow">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">
-                <i class="fas fa-file-medical text-green-600 mr-2"></i>
-                {{ __('secretary.recent_documents') }}
-            </h3>
+        <div class="divide-y divide-slate-100">
+            @forelse($recentAppointments as $appointment)
+                @php
+                    $player = $appointment->athlete?->player;
+                    $status = $appointment->status;
+                    $badge = match($status) {
+                        'Enregistré' => 'bg-amber-50 text-amber-800',
+                        'En cours' => 'bg-blue-50 text-blue-800',
+                        'Terminé' => 'bg-emerald-50 text-emerald-800',
+                        'Annulé','No-show' => 'bg-red-50 text-red-700',
+                        default => 'bg-slate-100 text-slate-700',
+                    };
+                @endphp
+                <div class="p-5 grid grid-cols-1 lg:grid-cols-[minmax(220px,1fr)_180px_170px_1fr_auto] gap-4 lg:items-center">
+                    <div>
+                        <div class="font-semibold text-slate-900">{{ $player?->full_name ?? $appointment->athlete?->name ?? 'Joueur' }}</div>
+                        <div class="text-sm text-slate-500 mt-0.5">{{ $player?->club?->name ?? '' }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs uppercase tracking-wide text-slate-400">Rendez-vous</div>
+                        <div class="text-sm text-slate-800 mt-1">{{ $appointment->appointment_date?->format('d/m/Y H:i') }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs uppercase tracking-wide text-slate-400">Objet</div>
+                        <div class="text-sm text-slate-800 mt-1">{{ $appointment->type_label }}</div>
+                    </div>
+                    <div>
+                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold {{ $badge }}">{{ $appointment->status_label }}</span>
+                        @if($appointment->reason)<div class="text-xs text-slate-500 mt-2 line-clamp-2">{{ $appointment->reason }}</div>@endif
+                    </div>
+                    <div class="flex flex-wrap gap-2 lg:justify-end">
+                        @if(in_array($status, ['Planifié','Confirmé']))
+                            <a href="{{ route('secretary.appointments.intake', $appointment) }}"
+                               class="px-3 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold">Pré-accueil</a>
+                        @elseif($status === 'Enregistré')
+                            <a href="{{ route('secretary.appointments.intake', $appointment) }}"
+                               class="px-3 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-slate-700">Documents</a>
+                            <span class="px-3 py-2 rounded-lg bg-amber-50 text-amber-800 text-sm font-semibold">En attente médecin</span>
+                        @elseif($status === 'En cours')
+                            <span class="px-3 py-2 rounded-lg bg-blue-50 text-blue-800 text-sm font-semibold">Consultation en cours</span>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="p-12 text-center text-slate-500">Aucun rendez-vous médical à venir.</div>
+            @endforelse
         </div>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_document') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_athlete') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_type') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_status') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('secretary.col_actions') }}</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($recentDocuments as $document)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10">
-                                    <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                        <i class="fas fa-file text-gray-600"></i>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ $document->file_name ?? __('secretary.unnamed_document') }}</div>
-                                    <div class="text-sm text-gray-500">{{ $document->file_size ?? __('secretary.unknown_size') }}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $document->player->name ?? 'N/A' }}</div>
-                            <div class="text-sm text-gray-500">{{ $document->player->fifa_connect_id ?? 'N/A' }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                {{ ucfirst($document->medical_record_type ?? __('secretary.unknown_type')) }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
-                                {{ $document->status === 'analyzed' ? 'bg-green-100 text-green-800' : 
-                                   ($document->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
-                                {{ ucfirst($document->status ?? __('secretary.undefined')) }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button class="text-blue-600 hover:text-blue-900 mr-2">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="text-green-600 hover:text-green-900 mr-2">
-                                <i class="fas fa-brain"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-900">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                            {{ __('secretary.no_recent_documents') }}
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b">
+            <h2 class="font-semibold text-slate-950">Documents récemment collectés</h2>
+            <p class="text-sm text-slate-500 mt-1">Pièces fournies au secrétariat pour être disponibles pendant la prise en charge.</p>
         </div>
-    </div>
+        <div class="divide-y">
+            @forelse($recentDocuments as $document)
+                <div class="px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div>
+                        <div class="text-sm font-medium text-slate-900">{{ $document->file_name }}</div>
+                        <div class="text-xs text-slate-500 mt-1">{{ $document->visit?->athlete?->player?->full_name ?? $document->visit?->athlete?->name ?? 'Joueur' }} · {{ $document->document_type_label }}</div>
+                    </div>
+                    <span class="text-xs text-slate-400">{{ $document->created_at?->format('d/m/Y H:i') }}</span>
+                </div>
+            @empty
+                <div class="p-6 text-sm text-slate-500">Aucun document collecté.</div>
+            @endforelse
+        </div>
+    </section>
 </div>
-
-<!-- Modals -->
-@include('secretary.partials.appointment-modal')
-@include('secretary.partials.document-modal')
-@include('secretary.partials.athlete-search-modal')
-
-@push('scripts')
-<script>
-const { createApp, ref } = Vue;
-
-createApp({
-    setup() {
-        const showAppointmentModal = ref(false);
-        const showDocumentModal = ref(false);
-        const showAthleteSearch = ref(false);
-
-        return {
-            showAppointmentModal,
-            showDocumentModal,
-            showAthleteSearch
-        };
-    }
-}).mount('#secretary-dashboard');
-</script>
-@endpush
-@endsection 
+@endsection

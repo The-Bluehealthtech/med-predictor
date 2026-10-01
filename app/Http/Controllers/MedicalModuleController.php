@@ -14,19 +14,48 @@ final class MedicalModuleController extends Controller
     }
     public function index(Request $request)
     {
-        $query=$this->players()->with('club');
-        $search=trim((string)$request->query('q',''));
-        if($search!=='') $query->where(function($q)use($search){
-            $q->where('first_name','like','%'.$search.'%')->orWhere('last_name','like','%'.$search.'%');
-        });
-        $players=$query->orderBy('last_name')->orderBy('first_name')->paginate(25)->withQueryString();
-        $records=app(HealthcareController::class)->query();
-        $pcmas=app(MedicalRecordAccess::class)->scope(auth()->user(),PCMA::query());
-        // Compter des dossiers, jamais assimiler une prédiction à une autorisation.
-        $stats=['records'=>(clone $records)->count(), 'pcmas'=>(clone $pcmas)->count(),
-            'pending'=>(clone $pcmas)->where('status','pending')->count()];
-        $recentRecords=$records->with('player')->orderByDesc('record_date')->orderByDesc('id')->limit(5)->get();
-        return view('modules.medical.index',compact('players','stats','recentRecords','search'));
+        $search = trim((string) $request->query('q', ''));
+
+        $query = $this->players()
+            ->with(['club', 'latestHealthRecord'])
+            ->withCount('healthRecords');
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', '%' . $search . '%')
+                    ->orWhere('last_name', 'like', '%' . $search . '%')
+                    ->orWhere('name', 'like', '%' . $search . '%');
+            });
+        }
+
+        $players = $query
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->paginate(20)
+            ->withQueryString();
+
+        $records = app(HealthcareController::class)->query();
+
+        $todayVisits = (clone $records)
+            ->whereDate('visit_date', now()->toDateString())
+            ->count();
+
+        $followUpsDue = (clone $records)
+            ->whereNotNull('next_checkup_date')
+            ->whereDate('next_checkup_date', '<=', now()->toDateString())
+            ->count();
+
+        $patientsFollowed = (clone $records)
+            ->distinct('player_id')
+            ->count('player_id');
+
+        return view('modules.medical.index', compact(
+            'players',
+            'search',
+            'todayVisits',
+            'followUpsDue',
+            'patientsFollowed'
+        ));
     }
     public function show($id)
     {

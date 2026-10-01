@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dossier médical longitudinal - Med Predictor')
+@section('title', 'Tableau de bord santé - Med Predictor')
 
 @section('content')
 @php
@@ -39,14 +39,10 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('health-records.create', ['player_id'=>$healthRecord->player_id]) }}"
+                <button type="button" data-medical-workspace-tab-target="exams"
                    class="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">
-                    + Nouvelle visite
-                </a>
-                <a href="{{ route('health-records.edit', $healthRecord) }}"
-                   class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
-                    Modifier cette visite
-                </a>
+                    + Ajouter un module
+                </button>
                 <a href="{{ route('health-records.show', ['healthRecord'=>$healthRecord,'legacy'=>1]) }}"
                    class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
                     Mode détaillé
@@ -57,9 +53,9 @@
         <div class="border-t bg-slate-50 px-4 overflow-x-auto">
             <nav class="flex gap-1 min-w-max" aria-label="Dossier médical">
                 @foreach([
-                    'summary'=>'Synthèse',
-                    'visits'=>'Visites',
-                    'exams'=>'Examens',
+                    'summary'=>'Tableau de bord',
+                    'visits'=>'Parcours de soins',
+                    'exams'=>'Modules spécialisés',
                     'documents'=>'Documents'
                 ] as $tab=>$label)
                     <button type="button" data-medical-workspace-tab="{{ $tab }}"
@@ -106,7 +102,7 @@
                 <div class="px-5 py-4 border-b flex items-center justify-between">
                     <div>
                         <h2 class="font-semibold text-gray-900">Chronologie récente</h2>
-                        <p class="text-sm text-gray-500">Les derniers épisodes cliniques du joueur.</p>
+                        <p class="text-sm text-gray-500">Historique des prises en charge et mises à jour du dossier.</p>
                     </div>
                     <button type="button" data-medical-workspace-tab-target="visits" class="text-sm text-blue-600 hover:text-blue-800">Tout voir</button>
                 </div>
@@ -158,10 +154,10 @@
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div class="px-6 py-4 border-b flex items-center justify-between">
                 <div>
-                    <h2 class="font-semibold text-gray-900">Visites médicales</h2>
-                    <p class="text-sm text-gray-500">Chaque ligne correspond à un épisode clinique distinct.</p>
+                    <h2 class="font-semibold text-gray-900">Parcours de soins</h2>
+                    <p class="text-sm text-gray-500">Historique des consultations ayant contribué au dossier longitudinal.</p>
                 </div>
-                <a href="{{ route('health-records.create', ['player_id'=>$healthRecord->player_id]) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold">+ Nouvelle visite</a>
+                
             </div>
             <div class="divide-y">
                 @forelse($records as $record)
@@ -185,44 +181,109 @@
         </div>
     </section>
 
-    <section data-medical-workspace-panel="exams" class="hidden space-y-5">
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            <a href="{{ route('health-records.show', ['healthRecord'=>$healthRecord,'legacy'=>1,'tab'=>'postural']) }}" class="bg-white border rounded-xl p-5 hover:border-blue-400">
-                <div class="text-2xl mb-3">🧍</div>
-                <div class="font-semibold text-gray-900">Évaluation posturale</div>
-                <div class="text-sm text-gray-500 mt-1">{{ $posturalAssessments->count() }} évaluation(s)</div>
-                <div class="text-sm text-blue-600 mt-4">Ouvrir le module →</div>
-            </a>
-            <a href="{{ route('pcma.index') }}" class="bg-white border rounded-xl p-5 hover:border-blue-400">
-                <div class="text-2xl mb-3">🩺</div>
-                <div class="font-semibold text-gray-900">PCMA</div>
-                <div class="text-sm text-gray-500 mt-1">{{ $pcmaRecords->count() }} examen(s)</div>
-                <div class="text-sm text-blue-600 mt-4">Ouvrir les PCMA →</div>
-            </a>
-            <a href="{{ route('health-records.edit', $healthRecord) }}#injuries" class="bg-white border rounded-xl p-5 hover:border-blue-400">
-                <div class="text-2xl mb-3">🦵</div>
-                <div class="font-semibold text-gray-900">Blessures / F-MARC</div>
-                <div class="text-sm text-gray-500 mt-1">{{ count($sectionHistory['fmarc'] ?? []) }} entrée(s)</div>
-                <div class="text-sm text-blue-600 mt-4">Ajouter / consulter →</div>
-            </a>
-            <a href="{{ route('health-records.edit', $healthRecord) }}#scat" class="bg-white border rounded-xl p-5 hover:border-blue-400">
-                <div class="text-2xl mb-3">🧠</div>
-                <div class="font-semibold text-gray-900">SCAT</div>
-                <div class="text-sm text-gray-500 mt-1">{{ count($sectionHistory['scat'] ?? []) }} évaluation(s)</div>
-                <div class="text-sm text-blue-600 mt-4">Ajouter / consulter →</div>
-            </a>
-            <a href="{{ route('health-records.edit', $healthRecord) }}#imaging" class="bg-white border rounded-xl p-5 hover:border-blue-400">
-                <div class="text-2xl mb-3">🩻</div>
-                <div class="font-semibold text-gray-900">Imagerie</div>
-                <div class="text-sm text-gray-500 mt-1">{{ count($sectionHistory['imaging'] ?? []) }} examen(s)</div>
-                <div class="text-sm text-blue-600 mt-4">Ajouter / consulter →</div>
-            </a>
-            <a href="{{ route('health-records.show', ['healthRecord'=>$healthRecord,'legacy'=>1,'tab'=>'dental']) }}" class="bg-white border rounded-xl p-5 hover:border-blue-400">
-                <div class="text-2xl mb-3">🦷</div>
-                <div class="font-semibold text-gray-900">Dentaire</div>
-                <div class="text-sm text-gray-500 mt-1">Odontogramme et suivi dentaire</div>
-                <div class="text-sm text-blue-600 mt-4">Ouvrir le module →</div>
-            </a>
+    <section data-medical-workspace-panel="exams" class="hidden space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div>
+                    <h2 class="font-semibold text-gray-900">Modules spécialisés du dossier</h2>
+                    <p class="text-sm text-gray-500 mt-1">Chaque module ajoute son historique au même dossier santé du joueur.</p>
+                </div>
+                <div class="text-xs px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 font-semibold">Dossier de base #{{ $healthRecord->id }}</div>
+            </div>
+        </div>
+
+        <div>
+            <div class="mb-3">
+                <div class="text-xs uppercase tracking-[0.14em] font-semibold text-slate-400">Prévention médicale</div>
+                <p class="text-sm text-slate-500 mt-1">Évaluations préventives et aptitude.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <a href="{{ route('pcma.create', ['player_id'=>$healthRecord->player_id]) }}" class="module-card">
+                    <div class="module-icon">🩺</div>
+                    <div>
+                        <div class="font-semibold text-slate-900">PCMA</div>
+                        <div class="text-sm text-slate-500 mt-1">{{ $pcmaRecords->count() }} évaluation(s)</div>
+                    </div>
+                    <span class="module-arrow">→</span>
+                </a>
+                <a href="{{ route('health-records.modules.show', ['healthRecord'=>$healthRecord,'module'=>'dental']) }}" class="module-card">
+                    <div class="module-icon">🦷</div>
+                    <div>
+                        <div class="font-semibold text-slate-900">Dentaire</div>
+                        <div class="text-sm text-slate-500 mt-1">{{ count($sectionHistory['dental'] ?? []) }} entrée(s)</div>
+                    </div>
+                    <span class="module-arrow">→</span>
+                </a>
+                <a href="{{ route('health-records.show', ['healthRecord'=>$healthRecord,'legacy'=>1,'tab'=>'postural']) }}" class="module-card">
+                    <div class="module-icon">🧍</div>
+                    <div>
+                        <div class="font-semibold text-slate-900">Posture</div>
+                        <div class="text-sm text-slate-500 mt-1">{{ $posturalAssessments->count() }} évaluation(s)</div>
+                    </div>
+                    <span class="module-arrow">→</span>
+                </a>
+            </div>
+        </div>
+
+        <div>
+            <div class="mb-3">
+                <div class="text-xs uppercase tracking-[0.14em] font-semibold text-slate-400">Suivi médical</div>
+                <p class="text-sm text-slate-500 mt-1">Blessures, commotions, pathologies, cardiologie et imagerie.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                @foreach([
+                    ['fmarc','🦵','Blessures / F-MARC'],
+                    ['scat','🧠','SCAT / commotion'],
+                    ['illness','🩹','Pathologies / maladie'],
+                    ['mapa','❤️','MAPA'],
+                    ['ecg_effort','📈','ECG d’effort'],
+                    ['imaging','🩻','Imagerie'],
+                    ['mri','🧲','IRM'],
+                    ['scintigraphy','☢️','Scintigraphie'],
+                ] as [$key,$icon,$label])
+                    <a href="{{ route('health-records.modules.show', ['healthRecord'=>$healthRecord,'module'=>$key]) }}" class="module-card">
+                        <div class="module-icon">{{ $icon }}</div>
+                        <div>
+                            <div class="font-semibold text-slate-900">{{ $label }}</div>
+                            <div class="text-sm text-slate-500 mt-1">{{ count($sectionHistory[$key] ?? []) }} entrée(s)</div>
+                        </div>
+                        <span class="module-arrow">→</span>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+        <div>
+            <div class="mb-3">
+                <div class="text-xs uppercase tracking-[0.14em] font-semibold text-slate-400">Anti-dopage & biologie</div>
+                <p class="text-sm text-slate-500 mt-1">Démarches réglementaires et données biologiques.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <a href="{{ route('medical-aut.choose', ['player_id'=>$healthRecord->player_id]) }}" class="module-card">
+                    <div class="module-icon">📄</div>
+                    <div>
+                        <div class="font-semibold text-slate-900">AUT</div>
+                        <div class="text-sm text-slate-500 mt-1">{{ $autRequests->count() }} demande(s)</div>
+                    </div>
+                    <span class="module-arrow">→</span>
+                </a>
+                <a href="{{ route('health-records.modules.show', ['healthRecord'=>$healthRecord,'module'=>'biological']) }}" class="module-card">
+                    <div class="module-icon">🧬</div>
+                    <div>
+                        <div class="font-semibold text-slate-900">Profil biologique</div>
+                        <div class="text-sm text-slate-500 mt-1">{{ count($sectionHistory['biological'] ?? []) }} entrée(s)</div>
+                    </div>
+                    <span class="module-arrow">→</span>
+                </a>
+                <a href="{{ route('health-records.modules.show', ['healthRecord'=>$healthRecord,'module'=>'laboratory']) }}" class="module-card">
+                    <div class="module-icon">🧪</div>
+                    <div>
+                        <div class="font-semibold text-slate-900">Laboratoire</div>
+                        <div class="text-sm text-slate-500 mt-1">{{ count($sectionHistory['laboratory'] ?? []) }} entrée(s)</div>
+                    </div>
+                    <span class="module-arrow">→</span>
+                </a>
+            </div>
         </div>
     </section>
 
@@ -249,6 +310,13 @@
         </div>
     </section>
 </div>
+
+<style>
+#medical-workspace .module-card{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.9rem;background:#fff;border:1px solid #e2e8f0;border-radius:.85rem;padding:1rem;transition:.15s}
+#medical-workspace .module-card:hover{border-color:#93c5fd;box-shadow:0 2px 8px rgba(15,23,42,.06);transform:translateY(-1px)}
+#medical-workspace .module-icon{width:2.5rem;height:2.5rem;border-radius:.7rem;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:1.15rem}
+#medical-workspace .module-arrow{color:#94a3b8;font-weight:700}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {

@@ -81,6 +81,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\RoleEvaluationComputeCommand::class,
         \App\Console\Commands\MigrateLegacyPosturalDataCommand::class,
         \App\Console\Commands\RoleEvaluationComputeHistoryCommand::class,
+        \App\Console\Commands\SeedDemoNationalSelections::class,
     ];
 
     /**

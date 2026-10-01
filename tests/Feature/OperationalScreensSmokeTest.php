@@ -48,10 +48,19 @@ class OperationalScreensSmokeTest extends TestCase
         $performance = new \App\Models\PlayerPerformance();
         $performance->performance_date = '2026-09-25';
         $this->assertInstanceOf(\Carbon\CarbonInterface::class, $performance->performance_date);
-        $dtn = view('dtn.index-canonical', [
-            'recentPerformances' => collect([$performance]),
-            'stats' => array_fill_keys(['players', 'clubs', 'teams',
-                'competitions', 'performance_records', 'players_with_performance'], 0),
+        // Outil DTN : liste des sélections nationales (dates au format français).
+        $selection = new \App\Models\NationalSelection([
+            'team_label' => 'Équipe nationale A', 'event_type' => 'friendly', 'event_name' => 'Fenêtre internationale',
+            'start_date' => '2026-09-25', 'end_date' => '2026-09-30', 'status' => 'convoked',
+        ]);
+        $selection->id = 1;
+        $selection->setRelation('player', new \App\Models\Player(['first_name' => 'Test', 'last_name' => 'Joueur']));
+        $selection->setRelation('club', null);
+        $selection->setRelation('departure', null);
+        $selection->setRelation('returnReport', null);
+        $dtn = view('dtn.index', [
+            'todo' => collect([$selection]), 'ongoing' => collect(), 'history' => collect(),
+            'canConvoke' => false, 'side' => 'club',
         ])->render();
         $this->assertStringContainsString('25/09/2026', $dtn);
     }

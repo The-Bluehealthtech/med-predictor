@@ -192,8 +192,9 @@ class GateServiceProvider extends ServiceProvider
             return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'club_admin', 'referee']);
         });
 
+        // Outil DTN : staff des clubs et Direction technique nationale (règles dans DtnAccess).
         Gate::define('access-dtn', function ($user) {
-            return in_array($user->role, ['system_admin', 'association_admin', 'admin', 'referee']);
+            return app(\App\Services\Dtn\DtnAccess::class)->canUseTool($user);
         });
 
         Gate::define('access-rpm', function ($user) {

@@ -70,6 +70,21 @@ Route::get(
     'permission.unified:record-performance-metrics',
 ])->name('performances.fit-metrics');
 
+// DTN (mêmes routes qu'en production) : sélections nationales, partage de données club ↔ Direction technique nationale
+Route::get(
+    '/dtn',
+    [\App\Http\Controllers\DtnController::class, 'index']
+)->middleware(['auth'])->name('dtn.index');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dtn/selections/create', [\App\Http\Controllers\DtnController::class, 'create'])->name('dtn.selections.create');
+    Route::post('/dtn/selections', [\App\Http\Controllers\DtnController::class, 'store'])->name('dtn.selections.store');
+    Route::get('/dtn/selections/{selection}', [\App\Http\Controllers\DtnController::class, 'show'])->name('dtn.selections.show');
+    Route::post('/dtn/selections/{selection}/departure', [\App\Http\Controllers\DtnController::class, 'saveDeparture'])->name('dtn.selections.departure');
+    Route::post('/dtn/selections/{selection}/return', [\App\Http\Controllers\DtnController::class, 'saveReturn'])->name('dtn.selections.return');
+    Route::post('/dtn/selections/{selection}/acknowledge', [\App\Http\Controllers\DtnController::class, 'acknowledge'])->name('dtn.selections.acknowledge');
+    Route::post('/dtn/selections/{selection}/cancel', [\App\Http\Controllers\DtnController::class, 'cancel'])->name('dtn.selections.cancel');
+});
+
 // Cockpit entraîneur : même contrôleur et même middleware qu'en production.
 Route::get(
     '/modules/coach-cockpit',

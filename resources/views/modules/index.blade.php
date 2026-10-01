@@ -304,10 +304,7 @@ function filterByCategory(category, event) {
                                     'record-performance-metrics'
                                 ),
                         'dtn.index' => auth()->check()
-                            && (
-                                auth()->user()->isSystemAdmin()
-                                || auth()->user()->isAssociationUser()
-                            ),
+                            && app(\App\Services\Dtn\DtnAccess::class)->canUseTool(auth()->user()),
                         default => true,
                     };
                 @endphp

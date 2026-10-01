@@ -258,6 +258,11 @@ class HealthRecord extends Model
         return $this->hasMany(MedicalPrediction::class);
     }
 
+    public function posturalAssessments(): HasMany
+    {
+        return $this->hasMany(PosturalAssessment::class);
+    }
+
     public function visit(): BelongsTo
     {
         return $this->belongsTo(Visit::class);

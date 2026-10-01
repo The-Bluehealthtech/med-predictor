@@ -18,7 +18,7 @@
 
     <form method="POST" action="{{ route('health-records.store') }}" class="space-y-6" id="clinical-visit-form">
         @csrf
-        <input type="hidden" name="record_date" value="{{ old('record_date', $defaultValues['visit_date'] ?? now()->format('Y-m-d')) }}">
+        <input type="hidden" name="workflow" value="visit">
         @if(request('visit_id'))<input type="hidden" name="visit_id" value="{{ request('visit_id') }}">@endif
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

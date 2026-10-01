@@ -135,6 +135,10 @@ class HealthRecordController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if ($request->input('workflow') === 'visit' && $request->filled('visit_date')) {
+            $request->merge(['record_date' => $request->input('visit_date')]);
+        }
+
         $this->normalizeLists($request);
         $sections = app(\App\Services\HealthRecordSections::class)->prepare($request);
         $validated = $request->validate([

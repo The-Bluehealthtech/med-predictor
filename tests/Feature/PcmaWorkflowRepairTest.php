@@ -34,6 +34,16 @@ final class PcmaWorkflowRepairTest extends TestCase
         self::assertSame('pcma',$new->getAttributes()['type']);
     }
 
+    public function test_document_rejects_player_mismatching_the_parent_record(): void
+    {
+        $this->healthcareSchema(); $this->clinicalDocumentsSchema(); $record=$this->healthRecord();
+        $this->expectException(\Illuminate\Validation\ValidationException::class);
+        \App\Models\HealthRecordDocument::create(['health_record_id'=>$record->id,'player_id'=>11,
+            'section'=>'imaging','entry_id'=>(string)\Illuminate\Support\Str::uuid(),
+            'exam_date'=>'2026-10-01','original_name'=>'test.pdf','mime_type'=>'application/pdf',
+            'sha256'=>hash('sha256','fixture'),'content'=>'fixture','recorded_by'=>1]);
+    }
+
     private string $previous;
     protected function setUp(): void
     {

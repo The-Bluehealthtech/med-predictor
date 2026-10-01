@@ -11,7 +11,8 @@ return new class extends Migration {
         if(Schema::hasTable('health_record_documents')) return;
         Schema::create('health_record_documents',function(Blueprint $t){
             $t->id(); $t->foreignId('health_record_id')->constrained('health_records')->cascadeOnDelete();
-            $t->foreignId('player_id')->constrained('players');
+            // Le dossier porte déjà le lien joueur : éviter un verrou redondant sur players.
+            $t->unsignedBigInteger('player_id')->index();
             $t->string('section'); $t->uuid('entry_id')->index(); $t->date('exam_date');
             $t->string('original_name'); $t->string('mime_type'); $t->string('sha256',64);
             $t->longText('content'); $t->unsignedBigInteger('recorded_by'); $t->timestamps();

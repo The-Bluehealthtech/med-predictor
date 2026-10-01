@@ -41,3 +41,9 @@ Le détail médical restitue les observations structurées et datées. Le portai
 
 Les formulaires, validations, filtres, exports et statistiques API utilisent pcma ; BPMA n'est pas un type médical. Les anciennes valeurs restent lisibles et filtrables jusqu'à leur migration. La migration 000003 normalise uniquement la colonne type, y compris pour les dossiers signés, sans modifier les observations, signatures ou dates. Elle est enregistrée dans le parcours de déploiement.
 Vérification : 84 tests PCMA, 762 assertions réussis ; migration SQLite depuis une colonne enum historique, conservation du contenu signé et seconde exécution sans effet. Tests JavaScript/Vue et contrôle de syntaxe réussis. Les chemins PostgreSQL/MySQL n'ont pas été exécutés dans cet environnement ; le déploiement effectif et la migration de production restent à confirmer.
+
+## Correctif du blocage Render 00:16 UTC
+
+Le journal fourni montre un build réussi puis un SQLSTATE 55P03 : verrou indisponible pendant l'ajout du FK health_record_documents.player_id vers players. La migration a échoué dans la transaction PostgreSQL.
+Le correctif remplace ce lien direct redondant par un identifiant indexé. Le FK vers health_records et sa suppression en cascade restent conservés. À chaque écriture Eloquent, le modèle vérifie le joueur du dossier parent et refuse une incohérence ; les contrôles d'autorisation et de téléchargement restent conservés. Les insertions SQL directes doivent respecter ce lien, qui n'est plus un FK autonome vers players.
+Tests : 71 tests, 693 assertions réussis, dont refus d'une pièce rattachée au mauvais joueur, chiffrement et accès privé ; syntaxe et diff vérifiés. Aucune session de production n'est interrompue ni aucun délai de verrou artificiellement augmenté. Le succès du nouveau déploiement nécessite encore la confirmation du journal Render.

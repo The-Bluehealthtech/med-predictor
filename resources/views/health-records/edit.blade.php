@@ -1308,6 +1308,7 @@
 
                         <!-- Postural Assessment -->
                         <div class="mb-6">
+                            @include('health-records.partials.postural-axis-map')
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 🦴 {{ __('health_records_edit.interactive_postural_assessment_icd_10_m') }}
                             </label>

@@ -321,18 +321,31 @@
                 <p class="text-sm text-gray-500">Documents associés aux examens du joueur.</p>
             </div>
             <div class="divide-y">
-                @forelse($sectionDocuments as $document)
+                @foreach($intakeDocuments as $document)
+                    <div class="p-5 grid grid-cols-1 md:grid-cols-[140px_1fr_180px] gap-4">
+                        <div class="text-sm text-gray-500">{{ $document->created_at?->format('d/m/Y') ?? '—' }}</div>
+                        <div>
+                            <div class="font-medium text-gray-900">{{ $document->file_name }}</div>
+                            <div class="text-sm text-gray-500">Secrétariat · {{ $document->document_type_label }}</div>
+                        </div>
+                        <div class="text-xs text-gray-400 md:text-right">Pièce de pré-accueil</div>
+                    </div>
+                @endforeach
+
+                @foreach($sectionDocuments as $document)
                     <div class="p-5 grid grid-cols-1 md:grid-cols-[140px_1fr_180px] gap-4">
                         <div class="text-sm text-gray-500">{{ $document->exam_date?->format('d/m/Y') ?? '—' }}</div>
                         <div>
                             <div class="font-medium text-gray-900">{{ $document->original_name }}</div>
-                            <div class="text-sm text-gray-500">{{ ucfirst($document->section) }}</div>
+                            <div class="text-sm text-gray-500">Module · {{ ucfirst($document->section) }}</div>
                         </div>
                         <div class="text-xs text-gray-400 md:text-right">{{ $document->mime_type }}</div>
                     </div>
-                @empty
+                @endforeach
+
+                @if($intakeDocuments->isEmpty() && $sectionDocuments->isEmpty())
                     <div class="p-6 text-sm text-gray-500">Aucun document médical enregistré.</div>
-                @endforelse
+                @endif
             </div>
         </div>
     </section>

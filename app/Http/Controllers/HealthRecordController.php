@@ -367,6 +367,9 @@ class HealthRecordController extends Controller
         $vigilance = request()->boolean('legacy')
             ? null
             : app(\App\Services\PlayerVigilanceService::class)->assess($healthRecord->player);
+        $vigilanceModels = request()->boolean('legacy')
+            ? null
+            : app(\App\Services\MedicalVigilanceModelRegistry::class)->forPlayer($healthRecord->player);
 
         $view = request()->boolean('legacy') ? 'health-records.show' : 'health-records.workspace';
 
@@ -379,7 +382,8 @@ class HealthRecordController extends Controller
             'sectionDocuments',
             'intakeDocuments',
             'posturalAssessments',
-            'vigilance'
+            'vigilance',
+            'vigilanceModels'
         ));
     }
 

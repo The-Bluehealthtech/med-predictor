@@ -3,6 +3,10 @@
 @section('title', 'Pré-accueil médical')
 
 @section('content')
+@php
+    $preIntake = data_get($appointment->visit?->administrative_data, 'pre_intake', []);
+    $savedSecretaryNotes = $appointment->visit?->notes;
+@endphp
 <div class="max-w-5xl mx-auto">
     <div class="mb-6 flex items-start justify-between gap-4">
         <div>
@@ -48,31 +52,31 @@
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Motif confirmé par le joueur</label>
-                    <input name="reason_confirmed" value="{{ old('reason_confirmed', $appointment->reason) }}"
+                    <input name="reason_confirmed" value="{{ old('reason_confirmed', data_get($preIntake, 'reason_confirmed', $appointment->reason)) }}"
                            class="w-full rounded-xl border-slate-300">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Symptômes / demande exprimée</label>
                     <textarea name="symptoms_summary" rows="3" class="w-full rounded-xl border-slate-300"
-                              placeholder="Résumé administratif des éléments rapportés par le joueur, sans interprétation médicale.">{{ old('symptoms_summary') }}</textarea>
+                              placeholder="Résumé administratif des éléments rapportés par le joueur, sans interprétation médicale.">{{ old('symptoms_summary', data_get($preIntake, 'symptoms_summary')) }}</textarea>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Allergies déclarées</label>
-                        <textarea name="patient_reported_allergies" rows="2" class="w-full rounded-xl border-slate-300">{{ old('patient_reported_allergies') }}</textarea>
+                        <textarea name="patient_reported_allergies" rows="2" class="w-full rounded-xl border-slate-300">{{ old('patient_reported_allergies', data_get($preIntake, 'patient_reported_allergies')) }}</textarea>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Traitements déclarés</label>
-                        <textarea name="patient_reported_medications" rows="2" class="w-full rounded-xl border-slate-300">{{ old('patient_reported_medications') }}</textarea>
+                        <textarea name="patient_reported_medications" rows="2" class="w-full rounded-xl border-slate-300">{{ old('patient_reported_medications', data_get($preIntake, 'patient_reported_medications')) }}</textarea>
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Note administrative</label>
                     <textarea name="secretary_notes" rows="2" class="w-full rounded-xl border-slate-300"
-                              placeholder="Pièces manquantes, accompagnant, information logistique…">{{ old('secretary_notes') }}</textarea>
+                              placeholder="Pièces manquantes, accompagnant, information logistique…">{{ old('secretary_notes', $savedSecretaryNotes) }}</textarea>
                 </div>
             </div>
 

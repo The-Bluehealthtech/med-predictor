@@ -15,21 +15,20 @@ class Appointment extends Model
 
     protected $fillable = [
         'athlete_id',
-        'fifa_connect_id',
         'doctor_id',
-        'title',
-        'description',
+        'created_by',
         'appointment_date',
+        'duration_minutes',
+        'appointment_type',
         'status',
-        'type',
-        'location',
+        'reason',
         'notes',
-        'metadata'
+        'reminder_settings',
     ];
 
     protected $casts = [
         'appointment_date' => 'datetime',
-        'metadata' => 'array'
+        'reminder_settings' => 'array'
     ];
 
     /**
@@ -121,10 +120,13 @@ class Appointment extends Model
         return match($this->status) {
             'scheduled' => 'Programmé',
             'confirmed' => 'Confirmé',
-            'waiting' => 'En salle d’attente',
-            'in_progress' => 'En consultation',
-            'completed' => 'Terminé',
-            'cancelled' => 'Annulé',
+            'Planifié' => 'Planifié',
+            'Confirmé' => 'Confirmé',
+            'Enregistré' => 'En salle d’attente',
+            'En cours' => 'En consultation',
+            'Terminé' => 'Terminé',
+            'Annulé' => 'Annulé',
+            'No-show' => 'Absent',
             default => 'Inconnu'
         };
     }
@@ -134,7 +136,7 @@ class Appointment extends Model
      */
     public function getTypeLabelAttribute(): string
     {
-        return match($this->type) {
+        return match($this->appointment_type) {
             'consultation' => 'Consultation',
             'examination' => 'Examen',
             'follow_up' => 'Suivi',

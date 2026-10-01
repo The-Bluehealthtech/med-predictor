@@ -124,6 +124,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button onclick="showTab('dental')" class="tab-button">
                         🦷 {{ __('health_records.show_page.tab_dental') }}
                     </button>
+                    <button onclick="showTab('postural')" class="tab-button">
+                        🧍 Posture
+                    </button>
                     @foreach(['scat','mapa','imaging','followup'] as $clinicalTab)
                     <button type="button" onclick="showTab('{{ $clinicalTab }}')" class="tab-button">{{ __('medical_sections.'.$clinicalTab) }}</button>
                     @endforeach
@@ -450,6 +453,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 @endforeach
                 <div id="doping-tab" class="tab-content hidden">
                     @include('health-records.doping')
+                </div>
+
+                <!-- Postural Tab -->
+                <div id="postural-tab" class="tab-content hidden">
+                    @include('health-records.partials.tab-postural-v1')
                 </div>
 
                 <!-- Codes Tab -->

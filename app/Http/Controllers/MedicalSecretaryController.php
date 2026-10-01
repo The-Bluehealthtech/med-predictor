@@ -265,11 +265,23 @@ final class MedicalSecretaryController extends Controller
             $appointment->update(['status' => 'En cours']);
         });
 
+        $player = $appointment->athlete->player;
+        $dossier = $player->baseHealthRecord()->first();
+
+        if ($dossier) {
+            return redirect()->route('health-records.show', [
+                'healthRecord' => $dossier,
+                'appointment_id' => $appointment->id,
+                'visit_id' => $visit->id,
+                'consultation' => 1,
+            ])->with('success', 'Le joueur est maintenant en consultation.');
+        }
+
         return redirect()->route('health-records.create', [
-            'player_id' => $appointment->athlete->player->id,
+            'player_id' => $player->id,
             'appointment_id' => $appointment->id,
             'visit_id' => $visit->id,
-        ]);
+        ])->with('success', 'Première consultation : initialisez le dossier médical du joueur.');
     }
 
     public function uploadDocument(Request $request, Appointment $appointment): RedirectResponse

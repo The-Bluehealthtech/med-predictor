@@ -93,7 +93,7 @@
 
                         <div class="{{ in_array($type,['text','list'],true) ? 'md:col-span-2' : '' }}">
                             <label class="block text-sm font-medium text-slate-700 mb-1">
-                                {{ app(AppServicesHealthRecordSections::class)->label($field) }}
+                                {{ app(\App\Services\HealthRecordSections::class)->label($field) }}
                             </label>
 
                             @if($module === 'fmarc' && $field === 'injury_location')

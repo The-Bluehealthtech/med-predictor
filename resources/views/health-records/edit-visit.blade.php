@@ -23,7 +23,7 @@
         @csrf
         @method('PUT')
         <input type="hidden" name="player_id" value="{{ $healthRecord->player_id }}">
-        <input type="hidden" name="record_date" value="{{ old('record_date', $healthRecord->record_date?->format('Y-m-d')) }}">
+        <input type="hidden" name="workflow" value="visit">
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="px-6 py-4 border-b bg-slate-50">

@@ -117,6 +117,8 @@
                 </div>
             </div>
 
+            @include('health-records.partials.postural-axis-map')
+
             <div>
                 <div class="flex items-center justify-between mb-3">
                     <h4 class="font-semibold text-gray-800">Observations</h4>
@@ -301,6 +303,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     document.getElementById('postural-add-measurement')?.addEventListener('click', addMeasurementRow);
+
+    document.getElementById('postural-axis-map')?.addEventListener('postural-axis-selected', function (event) {
+        addMeasurementRow();
+        const rows = document.querySelectorAll('.postural-measurement-row');
+        const row = rows[rows.length - 1];
+        if (!row) return;
+
+        const detail = event.detail || {};
+        const keySelect = row.querySelector('.measurement-key');
+        const viewSelect = row.querySelector('.measurement-view');
+        const sideSelect = row.querySelector('.measurement-side');
+
+        if (detail.measurement_key && catalog.measurements[detail.measurement_key]) {
+            keySelect.value = detail.measurement_key;
+            keySelect.dispatchEvent(new Event('change'));
+        }
+
+        if (detail.view) viewSelect.value = detail.view;
+        if (detail.side) sideSelect.value = detail.side;
+
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row.querySelector('.measurement-value')?.focus();
+    });
 
     async function postAction(url) {
         const response = await fetch(url, {

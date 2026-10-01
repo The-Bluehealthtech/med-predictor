@@ -88,9 +88,15 @@ class Appointment extends Model
     {
         return match($this->appointment_type) {
             'consultation' => 'Consultation',
-            'examination' => 'Examen',
             'follow_up' => 'Suivi',
             'emergency' => 'Urgence',
+            'pre_season' => 'Pré-saison',
+            'post_match' => 'Post-match',
+            'rehabilitation' => 'Rééducation',
+            'routine_checkup' => 'Contrôle médical',
+            'injury_assessment' => 'Évaluation de blessure',
+            'cardiac_evaluation' => 'Évaluation cardiaque',
+            'concussion_assessment' => 'Commotion / SCAT',
             default => 'Autre'
         };
     }

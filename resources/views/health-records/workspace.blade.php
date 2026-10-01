@@ -97,6 +97,33 @@
             </div>
         </div>
 
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <div>
+                    <h2 class="font-semibold text-slate-900">Modules du dossier santé</h2>
+                    <p class="text-sm text-slate-500 mt-1">Les modules spécialisés enrichissent ce dossier longitudinal sans créer de dossier parallèle.</p>
+                </div>
+                <button type="button" data-medical-workspace-tab-target="exams" class="text-sm font-semibold text-blue-600">Tous les modules →</button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-3">
+                @foreach([
+                    ['PCMA',$pcmaRecords->count(),'🩺'],
+                    ['F-MARC',count($sectionHistory['fmarc'] ?? []),'🦵'],
+                    ['SCAT',count($sectionHistory['scat'] ?? []),'🧠'],
+                    ['Imagerie',count($sectionHistory['imaging'] ?? []),'🩻'],
+                    ['Dentaire',count($sectionHistory['dental'] ?? []),'🦷'],
+                    ['Biologie',count($sectionHistory['biological'] ?? []),'🧬'],
+                ] as [$label,$count,$icon])
+                    <button type="button" data-medical-workspace-tab-target="exams"
+                            class="text-left border border-slate-200 rounded-xl p-3 hover:border-blue-300 hover:bg-blue-50/30">
+                        <div class="text-lg">{{ $icon }}</div>
+                        <div class="mt-2 text-sm font-semibold text-slate-800">{{ $label }}</div>
+                        <div class="text-xs text-slate-500 mt-1">{{ $count }} entrée(s)</div>
+                    </button>
+                @endforeach
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm">
                 <div class="px-5 py-4 border-b flex items-center justify-between">

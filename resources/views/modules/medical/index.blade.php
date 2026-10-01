@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Salle d’attente médicale - FIT')
+@section('title', 'Prise en charge médicale - FIT')
 
 @section('content')
 <div class="min-h-screen bg-slate-50">
@@ -10,11 +10,11 @@
             <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
                 <div>
                     <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full mb-3">
-                        Médical
+                        Prise en charge médicale
                     </div>
-                    <h1 class="text-3xl font-bold tracking-tight text-slate-950">Salle d’attente médicale</h1>
+                    <h1 class="text-3xl font-bold tracking-tight text-slate-950">Prise en charge médicale</h1>
                     <p class="mt-2 text-slate-600 max-w-2xl">
-                        Seuls les joueurs accueillis par le secrétariat et prêts à être reçus apparaissent ici.
+                        Salle d’attente clinique alimentée par le secrétariat médical. Seuls les joueurs prêts à être reçus apparaissent ici.
                     </p>
                 </div>
                 <div class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-600">

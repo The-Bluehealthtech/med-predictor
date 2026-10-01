@@ -51,7 +51,7 @@ return [
     'dob_label' => 'Date of birth:',
     'fifa_id_label' => 'FIFA ID:',
     'appointment_type_label' => 'Appointment type:',
-    'medical_module' => 'Medical Module',
+    'medical_module' => 'Medical Care',
     'general_consultations_and_health_records' => 'General consultations and health records',
     'cancel' => 'Cancel',
     'patient_list_heading' => 'Patient List',

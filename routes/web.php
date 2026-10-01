@@ -1045,8 +1045,8 @@ Route::middleware(['auth'])->group(function () {
             'modules' => [
                     // 🏥 SANTÉ & MÉDECINE
                             [
-                'name' => 'Medical',
-                'description' => 'Gestion médicale des athlètes, vaccinations, et dossiers de santé',
+                'name' => 'Prise en charge médicale',
+                'description' => 'File d’attente clinique et prise en charge des joueurs transmis par le secrétariat',
                 'icon' => '🏥',
                 'route' => 'modules.medical.index',
                         'status' => 'active',
@@ -1054,8 +1054,8 @@ Route::middleware(['auth'])->group(function () {
                         'category' => 'health'
                     ],
                     [
-                        'name' => 'Healthcare',
-                        'description' => 'Dossiers médicaux et suivi de santé',
+                        'name' => 'Dossiers médicaux',
+                        'description' => 'Accès longitudinal aux dossiers santé des joueurs',
                         'icon' => '📋',
                         'route' => 'modules.healthcare.index',
                         'status' => 'active',

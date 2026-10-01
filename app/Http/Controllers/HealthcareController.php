@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\{HealthRecord, MedicalPrediction};
+use App\Models\{HealthRecord, MedicalPrediction, Player};
 use App\Services\MedicalRecordAccess;
 use Illuminate\Http\Request;
 
@@ -13,10 +13,31 @@ final class HealthcareController extends Controller
         $access->authorizeRole($user);
         return HealthRecord::query()->whereHas('player',fn($p)=>$access->scopePlayers($user,$p));
     }
-    public function index()
+    public function index(Request $request)
     {
-        $healthRecords=$this->query()->with(['player','user','predictions'])->orderByDesc('record_date')->paginate(20);
-        return view('modules.healthcare.index',compact('healthRecords'));
+        $access = app(MedicalRecordAccess::class);
+        $user = auth()->user();
+        $access->authorizeRole($user);
+
+        $search = trim((string) $request->query('q', ''));
+
+        $players = $access->scopePlayers($user, Player::query())
+            ->whereHas('healthRecords')
+            ->with(['club', 'baseHealthRecord', 'latestHealthRecord'])
+            ->withCount('healthRecords')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', '%' . $search . '%')
+                        ->orWhere('last_name', 'like', '%' . $search . '%')
+                        ->orWhere('name', 'like', '%' . $search . '%');
+                });
+            })
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('modules.healthcare.index', compact('players', 'search'));
     }
     public function show($record)
     {

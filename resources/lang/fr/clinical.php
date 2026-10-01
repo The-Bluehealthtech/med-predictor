@@ -51,7 +51,7 @@ return [
     'dob_label' => 'Date de naissance :',
     'fifa_id_label' => 'FIFA ID :',
     'appointment_type_label' => 'Type de RDV :',
-    'medical_module' => 'Module Medical',
+    'medical_module' => 'Prise en charge médicale',
     'general_consultations_and_health_records' => 'Consultations générales et dossiers de santé',
     'cancel' => 'Annuler',
     'patient_list_heading' => 'Liste des Patients',

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('side', 24)->nullable();
             $table->decimal('value', 10, 3)->nullable();
             $table->string('unit', 16)->nullable();
-            $table->json('points');
+            $table->json('points')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
 

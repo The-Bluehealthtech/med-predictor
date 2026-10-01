@@ -173,6 +173,8 @@ class HealthRecordController extends Controller
             'prescriptions' => 'nullable|string',
             'follow_up_instructions' => 'nullable|string',
             'visit_notes' => 'nullable|string',
+            'prescribed_modules' => 'nullable|array|max:20',
+            'prescribed_modules.*' => 'string|in:pcma,fmarc,scat,imaging,mri,mapa,ecg_effort,laboratory,dental,postural,specialist,physiotherapy',
         ] + $this->extraRules($request));
 
         app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),Player::findOrFail($validated['player_id']),null);
@@ -231,6 +233,9 @@ class HealthRecordController extends Controller
                 $visitData = $visit->administrative_data ?? [];
                 $visitData['health_record_id'] = $healthRecord->id;
                 $visitData['completed_at'] = now()->toIso8601String();
+                $visitData['prescribed_modules'] = array_values($validated['prescribed_modules'] ?? []);
+                $visitData['orders_status'] = !empty($visitData['prescribed_modules']) ? 'pending' : 'none';
+                $visitData['prescription_summary'] = $validated['prescriptions'] ?? null;
                 $visit->update([
                     'status' => 'Terminé',
                     'notes' => $validated['visit_notes'] ?? $visit->notes,

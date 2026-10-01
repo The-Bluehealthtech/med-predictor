@@ -54,9 +54,46 @@
                     </select>
                 </div>
                 <div></div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Motif</label>
-                    <textarea name="chief_complaint" rows="3" class="w-full border-gray-300 rounded-lg">{{ old('chief_complaint', $healthRecord->chief_complaint) }}</textarea>
+                <div class="md:col-span-2 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Motif principal</label>
+                            <select id="complaint-type" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Sélectionner</option>
+                                @foreach(['Douleur','Blessure aiguë','Suivi de blessure','Fatigue','Symptômes respiratoires','Symptômes digestifs','Symptômes neurologiques','Contrôle médical','Pré-saison / aptitude','Autre'] as $option)
+                                    <option>{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Région</label>
+                            <select id="complaint-region" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Non précisée</option>
+                                @foreach(['Tête / cou','Épaule','Bras / coude','Poignet / main','Thorax','Dos / rachis','Bassin / hanche','Cuisse','Genou','Jambe','Cheville','Pied','Général'] as $option)
+                                    <option>{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Côté</label>
+                            <select id="complaint-side" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Sans latéralité</option>
+                                @foreach(['Gauche','Droite','Bilatéral','Médian'] as $option)<option>{{ $option }}</option>@endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Contexte</label>
+                            <select id="complaint-context" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Non précisé</option>
+                                @foreach(['Match','Entraînement','Traumatisme direct','Sans traumatisme','Effort progressif','Repos'] as $option)<option>{{ $option }}</option>@endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Précision / motif existant</label>
+                        <input id="complaint-detail" type="text" value="{{ old('chief_complaint', $healthRecord->chief_complaint) }}" class="w-full border-gray-300 rounded-lg">
+                    </div>
+                    <input type="hidden" name="chief_complaint" id="chief-complaint-value" value="{{ old('chief_complaint', $healthRecord->chief_complaint) }}">
                 </div>
             </div>
         </div>
@@ -66,9 +103,15 @@
                 <h2 class="font-semibold text-gray-900">Histoire et examen</h2>
             </div>
             <div class="p-6 space-y-5">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Histoire / notes de visite</label>
-                    <textarea name="visit_notes" rows="4" class="w-full border-gray-300 rounded-lg">{{ old('visit_notes', $healthRecord->visit_notes) }}</textarea>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Début</label><select id="history-onset" class="w-full border-gray-300 rounded-lg"><option value="">Non précisé</option>@foreach(['Aujourd’hui','1–3 jours','4–7 jours','1–4 semaines','Plus d’un mois'] as $option)<option>{{ $option }}</option>@endforeach</select></div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Installation</label><select id="history-mode" class="w-full border-gray-300 rounded-lg"><option value="">Non précisée</option>@foreach(['Brutale','Progressive','Récidivante','Post-traumatique'] as $option)<option>{{ $option }}</option>@endforeach</select></div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Évolution</label><select id="history-evolution" class="w-full border-gray-300 rounded-lg"><option value="">Non précisée</option>@foreach(['Amélioration','Stable','Aggravation','Fluctuante'] as $option)<option>{{ $option }}</option>@endforeach</select></div>
+                    </div>
+                    <div><div class="text-sm font-medium text-gray-700 mb-2">Symptômes associés</div><div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">@foreach(['Gonflement','Instabilité','Blocage','Craquement','Raideur','Faiblesse','Engourdissement','Douleur nocturne'] as $symptom)<label class="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white"><input type="checkbox" class="history-symptom" value="{{ $symptom }}"><span>{{ $symptom }}</span></label>@endforeach</div></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Détails existants / complémentaires</label><textarea id="history-detail" rows="2" class="w-full border-gray-300 rounded-lg">{{ old('visit_notes', $healthRecord->visit_notes) }}</textarea></div>
+                    <input type="hidden" name="visit_notes" id="visit-notes-value" value="{{ old('visit_notes', $healthRecord->visit_notes) }}">
                 </div>
 
                 <details class="border rounded-lg" @if($healthRecord->blood_pressure_systolic || $healthRecord->heart_rate || $healthRecord->temperature) open @endif>
@@ -83,9 +126,15 @@
                     </div>
                 </details>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Examen clinique</label>
-                    <textarea name="physical_examination" rows="5" class="w-full border-gray-300 rounded-lg">{{ old('physical_examination', $healthRecord->physical_examination) }}</textarea>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Examen ciblé</label><select id="exam-system" class="w-full border-gray-300 rounded-lg"><option value="">Sélectionner</option>@foreach(['Musculosquelettique','Neurologique','Cardiovasculaire','Respiratoire','Abdominal','ORL','Général'] as $option)<option>{{ $option }}</option>@endforeach</select></div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Mobilité</label><select id="exam-mobility" class="w-full border-gray-300 rounded-lg"><option value="">Non évaluée</option>@foreach(['Normale','Limitée','Douloureuse','Hypermobile'] as $option)<option>{{ $option }}</option>@endforeach</select></div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Force</label><select id="exam-strength" class="w-full border-gray-300 rounded-lg"><option value="">Non évaluée</option>@foreach(['Normale','Légèrement diminuée','Modérément diminuée','Très diminuée'] as $option)<option>{{ $option }}</option>@endforeach</select></div>
+                    </div>
+                    <div><div class="text-sm font-medium text-gray-700 mb-2">Constats cliniques</div><div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">@foreach(['Douleur à la palpation','Œdème','Ecchymose','Déformation','Instabilité','Déficit neurologique','Test spécifique positif','Examen normal'] as $finding)<label class="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white"><input type="checkbox" class="exam-finding" value="{{ $finding }}"><span>{{ $finding }}</span></label>@endforeach</div></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Détail / examen existant</label><textarea id="exam-detail" rows="2" class="w-full border-gray-300 rounded-lg">{{ old('physical_examination', $healthRecord->physical_examination) }}</textarea></div>
+                    <input type="hidden" name="physical_examination" id="physical-examination-value" value="{{ old('physical_examination', $healthRecord->physical_examination) }}">
                 </div>
             </div>
         </div>
@@ -95,28 +144,21 @@
                 <h2 class="font-semibold text-gray-900">Évaluation et plan</h2>
             </div>
             <div class="p-6 space-y-5">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Impression clinique / diagnostic</label>
-                    <textarea name="diagnosis" rows="3" class="w-full border-gray-300 rounded-lg">{{ old('diagnosis', $healthRecord->diagnosis) }}</textarea>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Impression clinique</label><select id="diagnosis-category" class="w-full border-gray-300 rounded-lg"><option value="">Non concluant / à préciser</option>@foreach(['Traumatisme musculosquelettique','Lésion musculaire probable','Entorse probable','Tendinopathie probable','Contusion','Surcharge / surmenage','Symptômes infectieux','Évaluation normale','Autre'] as $option)<option>{{ $option }}</option>@endforeach</select></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Niveau de certitude</label><select id="diagnosis-certainty" class="w-full border-gray-300 rounded-lg"><option value="">Non précisé</option>@foreach(['Hypothèse','Probable','Confirmé'] as $option)<option>{{ $option }}</option>@endforeach</select></div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Conduite à tenir / traitement</label>
-                    <textarea name="treatment_plan" rows="4" class="w-full border-gray-300 rounded-lg">{{ old('treatment_plan', $healthRecord->treatment_plan) }}</textarea>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Diagnostic existant / précision</label><input id="diagnosis-detail" type="text" value="{{ old('diagnosis', $healthRecord->diagnosis) }}" class="w-full border-gray-300 rounded-lg"><input type="hidden" name="diagnosis" id="diagnosis-value" value="{{ old('diagnosis', $healthRecord->diagnosis) }}"></div>
+                <div><div class="text-sm font-medium text-gray-700 mb-2">Conduite à tenir</div><div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">@foreach(['Repos relatif','Glace','Compression','Élévation','Antalgique','Anti-inflammatoire','Kinésithérapie','Imagerie','Avis spécialiste','Réévaluation'] as $plan)<label class="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white"><input type="checkbox" class="plan-action" value="{{ $plan }}"><span>{{ $plan }}</span></label>@endforeach</div></div>
+                <div><div class="text-sm font-medium text-gray-700 mb-2">Restriction sportive</div><div class="grid grid-cols-2 md:grid-cols-4 gap-2">@foreach(['Aucune','Entraînement adapté','Sans contact','Pas de compétition','Arrêt sportif'] as $restriction)<label class="border rounded-lg px-3 py-2 text-sm flex items-center gap-2 bg-white"><input type="radio" name="restriction_ui" class="restriction-option" value="{{ $restriction }}"><span>{{ $restriction }}</span></label>@endforeach</div></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Délai de suivi</label><select id="followup-delay" class="w-full border-gray-300 rounded-lg"><option value="">Selon évolution</option><option value="1">24 h</option><option value="2">48 h</option><option value="3">72 h</option><option value="7">7 jours</option><option value="14">14 jours</option><option value="30">1 mois</option></select></div>
+                    <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Précision de suivi</label><input id="followup-detail" type="text" value="{{ old('follow_up_instructions', $healthRecord->follow_up_instructions) }}" class="w-full border-gray-300 rounded-lg"></div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Prescriptions</label>
-                        <textarea name="prescriptions" rows="3" class="w-full border-gray-300 rounded-lg">{{ old('prescriptions', $healthRecord->prescriptions) }}</textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Instructions de suivi</label>
-                        <textarea name="follow_up_instructions" rows="3" class="w-full border-gray-300 rounded-lg">{{ old('follow_up_instructions', $healthRecord->follow_up_instructions) }}</textarea>
-                    </div>
-                </div>
-                <div class="max-w-xs">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Prochain contrôle</label>
-                    <input type="date" name="next_checkup_date" value="{{ old('next_checkup_date', $healthRecord->next_checkup_date?->format('Y-m-d')) }}" class="w-full border-gray-300 rounded-lg">
-                </div>
+                <input type="hidden" name="treatment_plan" id="treatment-plan-value" value="{{ old('treatment_plan', $healthRecord->treatment_plan) }}">
+                <input type="hidden" name="prescriptions" id="prescriptions-value" value="{{ old('prescriptions', $healthRecord->prescriptions) }}">
+                <input type="hidden" name="follow_up_instructions" id="follow-up-value" value="{{ old('follow_up_instructions', $healthRecord->follow_up_instructions) }}">
+                <input type="hidden" name="next_checkup_date" id="next-checkup-value" value="{{ old('next_checkup_date', $healthRecord->next_checkup_date?->format('Y-m-d')) }}">
             </div>
         </div>
 
@@ -126,4 +168,28 @@
         </div>
     </form>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form[action*="health-records"]');
+    if (!form) return;
+    const value = id => document.getElementById(id)?.value?.trim() || '';
+    const checked = selector => Array.from(document.querySelectorAll(selector + ':checked')).map(el => el.value);
+    const compose = () => {
+        document.getElementById('chief-complaint-value').value = [value('complaint-type'),value('complaint-region'),value('complaint-side'),value('complaint-context') ? 'Contexte: '+value('complaint-context') : '',value('complaint-detail')].filter(Boolean).join(' · ');
+        const symptoms=checked('.history-symptom');
+        document.getElementById('visit-notes-value').value=[value('history-onset')?'Début: '+value('history-onset'):'',value('history-mode')?'Installation: '+value('history-mode'):'',value('history-evolution')?'Évolution: '+value('history-evolution'):'',symptoms.length?'Associés: '+symptoms.join(', '):'',value('history-detail')].filter(Boolean).join(' | ');
+        const findings=checked('.exam-finding');
+        document.getElementById('physical-examination-value').value=[value('exam-system')?'Examen: '+value('exam-system'):'',value('exam-mobility')?'Mobilité: '+value('exam-mobility'):'',value('exam-strength')?'Force: '+value('exam-strength'):'',findings.length?'Constats: '+findings.join(', '):'',value('exam-detail')].filter(Boolean).join(' | ');
+        document.getElementById('diagnosis-value').value=[value('diagnosis-category'),value('diagnosis-certainty')?'('+value('diagnosis-certainty')+')':'',value('diagnosis-detail')].filter(Boolean).join(' ');
+        const actions=checked('.plan-action');
+        const restriction=document.querySelector('.restriction-option:checked')?.value||'';
+        document.getElementById('treatment-plan-value').value=[actions.length?actions.join(', '):'',restriction?'Restriction: '+restriction:''].filter(Boolean).join(' | ');
+        document.getElementById('prescriptions-value').value=actions.filter(x=>['Antalgique','Anti-inflammatoire'].includes(x)).join(', ');
+        const delay=Number(value('followup-delay'));
+        document.getElementById('follow-up-value').value=[delay?'Contrôle dans '+delay+' jour(s)':'Suivi selon évolution',value('followup-detail')].filter(Boolean).join(' · ');
+        if(delay){ const d=new Date(); d.setDate(d.getDate()+delay); document.getElementById('next-checkup-value').value=d.toISOString().slice(0,10); }
+    };
+    form.addEventListener('change',compose); form.addEventListener('input',compose); form.addEventListener('submit',compose); compose();
+});
+</script>
 @endsection

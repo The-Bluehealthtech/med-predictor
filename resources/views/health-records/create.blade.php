@@ -872,6 +872,7 @@
                     <!-- Onglet 7: Évaluation Posturale -->
                     <div v-show="activeTab === 'postural-assessment'" class="tab-panel">
                         <div class="space-y-6">
+                            @include('health-records.partials.postural-axis-map')
                             <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
                                 <h3 class="text-lg font-semibold text-indigo-900 mb-4">{{ __('health_records_create.postural_assessment_heading') }}</h3>
                                 <p class="text-indigo-700 mb-4">{{ __('health_records_create.postural_assessment_subtitle') }}</p>

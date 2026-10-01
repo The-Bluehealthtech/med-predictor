@@ -855,11 +855,14 @@
                                     $rcW = abs($rcVal) * $rcBarScale;
                                     $rcY = $rcIdx * 32 + 4;
                                     $rcColor = $rcVal >= 0 ? '#3987e5' : '#e66767';
+                                    // Teinte plus claire pour la valeur : le bleu plein de la barre
+                                    // se confond avec le fond bleu de la carte.
+                                    $rcTextColor = $rcVal >= 0 ? '#8fc1ff' : '#ff9a9a';
                                     $rcX = $rcVal >= 0 ? 160 : 160 - $rcW;
                                 @endphp
                                 <text x="4" y="{{ $rcY + 9 }}" font-size="10" fill="#cfd8e3">{{ $comparison->position_family_evaluated }}</text>
                                 <rect x="{{ $rcX }}" y="{{ $rcY + 13 }}" width="{{ max($rcW, 0.5) }}" height="12" fill="{{ $rcColor }}" rx="2" />
-                                <text x="{{ $rcVal >= 0 ? $rcX + $rcW + 4 : $rcX - 4 }}" y="{{ $rcY + 23 }}" font-size="10" fill="{{ $rcColor }}" text-anchor="{{ $rcVal >= 0 ? 'start' : 'end' }}">{{ $rcVal > 0 ? '+' : '' }}{{ number_format($rcVal, 1) }}</text>
+                                <text x="{{ $rcVal >= 0 ? $rcX + $rcW + 4 : $rcX - 4 }}" y="{{ $rcY + 23 }}" font-size="10" font-weight="600" fill="{{ $rcTextColor }}" text-anchor="{{ $rcVal >= 0 ? 'start' : 'end' }}">{{ $rcVal > 0 ? '+' : '' }}{{ number_format($rcVal, 1) }}</text>
                             @endforeach
                         </svg>
                         </div>

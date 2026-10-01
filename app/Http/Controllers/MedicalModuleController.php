@@ -49,7 +49,10 @@ final class MedicalModuleController extends Controller
             ->distinct('player_id')
             ->count('player_id');
 
+        $allowedPlayerIds = $this->players()->select('players.id');
+
         $waitingAppointments = Appointment::with(['athlete.player.club', 'visit.documents'])
+            ->whereHas('athlete', fn ($athlete) => $athlete->whereIn('player_id', $allowedPlayerIds))
             ->where('status', 'Enregistré')
             ->orderBy('appointment_date')
             ->get()

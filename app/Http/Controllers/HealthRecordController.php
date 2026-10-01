@@ -351,6 +351,51 @@ class HealthRecordController extends Controller
         ));
     }
 
+    public function module(HealthRecord $healthRecord, string $module): View
+    {
+        $this->authorizeRecord($healthRecord);
+
+        $sections = app(\App\Services\HealthRecordSections::class);
+        $definitions = $sections->definitions();
+        abort_unless(isset($definitions[$module]), 404);
+
+        $healthRecord->load('player.club');
+        $definition = $definitions[$module];
+        $sectionValues = $sections->formValues($healthRecord);
+
+        return view('health-records.module', compact(
+            'healthRecord',
+            'module',
+            'definition',
+            'sectionValues'
+        ));
+    }
+
+    public function storeModule(Request $request, HealthRecord $healthRecord, string $module): RedirectResponse
+    {
+        $this->authorizeRecord($healthRecord);
+
+        $service = app(\App\Services\HealthRecordSections::class);
+        abort_unless(isset($service->definitions()[$module]), 404);
+
+        $capture = $request->input('capture', []);
+        $capture[$module] = 1;
+        $request->merge(['capture' => $capture]);
+
+        $sections = $service->prepare($request);
+        abort_unless(isset($sections[$module]), 422, 'Aucune donnée de module à enregistrer.');
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($healthRecord, $service, $sections) {
+            $locked = HealthRecord::whereKey($healthRecord->id)->lockForUpdate()->firstOrFail();
+            $service->persist($locked, $sections);
+        });
+
+        return redirect()->route('health-records.show', [
+            'healthRecord' => $healthRecord,
+            'workspace' => 'exams',
+        ])->with('success', 'Module spécialisé enregistré dans le dossier santé.');
+    }
+
     public function edit(HealthRecord $healthRecord): View
     {
         $this->authorizeRecord($healthRecord);

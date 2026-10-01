@@ -13,7 +13,13 @@
                 @php($savedValue=old('section_values.'.$section.'.'.$field,$sectionValues[$field] ?? null))
                 @php($savedValue=is_array($savedValue)?implode("\n",array_map(fn($v)=>is_scalar($v)?(string)$v:json_encode($v,JSON_UNESCAPED_UNICODE),$savedValue)):$savedValue)
                 <label class="block">{{ app(\App\Services\HealthRecordSections::class)->label($field) }}
-                @if($type==='boolean')
+                @if($section==='fmarc' && $field==='injury_location')
+                    @include('health-records.partials.injury-body-map', [
+                        'inputId' => 'fmarc_injury_location',
+                        'inputName' => 'section_values[fmarc][injury_location]',
+                        'value' => $savedValue,
+                    ])
+                @elseif($type==='boolean')
                     <select class="border rounded px-3 py-2 block" name="section_values[{{ $section }}][{{ $field }}]">
                         <option value="">—</option><option value="1" @selected((string)$savedValue==='1')>{{ __('medical_sections.yes') }}</option><option value="0" @selected((string)$savedValue==='0')>{{ __('medical_sections.no') }}</option>
                     </select>

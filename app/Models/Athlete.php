@@ -12,6 +12,7 @@ class Athlete extends Model
     use HasFactory;
 
     protected $fillable = [
+        'player_id',
         'fifa_id',
         'name',
         'dob',
@@ -45,6 +46,11 @@ class Athlete extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function player(): BelongsTo
+    {
+        return $this->belongsTo(Player::class);
     }
 
     /**

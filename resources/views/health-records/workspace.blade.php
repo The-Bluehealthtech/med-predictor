@@ -144,6 +144,63 @@
                 @endforeach
             </div>
         </div>
+        @if($vigilanceModels)
+        @php
+            $modelStateStyles = [
+                'ready' => ['label'=>'Prêt','badge'=>'bg-emerald-100 text-emerald-800','bar'=>'bg-emerald-500'],
+                'partial' => ['label'=>'Partiel','badge'=>'bg-amber-100 text-amber-900','bar'=>'bg-amber-500'],
+                'insufficient' => ['label'=>'Insuffisant','badge'=>'bg-slate-200 text-slate-700','bar'=>'bg-slate-400'],
+            ];
+        @endphp
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-200">
+                <div class="text-xs uppercase tracking-[0.14em] font-semibold text-violet-700">Préparation des modèles externes</div>
+                <h2 class="font-semibold text-slate-950 mt-1">Couverture des données</h2>
+                <p class="text-sm text-slate-500 mt-1">Ces indicateurs mesurent uniquement si FIT possède les données nécessaires aux référentiels externes. Ils ne constituent pas un score médical ni une validation du modèle.</p>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 p-5">
+                @foreach(['identity'=>'Identité / âge','injury'=>'Blessure','cardiac'=>'Cardiovasculaire'] as $modelKey=>$modelLabel)
+                    @php
+                        $model = $vigilanceModels[$modelKey];
+                        $modelStyle = $modelStateStyles[$model['state']];
+                    @endphp
+                    <div class="rounded-xl border border-slate-200 p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <div class="text-sm font-semibold text-slate-900">{{ $modelLabel }}</div>
+                                <div class="text-xs text-slate-500 mt-1">{{ $model['name'] }}</div>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold {{ $modelStyle['badge'] }}">{{ $modelStyle['label'] }}</span>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-xs text-slate-500 mb-1">
+                                <span>Couverture des données</span><strong>{{ $model['coverage'] }}%</strong>
+                            </div>
+                            <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+                                <div class="h-full {{ $modelStyle['bar'] }}" style="width: {{ $model['coverage'] }}%"></div>
+                            </div>
+                        </div>
+                        @if(!empty($model['missing']))
+                            <div class="mt-4">
+                                <div class="text-[11px] uppercase tracking-wide font-semibold text-slate-500 mb-2">Données manquantes</div>
+                                <div class="space-y-1.5">
+                                    @foreach($model['missing'] as $missing)
+                                        <div class="text-xs text-slate-700">○ {{ $missing }}</div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                        <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500 space-y-1">
+                            <div>Mode : <strong>observation</strong></div>
+                            <div>Validation : <strong>référentiel uniquement</strong></div>
+                            @if($model['url'])
+                                <a href="{{ $model['url'] }}" target="_blank" rel="noopener noreferrer" class="text-blue-700 hover:underline">Voir la source ↗</a>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
         @endif
 
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden" id="clinical-assistant-panel"

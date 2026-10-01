@@ -56,6 +56,53 @@
             </form>
         </section>
 
+        @if($waitingAppointments->count())
+        <section class="bg-white border border-amber-200 rounded-2xl shadow-sm overflow-hidden mb-5">
+            <div class="px-5 py-4 border-b border-amber-100 bg-amber-50/60 flex items-center justify-between gap-3">
+                <div>
+                    <div class="text-xs uppercase tracking-wide font-semibold text-amber-700">Salle d’attente médicale</div>
+                    <h2 class="font-semibold text-slate-950 mt-1">{{ $waitingAppointments->count() }} joueur(s) prêt(s) à être reçu(s)</h2>
+                    <p class="text-sm text-slate-600 mt-1">Pré-accueil terminé par le secrétariat. Les informations et documents sont déjà disponibles.</p>
+                </div>
+            </div>
+            <div class="divide-y divide-slate-100">
+                @foreach($waitingAppointments as $appointment)
+                    @php
+                        $waitingPlayer = $appointment->athlete->player;
+                        $waitingVisit = $appointment->visit;
+                        $preIntake = data_get($waitingVisit?->administrative_data, 'pre_intake', []);
+                    @endphp
+                    <div class="px-5 py-4 grid grid-cols-1 lg:grid-cols-[1fr_220px_1.2fr_auto] gap-4 lg:items-center">
+                        <div>
+                            <div class="font-semibold text-slate-950">{{ $waitingPlayer->full_name ?? $waitingPlayer->name }}</div>
+                            <div class="text-sm text-slate-500 mt-0.5">{{ $waitingPlayer->club?->name ?? 'Club non renseigné' }}</div>
+                        </div>
+                        <div>
+                            <div class="text-xs uppercase tracking-wide font-semibold text-slate-400">Rendez-vous</div>
+                            <div class="text-sm text-slate-800 mt-1">{{ $appointment->appointment_date?->format('d/m/Y H:i') }}</div>
+                            <div class="text-xs text-slate-500 mt-1">{{ $appointment->type_label }}</div>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-xs uppercase tracking-wide font-semibold text-slate-400">Pré-accueil</div>
+                            <div class="text-sm text-slate-700 mt-1 line-clamp-2">
+                                {{ data_get($preIntake, 'reason_confirmed') ?: $appointment->reason ?: 'Motif non précisé' }}
+                            </div>
+                            @if($waitingVisit?->documents?->count())
+                                <div class="text-xs text-blue-700 font-medium mt-1">{{ $waitingVisit->documents->count() }} document(s) joint(s)</div>
+                            @endif
+                        </div>
+                        <form method="POST" action="{{ route('secretary.appointments.receive', $appointment) }}" class="lg:justify-self-end">
+                            @csrf
+                            <button class="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800">
+                                Recevoir le joueur
+                            </button>
+                        </form>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+        @endif
+
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6" aria-label="Indicateurs médicaux">
             <div class="bg-white border border-slate-200 rounded-2xl p-4">
                 <div class="flex items-center justify-between gap-3">

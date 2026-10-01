@@ -52,7 +52,9 @@
                                         Valider
                                     </button>
                                 @endif
-                                @php($older = $posturalAssessments->values()->get($loop->index + 1))
+                                @php
+                                    $older = $posturalAssessments->values()->get($loop->index + 1);
+                                @endphp
                                 @if($older)
                                     <button type="button"
                                             class="postural-compare px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"

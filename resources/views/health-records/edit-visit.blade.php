@@ -70,7 +70,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Région</label>
                             <select id="complaint-region" class="w-full border-gray-300 rounded-lg">
                                 <option value="">Non précisée</option>
-                                @foreach(['Tête / cou','Épaule','Bras / coude','Poignet / main','Thorax','Dos / rachis','Bassin / hanche','Cuisse','Genou','Jambe','Cheville','Pied','Général'] as $option)
+                                @foreach(['Tête / cou','Épaule','Bras / coude','Avant-bras','Poignet / main','Thorax','Abdomen','Dos / rachis','Bassin / hanche','Cuisse','Genou','Jambe','Cheville','Pied','Général'] as $option)
                                     <option>{{ $option }}</option>
                                 @endforeach
                             </select>
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const value = id => document.getElementById(id)?.value?.trim() || '';
     const checked = selector => Array.from(document.querySelectorAll(selector + ':checked')).map(el => el.value);
     const compose = () => {
-        document.getElementById('chief-complaint-value').value = [value('complaint-type'),value('complaint-region'),value('complaint-side'),value('complaint-context') ? 'Contexte: '+value('complaint-context') : '',value('complaint-detail')].filter(Boolean).join(' · ');
+        document.getElementById('chief-complaint-value').value = [value('complaint-type'),value('complaint-region'),value('complaint-anatomical-detail') ? 'Zone: '+value('complaint-anatomical-detail') : '',value('complaint-side'),value('complaint-context') ? 'Contexte: '+value('complaint-context') : '',value('complaint-detail')].filter(Boolean).join(' · ');
         const symptoms=checked('.history-symptom');
         document.getElementById('visit-notes-value').value=[value('history-onset')?'Début: '+value('history-onset'):'',value('history-mode')?'Installation: '+value('history-mode'):'',value('history-evolution')?'Évolution: '+value('history-evolution'):'',symptoms.length?'Associés: '+symptoms.join(', '):'',value('history-detail')].filter(Boolean).join(' | ');
         const findings=checked('.exam-finding');

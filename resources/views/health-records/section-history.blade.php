@@ -10,6 +10,9 @@
                 @if(empty($item['entry']['_fit_entry']))<p class="text-sm text-gray-500">{{ __('medical_sections.legacy_notice') }}</p>@endif
                 @if(!empty($item['entry']['source']))<p>{{ __('medical_sections.source') }} : {{ $item['entry']['source'] }}</p>@endif
                 @if(!empty($item['entry']['recorded_at']))<p class="text-sm text-gray-500">{{ __('medical_sections.saved_at') }} : {{ $item['entry']['recorded_at'] }}</p>@endif
+                @if($section==='dental' && is_array($item['entry']['values']['dental_data'] ?? null) && !empty($item['entry']['values']['dental_data']))
+                    @include('health-records.odontogram',['odontogramReadonly'=>true,'odontogramData'=>$item['entry']['values']['dental_data']])
+                @endif
                 @include('health-records.section-value',['value'=>$item['entry']['values'] ?? ($item['entry']['legacy'] ?? $item['entry'])])
                 @foreach(($sectionDocuments ?? collect())->where('entry_id',$item['entry']['id'] ?? '') as $file)
                     <p class="mt-3"><a class="text-blue-600 underline" href="{{ route('player-medical.document',[$file->health_record_id,$file->id]) }}">{{ $file->original_name }}</a></p>

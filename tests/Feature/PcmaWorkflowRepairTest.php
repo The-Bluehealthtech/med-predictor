@@ -44,6 +44,25 @@ final class PcmaWorkflowRepairTest extends TestCase
             'sha256'=>hash('sha256','fixture'),'content'=>'fixture','recorded_by'=>1]);
     }
 
+    public function test_odontogram_surfaces_roundtrip_and_private_readonly_render(): void
+    {
+        $this->healthcareSchema();$record=$this->healthRecord();
+        $data=['_meta'=>['notation'=>'FDI','version'=>1],'11'=>['status'=>'cavity','notes'=>'<script>fixture</script>',
+            'surfaces'=>['mesial'=>['status'=>'filling','notes'=>'Fixture surface']]]];
+        $this->post('/health-records',$this->clinicalPayload()+['capture'=>['dental'=>1],
+            'section_dates'=>['dental'=>'2026-10-01'],'dental_data'=>json_encode($data)])->assertRedirect();
+        self::assertSame($data,$record->fresh()->dental_records[0]['values']['dental_data']);
+        $response=$this->get('/health-records/'.$record->id)->assertOk()->assertSee('data-fit-odontogram',false)
+            ->assertSee('data-readonly="true"',false)->assertSee('js/odontogram.js',false);
+        $response->assertDontSee('<script>fixture</script>',false);
+        $create=$this->get('/health-records/create?player_id=10')->assertOk();
+        self::assertSame(1,substr_count($create->getContent(),'name="dental_data"'));
+        $edit=$this->get('/health-records/'.$record->id.'/edit')->assertOk();
+        self::assertSame(1,substr_count($edit->getContent(),'name="dental_data"'));
+        $this->actingAs(User::findOrFail(1)->forceFill(['role'=>'player','player_id'=>10,'tenant_id'=>1]));
+        $this->get('/player-portal/medical-records/'.$record->id)->assertOk()->assertSee('data-readonly="true"',false);
+    }
+
     private string $previous;
     protected function setUp(): void
     {

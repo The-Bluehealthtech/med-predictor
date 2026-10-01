@@ -1303,83 +1303,7 @@
                                 </div>
                             </div>
 
-                            <!-- Interactive Dental Chart -->
-                            <div class="mt-4 bg-white border border-gray-200 rounded-lg p-4">
-                                <h4 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
-                                    <span class="mr-2">📊</span>
-                                    {{ __('health_records_edit.interactive_dental_chart') }}
-                                </h4>
-                                
-                                <div class="dental-chart-wrapper">
-                                    <div class="dental-chart-container">
-                                        <div class="chart-header">
-                                            <div class="flex items-center space-x-4 text-sm mb-2">
-                                                <div class="flex items-center space-x-2">
-                                                    <div class="w-4 h-4 bg-white border border-gray-300 rounded"></div>
-                                                    <span>{{ __('health_records_edit.healthy') }}</span>
-                                                </div>
-                                                <div class="flex items-center space-x-2">
-                                                    <div class="w-4 h-4 bg-red-500 rounded"></div>
-                                                    <span>{{ __('health_records_edit.caries') }}</span>
-                                                </div>
-                                                <div class="flex items-center space-x-2">
-                                                    <div class="w-4 h-4 bg-blue-500 rounded"></div>
-                                                    <span>{{ __('health_records_edit.restoration') }}</span>
-                                                </div>
-                                                <div class="flex items-center space-x-2">
-                                                    <div class="w-4 h-4 bg-gray-500 opacity-50 rounded"></div>
-                                                    <span>{{ __('health_records_edit.missing') }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="chart-wrapper" id="chartContainer">
-                                            <div 
-                                                class="dental-svg-container" 
-                                                id="dental-svg-container"
-                                            >
-                                                <!-- Dental Chart SVG will be injected here -->
-                                            </div>
-                                        </div>
-
-                                        <!-- Dental Tooltip -->
-                                        <div 
-                                            id="dental-tooltip"
-                                            class="dental-tooltip"
-                                            style="display: none;"
-                                        >
-                                            <div class="tooltip-content">
-                                                <div class="font-semibold" id="tooltip-tooth-number">Dent 1</div>
-                                                <div class="text-sm" id="tooltip-status">{{ __('health_records_edit.healthy_2') }}</div>
-                                                <div class="text-xs text-gray-500" id="tooltip-condition">{{ __('health_records_edit.no_condition') }}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Dental Status Summary -->
-                                <div class="mt-4 bg-gray-50 rounded-lg p-4">
-                                    <h5 class="text-sm font-semibold text-gray-700 mb-3">{{ __('health_records_edit.dental_summary') }}</h5>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                        <div class="flex items-center justify-between">
-                                            <span>{{ __('health_records_edit.healthy_teeth') }}</span>
-                                            <span class="font-semibold text-green-600" id="healthy-teeth-count">32</span>
-                                        </div>
-                                        <div class="flex items-center justify-between">
-                                            <span>{{ __('health_records_edit.caries') }}s:</span>
-                                            <span class="font-semibold text-red-600" id="caries-count">0</span>
-                                        </div>
-                                        <div class="flex items-center justify-between">
-                                            <span>{{ __('health_records_edit.restorations') }}</span>
-                                            <span class="font-semibold text-blue-600" id="restoration-count">0</span>
-                                        </div>
-                                        <div class="flex items-center justify-between">
-                                            <span>{{ __('health_records_edit.missing_2') }}</span>
-                                            <span class="font-semibold text-gray-600" id="missing-teeth-count">0</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            @include('health-records.odontogram')
                         </div>
 
                         <!-- Postural Assessment -->
@@ -6381,6 +6305,7 @@ Signature: ___________________________ Date: ________________
 
     // Initialize dental chart
     function initializeDentalChart() {
+        if(document.querySelector('[data-fit-odontogram]')) return;
         // Initialize teeth status for all 32 teeth
         for (let i = 1; i <= 32; i++) {
             teethStatus[i] = {

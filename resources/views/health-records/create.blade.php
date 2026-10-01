@@ -700,139 +700,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Diagramme Dentaire Interactif -->
-                                <div class="mt-6">
-                                    <h4 class="text-md font-semibold text-gray-800 mb-3">{{ __('health_records_create.interactive_chart_heading') }}</h4>
-                                    <p class="text-sm text-gray-600 mb-4">{{ __('health_records_create.interactive_chart_subtitle') }}</p>
-                                    
-                                    <div class="bg-white border border-gray-200 rounded-lg p-4">
-                                        <div class="flex justify-between items-center mb-4">
-                                            <h5 class="text-sm font-medium text-gray-800">{{ __('health_records_create.dental_chart_label') }}</h5>
-                                            <div class="flex space-x-2">
-                                                <button 
-                                                    type="button" 
-                                                    @click="forceInitializeDentalChart"
-                                                    class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
-                                                >
-                                                    {{ __('health_records_create.reload_button') }}
-                                                </button>
-                                                <button 
-                                                    type="button" 
-                                                    @click="clearDentalSelection"
-                                                    class="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700 transition-colors"
-                                                >
-                                                    🗑️ {{ __('health_records_create.clear_button') }}
-                                                </button>
-                                                <button 
-                                                    type="button" 
-                                                    @click="saveDentalData"
-                                                    class="px-3 py-1 bg-yellow-600 text-white rounded text-sm hover:bg-yellow-700 transition-colors"
-                                                >
-                                                    {{ __('health_records_create.save_button') }}
-                                                </button>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Dental Chart Interactive SVG -->
-                                        <div class="overflow-x-auto">
-                                            <div id="dental-chart-interactive-container" class="w-full max-w-4xl mx-auto">
-                                                <div id="dental-chart-svg-container" style="width: 100%; height: 300px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; position: relative;">
-                                                    <!-- Le SVG sera chargé ici dynamiquement -->
-                                                    <div id="dental-chart-loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #6b7280;">
-                                                        <div style="font-size: 24px; margin-bottom: 10px;">🦷</div>
-                                                        <div>{{ __('health_records_create.chart_loading_text') }}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Dental Chart Info Panel -->
-                                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <!-- Informations de la dent sélectionnée -->
-                                            <div class="p-3 bg-blue-50 rounded-lg">
-                                                <h6 class="text-sm font-medium text-blue-800 mb-2">{{ __('health_records_create.selected_tooth_heading') }}</h6>
-                                                <div v-if="selectedDentalTooth" class="text-sm">
-                                                    <p><strong>{{ __('health_records_create.tooth_label') }}</strong> @{{ selectedDentalTooth }}</p>
-                                                    <p><strong>{{ __('health_records_create.type_label') }}</strong> @{{ getDentalToothType(selectedDentalTooth) }}</p>
-                                                    <p><strong>{{ __('health_records_create.quadrant_label') }}</strong> @{{ getDentalQuadrant(selectedDentalTooth) }}</p>
-                                                    <p><strong>{{ __('health_records_create.status_label') }}</strong>
-                                                        <select v-model="dentalToothStatus" class="ml-2 px-2 py-1 border rounded text-xs">
-                                                            <option value="healthy">{{ __('health_records_create.tooth_status_healthy') }}</option>
-                                                            <option value="cavity">{{ __('health_records_create.tooth_status_cavity') }}</option>
-                                                            <option value="filling">{{ __('health_records_create.tooth_status_filling') }}</option>
-                                                            <option value="crown">{{ __('health_records_create.tooth_status_crown') }}</option>
-                                                            <option value="missing">{{ __('health_records_create.tooth_status_missing') }}</option>
-                                                            <option value="implant">{{ __('health_records_create.tooth_status_implant') }}</option>
-                                                            <option value="treatment">{{ __('health_records_create.tooth_status_treatment') }}</option>
-                                                        </select>
-                                                    </p>
-                                                    <textarea 
-                                                        v-model="dentalToothNotes" 
-                                                        placeholder="{{ __('health_records_create.tooth_notes_placeholder') }}"
-                                                        class="mt-2 w-full px-2 py-1 border rounded text-xs"
-                                                        rows="2"
-                                                    ></textarea>
-                                                </div>
-                                                <div v-else class="text-sm text-gray-500">
-                                                    {{ __('health_records_create.click_tooth_hint') }}
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Résumé de l'État Dentaire -->
-                                            <div class="p-3 bg-gray-50 rounded-lg">
-                                                <h6 class="text-sm font-medium text-gray-800 mb-2">{{ __('health_records_create.dental_summary_heading') }}</h6>
-                                                <div class="grid grid-cols-2 gap-2 text-xs">
-                                                    <div class="flex items-center">
-                                                        <div class="w-3 h-3 bg-green-100 border border-green-300 rounded mr-2"></div>
-                                                        <span>{{ __('health_records_create.summary_healthy') }} <span id="healthy-count">@{{ dentalStats.healthy }}</span></span>
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <div class="w-3 h-3 bg-red-500 border border-gray-300 rounded mr-2"></div>
-                                                        <span>{{ __('health_records_create.summary_cavity') }} <span id="cavity-count">@{{ dentalStats.cavity }}</span></span>
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <div class="w-3 h-3 bg-yellow-400 border border-gray-300 rounded mr-2"></div>
-                                                        <span>{{ __('health_records_create.summary_filling') }} <span id="filling-count">@{{ dentalStats.filling }}</span></span>
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <div class="w-3 h-3 bg-purple-500 border border-gray-300 rounded mr-2"></div>
-                                                        <span>{{ __('health_records_create.summary_crown') }} <span id="crown-count">@{{ dentalStats.crown }}</span></span>
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <div class="w-3 h-3 bg-gray-500 border border-gray-300 rounded mr-2"></div>
-                                                        <span>{{ __('health_records_create.summary_missing') }} <span id="missing-count">@{{ dentalStats.missing }}</span></span>
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <div class="w-3 h-3 bg-blue-500 border border-gray-300 rounded mr-2"></div>
-                                                        <span>{{ __('health_records_create.summary_implant') }} <span id="implant-count">@{{ dentalStats.implant }}</span></span>
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <div class="w-3 h-3 bg-orange-500 border border-gray-300 rounded mr-2"></div>
-                                                        <span>{{ __('health_records_create.summary_treatment') }} <span id="treatment-count">@{{ dentalStats.treatment }}</span></span>
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <div class="w-3 h-3 bg-gray-100 border border-gray-300 rounded mr-2"></div>
-                                                        <span>{{ __('health_records_create.summary_unevaluated') }} <span id="unevaluated-count">@{{ dentalStats.unevaluated }}</span></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Historique des sélections -->
-                                        <div v-if="dentalHistory.length > 0" class="mt-4 p-3 bg-yellow-50 rounded-lg">
-                                            <h6 class="text-sm font-medium text-yellow-800 mb-2">{{ __('health_records_create.selection_history_heading') }}</h6>
-                                            <div class="flex flex-wrap gap-2">
-                                                <span 
-                                                    v-for="(tooth, index) in dentalHistory.slice(-8)" 
-                                                    :key="index"
-                                                    class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded text-xs"
-                                                >
-                                                    {{ __('health_records_create.tooth_prefix') }} @{{ tooth }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                @include('health-records.odontogram')
 
                                 <!-- Viewer d'Images Dentaires -->
                                 <div class="mt-6">
@@ -1503,7 +1371,7 @@
 
                             <!-- Hidden fields for form submission -->
                             <input type="hidden" name="imaging_data" id="imaging_data" value="{{ old('imaging_data') }}">
-                            <input type="hidden" name="dental_data" id="dental_data" value="{{ old('dental_data') }}">
+
                             <input type="hidden" name="selected_dental_tooth" id="selected_dental_tooth" value="{{ old('selected_dental_tooth') }}">
                             
                             <!-- Patient information fields -->
@@ -1890,6 +1758,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Méthodes pour le diagramme dentaire
                 const initializeDentalChart = () => {
+                    if(document.querySelector('[data-fit-odontogram]')) return;
     
                     
                     const container = document.getElementById('dental-chart-svg-container');

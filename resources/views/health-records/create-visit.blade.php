@@ -395,6 +395,38 @@
                     </div>
                 </div>
 
+                <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/60">
+                    <div class="text-sm font-semibold text-slate-800">Actes / modules à programmer</div>
+                    <p class="text-xs text-slate-500 mt-1 mb-3">Sélectionnez uniquement les actes décidés pendant cette consultation. Ils seront transmis au secrétariat.</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 text-sm">
+                        @foreach([
+                            'pcma'=>'PCMA',
+                            'fmarc'=>'F-MARC / blessure',
+                            'scat'=>'SCAT / commotion',
+                            'imaging'=>'Imagerie',
+                            'mri'=>'IRM',
+                            'mapa'=>'MAPA',
+                            'ecg_effort'=>'ECG d’effort',
+                            'laboratory'=>'Laboratoire',
+                            'dental'=>'Dentaire',
+                            'postural'=>'Posture',
+                            'specialist'=>'Avis spécialiste',
+                            'physiotherapy'=>'Kinésithérapie',
+                        ] as $value=>$label)
+                            <label class="flex items-center gap-2 bg-white border rounded-lg px-3 py-2">
+                                <input type="checkbox" name="prescribed_modules[]" class="prescribed-module" value="{{ $value }}" @checked(in_array($value, old('prescribed_modules', []), true))>
+                                <span>{{ $label }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ordonnance / prescription</label>
+                    <textarea id="prescription-detail" rows="2" class="w-full border-gray-300 rounded-lg"
+                              placeholder="Médicaments, posologie ou autres prescriptions décidées par le médecin">{{ old('prescriptions') }}</textarea>
+                </div>
+
                 <div>
                     <div class="text-sm font-medium text-gray-700 mb-2">Restriction sportive</div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -435,7 +467,7 @@
         </div>
 
         <div class="sticky bottom-4 bg-white/95 backdrop-blur border border-gray-200 rounded-xl shadow-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div class="text-sm text-gray-600">Les examens spécialisés pourront être ajoutés depuis la fiche après enregistrement.</div>
+            <div class="text-sm text-gray-600">À la fin de la visite : clôture simple ou transmission des actes prescrits au secrétariat.</div>
             <div class="flex gap-3">
                 <a href="{{ url()->previous() }}" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700">Annuler</a>
                 <button type="submit" class="px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">Terminer la visite</button>
@@ -497,8 +529,20 @@ document.addEventListener('DOMContentLoaded', () => {
             restriction ? 'Restriction: ' + restriction : ''
         ].filter(Boolean).join(' | ');
 
-        document.getElementById('prescriptions-value').value =
-            actions.filter(x => ['Antalgique','Anti-inflammatoire'].includes(x)).join(', ');
+        const medicationActions = actions.filter(x => ['Antalgique','Anti-inflammatoire'].includes(x));
+        document.getElementById('prescriptions-value').value = [
+            medicationActions.length ? medicationActions.join(', ') : '',
+            value('prescription-detail')
+        ].filter(Boolean).join(' | ');
+
+        const prescribedModules = checked('.prescribed-module');
+        if (prescribedModules.length) {
+            const currentPlan = document.getElementById('treatment-plan-value').value;
+            document.getElementById('treatment-plan-value').value = [
+                currentPlan,
+                'Actes prescrits: ' + prescribedModules.join(', ')
+            ].filter(Boolean).join(' | ');
+        }
 
         const delay = Number(value('followup-delay'));
         const followupDetail = value('followup-detail');

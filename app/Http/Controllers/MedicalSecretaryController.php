@@ -8,6 +8,7 @@ use App\Models\Document;
 use App\Models\Player;
 use App\Models\User;
 use App\Models\Visit;
+use App\Services\MedicalRecordAccess;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -17,12 +18,66 @@ use Illuminate\View\View;
 
 final class MedicalSecretaryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $user = $request->user();
+            abort_unless($user, 401);
+
+            if (($user->role ?? null) !== 'secretary') {
+                app(MedicalRecordAccess::class)->authorizeRole($user);
+            }
+
+            return $next($request);
+        });
+    }
+
+    private function playersQuery()
+    {
+        $user = auth()->user();
+
+        if (($user->role ?? null) !== 'secretary') {
+            return app(MedicalRecordAccess::class)->scopePlayers($user, Player::query());
+        }
+
+        $query = Player::query();
+        if ($user->club_id) {
+            return $query->where('club_id', $user->club_id);
+        }
+        if ($user->association_id) {
+            return $query->whereHas('club', fn ($club) => $club->where('association_id', $user->association_id));
+        }
+
+        abort(403);
+    }
+
+    private function authorizePlayer(Player $player): void
+    {
+        $user = auth()->user();
+
+        if (($user->role ?? null) !== 'secretary') {
+            app(MedicalRecordAccess::class)->authorize($user, $player, null);
+            return;
+        }
+
+        $allowed = $this->playersQuery()->whereKey($player->id)->exists();
+        abort_unless($allowed, 403);
+    }
+
+    private function athletesQuery()
+    {
+        return Athlete::query()->whereIn('player_id', $this->playersQuery()->select('players.id'));
+    }
+
     public function dashboard(): View
     {
         $today = now()->startOfDay();
         $tomorrow = now()->copy()->addDay()->startOfDay();
 
-        $appointments = Appointment::with(['athlete.player', 'doctor', 'visit.documents'])
+        $allowedPlayerIds = $this->playersQuery()->select('players.id');
+
+        $appointments = Appointment::with(['athlete.player.club', 'doctor', 'visit.documents'])
+            ->whereHas('athlete', fn ($athlete) => $athlete->whereIn('player_id', $allowedPlayerIds))
             ->where('appointment_date', '>=', $today)
             ->orderBy('appointment_date')
             ->limit(40)
@@ -30,6 +85,7 @@ final class MedicalSecretaryController extends Controller
 
         $recentAppointments = $appointments->take(20);
         $recentDocuments = Document::with(['visit.athlete.player', 'uploadedBy'])
+            ->whereHas('visit.athlete', fn ($athlete) => $athlete->whereIn('player_id', $this->playersQuery()->select('players.id')))
             ->latest()
             ->limit(10)
             ->get();
@@ -41,7 +97,7 @@ final class MedicalSecretaryController extends Controller
             'documents_pending' => $recentDocuments->where('status', 'pending')->count(),
         ];
 
-        $athletes = Athlete::with('player')->orderBy('name')->limit(1000)->get();
+        $athletes = $this->athletesQuery()->with('player')->orderBy('name')->limit(1000)->get();
         $doctors = User::query()
             ->whereIn('role', ['club_medical', 'association_medical', 'doctor'])
             ->orderBy('name')
@@ -69,7 +125,7 @@ final class MedicalSecretaryController extends Controller
             'notes' => 'nullable|string|max:4000',
         ]);
 
-        $athlete = Athlete::with('player')->findOrFail($validated['athlete_id']);
+        $athlete = $this->athletesQuery()->with('player')->findOrFail($validated['athlete_id']);
         $appointmentAt = Carbon::parse($validated['appointment_date'].' '.$validated['appointment_time']);
 
         Appointment::create([
@@ -95,6 +151,7 @@ final class MedicalSecretaryController extends Controller
     {
         $appointment->load(['athlete.player.club', 'doctor', 'visit.documents']);
         abort_unless($appointment->athlete?->player, 422, 'Ce rendez-vous n’est pas relié à un joueur canonique.');
+        $this->authorizePlayer($appointment->athlete->player);
 
         $player = $appointment->athlete->player;
         $dossier = $player->baseHealthRecord()->first();
@@ -106,6 +163,7 @@ final class MedicalSecretaryController extends Controller
     {
         $appointment->load('athlete.player');
         abort_unless($appointment->athlete?->player, 422, 'Ce rendez-vous n’est pas relié à un joueur canonique.');
+        $this->authorizePlayer($appointment->athlete->player);
 
         $validated = $request->validate([
             'reason_confirmed' => 'nullable|string|max:1000',
@@ -162,6 +220,7 @@ final class MedicalSecretaryController extends Controller
     {
         $appointment->load(['athlete.player', 'visit']);
         abort_unless($appointment->athlete?->player, 422, 'Ce rendez-vous n’est pas relié à un joueur canonique.');
+        $this->authorizePlayer($appointment->athlete->player);
 
         $visit = $appointment->visit;
         abort_unless($visit, 422, 'Le pré-accueil doit être terminé avant la consultation.');

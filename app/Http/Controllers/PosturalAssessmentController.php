@@ -41,6 +41,7 @@ class PosturalAssessmentController extends Controller
     public function show(Request $request, PosturalAssessment $assessment): JsonResponse
     {
         $this->authorizeMedicalUser($request);
+        $this->assertAssessmentVisible($assessment);
 
         return response()->json([
             'data' => $assessment->load(['findings', 'measurements', 'clinician', 'validatedBy']),
@@ -50,6 +51,7 @@ class PosturalAssessmentController extends Controller
     public function update(StorePosturalAssessmentRequest $request, PosturalAssessment $assessment): JsonResponse
     {
         $this->authorizeMedicalUser($request);
+        $this->assertAssessmentVisible($assessment);
 
         return response()->json([
             'data' => $this->service->update($assessment, $request->validated()),
@@ -59,6 +61,7 @@ class PosturalAssessmentController extends Controller
     public function complete(Request $request, PosturalAssessment $assessment): JsonResponse
     {
         $this->authorizeMedicalUser($request);
+        $this->assertAssessmentVisible($assessment);
 
         return response()->json(['data' => $this->service->complete($assessment)]);
     }
@@ -66,6 +69,7 @@ class PosturalAssessmentController extends Controller
     public function validateAssessment(Request $request, PosturalAssessment $assessment): JsonResponse
     {
         $this->authorizeMedicalUser($request);
+        $this->assertAssessmentVisible($assessment);
 
         return response()->json([
             'data' => $this->service->validate($assessment, (int) $request->user()->id),
@@ -75,13 +79,15 @@ class PosturalAssessmentController extends Controller
     public function compare(Request $request, PosturalAssessment $assessment, PosturalAssessment $other): JsonResponse
     {
         $this->authorizeMedicalUser($request);
+        $this->assertAssessmentVisible($assessment);
+        $this->assertAssessmentVisible($other);
         abort_unless($assessment->player_id === $other->player_id, 422, 'Les évaluations doivent appartenir au même joueur.');
 
         $assessment->load(['findings', 'measurements']);
         $other->load(['findings', 'measurements']);
 
-        $findingKey = fn ($finding) => $finding->finding_key.'|'.$finding->side;
-        $measurementKey = fn ($measurement) => ($measurement->measurement_key ?? 'legacy').'|'.($measurement->side ?? 'none');
+        $findingKey = fn ($finding) => $finding->finding_key.'|'.$finding->side.'|'.$finding->view;
+        $measurementKey = fn ($measurement) => ($measurement->measurement_key ?? 'legacy').'|'.($measurement->side ?? 'none').'|'.$measurement->view;
 
         return response()->json([
             'data' => [
@@ -109,6 +115,12 @@ class PosturalAssessmentController extends Controller
                 'after' => $afterByKey->get($itemKey),
             ])
             ->all();
+    }
+
+    private function assertAssessmentVisible(PosturalAssessment $assessment): void
+    {
+        abort_unless($assessment->health_record_id, 403);
+        HealthRecord::query()->findOrFail($assessment->health_record_id);
     }
 
     private function authorizeMedicalUser(Request $request): void

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PosturalAssessment extends Model
 {
@@ -13,85 +14,89 @@ class PosturalAssessment extends Model
     protected $fillable = [
         'player_id',
         'user_id',
+        'health_record_id',
         'assessment_type',
         'view',
         'annotations',
         'markers',
         'angles',
+        'overall_impression',
         'clinical_notes',
         'recommendations',
+        'context',
         'status',
         'assessment_date',
+        'validated_at',
+        'validated_by',
     ];
 
     protected $casts = [
         'annotations' => 'array',
         'markers' => 'array',
         'angles' => 'array',
+        'context' => 'array',
         'assessment_date' => 'datetime',
+        'validated_at' => 'datetime',
     ];
 
-    /**
-     * Get the player that owns the assessment.
-     */
     public function player(): BelongsTo
     {
         return $this->belongsTo(Player::class);
     }
 
-    /**
-     * Get the clinician who performed the assessment.
-     */
     public function clinician(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Scope for active assessments.
-     */
-    public function scopeActive($query)
+    public function healthRecord(): BelongsTo
     {
-        return $query->where('status', 'active');
+        return $this->belongsTo(HealthRecord::class);
     }
 
-    /**
-     * Scope for assessments by type.
-     */
+    public function validatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'validated_by');
+    }
+
+    public function findings(): HasMany
+    {
+        return $this->hasMany(PosturalFinding::class);
+    }
+
+    public function measurements(): HasMany
+    {
+        return $this->hasMany(PosturalMeasurement::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', '!=', 'archived');
+    }
+
     public function scopeByType($query, $type)
     {
         return $query->where('assessment_type', $type);
     }
 
-    /**
-     * Scope for assessments by view.
-     */
     public function scopeByView($query, $view)
     {
         return $query->where('view', $view);
     }
 
-    /**
-     * Get the assessment summary.
-     */
     public function getSummaryAttribute(): array
     {
-        $markers = $this->markers ?? [];
-        $angles = $this->angles ?? [];
-        $annotations = $this->annotations ?? [];
-
         return [
-            'total_markers' => count($markers),
-            'total_angles' => count($angles),
-            'total_annotations' => count($annotations),
+            'total_findings' => $this->relationLoaded('findings') ? $this->findings->count() : 0,
+            'total_measurements' => $this->relationLoaded('measurements') ? $this->measurements->count() : 0,
+            'total_markers' => count($this->markers ?? []),
+            'total_angles' => count($this->angles ?? []),
+            'total_annotations' => count($this->annotations ?? []),
             'has_clinical_notes' => !empty($this->clinical_notes),
             'has_recommendations' => !empty($this->recommendations),
         ];
     }
 
-    /**
-     * Get the assessment data for the Vue component.
-     */
     public function getSessionDataAttribute(): array
     {
         return [
@@ -102,9 +107,6 @@ class PosturalAssessment extends Model
         ];
     }
 
-    /**
-     * Set the session data from the Vue component.
-     */
     public function setSessionData(array $data): void
     {
         $this->update([
@@ -115,37 +117,32 @@ class PosturalAssessment extends Model
         ]);
     }
 
-    /**
-     * Get the formatted assessment date.
-     */
     public function getFormattedDateAttribute(): string
     {
         return $this->assessment_date->format('d/m/Y H:i');
     }
 
-    /**
-     * Get the assessment type label.
-     */
     public function getTypeLabelAttribute(): string
     {
         return match($this->assessment_type) {
+            'baseline' => 'Baseline',
             'routine' => 'Routine',
             'injury' => 'Blessure',
             'follow_up' => 'Suivi',
-            default => 'Autre'
+            'return_to_play' => 'Retour au jeu',
+            default => 'Autre',
         };
     }
 
-    /**
-     * Get the view label.
-     */
     public function getViewLabelAttribute(): string
     {
         return match($this->view) {
             'anterior' => 'Antérieure',
             'posterior' => 'Postérieure',
             'lateral' => 'Latérale',
-            default => 'Inconnue'
+            'left_lateral' => 'Latérale gauche',
+            'right_lateral' => 'Latérale droite',
+            default => 'Inconnue',
         };
     }
-} 
+}

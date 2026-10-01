@@ -67,11 +67,72 @@
                     </select>
                 </div>
                 <div></div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Motif de consultation</label>
-                    <textarea name="chief_complaint" rows="3" autofocus
-                              placeholder="Ex. Douleur du genou droit depuis le match de dimanche..."
-                              class="w-full border-gray-300 rounded-lg">{{ old('chief_complaint') }}</textarea>
+                <div class="md:col-span-2 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Motif principal</label>
+                            <select id="complaint-type" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Sélectionner</option>
+                                <option>Douleur</option>
+                                <option>Blessure aiguë</option>
+                                <option>Suivi de blessure</option>
+                                <option>Fatigue</option>
+                                <option>Symptômes respiratoires</option>
+                                <option>Symptômes digestifs</option>
+                                <option>Symptômes neurologiques</option>
+                                <option>Contrôle médical</option>
+                                <option>Pré-saison / aptitude</option>
+                                <option>Autre</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Région</label>
+                            <select id="complaint-region" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Non précisée</option>
+                                <option>Tête / cou</option>
+                                <option>Épaule</option>
+                                <option>Bras / coude</option>
+                                <option>Poignet / main</option>
+                                <option>Thorax</option>
+                                <option>Dos / rachis</option>
+                                <option>Bassin / hanche</option>
+                                <option>Cuisse</option>
+                                <option>Genou</option>
+                                <option>Jambe</option>
+                                <option>Cheville</option>
+                                <option>Pied</option>
+                                <option>Général</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Côté</label>
+                            <select id="complaint-side" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Sans latéralité</option>
+                                <option>Gauche</option>
+                                <option>Droite</option>
+                                <option>Bilatéral</option>
+                                <option>Médian</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Contexte</label>
+                            <select id="complaint-context" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Non précisé</option>
+                                <option>Match</option>
+                                <option>Entraînement</option>
+                                <option>Traumatisme direct</option>
+                                <option>Sans traumatisme</option>
+                                <option>Effort progressif</option>
+                                <option>Repos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Précision facultative</label>
+                        <input id="complaint-detail" type="text" class="w-full border-gray-300 rounded-lg"
+                               placeholder="Ex. depuis 3 jours, après changement de direction">
+                    </div>
+                    <input type="hidden" name="chief_complaint" id="chief-complaint-value" value="{{ old('chief_complaint') }}">
                 </div>
             </div>
         </div>
@@ -108,9 +169,59 @@
                 <p class="text-sm text-gray-500">Renseignez uniquement ce qui est pertinent pour cette visite.</p>
             </div>
             <div class="p-6 space-y-5">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Histoire / symptômes</label>
-                    <textarea name="visit_notes" rows="4" placeholder="Chronologie, contexte, évolution, symptômes associés..." class="w-full border-gray-300 rounded-lg">{{ old('visit_notes') }}</textarea>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Début</label>
+                            <select id="history-onset" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Non précisé</option>
+                                <option>Aujourd’hui</option>
+                                <option>1–3 jours</option>
+                                <option>4–7 jours</option>
+                                <option>1–4 semaines</option>
+                                <option>Plus d’un mois</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Installation</label>
+                            <select id="history-mode" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Non précisée</option>
+                                <option>Brutale</option>
+                                <option>Progressive</option>
+                                <option>Récidivante</option>
+                                <option>Post-traumatique</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Évolution</label>
+                            <select id="history-evolution" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Non précisée</option>
+                                <option>Amélioration</option>
+                                <option>Stable</option>
+                                <option>Aggravation</option>
+                                <option>Fluctuante</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-sm font-medium text-gray-700 mb-2">Symptômes associés</div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                            @foreach(['Gonflement','Instabilité','Blocage','Craquement','Raideur','Faiblesse','Engourdissement','Douleur nocturne'] as $symptom)
+                                <label class="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white">
+                                    <input type="checkbox" class="history-symptom" value="{{ $symptom }}">
+                                    <span>{{ $symptom }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Notes complémentaires</label>
+                        <textarea id="history-detail" rows="2" class="w-full border-gray-300 rounded-lg"
+                                  placeholder="Uniquement ce qui n’est pas couvert par les choix ci-dessus"></textarea>
+                    </div>
+                    <input type="hidden" name="visit_notes" id="visit-notes-value" value="{{ old('visit_notes') }}">
                 </div>
 
                 <details class="border rounded-lg">
@@ -125,9 +236,61 @@
                     </div>
                 </details>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Examen clinique</label>
-                    <textarea name="physical_examination" rows="5" placeholder="Inspection, palpation, mobilité, tests spécifiques, examen orienté..." class="w-full border-gray-300 rounded-lg">{{ old('physical_examination') }}</textarea>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Examen ciblé</label>
+                            <select id="exam-system" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Sélectionner</option>
+                                <option>Musculosquelettique</option>
+                                <option>Neurologique</option>
+                                <option>Cardiovasculaire</option>
+                                <option>Respiratoire</option>
+                                <option>Abdominal</option>
+                                <option>ORL</option>
+                                <option>Général</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mobilité</label>
+                            <select id="exam-mobility" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Non évaluée</option>
+                                <option>Normale</option>
+                                <option>Limitée</option>
+                                <option>Douloureuse</option>
+                                <option>Hypermobile</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Force</label>
+                            <select id="exam-strength" class="w-full border-gray-300 rounded-lg">
+                                <option value="">Non évaluée</option>
+                                <option>Normale</option>
+                                <option>Légèrement diminuée</option>
+                                <option>Modérément diminuée</option>
+                                <option>Très diminuée</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-sm font-medium text-gray-700 mb-2">Constats cliniques</div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                            @foreach(['Douleur à la palpation','Œdème','Ecchymose','Déformation','Instabilité','Déficit neurologique','Test spécifique positif','Examen normal'] as $finding)
+                                <label class="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white">
+                                    <input type="checkbox" class="exam-finding" value="{{ $finding }}">
+                                    <span>{{ $finding }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Détail de l’examen</label>
+                        <textarea id="exam-detail" rows="2" class="w-full border-gray-300 rounded-lg"
+                                  placeholder="Tests spécifiques, valeur chiffrée ou précision utile"></textarea>
+                    </div>
+                    <input type="hidden" name="physical_examination" id="physical-examination-value" value="{{ old('physical_examination') }}">
                 </div>
             </div>
         </div>
@@ -137,28 +300,87 @@
                 <h2 class="font-semibold text-gray-900">3. Évaluation et plan</h2>
             </div>
             <div class="p-6 space-y-5">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Impression clinique / diagnostic</label>
-                    <textarea name="diagnosis" rows="3" class="w-full border-gray-300 rounded-lg">{{ old('diagnosis') }}</textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Conduite à tenir / traitement</label>
-                    <textarea name="treatment_plan" rows="4" class="w-full border-gray-300 rounded-lg">{{ old('treatment_plan') }}</textarea>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Prescriptions</label>
-                        <textarea name="prescriptions" rows="3" class="w-full border-gray-300 rounded-lg">{{ old('prescriptions') }}</textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Impression clinique</label>
+                        <select id="diagnosis-category" class="w-full border-gray-300 rounded-lg">
+                            <option value="">Non concluant / à préciser</option>
+                            <option>Traumatisme musculosquelettique</option>
+                            <option>Lésion musculaire probable</option>
+                            <option>Entorse probable</option>
+                            <option>Tendinopathie probable</option>
+                            <option>Contusion</option>
+                            <option>Surcharge / surmenage</option>
+                            <option>Symptômes infectieux</option>
+                            <option>Évaluation normale</option>
+                            <option>Autre</option>
+                        </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Instructions de suivi</label>
-                        <textarea name="follow_up_instructions" rows="3" class="w-full border-gray-300 rounded-lg">{{ old('follow_up_instructions') }}</textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Niveau de certitude</label>
+                        <select id="diagnosis-certainty" class="w-full border-gray-300 rounded-lg">
+                            <option value="">Non précisé</option>
+                            <option>Hypothèse</option>
+                            <option>Probable</option>
+                            <option>Confirmé</option>
+                        </select>
                     </div>
                 </div>
-                <div class="max-w-xs">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Prochain contrôle</label>
-                    <input type="date" name="next_checkup_date" class="w-full border-gray-300 rounded-lg">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Précision diagnostique facultative</label>
+                    <input id="diagnosis-detail" type="text" class="w-full border-gray-300 rounded-lg"
+                           placeholder="Ex. entorse LLE genou droit">
+                    <input type="hidden" name="diagnosis" id="diagnosis-value" value="{{ old('diagnosis') }}">
                 </div>
+
+                <div>
+                    <div class="text-sm font-medium text-gray-700 mb-2">Conduite à tenir</div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                        @foreach(['Repos relatif','Glace','Compression','Élévation','Antalgique','Anti-inflammatoire','Kinésithérapie','Imagerie','Avis spécialiste','Réévaluation'] as $plan)
+                            <label class="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white">
+                                <input type="checkbox" class="plan-action" value="{{ $plan }}">
+                                <span>{{ $plan }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-sm font-medium text-gray-700 mb-2">Restriction sportive</div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        @foreach(['Aucune','Entraînement adapté','Sans contact','Pas de compétition','Arrêt sportif'] as $restriction)
+                            <label class="border rounded-lg px-3 py-2 text-sm flex items-center gap-2 bg-white">
+                                <input type="radio" name="restriction_ui" class="restriction-option" value="{{ $restriction }}">
+                                <span>{{ $restriction }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Délai de suivi</label>
+                        <select id="followup-delay" class="w-full border-gray-300 rounded-lg">
+                            <option value="">Selon évolution</option>
+                            <option value="1">24 h</option>
+                            <option value="2">48 h</option>
+                            <option value="3">72 h</option>
+                            <option value="7">7 jours</option>
+                            <option value="14">14 jours</option>
+                            <option value="30">1 mois</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Précision de suivi</label>
+                        <input id="followup-detail" type="text" class="w-full border-gray-300 rounded-lg"
+                               placeholder="Ex. contrôle après IRM">
+                    </div>
+                </div>
+
+                <input type="hidden" name="treatment_plan" id="treatment-plan-value" value="{{ old('treatment_plan') }}">
+                <input type="hidden" name="prescriptions" id="prescriptions-value" value="{{ old('prescriptions') }}">
+                <input type="hidden" name="follow_up_instructions" id="follow-up-value" value="{{ old('follow_up_instructions') }}">
+                <input type="hidden" name="next_checkup_date" id="next-checkup-value">
             </div>
         </div>
 
@@ -171,4 +393,83 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('clinical-visit-form');
+    if (!form) return;
+
+    const value = id => document.getElementById(id)?.value?.trim() || '';
+    const checked = selector => Array.from(document.querySelectorAll(selector + ':checked')).map(el => el.value);
+
+    const compose = () => {
+        const complaint = [
+            value('complaint-type'),
+            value('complaint-region'),
+            value('complaint-side'),
+            value('complaint-context') ? 'Contexte: ' + value('complaint-context') : '',
+            value('complaint-detail')
+        ].filter(Boolean).join(' · ');
+        document.getElementById('chief-complaint-value').value = complaint;
+
+        const symptoms = checked('.history-symptom');
+        const history = [
+            value('history-onset') ? 'Début: ' + value('history-onset') : '',
+            value('history-mode') ? 'Installation: ' + value('history-mode') : '',
+            value('history-evolution') ? 'Évolution: ' + value('history-evolution') : '',
+            symptoms.length ? 'Associés: ' + symptoms.join(', ') : '',
+            value('history-detail')
+        ].filter(Boolean).join(' | ');
+        document.getElementById('visit-notes-value').value = history;
+
+        const findings = checked('.exam-finding');
+        const exam = [
+            value('exam-system') ? 'Examen: ' + value('exam-system') : '',
+            value('exam-mobility') ? 'Mobilité: ' + value('exam-mobility') : '',
+            value('exam-strength') ? 'Force: ' + value('exam-strength') : '',
+            findings.length ? 'Constats: ' + findings.join(', ') : '',
+            value('exam-detail')
+        ].filter(Boolean).join(' | ');
+        document.getElementById('physical-examination-value').value = exam;
+
+        const diagnosis = [
+            value('diagnosis-category'),
+            value('diagnosis-certainty') ? '(' + value('diagnosis-certainty') + ')' : '',
+            value('diagnosis-detail')
+        ].filter(Boolean).join(' ');
+        document.getElementById('diagnosis-value').value = diagnosis;
+
+        const actions = checked('.plan-action');
+        const restriction = document.querySelector('.restriction-option:checked')?.value || '';
+        document.getElementById('treatment-plan-value').value = [
+            actions.length ? actions.join(', ') : '',
+            restriction ? 'Restriction: ' + restriction : ''
+        ].filter(Boolean).join(' | ');
+
+        document.getElementById('prescriptions-value').value =
+            actions.filter(x => ['Antalgique','Anti-inflammatoire'].includes(x)).join(', ');
+
+        const delay = Number(value('followup-delay'));
+        const followupDetail = value('followup-detail');
+        document.getElementById('follow-up-value').value = [
+            delay ? 'Contrôle dans ' + delay + ' jour(s)' : 'Suivi selon évolution',
+            followupDetail
+        ].filter(Boolean).join(' · ');
+
+        const next = document.getElementById('next-checkup-value');
+        if (delay) {
+            const d = new Date();
+            d.setDate(d.getDate() + delay);
+            next.value = d.toISOString().slice(0,10);
+        } else {
+            next.value = '';
+        }
+    };
+
+    form.addEventListener('change', compose);
+    form.addEventListener('input', compose);
+    form.addEventListener('submit', compose);
+    compose();
+});
+</script>
 @endsection

@@ -364,6 +364,10 @@ class HealthRecordController extends Controller
             $posturalAssessments = $posturalQuery->get();
         }
 
+        $vigilance = request()->boolean('legacy')
+            ? null
+            : app(\App\Services\PlayerVigilanceService::class)->assess($healthRecord->player);
+
         $view = request()->boolean('legacy') ? 'health-records.show' : 'health-records.workspace';
 
         return view($view, compact(
@@ -374,7 +378,8 @@ class HealthRecordController extends Controller
             'sectionHistory',
             'sectionDocuments',
             'intakeDocuments',
-            'posturalAssessments'
+            'posturalAssessments',
+            'vigilance'
         ));
     }
 

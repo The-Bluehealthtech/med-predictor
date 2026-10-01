@@ -68,6 +68,63 @@
     </div>
 
     <section data-medical-workspace-panel="summary" class="space-y-6">
+        @if($vigilance)
+        @php
+            $vigilanceStyles = [
+                'clear' => ['bg'=>'bg-emerald-50','border'=>'border-emerald-200','text'=>'text-emerald-800','badge'=>'bg-emerald-100 text-emerald-800','label'=>'Cohérent'],
+                'review' => ['bg'=>'bg-amber-50','border'=>'border-amber-200','text'=>'text-amber-900','badge'=>'bg-amber-100 text-amber-900','label'=>'À vérifier'],
+                'attention' => ['bg'=>'bg-red-50','border'=>'border-red-200','text'=>'text-red-900','badge'=>'bg-red-100 text-red-900','label'=>'Attention'],
+            ];
+        @endphp
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                    <div class="text-xs uppercase tracking-[0.14em] font-semibold text-blue-700">Vigilance joueur</div>
+                    <h2 class="font-semibold text-slate-950 mt-1">Contrôles explicables</h2>
+                    <p class="text-sm text-slate-500 mt-1">Signaux de cohérence et de surveillance issus des données présentes dans FIT. Aucun verdict de fraude ni pronostic médical automatique.</p>
+                </div>
+                <span class="text-xs text-slate-400">Règles {{ $vigilance['method'] }}</span>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 p-5">
+                @foreach(['identity'=>'Identité / âge','injury'=>'Blessure','cardiac'=>'Cardiovasculaire'] as $axisKey=>$axisTitle)
+                    @php
+                        $axis = $vigilance[$axisKey];
+                        $style = $vigilanceStyles[$axis['status']];
+                    @endphp
+                    <details class="rounded-xl border {{ $style['border'] }} {{ $style['bg'] }} p-4 group">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <div class="text-sm font-semibold {{ $style['text'] }}">{{ $axisTitle }}</div>
+                                    <div class="text-xs text-slate-500 mt-1">{{ count($axis['flags']) }} point(s) signalé(s)</div>
+                                </div>
+                                <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold {{ $style['badge'] }}">{{ $style['label'] }}</span>
+                            </div>
+                        </summary>
+                        <div class="mt-4 pt-4 border-t border-black/5 space-y-3">
+                            @foreach($axis['flags'] as $flag)
+                                @php
+                                    $flagClass = match($flag['severity']) {
+                                        'attention' => 'text-red-800',
+                                        'review' => 'text-amber-900',
+                                        default => 'text-slate-600',
+                                    };
+                                @endphp
+                                <div class="flex gap-2 text-sm {{ $flagClass }}">
+                                    <span class="mt-0.5">{{ $flag['severity']==='attention' ? '!' : ($flag['severity']==='review' ? '•' : 'i') }}</span>
+                                    <span>{{ $flag['label'] }}</span>
+                                </div>
+                            @endforeach
+                            @foreach($axis['confirmed'] as $item)
+                                <div class="flex gap-2 text-sm text-emerald-800"><span>✓</span><span>{{ $item }}</span></div>
+                            @endforeach
+                            <p class="text-xs text-slate-500 leading-5 pt-2">{{ $axis['notice'] }}</p>
+                        </div>
+                    </details>
+                @endforeach
+            </div>
+        </div>
+        @endif
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div class="rounded-xl border border-red-200 bg-red-50 p-5">
                 <div class="text-xs uppercase tracking-wide font-semibold text-red-700 mb-2">Allergies</div>

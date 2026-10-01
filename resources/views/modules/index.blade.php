@@ -161,6 +161,14 @@ function filterByCategory(category, event) {
                     'border_color' => 'border-purple-200',
                     'text_color' => 'text-purple-800'
                 ],
+                'data_entry' => [
+                    'name' => '📝 Données & saisie',
+                    'description' => 'Saisie et vérification des données qui alimentent les scores',
+                    'color' => 'purple',
+                    'bg_color' => 'bg-purple-50',
+                    'border_color' => 'border-purple-200',
+                    'text_color' => 'text-purple-800'
+                ],
                 'technology' => [
                     'name' => '🤖 IA & Technologie',
                     'description' => 'Intelligence artificielle et technologies avancées',

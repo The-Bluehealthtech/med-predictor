@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PerformanceAlert;
+use App\Models\Player;
 use App\Models\PlayerPerformance;
+use App\Models\PlayerSeasonStat;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -22,10 +27,27 @@ class PerformanceAnalyticsController extends Controller
             'social' => $this->roundedAverage(clone $query, 'social_score'),
             'passing_accuracy' => $this->roundedAverage(clone $query, 'passing_accuracy'),
             'shooting_accuracy' => $this->roundedAverage(clone $query, 'shooting_accuracy'),
-            'goals' => (int) (clone $query)->sum('goals'),
-            'assists' => (int) (clone $query)->sum('assists'),
-            'minutes_played' => (int) (clone $query)->sum('minutes_played'),
         ];
+
+        // Buts, passes décisives et minutes : ces colonnes de player_performances
+        // ne sont pas renseignées ; les totaux viennent des statistiques de saison
+        // (feuilles de match), limitées aux joueurs visibles par l'utilisateur.
+        $seasonStats = PlayerSeasonStat::query()->whereIn('player_id', Player::query()->select('id'));
+        $stats['goals'] = (int) (clone $seasonStats)->sum('goals');
+        $stats['assists'] = (int) (clone $seasonStats)->sum('assists');
+        $stats['minutes_played'] = (int) (clone $seasonStats)->sum('minutes_played');
+        $stats['season_players'] = (int) (clone $seasonStats)->distinct()->count('player_id');
+
+        // Alertes de performance actives (reprises de l'ancien Analytics Dashboard)
+        $alertsQuery = $this->scopeAlerts(
+            PerformanceAlert::query()
+                ->with(['player', 'club'])
+                ->where('is_active', true)
+                ->where('is_resolved', false)
+        );
+        $stats['active_alerts'] = (clone $alertsQuery)->count();
+        $stats['critical_alerts'] = (clone $alertsQuery)->where('alert_level', 'critical')->count();
+        $alerts = $alertsQuery->orderByDesc('created_at')->limit(10)->get();
 
         $recent = PlayerPerformance::query()
             ->with('player')
@@ -83,8 +105,41 @@ class PerformanceAnalyticsController extends Controller
             'stats',
             'recent',
             'trend',
-            'topPerformers'
+            'topPerformers',
+            'alerts'
         ));
+    }
+
+    /** Périmètre des alertes selon le rôle : tout pour l'admin système, sinon joueur, club ou association. */
+    private function scopeAlerts(Builder $query): Builder
+    {
+        $user = Auth::user();
+
+        if ($user->isSystemAdmin()) {
+            return $query;
+        }
+
+        if ($user->isPlayer()) {
+            return $user->player_id
+                ? $query->where('player_id', $user->player_id)
+                : $query->whereRaw('1 = 0');
+        }
+
+        if ($user->isClubUser()) {
+            return $user->club_id
+                ? $query->where('club_id', $user->club_id)
+                : $query->whereRaw('1 = 0');
+        }
+
+        if ($user->isAssociationUser()) {
+            return $user->association_id
+                ? $query->whereHas('club', fn ($club) =>
+                    $club->where('association_id', $user->association_id)
+                )
+                : $query->whereRaw('1 = 0');
+        }
+
+        return $query->whereRaw('1 = 0');
     }
 
     private function roundedAverage($query, string $column): ?float

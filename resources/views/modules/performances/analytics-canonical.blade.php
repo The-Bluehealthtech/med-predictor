@@ -7,23 +7,45 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">📈 Performance Analytics</h1>
-            <p class="text-sm text-gray-600">{{ __('Données enregistrées dans player_performances. Aucune valeur de démonstration.') }}</p>
+            <p class="text-sm text-gray-600">{{ __('Évaluations enregistrées dans player_performances, statistiques de saison et alertes, dans le périmètre autorisé.') }}</p>
         </div>
-        <a href="{{ route('modules.index') }}" class="text-blue-600 hover:text-blue-800">← Modules</a>
+        <div class="flex items-center gap-4">
+            <a href="{{ route('analytics.digital-twin') }}" class="text-blue-600 hover:text-blue-800">🔄 Digital Twin</a>
+            <a href="{{ route('modules.index') }}" class="text-blue-600 hover:text-blue-800">← Modules</a>
+        </div>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         @foreach([
-            'Enregistrements' => $stats['records'],
+            'Évaluations enregistrées' => $stats['records'],
             'Score global moyen' => $stats['overall'],
-            'Buts' => $stats['goals'],
-            'Passes décisives' => $stats['assists'],
+            'Alertes actives' => $stats['active_alerts'],
+            'Alertes critiques' => $stats['critical_alerts'],
         ] as $label => $value)
             <div class="bg-white rounded-lg shadow p-4">
                 <div class="text-sm text-gray-500">{{ $label }}</div>
                 <div class="text-2xl font-bold text-gray-900">{{ $value ?? 'N/A' }}</div>
             </div>
         @endforeach
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-4">
+        <div class="flex items-baseline justify-between gap-4 flex-wrap">
+            <div class="text-sm font-semibold text-gray-700">{{ __('Statistiques de saison (feuilles de match)') }}</div>
+            <div class="text-xs text-gray-500">{{ $stats['season_players'] }} {{ __('joueurs avec statistiques de saison') }}</div>
+        </div>
+        <div class="grid grid-cols-3 gap-4 mt-3">
+            @foreach([
+                'Buts' => $stats['goals'],
+                'Passes décisives' => $stats['assists'],
+                'Minutes jouées' => $stats['minutes_played'],
+            ] as $label => $value)
+                <div>
+                    <div class="text-sm text-gray-500">{{ $label }}</div>
+                    <div class="text-xl font-semibold text-gray-900">{{ number_format($value, 0, ',', ' ') }}</div>
+                </div>
+            @endforeach
+        </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -102,6 +124,41 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="p-5 border-b">
+            <h2 class="font-semibold text-gray-900">{{ __('Alertes de performance actives') }}</h2>
+        </div>
+        <div class="divide-y divide-gray-200">
+            @forelse($alerts as $alert)
+                <div class="p-5">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <div class="font-medium text-gray-900">{{ $alert->title }}</div>
+                            <div class="text-sm text-gray-600 mt-1">{{ $alert->description }}</div>
+                            <div class="text-xs text-gray-500 mt-2">
+                                @if($alert->player)
+                                    {{ trim(($alert->player->first_name ?? '') . ' ' . ($alert->player->last_name ?? '')) }}
+                                @endif
+                                @if($alert->club)
+                                    @if($alert->player) — @endif{{ $alert->club->name }}
+                                @endif
+                            </div>
+                        </div>
+                        <span class="text-xs font-semibold uppercase text-gray-600">{{ $alert->alert_level }}</span>
+                    </div>
+                    @if($alert->trigger_value !== null || $alert->threshold_value !== null)
+                        <div class="text-xs text-gray-500 mt-2">
+                            Valeur: {{ $alert->trigger_value ?? 'N/A' }}
+                            · Seuil: {{ $alert->threshold_value ?? 'N/A' }}
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <div class="p-8 text-center text-gray-500">{{ __('Aucune alerte active dans le périmètre autorisé.') }}</div>
+            @endforelse
         </div>
     </div>
 </div>

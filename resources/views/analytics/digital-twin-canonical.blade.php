@@ -9,7 +9,7 @@
             <h1 class="text-2xl font-bold text-gray-900">{{ __('🔄 Digital Twin — scénario what-if') }}</h1>
             <p class="text-sm text-gray-600">{{ __('Simulation mathématique basée sur la dernière performance réellement enregistrée.') }}</p>
         </div>
-        <a href="{{ route('analytics.dashboard') }}" class="text-blue-600 hover:text-blue-800">← Analytics</a>
+        <a href="{{ route('performances.analytics') }}" class="text-blue-600 hover:text-blue-800">← Performance Analytics</a>
     </div>
 
     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-900">{{ __('Les résultats ci-dessous sont des') }}<strong>{{ __('scénarios simulés') }}</strong>{{ __(', pas des mesures, pas un diagnostic médical et pas le score FIT canonique. L\'ajustement applique simplement le pourcentage choisi aux scores disponibles.') }}</div>

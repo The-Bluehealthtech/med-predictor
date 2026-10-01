@@ -34,11 +34,11 @@ return [
         'Gérer les transferts de joueurs connecté à FIFA TMS' => 'Player transfer management and FIFA TMS connectivity',
         'Gestion financière et comptabilité' => 'Finance and accounting',
     ],
-    'names' => ['Gestion des Transferts' => 'Transfer Management'],
+    'names' => ['Gestion des Transferts' => 'Transfer Management', 'Saisie des métriques FIT' => 'FIT metrics entry', 'Cockpit entraîneur' => 'Coach cockpit'],
     'categories' => [
         'health' => 'Health & Medicine', 'sport' => 'Football Management',
         'institutional' => 'Organizations', 'documents' => 'Licences & Documents',
-        'analytics' => 'Analytics & Performance', 'technology' => 'AI & Technology',
+        'analytics' => 'Analytics & Performance', 'data_entry' => 'Data & entry', 'technology' => 'AI & Technology',
         'portals' => 'Portals & Connectivity', 'administration' => 'Administration',
     ],
 ];

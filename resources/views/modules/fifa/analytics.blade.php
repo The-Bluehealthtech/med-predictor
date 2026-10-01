@@ -35,7 +35,7 @@
             <div class="p-6">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">📊 FIFA Analytics Dashboard</h2>
-                    <p class="text-lg text-gray-600 mb-6">{{ __('Tableau de bord analytique pour le suivi des données FIFA Connect') }}</p>
+                    <p class="text-lg text-gray-600 mb-6">{{ __('Vue d\'ensemble des joueurs, clubs et matchs enregistrés dans la plateforme') }}</p>
                     <div class="flex justify-center space-x-4">
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
@@ -119,7 +119,7 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-500">{{ __('common.matches') }}</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ \App\Models\GameMatch::count() }}</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ \Illuminate\Support\Facades\DB::table('matches')->count() }}</p>
                         </div>
                     </div>
                     <div class="text-right">
@@ -213,7 +213,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="text-lg font-bold text-purple-600">{{ \App\Models\GameMatch::where('match_date', '>=', now()->startOfMonth())->count() }}</span>
+                            <span class="text-lg font-bold text-purple-600">{{ \Illuminate\Support\Facades\DB::table('matches')->whereBetween('match_date', [now()->startOfMonth(), now()->endOfMonth()])->count() }}</span>
                             <p class="text-xs text-gray-400">{{ __('common.matches') }}</p>
                         </div>
                     </div>
@@ -233,10 +233,10 @@ const positionChart = new Chart(positionCtx, {
         labels: ['Gardien', 'Défenseur', 'Milieu', 'Attaquant'],
         datasets: [{
             data: [
-                {{ \App\Models\Player::where('position', 'Gardien')->count() }},
-                {{ \App\Models\Player::where('position', 'Défenseur')->count() }},
-                {{ \App\Models\Player::where('position', 'Milieu')->count() }},
-                {{ \App\Models\Player::where('position', 'Attaquant')->count() }}
+                {{ \App\Models\Player::whereIn('position', ['GK', 'Gardien'])->count() }},
+                {{ \App\Models\Player::whereIn('position', ['DEF', 'LCB', 'RCB', 'LB', 'RB', 'CB', 'Défenseur'])->count() }},
+                {{ \App\Models\Player::whereIn('position', ['MID', 'CDM', 'LCM', 'CAM', 'RCAM', 'CM', 'DM', 'AM', 'Milieu'])->count() }},
+                {{ \App\Models\Player::whereIn('position', ['FWD', 'CF', 'LAM', 'RAM', 'ST', 'LW', 'RW', 'Attaquant'])->count() }}
             ],
             backgroundColor: [
                 '#3B82F6',

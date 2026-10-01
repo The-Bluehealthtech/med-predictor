@@ -11,15 +11,16 @@ class AnalyticsRpmContractTest extends TestCase
         return dirname(__DIR__, 3) . '/' . $relative;
     }
 
-    public function test_analytics_dashboard_uses_real_controller_and_scoped_alerts(): void
+    public function test_former_analytics_dashboard_redirects_to_performance_analytics_with_scoped_alerts(): void
     {
         $routes = file_get_contents($this->projectPath('routes/web.php'));
         $controller = file_get_contents(
-            $this->projectPath('app/Http/Controllers/AnalyticsDashboardController.php')
+            $this->projectPath('app/Http/Controllers/PerformanceAnalyticsController.php')
         );
 
+        // Analytics Dashboard est fusionné dans Performance Analytics : l'adresse redirige.
         $this->assertStringContainsString(
-            "AnalyticsDashboardController::class, 'index'",
+            "return redirect()->route('performances.analytics');\n})->middleware(['auth'])->name('analytics.dashboard');",
             $routes
         );
         $this->assertStringContainsString('scopeAlerts', $controller);
@@ -32,7 +33,7 @@ class AnalyticsRpmContractTest extends TestCase
     public function test_active_analytics_view_contains_no_fabricated_player_alerts(): void
     {
         $view = file_get_contents(
-            $this->projectPath('resources/views/analytics/dashboard-canonical.blade.php')
+            $this->projectPath('resources/views/modules/performances/analytics-canonical.blade.php')
         );
 
         $this->assertStringNotContainsString('Player ID: 123', $view);

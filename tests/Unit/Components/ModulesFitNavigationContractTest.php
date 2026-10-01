@@ -26,19 +26,17 @@ class ModulesFitNavigationContractTest extends TestCase
         );
     }
 
-    public function test_fit_metrics_is_declared_in_analytics_modules(): void
+    public function test_fit_metrics_entry_is_declared_in_data_entry_modules(): void
     {
         $routes = file_get_contents($this->projectPath('routes/web.php'));
 
-        $this->assertStringContainsString("'name' => 'FIT Metrics'", $routes);
-        $this->assertStringContainsString(
-            "'route' => 'performances.fit-metrics'",
+        // Outil de saisie, rangé dans « Données & saisie » plutôt que dans Analytics.
+        $this->assertMatchesRegularExpression(
+            "/'name' => 'Saisie des métriques FIT',.*?'route' => 'performances\.fit-metrics',.*?'category' => 'data_entry'/s",
             $routes
         );
-        $this->assertStringContainsString(
-            "'category' => 'analytics'",
-            $routes
-        );
+        $view = file_get_contents($this->projectPath('resources/views/modules/index.blade.php'));
+        $this->assertStringContainsString("'data_entry' => [", $view);
     }
 
     public function test_fit_card_uses_canonical_record_permission(): void

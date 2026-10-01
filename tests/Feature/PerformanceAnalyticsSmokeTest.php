@@ -35,7 +35,7 @@ class PerformanceAnalyticsSmokeTest extends TestCase
         $this->assertCount(count($paths), $results);
         foreach ($paths as $path) {
             $this->assertSame(
-                $path === '/performances/trends' ? 302 : 200,
+                in_array($path, ['/performances/trends', '/analytics/dashboard'], true) ? 302 : 200,
                 $results[$path][0],
                 $path . ': ' . ($results[$path][1] ?? 'unknown error')
             );
@@ -43,6 +43,11 @@ class PerformanceAnalyticsSmokeTest extends TestCase
         $this->assertStringEndsWith(
             '/performances/analytics',
             $results['/performances/trends'][2]
+        );
+        // Analytics Dashboard fusionné dans Performance Analytics.
+        $this->assertStringEndsWith(
+            '/performances/analytics',
+            $results['/analytics/dashboard'][2]
         );
     }
 }

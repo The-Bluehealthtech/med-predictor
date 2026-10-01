@@ -2093,5 +2093,9 @@
     "🎯 Statistiques de saison": "🎯 Season statistics",
     "📊 Dernier match": "📊 Last match",
     "Données synthétiques de test — évaluation non officielle.": "Synthetic test data — unofficial assessment.",
-    "L'évolution du score est affichée dans Performances › Statistiques avancées › Rôle et apport.": "The score trend is shown in Performances › Advanced Statistics › Role and contribution."
+    "L'évolution du score est affichée dans Performances › Statistiques avancées › Rôle et apport.": "The score trend is shown in Performances › Advanced Statistics › Role and contribution.",
+    "Vue d'ensemble des joueurs, clubs et matchs enregistrés dans la plateforme": "Overview of the players, clubs and matches recorded in the platform",
+    "Évaluations enregistrées dans player_performances, statistiques de saison et alertes, dans le périmètre autorisé.": "Assessments recorded in player_performances, season statistics and alerts, within your authorised scope.",
+    "Statistiques de saison (feuilles de match)": "Season statistics (match sheets)",
+    "joueurs avec statistiques de saison": "players with season statistics"
 }

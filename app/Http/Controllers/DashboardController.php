@@ -14,7 +14,7 @@ class DashboardController extends Controller
         // Rediriger vers les dashboards complets selon le rôle
         switch ($user->role) {
             case 'system_admin':
-                return redirect()->route('analytics.dashboard');
+                return redirect()->route('performances.analytics');
             case 'association_admin':
                 return redirect()->route('admin.dashboard');
             case 'club_admin':

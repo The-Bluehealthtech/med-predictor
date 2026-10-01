@@ -1217,15 +1217,6 @@ Route::middleware(['auth'])->group(function () {
                     
                     // 📊 ANALYTICS & PERFORMANCE
                     [
-                        'name' => 'Analytics Dashboard',
-                        'description' => 'Tableau de bord analytique',
-                        'icon' => '📈',
-                        'route' => 'analytics.dashboard',
-                        'status' => 'active',
-                        'color' => 'yellow',
-                        'category' => 'analytics'
-                    ],
-                    [
                         'name' => 'Digital Twin',
                         'description' => 'Jumeau numérique des athlètes',
                         'icon' => '👤',
@@ -1253,13 +1244,13 @@ Route::middleware(['auth'])->group(function () {
                         'category' => 'analytics'
                     ],
                     [
-                        'name' => 'FIT Metrics',
+                        'name' => 'Saisie des métriques FIT',
                         'description' => 'Saisie et vérification des métriques du score FIT canonique',
                         'icon' => '🎯',
                         'route' => 'performances.fit-metrics',
                         'status' => 'active',
                         'color' => 'purple',
-                        'category' => 'analytics'
+                        'category' => 'data_entry'
                     ],
                     
                     // 🤖 IA & TECHNOLOGIE
@@ -3586,10 +3577,11 @@ Route::get('/api/fit/kpis', [FitDashboardController::class, 'kpis'])->name('fit.
 // Test routes
 
 // Analytics routes
-Route::get(
-    '/analytics/dashboard',
-    [\App\Http\Controllers\AnalyticsDashboardController::class, 'index']
-)->middleware(['auth'])->name('analytics.dashboard');
+// L'ancien Analytics Dashboard est fusionné dans Performance Analytics (alertes comprises) ;
+// l'adresse et le nom de route sont conservés pour les liens et favoris existants.
+Route::get('/analytics/dashboard', function () {
+    return redirect()->route('performances.analytics');
+})->middleware(['auth'])->name('analytics.dashboard');
 
 Route::get(
     '/analytics/digital-twin',

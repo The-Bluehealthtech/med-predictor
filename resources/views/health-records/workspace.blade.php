@@ -125,6 +125,69 @@
             </div>
         </div>
         @endif
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden" id="clinical-assistant-panel"
+             data-assistant-url="{{ route('health-records.assistant', $healthRecord) }}">
+            <div class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-950 to-blue-950 text-white flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div>
+                    <div class="text-xs uppercase tracking-[0.14em] font-semibold text-blue-200">Assistant clinique</div>
+                    <h2 class="font-semibold text-lg mt-1">Aide à la revue du dossier</h2>
+                    <p class="text-sm text-slate-300 mt-1">Lecture seule · aucune suggestion n’est enregistrée automatiquement dans le dossier.</p>
+                </div>
+                <span class="text-xs px-2.5 py-1 rounded-full bg-white/10 text-blue-100 border border-white/10">Mode explicable local</span>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-[320px_1fr]">
+                <div class="p-5 border-b xl:border-b-0 xl:border-r border-slate-200 space-y-3">
+                    <button type="button" data-clinical-assistant-action="analyze"
+                            class="w-full text-left rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 p-4 transition">
+                        <div class="font-semibold text-blue-950">Analyser le dossier</div>
+                        <div class="text-xs text-blue-700 mt-1">Synthèse des éléments de vigilance et de l’historique récent.</div>
+                    </button>
+                    <button type="button" data-clinical-assistant-action="verify"
+                            class="w-full text-left rounded-xl border border-slate-200 hover:border-amber-300 hover:bg-amber-50 p-4 transition">
+                        <div class="font-semibold text-slate-900">Vérifier avant validation</div>
+                        <div class="text-xs text-slate-500 mt-1">Repère les données absentes, anciennes ou à confirmer.</div>
+                    </button>
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 text-xs text-slate-600 leading-5">
+                        L’assistant actuel n’établit ni diagnostic, ni aptitude, ni fraude, ni probabilité de mort subite ou de blessure.
+                    </div>
+                </div>
+
+                <div class="p-5 space-y-4">
+                    <div>
+                        <label for="clinical-assistant-question" class="text-sm font-semibold text-slate-900">Poser une question sur ce dossier</label>
+                        <textarea id="clinical-assistant-question" rows="3" maxlength="1200"
+                                  class="mt-2 w-full rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
+                                  placeholder="Ex. Quels éléments cardiovasculaires sont à vérifier ?"></textarea>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <button type="button" data-clinical-assistant-action="question"
+                                    class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">Envoyer</button>
+                            <button type="button" data-clinical-assistant-example="Quels éléments cardiovasculaires sont à vérifier ?"
+                                    class="px-3 py-2 rounded-lg border border-slate-200 text-xs text-slate-600 hover:bg-slate-50">Cardiovasculaire</button>
+                            <button type="button" data-clinical-assistant-example="Y a-t-il des signaux de récidive de blessure ?"
+                                    class="px-3 py-2 rounded-lg border border-slate-200 text-xs text-slate-600 hover:bg-slate-50">Blessures</button>
+                            <button type="button" data-clinical-assistant-example="Quelles données d’identité ou d’âge sont à vérifier ?"
+                                    class="px-3 py-2 rounded-lg border border-slate-200 text-xs text-slate-600 hover:bg-slate-50">Identité / âge</button>
+                        </div>
+                    </div>
+
+                    <div id="clinical-assistant-result" class="hidden rounded-xl border border-slate-200 bg-slate-50 p-4" aria-live="polite">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 id="clinical-assistant-title" class="font-semibold text-slate-900">Résultat</h3>
+                            <span id="clinical-assistant-mode" class="text-[11px] text-slate-400"></span>
+                        </div>
+                        <p id="clinical-assistant-summary" class="text-sm text-slate-700 mt-2 leading-6"></p>
+                        <ul id="clinical-assistant-items" class="mt-3 space-y-2 text-sm text-slate-700"></ul>
+                        <div id="clinical-assistant-sources" class="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-500"></div>
+                    </div>
+
+                    <div id="clinical-assistant-loading" class="hidden text-sm text-slate-500">Analyse du dossier en cours…</div>
+                    <div id="clinical-assistant-error" class="hidden rounded-lg bg-red-50 border border-red-200 text-red-800 p-3 text-sm"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div class="rounded-xl border border-red-200 bg-red-50 p-5">
                 <div class="text-xs uppercase tracking-wide font-semibold text-red-700 mb-2">Allergies</div>
@@ -446,6 +509,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const initial = new URLSearchParams(window.location.search).get('workspace');
     if (['summary','visits','exams','documents'].includes(initial)) showTab(initial);
+
+    const assistant = document.getElementById('clinical-assistant-panel');
+    if (assistant) {
+        const question = document.getElementById('clinical-assistant-question');
+        const result = document.getElementById('clinical-assistant-result');
+        const title = document.getElementById('clinical-assistant-title');
+        const summary = document.getElementById('clinical-assistant-summary');
+        const items = document.getElementById('clinical-assistant-items');
+        const sources = document.getElementById('clinical-assistant-sources');
+        const modeLabel = document.getElementById('clinical-assistant-mode');
+        const loading = document.getElementById('clinical-assistant-loading');
+        const error = document.getElementById('clinical-assistant-error');
+
+        const runAssistant = async mode => {
+            error.classList.add('hidden');
+            result.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            try {
+                const response = await fetch(assistant.dataset.assistantUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify({
+                        mode,
+                        question: mode === 'question' ? question.value.trim() : null,
+                    }),
+                });
+
+                const payload = await response.json();
+                if (!response.ok || !payload.success) {
+                    throw new Error(payload.message || 'Impossible d’analyser le dossier.');
+                }
+
+                const data = payload.assistant || {};
+                title.textContent = data.title || 'Assistant clinique';
+                summary.textContent = data.summary || '';
+                modeLabel.textContent = data.mode || '';
+                items.innerHTML = '';
+                (data.items || []).forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'flex gap-2';
+                    const dot = document.createElement('span');
+                    dot.className = 'text-blue-600 font-bold';
+                    dot.textContent = '•';
+                    const value = document.createElement('span');
+                    value.textContent = item;
+                    li.append(dot, value);
+                    items.appendChild(li);
+                });
+                sources.textContent = (data.sources || []).length
+                    ? 'Sources du dossier : ' + data.sources.join(' · ')
+                    : '';
+                result.classList.remove('hidden');
+            } catch (e) {
+                error.textContent = e.message || 'Erreur de l’assistant clinique.';
+                error.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden');
+            }
+        };
+
+        assistant.querySelectorAll('[data-clinical-assistant-action]').forEach(button => {
+            button.addEventListener('click', () => runAssistant(button.dataset.clinicalAssistantAction));
+        });
+        assistant.querySelectorAll('[data-clinical-assistant-example]').forEach(button => {
+            button.addEventListener('click', () => {
+                question.value = button.dataset.clinicalAssistantExample;
+                question.focus();
+            });
+        });
+    }
 });
 </script>
 @endsection

@@ -383,6 +383,31 @@ class HealthRecordController extends Controller
         ));
     }
 
+    public function assistant(Request $request, HealthRecord $healthRecord): JsonResponse
+    {
+        $this->authorizeRecord($healthRecord);
+        $healthRecord = $this->baseRecordFor($healthRecord);
+        $healthRecord->load('player');
+
+        $validated = $request->validate([
+            'mode' => 'required|string|in:analyze,verify,question',
+            'question' => 'nullable|string|max:1200',
+        ]);
+
+        $vigilance = app(\App\Services\PlayerVigilanceService::class)->assess($healthRecord->player);
+        $response = app(\App\Services\MedicalDossierAssistantService::class)->respond(
+            $healthRecord,
+            $vigilance,
+            $validated['mode'],
+            $validated['question'] ?? null
+        );
+
+        return response()->json([
+            'success' => true,
+            'assistant' => $response,
+        ]);
+    }
+
     public function module(HealthRecord $healthRecord, string $module): View
     {
         $this->authorizeRecord($healthRecord);

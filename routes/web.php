@@ -1984,6 +1984,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/health-records/{healthRecord}/modules/{module}', [App\Http\Controllers\HealthRecordController::class, 'storeModule'])
         ->name('health-records.modules.store');
     Route::get('/health-records/{healthRecord}', [App\Http\Controllers\HealthRecordController::class, 'show'])->name('health-records.show');
+    Route::post('/health-records/{healthRecord}/assistant', [App\Http\Controllers\HealthRecordController::class, 'assistant'])->name('health-records.assistant');
     Route::get('/health-records/{healthRecord}/edit', [App\Http\Controllers\HealthRecordController::class, 'edit'])->name('health-records.edit');
     Route::put('/health-records/{healthRecord}', [App\Http\Controllers\HealthRecordController::class, 'update'])->name('health-records.update');
     Route::delete('/health-records/{healthRecord}', [App\Http\Controllers\HealthRecordController::class, 'destroy'])->name('health-records.destroy');

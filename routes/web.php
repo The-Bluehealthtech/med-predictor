@@ -558,32 +558,7 @@ Route::get('/confederations-view/show', function (Request $request) {
 
 // Route de test secretary dashboard avec données réelles (sans authentification)
 
-// Routes Secretary manquantes
-Route::prefix('secretary')->name('secretary.')->group(function () {
-    Route::post('/appointments', function () {
-        return redirect()->back()->with('success', 'Rendez-vous créé avec succès !');
-    })->name('appointments.store');
-    
-    Route::get('/appointments', function () {
-        return view('secretary.appointments.index');
-    })->name('appointments.index');
-    
-    Route::get('/documents', function () {
-        return view('secretary.documents.index');
-    })->name('documents.index');
-    
-    Route::post('/documents/upload', function () {
-        return redirect()->back()->with('success', 'Document uploadé avec succès !');
-    })->name('documents.upload');
-    
-    Route::get('/athletes/search', function () {
-        return view('secretary.athletes.search');
-    })->name('athletes.search');
-    
-    Route::get('/stats', function () {
-        return view('secretary.stats');
-    })->name('stats');
-});
+// Le workflow du secrétariat médical est déclaré dans le groupe authentifié ci-dessous.
 
 
 // Route principale pour les compétitions (sans authentification)
@@ -2875,43 +2850,20 @@ Route::get('/test-pdf', function() {
     })->name('portal.wellness');
     
     
-    // Secretary Dashboard routes
-    Route::get('/secretary/dashboard', function () {
-    // Données dynamiques pour le dashboard secretary - Utilisation des rendez-vous futurs
-    $stats = [
-        'total_appointments' => \App\Models\Appointment::count(),
-        'upcoming_appointments' => \App\Models\Appointment::where('appointment_date', '>=', now())->whereIn('status', ['scheduled', 'confirmed'])->count(),
-        'total_documents' => \App\Models\HealthRecord::count(),
-        'pending_documents' => \App\Models\HealthRecord::where('status', 'pending')->count(),
-    ];
+    // Secretary medical workflow
+    Route::get('/secretary/dashboard', [App\Http\Controllers\MedicalSecretaryController::class, 'dashboard'])
+        ->name('secretary.dashboard');
+    Route::post('/secretary/appointments', [App\Http\Controllers\MedicalSecretaryController::class, 'storeAppointment'])
+        ->name('secretary.appointments.store');
+    Route::get('/secretary/appointments/{appointment}/intake', [App\Http\Controllers\MedicalSecretaryController::class, 'intake'])
+        ->name('secretary.appointments.intake');
+    Route::post('/secretary/appointments/{appointment}/check-in', [App\Http\Controllers\MedicalSecretaryController::class, 'checkIn'])
+        ->name('secretary.appointments.check-in');
+    Route::post('/secretary/appointments/{appointment}/receive', [App\Http\Controllers\MedicalSecretaryController::class, 'receive'])
+        ->name('secretary.appointments.receive');
+    Route::post('/secretary/appointments/{appointment}/documents', [App\Http\Controllers\MedicalSecretaryController::class, 'uploadDocument'])
+        ->name('secretary.appointments.documents.store');
 
-    // Rendez-vous futurs (comme dans clinician portal)
-    $recentAppointments = \App\Models\Appointment::with('athlete')
-        ->where('appointment_date', '>=', now())
-        ->whereIn('status', ['scheduled', 'confirmed'])
-        ->orderBy('appointment_date', 'asc')
-        ->limit(10)
-        ->get();
-
-    // Documents récents pour référence
-    $recentDocuments = \App\Models\HealthRecord::with('player')
-        ->orderBy('created_at', 'desc')
-        ->limit(10)
-        ->get();
-
-    return view('secretary.dashboard', compact('stats', 'recentAppointments', 'recentDocuments'));
-    })->name('secretary.dashboard');
-    
-    
-    // Secretary sub-routes
-    Route::get('/appointments', function () {
-        return view('modules.appointments.index');
-    })->name('appointments.index');
-    
-    Route::get('/documents', function () {
-        return view('modules.documents.index');
-    })->name('documents.index');
-    
     // Referee routes
     Route::get('/referee/dashboard', [App\Http\Controllers\RefereeController::class, 'dashboard'])->name('referee.dashboard');
     

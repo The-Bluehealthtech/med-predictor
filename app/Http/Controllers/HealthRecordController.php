@@ -25,6 +25,13 @@ class HealthRecordController extends Controller
     {
         app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),$record->player,null);
     }
+    private function baseRecordFor(HealthRecord $record): HealthRecord
+    {
+        return HealthRecord::where('player_id', $record->player_id)
+            ->orderBy('record_date')
+            ->orderBy('id')
+            ->firstOrFail();
+    }
     private function playersQuery()
     {
         return app(\App\Services\MedicalRecordAccess::class)->scopePlayers(auth()->user(),Player::query());
@@ -233,7 +240,9 @@ class HealthRecordController extends Controller
             }
         }
 
-        return redirect()->route('health-records.show', $healthRecord)
+        $dossier = $this->baseRecordFor($healthRecord);
+
+        return redirect()->route('health-records.show', $dossier)
             ->with('success', $message);
     }
 
@@ -293,6 +302,11 @@ class HealthRecordController extends Controller
     public function show(HealthRecord $healthRecord): View
     {
         $this->authorizeRecord($healthRecord);
+
+        if (!request()->boolean('legacy')) {
+            $healthRecord = $this->baseRecordFor($healthRecord);
+        }
+
         $healthRecord->load([
             'user',
             'player',
@@ -362,6 +376,7 @@ class HealthRecordController extends Controller
     public function module(HealthRecord $healthRecord, string $module): View
     {
         $this->authorizeRecord($healthRecord);
+        $healthRecord = $this->baseRecordFor($healthRecord);
 
         $sections = app(\App\Services\HealthRecordSections::class);
         $definitions = $sections->definitions();
@@ -382,6 +397,7 @@ class HealthRecordController extends Controller
     public function storeModule(Request $request, HealthRecord $healthRecord, string $module): RedirectResponse
     {
         $this->authorizeRecord($healthRecord);
+        $healthRecord = $this->baseRecordFor($healthRecord);
 
         $service = app(\App\Services\HealthRecordSections::class);
         abort_unless(isset($service->definitions()[$module]), 404);

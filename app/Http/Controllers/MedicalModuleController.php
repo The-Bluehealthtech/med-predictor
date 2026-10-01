@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\{Player, MedicalPrediction, PCMA};
+use App\Models\{Player, MedicalPrediction, PCMA, Appointment};
 use App\Services\MedicalRecordAccess;
 use Illuminate\Http\Request;
 
@@ -49,12 +49,20 @@ final class MedicalModuleController extends Controller
             ->distinct('player_id')
             ->count('player_id');
 
+        $waitingAppointments = Appointment::with(['athlete.player.club', 'visit.documents'])
+            ->where('status', 'Enregistré')
+            ->orderBy('appointment_date')
+            ->get()
+            ->filter(fn ($appointment) => $appointment->athlete?->player !== null)
+            ->values();
+
         return view('modules.medical.index', compact(
             'players',
             'search',
             'todayVisits',
             'followUpsDue',
-            'patientsFollowed'
+            'patientsFollowed',
+            'waitingAppointments'
         ));
     }
     public function show($id)

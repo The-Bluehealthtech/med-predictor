@@ -17,7 +17,7 @@ final class MedicalModuleController extends Controller
         $search = trim((string) $request->query('q', ''));
 
         $query = $this->players()
-            ->with(['club', 'latestHealthRecord'])
+            ->with(['club', 'baseHealthRecord', 'latestHealthRecord'])
             ->withCount('healthRecords');
 
         if ($search !== '') {

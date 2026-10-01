@@ -43,19 +43,20 @@
         </div>
     </section>
 
-    <section id="new-appointment-panel" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+    <section id="new-appointment-panel" class="{{ $sourceVisit ? '' : 'hidden' }} bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b">
             <h2 class="font-semibold text-slate-900">Planifier un rendez-vous médical</h2>
             <p class="text-sm text-slate-500 mt-1">Le motif du rendez-vous oriente le parcours, sans créer encore d’acte médical.</p>
         </div>
         <form method="POST" action="{{ route('secretary.appointments.store') }}" class="p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             @csrf
+            @if($sourceVisit)<input type="hidden" name="source_visit_id" value="{{ $sourceVisit->id }}">@endif
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Joueur</label>
                 <select name="athlete_id" required class="w-full rounded-xl border-slate-300">
                     <option value="">Sélectionner</option>
                     @foreach($athletes as $athlete)
-                        <option value="{{ $athlete->id }}">{{ $athlete->name }}</option>
+                        <option value="{{ $athlete->id }}" @selected((int)old('athlete_id', $sourceVisit?->athlete_id) === (int)$athlete->id)>{{ $athlete->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -71,7 +72,7 @@
                 <label class="block text-sm font-medium text-slate-700 mb-1">Objet</label>
                 <select name="appointment_type" required class="w-full rounded-xl border-slate-300">
                     <option value="consultation">Consultation</option>
-                    <option value="follow_up">Suivi</option>
+                    <option value="follow_up" @selected($sourceVisit)>Suivi</option>
                     <option value="routine_checkup">Contrôle médical</option>
                     <option value="injury_assessment">Évaluation de blessure</option>
                     <option value="cardiac_evaluation">Évaluation cardiaque</option>
@@ -81,7 +82,7 @@
             </div>
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-slate-700 mb-1">Motif administratif</label>
-                <input name="reason" class="w-full rounded-xl border-slate-300" placeholder="Ex. douleur genou, contrôle pré-compétition, suivi…">
+                <input name="reason" value="{{ old('reason', $sourceVisit ? 'Actes prescrits : '.implode(', ', (array)data_get($sourceVisit->administrative_data, 'prescribed_modules', [])) : '') }}" class="w-full rounded-xl border-slate-300" placeholder="Ex. douleur genou, contrôle pré-compétition, suivi…">
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Médecin</label>
@@ -95,6 +96,49 @@
             </div>
         </form>
     </section>
+
+    @if($pendingOrders->count())
+    <section class="bg-white border border-violet-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-violet-100 bg-violet-50/60">
+            <div class="text-xs uppercase tracking-wide font-semibold text-violet-700">À organiser</div>
+            <h2 class="font-semibold text-slate-950 mt-1">Actes prescrits par les médecins</h2>
+            <p class="text-sm text-slate-600 mt-1">Ces demandes proviennent de consultations terminées et nécessitent une organisation ou un rendez-vous.</p>
+        </div>
+        <div class="divide-y divide-slate-100">
+            @foreach($pendingOrders as $order)
+                @php
+                    $orderedPlayer = $order->athlete?->player;
+                    $modules = (array)data_get($order->administrative_data, 'prescribed_modules', []);
+                    $labels = [
+                        'pcma'=>'PCMA','fmarc'=>'F-MARC / blessure','scat'=>'SCAT / commotion',
+                        'imaging'=>'Imagerie','mri'=>'IRM','mapa'=>'MAPA','ecg_effort'=>'ECG d’effort',
+                        'laboratory'=>'Laboratoire','dental'=>'Dentaire','postural'=>'Posture',
+                        'specialist'=>'Avis spécialiste','physiotherapy'=>'Kinésithérapie',
+                    ];
+                @endphp
+                <div class="p-5 grid grid-cols-1 lg:grid-cols-[1fr_180px_1.4fr_auto] gap-4 lg:items-center">
+                    <div>
+                        <div class="font-semibold text-slate-900">{{ $orderedPlayer?->full_name ?? $order->athlete?->name ?? 'Joueur' }}</div>
+                        <div class="text-sm text-slate-500 mt-0.5">{{ $orderedPlayer?->club?->name ?? '' }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs uppercase tracking-wide text-slate-400">Consultation</div>
+                        <div class="text-sm text-slate-700 mt-1">{{ $order->visit_date?->format('d/m/Y') }}</div>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        @foreach($modules as $module)
+                            <span class="px-2 py-1 rounded-md bg-violet-50 text-violet-800 text-xs font-medium">{{ $labels[$module] ?? $module }}</span>
+                        @endforeach
+                    </div>
+                    <a href="{{ route('secretary.dashboard', ['source_visit'=>$order->id]) }}"
+                       class="px-3.5 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold text-center hover:bg-violet-700">
+                        Programmer
+                    </a>
+                </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
 
     <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b">

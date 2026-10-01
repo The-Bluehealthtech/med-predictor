@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Concerns\UsesEnhancedTenantScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Appointment extends Model
 {
@@ -45,6 +46,11 @@ class Appointment extends Model
     public function doctor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'doctor_id');
+    }
+
+    public function visit(): HasOne
+    {
+        return $this->hasOne(Visit::class);
     }
 
     /**
@@ -115,6 +121,8 @@ class Appointment extends Model
         return match($this->status) {
             'scheduled' => 'Programmé',
             'confirmed' => 'Confirmé',
+            'waiting' => 'En salle d’attente',
+            'in_progress' => 'En consultation',
             'completed' => 'Terminé',
             'cancelled' => 'Annulé',
             default => 'Inconnu'

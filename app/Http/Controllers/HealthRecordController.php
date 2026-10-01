@@ -328,7 +328,9 @@ class HealthRecordController extends Controller
         $this->authorizeRecord($healthRecord);
         $players = $this->playersQuery()->orderBy('name')->get();
         $sectionValues = array_replace(app(\App\Services\HealthRecordSections::class)->formValues($healthRecord),session()->getOldInput());
-        return view('health-records.edit', compact('healthRecord', 'players','sectionValues'));
+        $view = request()->boolean('advanced') ? 'health-records.edit' : 'health-records.edit-visit';
+
+        return view($view, compact('healthRecord', 'players','sectionValues'));
     }
 
     public function update(Request $request, HealthRecord $healthRecord): RedirectResponse
@@ -339,6 +341,14 @@ class HealthRecordController extends Controller
         abort_if($request->has('player_id') && (int)$request->player_id !== (int)$healthRecord->player_id,422,'Le joueur du dossier ne peut pas être remplacé.');
         $validated = $request->validate([
             'player_id' => 'nullable|exists:players,id',
+            'visit_date' => 'nullable|date',
+            'doctor_name' => 'nullable|string|max:255',
+            'visit_type' => 'nullable|string|in:consultation,emergency,follow_up,pre_season,post_match,rehabilitation',
+            'chief_complaint' => 'nullable|string',
+            'physical_examination' => 'nullable|string',
+            'prescriptions' => 'nullable|string',
+            'follow_up_instructions' => 'nullable|string',
+            'visit_notes' => 'nullable|string',
             'blood_pressure_systolic' => 'nullable|integer|min:70|max:200',
             'blood_pressure_diastolic' => 'nullable|integer|min:40|max:130',
             'heart_rate' => 'nullable|integer|min:40|max:200',

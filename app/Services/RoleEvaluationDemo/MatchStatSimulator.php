@@ -504,11 +504,17 @@ class MatchStatSimulator
             $gk['gk_long_passes_completed'] = $this->boundedSuccess($gk['gk_long_passes'], $this->clampRate(0.4 + 0.3 * $skill));
         }
 
+        // Note de match : actions du match + niveau propre au joueur. Sans ce
+        // niveau, la note passée d'un joueur ne prédisait rien de la suivante,
+        // ce qui rendait les données démo inutilisables pour un modèle de
+        // sélection (même calibrage que ~/demo-calibration/calibrate_ratings.py).
         $matchRating = round(min(10, max(1, 6.0
             + $goalsScored * 0.8 + $assists * 0.5
             - $yellowCards * 0.3 - $redCards * 1.5
             + ($passesTotal > 0 ? ($passesCompleted / $passesTotal - 0.75) * 2 : 0)
-            + $this->rng->gaussianNoise(0.5))), 1);
+            + $this->playerRatingLevel($player, $detailedPosition)
+            + 0.2 * ($teamGoals <=> $opponentGoals)
+            + $this->rng->gaussianNoise(0.35))), 1);
 
         $stats = [
             'position_played' => PositionCatalog::TO_LEGACY[$detailedPosition],
@@ -606,6 +612,56 @@ class MatchStatSimulator
 
         return $stats;
     }
+
+    /**
+     * Niveau de note propre au joueur, stable sur toute la saison :
+     *  - niveau général dérivé de son skill (écart-type ≈ 0,4 point de note) ;
+     *  - écart propre à chaque famille de poste (écart-type 0,25) ;
+     *  - pénalité hors poste : −0,15 sur un poste voisin, −0,4 sinon.
+     * L'écart par poste vient d'un générateur séparé, amorcé par l'identité
+     * du joueur : il ne consomme aucun tirage du générateur principal, donc
+     * le reste de la simulation (scores, événements, statistiques) est inchangé.
+     */
+    private function playerRatingLevel(array $player, string $playedPosition): float
+    {
+        $mainFamily = self::FAMILY[$player['detailed_position']] ?? null;
+        $playedFamily = self::FAMILY[$playedPosition] ?? null;
+
+        $level = ($player['skill'] - 0.5) * (0.4 / 0.15);
+
+        $identity = sprintf('%d|%s|%s|%.6f|%s', $this->rng->seed(), $player['name'], $player['detailed_position'], $player['skill'], $playedFamily);
+        $level += (new SeededRandom(crc32($identity)))->gaussianNoise(0.25);
+
+        if ($mainFamily !== null && $playedFamily !== null && $mainFamily !== $playedFamily) {
+            $isNeighbour = $mainFamily !== 'gardien' && $playedFamily !== 'gardien'
+                && in_array($playedFamily, self::NEIGHBOUR_FAMILIES[$mainFamily], true);
+            $level += $isNeighbour ? -0.15 : -0.4;
+        }
+
+        return $level;
+    }
+
+    /** Familles de poste, alignées sur la table position_catalog. */
+    private const FAMILY = [
+        'GK' => 'gardien',
+        'LCB' => 'défenseur central', 'RCB' => 'défenseur central',
+        'LB' => 'latéral', 'RB' => 'latéral',
+        'CDM' => 'milieu défensif', 'LCM' => 'milieu relayeur',
+        'CAM' => 'milieu offensif', 'RCAM' => 'milieu offensif',
+        'LAM' => 'ailier', 'RAM' => 'ailier',
+        'CF' => 'avant-centre',
+    ];
+
+    private const NEIGHBOUR_FAMILIES = [
+        'gardien' => [],
+        'défenseur central' => ['latéral', 'milieu défensif'],
+        'latéral' => ['défenseur central', 'ailier'],
+        'milieu défensif' => ['milieu relayeur', 'défenseur central'],
+        'milieu relayeur' => ['milieu défensif', 'milieu offensif'],
+        'milieu offensif' => ['milieu relayeur', 'ailier', 'avant-centre'],
+        'ailier' => ['milieu offensif', 'latéral', 'avant-centre'],
+        'avant-centre' => ['ailier', 'milieu offensif'],
+    ];
 
     private function clampRate(float $rate): float
     {

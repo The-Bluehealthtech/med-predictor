@@ -97,6 +97,24 @@ final class MedicalSecretaryController extends Controller
             'documents_pending' => $recentDocuments->where('status', 'pending')->count(),
         ];
 
+        $pendingOrders = Visit::with(['athlete.player.club', 'doctor'])
+            ->whereHas('athlete', fn ($athlete) => $athlete->whereIn('player_id', $this->playersQuery()->select('players.id')))
+            ->where('status', 'Terminé')
+            ->orderByDesc('visit_date')
+            ->limit(50)
+            ->get()
+            ->filter(fn ($visit) =>
+                data_get($visit->administrative_data, 'orders_status') === 'pending'
+                && count((array) data_get($visit->administrative_data, 'prescribed_modules', [])) > 0
+            )
+            ->values();
+
+        $sourceVisit = null;
+        if (request()->filled('source_visit')) {
+            $sourceVisit = $pendingOrders->firstWhere('id', (int) request('source_visit'));
+            abort_unless($sourceVisit, 404);
+        }
+
         $athletes = $this->athletesQuery()->with('player')->orderBy('name')->limit(1000)->get();
         $doctors = User::query()
             ->whereIn('role', ['club_medical', 'association_medical', 'doctor'])
@@ -108,7 +126,9 @@ final class MedicalSecretaryController extends Controller
             'recentAppointments',
             'recentDocuments',
             'athletes',
-            'doctors'
+            'doctors',
+            'pendingOrders',
+            'sourceVisit'
         ));
     }
 
@@ -123,12 +143,13 @@ final class MedicalSecretaryController extends Controller
             'doctor_name' => 'nullable|string|max:255',
             'reason' => 'nullable|string|max:1000',
             'notes' => 'nullable|string|max:4000',
+            'source_visit_id' => 'nullable|exists:visits,id',
         ]);
 
         $athlete = $this->athletesQuery()->with('player')->findOrFail($validated['athlete_id']);
         $appointmentAt = Carbon::parse($validated['appointment_date'].' '.$validated['appointment_time']);
 
-        Appointment::create([
+        $appointment = Appointment::create([
             'athlete_id' => $athlete->id,
             'doctor_id' => $validated['doctor_id'] ?? null,
             'created_by' => auth()->id(),
@@ -144,7 +165,21 @@ final class MedicalSecretaryController extends Controller
             ],
         ]);
 
-        return back()->with('success', 'Rendez-vous médical enregistré.');
+        if (!empty($validated['source_visit_id'])) {
+            $sourceVisit = Visit::with('athlete.player')->findOrFail($validated['source_visit_id']);
+            abort_unless($sourceVisit->athlete?->player, 422);
+            $this->authorizePlayer($sourceVisit->athlete->player);
+            abort_unless((int) $sourceVisit->athlete_id === (int) $athlete->id, 422, 'Le rendez-vous doit concerner le joueur de la prescription.');
+
+            $admin = $sourceVisit->administrative_data ?? [];
+            $admin['orders_status'] = 'scheduled';
+            $admin['follow_up_appointment_id'] = $appointment->id;
+            $admin['orders_scheduled_at'] = now()->toIso8601String();
+            $admin['orders_scheduled_by'] = auth()->id();
+            $sourceVisit->update(['administrative_data' => $admin]);
+        }
+
+        return redirect()->route('secretary.dashboard')->with('success', 'Rendez-vous médical enregistré.');
     }
 
     public function intake(Appointment $appointment): View

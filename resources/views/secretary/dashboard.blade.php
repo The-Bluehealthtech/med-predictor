@@ -72,7 +72,10 @@
                 <select name="appointment_type" required class="w-full rounded-xl border-slate-300">
                     <option value="consultation">Consultation</option>
                     <option value="follow_up">Suivi</option>
-                    <option value="examination">Examen spécialisé</option>
+                    <option value="routine_checkup">Contrôle médical</option>
+                    <option value="injury_assessment">Évaluation de blessure</option>
+                    <option value="cardiac_evaluation">Évaluation cardiaque</option>
+                    <option value="concussion_assessment">Commotion / SCAT</option>
                     <option value="emergency">Urgence</option>
                 </select>
             </div>

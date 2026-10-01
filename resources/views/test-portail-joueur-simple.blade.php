@@ -632,7 +632,7 @@
         <div class="fifa-sub-tabs">
             <button class="fifa-sub-tab-button active" onclick="showFIFASubTab('overview')">{{ __('Vue d\'ensemble') }}</button>
             <button class="fifa-sub-tab-button" onclick="showFIFASubTab('advanced-stats')">{{ __('Statistiques avancées') }}</button>
-            <button class="fifa-sub-tab-button" onclick="showFIFASubTab('match-stats')">{{ __('Statistiques de match') }}</button>
+            <button class="fifa-sub-tab-button" onclick="showFIFASubTab('match-stats')">{{ __('Saison & dernier match') }}</button>
         </div>
         
         <!-- Contenu des sous-onglets Performances -->
@@ -641,37 +641,9 @@
             <div id="overview-content">
                 <!-- 🆕 CONTENU BLADE DIRECT AU LIEU DU CHARGEMENT -->
                 <!-- 🆕 CONTENU BLADE DIRECT - STRUCTURE COMPLÈTE -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                    <!-- Carte Forme Physique -->
-                    <div class="fifa-stat-card">
-                        <h3>{{ __('🏃 Forme Physique') }}</h3>
-                        <div style="text-align: left; margin-top: 15px;">
-                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>{{ __("Axe physique actuel:") }}</span>
-                                <span style="color: #ffd700; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) $latestFitSnapshot->physical_score, 1).'/100' : __('Données non disponibles') }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Carte Note Globale FIFA -->
-                    <div class="fifa-stat-card">
-                        <h3>{{ __('⚽ Note Globale FIT') }}</h3>
-                        <div style="text-align: left; margin-top: 15px;">
-                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>{{ __("Note actuelle:") }}</span>
-                                <span style="color: #ffd700; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) $latestFitSnapshot->fit_score, 1).'/100' : __('Données non disponibles') }}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                                <span>{{ __("Meilleur axe actuel:") }}</span>
-                                <span style="color: #51cf66; font-weight: bold;">{{ $latestFitSnapshot ? number_format((float) max($latestFitSnapshot->physical_score, $latestFitSnapshot->technical_score, $latestFitSnapshot->tactical_score, $latestFitSnapshot->mental_score, $latestFitSnapshot->social_score), 1).'/100' : __('Données non disponibles') }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
-                
+                {{-- Score FIT et axes : affichés une seule fois, dans le bloc « Statistiques FIT » de l'en-tête. --}}
                 <!-- Graphiques de performance -->
-                <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Graphique Radar des Ratings -->
                     <div class="fifa-stat-card">
                         <h3 class="text-lg font-bold mb-4">{{ __('📈 Ratings FIT') }}</h3>
@@ -682,7 +654,7 @@
                     
                     <!-- Graphique Barres des Statistiques -->
                     <div class="fifa-stat-card">
-                        <h3 class="text-lg font-bold mb-4">{{ __('🎯 Statistiques de Match') }}</h3>
+                        <h3 class="text-lg font-bold mb-4">{{ __('🎯 Statistiques de saison') }}</h3>
                         <div class="h-64">
                             <canvas id="statsChart"></canvas>
                         </div>
@@ -696,17 +668,14 @@
             <div id="advanced-stats-content" class="fifa-medical-card">
                 @php
                     $assessmentNotes = json_decode($latestPerformance?->notes ?? '{}', true) ?: [];
+                    // Les cinq axes FIT ne sont plus répétés ici : ils figurent dans
+                    // le bloc « Statistiques FIT » de l'en-tête.
                     $assessmentScores = [
-                        'Physique' => $latestFitSnapshot?->physical_score,
-                        'Technique' => $latestFitSnapshot?->technical_score,
-                        'Tactique' => $latestFitSnapshot?->tactical_score,
-                        'Mental' => $latestFitSnapshot?->mental_score,
-                        'Social' => $latestFitSnapshot?->social_score,
                         'Endurance' => $latestPerformance?->endurance_score,
                         'Force' => $latestPerformance?->strength_score,
                         'Vitesse évaluée' => $latestPerformance?->speed_score,
                         'Agilité' => $latestPerformance?->agility_score,
-                        'Précision des passes' => $latestPerformance?->passing_accuracy,
+                        'Précision des passes (évaluation)' => $latestPerformance?->passing_accuracy,
                     ];
                     $hasAssessment = collect($assessmentScores)->contains(
                         fn ($score) => $score !== null
@@ -714,14 +683,14 @@
                 @endphp
                 @if($hasAssessment)
                     @if(($assessmentNotes['source'] ?? null) === 'synthetic_demo')
-                        <p>{{ __('Données synthétiques de test — évaluation non officielle. Les cinq axes proviennent du Score FIT.') }}</p>
+                        <p>{{ __('Données synthétiques de test — évaluation non officielle.') }}</p>
                     @endif
                     <div class="fifa-medical-stat">
                         @foreach($assessmentScores as $label => $score)
                             @if($score !== null)
                                 <div class="fifa-stat-header">
-                                    <span>{{ $label }}</span>
-                                    <span class="fifa-stat-value">{{ $score }}/100</span>
+                                    <span>{{ __($label) }}</span>
+                                    <span class="fifa-stat-value">{{ rtrim(rtrim(number_format((float) $score, 1, '.', ''), '0'), '.') }}/100</span>
                                 </div>
                             @endif
                         @endforeach
@@ -976,7 +945,7 @@
         </div>
 
         <div id="match-stats-sub-tab" class="fifa-sub-tab-content">
-            <h3>{{ __('Statistiques de saison') }}</h3>
+            <h3>{{ __('Saison & dernier match') }}</h3>
             <div id="match-stats-content">
                 @php
                     $seasonStat = $playerStats->first();
@@ -1095,7 +1064,7 @@
                     </div>
 
                     <div class="fifa-health-card">
-                        <h4>{{ __('📊 Statistiques avancées') }}</h4>
+                        <h4>{{ __('📊 Dernier match') }}@if($latestMatchPerformance) · {{ \Carbon\Carbon::parse($latestMatchPerformance->match_date)->format('d/m/Y') }}@endif</h4>
                         <div class="fifa-health-stat">
                             @if($latestMatchPerformance)
                                 @php
@@ -1109,7 +1078,7 @@
                                     <div class="fifa-stat-header"><span>Interceptions</span><span class="fifa-stat-value">{{ $matchExtras['interceptions'] }}</span></div>
                                 @endif
                                 <div class="fifa-stat-header"><span>{{ __('Tirs cadrés') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->shots_on_target }}</span></div>
-                                <div class="fifa-stat-header"><span>{{ __('Précision des passes') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->passes_attempted > 0 ? number_format(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1).'%' : __('Données non disponibles') }}</span></div>
+                                <div class="fifa-stat-header"><span>{{ __('Passes réussies (dernier match)') }}</span><span class="fifa-stat-value">{{ $latestMatchPerformance->passes_attempted > 0 ? number_format(100 * $latestMatchPerformance->passes_completed / $latestMatchPerformance->passes_attempted, 1).'%' : __('Données non disponibles') }}</span></div>
                             @else
                                 <p>{{ __('Aucune statistique de match détaillée enregistrée.') }}</p>
                             @endif
@@ -1117,6 +1086,8 @@
                     </div>
                 </div>
 
+{{-- Sans aucune métrique KSA, le cockpit n'afficherait que « Données indisponibles » : il est masqué. --}}
+@if($hasKsaCockpit || $player->position === \App\Models\Player::POSITION_GOALKEEPER)
 <style>#cockpit-joueur{max-width:1080px;margin:0 auto;padding:20px 16px 40px}</style>
 <div id="cockpit-joueur" role="status" aria-live="polite" class="text-gray-300 p-4">{{ __('Chargement des performances…') }}</div>
 <script>
@@ -1214,6 +1185,7 @@ render();
 @endif
 @if(app()->getLocale() === 'en')
 <script src="{{ asset('js/player-portal-cockpit-en.js') }}?v={{ filemtime(public_path('js/player-portal-cockpit-en.js')) }}"></script>
+@endif
 @endif
             </div>
         </div>
@@ -1440,7 +1412,11 @@ render();
                     @else
                         <div class="col-span-3 text-center text-gray-500 py-8">
                             <i class="fas fa-info-circle text-2xl mb-2"></i>
-                            <p>{{ __('Aucune tendance enregistrée') }}</p>
+                            @if(($roleEvaluationCockpit['hasEvaluation'] ?? false) && ($roleEvaluationCockpit['trend'] ?? collect())->count() >= 2)
+                                <p>{{ __("L'évolution du score est affichée dans Performances › Statistiques avancées › Rôle et apport.") }}</p>
+                            @else
+                                <p>{{ __('Aucune tendance enregistrée') }}</p>
+                            @endif
                         </div>
                     @endif
                 </div>

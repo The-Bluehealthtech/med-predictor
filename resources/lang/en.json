@@ -2085,5 +2085,13 @@
     "Traitements actifs:": "Active treatments:",
     "Données:": "Data:",
     "Traitement fictif de test": "Synthetic test treatment",
-    "Conseil fictif de test, sans valeur médicale.": "Synthetic test advice with no medical significance."
+    "Conseil fictif de test, sans valeur médicale.": "Synthetic test advice with no medical significance.",
+    "Précision des passes (évaluation)": "Passing accuracy (assessment)",
+    "Vitesse évaluée": "Assessed speed",
+    "Passes réussies (dernier match)": "Pass completion (last match)",
+    "Saison & dernier match": "Season & last match",
+    "🎯 Statistiques de saison": "🎯 Season statistics",
+    "📊 Dernier match": "📊 Last match",
+    "Données synthétiques de test — évaluation non officielle.": "Synthetic test data — unofficial assessment.",
+    "L'évolution du score est affichée dans Performances › Statistiques avancées › Rôle et apport.": "The score trend is shown in Performances › Advanced Statistics › Role and contribution."
 }

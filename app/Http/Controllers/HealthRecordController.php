@@ -119,7 +119,7 @@ class HealthRecordController extends Controller
             'visit_date' => $appointment ? $appointment->appointment_date->format('Y-m-d') : old('visit_date', date('Y-m-d')),
             'doctor_name' => old('doctor_name', auth()->user()->name ?? ''),
             // Prefer explicit appointment_type from query when no appointment is loaded
-            'visit_type' => $appointment ? $appointment->type : old('visit_type', $request->get('appointment_type')),
+            'visit_type' => $appointment ? $appointment->appointment_type : old('visit_type', $request->get('appointment_type')),
             // If no selected player, build a name from query params as a non-blocking display default
             'patient_name' => $selectedPlayer ? ($selectedPlayer->full_name ?? $selectedPlayer->name) : old('patient_name', trim(($request->get('first_name') ?? '').' '.($request->get('last_name') ?? '')) ?: null),
             'patient_birth_date' => $selectedPlayer ? $selectedPlayer->date_of_birth : old('patient_birth_date', $request->get('date_of_birth')),
@@ -221,6 +221,21 @@ class HealthRecordController extends Controller
         event(new HealthRecordCreated($healthRecord));
 
         // Aucun pronostic n'est créé sans modèle médical validé.
+
+        if (!empty($validated['visit_id'])) {
+            $visit = \App\Models\Visit::with('appointment')->find($validated['visit_id']);
+            if ($visit) {
+                $visitData = $visit->administrative_data ?? [];
+                $visitData['health_record_id'] = $healthRecord->id;
+                $visitData['completed_at'] = now()->toIso8601String();
+                $visit->update([
+                    'status' => 'Terminé',
+                    'notes' => $validated['visit_notes'] ?? $visit->notes,
+                    'administrative_data' => $visitData,
+                ]);
+                $visit->appointment?->update(['status' => 'Terminé']);
+            }
+        }
 
         return redirect()->route('health-records.show', $healthRecord)
             ->with('success', $message);

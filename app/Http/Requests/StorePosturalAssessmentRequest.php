@@ -44,7 +44,7 @@ class StorePosturalAssessmentRequest extends FormRequest
             'measurements.*.side' => ['nullable', 'string', 'max:24'],
             'measurements.*.value' => ['nullable', 'numeric'],
             'measurements.*.unit' => ['nullable', 'string', 'max:16'],
-            'measurements.*.points' => ['required', 'array', 'min:1'],
+            'measurements.*.points' => ['nullable', 'array'],
             'measurements.*.points.*.x' => ['required', 'numeric', 'between:0,1'],
             'measurements.*.points.*.y' => ['required', 'numeric', 'between:0,1'],
             'measurements.*.metadata' => ['nullable', 'array'],
@@ -117,8 +117,8 @@ class StorePosturalAssessmentRequest extends FormRequest
                     $validator->errors()->add("measurements.$index.unit", 'Unité incompatible avec la mesure.');
                 }
 
-                $pointCount = count((array) ($measurement['points'] ?? []));
-                if ($pointCount !== (int) $definition['points']) {
+                $points = (array) ($measurement['points'] ?? []);
+                if ($points && count($points) !== (int) $definition['points']) {
                     $validator->errors()->add("measurements.$index.points", 'Nombre de points incompatible avec le protocole de mesure.');
                 }
             }

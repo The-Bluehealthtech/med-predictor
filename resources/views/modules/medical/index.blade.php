@@ -19,10 +19,6 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <a href="{{ route('health-records.index') }}"
-                       class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50">
-                        Dossiers
-                    </a>
                     <a href="{{ route('health-records.create') }}"
                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold shadow-sm hover:bg-blue-700">
                         <span class="text-lg leading-none">+</span>
@@ -95,7 +91,7 @@
             </div>
         </section>
 
-        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_280px] gap-6">
+        <div class="space-y-5">
             <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                 <div class="px-5 sm:px-6 py-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
@@ -119,7 +115,7 @@
                         $followUpDue = $followUpDate && $followUpDate->isPast();
                     @endphp
 
-                    <article class="px-5 sm:px-6 py-5 border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70 transition-colors">
+                    <article class="relative px-5 sm:px-6 py-5 border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70 transition-colors">
                         <div class="grid grid-cols-1 lg:grid-cols-[minmax(240px,1.1fr)_minmax(220px,1fr)_180px_auto] gap-4 lg:items-center">
 
                             <div class="flex items-center gap-4 min-w-0">
@@ -133,9 +129,10 @@
                                     @endif
                                 </div>
                                 <div class="min-w-0">
-                                    <div class="font-semibold text-slate-950 truncate">
+                                    <a href="{{ $latest ? route('health-records.show', $latest) : route('modules.medical.athlete', $player->id) }}"
+                                       class="font-semibold text-slate-950 truncate hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
                                         {{ $player->full_name ?? $player->name }}
-                                    </div>
+                                    </a>
                                     <div class="mt-0.5 text-sm text-slate-500 truncate">
                                         {{ $player->club?->name ?? 'Club non renseigné' }}
                                         @if($player->position) · {{ $player->position }} @endif
@@ -184,18 +181,11 @@
                                 <div class="mt-1 text-xs text-slate-400">{{ $player->health_records_count }} visite(s)</div>
                             </div>
 
-                            <div class="flex flex-wrap lg:flex-col xl:flex-row gap-2 lg:justify-self-end">
-                                @if($latest)
-                                    <a href="{{ route('health-records.show', $latest) }}"
-                                       class="inline-flex justify-center px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50">
-                                        Ouvrir le dossier
-                                    </a>
-                                @else
-                                    <a href="{{ route('modules.medical.athlete', $player->id) }}"
-                                       class="inline-flex justify-center px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50">
-                                        Ouvrir
-                                    </a>
-                                @endif
+                            <div class="flex flex-wrap gap-2 lg:justify-self-end">
+                                <a href="{{ $latest ? route('health-records.show', $latest) : route('modules.medical.athlete', $player->id) }}"
+                                   class="inline-flex justify-center px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                                    Dossier
+                                </a>
                                 <a href="{{ route('health-records.create', ['player_id' => $player->id]) }}"
                                    class="inline-flex justify-center px-3.5 py-2 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700">
                                     + Consultation
@@ -218,38 +208,25 @@
                 @endif
             </section>
 
-            <aside class="space-y-4">
-                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-                    <div class="text-xs uppercase tracking-wide font-semibold text-slate-400 mb-3">Accès spécialisés</div>
-                    <div class="space-y-2">
-                        <a href="{{ route('pcma.create') }}"
-                           class="flex items-center justify-between gap-3 px-3 py-3 rounded-xl border border-slate-200 hover:bg-slate-50">
-                            <div>
-                                <div class="text-sm font-semibold text-slate-800">PCMA</div>
-                                <div class="text-xs text-slate-500 mt-0.5">Examen médical structuré</div>
-                            </div>
-                            <span class="text-slate-400">→</span>
-                        </a>
-
-                        <a href="{{ route('medical-aut.choose') }}"
-                           class="flex items-center justify-between gap-3 px-3 py-3 rounded-xl border border-slate-200 hover:bg-slate-50">
-                            <div>
-                                <div class="text-sm font-semibold text-slate-800">AUT</div>
-                                <div class="text-xs text-slate-500 mt-0.5">Autorisation thérapeutique</div>
-                            </div>
-                            <span class="text-slate-400">→</span>
-                        </a>
+            <details class="bg-white border border-slate-200 rounded-2xl shadow-sm group">
+                <summary class="list-none cursor-pointer px-5 py-4 flex items-center justify-between gap-3">
+                    <div>
+                        <div class="text-sm font-semibold text-slate-800">Examens et démarches spécialisées</div>
+                        <div class="text-xs text-slate-500 mt-0.5">PCMA et AUT restent disponibles sans encombrer le parcours principal.</div>
                     </div>
+                    <span class="text-slate-400 transition-transform group-open:rotate-90">→</span>
+                </summary>
+                <div class="px-5 pb-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <a href="{{ route('pcma.create') }}" class="px-4 py-3 rounded-xl border border-slate-200 hover:bg-slate-50">
+                        <div class="text-sm font-semibold text-slate-800">PCMA</div>
+                        <div class="text-xs text-slate-500 mt-1">Examen médical structuré</div>
+                    </a>
+                    <a href="{{ route('medical-aut.choose') }}" class="px-4 py-3 rounded-xl border border-slate-200 hover:bg-slate-50">
+                        <div class="text-sm font-semibold text-slate-800">AUT</div>
+                        <div class="text-xs text-slate-500 mt-1">Autorisation thérapeutique</div>
+                    </a>
                 </div>
-
-                <div class="bg-slate-900 text-white rounded-2xl p-4">
-                    <div class="text-xs uppercase tracking-wide font-semibold text-slate-400">Principe de travail</div>
-                    <div class="mt-2 text-sm font-semibold">Le patient d'abord</div>
-                    <p class="mt-2 text-xs text-slate-300 leading-5">
-                        Ouvrez le dossier longitudinal, puis ajoutez une consultation ou un examen spécialisé depuis le contexte du joueur.
-                    </p>
-                </div>
-            </aside>
+            </details>
         </div>
     </div>
 </div>

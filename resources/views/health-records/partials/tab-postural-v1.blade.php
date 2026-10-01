@@ -1,6 +1,6 @@
 @php
     $posturalCatalog = config('postural_assessment');
-    $posturalAssessments = $healthRecord->posturalAssessments
+    $posturalAssessments = ($posturalAssessments ?? collect())
         ->sortByDesc('assessment_date');
 @endphp
 

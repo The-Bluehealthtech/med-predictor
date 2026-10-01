@@ -201,6 +201,11 @@ class Player extends Model
         return $this->hasMany(HealthRecord::class);
     }
 
+    public function latestHealthRecord(): HasOne
+    {
+        return $this->hasOne(HealthRecord::class)->latestOfMany('record_date');
+    }
+
     public function medicalPredictions(): HasMany
     {
         return $this->hasMany(MedicalPrediction::class);

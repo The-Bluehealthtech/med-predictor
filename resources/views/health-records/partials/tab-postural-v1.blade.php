@@ -37,8 +37,29 @@
                                     · {{ ucfirst($assessment->status) }}
                                 </div>
                             </div>
-                            <div class="text-sm text-gray-500">
-                                {{ $assessment->clinician?->name ?? 'Clinicien non renseigné' }}
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="text-sm text-gray-500 mr-2">{{ $assessment->clinician?->name ?? 'Clinicien non renseigné' }}</span>
+                                @if($assessment->status === 'draft')
+                                    <button type="button"
+                                            class="postural-complete px-3 py-1 text-sm bg-blue-600 text-white rounded"
+                                            data-url="{{ route('postural-assessments.complete', $assessment) }}">
+                                        Terminer
+                                    </button>
+                                @elseif($assessment->status === 'completed')
+                                    <button type="button"
+                                            class="postural-validate px-3 py-1 text-sm bg-green-600 text-white rounded"
+                                            data-url="{{ route('postural-assessments.validate', $assessment) }}">
+                                        Valider
+                                    </button>
+                                @endif
+                                @php($older = $posturalAssessments->values()->get($loop->index + 1))
+                                @if($older)
+                                    <button type="button"
+                                            class="postural-compare px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+                                            data-url="{{ route('postural-assessments.compare', [$older, $assessment]) }}">
+                                        Comparer
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     @endforeach
@@ -106,6 +127,20 @@
             </div>
 
             <div>
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Mesures</h4>
+                        <p class="text-xs text-gray-500 mt-1">Saisie manuelle possible ; les points graphiques restent facultatifs.</p>
+                    </div>
+                    <button type="button" id="postural-add-measurement"
+                            class="text-sm px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-md">
+                        + Ajouter une mesure
+                    </button>
+                </div>
+                <div id="postural-measurements" class="space-y-3"></div>
+            </div>
+
+            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Impression clinique</label>
                 <textarea name="overall_impression" rows="3"
                           class="w-full border border-gray-300 rounded-md px-3 py-2"></textarea>
@@ -131,6 +166,14 @@
             </div>
         </form>
     </div>
+
+    <div id="postural-compare-panel" class="bg-white rounded-lg shadow-md overflow-hidden hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-800">Comparaison longitudinale</h3>
+            <button type="button" id="postural-compare-close" class="text-sm text-gray-600">Fermer</button>
+        </div>
+        <div id="postural-compare-content" class="p-6 text-sm text-gray-700"></div>
+    </div>
 </div>
 
 <script>
@@ -140,6 +183,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const panel = document.getElementById('postural-new-panel');
     const form = document.getElementById('postural-v1-form');
     const errors = document.getElementById('postural-form-errors');
+    const measurementsContainer = document.getElementById('postural-measurements');
+    const comparePanel = document.getElementById('postural-compare-panel');
+    const compareContent = document.getElementById('postural-compare-content');
 
     document.getElementById('postural-new-toggle')?.addEventListener('click', () => panel.classList.toggle('hidden'));
     document.getElementById('postural-cancel')?.addEventListener('click', () => panel.classList.add('hidden'));
@@ -210,6 +256,115 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('postural-add-finding')?.addEventListener('click', addFindingRow);
 
+    function addMeasurementRow() {
+        const row = document.createElement('div');
+        row.className = 'postural-measurement-row grid grid-cols-1 md:grid-cols-6 gap-3 border border-gray-200 rounded-lg p-3';
+
+        const options = Object.entries(catalog.measurements || {})
+            .map(([key, definition]) => '<option value="' + key + '">' + key.replaceAll('_', ' ') + '</option>')
+            .join('');
+
+        row.innerHTML = `
+            <select class="measurement-key md:col-span-2 border border-gray-300 rounded-md px-2 py-2">
+                <option value="">Mesure...</option>
+                ${options}
+            </select>
+            <select class="measurement-view border border-gray-300 rounded-md px-2 py-2">
+                <option value="anterior">Antérieure</option>
+                <option value="posterior">Postérieure</option>
+                <option value="left_lateral">Latérale gauche</option>
+                <option value="right_lateral">Latérale droite</option>
+            </select>
+            <select class="measurement-side border border-gray-300 rounded-md px-2 py-2">
+                <option value="">Sans côté</option>
+                <option value="left">Gauche</option>
+                <option value="right">Droite</option>
+                <option value="bilateral">Bilatéral</option>
+                <option value="midline">Médian</option>
+            </select>
+            <input type="number" step="0.001" class="measurement-value border border-gray-300 rounded-md px-2 py-2" placeholder="Valeur">
+            <input type="text" class="measurement-unit border border-gray-300 rounded-md px-2 py-2 bg-gray-50" readonly placeholder="Unité">
+            <button type="button" class="remove-measurement md:col-span-6 justify-self-start text-red-600 text-sm">Supprimer</button>
+        `;
+
+        const keySelect = row.querySelector('.measurement-key');
+        const unitInput = row.querySelector('.measurement-unit');
+        keySelect.addEventListener('change', function () {
+            const definition = catalog.measurements[this.value];
+            unitInput.value = definition ? definition.unit : '';
+        });
+        row.querySelector('.remove-measurement').addEventListener('click', () => row.remove());
+
+        measurementsContainer.appendChild(row);
+    }
+
+    document.getElementById('postural-add-measurement')?.addEventListener('click', addMeasurementRow);
+
+    async function postAction(url) {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value,
+            },
+        });
+
+        if (response.ok) {
+            window.location.reload();
+            return;
+        }
+
+        const body = await response.json().catch(() => ({}));
+        alert(body.message || 'Action impossible.');
+    }
+
+    document.querySelectorAll('.postural-complete').forEach(button => {
+        button.addEventListener('click', () => postAction(button.dataset.url));
+    });
+
+    document.querySelectorAll('.postural-validate').forEach(button => {
+        button.addEventListener('click', () => postAction(button.dataset.url));
+    });
+
+    document.querySelectorAll('.postural-compare').forEach(button => {
+        button.addEventListener('click', async () => {
+            const response = await fetch(button.dataset.url, { headers: { 'Accept': 'application/json' } });
+            const body = await response.json();
+            if (!response.ok) {
+                alert(body.message || 'Comparaison impossible.');
+                return;
+            }
+
+            const findingRows = (body.data.finding_changes || []).map(change => {
+                const before = change.before ? [change.before.severity, change.before.value, change.before.unit].filter(Boolean).join(' ') : '—';
+                const after = change.after ? [change.after.severity, change.after.value, change.after.unit].filter(Boolean).join(' ') : '—';
+                return '<tr><td class="py-2 pr-4">' + change.key + '</td><td class="py-2 pr-4">' + before + '</td><td class="py-2">' + after + '</td></tr>';
+            }).join('');
+
+            const measurementRows = (body.data.measurement_changes || []).map(change => {
+                const before = change.before && change.before.value !== null ? change.before.value + ' ' + (change.before.unit || '') : '—';
+                const after = change.after && change.after.value !== null ? change.after.value + ' ' + (change.after.unit || '') : '—';
+                return '<tr><td class="py-2 pr-4">' + change.key + '</td><td class="py-2 pr-4">' + before + '</td><td class="py-2">' + after + '</td></tr>';
+            }).join('');
+
+            compareContent.innerHTML = `
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="font-semibold mb-2">Observations</h4>
+                        <table class="w-full"><thead><tr class="text-left border-b"><th>Élément</th><th>Avant</th><th>Après</th></tr></thead><tbody>${findingRows || '<tr><td colspan="3" class="py-3 text-gray-500">Aucune observation comparable.</td></tr>'}</tbody></table>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Mesures</h4>
+                        <table class="w-full"><thead><tr class="text-left border-b"><th>Mesure</th><th>Avant</th><th>Après</th></tr></thead><tbody>${measurementRows || '<tr><td colspan="3" class="py-3 text-gray-500">Aucune mesure comparable.</td></tr>'}</tbody></table>
+                    </div>
+                </div>
+            `;
+            comparePanel.classList.remove('hidden');
+        });
+    });
+
+    document.getElementById('postural-compare-close')?.addEventListener('click', () => comparePanel.classList.add('hidden'));
+
     form?.addEventListener('submit', async function (event) {
         event.preventDefault();
         errors.classList.add('hidden');
@@ -233,6 +388,25 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
+        const measurements = [];
+        document.querySelectorAll('.postural-measurement-row').forEach(row => {
+            const key = row.querySelector('.measurement-key').value;
+            const definition = catalog.measurements[key];
+            const rawValue = row.querySelector('.measurement-value').value;
+            if (!key || !definition || rawValue === '') return;
+
+            measurements.push({
+                measurement_key: key,
+                measurement_type: definition.type,
+                view: row.querySelector('.measurement-view').value,
+                side: row.querySelector('.measurement-side').value || null,
+                value: Number(rawValue),
+                unit: definition.unit,
+                points: null,
+                metadata: { source: 'manual' },
+            });
+        });
+
         const payload = {
             assessment_type: data.get('assessment_type'),
             assessment_date: data.get('assessment_date'),
@@ -244,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
             },
             findings,
-            measurements: [],
+            measurements,
             overall_impression: data.get('overall_impression') || null,
             recommendations: data.get('recommendations') || null,
         };

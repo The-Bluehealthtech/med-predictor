@@ -64,28 +64,18 @@
                     {{ __('secretary.nav_dashboard') }}
                 </a>
                 
-                <a href="{{ route('secretary.appointments.index') }}" 
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('secretary.appointments.*') ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-                    <i class="fas fa-calendar-alt mr-3"></i>
-                    {{ __('secretary.nav_appointments') }}
+                <div class="mt-5 px-2 text-xs uppercase tracking-wider text-gray-400 font-semibold">
+                    Flux médical
+                </div>
+                <a href="{{ route('secretary.dashboard') }}#new-appointment-panel"
+                   class="group flex items-center px-2 py-2 mt-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                    <i class="fas fa-calendar-plus mr-3"></i>
+                    Nouveau rendez-vous
                 </a>
-                
-                <a href="{{ route('secretary.documents.index') }}" 
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('secretary.documents.*') ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-                    <i class="fas fa-file-medical mr-3"></i>
-                    {{ __('secretary.nav_documents') }}
-                </a>
-                
-                <a href="{{ route('secretary.athletes.search') }}" 
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('secretary.athletes.*') ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                <a href="{{ route('secretary.dashboard') }}#patient-flow"
+                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900">
                     <i class="fas fa-users mr-3"></i>
-                    {{ __('secretary.nav_athletes') }}
-                </a>
-                
-                <a href="{{ route('secretary.stats') }}" 
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('secretary.stats') ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-                    <i class="fas fa-chart-bar mr-3"></i>
-                    {{ __('secretary.nav_stats') }}
+                    Parcours patients
                 </a>
             </nav>
         </div>

@@ -6,23 +6,15 @@
 <div class="min-h-screen bg-slate-50">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-7">
 
-        <header class="mb-6">
-            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-                <div>
-                    <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full mb-3">
-                        Prise en charge médicale
-                    </div>
-                    <h1 class="text-3xl font-bold tracking-tight text-slate-950">Prise en charge médicale</h1>
-                    <p class="mt-2 text-slate-600 max-w-2xl">
-                        Salle d’attente clinique alimentée par le secrétariat médical. Seuls les joueurs prêts à être reçus apparaissent ici.
-                    </p>
-                </div>
-                <div class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-600">
-                    <span class="font-semibold text-slate-950">{{ $waitingAppointments->count() }}</span>
-                    patient(s) en attente
-                </div>
-            </div>
-        </header>
+        <x-page-header
+            title="Prise en charge médicale"
+            subtitle="Salle d’attente clinique alimentée par le secrétariat médical. Seuls les joueurs prêts à être reçus apparaissent ici."
+            eyebrow="Clinique"
+            :back-href="route('modules.index')"
+            back-label="Retour aux modules"
+            :count="$waitingAppointments->count()"
+            count-label="patient(s) en attente"
+        />
 
         <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
             <div class="px-5 sm:px-6 py-4 border-b border-slate-200 bg-slate-50/70">

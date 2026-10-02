@@ -1,28 +1,33 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('Confédérations FIFA - Plateforme FIT') }}</title>
+    <title>FIT — Confédérations</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/fit-logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/fit-logo.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-purple-50 to-indigo-100 min-h-screen">
+<body class="bg-slate-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="text-4xl font-bold text-gray-800 mb-2">{{ __('🌍 Confédérations FIFA') }}</h1>
-                <p class="text-lg text-gray-600">{{ __('Gestion des confédérations continentales et internationales') }}</p>
-            </div>
-            <a href="/modules" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center">
-                <span class="mr-2">🏠</span>
-                {{ __('Retour aux modules') }}
-            </a>
-        </div>
-
-        @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations'))
-            <div class="mb-6"><a href="{{ route('organization-cards.create', 'confederations') }}" class="inline-block px-4 py-2 bg-purple-700 text-white rounded">{{ __('+ Ajouter une confédération') }}</a></div>
-        @endif
+        <x-page-header
+            title="Confédérations"
+            subtitle="Gérez les confédérations continentales et la hiérarchie institutionnelle FIFA."
+            eyebrow="FIFA Connect"
+            :back-href="url('/modules')"
+            back-label="Retour aux modules"
+            :count="$confederations->count()"
+            count-label="confédération(s)"
+        >
+            @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations'))
+                <x-slot:actions>
+                    <a href="{{ route('organization-cards.create', 'confederations') }}"
+                       class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+                        Ajouter une confédération
+                    </a>
+                </x-slot:actions>
+            @endif
+        </x-page-header>
 
         <!-- Informations -->
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">

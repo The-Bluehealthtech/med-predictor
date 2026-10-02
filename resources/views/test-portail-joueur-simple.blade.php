@@ -15,14 +15,9 @@
     <!-- Lien de retour à la liste -->
     <div class="bg-gray-800 border-b border-gray-700">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            @unless(auth()->user()->isPlayer())
-                <a href="{{ route('players.list') }}"
-                   class="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>{{ __('Retour à la Liste') }}</span>
-                </a>
-            @endunless
-            @include('passports.partials.portal-links')
+            <div class="flex-1">
+                @include('passports.partials.portal-links')
+            </div>
             
             <!-- Connection Status Button -->
             @php
@@ -100,7 +95,29 @@
     </div>
     
     @php $ksaSourceField = fn ($name) => collect($cockpitV2Data['extra'] ?? [])->firstWhere('name', $name)['value'] ?? null; @endphp
-    <!-- 🆕 NOUVELLE HERO ZONE SIMPLE EN BLADE (remplace le JavaScript complexe) -->
+
+    <div class="max-w-7xl mx-auto px-6 pt-6">
+        <x-page-header
+            :title="trim(($player->first_name ?? '').' '.($player->last_name ?? '')) ?: ($player->name ?? 'Joueur')"
+            subtitle="Portail joueur FIT"
+            eyebrow="Joueur"
+            :back-href="auth()->user()->isPlayer() ? null : route('players.list')"
+            back-label="Retour à la liste"
+            :dark="true"
+        >
+            <x-slot:meta>
+                <span>{{ $player->position ?? $ksaSourceField('Position') ?? __('Position non définie') }}</span>
+                <span aria-hidden="true">•</span>
+                <span>{{ $player->club->name ?? __('Club non défini') }}</span>
+                @if($player->nationality || $ksaSourceField('Nationality'))
+                    <span aria-hidden="true">•</span>
+                    <span>{{ $player->nationality ?? $ksaSourceField('Nationality') }}</span>
+                @endif
+            </x-slot:meta>
+        </x-page-header>
+    </div>
+
+    <!-- Profil joueur -->
     <div class="bg-gradient-to-br from-blue-900 to-indigo-900 p-6">
         <div class="max-w-7xl mx-auto">
             
@@ -123,19 +140,12 @@
 
                 </div>
                 
-                <!-- Informations du joueur -->
+                <!-- Informations complémentaires du joueur -->
                 <div class="text-center lg:text-left">
-                    <h1 class="text-4xl font-bold text-white mb-2">
-                        {{ $player->first_name }} {{ $player->last_name }}
-                    </h1>
-                    <p class="text-xl text-blue-200 mb-4">
-                        {{ $player->position ?? $ksaSourceField('Position') ?? __('Position non définie') }} •
-                        {{ $player->club->name ?? __('Club non défini') }}
-                        @if($ksaSourceField('№') !== null)
-                            <span class="text-sm text-blue-200"> · № {{ $ksaSourceField('№') }} (KSA)</span>
-                        @endif
-                    </p>
-                    
+                    @if($ksaSourceField('№') !== null)
+                        <p class="text-sm text-blue-200 mb-4">№ {{ $ksaSourceField('№') }}</p>
+                    @endif
+
                     <!-- Drapeau nationalité -->
                     <div class="inline-block">
                         @if($player->nationality)

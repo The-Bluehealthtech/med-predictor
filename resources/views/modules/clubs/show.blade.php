@@ -1,32 +1,39 @@
- !DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
-page    <title>{{ $club->name }} - {{ __('Détails du Club - Plateforme FIT') }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIT — {{ $club->name }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/fit-logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/fit-logo.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<body class="bg-slate-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <!-- Navigation -->
-        <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center space-x-4">
-                <a href="/clubs-view" class="flex items-center text-blue-600 hover:text-blue-800 transition-colors">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                    {{ __('Retour aux clubs') }}
+        <x-page-header
+            :title="$club->name"
+            :subtitle="collect([$club->city, $club->country, $club->league])->filter()->implode(' · ')"
+            eyebrow="Club"
+            :back-href="url('/clubs-view')"
+            back-label="Retour aux clubs"
+        >
+            <x-slot:actions>
+                <a href="{{ route('clubs-view.edit', $club->id) }}"
+                   class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+                    Modifier
                 </a>
-                <h1 class="text-3xl font-bold text-gray-800">{{ __('Détails du Club') }}</h1>
-            </div>
-            <div class="flex space-x-3">
-                <a href="{{ route('clubs-view.edit', $club->id) }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
-                    {{ __('pcma_extra.label_723bbbfede8a') }}
-                </a>
-                <a href="/modules" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
-                    {{ __('📋 Retour aux modules') }}
-                </a>
-            </div>
-        </div>
+            </x-slot:actions>
+            <x-slot:meta>
+                @if($club->association)
+                    <span>{{ $club->association->short_name ?: $club->association->name }}</span>
+                @endif
+                @if($club->status)
+                    <span class="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                        {{ ucfirst($club->status) }}
+                    </span>
+                @endif
+            </x-slot:meta>
+        </x-page-header>
 
         <!-- Messages de succès/erreur -->
         @if(session('success'))

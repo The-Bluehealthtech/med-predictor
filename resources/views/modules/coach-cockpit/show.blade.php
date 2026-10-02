@@ -237,21 +237,31 @@
     $clubShort = $cockpit ? str_replace(' (Démo)', '', $cockpit['club']['name']) : '';
     $initials = $cockpit ? collect(preg_split('/[\s-]+/u', $clubShort))->filter()->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->take(2)->implode('') : '';
 @endphp
-<div class="cc" style="padding-bottom:0">
-  <div class="wrap" style="gap:12px">
-    <a href="{{ route('modules.index') }}" style="font-size:0.85rem;color:var(--accent)">← Modules</a>
-    <form method="get" action="{{ route('modules.coach-cockpit') }}" class="club-picker">
-      <label class="field" for="club-select">Équipe à afficher
-        <select id="club-select" name="club_id" onchange="this.form.submit()">
-          @foreach($clubs as $club)
-            <option value="{{ $club->id }}" @selected((int) $club->id === (int) $clubId)>{{ str_replace(' (Démo)', '', $club->name) }}</option>
-          @endforeach
-        </select>
-      </label>
-      <noscript><button type="submit">Afficher</button></noscript>
-      @if($clubs->count() === 1)<span class="note">Votre compte donne accès à votre club uniquement.</span>@endif
-    </form>
-  </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+  <x-page-header
+      :title="$cockpit ? 'Cockpit entraîneur — '.$clubShort : 'Cockpit entraîneur'"
+      subtitle="Bilan, trajectoire, forme, pronostic, composition et évaluation des joueurs."
+      eyebrow="Centre de performance"
+      :back-href="route('modules.index')"
+      back-label="Retour aux modules"
+  >
+      <x-slot:actions>
+          <form method="get" action="{{ route('modules.coach-cockpit') }}" class="flex items-end gap-2">
+              <label for="club-select" class="text-xs font-semibold text-slate-600">Équipe
+                  <select id="club-select" name="club_id" onchange="this.form.submit()"
+                          class="mt-1 rounded-xl border-slate-300 text-sm focus:border-emerald-500 focus:ring-emerald-500">
+                      @foreach($clubs as $club)
+                          <option value="{{ $club->id }}" @selected((int) $club->id === (int) $clubId)>{{ str_replace(' (Démo)', '', $club->name) }}</option>
+                      @endforeach
+                  </select>
+              </label>
+              <noscript><button type="submit" class="rounded-xl bg-slate-900 px-3 py-2 text-sm text-white">Afficher</button></noscript>
+          </form>
+      </x-slot:actions>
+      @if($cockpit)
+          <x-slot:meta><span id="tag-updated"></span></x-slot:meta>
+      @endif
+  </x-page-header>
 </div>
 
 @if(!$cockpit)
@@ -259,20 +269,6 @@
 @else
 <div class="cc">
 <div class="wrap">
-  <header class="top">
-    <div class="identity">
-      <div class="crest" aria-hidden="true">{{ $initials }}</div>
-      <div>
-        <p class="eyebrow">Cockpit entraîneur</p>
-        <h1>{{ $clubShort }}</h1>
-        <p class="meta" id="meta"></p>
-      </div>
-    </div>
-    <div class="tags">
-      <span class="tag" id="tag-updated"></span>
-    </div>
-  </header>
-
   <section aria-labelledby="h-bilan">
     <h2 id="h-bilan" class="eyebrow" style="font-family:var(--font-body);font-size:0.72rem;margin-bottom:10px">Bilan de la saison</h2>
     <div class="kpis" id="kpis"></div>

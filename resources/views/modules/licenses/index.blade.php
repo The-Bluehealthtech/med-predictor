@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'FIT - Football Intelligence & Tracking') }} - {{ ucfirst($footballType) }} Licensing</title>
+    <title>FIT — Licences</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/fit-logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/fit-logo.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -19,35 +21,21 @@
 </head>
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-50">
-        <!-- Header -->
-        <header class="bg-white shadow-sm border-b border-gray-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center py-6">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                                    <span class="text-white font-bold text-lg">FIT</span>
-                                </div>
-                                <div class="ml-3">
-                                    <h1 class="text-2xl font-bold text-gray-900">
-                                        {{ __('📋 Gestion des Licences - Clubs') }}
-                                    </h1>
-                                    <p class="text-sm text-gray-600">{{ __('Demande de licences par les clubs') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <a href="/modules" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux modules') }}</a>
-                        <a href="/clubs-view" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('🏟️ Voir les clubs') }}</a>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content -->
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <x-page-header
+                title="Licences"
+                subtitle="Initiez et suivez les demandes de licence des joueurs depuis leur club."
+                eyebrow="Administration"
+                :back-href="url('/modules')"
+                back-label="Retour aux modules"
+            >
+                <x-slot:actions>
+                    <a href="/clubs-view"
+                       class="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                        Voir les clubs
+                    </a>
+                </x-slot:actions>
+            </x-page-header>
             <!-- Message d'information -->
             <div class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div class="flex">

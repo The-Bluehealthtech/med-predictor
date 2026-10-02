@@ -114,69 +114,23 @@ function filterByCategory(category, event) {
 </script>
 
 <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="flex items-center">
-                            <img src="{{ asset('images/fit-logo.png') }}" alt="FIT Logo" class="w-10 h-10 mr-3">
-                            <div>
-                                <h1 class="text-2xl font-bold text-gray-900">
-                                    Modules FIT
-                                </h1>
-                                <p class="text-sm text-gray-600">Football Intelligence & Tracking</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ app()->getLocale() === 'en' ? '← Back to the dashboard' : '← Retour au Dashboard Général' }}</a>
-                    @auth
-                        <form method="POST" action="{{ route('logout') }}" class="inline-block">
-                            @csrf
-                            <button type="submit" 
-                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center space-x-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                                </svg>
-                                <span>{{ app()->getLocale() === 'en' ? 'Log out' : 'Déconnexion' }}</span>
-                            </button>
-                        </form>
-                    @endauth
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Welcome Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
-            <div class="p-6">
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ app()->getLocale() === 'en' ? 'Welcome to FIT' : 'Bienvenue sur la plateforme FIT' }}</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        {{ app()->getLocale() === 'en' ? 'Choose a module to access the football management tools' : 'Sélectionnez un module pour accéder aux fonctionnalités de gestion du football' }}
-                    </p>
-                    <div class="flex justify-center space-x-4">
-                        <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            {{ app()->getLocale() === 'en' ? 'System operational' : 'Système opérationnel' }}
-                        </div>
-                        <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            {{ $visibleModules->count() }} {{ app()->getLocale() === 'en' ? 'modules available' : 'modules disponibles' }}
-                        </div>
-                        <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                            {{ $visibleModules->pluck('category')->filter()->unique()->count() }} {{ app()->getLocale() === 'en' ? 'sections' : 'sections' }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <x-page-header
+            title="{{ app()->getLocale() === 'en' ? 'FIT modules' : 'Modules FIT' }}"
+            subtitle="{{ app()->getLocale() === 'en' ? 'Access your clinical, performance, selection and administration workflows.' : 'Accédez aux parcours clinique, performance, sélections et administration.' }}"
+            eyebrow="FIT"
+            :back-href="route('dashboard')"
+            :back-label="app()->getLocale() === 'en' ? 'Back to dashboard' : 'Retour au tableau de bord'"
+            :count="$visibleModules->count()"
+            :count-label="app()->getLocale() === 'en' ? 'available modules' : 'modules disponibles'"
+        >
+            <x-slot:meta>
+                <span>{{ $visibleModules->pluck('category')->filter()->unique()->count() }} {{ app()->getLocale() === 'en' ? 'sections' : 'sections' }}</span>
+                <span aria-hidden="true">•</span>
+                <span>{{ app()->getLocale() === 'en' ? 'System operational' : 'Système opérationnel' }}</span>
+            </x-slot:meta>
+        </x-page-header>
 
         <!-- Modules organisés par catégories -->
         @php

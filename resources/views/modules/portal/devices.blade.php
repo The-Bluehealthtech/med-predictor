@@ -3,11 +3,15 @@
 @section('content')
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">{{ __('📱 Portail des Appareils') }}</h1>
-            <p class="mt-2 text-gray-600">{{ __('Gestion des appareils connectés et dispositifs IoT') }}</p>
-        </div>
+        <x-page-header
+            title="Appareils connectés"
+            subtitle="Gérez les appareils, capteurs et dispositifs IoT reliés à FIT."
+            eyebrow="Performance"
+            :back-href="route('modules.index')"
+            back-label="Retour aux modules"
+            :count="$stats['total']"
+            count-label="appareil(s)"
+        />
 
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

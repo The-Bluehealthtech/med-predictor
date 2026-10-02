@@ -4,19 +4,16 @@
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">{{ __('📋 Licences des Joueurs') }}</h1>
-                    <p class="text-sm text-gray-600">{{ __('Vue d\'ensemble de toutes les licences') }}</p>
-                </div>
-                <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
-            </div>
-        </div>
-    </div>
-
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <x-page-header
+            title="Licences joueurs"
+            subtitle="Vue d’ensemble des licences enregistrées, leur statut et leur échéance."
+            eyebrow="Administration"
+            :back-href="route('modules.index')"
+            back-label="Retour aux modules"
+            :count="$licenses->total()"
+            count-label="licence(s)"
+        />
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-800">Licences ({{ $licenses->total() }})</h2>

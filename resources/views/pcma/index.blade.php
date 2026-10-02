@@ -5,19 +5,22 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="mb-8">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900">📋 PCMA Assessments</h1>
-                    <p class="text-gray-600 mt-2">{{ __('pcma_extra.label_fe15d963105b') }}</p>
-                </div>
-                <a href="{{ route('pcma.create') }}" 
-                   class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
-                    {{ __('pcma_extra.label_47ad15b4e542') }}
+        <x-page-header
+            title="PCMA"
+            :subtitle="__('pcma_extra.label_fe15d963105b')"
+            eyebrow="Clinique"
+            :back-href="route('modules.index')"
+            back-label="Retour aux modules"
+            :count="$pcmas->total()"
+            count-label="évaluation(s)"
+        >
+            <x-slot:actions>
+                <a href="{{ route('pcma.create') }}"
+                   class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+                    Nouvelle PCMA
                 </a>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         <!-- Filters -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">

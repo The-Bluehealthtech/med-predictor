@@ -5,38 +5,13 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <nav class="flex" aria-label="Breadcrumb">
-                <ol class="flex items-center space-x-4">
-                    <li>
-                        <a href="{{ route('dashboard') }}" class="text-gray-400 hover:text-gray-500">
-                            Dashboard
-                        </a>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                            </svg>
-                            <a href="{{ route('modules.index') }}" class="ml-4 text-gray-400 hover:text-gray-500">
-                                Modules
-                            </a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <svg class="flex-shrink-0 h-5 w-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="ml-4 text-gray-500">Administration</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
-            <h1 class="mt-4 text-3xl font-bold text-gray-900">⚙️ Administration Management</h1>
-            <p class="mt-2 text-gray-600">{{ __('Gestion administrative du système FIT') }}</p>
-        </div>
+        <x-page-header
+            title="Administration"
+            subtitle="Gérez les utilisateurs, organisations, paramètres et outils transverses de FIT."
+            eyebrow="FIT"
+            :back-href="route('modules.index')"
+            back-label="Retour aux modules"
+        />
 
         <!-- Administration Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

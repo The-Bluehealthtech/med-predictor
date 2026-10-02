@@ -4,16 +4,15 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-4">
-            {{ app()->getLocale() === 'fr' ? 'Profil Utilisateur' : 'User Profile' }}
-        </h1>
-        <p class="text-gray-600">
-            {{ app()->getLocale() === 'fr' 
-                ? 'Gérez vos informations personnelles et vos paramètres de compte.' 
-                : 'Manage your personal information and account settings.' }}
-        </p>
-    </div>
+    <x-page-header
+        :title="app()->getLocale() === 'fr' ? 'Profil utilisateur' : 'User profile'"
+        :subtitle="app()->getLocale() === 'fr'
+            ? 'Gérez vos informations personnelles et vos paramètres de compte.'
+            : 'Manage your personal information and account settings.'"
+        eyebrow="Compte"
+        :back-href="route('modules.index')"
+        :back-label="app()->getLocale() === 'fr' ? 'Retour aux modules' : 'Back to modules'"
+    />
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Profile Information -->

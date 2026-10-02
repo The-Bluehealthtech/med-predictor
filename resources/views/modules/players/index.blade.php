@@ -4,56 +4,27 @@
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                                <span class="text-white font-bold text-lg">👥</span>
-                            </div>
-                            <div class="ml-3">
-                                <h1 class="text-2xl font-bold text-gray-900">
-                                    Players
-                                </h1>
-                                <p class="text-sm text-gray-600">{{ __('Gestion des joueurs') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Contenu principal -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Welcome Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
-            <div class="p-6">
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ __('👥 Gestion des Joueurs') }}</h2>
-                    <p class="text-lg text-gray-600 mb-6">{{ __('Gestion complète des joueurs, profils et informations') }}</p>
-                    <div class="flex justify-center space-x-4">
-                        <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            {{ __('Système opérationnel') }}
-                        </div>
-                        <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            {{ $players->total() }} {{ __('joueurs enregistrés') }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <x-page-header
+            title="Joueurs"
+            subtitle="Gérez les profils, licences, passeports et accès aux dossiers liés aux joueurs."
+            eyebrow="Administration"
+            :back-href="route('modules.index')"
+            back-label="Retour aux modules"
+            :count="$players->total()"
+            count-label="joueur(s)"
+        >
+            <x-slot:actions>
+                <a href="{{ route('player-registration.create') }}"
+                   class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+                    Ajouter un joueur
+                </a>
+            </x-slot:actions>
+        </x-page-header>
 
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">

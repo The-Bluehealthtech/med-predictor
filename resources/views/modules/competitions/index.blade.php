@@ -4,14 +4,17 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <!-- En-tête du Module -->
+    <x-page-header
+        :title="__('competitions.home.module_title')"
+        :subtitle="__('competitions.home.module_subtitle')"
+        eyebrow="Sport"
+        :back-href="route('modules.index')"
+        back-label="Retour aux modules"
+        :count="$competitions->count()"
+        count-label="compétition(s)"
+    />
+
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">
-            <i class="fas fa-trophy text-yellow-500 mr-3"></i>
-            {{ __('competitions.home.module_title') }}
-        </h1>
-        <p class="text-gray-600">{{ __('competitions.home.module_subtitle') }}</p>
-        
         <!-- Statistiques en temps réel -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">

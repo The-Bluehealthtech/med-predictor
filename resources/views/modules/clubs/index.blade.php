@@ -4,34 +4,26 @@
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg flex items-center justify-center">
-                                <span class="text-white font-bold text-lg">🏟️</span>
-                            </div>
-                            <div class="ml-3">
-                                <h1 class="text-2xl font-bold text-gray-900">
-                                    {{ __('Clubs de Football') }}
-                                </h1>
-                                <p class="text-sm text-gray-600">{{ __('Gestion et suivi de tous les clubs affiliés') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Contenu principal -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <x-page-header
+            title="Clubs"
+            subtitle="Gérez les clubs affiliés, leur identité, leur rattachement institutionnel et leurs effectifs."
+            eyebrow="Administration"
+            :back-href="isset($filtered) && $filtered ? url('/associations-view') : route('modules.index')"
+            :back-label="isset($filtered) && $filtered ? 'Retour aux associations' : 'Retour aux modules'"
+            :count="$clubs->count()"
+            count-label="club(s)"
+        >
+            @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs'))
+                <x-slot:actions>
+                    <a href="{{ route('organization-cards.create', 'clubs') }}"
+                       class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+                        Ajouter un club
+                    </a>
+                </x-slot:actions>
+            @endif
+        </x-page-header>
 
         <!-- Filtre par association -->
         @if(isset($filtered) && $filtered && isset($association) && $association)
@@ -55,26 +47,6 @@
         </div>
         @endif
 
-        @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'clubs'))
-            <a href="{{ route('organization-cards.create', 'clubs') }}" class="inline-block mb-6 px-4 py-2 bg-blue-700 text-white rounded">{{ __('+ Ajouter un club') }}</a>
-        @endif
-
-        <!-- Navigation -->
-        <div class="mb-8 flex justify-between items-center">
-            @if($filtered && $association)
-                <a href="/associations-view" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    {{ __('← Retour aux associations') }}
-                </a>
-            @else
-                <a href="/" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    {{ __('auth.login_back_home') }}
-                </a>
-            @endif
-            
-            <a href="/modules" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                {{ __('📋 Retour aux modules') }}
-            </a>
-        </div>
 
         <!-- Liste des clubs -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

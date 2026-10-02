@@ -5,11 +5,15 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">📋 PCMA Dashboard</h1>
-            <p class="text-gray-600 mt-2">{{ __('pcma_extra.label_2a2066cd9351') }}</p>
-        </div>
+        <x-page-header
+            title="Tableau de bord PCMA"
+            :subtitle="__('pcma_extra.label_2a2066cd9351')"
+            eyebrow="Clinique"
+            :back-href="route('modules.index')"
+            back-label="Retour aux modules"
+            :count="$stats['total_pcmas']"
+            count-label="PCMA"
+        />
 
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

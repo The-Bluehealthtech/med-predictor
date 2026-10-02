@@ -1,34 +1,36 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $confederation->name }} - Plateforme FIT</title>
+    <title>FIT — {{ $confederation->name }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/fit-logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/fit-logo.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-purple-50 to-indigo-100 min-h-screen">
+<body class="bg-slate-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <!-- Navigation -->
-        <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center space-x-4">
-                <a href="/confederations-view" class="flex items-center text-purple-600 hover:text-purple-800 transition-colors">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>{{ __('Retour aux confédérations') }}</a>
-                <h1 class="text-3xl font-bold text-gray-800">{{ __('Détails de la Confédération') }}</h1>
-            </div>
-            <div class="flex space-x-3">
-                @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations', $confederation))
-                <a href="{{ route('organization-cards.edit', ['confederations', $confederation->id]) }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
-                    {{ __('pcma_extra.label_723bbbfede8a') }}
-                </a>
-                @endif
-                <a href="/modules" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
-                    🏠 Modules
-                </a>
-            </div>
-        </div>
+        <x-page-header
+            :title="$confederation->name"
+            subtitle="Confédération continentale et rattachement des associations membres."
+            eyebrow="FIFA Connect"
+            :back-href="url('/confederations-view')"
+            back-label="Retour aux confédérations"
+        >
+            @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'confederations', $confederation))
+                <x-slot:actions>
+                    <a href="{{ route('organization-cards.edit', ['confederations', $confederation->id]) }}"
+                       class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+                        Modifier
+                    </a>
+                </x-slot:actions>
+            @endif
+            <x-slot:meta>
+                @if($confederation->short_name)<span>{{ $confederation->short_name }}</span>@endif
+                @if($confederation->status)<span>{{ ucfirst($confederation->status) }}</span>@endif
+            </x-slot:meta>
+        </x-page-header>
 
         <!-- Confederation Details -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

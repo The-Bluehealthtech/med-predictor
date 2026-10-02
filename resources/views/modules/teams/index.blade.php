@@ -4,18 +4,15 @@
 
 @section('content')
 <div class="container-fluid">
-    <!-- Header avec bouton retour -->
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900 flex items-center">
-                <i class="fas fa-users text-blue-600 mr-3"></i>{{ __('Gestion des Équipes') }}</h1>
-            <p class="text-gray-600 mt-2">{{ __('Gestion des équipes selon les standards FIFA Connect') }}</p>
-        </div>
-        <a href="{{ route('modules.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center">
-            <i class="fas fa-arrow-left mr-2"></i>
-            {{ __('Retour vers Modules') }}
-        </a>
-    </div>
+    <x-page-header
+        title="Équipes"
+        subtitle="Gérez les équipes, leur club, leur compétition et leur rattachement FIFA Connect."
+        eyebrow="Administration"
+        :back-href="route('modules.index')"
+        back-label="Retour aux modules"
+        :count="$teams->count()"
+        count-label="équipe(s)"
+    />
 
     <!-- Statistiques -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

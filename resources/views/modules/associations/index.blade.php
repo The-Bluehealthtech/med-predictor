@@ -1,21 +1,33 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('Démonstration Logos Officiels des Fédérations') }}</title>
+    <title>FIT — Associations</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/fit-logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/fit-logo.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-slate-50 min-h-screen">
     <div class="max-w-6xl mx-auto p-6">
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-4">{{ __('🏛️ Associations de Football') }}</h1>
-            <p class="text-xl text-gray-600">{{ __('Gestion des fédérations nationales et régionales') }}</p>
-        </div>
-
-        @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations'))
-            <a href="{{ route('organization-cards.create', 'associations') }}" class="inline-block mb-6 px-4 py-2 bg-green-700 text-white rounded">{{ __('+ Ajouter une association') }}</a>
-        @endif
+        <x-page-header
+            title="Associations"
+            subtitle="Gérez les associations nationales et régionales, leurs clubs affiliés et leur rattachement confédéral."
+            eyebrow="Administration"
+            :back-href="url('/modules')"
+            back-label="Retour aux modules"
+            :count="$associations->count()"
+            count-label="association(s)"
+        >
+            @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations'))
+                <x-slot:actions>
+                    <a href="{{ route('organization-cards.create', 'associations') }}"
+                       class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+                        Ajouter une association
+                    </a>
+                </x-slot:actions>
+            @endif
+        </x-page-header>
         <!-- Liste des associations -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-2xl font-semibold mb-6 text-green-600">🏛️ {{ __("Associations Disponibles") }}</h2>

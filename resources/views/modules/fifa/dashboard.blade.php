@@ -4,53 +4,21 @@
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
-                                <span class="text-white font-bold text-lg">⚽</span>
-                            </div>
-                            <div class="ml-3">
-                                <h1 class="text-2xl font-bold text-gray-900">
-                                    FIFA Dashboard
-                                </h1>
-                                <p class="text-sm text-gray-600">{{ __('Connectivité FIFA et gestion des contrats') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="/modules" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Welcome Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
-            <div class="p-6">
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">⚽ FIFA Dashboard</h2>
-                    <p class="text-lg text-gray-600 mb-6">{{ __('Connectivité FIFA, synchronisation et gestion des contrats') }}</p>
-                    <div class="flex justify-center space-x-4">
-                        <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 {{ $connectivity['connected'] ? 'bg-green-500' : 'bg-red-500' }} rounded-full mr-2"></span>
-                            {{ $connectivity['connected'] ? __('Système opérationnel') : __('Système hors ligne') }}
-                        </div>
-                        <div class="flex items-center text-sm text-gray-500">
-                            <span class="w-2 h-2 {{ $connectivity['connected'] ? 'bg-blue-500' : 'bg-gray-500' }} rounded-full mr-2"></span>
-                            {{ $connectivity['connected'] ? __('FIFA Connecté') : __('FIFA Non connecté') }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <x-page-header
+            title="FIFA Connect"
+            subtitle="Suivez la connectivité, les synchronisations et les objets de référence FIFA."
+            eyebrow="Interopérabilité"
+            :back-href="route('modules.index')"
+            back-label="Retour aux modules"
+        >
+            <x-slot:meta>
+                <span class="{{ $connectivity['connected'] ? 'text-emerald-700' : 'text-red-700' }}">
+                    {{ $connectivity['connected'] ? 'Connecté' : 'Déconnecté' }}
+                </span>
+            </x-slot:meta>
+        </x-page-header>
 
         <!-- FIFA Connection Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

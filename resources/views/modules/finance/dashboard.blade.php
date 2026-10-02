@@ -4,50 +4,21 @@
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-gradient-to-r from-green-600 to-blue-600 rounded-lg flex items-center justify-center">
-                                <span class="text-white font-bold text-lg">💰</span>
-                            </div>
-                            <div class="ml-3">
-                                <h1 class="text-2xl font-bold text-gray-900">{{ __('Comptabilité & Finances') }}</h1>
-                                <p class="text-sm text-gray-600">Dashboard financier {{ ucfirst($userType) }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('modules.index') }}" class="text-gray-600 hover:text-gray-900 text-sm font-medium">{{ __('← Retour aux Modules') }}</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <x-page-header
+            title="Comptabilité & Finances"
+            subtitle="{{ 'Suivi financier pour '.($userType === 'club' ? 'votre club' : 'votre association').'.' }}"
+            eyebrow="Finance"
+            :back-href="route('modules.index')"
+            back-label="Retour aux modules"
+        />
 
         @if(session('info'))
         <div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 mb-8 text-sm">
             ℹ️ {{ session('info') }}
         </div>
         @endif
-
-        <!-- Welcome Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
-            <div class="p-6">
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">💰 {{ __("Dashboard Financier") }}</h2>
-                    <p class="text-lg text-gray-600 mb-2">
-                        {{ __("Gestion de la comptabilité et des finances pour") }} {{ $userType === 'club' ? 'votre club' : 'votre association' }}
-                    </p>
-                </div>
-            </div>
-        </div>
 
         <!-- Avis : pas de comptabilite generale -->
         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">

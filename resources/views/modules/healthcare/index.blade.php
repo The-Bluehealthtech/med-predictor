@@ -5,23 +5,15 @@
 @section('content')
 <div class="min-h-screen bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7">
-        <header class="mb-6">
-            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-                <div>
-                    <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full mb-3">
-                        Dossiers médicaux
-                    </div>
-                    <h1 class="text-3xl font-bold tracking-tight text-slate-950">Dossiers santé des joueurs</h1>
-                    <p class="mt-2 text-slate-600 max-w-2xl">
-                        Recherchez un joueur et ouvrez son dossier longitudinal : synthèse, parcours de soins, modules spécialisés et documents.
-                    </p>
-                </div>
-                <div class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-600">
-                    <span class="font-semibold text-slate-950">{{ $players->total() }}</span>
-                    dossier(s)
-                </div>
-            </div>
-        </header>
+        <x-page-header
+            title="Dossiers santé des joueurs"
+            subtitle="Recherchez un joueur et ouvrez son dossier longitudinal : synthèse, parcours de soins, modules spécialisés et documents."
+            eyebrow="Clinique"
+            :back-href="route('modules.index')"
+            back-label="Retour aux modules"
+            :count="$players->total()"
+            count-label="dossier(s)"
+        />
 
         <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 sm:p-5 mb-5">
             <form method="GET" action="{{ route('modules.healthcare.index') }}" class="flex flex-col sm:flex-row gap-3">

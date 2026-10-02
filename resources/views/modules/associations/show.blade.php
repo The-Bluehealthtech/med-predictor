@@ -1,35 +1,39 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $association->name }} - {{ __('Détails de l’association - Plateforme FIT') }}</title>
+    <title>FIT — {{ $association->name }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/fit-logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/fit-logo.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen">
+<body class="bg-slate-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <!-- Navigation -->
-        <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center space-x-4">
-                <a href="/associations-view" class="flex items-center text-green-600 hover:text-green-800 transition-colors">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                    {{ __('Retour aux associations') }}
-                </a>
-                <h1 class="text-3xl font-bold text-gray-800">{{ __('Détails de l\'Association') }}</h1>
-            </div>
-            <div class="flex space-x-3">
-                @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association))
-                <a href="{{ route('organization-cards.edit', ['associations', $association->id]) }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
-                    {{ __('pcma_extra.label_723bbbfede8a') }}
-                </a>
+        <x-page-header
+            :title="$association->name"
+            :subtitle="collect([$association->country, $association->confederation])->filter()->implode(' · ')"
+            eyebrow="Association"
+            :back-href="url('/associations-view')"
+            back-label="Retour aux associations"
+            :count="$association->clubs ? $association->clubs->count() : 0"
+            count-label="club(s)"
+        >
+            @if(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association))
+                <x-slot:actions>
+                    <a href="{{ route('organization-cards.edit', ['associations', $association->id]) }}"
+                       class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+                        Modifier
+                    </a>
+                </x-slot:actions>
+            @endif
+            <x-slot:meta>
+                @if($association->short_name)<span>{{ $association->short_name }}</span>@endif
+                @if($association->status)
+                    <span class="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">{{ ucfirst($association->status) }}</span>
                 @endif
-                <a href="/modules" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                    {{ __('📋 Retour aux modules') }}
-                </a>
-            </div>
-        </div>
+            </x-slot:meta>
+        </x-page-header>
 
         <!-- Association Details -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

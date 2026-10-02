@@ -10,23 +10,24 @@
 
 @section('content')
 <div class="max-w-6xl mx-auto px-4 py-8 space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-        <div>
-            <p class="text-xs font-semibold uppercase tracking-wider {{ $isMedical ? 'text-red-700' : 'text-slate-600' }}">Passeports</p>
-            <h1 class="text-2xl font-bold text-gray-900">{{ $title }}</h1>
-            <p class="text-sm text-gray-600 max-w-3xl">
-                @if($isMedical)
-                    Résumé médical de chaque joueur au format International Patient Summary (HL7/IHE), à partager lors d'un transfert, d'une sélection nationale ou à la demande du joueur. Réservé aux rôles médicaux, dans leur périmètre.
-                @else
-                    Passeport joueur au format FIFA : clubs d'enregistrement, statut, transferts et ITC. Aucune donnée médicale.
-                @endif
-            </p>
-        </div>
-        <div class="flex items-center gap-4 text-sm">
-            <a href="{{ route($isMedical ? 'passports.transfer.index' : 'passports.medical.index') }}" class="text-blue-600 hover:text-blue-800">{{ $isMedical ? 'Passeports de transfert' : 'Passeports médicaux' }}</a>
-            <a href="{{ route('modules.index') }}" class="text-blue-600 hover:text-blue-800">← Modules</a>
-        </div>
-    </div>
+    <x-page-header
+        :title="$title"
+        :subtitle="$isMedical
+            ? 'Résumé médical International Patient Summary (HL7/IHE) à partager lors d’un transfert, d’une sélection nationale ou à la demande du joueur.'
+            : 'Passeport joueur : clubs d’enregistrement, statut, transferts et ITC. Aucune donnée médicale.'"
+        eyebrow="Passeports"
+        :back-href="route('modules.index')"
+        back-label="Retour aux modules"
+        :count="$players->total()"
+        count-label="joueur(s)"
+    >
+        <x-slot:actions>
+            <a href="{{ route($isMedical ? 'passports.transfer.index' : 'passports.medical.index') }}"
+               class="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                {{ $isMedical ? 'Passeports de transfert' : 'Passeports médicaux' }}
+            </a>
+        </x-slot:actions>
+    </x-page-header>
 
     <form method="GET" class="bg-white rounded-lg shadow p-4 flex flex-wrap items-end gap-3">
         <label class="block text-sm font-medium text-gray-700">Joueur

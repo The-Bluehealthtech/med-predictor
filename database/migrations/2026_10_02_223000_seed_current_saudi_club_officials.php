@@ -70,7 +70,7 @@ return new class extends Migration {
     private function findClub($clubs,string $needle): ?object
     {
         $norm=fn($v)=>Str::of($v)->ascii()->lower()->replaceMatches('/[^a-z0-9]+/',' ')->trim()->toString(); $n=$norm($needle);
-        foreach($clubs as $club) { $c=$norm($club->name); if($c===$n || str_starts_with($c,$n.' ') || str_starts_with($n,$c.' ') || ($n==='al nassr'&&str_contains($c,'al nasr')) || ($n==='al qadsiah'&&str_contains($c,'al quadisiya')) || ($n==='al ettifaq'&&str_contains($c,'al ittifaq'))) return $club; } return null;
+        foreach($clubs as $club) { $c=$norm($club->name); if($c===$n || str_starts_with($c,$n.' ') || str_starts_with($n,$c.' ') || ($n==='al nassr'&&str_contains($c,'al nasr')) || ($n==='al qadsiah'&&str_contains($c,'al quadisiya')) || ($n==='al ettifaq'&&str_contains($c,'al ittifaq')) || ($n==='al hazm'&&str_contains($c,'al hazem')) || ($n==='al faisaly'&&str_contains($c,'al faysaly'))) return $club; } return null;
     }
     public function down(): void {}
 };

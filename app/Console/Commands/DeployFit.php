@@ -26,6 +26,8 @@ class DeployFit extends Command
         'database/migrations/2026_10_02_140000_create_external_entity_links_table.php',
         'database/migrations/2026_10_02_150000_create_club_officials_table.php',
         'database/migrations/2026_10_02_160000_create_passport_attestations_table.php',
+        'database/migrations/2026_10_02_220000_allow_sourced_club_officials.php',
+        'database/migrations/2026_10_02_223000_seed_current_saudi_club_officials.php',
     ];
 
     protected $signature = 'fit:deploy

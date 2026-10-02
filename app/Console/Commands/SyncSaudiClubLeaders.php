@@ -56,7 +56,9 @@ class SyncSaudiClubLeaders extends Command
             return $c === $n || str_starts_with($c, $n.' ') || str_starts_with($n, $c.' ')
                 || ($n === 'al nassr' && str_contains($c, 'al nasr'))
                 || ($n === 'al qadsiah' && str_contains($c, 'al quadisiya'))
-                || ($n === 'al ettifaq' && str_contains($c, 'al ittifaq'));
+                || ($n === 'al ettifaq' && str_contains($c, 'al ittifaq'))
+                || ($n === 'al hazm' && str_contains($c, 'al hazem'))
+                || ($n === 'al faisaly' && str_contains($c, 'al faysaly'));
         });
     }
 

@@ -108,8 +108,7 @@ class PlayerPortalController extends Controller
                 
                 if (!$this->validateAccessCode($player, $accessCode)) {
                     \Log::warning('Access code validation failed', [
-                        'received' => $accessCode,
-                        'expected' => $this->generateAccessCode($player)
+                        'player_id' => $player->id,
                     ]);
                     return back()->withErrors(['access_code' => 'Code d\'accès incorrect']);
                 }

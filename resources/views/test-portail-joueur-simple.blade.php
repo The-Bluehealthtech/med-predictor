@@ -706,9 +706,6 @@
                     $roleEval = $roleEvaluationCockpit ?? ['hasEvaluation' => false];
                 @endphp
                 @if($roleEval['hasEvaluation'])
-                    @if($roleEval['isDemo'])
-                        <p>{{ __('Données de démonstration') }}</p>
-                    @endif
                     <div class="fifa-medical-stat">
                         <div class="fifa-stat-header">
                             <span>{{ __('Famille de poste évaluée') }}</span>

@@ -21,8 +21,11 @@ class RoleEvaluationImporter
     private EntityResolver $resolver;
     public ImportReport $report;
 
-    public function __construct(private ImportMapping $mapping, private bool $dryRun = false)
-    {
+    public function __construct(
+        private ImportMapping $mapping,
+        private bool $dryRun = false,
+        private bool $isDemo = false
+    ) {
         $validPositionCodes = DB::table('position_catalog')->pluck('code')->map(
             static fn ($c) => mb_strtoupper($c)
         )->all();
@@ -230,7 +233,7 @@ class RoleEvaluationImporter
 
         $hash = hash('sha256', $this->mapping->type . '|' . $this->mapping->sourceLabel . '|' . implode('|', $fields = array_values($row)));
 
-        $target['is_demo'] = false;
+        $target['is_demo'] = $this->isDemo;
         $target['import_batch_id'] = $batchId;
         $target['source_row_hash'] = $hash;
         if ($matchId !== null) {

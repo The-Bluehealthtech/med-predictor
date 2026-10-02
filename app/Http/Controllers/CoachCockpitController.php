@@ -72,7 +72,7 @@ class CoachCockpitController extends Controller
             $csvPath = $request->file('csv_file')->getRealPath();
             $source = $validated['source'] ?? null;
 
-            $dryRun = new RoleEvaluationImporter($mapping, true);
+            $dryRun = new RoleEvaluationImporter($mapping, true, true);
             $dryRun->run($csvPath, $source);
 
             if ($dryRun->report->rowsRejected() > 0) {
@@ -83,11 +83,11 @@ class CoachCockpitController extends Controller
                 ));
             }
 
-            $importer = new RoleEvaluationImporter($mapping, false);
+            $importer = new RoleEvaluationImporter($mapping, false, true);
             $batchId = $importer->run($csvPath, $source);
 
             return back()->with('success', sprintf(
-                'Import réel terminé dans PostgreSQL : lot #%d, %s.',
+                'Import terminé dans PostgreSQL : lot #%d, %s.',
                 $batchId,
                 $importer->report->summaryLine()
             ));
@@ -107,7 +107,7 @@ class CoachCockpitController extends Controller
 
         $config = DB::table('role_config_versions')->find((int) $validated['config_version']);
         if (! $config || $config->status !== 'published') {
-            return back()->with('error', 'Le calcul réel exige une configuration de poids au statut published.');
+            return back()->with('error', 'Le calcul exige une configuration de poids au statut published.');
         }
 
         $playerIds = null;
@@ -124,7 +124,7 @@ class CoachCockpitController extends Controller
 
         $arguments = [
             '--config-version' => (string) $config->id,
-            '--is-demo' => '0',
+            '--is-demo' => '1',
             '--no-interaction' => true,
         ];
 
@@ -140,7 +140,7 @@ class CoachCockpitController extends Controller
         }
 
         if (str_contains($dryOutput, 'Aucun joueur à évaluer')) {
-            return back()->with('error', 'Aucune donnée réelle éligible n’est disponible pour ce calcul.');
+            return back()->with('error', 'Aucune donnée de performance éligible n’est disponible pour ce calcul.');
         }
 
         $code = Artisan::call('role-eval:compute', $arguments);
@@ -150,7 +150,7 @@ class CoachCockpitController extends Controller
             return back()->with('error', 'Échec du calcul rôle/apport : '.$output);
         }
 
-        return back()->with('success', 'Évaluations réelles calculées : '.$output);
+        return back()->with('success', 'Évaluations calculées : '.$output);
     }
 
     private function roleEvaluationStatus(): array
@@ -161,12 +161,10 @@ class CoachCockpitController extends Controller
             ->get();
 
         return [
-            'real_participations' => DB::table('match_participations')->where('is_demo', false)->count(),
-            'demo_participations' => DB::table('match_participations')->where('is_demo', true)->count(),
-            'real_stats' => DB::table('player_match_detailed_stats')->where('is_demo', false)->count(),
-            'demo_stats' => DB::table('player_match_detailed_stats')->where('is_demo', true)->count(),
-            'real_evaluations' => DB::table('player_role_evaluations')->where('is_demo', false)->count(),
-            'demo_evaluations' => DB::table('player_role_evaluations')->where('is_demo', true)->count(),
+            'participations' => DB::table('match_participations')->count(),
+            'stats' => DB::table('player_match_detailed_stats')->count(),
+            'evaluations' => DB::table('player_role_evaluations')->count(),
+            'players_evaluated' => DB::table('player_role_evaluations')->distinct()->count('player_id'),
             'published_configs' => $publishedConfigs,
             'draft_configs' => DB::table('role_config_versions')->where('status', 'draft')->orderByDesc('id')->get(),
         ];

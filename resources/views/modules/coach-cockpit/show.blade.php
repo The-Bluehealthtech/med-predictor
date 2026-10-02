@@ -260,8 +260,8 @@
       <div class="section-head">
         <h2 id="h-role-eval-activation">Évaluation joueur — rôle et apport</h2>
         <p>
-          Pipeline canonique : importer des observations réelles, les valider par dry-run,
-          puis calculer les scores dans PostgreSQL. Les données de démonstration restent séparées.
+          Paramétrez le moteur hors du code, importez les observations disponibles,
+          puis recalculez les scores dans PostgreSQL.
         </p>
       </div>
 
@@ -278,10 +278,10 @@
 
       <div class="kpis" style="margin-bottom:18px">
         @foreach([
-          ['Participations réelles', $roleEvaluationStatus['real_participations']],
-          ['Stats réelles', $roleEvaluationStatus['real_stats']],
-          ['Évaluations réelles', $roleEvaluationStatus['real_evaluations']],
-          ['Évaluations démo', $roleEvaluationStatus['demo_evaluations']],
+          ['Participations', $roleEvaluationStatus['participations']],
+          ['Statistiques joueur/match', $roleEvaluationStatus['stats']],
+          ['Évaluations', $roleEvaluationStatus['evaluations']],
+          ['Joueurs évalués', $roleEvaluationStatus['players_evaluated']],
         ] as [$label, $value])
           <div class="kpi">
             <span class="eyebrow">{{ $label }}</span>
@@ -292,17 +292,23 @@
 
       @if($roleEvaluationStatus['published_configs']->isEmpty())
         <div style="margin-bottom:18px;padding:12px 14px;border:1px solid #e8b04a;border-radius:10px;background:#fff9e8">
-          <strong>Calcul réel verrouillé.</strong>
+          <strong>Calcul verrouillé.</strong>
           <span>
-            Aucune configuration de poids n'est publiée. La configuration de démonstration reste en brouillon
-            et ne sera jamais utilisée comme résultat réel.
+            Aucune configuration de poids n'est publiée. Ouvrez le paramétrage externe pour publier une version.
           </span>
         </div>
       @endif
 
+      <div style="margin-bottom:16px">
+        <a href="{{ route('modules.coach-cockpit.role-evaluation.settings') }}"
+           class="inline-flex items-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white">
+          Ouvrir le paramétrage externe
+        </a>
+      </div>
+
       <div class="grid-2">
         <div>
-          <h3 style="margin-bottom:8px">1. Importer des observations réelles</h3>
+          <h3 style="margin-bottom:8px">1. Importer des observations</h3>
           <p class="note" style="margin-bottom:10px">
             Le système effectue d'abord un dry-run transactionnel. Si une ligne est rejetée,
             aucune donnée n'est écrite.
@@ -334,9 +340,9 @@
         </div>
 
         <div>
-          <h3 style="margin-bottom:8px">2. Calculer les évaluations réelles</h3>
+          <h3 style="margin-bottom:8px">2. Calculer les évaluations</h3>
           <p class="note" style="margin-bottom:10px">
-            Le calcul utilise exclusivement <code>is_demo=0</code> et exige une configuration publiée.
+            Le calcul utilise les données de performance actuellement disponibles et exige une configuration publiée.
           </p>
           <form method="post"
                 action="{{ route('modules.coach-cockpit.role-evaluation.compute') }}"
@@ -353,7 +359,7 @@
               </select>
             </label>
             <button type="submit" @disabled($roleEvaluationStatus['published_configs']->isEmpty())>
-              Calculer les scores réels
+              Calculer les scores
             </button>
           </form>
 
@@ -384,7 +390,6 @@
       </div>
     </div>
     <div class="tags">
-      @if($cockpit['isDemo'])<span class="tag demo">Données de démonstration</span>@endif
       <span class="tag" id="tag-updated"></span>
     </div>
   </header>

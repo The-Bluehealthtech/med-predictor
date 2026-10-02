@@ -98,6 +98,10 @@
         </section>
     </div>
 
+    @unless($official)
+        @include('licenses.approval._fraud-check')
+    @endunless
+
     <section class="mt-4 rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="h-decision">
         <h2 id="h-decision" class="text-base font-semibold text-slate-900">3 · Décision de la fédération</h2>
         @if($pending)

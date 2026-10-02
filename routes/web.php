@@ -1222,6 +1222,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/licenses/review/{license}', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'show'])->whereNumber('license')->name('licenses.review');
     Route::post('/licenses/review/{license}/identity', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'verifyIdentity'])->whereNumber('license')->name('licenses.verify-identity');
     Route::post('/licenses/review/{license}/decision', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'decide'])->whereNumber('license')->name('licenses.decide');
+    Route::get('/licenses/cards/{license}', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'card'])->whereNumber('license')->name('licenses.card');
+    Route::post('/licenses/cards/batch', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'cardsBatch'])->name('licenses.cards.batch');
     Route::get('/licenses/create', [LicenseController::class, 'create'])->name('licenses.create');
     Route::resource('licenses', LicenseController::class)->except(['show', 'create', 'edit', 'update', 'destroy']);
     Route::patch('/licenses/{license}/approve', [LicenseController::class, 'approve'])->name('licenses.approve');

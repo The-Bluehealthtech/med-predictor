@@ -44,26 +44,49 @@
         @if($licenses->count() === 0)
             <p class="px-5 py-8 text-center text-sm text-slate-500">{{ $tab === 'pending' ? 'Aucune demande à examiner.' : 'Aucune demande dans cet onglet.' }}</p>
         @else
+            @if($tab === 'active')
+                <form method="POST" action="{{ route('licenses.cards.batch') }}">
+                    @csrf
+            @endif
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-100 text-sm">
                     <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        <tr><th class="px-5 py-2">Titulaire</th><th class="px-5 py-2">Club</th><th class="px-5 py-2">Licence</th><th class="px-5 py-2">Pièces</th><th class="px-5 py-2">Identité FIFA ID</th><th class="px-5 py-2">{{ $tab === 'pending' ? 'Reçue le' : 'Décision le' }}</th><th class="px-5 py-2 text-right">Dossier</th></tr>
+                        <tr>
+                            @if($tab === 'active')<th class="px-5 py-2"><span class="sr-only">Sélection</span></th>@endif
+                            <th class="px-5 py-2">Titulaire</th><th class="px-5 py-2">Club</th><th class="px-5 py-2">Licence</th><th class="px-5 py-2">Pièces</th><th class="px-5 py-2">Identité FIFA ID</th><th class="px-5 py-2">{{ $tab === 'pending' ? 'Reçue le' : 'Décision le' }}</th><th class="px-5 py-2 text-right">Actions</th>
+                        </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @foreach($licenses as $license)
                             <tr>
+                                @if($tab === 'active')
+                                    <td class="px-5 py-2"><input type="checkbox" name="license_ids[]" value="{{ $license->id }}" class="rounded border-slate-300" @disabled((bool) $license->club_official_id)></td>
+                                @endif
                                 <td class="px-5 py-2 font-medium text-slate-900">{{ $holder($license) }}<span class="block text-xs font-normal text-slate-500">{{ $license->fifa_connect_id ? 'FIFA ' . $license->fifa_connect_id : 'sans identifiant FIFA' }}</span></td>
                                 <td class="px-5 py-2">{{ $license->club?->name ?? '—' }}</td>
                                 <td class="px-5 py-2">{{ LicenseWorkflow::describe($license) }}{{ $license->season ? ' · ' . $license->season : '' }}</td>
                                 <td class="px-5 py-2 text-slate-600">{{ $license->documents_count }}</td>
                                 <td class="px-5 py-2 text-slate-600">{{ $license->identity_check_status ? FifaIdRegistry::STATUSES[$license->identity_check_status] ?? $license->identity_check_status : 'Non vérifiée' }}</td>
                                 <td class="px-5 py-2 text-slate-500">{{ ($tab === 'pending' ? $license->updated_at : $license->approved_at)?->format('d/m/Y') ?? '—' }}</td>
-                                <td class="px-5 py-2 text-right"><a href="{{ route('licenses.review', $license) }}" class="rounded-lg {{ $tab === 'pending' ? 'bg-slate-900 text-white hover:bg-slate-800' : 'border border-slate-200 text-slate-700 hover:bg-slate-50' }} px-3 py-1.5 text-xs font-semibold">{{ $tab === 'pending' ? 'Examiner' : 'Voir' }}</a></td>
+                                <td class="px-5 py-2 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        @if($tab === 'active' && !$license->club_official_id)
+                                            <a href="{{ route('licenses.card', $license) }}" class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-800">Carte</a>
+                                        @endif
+                                        <a href="{{ route('licenses.review', $license) }}" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">{{ $tab === 'pending' ? 'Examiner' : 'Voir' }}</a>
+                                    </div>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+            @if($tab === 'active')
+                <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-5 py-3">
+                    <p class="text-sm text-slate-600">Sélectionnez jusqu’à 50 licences joueur pour une impression groupée.</p>
+                    <button type="submit" class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Imprimer la sélection</button>
+                </div>
+            </form>@endif
             @if($licenses->hasPages())<div class="border-t border-slate-200 px-5 py-3">{{ $licenses->links() }}</div>@endif
         @endif
     </div>

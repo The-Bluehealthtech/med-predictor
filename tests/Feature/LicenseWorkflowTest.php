@@ -48,6 +48,8 @@ class LicenseWorkflowTest extends TestCase
             Route::get('/_t/approval/{license}', [LicenseApprovalController::class, 'show'])->name('licenses.review');
             Route::post('/_t/approval/{license}/identity', [LicenseApprovalController::class, 'verifyIdentity'])->name('licenses.verify-identity');
             Route::post('/_t/approval/{license}/decision', [LicenseApprovalController::class, 'decide'])->name('licenses.decide');
+            Route::get('/_t/approval/cards/{license}', [LicenseApprovalController::class, 'card'])->name('licenses.card');
+            Route::post('/_t/approval/cards/batch', [LicenseApprovalController::class, 'cardsBatch'])->name('licenses.cards.batch');
         });
         app('router')->getRoutes()->refreshNameLookups();
 
@@ -135,7 +137,7 @@ class LicenseWorkflowTest extends TestCase
         $this->assertSame('pending', $license->fresh()->status);
         $this->assertSame('Contrat transmis par courrier', $license->fresh()->club_response);
 
-        $this->actingAs($federation)->get("/_t/approval/{$license->id}")->assertOk()->assertSee('Contrat transmis par courrier');
+        $this->actingAs($federation)->get("/_t/approval/{$license->id}")->assertOk()->assertSee('Contrat transmis par courrier')->assertSee('Anti-fraude · identité et âge');
         $this->actingAs($federation)->post("/_t/approval/{$license->id}/decision", ['decision' => 'approve'])->assertRedirect();
         $fresh = $license->fresh();
         $this->assertSame('active', $fresh->status);
@@ -340,5 +342,33 @@ class LicenseWorkflowTest extends TestCase
         $this->assertSame('male', $license->gender);
         $this->assertSame('SENIOR', $license->age_category);
         $this->actingAs($this->club())->post("/_t/licenses/players/{$this->playerId}/request", $this->payload(['season' => '1999-2000']))->assertSessionHas('error');
+    }
+
+    public function test_federation_can_preview_and_batch_print_only_approved_player_cards(): void
+    {
+        $this->pcma();
+        $license = $this->request();
+        $federation = $this->federation();
+
+        $this->actingAs($federation)->get("/_t/approval/cards/{$license->id}")->assertNotFound();
+        $this->actingAs($federation)->post("/_t/approval/{$license->id}/decision", ['decision' => 'approve'])->assertRedirect();
+
+        $this->actingAs($federation)->get("/_t/approval?tab=active")
+            ->assertOk()->assertSee('Imprimer la sélection')->assertSee('Carte');
+        $this->actingAs($federation)->get("/_t/approval/cards/{$license->id}")
+            ->assertOk()->assertSee('Carte de licence')->assertSee('CR80')->assertSee('Samir')->assertSee('Club Licences Test');
+        $this->actingAs($federation)->post('/_t/approval/cards/batch', ['license_ids' => [$license->id]])
+            ->assertOk()->assertSee('Impression en batch')->assertSee('1 carte');
+    }
+
+    public function test_club_cannot_open_federation_license_cards(): void
+    {
+        $license = PlayerLicense::query()->create([
+            'player_id' => $this->playerId, 'club_id' => $this->clubId, 'status' => 'active',
+            'approval_status' => 'approved', 'season' => $this->season(), 'expiry_date' => now()->addMonths(6),
+        ]);
+
+        $this->actingAs($this->club())->get("/_t/approval/cards/{$license->id}")->assertForbidden();
+        $this->actingAs($this->club())->post('/_t/approval/cards/batch', ['license_ids' => [$license->id]])->assertForbidden();
     }
 }

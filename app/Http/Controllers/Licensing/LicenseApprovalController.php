@@ -38,7 +38,11 @@ class LicenseApprovalController extends Controller
             $counts[$status] = $this->workflow->licenses($user)->where('status', $status)->count();
         }
         $licenses = $this->workflow->licenses($user)->where('status', $tab)->withCount('documents')
-            ->with(['player:id,first_name,last_name,name,fifa_connect_id,date_of_birth', 'clubOfficial', 'club:id,name'])
+            ->with([
+                'player:id,first_name,last_name,name,fifa_connect_id,date_of_birth,nationality,position,preferred_foot,player_picture,player_face_url,club_id',
+                'clubOfficial',
+                'club:id,name,association_id,logo_url,logo_image,logo_path',
+            ])
             ->orderBy($tab === 'pending' ? 'updated_at' : 'approved_at', $tab === 'pending' ? 'asc' : 'desc')
             ->paginate(20)->withQueryString();
 
@@ -50,7 +54,11 @@ class LicenseApprovalController extends Controller
     public function show(Request $request, PlayerLicense $license)
     {
         $this->authorizeLicense($request->user(), $license);
-        $license->load(['player.club', 'clubOfficial', 'club', 'documents:id,player_license_id,document_type,original_name,size,created_at', 'events.user:id,name']);
+        $license->load([
+            'player.club', 'player.passport', 'clubOfficial', 'club.association', 'photo',
+            'documents:id,player_license_id,document_type,original_name,mime_type,size,created_at',
+            'events.user:id,name',
+        ]);
 
         return view('licenses.approval.show', [
             'license' => $license,
@@ -90,6 +98,35 @@ class LicenseApprovalController extends Controller
         $done = ['approve' => 'Licence approuvée : elle est active.', 'request_info' => 'Complément demandé au club.', 'reject' => 'Demande refusée.'][$data['decision']];
 
         return redirect()->route('licenses.validation')->with('success', $done);
+    }
+
+    public function card(Request $request, PlayerLicense $license)
+    {
+        $this->authorizeLicense($request->user(), $license);
+        abort_unless($license->status === 'active' && !$license->club_official_id, 404);
+        $license->load(['player.passport', 'club.association', 'photo']);
+
+        return view('licenses.cards.show', ['license' => $license]);
+    }
+
+    public function cardsBatch(Request $request)
+    {
+        $user = $request->user();
+        abort_unless($this->workflow->canApprove($user), 403);
+        $data = $request->validate([
+            'license_ids' => 'required|array|min:1|max:50',
+            'license_ids.*' => 'integer|distinct',
+        ]);
+        $ids = collect($data['license_ids'])->map(fn ($id) => (int) $id)->values();
+        $licenses = $this->workflow->licenses($user)
+            ->whereIn('id', $ids)
+            ->where('status', 'active')
+            ->whereNull('club_official_id')
+            ->with(['player.passport', 'club.association'])
+            ->get();
+        abort_unless($licenses->count() === $ids->count(), 403);
+
+        return view('licenses.cards.batch', ['licenses' => $licenses]);
     }
 
     private function authorizeLicense(User $user, PlayerLicense $license): void

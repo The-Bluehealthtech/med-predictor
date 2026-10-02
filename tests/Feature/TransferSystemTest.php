@@ -298,6 +298,8 @@ class TransferSystemTest extends TestCase
     /** @test */
     public function club_passport_returns_eligible_players()
     {
+        $this->user->update(['role' => 'system_admin']);
+
         $response = $this->actingAs($this->user)
             ->getJson("/api/clubs/{$this->clubOrigin->id}/players/daily-passport");
 
@@ -308,6 +310,8 @@ class TransferSystemTest extends TestCase
     /** @test */
     public function federation_passport_returns_transfer_summary()
     {
+        $this->user->update(['role' => 'system_admin']);
+
         $response = $this->actingAs($this->user)
             ->getJson("/api/federations/{$this->federation->id}/daily-passport");
 
@@ -318,6 +322,8 @@ class TransferSystemTest extends TestCase
     /** @test */
     public function player_transfers_history_is_accessible()
     {
+        $this->user->update(['role' => 'system_admin']);
+
         $response = $this->actingAs($this->user)
             ->getJson("/api/players/{$this->player->id}/transfers");
 

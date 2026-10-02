@@ -222,15 +222,10 @@
                         @foreach($association->clubs as $club)
                         <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
                             <div class="flex items-center space-x-3">
-                                @if($club->logo_path)
-                                    <img src="{{ asset('storage/' . $club->logo_path) }}" 
-                                         alt="Logo {{ $club->name }}" 
-                                         class="h-12 w-12 object-contain rounded-lg border border-gray-200">
-                                @else
-                                    <div class="h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                                        <span class="text-white font-bold text-lg">{{ substr($club->name, 0, 2) }}</span>
-                                    </div>
-                                @endif
+                                <img src="{{ $club->getLogoUrl() }}"
+                                     alt="Logo {{ $club->name }}"
+                                     onerror="this.onerror=null;this.src='{{ asset('images/defaults/club-logo.png') }}'"
+                                     class="h-12 w-12 object-contain rounded-lg border border-gray-200 bg-white">
                                 <div class="flex-1">
                                     <h4 class="font-medium text-gray-800">{{ $club->name }}</h4>
                                     @if($club->short_name)

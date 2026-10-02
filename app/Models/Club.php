@@ -303,8 +303,19 @@ class Club extends Model
         if ($this->logo_url) {
             return $this->logo_url;
         }
-        
-        // Return a default club logo based on the club name or country
+
+        if ($this->logo_image) {
+            return filter_var($this->logo_image, FILTER_VALIDATE_URL)
+                ? $this->logo_image
+                : asset('storage/' . ltrim($this->logo_image, '/'));
+        }
+
+        if ($this->logo_path) {
+            return filter_var($this->logo_path, FILTER_VALIDATE_URL)
+                ? $this->logo_path
+                : asset('storage/' . ltrim($this->logo_path, '/'));
+        }
+
         return asset('images/defaults/club-logo.png');
     }
 

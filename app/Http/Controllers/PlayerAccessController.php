@@ -42,16 +42,22 @@ class PlayerAccessController extends Controller
             ]);
             
             $player = Player::findOrFail($playerId);
-            \Log::info('Player found', ['player' => $player->toArray()]);
+            \Log::info('Player access target resolved', ['player_id' => $player->id]);
             
             // Vérifier si le joueur a un compte utilisateur
             $user = User::where('player_id', $playerId)->first();
-            \Log::info('User found', ['user' => $user ? $user->toArray() : null]);
+            \Log::info('Player user account lookup completed', [
+                'player_id' => $player->id,
+                'user_exists' => (bool) $user,
+            ]);
             
             if (!$user) {
                 // Créer un compte utilisateur automatiquement pour le joueur
                 $user = $this->createPlayerUserAccount($player);
-                \Log::info('User account created', ['user' => $user->toArray()]);
+                \Log::info('Player user account created', [
+                    'player_id' => $player->id,
+                    'user_id' => $user->id,
+                ]);
             }
             
             // Vérifier le mot de passe ou créer une session directe

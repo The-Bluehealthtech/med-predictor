@@ -1434,7 +1434,7 @@ Route::get('/dataset-analytics', function () {
 // Test Portal Debug
 
 // Sélection des joueurs
-Route::get('/joueurs', [PlayerSelectionController::class, 'index'])->name('joueurs.selection');
+Route::get('/joueurs', [PlayerSelectionController::class, 'index'])->middleware(['auth'])->name('joueurs.selection');
 Route::get('/joueurs/{id}', [PlayerSelectionController::class, 'show'])->middleware(['auth'])->name('joueurs.show');
 
 // Test public du portail (sans authentification)
@@ -1479,10 +1479,13 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-Route::get('/joueur/{playerId}/access', [App\Http\Controllers\PlayerAccessController::class, 'showAccessForm'])->name('player.access.form');
+Route::get('/joueur/{playerId}/access', [App\Http\Controllers\PlayerAccessController::class, 'showAccessForm'])
+    ->middleware('throttle:30,1')
+    ->name('player.access.form');
 
-
-Route::post('/joueur/{playerId}/access', [App\Http\Controllers\PlayerAccessController::class, 'authenticate'])->name('player.access.authenticate');
+Route::post('/joueur/{playerId}/access', [App\Http\Controllers\PlayerAccessController::class, 'authenticate'])
+    ->middleware('throttle:5,1')
+    ->name('player.access.authenticate');
 
 // Dataset Analytics route
 

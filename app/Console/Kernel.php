@@ -82,6 +82,8 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\MigrateLegacyPosturalDataCommand::class,
         \App\Console\Commands\RoleEvaluationComputeHistoryCommand::class,
         \App\Console\Commands\SeedDemoNationalSelections::class,
+        \App\Console\Commands\ImportExternalClub::class,
+        \App\Console\Commands\ImportSaudiProLeague::class,
     ];
 
     /**

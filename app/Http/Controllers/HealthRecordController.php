@@ -364,9 +364,18 @@ class HealthRecordController extends Controller
             $posturalAssessments = $posturalQuery->get();
         }
 
-        $vigilance = request()->boolean('legacy')
-            ? null
-            : app(\App\Services\PlayerVigilanceService::class)->assess($healthRecord->player);
+        $vigilance = null;
+        if (!request()->boolean('legacy')) {
+            try {
+                $vigilance = app(\App\Services\PlayerVigilanceService::class)->assess($healthRecord->player);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Player vigilance unavailable', [
+                    'player_id' => $healthRecord->player_id,
+                    'health_record_id' => $healthRecord->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
         $vigilanceModels = null;
         if (!request()->boolean('legacy')) {
             try {

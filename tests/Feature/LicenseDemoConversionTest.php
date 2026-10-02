@@ -41,4 +41,20 @@ class LicenseDemoConversionTest extends TestCase
         (require base_path('database/migrations/2026_10_03_140000_convert_demo_licenses_to_fifa_connect.php'))->up();
         $this->assertSame('amateur', DB::table('player_licenses')->where('id', $a)->value('level'));
     }
+
+    public function test_every_licence_is_converted_even_beyond_one_batch(): void
+    {
+        $clubId = (int) DB::table('clubs')->insertGetId(['name' => 'Club Lot', 'created_at' => now(), 'updated_at' => now()]);
+        $playerId = (int) DB::table('players')->insertGetId(['name' => 'Lot', 'first_name' => 'Lot', 'last_name' => 'Joueur', 'date_of_birth' => '1995-01-01',
+            'club_id' => $clubId, 'created_at' => now(), 'updated_at' => now()]);
+        $rows = collect(range(1, 450))->map(fn () => ['player_id' => $playerId, 'club_id' => $clubId, 'license_type' => 'player', 'season' => '2026-2027',
+            'contract_start_date' => '2026-07-01', 'expiry_date' => '2027-06-30', 'status' => 'active', 'created_at' => now(), 'updated_at' => now()])->all();
+        foreach (array_chunk($rows, 100) as $chunk) {
+            DB::table('player_licenses')->insert($chunk);
+        }
+
+        (require base_path('database/migrations/2026_10_03_150000_finish_demo_licenses_conversion.php'))->up();
+
+        $this->assertSame(0, DB::table('player_licenses')->where('player_id', $playerId)->whereNull('registration_type')->count(), 'aucune licence sautée (450 > un lot de 200)');
+    }
 }

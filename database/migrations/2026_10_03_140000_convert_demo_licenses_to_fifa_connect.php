@@ -27,7 +27,8 @@ return new class extends Migration
         DB::table('player_licenses as l')->leftJoin('players as p', 'p.id', '=', 'l.player_id')
             ->whereNull('l.registration_type')->whereNotNull('l.player_id')
             ->select('l.id', 'l.player_id', 'l.contract_start_date', 'l.expiry_date', 'l.created_at', 'p.date_of_birth', 'p.gender')
-            ->orderBy('l.id')->chunk(200, function ($licenses) use ($thresholds) {
+            // chunkById : la conversion retire les lignes du filtre, une pagination par décalage en sauterait.
+            ->chunkById(200, function ($licenses) use ($thresholds) {
                 foreach ($licenses as $license) {
                     $start = Carbon::parse($license->contract_start_date ?? $license->created_at ?? now());
                     $seasonStart = Carbon::create($start->month >= 7 ? $start->year : $start->year - 1, 7, 1)->startOfDay();
@@ -58,7 +59,7 @@ return new class extends Migration
                         DB::table('players')->where('id', $license->player_id)->whereNull('gender')->update(['gender' => $gender]);
                     }
                 }
-            });
+            }, 'l.id', 'id');
     }
 
     public function down(): void

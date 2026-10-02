@@ -52,6 +52,7 @@ class ExternalPlayerPerformanceMetric extends Model
         'measured_at',
         'raw_data',
         'notes',
+        'score_origin',
     ];
 
     protected $casts = [

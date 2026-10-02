@@ -93,6 +93,7 @@ class ImportKsaPlayerStatistics extends Command
                         'competition' => 'Saudi Professional League',
                         'measured_at' => now()->toDateString(),
                         'raw_data' => $data,
+                        'score_origin' => 'observed',
                     ]
                 );
                 $metricsCreated++;

@@ -23,6 +23,7 @@ class PlayerSeasonStat extends Model
         'clean_sheets',
         'saves',
         'goals_conceded',
+        'score_origin',
     ];
 
     protected $casts = [

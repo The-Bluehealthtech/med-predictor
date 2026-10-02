@@ -55,6 +55,8 @@ class PlayerPerformance extends Model
         'physical_rating',
         'technical_rating',
         'mental_rating',
+        'position_played',
+        'score_origin',
     ];
 
     protected $casts = [

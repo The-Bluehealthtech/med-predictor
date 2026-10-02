@@ -45,7 +45,9 @@ Route::get('/ready', function () {
         
         return response()->json(['status' => 'ready', 'timestamp' => now()]);
     } catch (\Exception $e) {
-        return response()->json(['status' => 'not_ready', 'error' => $e->getMessage()], 503);
+        \Log::warning('Readiness check failed', ['error_class' => $e::class]);
+
+        return response()->json(['status' => 'not_ready'], 503);
     }
 })->name('ready');
 

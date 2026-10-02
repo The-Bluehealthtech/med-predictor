@@ -523,10 +523,13 @@ class GoogleAssistantController extends Controller
             return response()->json($health);
             
         } catch (\Exception $e) {
+            \Log::warning('Google Assistant FIT health check failed', [
+                'error_class' => $e::class,
+            ]);
+
             return response()->json([
                 'success' => false,
                 'status' => 'error',
-                'error' => $e->getMessage()
             ]);
         }
     }

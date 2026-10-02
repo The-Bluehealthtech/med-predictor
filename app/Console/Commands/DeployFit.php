@@ -11,6 +11,9 @@ class DeployFit extends Command
 
     private const MIGRATIONS = [
         'database/migrations/2026_10_01_000003_normalize_pcma_type.php',
+        'database/migrations/2026_10_01_120000_extend_postural_assessments_for_clinical_v1.php',
+        'database/migrations/2026_10_01_120100_create_postural_findings_table.php',
+        'database/migrations/2026_10_01_120200_create_postural_measurements_table.php',
         'database/migrations/2024_01_15_000006_create_tue_requests_table.php',
         'database/migrations/2026_10_01_000001_add_icd11_and_aut_to_health_records.php',
         'database/migrations/2026_10_01_000002_create_health_record_documents.php',

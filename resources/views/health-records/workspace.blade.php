@@ -144,6 +144,8 @@
                 @endforeach
             </div>
         </div>
+        @endif
+
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden" id="clinical-assistant-panel"
              data-assistant-url="{{ route('health-records.assistant', $healthRecord) }}">
             <div class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-950 to-blue-950 text-white flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">

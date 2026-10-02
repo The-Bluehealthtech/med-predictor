@@ -4,11 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\DentalAnnotation;
 use App\Models\HealthRecord;
+use App\Services\MedicalRecordAccess;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class DentalController extends Controller
 {
+    private function authorizeRecord(Request $request, HealthRecord $record): void
+    {
+        app(MedicalRecordAccess::class)->authorize($request->user(), $record->player, null);
+    }
+
+    private function recordFromRequest(Request $request): HealthRecord
+    {
+        $record = HealthRecord::with('player')->findOrFail($request->input('health_record_id'));
+        $this->authorizeRecord($request, $record);
+
+        return $record;
+    }
+
+    private function authorizeAnnotation(Request $request, DentalAnnotation $annotation): void
+    {
+        $record = $annotation->healthRecord()->with('player')->firstOrFail();
+        $this->authorizeRecord($request, $record);
+    }
+
     /**
      * Obtenir toutes les annotations dentaires pour un dossier de santé
      */
@@ -20,7 +40,9 @@ class DentalController extends Controller
             return response()->json(['error' => 'health_record_id requis'], 400);
         }
 
-        $annotations = DentalAnnotation::where('health_record_id', $healthRecordId)
+        $record = $this->recordFromRequest($request);
+
+        $annotations = DentalAnnotation::where('health_record_id', $record->id)
             ->orderBy('tooth_id')
             ->get();
 
@@ -34,8 +56,10 @@ class DentalController extends Controller
     /**
      * Obtenir une annotation dentaire spécifique
      */
-    public function show(DentalAnnotation $dentalAnnotation): JsonResponse
+    public function show(Request $request, DentalAnnotation $dentalAnnotation): JsonResponse
     {
+        $this->authorizeAnnotation($request, $dentalAnnotation);
+
         return response()->json([
             'success' => true,
             'data' => $dentalAnnotation
@@ -57,7 +81,17 @@ class DentalController extends Controller
             'metadata' => 'nullable|array'
         ]);
 
-        $annotation = DentalAnnotation::create($request->all());
+        $this->recordFromRequest($request);
+
+        $annotation = DentalAnnotation::create($request->only([
+            'health_record_id',
+            'tooth_id',
+            'position_x',
+            'position_y',
+            'status',
+            'notes',
+            'metadata',
+        ]));
 
         return response()->json([
             'success' => true,
@@ -71,6 +105,8 @@ class DentalController extends Controller
      */
     public function update(Request $request, DentalAnnotation $dentalAnnotation): JsonResponse
     {
+        $this->authorizeAnnotation($request, $dentalAnnotation);
+
         $request->validate([
             'position_x' => 'nullable|integer',
             'position_y' => 'nullable|integer',
@@ -79,7 +115,13 @@ class DentalController extends Controller
             'metadata' => 'nullable|array'
         ]);
 
-        $dentalAnnotation->update($request->all());
+        $dentalAnnotation->update($request->only([
+            'position_x',
+            'position_y',
+            'status',
+            'notes',
+            'metadata',
+        ]));
 
         return response()->json([
             'success' => true,
@@ -91,8 +133,9 @@ class DentalController extends Controller
     /**
      * Supprimer une annotation dentaire
      */
-    public function destroy(DentalAnnotation $dentalAnnotation): JsonResponse
+    public function destroy(Request $request, DentalAnnotation $dentalAnnotation): JsonResponse
     {
+        $this->authorizeAnnotation($request, $dentalAnnotation);
         $dentalAnnotation->delete();
 
         return response()->json([
@@ -117,7 +160,8 @@ class DentalController extends Controller
             'annotations.*.metadata' => 'nullable|array'
         ]);
 
-        $healthRecordId = $request->input('health_record_id');
+        $record = $this->recordFromRequest($request);
+        $healthRecordId = $record->id;
         $annotations = $request->input('annotations');
 
         // Supprimer les anciennes annotations
@@ -149,7 +193,8 @@ class DentalController extends Controller
             return response()->json(['error' => 'health_record_id requis'], 400);
         }
 
-        $annotations = DentalAnnotation::where('health_record_id', $healthRecordId)->get();
+        $record = $this->recordFromRequest($request);
+        $annotations = DentalAnnotation::where('health_record_id', $record->id)->get();
 
         $stats = [
             'total' => $annotations->count(),
@@ -176,9 +221,9 @@ class DentalController extends Controller
             'health_record_id' => 'required|exists:health_records,id'
         ]);
 
-        $healthRecordId = $request->input('health_record_id');
-        
-        DentalAnnotation::where('health_record_id', $healthRecordId)->delete();
+        $record = $this->recordFromRequest($request);
+
+        DentalAnnotation::where('health_record_id', $record->id)->delete();
 
         return response()->json([
             'success' => true,

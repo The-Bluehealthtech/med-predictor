@@ -731,6 +731,33 @@ final class PcmaWorkflowRepairTest extends TestCase
         return \App\Models\HealthRecord::create(['player_id'=>$player,'user_id'=>1,
             'status'=>'active','record_date'=>'2026-09-30','diagnosis'=>'Fixture clinical note']);
     }
+    private function dentalSchema(): void
+    {
+        Schema::create('dental_annotations', function (Blueprint $t) {
+            $t->id(); $t->unsignedBigInteger('health_record_id'); $t->string('tooth_id',10);
+            $t->integer('position_x')->nullable(); $t->integer('position_y')->nullable();
+            $t->string('status')->nullable(); $t->text('notes')->nullable();
+            $t->text('metadata')->nullable(); $t->timestamps();
+        });
+    }
+    public function test_dental_access_is_scoped_to_the_medical_users_club(): void
+    {
+        $this->healthcareSchema(); $this->dentalSchema();
+        $own=$this->healthRecord(); $other=$this->healthRecord(20);
+
+        $this->getJson('/api/dental/annotations?health_record_id='.$own->id)->assertOk();
+        $this->getJson('/api/dental/annotations?health_record_id='.$other->id)->assertForbidden();
+        $this->postJson('/api/dental/annotations',[
+            'health_record_id'=>$other->id,'tooth_id'=>'11','status'=>'normal'
+        ])->assertForbidden();
+
+        $annotation=\App\Models\DentalAnnotation::create([
+            'health_record_id'=>$other->id,'tooth_id'=>'12','status'=>'problem'
+        ]);
+        $this->getJson('/api/dental/annotations/'.$annotation->id)->assertForbidden();
+        $this->putJson('/api/dental/annotations/'.$annotation->id,['status'=>'normal'])->assertForbidden();
+        $this->deleteJson('/api/dental/annotations/'.$annotation->id)->assertForbidden();
+    }
     public function test_healthcare_lists_real_records_and_blocks_cross_club_operations(): void
     {
         $this->healthcareSchema();$own=$this->healthRecord();$other=$this->healthRecord(20);

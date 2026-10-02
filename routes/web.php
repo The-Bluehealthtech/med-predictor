@@ -3418,7 +3418,7 @@ Route::post('/api/v1/licenses/fraud-detection/check-all', [App\Http\Controllers\
 
 // Routes pour le diagramme dentaire
 Route::get('/dental-chart', [App\Http\Controllers\DentalChartController::class, 'index'])->middleware(['auth'])->name('dental-chart.index');
-Route::get('/dental-chart/{patient}', [App\Http\Controllers\DentalChartController::class, 'show'])->middleware(['auth'])->name('dental-chart.show');
+Route::get('/dental-chart/{healthRecord}', [App\Http\Controllers\DentalChartController::class, 'show'])->middleware(['auth'])->name('dental-chart.show');
 
 // Route pour le diagramme dentaire (supprimée - doublon)
 

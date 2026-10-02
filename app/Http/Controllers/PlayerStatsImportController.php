@@ -89,6 +89,8 @@ class PlayerStatsImportController extends Controller
             Storage::disk('local')->delete($path);
         }
 
+        app(\App\Services\Activity\ActivityRecorder::class)->record('performance', 'Export de statistiques joueurs importé', $club, $club->id);
+
         return redirect()->route('modules.coach-cockpit', ['club_id' => $club->id])->with('success',
             "Export importé pour {$club->name} : {$stats['players']} joueur(s), {$stats['metrics']} indicateur(s) enregistré(s)"
             . ($stats['created'] ? ", {$stats['created']} joueur(s) créé(s)" : '') . ($stats['skipped'] ? ", {$stats['skipped']} ignoré(s)" : '') . '.');

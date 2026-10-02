@@ -173,6 +173,8 @@ class CoachCockpitController extends Controller
                 : 'Aucune donnée de performance éligible n’est disponible pour ce calcul.');
         }
 
+        app(\App\Services\Activity\ActivityRecorder::class)->record('performance', 'Scores « Rôle et apport » calculés', null, ! empty($validated['club_id']) ? (int) $validated['club_id'] : null);
+
         return back()->with('success', 'Évaluations calculées : '.implode(' ; ', $messages));
     }
 

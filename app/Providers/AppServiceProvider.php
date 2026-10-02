@@ -24,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Journal d'activité du tableau de bord général (actions des utilisateurs connectés).
+        \App\Services\Activity\ActivityRecorder::observeConfiguredModels();
+
         // Force HTTP locally to avoid HTTPS redirects during local Docker usage
         if (in_array(config('app.env'), ['local', 'docker', 'development'], true)) {
             URL::forceScheme('http');

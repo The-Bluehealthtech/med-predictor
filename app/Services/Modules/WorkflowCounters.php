@@ -39,6 +39,21 @@ final class WorkflowCounters
         return Cache::remember("modules:todo:v1:{$user->id}", now()->addMinute(), fn () => $this->compute($user));
     }
 
+    /** Tous les compteurs qui s'appliquent à ce compte, zéros compris (tableau de bord général). */
+    public function allForUser(User $user): array
+    {
+        return Cache::remember("modules:todo:all:v1:{$user->id}", now()->addMinute(), function () use ($user) {
+            $this->keepZeros = true;
+            try {
+                return $this->compute($user);
+            } finally {
+                $this->keepZeros = false;
+            }
+        });
+    }
+
+    private bool $keepZeros = false;
+
     private function compute(User $user): array
     {
         $isMedical = $user->hasAnyRole(self::MEDICAL_ROLES);
@@ -116,7 +131,7 @@ final class WorkflowCounters
 
             return;
         }
-        if ($value > 0) {
+        if ($value > 0 || $this->keepZeros) {
             $counters[$key] = ['count' => $value, 'label' => $label, 'tone' => $tone];
         }
     }

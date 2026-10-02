@@ -111,6 +111,15 @@ function filterByCategory(category, event) {
     setActiveCategoryButton(event?.currentTarget || null);
     applyModuleFilters();
 }
+
+// Lien depuis le tableau de bord général : /modules?section=clinique pré-filtre la section.
+document.addEventListener('DOMContentLoaded', () => {
+    const section = new URLSearchParams(window.location.search).get('section');
+    const button = section && document.querySelector(`[data-module-category-filter][data-category="${CSS.escape(section)}"]`);
+    if (button) {
+        filterByCategory(section, { currentTarget: button });
+    }
+});
 </script>
 
 <div class="min-h-screen bg-gray-50">

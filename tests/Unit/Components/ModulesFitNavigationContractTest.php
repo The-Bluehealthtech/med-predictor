@@ -29,12 +29,12 @@ class ModulesFitNavigationContractTest extends TestCase
 
     public function test_fit_metrics_entry_is_declared_in_performance_centre(): void
     {
-        $routes = file_get_contents($this->projectPath('routes/web.php'));
+        $catalog = file_get_contents($this->projectPath('config/fit_modules.php'));
 
         // Outil du staff sportif, rangé dans « Le centre de performance ».
         $this->assertMatchesRegularExpression(
             "/'name' => 'Saisie des métriques FIT',.*?'route' => 'performances\.fit-metrics',.*?'category' => 'performance'/s",
-            $routes
+            $catalog
         );
         $view = file_get_contents($this->projectPath('resources/views/modules/index.blade.php'));
         $this->assertStringContainsString("'performance' => [", $view);
@@ -72,9 +72,11 @@ class ModulesFitNavigationContractTest extends TestCase
 
     public function test_catalog_has_four_business_sections_and_no_known_duplicates(): void
     {
+        // Le catalogue de /modules vit dans config/fit_modules.php (partagé avec /dashboard).
         $routes = file_get_contents($this->projectPath('routes/web.php'));
         $start = strpos($routes, "Route::get('/modules', function () {");
-        $catalog = substr($routes, $start, strpos($routes, "->name('modules.index');", $start) - $start);
+        $this->assertStringContainsString("config('fit_modules.modules')", substr($routes, $start, strpos($routes, "->name('modules.index');", $start) - $start));
+        $catalog = file_get_contents($this->projectPath('config/fit_modules.php'));
 
         preg_match_all("/'category' => '([a-z_]+)'/", $catalog, $categories);
         $this->assertSame(['administration', 'clinique', 'performance', 'selections'], array_values(array_unique(array_merge([], (function ($c) { sort($c); return $c; })(array_unique($categories[1]))))));

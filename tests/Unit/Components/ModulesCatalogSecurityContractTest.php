@@ -13,9 +13,15 @@ class ModulesCatalogSecurityContractTest extends TestCase
         );
     }
 
+    /** Cartes de /modules : catalogue extrait dans config/fit_modules.php. */
+    private function catalog(): string
+    {
+        return file_get_contents(dirname(__DIR__, 3) . '/config/fit_modules.php');
+    }
+
     public function test_referee_card_uses_real_portal_route(): void
     {
-        $routes = $this->routes();
+        $routes = $this->catalog();
 
         $this->assertStringContainsString(
             "'route' => 'referee-portal.index'",

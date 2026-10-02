@@ -85,7 +85,7 @@ DB_HOST=/cloudsql/PROJECT_ID:europe-west1:med-predictor-db
 DB_PORT=3306
 DB_DATABASE=med_predictor
 DB_USERNAME=med_predictor_user
-DB_PASSWORD=USER_PASSWORD
+DB_PASSWORD=${DB_PASSWORD}
 
 GOOGLE_SPEECH_API_KEY=your_google_cloud_api_key
 GOOGLE_CLOUD_PROJECT=med-predictor-fit

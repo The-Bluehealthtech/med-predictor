@@ -105,7 +105,7 @@ DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=med_predictor_prod
 DB_USERNAME=med_predictor_user
-DB_PASSWORD=secure_password_here
+DB_PASSWORD=${DB_PASSWORD}
 
 CACHE_DRIVER=redis
 SESSION_DRIVER=redis

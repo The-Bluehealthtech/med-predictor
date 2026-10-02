@@ -103,6 +103,22 @@
                 <dt class="text-slate-500">Âge estimé biométrie / IRM</dt><dd class="font-medium text-slate-500">Moteur non connecté</dd>
             </dl>
             <p class="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">Toute estimation future devra afficher la méthode, la date, la source et l’incertitude ; elle ne modifiera jamais automatiquement la date de naissance déclarée.</p>
+            @if(!empty($ageVerification['flags']) || !empty($ageVerification['confirmed']))
+                <div class="mt-3 border-t border-slate-100 pt-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <h4 class="text-sm font-semibold text-slate-900">Vérification U-17 / imagerie validée</h4>
+                        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">Couverture {{ mb_strtolower($ageVerification['coverage'] ?? 'insuffisante') }}</span>
+                    </div>
+                    @foreach($ageVerification['flags'] ?? [] as $flag)
+                        <p class="mt-2 rounded-lg px-3 py-2 text-xs {{ ($flag['severity'] ?? '') === 'attention' ? 'bg-red-50 text-red-800' : 'bg-amber-50 text-amber-800' }}">
+                            {{ $flag['label'] }} <span class="opacity-70">· {{ $flag['source'] }}</span>
+                        </p>
+                    @endforeach
+                    @foreach($ageVerification['confirmed'] ?? [] as $confirmed)
+                        <p class="mt-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-800">{{ $confirmed }}</p>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
 

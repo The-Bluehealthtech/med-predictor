@@ -344,6 +344,8 @@ class LicenseController extends Controller
      */
     public function batchFraudDetection(Request $request): JsonResponse
     {
+        return $this->legacyFraudDetectionDisabled();
+
         try {
             $licenses = License::with(['player', 'club'])->get();
             $results = [];
@@ -391,6 +393,8 @@ class LicenseController extends Controller
      */
     public function analyzeLicenseFraud(Request $request, $licenseId): JsonResponse
     {
+        return $this->legacyFraudDetectionDisabled();
+
         try {
             $license = License::with(['player', 'club'])->findOrFail($licenseId);
             
@@ -429,6 +433,8 @@ class LicenseController extends Controller
      */
     public function checkAllLicenses(Request $request): JsonResponse
     {
+        return $this->legacyFraudDetectionDisabled();
+
         try {
             $licenses = License::with(['player', 'club'])->get();
             $alerts = [];
@@ -552,6 +558,14 @@ class LicenseController extends Controller
                 'Licence peut être approuvée automatiquement.',
             'analysis_timestamp' => now()->toISOString()
         ];
+    }
+
+    private function legacyFraudDetectionDisabled(): JsonResponse
+    {
+        return response()->json([
+            'error' => 'legacy_fraud_detection_disabled',
+            'message' => 'Cet ancien moteur de fraude est désactivé. Utilisez la revue d’intégrité fédération du workflow de licence canonique.',
+        ], 410);
     }
 
     protected function authorizeLicenseAccess(License $license)

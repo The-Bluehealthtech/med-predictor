@@ -51,6 +51,7 @@ class LicenseWorkflowTest extends TestCase
             Route::get('/_t/approval/cards/{license}', [LicenseApprovalController::class, 'card'])->name('licenses.card');
             Route::post('/_t/approval/cards/batch', [LicenseApprovalController::class, 'cardsBatch'])->name('licenses.cards.batch');
             Route::post('/_t/approval/{license}/integrity', [LicenseApprovalController::class, 'recordIntegrityReview'])->name('licenses.integrity-review');
+            Route::post('/_t/legacy-fraud', [\App\Http\Controllers\LicenseController::class, 'checkAllLicenses'])->name('licenses.fraud-detection.test-disabled');
         });
         app('router')->getRoutes()->refreshNameLookups();
 
@@ -372,6 +373,14 @@ class LicenseWorkflowTest extends TestCase
         $this->actingAs($this->club())->get("/_t/approval/cards/{$license->id}")->assertForbidden();
         $this->actingAs($this->club())->post('/_t/approval/cards/batch', ['license_ids' => [$license->id]])->assertForbidden();
     }
+    public function test_legacy_fraud_scoring_endpoint_is_disabled(): void
+    {
+        $this->actingAs($this->federation())
+            ->postJson('/_t/legacy-fraud')
+            ->assertStatus(410)
+            ->assertJson(['error' => 'legacy_fraud_detection_disabled']);
+    }
+
     public function test_federation_integrity_reviews_are_append_only_and_audited(): void
     {
         $license = $this->request();

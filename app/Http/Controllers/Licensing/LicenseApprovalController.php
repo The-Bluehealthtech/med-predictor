@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LicenseIntegrityReview;
 use App\Models\PlayerLicense;
 use App\Models\User;
+use App\Services\AgeVerificationService;
 use App\Services\Licensing\FifaIdRegistry;
 use App\Services\Licensing\LicenseWorkflow;
 use Illuminate\Http\Request;
@@ -25,8 +26,11 @@ class LicenseApprovalController extends Controller
         'revoked' => 'Refusées',
     ];
 
-    public function __construct(private readonly LicenseWorkflow $workflow, private readonly FifaIdRegistry $registry)
-    {
+    public function __construct(
+        private readonly LicenseWorkflow $workflow,
+        private readonly FifaIdRegistry $registry,
+        private readonly AgeVerificationService $ageVerification,
+    ) {
     }
 
     public function index(Request $request)
@@ -63,12 +67,22 @@ class LicenseApprovalController extends Controller
             'integrityReviews.reviewer:id,name',
         ]);
 
+        $ageVerification = ['coverage' => 'Insuffisant', 'flags' => [], 'confirmed' => []];
+        if ($license->player) {
+            try {
+                $ageVerification = $this->ageVerification->assess($license->player, false);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
         return view('licenses.approval.show', [
             'license' => $license,
             'registryConnected' => $this->registry->isConfigured(),
             'missing' => $this->workflow->missingDocuments($license),
             'pcma' => app(\App\Services\Licensing\PcmaRequirement::class)->check($license),
             'required' => $this->workflow->requiredDocuments($license),
+            'ageVerification' => $ageVerification,
 
             'requester' => $license->requested_by ? User::query()->find($license->requested_by, ['id', 'name']) : null,
             'decider' => $license->approved_by ? User::query()->find($license->approved_by, ['id', 'name']) : null,
@@ -148,7 +162,15 @@ class LicenseApprovalController extends Controller
         $license->loadMissing(['player.passport', 'documents']);
         $player = $license->player;
         $passport = $player?->passport;
-        DB::transaction(function () use ($license, $user, $data, $player, $passport) {
+        $ageReview = ['coverage' => 'Insuffisant', 'flags' => [], 'confirmed' => []];
+        if ($player) {
+            try {
+                $ageReview = $this->ageVerification->assess($player, false);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+        DB::transaction(function () use ($license, $user, $data, $player, $passport, $ageReview) {
             $review = $license->integrityReviews()->create([
                 'reviewer_id' => $user->id,
                 'photo_status' => $data['photo_status'],
@@ -176,6 +198,7 @@ class LicenseApprovalController extends Controller
                         'passport' => $passport?->fifa_date_of_birth?->toDateString(),
                         'fifa_registry' => data_get($license->identity_check, 'registry.date_of_birth'),
                     ],
+                    'age_verification' => $ageReview,
                     'identity_check_status' => $license->identity_check_status,
                 ],
             ]);

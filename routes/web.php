@@ -1081,6 +1081,16 @@ Route::middleware(['auth'])->group(function () {
                         'category' => 'clinique'
                     ],
 
+                    [
+                        'name' => 'Passeport médical (IPS)',
+                        'description' => 'Résumé médical du joueur au format International Patient Summary, à partager lors d’un transfert, d’une sélection ou à sa demande',
+                        'icon' => 'passport',
+                        'route' => 'passports.medical.index',
+                        'status' => 'active',
+                        'color' => 'red',
+                        'category' => 'clinique'
+                    ],
+
                     // LE CENTRE DE PERFORMANCE — staff sportif
                     [
                         'name' => 'Cockpit entraîneur',
@@ -1295,6 +1305,16 @@ Route::middleware(['auth'])->group(function () {
                         'description' => 'Gestion des transferts de joueurs',
                         'icon' => 'transfer',
                         'route' => 'admin.transfer-management.index',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'licences',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Passeport de transfert',
+                        'description' => 'Passeport joueur au format FIFA : clubs d’enregistrement, statut, transferts et ITC',
+                        'icon' => 'passport',
+                        'route' => 'passports.transfer.index',
                         'status' => 'active',
                         'color' => 'gray',
                         'group' => 'licences',
@@ -1954,6 +1974,14 @@ Route::middleware(['auth'])->group(function () {
         $passports = $query->orderByDesc('created_at')->paginate(20);
         return view('modules.player-passports.index', compact('passports'));
     })->name('player-passports.index');
+
+    // Module Passeports : passeport médical (résumé IPS HL7/IHE) et passeport de transfert (format FIFA).
+    Route::get('/passports/medical', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalIndex'])->name('passports.medical.index');
+    Route::get('/passports/medical/{player}', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalShow'])->whereNumber('player')->name('passports.medical.show');
+    Route::get('/passports/medical/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalPdf'])->whereNumber('player')->name('passports.medical.pdf');
+    Route::get('/passports/transfer', [\App\Http\Controllers\Passports\PassportsController::class, 'transferIndex'])->name('passports.transfer.index');
+    Route::get('/passports/transfer/{player}', [\App\Http\Controllers\Passports\PassportsController::class, 'transferShow'])->whereNumber('player')->name('passports.transfer.show');
+    Route::get('/passports/transfer/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'transferPdf'])->whereNumber('player')->name('passports.transfer.pdf');
     
     Route::get('/player-portal/medical-records/{record}', [App\Http\Controllers\PlayerMedicalRecordController::class,'show'])->whereNumber('record')->name('player-medical.show');
     Route::get('/player-portal/medical-records/{record}/documents/{document}', [App\Http\Controllers\PlayerMedicalRecordController::class,'document'])->whereNumber('record')->whereNumber('document')->name('player-medical.document');

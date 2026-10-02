@@ -114,6 +114,16 @@ Route::get(
     [\App\Http\Controllers\PerformanceAnalyticsController::class, 'index']
 )->middleware(['auth'])->name('performances.analytics');
 
+Route::middleware(['auth'])->group(function () {
+    // Module Passeports : passeport médical (résumé IPS HL7/IHE) et passeport de transfert (format FIFA).
+    Route::get('/passports/medical', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalIndex'])->name('passports.medical.index');
+    Route::get('/passports/medical/{player}', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalShow'])->whereNumber('player')->name('passports.medical.show');
+    Route::get('/passports/medical/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalPdf'])->whereNumber('player')->name('passports.medical.pdf');
+    Route::get('/passports/transfer', [\App\Http\Controllers\Passports\PassportsController::class, 'transferIndex'])->name('passports.transfer.index');
+    Route::get('/passports/transfer/{player}', [\App\Http\Controllers\Passports\PassportsController::class, 'transferShow'])->whereNumber('player')->name('passports.transfer.show');
+    Route::get('/passports/transfer/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'transferPdf'])->whereNumber('player')->name('passports.transfer.pdf');
+});
+
 // Minimal language switch target required by the application layout during tests.
 Route::post('/language', function () {
     return redirect()->back();

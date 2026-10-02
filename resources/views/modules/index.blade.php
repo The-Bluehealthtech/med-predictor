@@ -167,6 +167,7 @@ function filterByCategory(category, event) {
                     ['label' => 'Prise en charge', 'todo' => 'clinic_waiting', 'role' => 'Médecin', 'output' => 'Consultation et orientation', 'routes' => ['modules.medical.index']],
                     ['label' => 'Dossier médical', 'todo' => 'clinic_aut', 'role' => 'Médecin', 'output' => 'Diagnostic, traitement, AUT, imagerie', 'routes' => ['modules.healthcare.index']],
                     ['label' => 'Aptitude', 'todo' => 'clinic_pcma', 'role' => 'Médecin', 'output' => 'Aptitude à jouer transmise au staff', 'routes' => ['pcma.index']],
+                    ['label' => 'Partager', 'role' => 'Médecin, joueur', 'output' => 'Résumé IPS pour un transfert, une sélection ou un club', 'routes' => ['passports.medical.index']],
                 ]],
                 'performance' => ['type' => 'flow', 'tone' => 'bg-blue-600', 'steps' => [
                     ['label' => 'Collecter', 'role' => 'Préparateur physique', 'output' => 'Métriques et données des capteurs', 'routes' => ['performances.fit-metrics', 'portal.devices']],
@@ -188,7 +189,7 @@ function filterByCategory(category, event) {
                     ['label' => 'Structurer', 'role' => 'Administration', 'output' => 'Clubs et fédérations en place', 'routes' => ['modules.clubs.index', 'modules.associations.index', 'modules.confederations.index']],
                     ['label' => 'Enregistrer', 'role' => 'Secrétariat du club', 'output' => 'Joueurs et équipes inscrits', 'routes' => ['modules.players.index', 'modules.teams.index']],
                     ['label' => 'Licencier', 'todo' => 'licences_pending', 'role' => 'Club, puis ligue ou fédération', 'output' => 'Licences validées', 'routes' => ['modules.licenses.index', 'licenses.validation']],
-                    ['label' => 'Transférer', 'todo' => 'transfers_pending', 'role' => 'Club et fédération', 'output' => 'Mutations enregistrées', 'routes' => ['admin.transfer-management.index', 'fifa.dashboard']],
+                    ['label' => 'Transférer', 'todo' => 'transfers_pending', 'role' => 'Club et fédération', 'output' => 'Mutations enregistrées', 'routes' => ['admin.transfer-management.index', 'passports.transfer.index', 'fifa.dashboard']],
                     ['label' => 'Organiser', 'role' => 'Ligue ou fédération', 'output' => 'Compétitions et arbitres désignés', 'routes' => ['modules.competitions.index', 'referee-portal.index']],
                 ], 'tools' => ['modules.finance.dashboard', 'modules.administration.index', 'admin.content-management.index', 'gemini.index'], 'tools_label' => 'Outils transverses'],
             ];
@@ -333,6 +334,8 @@ function handleModuleClick(route, moduleName, event) {
         'performances.analytics': '/performances/analytics',
         'performances.fit-metrics': '/performances/fit-metrics',
         'modules.coach-cockpit': '/modules/coach-cockpit',
+        'passports.medical.index': '/passports/medical',
+        'passports.transfer.index': '/passports/transfer',
         'dtn.index': '/dtn',
         'dtn.players.index': '/dtn/players',
         'dtn.api-access': '/dtn/api-access',

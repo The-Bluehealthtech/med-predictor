@@ -45,6 +45,8 @@ return [
         'Administration du système' => 'System administration',
         'Contenu du site' => 'Website content',
         'IA Gemini' => 'Gemini AI',
+        'Passeport médical (IPS)' => 'Medical passport (IPS)',
+        'Passeport de transfert' => 'Transfer passport',
         'Convocations et retours' => 'Call-ups and return reports',
         'Fiches joueurs' => 'Player profiles',
         'Accès API — DTN' => 'API access — National technical department',
@@ -136,6 +138,9 @@ return [
         'à lire' => 'to read',
         'à valider' => 'to approve',
         'points d\'attention' => 'alerts',
+        'Partager' => 'Share',
+        'Médecin, joueur' => 'Physician, player',
+        'Résumé IPS pour un transfert, une sélection ou un club' => 'IPS summary for a transfer, a call-up or a club',
         'Non accessible avec votre compte' => 'Not available with your account',
     ],
 ];

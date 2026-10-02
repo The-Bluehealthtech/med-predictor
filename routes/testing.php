@@ -108,6 +108,12 @@ Route::get(
     [\App\Http\Controllers\CoachCockpitController::class, 'show']
 )->middleware(['auth'])->name('modules.coach-cockpit');
 
+// Analyse des performances : même contrôleur qu'en production.
+Route::get(
+    '/performances/analytics',
+    [\App\Http\Controllers\PerformanceAnalyticsController::class, 'index']
+)->middleware(['auth'])->name('performances.analytics');
+
 // Minimal language switch target required by the application layout during tests.
 Route::post('/language', function () {
     return redirect()->back();

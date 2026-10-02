@@ -11,7 +11,7 @@ class AnalyticsRpmContractTest extends TestCase
         return dirname(__DIR__, 3) . '/' . $relative;
     }
 
-    public function test_former_analytics_dashboard_redirects_to_performance_analytics_with_scoped_alerts(): void
+    public function test_former_analytics_dashboard_redirects_to_performance_analytics_with_scoped_clubs(): void
     {
         $routes = file_get_contents($this->projectPath('routes/web.php'));
         $controller = file_get_contents(
@@ -23,7 +23,8 @@ class AnalyticsRpmContractTest extends TestCase
             "return redirect()->route('performances.analytics');\n})->middleware(['auth'])->name('analytics.dashboard');",
             $routes
         );
-        $this->assertStringContainsString('scopeAlerts', $controller);
+        // Alertes calculées par club, dans le périmètre du compte (clubsFor).
+        $this->assertStringContainsString('clubsFor', $controller);
         $this->assertStringContainsString('$user->isSystemAdmin()', $controller);
         $this->assertStringContainsString('$user->isClubUser()', $controller);
         $this->assertStringContainsString('$user->isAssociationUser()', $controller);

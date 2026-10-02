@@ -2,150 +2,77 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PerformanceAlert;
-use App\Models\Player;
-use App\Models\PlayerPerformance;
-use App\Models\PlayerSeasonStat;
-use Illuminate\Database\Eloquent\Builder;
+use App\Services\Analytics\PlayerFormAnalytics;
+use App\Services\CoachCockpit\CoachCockpitData;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
+/**
+ * Analyse des performances : suivi individuel des joueurs d'un club à partir
+ * des feuilles de match (forme, temps de jeu, charge, efficacité, alertes).
+ * Les relevés player_performances (un seul point par joueur, origine non
+ * documentée) ne sont plus utilisés pour décider.
+ */
 class PerformanceAnalyticsController extends Controller
 {
-    public function index(): View
-    {
-        $query = PlayerPerformance::query();
-
-        $stats = [
-            'records' => (clone $query)->count(),
-            'overall' => $this->roundedAverage(clone $query, 'overall_performance_score'),
-            'physical' => $this->roundedAverage(clone $query, 'physical_score'),
-            'technical' => $this->roundedAverage(clone $query, 'technical_score'),
-            'tactical' => $this->roundedAverage(clone $query, 'tactical_score'),
-            'mental' => $this->roundedAverage(clone $query, 'mental_score'),
-            'social' => $this->roundedAverage(clone $query, 'social_score'),
-            'passing_accuracy' => $this->roundedAverage(clone $query, 'passing_accuracy'),
-            'shooting_accuracy' => $this->roundedAverage(clone $query, 'shooting_accuracy'),
-        ];
-
-        // Buts, passes décisives et minutes : ces colonnes de player_performances
-        // ne sont pas renseignées ; les totaux viennent des statistiques de saison
-        // (feuilles de match), limitées aux joueurs visibles par l'utilisateur.
-        $seasonStats = PlayerSeasonStat::query()->whereIn('player_id', Player::query()->select('id'));
-        $stats['goals'] = (int) (clone $seasonStats)->sum('goals');
-        $stats['assists'] = (int) (clone $seasonStats)->sum('assists');
-        $stats['minutes_played'] = (int) (clone $seasonStats)->sum('minutes_played');
-        $stats['season_players'] = (int) (clone $seasonStats)->distinct()->count('player_id');
-
-        // Alertes de performance actives (reprises de l'ancien Analytics Dashboard)
-        $alertsQuery = $this->scopeAlerts(
-            PerformanceAlert::query()
-                ->with(['player', 'club'])
-                ->where('is_active', true)
-                ->where('is_resolved', false)
-        );
-        $stats['active_alerts'] = (clone $alertsQuery)->count();
-        $stats['critical_alerts'] = (clone $alertsQuery)->where('alert_level', 'critical')->count();
-        $alerts = $alertsQuery->orderByDesc('created_at')->limit(10)->get();
-
-        $recent = PlayerPerformance::query()
-            ->with('player')
-            ->orderByDesc('performance_date')
-            ->orderByDesc('id')
-            ->limit(10)
-            ->get();
-
-        $trendRows = PlayerPerformance::query()
-            ->whereNotNull('performance_date')
-            ->whereNotNull('overall_performance_score')
-            ->orderByDesc('performance_date')
-            ->limit(12)
-            ->get(['performance_date', 'overall_performance_score'])
-            ->sortBy('performance_date')
-            ->values();
-
-        $trend = [
-            'labels' => $trendRows
-                ->map(fn ($row) => optional($row->performance_date)->format('d/m/Y'))
-                ->all(),
-            'values' => $trendRows
-                ->map(fn ($row) => (float) $row->overall_performance_score)
-                ->all(),
-        ];
-
-        $topRows = PlayerPerformance::query()
-            ->select(
-                'player_id',
-                DB::raw('AVG(overall_performance_score) as average_score')
-            )
-            ->whereNotNull('overall_performance_score')
-            ->groupBy('player_id')
-            ->orderByDesc('average_score')
-            ->limit(5)
-            ->with('player')
-            ->get();
-
-        $topPerformers = [
-            'labels' => $topRows->map(function ($row) {
-                $name = trim(
-                    ($row->player?->first_name ?? '')
-                    . ' '
-                    . ($row->player?->last_name ?? '')
-                );
-
-                return $name !== '' ? $name : 'Joueur #' . $row->player_id;
-            })->all(),
-            'values' => $topRows
-                ->map(fn ($row) => round((float) $row->average_score, 1))
-                ->all(),
-        ];
-
-        return view('modules.performances.analytics-canonical', compact(
-            'stats',
-            'recent',
-            'trend',
-            'topPerformers',
-            'alerts'
-        ));
-    }
-
-    /** Périmètre des alertes selon le rôle : tout pour l'admin système, sinon joueur, club ou association. */
-    private function scopeAlerts(Builder $query): Builder
+    public function index(Request $request, PlayerFormAnalytics $analytics, CoachCockpitData $cockpit): View
     {
         $user = Auth::user();
+        abort_if($user->isPlayer(), 403, 'Accès réservé au staff et aux administrateurs.');
 
-        if ($user->isSystemAdmin()) {
-            return $query;
+        $filters = $request->validate([
+            'club_id' => ['nullable', 'integer'],
+            'window' => ['nullable', 'in:' . implode(',', array_keys(PlayerFormAnalytics::WINDOWS))],
+            'position' => ['nullable', 'in:' . implode(',', array_keys(PlayerFormAnalytics::POSITIONS))],
+            'min_matches' => ['nullable', 'integer', 'min:1', 'max:20'],
+        ]);
+
+        $clubs = $this->clubsFor($user, $cockpit->availableClubs());
+        if (isset($filters['club_id'])) {
+            $clubId = (int) $filters['club_id'];
+            abort_unless($clubs->contains('id', $clubId), 404, 'Club introuvable ou non autorisé.');
+        } else {
+            $clubId = $clubs->contains('id', (int) $user->club_id) ? (int) $user->club_id : $clubs->first()?->id;
         }
 
-        if ($user->isPlayer()) {
-            return $user->player_id
-                ? $query->where('player_id', $user->player_id)
-                : $query->whereRaw('1 = 0');
-        }
+        $window = $filters['window'] ?? '10';
+        $position = $filters['position'] ?? null;
+        $minMatches = (int) ($filters['min_matches'] ?? 3);
+        $data = $clubId ? $analytics->forClub($clubId, $window, $position, $minMatches) : null;
+        $alerts = collect($data['alerts'] ?? []);
 
-        if ($user->isClubUser()) {
-            return $user->club_id
-                ? $query->where('club_id', $user->club_id)
-                : $query->whereRaw('1 = 0');
-        }
-
-        if ($user->isAssociationUser()) {
-            return $user->association_id
-                ? $query->whereHas('club', fn ($club) =>
-                    $club->where('association_id', $user->association_id)
-                )
-                : $query->whereRaw('1 = 0');
-        }
-
-        return $query->whereRaw('1 = 0');
+        return view('modules.performances.analytics-canonical', [
+            'clubs' => $clubs,
+            'clubId' => $clubId,
+            'window' => $window,
+            'position' => $position,
+            'minMatches' => $minMatches,
+            'data' => $data,
+            'alerts' => $alerts,
+            'windows' => PlayerFormAnalytics::WINDOWS,
+            'positions' => PlayerFormAnalytics::POSITIONS,
+        ]);
     }
 
-    private function roundedAverage($query, string $column): ?float
+    /** Périmètre : un compte club voit son club, une fédération ses clubs, l'admin système tous les clubs avec matchs. */
+    private function clubsFor($user, Collection $clubs): Collection
     {
-        $value = $query->avg($column);
+        if ($user->isSystemAdmin()) {
+            return $clubs;
+        }
+        if ($user->isClubUser()) {
+            return $clubs->where('id', (int) $user->club_id)->values();
+        }
+        if ($user->isAssociationUser()) {
+            $ids = DB::table('clubs')->where('association_id', $user->association_id)->pluck('id')->map(fn ($id) => (int) $id);
 
-        return $value === null ? null : round((float) $value, 1);
+            return $clubs->filter(fn ($c) => $ids->contains((int) $c->id))->values();
+        }
+
+        // Autres rôles du staff (DTN, officiels…) : mêmes clubs que le cockpit entraîneur.
+        return $clubs;
     }
 }

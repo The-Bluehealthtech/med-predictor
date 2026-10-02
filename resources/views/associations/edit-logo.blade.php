@@ -19,9 +19,12 @@
                         <p class="text-gray-600">{{ __('Code pays :') }} <strong>{{ $countryCode }}</strong></p>
                     @endif
                 </div>
-                <a href="{{ url()->previous() }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    {{ __('errors.generic_back') }}
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="{{ url()->previous() }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                        {{ __('errors.generic_back') }}
+                    </a>
+                    @include('partials.logout-button', ['variant' => 'chip'])
+                </div>
             </div>
         </div>
 

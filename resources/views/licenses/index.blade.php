@@ -10,10 +10,13 @@
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold text-gray-800">{{ __('🏆 Liste des Licences') }}</h1>
-            <a href="{{ route('license.upload.photo.form') }}" 
-               class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                {{ __('📤 Nouvelle Licence + Photo') }}
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('license.upload.photo.form') }}" 
+                   class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {{ __('📤 Nouvelle Licence + Photo') }}
+                </a>
+                @include('partials.logout-button', ['variant' => 'chip'])
+            </div>
         </div>
 
         <!-- Filtres -->

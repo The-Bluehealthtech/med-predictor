@@ -419,7 +419,9 @@
                         <span class="text-xs text-gray-500">({{ ucfirst($user->role ?? 'user') }})</span>
                     @endif
                 </div>
-                
+
+                @include('partials.logout-button', ['variant' => 'chip'])
+
                 <!-- Notification Bell -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" class="relative focus:outline-none hover:bg-blue-50 rounded-full p-2 transition-colors duration-200">

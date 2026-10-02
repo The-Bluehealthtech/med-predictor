@@ -23,6 +23,7 @@
     <div class="min-h-screen bg-gray-50">
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <x-page-header
+                :logout="true"
                 title="Licences"
                 subtitle="Initiez et suivez les demandes de licence des joueurs depuis leur club."
                 eyebrow="Administration"

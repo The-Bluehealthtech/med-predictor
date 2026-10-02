@@ -25,6 +25,7 @@
                     <span class="mr-2">➕</span>
                     {{ __('Nouvelle licence') }}
                 </button>
+                @include('partials.logout-button', ['variant' => 'chip'])
             </div>
         </div>
 

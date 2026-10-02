@@ -84,6 +84,7 @@
                    class="px-2 py-1 rounded text-xs {{ app()->getLocale() === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300' }}">EN</a>
             </div>
 
+            <div class="flex items-center gap-2">
             <div class="flex items-center space-x-2 bg-gray-700 rounded-lg px-3 py-2">
                 <div class="flex items-center space-x-2">
                     <div class="w-2 h-2 bg-{{ $statusColor }}-500 rounded-full {{ $connectionStatus === 'connected' ? 'animate-pulse' : '' }}" 
@@ -95,6 +96,8 @@
                     <span class="text-sm font-semibold text-gray-200">{{ $user->name ?? 'User' }}</span>
                     <span class="text-xs text-gray-400">({{ ucfirst($user->role ?? 'user') }})</span>
                 @endif
+            </div>
+            @include('partials.logout-button', ['variant' => 'dark'])
             </div>
         </div>
     </div>

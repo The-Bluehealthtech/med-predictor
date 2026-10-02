@@ -11,6 +11,7 @@
 <body class="bg-slate-50 min-h-screen">
     <div class="max-w-6xl mx-auto p-6">
         <x-page-header
+            :logout="true"
             title="Associations"
             subtitle="Gérez les associations nationales et régionales, leurs clubs affiliés et leur rattachement confédéral."
             eyebrow="Administration"

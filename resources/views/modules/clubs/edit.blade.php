@@ -24,9 +24,12 @@
                 {{ __('← Retour aux clubs') }}
             </a>
             
-            <a href="/modules" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                {{ __('📋 Retour aux modules') }}
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="/modules" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    {{ __('📋 Retour aux modules') }}
+                </a>
+                @include('partials.logout-button', ['variant' => 'chip'])
+            </div>
         </div>
 
         <!-- Messages de succès/erreur -->

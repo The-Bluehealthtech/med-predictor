@@ -41,8 +41,11 @@
                 <i class="fas fa-arrow-left mr-2"></i>
                 {{ __('Retour au Dashboard') }}
             </a>
-            <div class="text-sm text-gray-500">
-                Fiche Joueur 360° - {{ now()->format('d/m/Y H:i') }}
+            <div class="flex items-center gap-3">
+                <div class="text-sm text-gray-500">
+                    Fiche Joueur 360° - {{ now()->format('d/m/Y H:i') }}
+                </div>
+                @include('partials.logout-button', ['variant' => 'chip'])
             </div>
         </div>
 

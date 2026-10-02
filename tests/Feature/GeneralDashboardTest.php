@@ -114,4 +114,17 @@ class GeneralDashboardTest extends TestCase
         $this->assertGreaterThanOrEqual(2, $activity['by_domain']['performance']);
         $response->assertSee('data-activity-ready="1"', false)->assertSee('Volume par domaine');
     }
+
+    public function test_page_tops_offer_a_logout_button(): void
+    {
+        if (!Route::has('logout')) {
+            Route::middleware('web')->post('/logout', fn () => redirect('/'))->name('logout');
+            app('router')->getRoutes()->refreshNameLookups();
+        }
+        $response = $this->actingAs($this->user('system_admin'))->get('/_test/general-dashboard')->assertOk();
+
+        $response->assertSee('class="fit-logout-form', false)->assertSee('action="' . route('logout') . '"', false)
+            ->assertSee('Déconnexion');
+        $this->assertSame(1, substr_count($response->getContent(), 'class="fit-logout-form'), 'un seul bouton dans le haut de page');
+    }
 }

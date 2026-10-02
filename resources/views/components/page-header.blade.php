@@ -7,6 +7,8 @@
     'count' => null,
     'countLabel' => null,
     'dark' => false,
+    // Pages autonomes (sans layouts.app, dont la barre du haut a déjà le bouton) : bouton de déconnexion.
+    'logout' => false,
 ])
 
 @php
@@ -67,6 +69,10 @@
             @isset($actions)
                 {{ $actions }}
             @endisset
+
+            @if($logout)
+                @include('partials.logout-button', ['variant' => $dark ? 'dark' : 'chip'])
+            @endif
         </div>
     </div>
 </header>

@@ -8,7 +8,10 @@
 </head>
 <body class="bg-gray-100 p-8">
     <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-8">{{ __('📸 Upload Photo Joueur - Système de Licences') }}</h1>
+        <div class="flex items-start justify-between gap-4 mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">{{ __('📸 Upload Photo Joueur - Système de Licences') }}</h1>
+            @include('partials.logout-button', ['variant' => 'chip'])
+        </div>
         
         <!-- Formulaire d'Upload -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">

@@ -42,6 +42,7 @@
                     </div>
 
                     <!-- FIFA Connect Badge -->
+                    <div class="flex items-center gap-3">
                     <div class="bg-green-100 border border-green-300 rounded-lg px-3 py-2">
                         <div class="flex items-center">
                             <svg class="w-4 h-4 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -49,6 +50,8 @@
                             </svg>
                             <span class="text-xs font-medium text-green-800">FIFA Connect</span>
                         </div>
+                    </div>
+                    @include('partials.logout-button', ['variant' => 'chip'])
                     </div>
                 </div>
             </div>

@@ -14,9 +14,12 @@
             <a href="/associations-view" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
                 {{ __('← Retour aux associations') }}
             </a>
-            <a href="/modules" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                {{ __('📋 Retour aux modules') }}
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="/modules" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    {{ __('📋 Retour aux modules') }}
+                </a>
+                @include('partials.logout-button', ['variant' => 'chip'])
+            </div>
         </div>
 
         @if(session('success'))

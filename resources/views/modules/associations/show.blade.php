@@ -11,6 +11,7 @@
 <body class="bg-slate-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
         <x-page-header
+            :logout="true"
             :title="$association->name"
             :subtitle="collect([$association->country, $association->confederation])->filter()->implode(' · ')"
             eyebrow="Association"

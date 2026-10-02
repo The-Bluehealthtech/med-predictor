@@ -13,6 +13,7 @@
 
             <!-- Header -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="float-right ml-4">@include('partials.logout-button', ['variant' => 'chip'])</div>
                 <h1 class="text-2xl font-bold text-gray-800 mb-2">
                     {{ $typeIcon ?? '📸' }} Gestion de {{ $typeLabel ?? __('la photo') }} de {{ $player->first_name ?? 'Joueur' }} {{ $player->last_name ?? '' }}
                 </h1>

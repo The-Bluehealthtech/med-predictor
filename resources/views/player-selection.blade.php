@@ -11,9 +11,12 @@
     <div class="min-h-screen">
         <!-- Header -->
         <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
-            <div class="container mx-auto px-6 py-4">
-                <h1 class="text-3xl font-bold">{{ __('🏆 Sélection des Joueurs') }}</h1>
-                <p class="text-blue-100">{{ __('Choisissez un joueur pour accéder à son portail') }}</p>
+            <div class="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold">{{ __('🏆 Sélection des Joueurs') }}</h1>
+                    <p class="text-blue-100">{{ __('Choisissez un joueur pour accéder à son portail') }}</p>
+                </div>
+                @include('partials.logout-button', ['variant' => 'dark'])
             </div>
         </header>
 

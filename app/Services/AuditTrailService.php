@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\AuditTrail;
+use App\Models\AuditLog;
+use App\Services\Audit\Auditor;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -12,47 +13,47 @@ class AuditTrailService
     /**
      * Log a user action
      */
-    public static function logUserAction(string $action, string $description, array $metadata = []): AuditTrail
+    public static function logUserAction(string $action, string $description, array $metadata = []): ?AuditLog
     {
-        return AuditTrail::logUserAction($action, $description, $metadata);
+        return app(Auditor::class)->record(['event_type' => 'user_action', 'action' => $action, 'description' => $description, 'metadata' => $metadata]);
     }
 
     /**
      * Log a security event
      */
-    public static function logSecurityEvent(string $action, string $description, string $severity = 'warning', array $metadata = []): AuditTrail
+    public static function logSecurityEvent(string $action, string $description, string $severity = 'warning', array $metadata = []): ?AuditLog
     {
-        return AuditTrail::logSecurityEvent($action, $description, $severity, $metadata);
+        return app(Auditor::class)->record(['event_type' => 'security', 'module' => 'security', 'action' => $action, 'description' => $description, 'severity' => $severity, 'metadata' => $metadata]);
     }
 
     /**
      * Log data access
      */
-    public static function logDataAccess(string $action, string $description, ?string $modelType = null, ?int $modelId = null, array $metadata = []): AuditTrail
+    public static function logDataAccess(string $action, string $description, ?string $modelType = null, ?int $modelId = null, array $metadata = []): ?AuditLog
     {
-        return AuditTrail::logDataAccess($action, $description, $modelType, $modelId, $metadata);
+        return app(Auditor::class)->record(['event_type' => 'data_access', 'action' => $action, 'description' => $description, 'model_type' => $modelType, 'model_id' => $modelId, 'metadata' => $metadata]);
     }
 
     /**
      * Log model changes (create, update, delete)
      */
-    public static function logModelChange(string $action, Model $model, ?array $oldValues = null, ?array $newValues = null, ?string $description = null): AuditTrail
+    public static function logModelChange(string $action, Model $model, ?array $oldValues = null, ?array $newValues = null, ?string $description = null): ?AuditLog
     {
-        return AuditTrail::logModelChange($action, $model, $oldValues, $newValues, $description);
+        return app(Auditor::class)->record(['event_type' => 'model_change', 'action' => $action, 'description' => $description ?? ucfirst($action) . ' : ' . class_basename($model), 'model' => $model, 'old_values' => $oldValues, 'new_values' => $newValues]);
     }
 
     /**
      * Log a system event
      */
-    public static function logSystemEvent(string $action, string $description, string $severity = 'info', array $metadata = []): AuditTrail
+    public static function logSystemEvent(string $action, string $description, string $severity = 'info', array $metadata = []): ?AuditLog
     {
-        return AuditTrail::logSystemEvent($action, $description, $severity, $metadata);
+        return app(Auditor::class)->record(['event_type' => 'system', 'module' => 'system', 'action' => $action, 'description' => $description, 'severity' => $severity, 'metadata' => $metadata]);
     }
 
     /**
      * Log user login
      */
-    public static function logLogin(User $user, bool $success = true, ?string $reason = null): AuditTrail
+    public static function logLogin(User $user, bool $success = true, ?string $reason = null): ?AuditLog
     {
         $description = $success 
             ? "User {$user->name} logged in successfully"
@@ -79,7 +80,7 @@ class AuditTrailService
     /**
      * Log user logout
      */
-    public static function logLogout(User $user): AuditTrail
+    public static function logLogout(User $user): ?AuditLog
     {
         return self::logUserAction(
             'logout',
@@ -94,7 +95,7 @@ class AuditTrailService
     /**
      * Log failed login attempt
      */
-    public static function logFailedLogin(string $email, ?string $reason = null): AuditTrail
+    public static function logFailedLogin(string $email, ?string $reason = null): ?AuditLog
     {
         $description = "Failed login attempt for email: {$email}";
         
@@ -117,7 +118,7 @@ class AuditTrailService
     /**
      * Log password change
      */
-    public static function logPasswordChange(User $user): AuditTrail
+    public static function logPasswordChange(User $user): ?AuditLog
     {
         return self::logSecurityEvent(
             'password_change',
@@ -133,7 +134,7 @@ class AuditTrailService
     /**
      * Log role assignment
      */
-    public static function logRoleAssignment(User $user, string $oldRole, string $newRole): AuditTrail
+    public static function logRoleAssignment(User $user, string $oldRole, string $newRole): ?AuditLog
     {
         return self::logSecurityEvent(
             'role_assignment',
@@ -150,7 +151,7 @@ class AuditTrailService
     /**
      * Log data export
      */
-    public static function logDataExport(User $user, string $dataType, ?int $recordCount = null): AuditTrail
+    public static function logDataExport(User $user, string $dataType, ?int $recordCount = null): ?AuditLog
     {
         $description = "User {$user->name} exported {$dataType} data";
         
@@ -176,7 +177,7 @@ class AuditTrailService
     /**
      * Log data import
      */
-    public static function logDataImport(User $user, string $dataType, int $recordCount, bool $success = true): AuditTrail
+    public static function logDataImport(User $user, string $dataType, int $recordCount, bool $success = true): ?AuditLog
     {
         $description = $success 
             ? "User {$user->name} successfully imported {$recordCount} {$dataType} records"
@@ -202,7 +203,7 @@ class AuditTrailService
     /**
      * Log sensitive data access
      */
-    public static function logSensitiveDataAccess(User $user, string $dataType, ?int $recordId = null): AuditTrail
+    public static function logSensitiveDataAccess(User $user, string $dataType, ?int $recordId = null): ?AuditLog
     {
         $description = "User {$user->name} accessed sensitive {$dataType} data";
         
@@ -227,7 +228,7 @@ class AuditTrailService
     /**
      * Log configuration change
      */
-    public static function logConfigurationChange(User $user, string $configKey, $oldValue, $newValue): AuditTrail
+    public static function logConfigurationChange(User $user, string $configKey, $oldValue, $newValue): ?AuditLog
     {
         return self::logSystemEvent(
             'config_change',
@@ -246,7 +247,7 @@ class AuditTrailService
     /**
      * Log system maintenance
      */
-    public static function logSystemMaintenance(string $action, string $description, bool $success = true): AuditTrail
+    public static function logSystemMaintenance(string $action, string $description, bool $success = true): ?AuditLog
     {
         $metadata = [
             'success' => $success,
@@ -263,7 +264,7 @@ class AuditTrailService
     /**
      * Log API access
      */
-    public static function logApiAccess(User $user, string $endpoint, string $method, bool $success = true): AuditTrail
+    public static function logApiAccess(User $user, string $endpoint, string $method, bool $success = true): ?AuditLog
     {
         $description = "User {$user->name} accessed API endpoint {$method} {$endpoint}";
         
@@ -287,7 +288,7 @@ class AuditTrailService
     /**
      * Log bulk operation
      */
-    public static function logBulkOperation(User $user, string $operation, string $dataType, int $recordCount, bool $success = true): AuditTrail
+    public static function logBulkOperation(User $user, string $operation, string $dataType, int $recordCount, bool $success = true): ?AuditLog
     {
         $description = $success 
             ? "User {$user->name} successfully performed bulk {$operation} on {$recordCount} {$dataType} records"

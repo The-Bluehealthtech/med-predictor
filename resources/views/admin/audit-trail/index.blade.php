@@ -127,9 +127,7 @@
                     <a href="{{ route('admin.audit-trail.export', ['format' => 'csv'] + $filters) }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
                         📤 Exporter CSV
                     </a>
-                    <button onclick="openCleanupModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        {{ __('🗑️ Nettoyer les anciens logs') }}
-                    </button>
+                    <span class="self-center text-sm text-gray-500">Journal en ajout seul : les événements ne peuvent être ni modifiés ni supprimés.</span>
                 </div>
             </div>
         </div>
@@ -298,39 +296,4 @@
     </div>
 </div>
 
-<!-- Modal de nettoyage -->
-<div id="cleanupModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Nettoyer les anciens logs') }}</h3>
-            <form action="{{ route('admin.audit-trail.cleanup') }}" method="POST">
-                @csrf
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Supprimer les logs plus anciens que (jours)') }}</label>
-                    <select name="days" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                        <option value="30">30 jours</option>
-                        <option value="60">60 jours</option>
-                        <option value="90" selected>90 jours</option>
-                        <option value="180">180 jours</option>
-                        <option value="365">1 an</option>
-                    </select>
-                </div>
-                <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="closeCleanupModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">{{ __('clinical.cancel') }}</button>
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Nettoyer</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-function openCleanupModal() {
-    document.getElementById('cleanupModal').classList.remove('hidden');
-}
-
-function closeCleanupModal() {
-    document.getElementById('cleanupModal').classList.add('hidden');
-}
-</script>
 @endsection

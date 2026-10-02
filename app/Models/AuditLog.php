@@ -42,6 +42,13 @@ class AuditLog extends Model
         'updated_at' => 'datetime'
     ];
 
+    /** Journal en ajout seul : un événement enregistré ne se modifie ni ne se supprime. */
+    protected static function booted(): void
+    {
+        static::updating(fn () => throw new \LogicException('Audit trail en ajout seul : modification interdite.'));
+        static::deleting(fn () => throw new \LogicException('Audit trail en ajout seul : suppression interdite.'));
+    }
+
     // Relationships
     public function user(): BelongsTo
     {

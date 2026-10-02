@@ -41,12 +41,15 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\SetLocale::class,
             // Enforce tenant context for all web routes and views
             'tenant.enforce',
+            // Audit trail : consultation des données sensibles (config/audit.php)
+            \App\Http\Middleware\AuditSensitiveAccess::class,
         ],
 
         'api' => [
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             // Enforce tenant context for all API routes
             'tenant.enforce',
+            \App\Http\Middleware\AuditSensitiveAccess::class,
         ],
     ];
 

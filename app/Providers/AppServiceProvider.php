@@ -27,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
         // Journal d'activité du tableau de bord général (actions des utilisateurs connectés).
         \App\Services\Activity\ActivityRecorder::observeConfiguredModels();
 
+        // Audit trail : modifications des modèles suivis et événements d'authentification (config/audit.php).
+        \App\Services\Audit\Auditor::observeConfiguredModels();
+        \Illuminate\Support\Facades\Event::subscribe(\App\Services\Audit\AuthAuditSubscriber::class);
+
         // Force HTTP locally to avoid HTTPS redirects during local Docker usage
         if (in_array(config('app.env'), ['local', 'docker', 'development'], true)) {
             URL::forceScheme('http');

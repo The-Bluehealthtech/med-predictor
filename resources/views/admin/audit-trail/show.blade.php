@@ -169,12 +169,22 @@
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Changements</h3>
                     <div class="space-y-4">
+                        @if(isset($log->changes['fields']))
+                        <div class="border-l-4 border-blue-400 pl-4">
+                            <dt class="text-sm font-medium text-gray-500">Champs concernés</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ implode(', ', $log->changes['fields']) ?: '—' }}</dd>
+                            @if(!empty($log->changes['sensitive']))
+                                <dd class="mt-1 text-xs text-gray-500">Donnée de santé : seuls les noms des champs sont conservés, jamais leurs valeurs.</dd>
+                            @endif
+                        </div>
+                        @else
                         @foreach($log->changes as $field => $value)
                         <div class="border-l-4 border-blue-400 pl-4">
                             <dt class="text-sm font-medium text-gray-500">{{ $field }}</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ is_array($value) ? json_encode($value) : $value }}</dd>
                         </div>
                         @endforeach
+                        @endif
                     </div>
                 </div>
             </div>

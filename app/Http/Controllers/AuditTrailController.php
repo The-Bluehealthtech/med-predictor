@@ -144,6 +144,9 @@ class AuditTrailController extends Controller
 
         $logs = $query->orderBy('created_at', 'desc')->get();
 
+        // L'export du journal est lui-même tracé.
+        \App\Services\AuditTrailService::logDataExport(Auth::user(), 'audit_logs', $logs->count());
+
         if ($format === 'csv') {
             return $this->exportToCsv($logs);
         }
@@ -197,21 +200,5 @@ class AuditTrailController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
-    }
-
-    /**
-     * Supprimer les anciens logs
-     */
-    public function cleanup(Request $request)
-    {
-        if (!Auth::check() || !in_array(Auth::user()->role, ['super_admin', 'system_admin'])) {
-            return redirect()->route('login')->withErrors(['email' => 'Accès administrateur requis.']);
-        }
-
-        $days = $request->get('days', 90);
-        $deleted = AuditLog::where('created_at', '<', now()->subDays($days))->delete();
-
-        return redirect()->route('admin.audit-trail.index')
-            ->with('success', "{$deleted} logs supprimés (plus anciens que {$days} jours).");
     }
 }

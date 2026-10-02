@@ -931,10 +931,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Routes Audit Trail
     Route::prefix('admin/audit-trail')->name('admin.audit-trail.')->group(function () {
+        // Journal en ajout seul : pas de suppression depuis l'interface. /export avant /{id}.
         Route::get('/', [App\Http\Controllers\AuditTrailController::class, 'index'])->name('index');
-        Route::get('/{id}', [App\Http\Controllers\AuditTrailController::class, 'show'])->name('show');
         Route::get('/export', [App\Http\Controllers\AuditTrailController::class, 'export'])->name('export');
-        Route::post('/cleanup', [App\Http\Controllers\AuditTrailController::class, 'cleanup'])->name('cleanup');
+        Route::get('/{id}', [App\Http\Controllers\AuditTrailController::class, 'show'])->whereNumber('id')->name('show');
     });
 
     // Routes System Settings
@@ -1580,9 +1580,8 @@ Route::middleware(['auth'])->group(function () {
     })->middleware('role:system_admin');
     
     // Audit Trail routes
-    Route::get('/audit-trail', function () {
-        return view('modules.audit-trail.index');
-    })->name('audit-trail.index');
+    // L'ancienne vue modules.audit-trail.index n'existe pas : renvoi vers l'écran d'audit.
+    Route::get('/audit-trail', fn () => redirect()->route('admin.audit-trail.index'))->name('audit-trail.index');
     
     // Logs routes
     Route::get('/logs', function () {

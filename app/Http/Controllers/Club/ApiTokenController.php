@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Dtn;
+namespace App\Http\Controllers\Club;
 
 use App\Http\Controllers\Controller;
 use App\Services\Dtn\ApiAbilities;
@@ -9,18 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * Espace fédération (DTN) — jetons d'API de la Direction technique nationale.
+ * Espace club — jetons d'API du logiciel du club.
  * Un jeton est limité à cet espace et n'est affiché qu'une seule fois.
  */
 class ApiTokenController extends Controller
 {
-    private const SPACE = 'federation';
+    private const SPACE = 'club';
 
     public function index(Request $request): View
     {
         $config = ApiAbilities::SPACES[self::SPACE];
 
-        return view('dtn.federation.api-access', [
+        return view('club.selections.api-access', [
             'config' => $config,
             'tokens' => $request->user()->tokens()->where('name', 'like', $config['prefix'] . ':%')->orderByDesc('created_at')->get(),
             'canHaveMedical' => ApiAbilities::canHaveMedical(self::SPACE, $request->user()),
@@ -42,7 +42,7 @@ class ApiTokenController extends Controller
             now()->addDays((int) $data['expires_in_days'])
         );
 
-        return redirect()->route('dtn.api-access')->with('plain_token', $token->plainTextToken)
+        return redirect()->route('club.selections.api-access')->with('plain_token', $token->plainTextToken)
             ->with('status', 'Jeton créé. Copiez-le maintenant : il ne sera plus affiché.');
     }
 
@@ -52,6 +52,6 @@ class ApiTokenController extends Controller
             ->where('name', 'like', ApiAbilities::SPACES[self::SPACE]['prefix'] . ':%')->delete();
         abort_unless($deleted, 404);
 
-        return redirect()->route('dtn.api-access')->with('status', 'Jeton révoqué.');
+        return redirect()->route('club.selections.api-access')->with('status', 'Jeton révoqué.');
     }
 }

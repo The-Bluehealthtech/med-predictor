@@ -1,19 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'DTN — Espace fédération')
+@section('title', 'Retours de sélection — Espace club')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8 space-y-6">
-    @include('dtn.federation.partials.nav', ['active' => 'selections'])
+    @include('club.selections.partials.nav', ['active' => 'returns'])
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Convocations et retours</h1>
-            <p class="text-sm text-gray-600 max-w-2xl">Consultez les fiches joueurs, convoquez, recevez l'état de départ préparé par le club et renvoyez l'état de retour (incidents, performances, risques, indice de performance).</p>
-        </div>
-        <div class="flex flex-wrap items-center gap-3">
-            @if($canConvoke)
-                <a href="{{ route('dtn.selections.create') }}" class="inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700">+ Convoquer un joueur</a>
-            @endif
+            <h1 class="text-2xl font-bold text-gray-900">Retours de sélection</h1>
+            <p class="text-sm text-gray-600 max-w-2xl">États de retour envoyés par la Direction technique nationale : incidents, performances, risques et indice de performance. Accusez réception pour clôturer.</p>
         </div>
     </div>
 
@@ -33,7 +28,7 @@
             @if($group['items']->isEmpty())
                 <p class="px-5 py-6 text-sm text-gray-500">{{ $group['empty'] }}</p>
             @else
-                @include('dtn.federation.partials.selection-table', ['items' => $group['items']])
+                @include('club.selections.partials.selection-table', ['items' => $group['items']])
             @endif
         </section>
     @endforeach

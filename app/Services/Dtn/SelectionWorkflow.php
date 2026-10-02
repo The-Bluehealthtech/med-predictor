@@ -173,18 +173,23 @@ final class SelectionWorkflow
         $selection->update(['status' => NationalSelection::STATUS_CANCELLED]);
     }
 
-    public function performance(NationalSelection $selection): ?array
+    /** Indice de performance ; $sentOnly : ne pas calculer sur un brouillon (vue du club). */
+    public function performance(NationalSelection $selection, bool $sentOnly = false): ?array
     {
         $return = $selection->returnReport;
+        if ($sentOnly && !$return?->isSent()) {
+            return null;
+        }
 
         return $return ? $this->snapshots->performanceIndex($return->content ?? [], $selection->departure?->snapshot) : null;
     }
 
     /**
-     * Représentation d'une sélection (interface et API). La partie médicale n'est
-     * incluse que si $includeMedical est vrai ET que l'utilisateur y a droit.
+     * Représentation JSON d'une sélection pour l'API d'un espace ($space : federation | club).
+     * Chaque espace ne reçoit le rapport de l'autre partie qu'une fois envoyé ; la partie
+     * médicale n'est incluse que si $includeMedical est vrai ET que l'utilisateur y a droit.
      */
-    public function present(NationalSelection $selection, User $user, bool $includeMedical = false): array
+    public function present(NationalSelection $selection, User $user, string $space, bool $includeMedical = false): array
     {
         $selection->loadMissing(['player', 'club', 'association', 'departure', 'returnReport']);
         $medical = $includeMedical && $this->access->canSeeMedical($user, $selection);
@@ -221,9 +226,9 @@ final class SelectionWorkflow
             'end_date' => $selection->end_date?->toDateString(),
             'convocation_note' => $selection->convocation_note,
             'is_demo' => (bool) $selection->is_demo,
-            'departure_report' => $report($selection->departure, true),
-            'return_report' => $report($selection->returnReport, false),
-            'performance' => $this->performance($selection),
+            'departure_report' => $report($space === 'federation' && !$selection->departure?->isSent() ? null : $selection->departure, true),
+            'return_report' => $report($space === 'club' && !$selection->returnReport?->isSent() ? null : $selection->returnReport, false),
+            'performance' => $this->performance($selection, $space === 'club'),
             'medical_included' => $medical,
         ];
     }

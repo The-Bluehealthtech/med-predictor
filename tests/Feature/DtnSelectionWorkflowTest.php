@@ -83,8 +83,10 @@ class DtnSelectionWorkflowTest extends TestCase
         $this->assertGreaterThan(0, $snapshot['season']['matches'], 'état de départ pré-rempli depuis les feuilles de match');
         $this->assertNotEmpty($snapshot['last_matches']);
 
-        // Le club complète et envoie l'état de départ
+        // Le club complète et envoie l'état de départ ; la DTN ne voit pas le brouillon
         $coach = $this->user('club_admin', ['club_id' => $this->clubId]);
+        $this->actingAs($coach)->post(route('club.selections.departure', $selection), ['vigilance' => 'BROUILLON CLUB', 'action' => 'save'])->assertRedirect();
+        $this->actingAs($dtn)->get(route('dtn.selections.show', $selection))->assertOk()->assertDontSee('BROUILLON CLUB')->assertSee('En attente de l');
         $this->actingAs($coach)->post(route('club.selections.departure', $selection), [
             'availability' => 'available_limited', 'load_recommendation' => '60 minutes maximum', 'action' => 'send',
         ])->assertRedirect();
@@ -99,14 +101,20 @@ class DtnSelectionWorkflowTest extends TestCase
         $this->actingAs($coach)->post(route('dtn.selections.return', $selection), ['action' => 'save'])->assertRedirect(route('dashboard'));
         $this->assertNull($selection->fresh()->returnReport);
 
-        // La DTN envoie l'état de retour
+
+        // Le brouillon de retour reste invisible pour le club
+        $this->actingAs($dtn)->post(route('dtn.selections.return', $selection), ['matches' => 1, 'incidents' => 'BROUILLON DTN', 'action' => 'save']);
+        $draft = $this->actingAs($coach)->get(route('club.selections.show', $selection))->assertOk()->assertDontSee('BROUILLON DTN');
+        $this->assertNull($draft->viewData('returnReport'));
+        $this->assertNull($draft->viewData('performance'));
+
         $this->actingAs($dtn)->post(route('dtn.selections.return', $selection), [
             'matches' => 2, 'minutes' => 150, 'avg_rating' => 7.0, 'staff_evaluation' => 8,
             'fatigue_level' => 'medium', 'injury_risk' => 'low', 'incidents' => 'Aucun', 'action' => 'send',
         ])->assertRedirect();
+        $this->assertTrue($this->actingAs($coach)->get(route('club.selections.returns'))->viewData('groups')[0]['items']->contains('id', $selection->id), 'retour à lire');
+        $page = $this->actingAs($coach)->get(route('club.selections.show', $selection))->assertOk()->assertSee('Aucun');
         $this->assertSame(NationalSelection::STATUS_RETURN_SENT, $selection->fresh()->status);
-
-        $page = $this->actingAs($coach)->get(route('club.selections.show', $selection))->assertOk();
         $this->assertEqualsWithDelta(74.0, $page->viewData('performance')['index'], 0.01, '0,6 × 70 + 0,4 × 80');
 
         // Le club accuse réception : clôture
@@ -202,19 +210,21 @@ class DtnSelectionWorkflowTest extends TestCase
         $coach = $this->user('club_admin', ['club_id' => $this->clubId]);
 
         // Espace fédération : DTN oui, club non
-        $this->actingAs($dtn)->get(route('dtn.index'))->assertOk()->assertSee('Espace fédération');
+        $this->actingAs($dtn)->get(route('dtn.index'))->assertOk()->assertSee('Direction technique nationale');
         $this->actingAs($dtn)->get(route('dtn.players.index'))->assertOk();
         $this->actingAs($dtn)->get(route('dtn.players.show', $this->playerId))->assertOk()->assertSee('Historique des sélections');
         $this->actingAs($dtn)->get(route('dtn.selections.create', ['player_id' => $this->playerId]))->assertOk();
         foreach (['dtn.index', 'dtn.players.index', 'dtn.selections.create', 'dtn.api-access'] as $route) {
+            $this->actingAs($dtn)->get(route($route))->assertOk()->assertSee('Espace fédération')->assertDontSee('Espace club');
             $this->actingAs($coach)->get(route($route))->assertRedirect(route('dashboard'));
         }
         $this->actingAs($coach)->post(route('dtn.selections.store'), ['player_id' => $this->playerId])->assertRedirect(route('dashboard'));
         $this->assertSame(0, NationalSelection::query()->count());
 
         // Espace club : club oui, DTN non
-        $this->actingAs($coach)->get(route('club.selections.index'))->assertOk()->assertSee('Joueurs sélectionnés');
-        foreach (['club.selections.index', 'club.selections.api-access'] as $route) {
+        $this->actingAs($coach)->get(route('club.selections.index'))->assertOk()->assertSee('Convocations reçues');
+        foreach (['club.selections.index', 'club.selections.returns', 'club.selections.api-access'] as $route) {
+            $this->actingAs($coach)->get(route($route))->assertOk()->assertSee('Espace club')->assertDontSee('Espace fédération');
             $this->actingAs($dtn)->get(route($route))->assertRedirect(route('dashboard'));
         }
 
@@ -223,7 +233,33 @@ class DtnSelectionWorkflowTest extends TestCase
         $this->actingAs($dtn)->get(route('club.selections.show', $selection))->assertRedirect(route('dashboard'));
         $this->actingAs($coach)->get(route('dtn.selections.show', $selection))->assertRedirect(route('dashboard'));
 
-        // Page des modules : une carte par espace (visibilité calculée par DtnAccess)
+        // Page des modules : une section par espace, visible seulement avec la permission de l'espace
+        $cards = [
+            ['name' => 'Convocations et retours', 'description' => 'x', 'icon' => 'x', 'route' => 'dtn.index', 'status' => 'active', 'color' => 'indigo', 'category' => 'dtn'],
+            ['name' => 'Fiches joueurs', 'description' => 'x', 'icon' => 'x', 'route' => 'dtn.players.index', 'status' => 'active', 'color' => 'indigo', 'category' => 'dtn'],
+            ['name' => 'Convocations reçues', 'description' => 'x', 'icon' => 'x', 'route' => 'club.selections.index', 'status' => 'active', 'color' => 'emerald', 'category' => 'club_selections'],
+            ['name' => 'Retours de sélection', 'description' => 'x', 'icon' => 'x', 'route' => 'club.selections.returns', 'status' => 'active', 'color' => 'emerald', 'category' => 'club_selections'],
+        ];
+        if (!\Illuminate\Support\Facades\Route::has('logout')) {
+            \Illuminate\Support\Facades\Route::post('/logout', fn () => null)->name('logout');
+            \Illuminate\Support\Facades\Route::getRoutes()->refreshNameLookups();
+        }
+        $this->actingAs($dtn);
+        $html = view('modules.index', ['modules' => $cards])->render();
+        $this->assertStringContainsString('data-category="dtn"', $html);
+        $this->assertStringNotContainsString('data-category="club_selections"', $html);
+        $this->assertStringNotContainsString('Retours de sélection', $html);
+        $this->actingAs($coach);
+        $html = view('modules.index', ['modules' => $cards])->render();
+        $this->assertStringContainsString('data-category="club_selections"', $html);
+        $this->assertStringNotContainsString('data-category="dtn"', $html);
+        $this->assertStringNotContainsString('Fiches joueurs', $html);
+        $this->actingAs($this->user('system_admin'));
+        $html = view('modules.index', ['modules' => $cards])->render();
+        $this->assertStringContainsString('data-category="dtn"', $html);
+        $this->assertStringContainsString('data-category="club_selections"', $html);
+
+        // Visibilité calculée par DtnAccess
         $access = app(\App\Services\Dtn\DtnAccess::class);
         $this->assertTrue($access->isDtnSide($dtn) && !$access->isClubSide($dtn));
         $this->assertTrue($access->isClubSide($coach) && !$access->isDtnSide($coach));

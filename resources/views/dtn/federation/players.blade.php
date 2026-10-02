@@ -4,13 +4,12 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8 space-y-6">
+    @include('dtn.federation.partials.nav', ['active' => 'players'])
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-700">Direction technique nationale · Espace fédération</p>
             <h1 class="text-2xl font-bold text-gray-900">Fiches joueurs</h1>
             <p class="text-sm text-gray-600">Données sportives des joueurs de tous les clubs, pour préparer une convocation. Aucune donnée médicale.</p>
         </div>
-        <a href="{{ route('dtn.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">← Espace fédération</a>
     </div>
 
     <form method="GET" class="bg-white rounded-lg shadow p-4 flex flex-wrap items-end gap-3">

@@ -6,9 +6,10 @@
 
 @section('content')
 <div class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    @include('dtn.federation.partials.nav', ['active' => 'players'])
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-700">Fiche joueur · Espace fédération</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-700">Fiche joueur</p>
             <h1 class="text-2xl font-bold text-gray-900">{{ $profile['name'] }}</h1>
             <p class="text-sm text-gray-600">{{ str_replace(' (Démo)', '', $profile['club']['name'] ?? '—') }} · {{ $profile['position'] ?? 'poste non renseigné' }}@if($profile['age']) · {{ $profile['age'] }} ans @endif @if($profile['height_cm']) · {{ $profile['height_cm'] }} cm @endif @if($profile['weight_kg']) · {{ $profile['weight_kg'] }} kg @endif</p>
         </div>
@@ -16,7 +17,7 @@
             @if($canConvoke)
                 <a href="{{ route('dtn.selections.create', ['player_id' => $profile['id']]) }}" class="inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700">Convoquer ce joueur</a>
             @endif
-            <a href="{{ route('dtn.players.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">← Fiches joueurs</a>
+            <a href="{{ route('dtn.players.index') }}" class="text-indigo-700 hover:text-indigo-900 text-sm">← Fiches joueurs</a>
         </div>
     </div>
 

@@ -121,6 +121,22 @@ function filterByCategory(category, event) {
         @php
             // Organiser les modules par catégories
             $categories = [
+                'dtn' => [
+                    'name' => '🇹🇳 Direction technique nationale',
+                    'description' => 'Espace fédération : fiches joueurs, convocations et retours de sélection',
+                    'color' => 'indigo',
+                    'bg_color' => 'bg-indigo-50',
+                    'border_color' => 'border-indigo-200',
+                    'text_color' => 'text-indigo-800'
+                ],
+                'club_selections' => [
+                    'name' => '🎽 Club — Sélections nationales',
+                    'description' => 'Espace club : convocations reçues, états de départ et retours de sélection',
+                    'color' => 'emerald',
+                    'bg_color' => 'bg-emerald-50',
+                    'border_color' => 'border-emerald-200',
+                    'text_color' => 'text-emerald-800'
+                ],
                 'health' => [
                     'name' => '🏥 Santé & Médecine',
                     'description' => 'Gestion médicale et suivi de santé des athlètes',
@@ -197,8 +213,18 @@ function filterByCategory(category, event) {
             
             // Grouper les modules par catégorie
             $groupedModules = [];
+            // Les deux espaces des sélections nationales ne sont montrés qu'aux comptes
+            // qui ont la permission RBAC de l'espace (section et filtre masqués sinon).
+            $dtnAccess = app(\App\Services\Dtn\DtnAccess::class);
+            $spaceVisible = [
+                'dtn' => auth()->check() && $dtnAccess->isDtnSide(auth()->user()),
+                'club_selections' => auth()->check() && $dtnAccess->isClubSide(auth()->user()),
+            ];
             foreach($modules as $module) {
                 $category = $module['category'] ?? 'administration';
+                if (isset($spaceVisible[$category]) && !$spaceVisible[$category]) {
+                    continue;
+                }
                 if(!isset($groupedModules[$category])) {
                     $groupedModules[$category] = [];
                 }
@@ -215,6 +241,7 @@ function filterByCategory(category, event) {
                         {{ app()->getLocale() === 'en' ? 'All categories' : 'Toutes les catégories' }}
                     </button>
                     @foreach($categories as $key => $category)
+                    @continue(isset($spaceVisible[$key]) && !$spaceVisible[$key])
                     <button onclick="filterByCategory('{{ $key }}', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="{{ $key }}">
                         {{ app()->getLocale() === 'en' ? (trans('modules_fit.categories')[$key] ?? $category['name']) : $category['name'] }}
                     </button>
@@ -233,7 +260,9 @@ function filterByCategory(category, event) {
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <span class="text-2xl mr-3">
-                                @if($categoryKey === 'health') 🏥
+                                @if($categoryKey === 'dtn') 🇹🇳
+                                @elseif($categoryKey === 'club_selections') 🎽
+                                @elseif($categoryKey === 'health') 🏥
                                 @elseif($categoryKey === 'sport') ⚽
                                 @elseif($categoryKey === 'institutional') 🏢
                                 @elseif($categoryKey === 'documents') 📋
@@ -282,7 +311,6 @@ function filterByCategory(category, event) {
                         'analytics.dashboard' => 'access-analytics',
                         'analytics.digital-twin' => 'access-digital-twin',
                         'performances.analytics' => 'access-performance-analytics',
-                        'dtn.index' => 'access-dtn',
                         'rpm.index' => 'access-rpm',
                         'gemini.index' => 'access-gemini',
                         'modules.finance.dashboard' => 'access-finance',
@@ -303,10 +331,8 @@ function filterByCategory(category, event) {
                                     auth()->user(),
                                     'record-performance-metrics'
                                 ),
-                        'dtn.index' => auth()->check()
-                            && app(\App\Services\Dtn\DtnAccess::class)->isDtnSide(auth()->user()),
-                        'club.selections.index' => auth()->check()
-                            && app(\App\Services\Dtn\DtnAccess::class)->isClubSide(auth()->user()),
+                        'dtn.index', 'dtn.players.index', 'dtn.api-access' => $spaceVisible['dtn'],
+                        'club.selections.index', 'club.selections.returns', 'club.selections.api-access' => $spaceVisible['club_selections'],
                         default => true,
                     };
                 @endphp
@@ -442,7 +468,11 @@ function handleModuleClick(route, moduleName, event) {
         'performances.fit-metrics': '/performances/fit-metrics',
         'modules.coach-cockpit': '/modules/coach-cockpit',
         'dtn.index': '/dtn',
+        'dtn.players.index': '/dtn/players',
+        'dtn.api-access': '/dtn/api-access',
         'club.selections.index': '/club/selections',
+        'club.selections.returns': '/club/selections/returns',
+        'club.selections.api-access': '/club/selections/api-access',
         'rpm.index': '/rpm',
         'gemini.index': '/gemini',
         'fifa.dashboard': '/fifa/dashboard',

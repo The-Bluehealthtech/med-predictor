@@ -4,13 +4,13 @@
 
 @section('content')
 <div class="max-w-3xl mx-auto px-4 py-8 space-y-6">
+    @include('dtn.federation.partials.nav', ['active' => 'players'])
     <div class="flex items-start justify-between gap-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-700">Direction technique nationale · Espace fédération</p>
             <h1 class="text-2xl font-bold text-gray-900">Convoquer un joueur</h1>
             <p class="text-sm text-gray-600">Le club du joueur recevra une demande d'état de départ, pré-rempli à partir de ses données de match.</p>
         </div>
-        <a href="{{ route('dtn.players.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">← Fiches joueurs</a>
+        <a href="{{ route('dtn.players.index') }}" class="text-indigo-700 hover:text-indigo-900 text-sm">← Fiches joueurs</a>
     </div>
 
     @if($errors->any())

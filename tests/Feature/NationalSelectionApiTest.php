@@ -97,11 +97,19 @@ class NationalSelectionApiTest extends TestCase
         $this->getJson("/api/v1/club/selections/{$id}")->assertOk()
             ->assertJsonPath('data.departure_report.status', 'draft')
             ->assertJsonPath('data.medical_included', false);
+        $this->putJson("/api/v1/club/selections/{$id}/departure", ['vigilance' => 'BROUILLON CLUB'])->assertOk();
+        Sanctum::actingAs($dtn, self::FEDERATION);
+        $this->getJson("/api/v1/dtn/selections/{$id}")->assertJsonPath('data.departure_report', null);
+        Sanctum::actingAs($coach, self::CLUB);
         $this->putJson("/api/v1/club/selections/{$id}/departure", [
             'availability' => 'available_limited', 'load_recommendation' => '60 minutes maximum', 'send' => true,
         ])->assertOk()->assertJsonPath('data.status', NationalSelection::STATUS_DEPARTURE_SENT);
 
-        // La DTN envoie l'état de retour
+        // La DTN envoie l'état de retour (son brouillon reste invisible pour le club)
+        Sanctum::actingAs($dtn, self::FEDERATION);
+        $this->putJson("/api/v1/dtn/selections/{$id}/return", ['incidents' => 'BROUILLON DTN'])->assertOk();
+        Sanctum::actingAs($coach, self::CLUB);
+        $this->getJson("/api/v1/club/selections/{$id}")->assertJsonPath('data.return_report', null)->assertJsonPath('data.performance', null);
         Sanctum::actingAs($dtn, self::FEDERATION);
         $this->getJson("/api/v1/dtn/selections/{$id}")->assertOk()
             ->assertJsonPath('data.departure_report.content.load_recommendation', '60 minutes maximum');

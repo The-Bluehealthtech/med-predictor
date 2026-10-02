@@ -24,7 +24,7 @@ class DtnContractTest extends TestCase
         $this->assertStringContainsString("Route::middleware(['auth', 'auth.unified', 'permission.unified:dtn-federation-space'])->group(", $routes);
         $this->assertStringContainsString("Route::middleware(['auth', 'auth.unified', 'permission.unified:club-selections-space'])->group(", $routes);
         foreach (['dtn.players.index', 'dtn.players.show', 'dtn.selections.store', 'dtn.selections.show', 'dtn.selections.return', 'dtn.api-access',
-            'club.selections.index', 'club.selections.show', 'club.selections.departure', 'club.selections.acknowledge', 'club.selections.api-access'] as $name) {
+            'club.selections.index', 'club.selections.returns', 'club.selections.show', 'club.selections.departure', 'club.selections.acknowledge', 'club.selections.api-access'] as $name) {
             $this->assertStringContainsString("->name('{$name}')", $routes);
         }
         $this->assertFileDoesNotExist($this->projectPath('app/Http/Controllers/DtnController.php'));
@@ -37,13 +37,39 @@ class DtnContractTest extends TestCase
             $this->assertStringContainsString("{$check}(", $workflow);
         }
         $this->assertStringContainsString('canViewAsFederation(', file_get_contents($this->projectPath('app/Http/Controllers/Dtn/FederationController.php')));
-        $this->assertStringContainsString('canViewAsClub(', file_get_contents($this->projectPath('app/Http/Controllers/Dtn/ClubSelectionController.php')));
+        $this->assertStringContainsString('canViewAsClub(', file_get_contents($this->projectPath('app/Http/Controllers/Club/SelectionController.php')));
 
-        foreach (['FederationApiController' => 'FEDERATION_PERMISSION', 'ClubSelectionApiController' => 'CLUB_PERMISSION'] as $class => $permission) {
-            $api = file_get_contents($this->projectPath("app/Http/Controllers/Api/V1/Selections/{$class}.php"));
-            $this->assertSame(substr_count($api, '): JsonResponse'), substr_count($api, '$this->requireAbility('), "{$class} : droit du jeton sur chaque action");
-            $this->assertSame(substr_count($api, '$this->requireAbility('), substr_count($api, "DtnAccess::{$permission})"), "{$class} : permission RBAC sur chaque action");
+        foreach (['Dtn' => 'isDtnSide', 'Club' => 'isClubSide'] as $space => $check) {
+            $api = file_get_contents($this->projectPath("app/Http/Controllers/Api/V1/{$space}/SelectionApiController.php"));
+            $actions = substr_count($api, '): JsonResponse');
+            $this->assertSame($actions, substr_count($api, '$this->requireAbility($request, ApiAbilities::'), "{$space} : droit du jeton sur chaque action");
+            $this->assertSame($actions, substr_count($api, '$this->requireSpace($request);'), "{$space} : permission RBAC de l'espace sur chaque action");
+            $this->assertStringContainsString("\$this->access->{$check}(", $api);
         }
+    }
+
+    public function test_the_two_spaces_share_no_controller_view_or_api_code(): void
+    {
+        foreach ([
+            'app/Http/Controllers/Club' => ['Dtn\\', "'dtn."],
+            'app/Http/Controllers/Api/V1/Club' => ['Api\\V1\\Dtn', "'dtn."],
+            'app/Http/Controllers/Api/V1/Dtn' => ['Api\\V1\\Club', "'club."],
+            'resources/views/club' => ["'dtn.", "route('dtn"],
+            'resources/views/dtn' => ["'club.", "route('club"],
+        ] as $dir => $forbidden) {
+            foreach (glob($this->projectPath($dir) . '/{,*/,*/*/}*.php', GLOB_BRACE) as $file) {
+                $source = file_get_contents($file);
+                foreach ($forbidden as $needle) {
+                    if ($needle === 'Dtn\\') {
+                        // Le socle métier commun (App\Services\Dtn) est autorisé, pas les contrôleurs de l'autre espace.
+                        $source = str_replace('App\\Services\\Dtn\\', '', $source);
+                    }
+                    $this->assertStringNotContainsString($needle, $source, basename($dir) . '/' . basename($file));
+                }
+            }
+        }
+        $this->assertDirectoryDoesNotExist($this->projectPath('resources/views/dtn/partials'));
+        $this->assertDirectoryDoesNotExist($this->projectPath('app/Http/Controllers/Api/V1/Selections'));
     }
 
     public function test_medical_data_is_restricted_to_medical_roles_and_never_serialized(): void

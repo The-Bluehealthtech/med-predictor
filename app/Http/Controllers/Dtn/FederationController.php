@@ -125,14 +125,16 @@ class FederationController extends Controller
     {
         $selection->load(['player', 'club', 'association', 'creator', 'departure.author', 'returnReport.author']);
         $canSeeMedical = $this->access->canSeeMedical($request->user(), $selection);
+        // L'état de départ n'est visible par la fédération qu'une fois envoyé par le club (jamais le brouillon).
+        $departure = $selection->departure?->isSent() ? $selection->departure : null;
 
         return [
             'selection' => $selection,
-            'departure' => $selection->departure,
+            'departure' => $departure,
             'returnReport' => $selection->returnReport,
-            'snapshot' => $selection->departure?->snapshot ?? [],
+            'snapshot' => $departure?->snapshot ?? [],
             'performance' => $this->workflow->performance($selection),
-            'departureMedical' => $canSeeMedical ? ($selection->departure?->medical ?? []) : null,
+            'departureMedical' => $canSeeMedical && $departure ? ($departure->medical ?? []) : null,
             'returnMedical' => $canSeeMedical ? ($selection->returnReport?->medical ?? []) : null,
             'levels' => NationalSelectionReport::LEVELS,
         ];

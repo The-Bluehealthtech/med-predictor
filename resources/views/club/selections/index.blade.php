@@ -1,18 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Sélections nationales — Espace club')
+@section('title', 'Convocations reçues — Espace club')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8 space-y-6">
+    @include('club.selections.partials.nav', ['active' => 'index'])
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-emerald-700">Club · Sélections nationales</p>
-            <h1 class="text-2xl font-bold text-gray-900">Joueurs sélectionnés</h1>
-            <p class="text-sm text-gray-600 max-w-2xl">Recevez les convocations de la Direction technique nationale, préparez l'état de départ de vos joueurs et recevez leur état de retour de sélection.</p>
-        </div>
-        <div class="flex flex-wrap items-center gap-3">
-            <a href="{{ route('club.selections.api-access') }}" class="text-sm text-gray-600 hover:text-gray-900">Accès API</a>
-            <a href="{{ route('modules.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">← Modules</a>
+            <h1 class="text-2xl font-bold text-gray-900">Convocations reçues</h1>
+            <p class="text-sm text-gray-600 max-w-2xl">Convocations de vos joueurs par la Direction technique nationale : préparez et envoyez leur état de départ avant le rassemblement.</p>
         </div>
     </div>
 
@@ -32,7 +28,7 @@
             @if($group['items']->isEmpty())
                 <p class="px-5 py-6 text-sm text-gray-500">{{ $group['empty'] }}</p>
             @else
-                @include('dtn.partials.selection-table', ['items' => $group['items'], 'showRoute' => 'club.selections.show', 'counterpart' => 'Fédération'])
+                @include('club.selections.partials.selection-table', ['items' => $group['items']])
             @endif
         </section>
     @endforeach

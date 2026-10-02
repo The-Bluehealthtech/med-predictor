@@ -20,6 +20,7 @@ class ClubOfficial extends Model
         'certification_valid_from' => 'date',
         'certification_valid_to' => 'date',
         'is_head_coach' => 'boolean',
+        'retrieved_at' => 'datetime',
     ];
 
     public function club(): BelongsTo

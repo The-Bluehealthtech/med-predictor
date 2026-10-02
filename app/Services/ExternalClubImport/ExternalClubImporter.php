@@ -3,6 +3,7 @@
 namespace App\Services\ExternalClubImport;
 
 use App\Models\Club;
+use App\Models\ClubOfficial;
 use App\Models\Player;
 use App\Services\ExternalClubImport\Providers\FootMercatoProvider;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +56,8 @@ class ExternalClubImporter
             $updated = 0;
             $externalLinks = [];
 
+            $coach = $this->syncHeadCoach($club, $data['club']['coach'] ?? [], $data);
+
             foreach ($data['players'] as $externalPlayer) {
                 $player = $this->matchPlayer($externalPlayer, $club);
                 $isNew = ! $player;
@@ -91,6 +94,7 @@ class ExternalClubImporter
                 'players_total' => count($data['players']),
                 'import_batch_id' => $batchId,
                 'external_links' => $externalLinks,
+                'head_coach' => $coach?->fullName(),
             ];
 
             $this->finishImportBatch($batchId, $result, $data);
@@ -98,6 +102,84 @@ class ExternalClubImporter
             return $result;
         });
     }
+    private function syncHeadCoach(Club $club, array $external, array $data): ?ClubOfficial
+    {
+        $name = trim((string) ($external['name'] ?? ''));
+        if ($name === '' || ! Schema::hasTable('club_officials')) {
+            return null;
+        }
+
+        $firstName = trim((string) ($external['first_name'] ?? ''));
+        $lastName = trim((string) ($external['last_name'] ?? ''));
+        if ($firstName === '' || $lastName === '') {
+            $parts = preg_split('/\s+/u', $name) ?: [];
+            $firstName = $firstName ?: (array_shift($parts) ?: $name);
+            $lastName = $lastName ?: (implode(' ', $parts) ?: $firstName);
+        }
+
+        // A newly sourced coach supersedes the previous active head coach, but history is retained.
+        ClubOfficial::query()
+            ->where('club_id', $club->id)
+            ->where('registration_type', ClubOfficial::TEAM_OFFICIAL)
+            ->where('team_official_role', 'Coach')
+            ->where('is_head_coach', true)
+            ->whereRaw("LOWER(TRIM(international_first_name || ' ' || international_last_name)) <> ?", [mb_strtolower($name)])
+            ->update(['is_head_coach' => false, 'status' => 'inactive']);
+
+        $official = ClubOfficial::query()
+            ->where('club_id', $club->id)
+            ->where('registration_type', ClubOfficial::TEAM_OFFICIAL)
+            ->where('team_official_role', 'Coach')
+            ->whereRaw("LOWER(TRIM(international_first_name || ' ' || international_last_name)) = ?", [mb_strtolower($name)])
+            ->first() ?? new ClubOfficial();
+
+        $official->club_id = $club->id;
+        $official->international_first_name = $firstName;
+        $official->international_last_name = $lastName;
+        $official->gender = $official->gender ?: 'male';
+        $official->date_of_birth = $external['date_of_birth'] ?? $official->date_of_birth;
+        $official->nationality = $this->countryCode($external['nationality'] ?? null) ?: $official->nationality;
+        $official->registration_type = ClubOfficial::TEAM_OFFICIAL;
+        $official->team_official_role = 'Coach';
+        $official->organisation_official_role = null;
+        $official->role_description = 'Head coach';
+        $official->is_head_coach = true;
+        $official->status = 'active';
+        $official->discipline = 'Football';
+        $official->registration_valid_from = $official->registration_valid_from ?: now()->startOfYear()->toDateString();
+        $official->source = FootMercatoProvider::SOURCE;
+        $official->source_url = $external['profile_url'] ?? ($data['source_url'] ?? null);
+        $official->retrieved_at = $data['retrieved_at'] ?? now();
+        $official->save();
+
+        return $official;
+    }
+
+    private function countryCode(?string $country): ?string
+    {
+        if (! $country) {
+            return null;
+        }
+
+        $key = mb_strtolower(trim($country));
+        return [
+            'arabie saoudite' => 'SA', 'saudi arabia' => 'SA',
+            'australie' => 'AU', 'australia' => 'AU',
+            'allemagne' => 'DE', 'germany' => 'DE',
+            'portugal' => 'PT', 'italie' => 'IT', 'italy' => 'IT',
+            'france' => 'FR', 'espagne' => 'ES', 'spain' => 'ES',
+            'croatie' => 'HR', 'croatia' => 'HR',
+            'serbie' => 'RS', 'serbia' => 'RS',
+            'bosnie-herzégovine' => 'BA', 'bosnia and herzegovina' => 'BA',
+            'brésil' => 'BR', 'brazil' => 'BR',
+            'royaume-uni' => 'GB', 'angleterre' => 'GB', 'england' => 'GB',
+            'pays-bas' => 'NL', 'netherlands' => 'NL',
+            'belgique' => 'BE', 'belgium' => 'BE',
+            'grèce' => 'GR', 'greece' => 'GR',
+            'uruguay' => 'UY', 'argentine' => 'AR', 'argentina' => 'AR',
+        ][$key] ?? null;
+    }
+
     private function matchClub(array $external): ?Club
     {
         $name = trim((string) ($external['name'] ?? ''));

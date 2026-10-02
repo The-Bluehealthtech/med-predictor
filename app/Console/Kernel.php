@@ -84,6 +84,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\SeedDemoNationalSelections::class,
         \App\Console\Commands\ImportExternalClub::class,
         \App\Console\Commands\ImportSaudiProLeague::class,
+        \App\Console\Commands\SyncSaudiClubLeaders::class,
     ];
 
     /**

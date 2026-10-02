@@ -26,6 +26,7 @@ class FootMercatoProvider
 
         $data = $this->parseClubHtml($response->body(), $url);
         $data['players'] = $this->enrichPlayerDetails($data['players']);
+        $data['club']['coach'] = $this->enrichCoachDetails($data['club']['coach'] ?? []);
 
         return $data;
     }
@@ -306,6 +307,30 @@ class FootMercatoProvider
         }
 
         return array_values($indexed);
+    }
+
+    private function enrichCoachDetails(array $coach): array
+    {
+        $url = $coach['profile_url'] ?? null;
+        if (! $url) {
+            return $coach;
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'User-Agent' => 'Mozilla/5.0 FIT-ExternalClubImporter/1.0',
+                'Accept-Language' => 'fr-FR,fr;q=0.9,en;q=0.8',
+            ])->timeout(20)->retry(1, 200)->get($url);
+
+            if ($response->successful()) {
+                $detail = $this->parsePersonHtml($response->body());
+                return array_replace($coach, array_filter($detail, static fn ($value) => $value !== null && $value !== ''));
+            }
+        } catch (\Throwable) {
+            // Keep the structured club-level coach data when profile enrichment fails.
+        }
+
+        return $coach;
     }
 
     private function parsePersonHtml(string $html): array

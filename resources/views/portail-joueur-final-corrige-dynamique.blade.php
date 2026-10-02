@@ -71,9 +71,12 @@
                 <div class="flex gap-2">
                     <!-- Photo du joueur (w-32 h-32) -->
                     <div class="w-32 h-32 bg-blue-100 rounded-lg p-2 flex items-center justify-center relative group">
-                        @if($player->player_picture || $player->player_face_url)
-                            <img src="{{ $player->player_picture ?? $player->player_face_url }}" 
-                                 alt="Photo de {{ $player->first_name }} {{ $player->last_name }}" 
+                        @if($player->player_picture_url)
+                            <img src="{{ $player->player_picture_url }}"
+                                 @if($player->player_face_url && $player->player_picture_url !== $player->player_face_url)
+                                     onerror='this.onerror=null;this.src=@js($player->player_face_url)'
+                                 @endif
+                                 alt="Photo de {{ $player->first_name }} {{ $player->last_name }}"
                                  class="w-full h-full object-cover rounded-lg">
                         @else
                             <div class="text-4xl text-gray-400">👤</div>

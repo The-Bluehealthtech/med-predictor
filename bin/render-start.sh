@@ -12,6 +12,8 @@ sed -i "s/^Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf
 sed -i "s/<VirtualHost \\*:[0-9]*>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-available/000-default.conf
 echo "Clearing compiled Blade views..."
 php artisan view:clear
+echo "Ensuring public storage link..."
+php artisan storage:link --no-interaction || true
 echo "Applying required FIT schema..."
 # Ne jamais servir l'application avec une migration échouée.
 php artisan fit:deploy --schema-only --no-interaction

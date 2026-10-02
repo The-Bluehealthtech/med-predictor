@@ -107,7 +107,7 @@ final class ClubSheet
     {
         $engine = config('role_evaluation_engine');
         $guide = $engine['period_guidance'];
-        $catalog = DB::table('position_catalog')->orderBy('id')->pluck('family', 'code');
+        $catalog = DB::table('position_catalog')->orderBy('display_order')->pluck('family', 'code');
         $profiles = collect((new PeriodStatsDataSource)->forPlayers());
         $clubOf = DB::table('players')->whereIn('id', $profiles->pluck('id'))->pluck('club_id', 'id');
 

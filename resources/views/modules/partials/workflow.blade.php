@@ -16,7 +16,7 @@
     <ol class="grid grid-cols-1 gap-4 {{ $cols[count($workflow['steps'])] ?? 'lg:grid-cols-4' }}">
         @foreach($workflow['steps'] as $i => $step)
             @php $cards = $cardsOf($step); @endphp
-            <li class="relative flex flex-col rounded-xl border p-4 {{ $cards->isEmpty() ? 'border-dashed border-gray-200 bg-gray-50' : 'border-gray-200 bg-gray-50/60' }}" data-step="{{ $i + 1 }}">
+            <li class="module-step relative flex flex-col rounded-xl border p-4 {{ $cards->isEmpty() ? 'border-dashed border-gray-200 bg-gray-50' : 'border-gray-200 bg-gray-50/60' }}" data-step="{{ $i + 1 }}">
                 @if(!$loop->last)
                     <span class="hidden lg:flex absolute -right-3.5 top-6 z-10 items-center justify-center w-7 h-7 rounded-full bg-white border border-gray-200 text-gray-400" aria-hidden="true">{!! $arrow !!}</span>
                 @endif
@@ -54,7 +54,7 @@
                             @continue
                         @endif
                         @php $cards = $laneOpen ? $cardsOf($step) : collect(); @endphp
-                        <li class="relative flex flex-col rounded-xl border p-3 {{ $laneOpen ? 'border-gray-200 bg-gray-50/60' : 'border-dashed border-gray-200 bg-gray-50' }}" data-step="{{ $i + 1 }}">
+                        <li class="module-step relative flex flex-col rounded-xl border p-3 {{ $laneOpen ? 'border-gray-200 bg-gray-50/60' : 'border-dashed border-gray-200 bg-gray-50' }}" data-step="{{ $i + 1 }}">
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-sm font-bold {{ $laneOpen ? $lane['tone'] : 'bg-gray-300' }}">{{ $i + 1 }}</span>
                                 <span class="font-semibold text-gray-900">{{ $tr($step['label']) }}</span>

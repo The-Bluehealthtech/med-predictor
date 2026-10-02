@@ -38,46 +38,78 @@
         : collect($modules);
 @endphp
 <script>
-// Filter functions - defined early to ensure availability
-function showAllCategories(event) {
-    const sections = document.querySelectorAll('.category-section');
-    sections.forEach(section => {
-        section.style.display = 'block';
+let activeModuleCategory = null;
+
+function normalizeModuleSearch(value) {
+    return (value || '')
+        .toString()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+}
+
+function setActiveCategoryButton(button) {
+    document.querySelectorAll('[data-module-category-filter]').forEach(candidate => {
+        candidate.classList.remove('bg-blue-600', 'text-white');
+        candidate.classList.add('bg-gray-200', 'text-gray-700');
     });
-    
-    const buttons = document.querySelectorAll('button[onclick*="filterByCategory"], button[onclick*="showAllCategories"]');
-    buttons.forEach(button => {
-        button.classList.remove('bg-blue-600', 'text-white');
-        button.classList.add('bg-gray-200', 'text-gray-700');
-    });
-    
-    if (event && event.target) {
-        event.target.classList.remove('bg-gray-200', 'text-gray-700');
-        event.target.classList.add('bg-blue-600', 'text-white');
+
+    if (button) {
+        button.classList.remove('bg-gray-200', 'text-gray-700');
+        button.classList.add('bg-blue-600', 'text-white');
     }
 }
 
-function filterByCategory(category, event) {
-    const sections = document.querySelectorAll('.category-section');
-    sections.forEach(section => {
-        section.style.display = 'none';
+function applyModuleFilters() {
+    const searchInput = document.getElementById('module-search');
+    const query = normalizeModuleSearch(searchInput ? searchInput.value : '');
+    let visibleCards = 0;
+
+    document.querySelectorAll('.category-section').forEach(section => {
+        const categoryMatches = !activeModuleCategory || section.dataset.category === activeModuleCategory;
+        let sectionVisibleCards = 0;
+
+        section.querySelectorAll('.module-card').forEach(card => {
+            const haystack = normalizeModuleSearch(card.dataset.search || card.textContent);
+            const matches = categoryMatches && (!query || haystack.includes(query));
+            card.hidden = !matches;
+            if (matches) {
+                sectionVisibleCards++;
+                visibleCards++;
+            }
+        });
+
+        section.querySelectorAll('.module-step').forEach(step => {
+            const cards = [...step.querySelectorAll('.module-card')];
+            if (cards.length > 0) {
+                step.hidden = !cards.some(card => !card.hidden);
+            } else {
+                step.hidden = !categoryMatches || query !== '';
+            }
+        });
+
+        section.hidden = !categoryMatches || (query !== '' && sectionVisibleCards === 0);
     });
-    
-    const targetSections = document.querySelectorAll(`.category-section[data-category="${category}"]`);
-    targetSections.forEach(section => {
-        section.style.display = 'block';
-    });
-    
-    const buttons = document.querySelectorAll('button[onclick*="filterByCategory"], button[onclick*="showAllCategories"]');
-    buttons.forEach(button => {
-        button.classList.remove('bg-blue-600', 'text-white');
-        button.classList.add('bg-gray-200', 'text-gray-700');
-    });
-    
-    if (event && event.target) {
-        event.target.classList.remove('bg-gray-200', 'text-gray-700');
-        event.target.classList.add('bg-blue-600', 'text-white');
+
+    const status = document.getElementById('module-search-status');
+    if (status) {
+        status.textContent = query
+            ? `${visibleCards} {{ app()->getLocale() === 'en' ? 'module(s) found' : 'module(s) trouvé(s)' }}`
+            : '';
     }
+}
+
+function showAllCategories(event) {
+    activeModuleCategory = null;
+    setActiveCategoryButton(event?.currentTarget || null);
+    applyModuleFilters();
+}
+
+function filterByCategory(category, event) {
+    activeModuleCategory = category;
+    setActiveCategoryButton(event?.currentTarget || null);
+    applyModuleFilters();
 }
 </script>
 
@@ -214,17 +246,32 @@ function filterByCategory(category, event) {
             }
         @endphp
 
-        <!-- Filtres par catégorie -->
+        <!-- Recherche et filtres -->
         <div class="mb-8">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="mb-5">
+                    <label for="module-search" class="block text-sm font-semibold text-gray-900 mb-2">
+                        {{ app()->getLocale() === 'en' ? 'Search modules' : 'Rechercher un module' }}
+                    </label>
+                    <div class="relative">
+                        <input id="module-search"
+                               type="search"
+                               autocomplete="off"
+                               placeholder="{{ app()->getLocale() === 'en' ? 'Name, feature, workflow…' : 'Nom, fonctionnalité, parcours…' }}"
+                               class="w-full rounded-lg border border-gray-300 px-4 py-3 pr-10 focus:border-blue-500 focus:ring-blue-500">
+                        <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">⌕</span>
+                    </div>
+                    <p id="module-search-status" class="mt-2 text-sm text-gray-500" aria-live="polite"></p>
+                </div>
+
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ app()->getLocale() === 'en' ? 'Filter by category' : 'Filtrer par catégorie' }}</h3>
                 <div class="flex flex-wrap gap-2">
-                    <button onclick="showAllCategories(event)" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    <button type="button" data-module-category-filter onclick="showAllCategories(event)" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                         {{ app()->getLocale() === 'en' ? 'All categories' : 'Toutes les catégories' }}
                     </button>
                     @foreach($categories as $key => $category)
                     @continue(empty($groupedModules[$key]))
-                    <button onclick="filterByCategory('{{ $key }}', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="{{ $key }}">
+                    <button type="button" data-module-category-filter onclick="filterByCategory('{{ $key }}', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="{{ $key }}">
                         <span class="inline-flex items-center gap-2">@include('modules.partials.icon', ['name' => $category['icon'] ?? '', 'class' => 'w-4 h-4'])<span>{{ app()->getLocale() === 'en' ? (trans('modules_fit.categories')[$key] ?? $category['name']) : $category['name'] }}</span></span>
                     </button>
                     @endforeach
@@ -302,13 +349,6 @@ function filterByCategory(category, event) {
         @endif
     </div>
 </div>
-
-<style>
-/* Ensure all category sections are visible by default */
-.category-section {
-    display: block !important;
-}
-</style>
 
 <script>
 function handleModuleClick(route, moduleName, event) {
@@ -407,14 +447,14 @@ function showModuleInfo(moduleName, url) {
 }
 
 
-// Ensure all sections are visible on page load
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Page loaded, ensuring all sections are visible');
-    const pageSections = document.querySelectorAll('.category-section');
-    pageSections.forEach(section => {
-        section.style.display = 'block';
-    });
-    console.log('Made', pageSections.length, 'sections visible');
+    const searchInput = document.getElementById('module-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', applyModuleFilters);
+        searchInput.addEventListener('search', applyModuleFilters);
+    }
+
+    applyModuleFilters();
 });
 </script>
 @endsection

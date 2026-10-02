@@ -128,5 +128,14 @@ class CoachCockpitTest extends TestCase
         $this->assertSame('CDM', $sheet['squad'][0]['position']);
         $response->assertSee('data-club-sheet', false)->assertSee('Club Fiche Test')->assertSee('Fondé en 1957')
             ->assertSee('Karim Fiche')->assertSee('90 %')->assertSee('Ligue test 2026/27')->assertSee('fiche club');
+
+        // Seuils minimums : 1 club importé sur 6, le milieu défensif compte 1 régulier, Karim a assez de minutes.
+        $t = $sheet['thresholds'];
+        $this->assertSame(1, $t['clubs_imported']);
+        $this->assertTrue($t['club_imported']);
+        $cdm = collect($t['families'])->firstWhere('family', 'milieu défensif');
+        $this->assertGreaterThanOrEqual(1, $cdm['regulars']);
+        $this->assertSame(1, $cdm['own']);
+        $response->assertSee('data-thresholds', false)->assertSee('Seuils minimums')->assertSee('1 / 6 minimum')->assertSee('score possible');
     }
 }

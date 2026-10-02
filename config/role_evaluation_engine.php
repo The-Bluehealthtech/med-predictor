@@ -41,6 +41,11 @@ return [
     // élargi automatiquement à chaque nouveau club importé. Seuil plus bas
     // assumé et tracé (model_version « -period », taille de la référence).
     'period_min_reference_players' => 12,
+    // Repères affichés dans le cockpit (indicatifs, non utilisés par le calcul) :
+    // joueurs réguliers par poste pour estimer la variance entre joueurs,
+    // clubs importés de la même compétition, minutes jouées pour qu'un score
+    // individuel dépasse en pratique la fiabilité minimale.
+    'period_guidance' => ['family_regulars' => 10, 'min_clubs' => 6, 'player_minutes' => 450],
     'half_life_matches' => 8,
     'minute_weight_denominator' => 60,
     'rate_prior_attempts' => 15,

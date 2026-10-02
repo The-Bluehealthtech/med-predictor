@@ -4,6 +4,7 @@ namespace App\Services\CoachCockpit;
 
 use App\Models\Club;
 use App\Services\ClubOfficials\ClubOfficials;
+use App\Services\RoleEvaluationEngine\PeriodStatsDataSource;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -82,6 +83,7 @@ final class ClubSheet
                 'certification' => $coach->certification_name ?: $coach->certification_type,
                 'since' => $coach->registration_valid_from ? Carbon::parse($coach->registration_valid_from)->format('m/Y') : null,
             ] : null,
+            'thresholds' => $this->thresholds($club),
             'columns' => self::COLUMNS,
             'squad' => $squad,
             'summary' => [
@@ -93,6 +95,50 @@ final class ClubSheet
                 'source' => $latest->source ?? null,
                 'measured_at' => isset($latest->measured_at) ? Carbon::parse($latest->measured_at) : null,
             ],
+        ];
+    }
+
+    /**
+     * Seuils minimums pour obtenir des scores « Rôle et apport » à partir des
+     * exports de saison : clubs importés, joueurs réguliers par poste (tous
+     * clubs importés confondus), minutes par joueur.
+     */
+    public function thresholds(Club $club): array
+    {
+        $engine = config('role_evaluation_engine');
+        $guide = $engine['period_guidance'];
+        $catalog = DB::table('position_catalog')->orderBy('id')->pluck('family', 'code');
+        $profiles = collect((new PeriodStatsDataSource)->forPlayers());
+        $clubOf = DB::table('players')->whereIn('id', $profiles->pluck('id'))->pluck('club_id', 'id');
+
+        $families = [];
+        foreach ($catalog->unique()->values() as $family) {
+            $families[$family] = ['family' => $family, 'regulars' => 0, 'own' => 0];
+        }
+        foreach ($profiles as $p) {
+            $family = $catalog[$p['position'] ?? ''] ?? null;
+            if ($family === null || $p['average']['minutes'] < $engine['min_reference_minutes']) {
+                continue;
+            }
+            $families[$family]['regulars']++;
+            if ((int) ($clubOf[$p['id']] ?? 0) === $club->id) {
+                $families[$family]['own']++;
+            }
+        }
+
+        $importedClubs = $clubOf->filter()->unique();
+        $ideal = $club->association_id ? DB::table('clubs')->where('association_id', $club->association_id)->count() : null;
+
+        return [
+            'regular_minutes' => $engine['min_reference_minutes'],
+            'family_regulars' => $guide['family_regulars'],
+            'player_minutes' => $guide['player_minutes'],
+            'min_clubs' => $guide['min_clubs'],
+            'ideal_clubs' => $ideal,
+            'clubs_imported' => $importedClubs->count(),
+            'club_imported' => $importedClubs->contains($club->id),
+            'families' => array_values($families),
+            'families_ready' => count(array_filter($families, fn ($f) => $f['regulars'] >= $guide['family_regulars'])),
         ];
     }
 

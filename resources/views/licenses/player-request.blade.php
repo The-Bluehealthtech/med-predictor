@@ -27,9 +27,19 @@
         <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert"><ul class="list-disc pl-5">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
     @endif
 
+    <div class="mb-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Votre objectif</p>
+        <p class="mt-1 font-semibold text-slate-900">Préparer puis envoyer la demande à la fédération</p>
+        <p class="mt-1 text-sm text-slate-600">Vérifiez les informations de licence, ajoutez les pièces demandées et envoyez le dossier. Les exigences médicales et documentaires s'adaptent automatiquement au joueur.</p>
+    </div>
+
     <div class="rounded-2xl border border-slate-200 bg-white p-6">
-        <p class="mb-5 text-sm text-slate-600">Enregistrement « Player » au sens de FIFA Connect. La licence vaut pour une saison et la demande part à la fédération dès sa création.
-            @unless($player->fifa_connect_id) <strong>Ce joueur n'a pas d'identifiant FIFA :</strong> la fédération ne pourra pas vérifier son identité auprès de FIFA ID.@endunless</p>
+        @unless($player->fifa_connect_id)
+            <div class="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                <strong>Identité internationale non vérifiable pour le moment.</strong>
+                La demande peut être préparée, mais la fédération ne pourra pas effectuer la vérification FIFA ID tant que l'identifiant du joueur n'est pas renseigné.
+            </div>
+        @endunless
 
         <form method="POST" action="{{ route('player-licenses.request.store', $player) }}" enctype="multipart/form-data" class="space-y-5" id="license-request">
             @csrf
@@ -51,6 +61,11 @@
                         </select>
                     @endif
                 </label>
+            </div>
+
+            <div class="border-t border-slate-100 pt-5">
+                <h2 class="text-base font-semibold text-slate-900">Type de licence</h2>
+                <p class="mt-1 text-sm text-slate-500">Choisissez uniquement ce qui correspond à la situation du joueur.</p>
             </div>
 
             <fieldset>

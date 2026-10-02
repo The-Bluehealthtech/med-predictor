@@ -11,9 +11,9 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <x-page-header
-        title="Approbation des licences"
-        subtitle="Côté fédération : examinez les demandes des clubs, vérifiez l'identité (FIFA ID, facultatif), puis approuvez, demandez un complément ou refusez."
-        eyebrow="Licences · fédération"
+        title="Licences à examiner"
+        subtitle="Traitez les demandes des clubs et prenez une décision lorsque le dossier est complet."
+        eyebrow="Administration · fédération"
         :back-href="route('modules.index', ['section' => 'administration'])"
         back-label="Retour aux modules"
     />
@@ -22,11 +22,11 @@
         @if(session($key))<div class="mb-4 rounded-xl border px-4 py-3 text-sm {{ $class }}" role="status">{{ session($key) }}</div>@endif
     @endforeach
 
-    <ol class="mb-4 grid gap-3 sm:grid-cols-3" aria-label="Étapes de l'approbation">
-        <li class="rounded-2xl border border-slate-200 bg-white p-4"><span class="text-xs font-bold uppercase tracking-wide text-slate-500">1 · Examiner</span><p class="mt-1 text-sm text-slate-700">Ouvrez la demande : joueur, club, type, dates et pièces justificatives exigées.</p></li>
-        <li class="rounded-2xl border border-slate-200 bg-white p-4"><span class="text-xs font-bold uppercase tracking-wide text-slate-500">2 · Vérifier l'identité (facultatif)</span><p class="mt-1 text-sm text-slate-700">Consultez le registre FIFA ID avec l'identifiant FIFA du joueur.</p></li>
-        <li class="rounded-2xl border border-slate-200 bg-white p-4"><span class="text-xs font-bold uppercase tracking-wide text-slate-500">3 · Décider</span><p class="mt-1 text-sm text-slate-700">Approuver, demander un complément au club, ou refuser avec un motif.</p></li>
-    </ol>
+    <section class="mb-4 rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="h-review-now">
+        <p class="text-xs font-bold uppercase tracking-wide text-slate-500">À faire maintenant</p>
+        <h2 id="h-review-now" class="mt-1 text-lg font-semibold text-slate-900">{{ $counts['pending'] }} demande(s) à examiner</h2>
+        <p class="mt-1 text-sm text-slate-600">Ouvrez un dossier, vérifiez les éléments requis puis approuvez, demandez un complément ou refusez avec un motif.</p>
+    </section>
 
     <div class="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border px-4 py-3 text-sm {{ $registryConnected ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-white text-slate-700' }}" data-fifa-id-status="{{ $registryConnected ? 'connected' : 'not_configured' }}">
         <span class="font-semibold">Registre d'identité FIFA ID :</span>

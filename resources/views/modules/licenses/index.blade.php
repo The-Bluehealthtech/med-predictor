@@ -13,9 +13,9 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <x-page-header
-        title="Demande de licence"
-        subtitle="Côté club : choisissez un joueur, remplissez la demande et envoyez-la à la fédération, qui l'approuve."
-        eyebrow="Licences · club"
+        title="Licences"
+        subtitle="Gérez les demandes de licence du club et voyez immédiatement ce qui nécessite votre intervention."
+        eyebrow="Administration · club"
         :back-href="route('modules.index', ['section' => 'administration'])"
         back-label="Retour aux modules"
     >
@@ -30,24 +30,23 @@
         @if(session($key))<div class="mb-4 rounded-xl border px-4 py-3 text-sm {{ $class }}" role="status">{{ session($key) }}</div>@endif
     @endforeach
 
-    {{-- Le processus en trois étapes, pour savoir qui fait quoi. --}}
-    <ol class="mb-6 grid gap-3 sm:grid-cols-3" aria-label="Étapes de la demande de licence">
-        <li class="rounded-2xl border border-slate-200 bg-white p-4">
-            <span class="text-xs font-bold uppercase tracking-wide text-slate-500">Étape 1 · Club</span>
-            <p class="mt-1 font-semibold text-slate-900">Choisir le joueur</p>
-            <p class="text-sm text-slate-600">Un joueur, un officiel d'équipe ou un dirigeant sans licence active ni demande en cours.</p>
-        </li>
-        <li class="rounded-2xl border border-slate-200 bg-white p-4">
-            <span class="text-xs font-bold uppercase tracking-wide text-slate-500">Étape 2 · Club</span>
-            <p class="mt-1 font-semibold text-slate-900">Remplir et envoyer la demande</p>
-            <p class="text-sm text-slate-600">Saison, discipline, niveau et nature (FIFA Connect), pièces exigées par le barème. Elle part aussitôt à la fédération, qui est notifiée.</p>
-        </li>
-        <li class="rounded-2xl border border-slate-200 bg-white p-4">
-            <span class="text-xs font-bold uppercase tracking-wide text-slate-500">Étape 3 · Fédération</span>
-            <p class="mt-1 font-semibold text-slate-900">Approbation</p>
-            <p class="text-sm text-slate-600">La fédération vérifie pièces et identité (FIFA ID, si le registre est connecté), puis approuve, demande un complément ou refuse. Vous êtes notifié à chaque décision.</p>
-        </li>
-    </ol>
+    {{-- Vue métier : l'action requise passe avant l'explication du processus. --}}
+    <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="h-now">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wide text-slate-500">À faire maintenant</p>
+                <h2 id="h-now" class="mt-1 text-lg font-semibold text-slate-900">
+                    {{ $counts['info'] > 0 ? $counts['info'] . ' demande(s) à compléter' : 'Aucun complément demandé par la fédération' }}
+                </h2>
+                <p class="mt-1 text-sm text-slate-600">
+                    {{ $counts['info'] > 0 ? 'Traitez ces dossiers en priorité pour permettre leur réexamen.' : 'Vous pouvez déposer une nouvelle demande pour un joueur ou un membre du staff ci-dessous.' }}
+                </p>
+            </div>
+            @if($counts['info'] === 0)
+                <a href="#h-players" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Nouvelle licence joueur</a>
+            @endif
+        </div>
+    </section>
 
     <div class="mb-6 grid gap-3 sm:grid-cols-3">
         <div class="rounded-2xl border border-slate-200 bg-white p-4"><span class="text-sm text-slate-600">Compléments à fournir</span><b class="block text-2xl text-slate-900">{{ $counts['info'] }}</b></div>

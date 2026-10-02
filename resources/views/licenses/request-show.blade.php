@@ -27,8 +27,17 @@
     @endforeach
 
     <div class="mb-4 rounded-2xl border px-5 py-4 {{ $tone[$license->status] ?? 'border-slate-200 bg-white text-slate-900' }}" data-license-status="{{ $license->status }}">
-        <p class="text-base font-semibold">{{ LicenseWorkflow::STATUS_LABELS[$license->status] ?? $license->status }}</p>
-        <p class="text-sm">
+        <p class="text-xs font-bold uppercase tracking-wide opacity-70">Prochaine action</p>
+        <p class="mt-1 text-base font-semibold">
+            @switch($license->status)
+                @case('pending') Aucune action requise : la fédération examine le dossier. @break
+                @case('justification_requested') Complétez le dossier pour relancer son examen. @break
+                @case('active') Licence délivrée : aucune action requise. @break
+                @case('revoked') Demande refusée : consultez le motif avant toute nouvelle demande. @break
+                @default {{ LicenseWorkflow::STATUS_LABELS[$license->status] ?? $license->status }}
+            @endswitch
+        </p>
+        <p class="mt-1 text-sm">
             @switch($license->status)
                 @case('pending') La fédération examine la demande. Vous serez notifié de sa décision. @break
                 @case('justification_requested') La fédération attend un complément : <strong>{{ $license->rejection_reason }}</strong> @break

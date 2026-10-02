@@ -84,6 +84,8 @@ class DeployFit extends Command
                     $this->error('FIT migrations failed.');
                     return self::FAILURE;
                 }
+
+                $this->reportMigrationDrift();
             }
             if ($this->option('schema-only')) {
                 $this->info('FIT schema preparation completed.');
@@ -135,6 +137,46 @@ class DeployFit extends Command
             return self::SUCCESS;
         } finally {
             $this->releaseLock($driver);
+        }
+    }
+
+    /**
+     * Report migration files that exist in the repository but are not recorded
+     * in the canonical database. This is intentionally read-only: FIT keeps an
+     * explicit migration allowlist so an unexpected migration is never applied
+     * to production automatically.
+     */
+    private function reportMigrationDrift(): void
+    {
+        if (!DB::getSchemaBuilder()->hasTable('migrations')) {
+            return;
+        }
+
+        $applied = DB::table('migrations')->pluck('migration')->all();
+        $applied = array_fill_keys($applied, true);
+        $pending = [];
+
+        foreach (glob(database_path('migrations/*.php')) ?: [] as $file) {
+            $name = pathinfo($file, PATHINFO_FILENAME);
+            if (!isset($applied[$name])) {
+                $pending[] = $name;
+            }
+        }
+
+        sort($pending);
+
+        if ($pending === []) {
+            $this->info('Migration drift check: no unapplied repository migrations.');
+            return;
+        }
+
+        $this->warn(
+            'Migration drift detected: '.count($pending).
+            ' repository migration(s) are not applied to this database.'
+        );
+
+        foreach ($pending as $migration) {
+            $this->line('  - '.$migration);
         }
     }
 

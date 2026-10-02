@@ -1158,15 +1158,6 @@ Route::post('/joueur/{playerId}/access', [App\Http\Controllers\PlayerAccessContr
 Route::prefix('api/dataset-analytics')->group(function () {
 });
 
-// Test Health Records Simple route (public access for testing)
-Route::get('/health-records-simple', function () {
-    try {
-        return view('health-records.create-simple');
-    } catch (\Exception $e) {
-        \Log::error('Health records simple test route error: ' . $e->getMessage());
-        return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);
-    }
-})->middleware(['auth'])->name('health.records.simple');
 
 
 

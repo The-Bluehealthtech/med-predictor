@@ -1708,7 +1708,6 @@ class CompetitionManagementController extends Controller
         \Log::info('getClubPlayers response', [
             'club_id' => $request->club_id,
             'players_count' => $players->count(),
-            'players' => $players->toArray()
         ]);
         
         return response()->json([
@@ -1723,7 +1722,9 @@ class CompetitionManagementController extends Controller
         
         \Log::info('Import players request received', [
             'match_id' => $match->id,
-            'request_data' => $request->all()
+            'club_id' => $request->input('club_id'),
+            'team_type' => $request->input('team_type'),
+            'players_count' => count($request->input('players', [])),
         ]);
         
         $request->validate([
@@ -1744,10 +1745,11 @@ class CompetitionManagementController extends Controller
             }
             
             \Log::info('Match club validation', [
+                'match_id' => $match->id,
                 'match_club_ids' => $matchClubIds,
                 'requested_club_id' => $request->club_id,
-                'home_team' => $match->homeTeam ? $match->homeTeam->toArray() : null,
-                'away_team' => $match->awayTeam ? $match->awayTeam->toArray() : null
+                'home_team_id' => $match->home_team_id,
+                'away_team_id' => $match->away_team_id,
             ]);
             
             if (!in_array($request->club_id, $matchClubIds)) {

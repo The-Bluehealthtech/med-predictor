@@ -177,14 +177,16 @@ class TransferController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating transfer', [
+                'error_class' => $e::class,
                 'error' => $e->getMessage(),
-                'request_data' => $request->all(),
+                'player_id' => $request->input('player_id'),
+                'club_destination_id' => $request->input('club_destination_id'),
+                'created_by' => Auth::id(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la création du transfert',
-                'error' => $e->getMessage(),
             ], 500);
         }
     }

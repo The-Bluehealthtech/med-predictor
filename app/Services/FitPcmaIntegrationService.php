@@ -342,10 +342,13 @@ class FitPcmaIntegrationService
             ];
             
         } catch (Exception $e) {
+            Log::warning('FIT API health check unreachable', [
+                'error_class' => $e::class,
+            ]);
+
             return [
                 'success' => false,
                 'status' => 'unreachable',
-                'error' => $e->getMessage()
             ];
         }
     }

@@ -247,18 +247,20 @@ class DtnSelectionWorkflowTest extends TestCase
         app()->setLocale('fr');
         $this->actingAs($dtn);
         $html = view('modules.index', ['modules' => $cards])->render();
-        $this->assertStringContainsString('Espace DTN — fédération', $html);
-        $this->assertStringNotContainsString('Espace club', $html);
+        $this->assertStringContainsString('Fiches joueurs', $html);
+        $this->assertStringNotContainsString('Convocations reçues', $html);
         $this->assertStringNotContainsString('Retours de sélection', $html);
         $this->actingAs($coach);
         $html = view('modules.index', ['modules' => $cards])->render();
-        $this->assertStringContainsString('Espace club', $html);
-        $this->assertStringNotContainsString('Espace DTN', $html);
+        $this->assertStringContainsString('Convocations reçues', $html);
         $this->assertStringNotContainsString('Fiches joueurs', $html);
+        $this->assertStringNotContainsString('Convocations et retours', $html);
         $this->actingAs($this->user('system_admin'));
         $html = view('modules.index', ['modules' => $cards])->render();
-        $this->assertStringContainsString('Espace DTN — fédération', $html);
-        $this->assertStringContainsString('Espace club', $html);
+        $this->assertStringContainsString('Fiches joueurs', $html);
+        $this->assertStringContainsString('Convocations reçues', $html);
+        // Le parcours ordonne les étapes : Observer (1) … Accusé de réception (5).
+        $this->assertLessThan(strpos($html, 'Accusé de réception'), strpos($html, 'Observer'));
 
         // La clinique n'apparaît qu'aux rôles médicaux (et le secrétariat au rôle secretary).
         $clinic = [

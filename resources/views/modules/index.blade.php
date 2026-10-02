@@ -17,6 +17,15 @@
         if (($module['category'] ?? null) === 'clinique') {
             return $isMedical || (($module['route'] ?? null) === 'secretary.dashboard' && ($authUser?->role === 'secretary'));
         }
+        // La saisie FIT suit la permission RBAC canonique de sa route de destination.
+        $routeRule = match ($module['route'] ?? null) {
+            'performances.fit-metrics' => auth()->check()
+                && app(\App\Services\RBACService::class)->userHasPermission(auth()->user(), 'record-performance-metrics'),
+            default => null,
+        };
+        if ($routeRule !== null) {
+            return $routeRule;
+        }
         $group = $module['group'] ?? null;
         return isset($spaceVisible[$group]) ? $spaceVisible[$group] : true;
     };
@@ -148,6 +157,38 @@ function filterByCategory(category, event) {
                 'selections' => ['name' => 'Les sélections nationales', 'description' => 'Relation club ↔ Direction technique nationale', 'icon' => 'flag', 'tone' => 'bg-indigo-50 text-indigo-600 ring-indigo-100'],
                 'administration' => ['name' => 'L\'administration', 'description' => 'Organisations, sport, licences, finance et système', 'icon' => 'briefcase', 'tone' => 'bg-slate-100 text-slate-600 ring-slate-200'],
             ];
+            // Parcours de chaque section : étapes ordonnées, rôle et production de chaque étape.
+            $workflows = [
+                'clinique' => ['type' => 'flow', 'tone' => 'bg-red-600', 'steps' => [
+                    ['label' => 'Accueil', 'role' => 'Secrétariat médical', 'output' => 'Rendez-vous pris, dossier ouvert', 'routes' => ['secretary.dashboard']],
+                    ['label' => 'Prise en charge', 'role' => 'Médecin', 'output' => 'Consultation et orientation', 'routes' => ['modules.medical.index']],
+                    ['label' => 'Dossier médical', 'role' => 'Médecin', 'output' => 'Diagnostic, traitement, AUT, imagerie', 'routes' => ['modules.healthcare.index']],
+                    ['label' => 'Aptitude', 'role' => 'Médecin', 'output' => 'Aptitude à jouer transmise au staff', 'routes' => ['pcma.index']],
+                ]],
+                'performance' => ['type' => 'flow', 'tone' => 'bg-blue-600', 'steps' => [
+                    ['label' => 'Collecter', 'role' => 'Préparateur physique', 'output' => 'Métriques et données des capteurs', 'routes' => ['performances.fit-metrics', 'portal.devices']],
+                    ['label' => 'Surveiller', 'role' => 'Préparateur physique', 'output' => 'Charge et état de forme', 'routes' => ['rpm.index']],
+                    ['label' => 'Évaluer', 'role' => 'Analyste, entraîneur adjoint', 'output' => 'Forme, temps de jeu, alertes par joueur', 'routes' => ['performances.analytics']],
+                    ['label' => 'Décider', 'role' => 'Entraîneur', 'output' => 'Composition et plan du prochain match', 'routes' => ['modules.coach-cockpit']],
+                ], 'tools' => ['analytics.digital-twin'], 'tools_label' => 'Pour aller plus loin'],
+                'selections' => ['type' => 'lanes', 'lanes' => [
+                    'dtn' => ['label' => 'Direction technique nationale', 'tone' => 'bg-indigo-600', 'text' => 'text-indigo-700'],
+                    'club' => ['label' => 'Club', 'tone' => 'bg-emerald-600', 'text' => 'text-emerald-700'],
+                ], 'steps' => [
+                    ['lane' => 'dtn', 'label' => 'Observer', 'role' => 'DTN', 'output' => 'Joueurs ciblés', 'routes' => ['dtn.players.index']],
+                    ['lane' => 'dtn', 'label' => 'Convoquer', 'role' => 'DTN', 'output' => 'Convocation envoyée au club', 'routes' => ['dtn.index']],
+                    ['lane' => 'club', 'label' => 'État de départ', 'role' => 'Staff et médecin du club', 'output' => 'Données du joueur envoyées à la DTN', 'routes' => ['club.selections.index']],
+                    ['lane' => 'dtn', 'label' => 'État de retour', 'role' => 'DTN, après le rassemblement', 'output' => 'Incidents, performances et risques', 'routes' => ['dtn.index']],
+                    ['lane' => 'club', 'label' => 'Accusé de réception', 'role' => 'Club', 'output' => 'Sélection clôturée', 'routes' => ['club.selections.returns']],
+                ], 'tools' => ['dtn.api-access', 'club.selections.api-access'], 'tools_label' => 'Connexion des logiciels (API)'],
+                'administration' => ['type' => 'flow', 'tone' => 'bg-slate-600', 'steps' => [
+                    ['label' => 'Structurer', 'role' => 'Administration', 'output' => 'Clubs et fédérations en place', 'routes' => ['modules.clubs.index', 'modules.associations.index', 'modules.confederations.index']],
+                    ['label' => 'Enregistrer', 'role' => 'Secrétariat du club', 'output' => 'Joueurs et équipes inscrits', 'routes' => ['modules.players.index', 'modules.teams.index']],
+                    ['label' => 'Licencier', 'role' => 'Club, puis ligue ou fédération', 'output' => 'Licences validées', 'routes' => ['modules.licenses.index', 'licenses.validation']],
+                    ['label' => 'Transférer', 'role' => 'Club et fédération', 'output' => 'Mutations enregistrées', 'routes' => ['admin.transfer-management.index', 'fifa.dashboard']],
+                    ['label' => 'Organiser', 'role' => 'Ligue ou fédération', 'output' => 'Compétitions et arbitres désignés', 'routes' => ['modules.competitions.index', 'referee-portal.index']],
+                ], 'tools' => ['modules.finance.dashboard', 'modules.administration.index', 'admin.content-management.index', 'gemini.index'], 'tools_label' => 'Outils transverses'],
+            ];
             // Teinte des pastilles d'icône, par couleur de carte (classes écrites en entier pour Tailwind).
             $iconTone = [
                 'red' => 'bg-red-50 text-red-600', 'blue' => 'bg-blue-50 text-blue-600', 'indigo' => 'bg-indigo-50 text-indigo-600',
@@ -205,119 +246,9 @@ function filterByCategory(category, event) {
                     </div>
                 </div>
                 
-                <!-- Modules Grid -->
+                <!-- Parcours de la section -->
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                @php $previousGroup = null; @endphp
-                @foreach($groupedModules[$categoryKey] as $item)
-                @if(($item['group'] ?? null) && $item['group'] !== $previousGroup)
-                    <div class="md:col-span-2 lg:col-span-3 {{ $previousGroup ? 'mt-2 pt-4 border-t border-gray-100' : '' }}">
-                        <h4 class="text-xs font-semibold uppercase tracking-wider {{ $groupTone[$item['group']] ?? 'text-gray-500' }}">{{ app()->getLocale() === 'en' ? (trans('modules_fit.groups')[$item['group']] ?? $groupLabels[$item['group']]) : ($groupLabels[$item['group']] ?? $item['group']) }}</h4>
-                    </div>
-                @endif
-                @php $previousGroup = $item['group'] ?? null; @endphp
-                @php
-                    $routeName = $item['route'] ?? null;
-                    $gateMap = [
-                        'players.index' => 'access-player-list',
-                        'modules.teams.index' => 'access-team-management',
-                        'modules.competitions.index' => 'access-competition-management',
-                        'modules.referees.index' => 'access-referee-portal',
-                        'modules.clubs.index' => 'access-club-management',
-                        'modules.associations.index' => 'access-back-office',
-                        'modules.licenses.index' => 'access-license-management',
-                        'fifa.dashboard' => 'access-fifa-connect',
-                        'portal.devices' => 'access-devices-portal',
-                        'clinical.patient-portal' => 'access-clinical-portal',
-                        'clinical.clinician-portal' => 'access-clinical-portal',
-                        'modules.administration.index' => 'access-back-office',
-                        'modules.medical.index' => 'access-medical',
-                        'modules.healthcare.index' => 'access-healthcare',
-                        'pcma.index' => 'access-pcma',
-                        'secretary.dashboard' => 'access-secretary',
-                        'modules.confederations.index' => 'access-confederations',
-                        'fifa.portal.integrated' => 'access-fifa-portal',
-                        'player-portal.index' => 'access-player-portal',
-                        'referee-portal.index' => 'access-referee-portal',
-                        'team-portal.dashboard' => 'access-team-portal',
-                        'analytics.dashboard' => 'access-analytics',
-                        'analytics.digital-twin' => 'access-digital-twin',
-                        'performances.analytics' => 'access-performance-analytics',
-                        'rpm.index' => 'access-rpm',
-                        'gemini.index' => 'access-gemini',
-                        'modules.finance.dashboard' => 'access-finance',
-                        'licenses.validation' => 'access-license-validation',
-                        'fifa.analytics' => 'access-fifa-analytics',
-                        'admin.content-management.index' => 'access-content-management',
-                        'admin.transfer-management.index' => 'access-transfer-management'
-                    ];
-                    $permission = $gateMap[$routeName] ?? 'access-modules';
-
-                    // FIT Metrics follows the canonical RBAC permission used
-                    // by its destination route. Legacy module permissions are
-                    // audited separately before enforcing them globally here.
-                    $canAccess = match ($routeName) {
-                        'performances.fit-metrics' => auth()->check()
-                            && app(\App\Services\RBACService::class)
-                                ->userHasPermission(
-                                    auth()->user(),
-                                    'record-performance-metrics'
-                                ),
-                        'dtn.index', 'dtn.players.index', 'dtn.api-access' => $spaceVisible['dtn'],
-                        'club.selections.index', 'club.selections.returns', 'club.selections.api-access' => $spaceVisible['club'],
-                        default => true,
-                    };
-                @endphp
-                @if($canAccess)
-                <div class="module-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 cursor-pointer group" 
-                     onclick="handleModuleClick('{{ $item['route'] }}', '{{ app()->getLocale() === 'en' ? (trans('modules_fit.names')[$item['name']] ?? $item['name']) : $item['name'] }}', event)">
-                    <div class="flex items-start justify-between mb-3">
-                        <div class="flex items-center">
-                            <div class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">
-                                @php
-                                    $cardNumber = 1;
-                                    foreach($categories as $catKey => $catInfo) {
-                                        if($catKey === $categoryKey) {
-                                            break;
-                                        }
-                                        $cardNumber += count($groupedModules[$catKey] ?? []);
-                                    }
-                                    $cardNumber += $loop->iteration - 1;
-                                @endphp
-                                {{ $cardNumber }}
-                            </div>
-                            <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg {{ $iconTone[$item['color'] ?? 'gray'] ?? 'bg-slate-100 text-slate-600' }}">@include('modules.partials.icon', ['name' => $item['icon'] ?? '', 'class' => 'w-5 h-5'])</span>
-                        </div>
-                        <div class="w-3 h-3 rounded-full 
-                            @if($item['color'] === 'red') bg-red-500
-                            @elseif($item['color'] === 'green') bg-green-500
-                            @elseif($item['color'] === 'blue') bg-blue-500
-                            @elseif($item['color'] === 'purple') bg-purple-500
-                            @elseif($item['color'] === 'yellow') bg-yellow-500
-                            @elseif($item['color'] === 'indigo') bg-indigo-500
-                            @elseif($item['color'] === 'pink') bg-pink-500
-                            @elseif($item['color'] === 'teal') bg-teal-500
-                            @elseif($item['color'] === 'cyan') bg-cyan-500
-                            @elseif($item['color'] === 'emerald') bg-emerald-500
-                            @else bg-gray-500 @endif"></div>
-                    </div>
-                    <h4 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                        {{ app()->getLocale() === 'en' ? (trans('modules_fit.names')[$item['name']] ?? $item['name']) : $item['name'] }}
-                    </h4>
-                    
-                    <p class="text-sm text-gray-600 mb-3 line-clamp-2">
-                        {{ app()->getLocale() === 'en' ? (trans('modules_fit.descriptions')[$item['description']] ?? $item['description']) : $item['description'] }}
-                    </p>
-                    
-                    <div class="flex items-center justify-between">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {{ app()->getLocale() === 'en' ? 'Available' : 'Disponible' }}
-                        </span>
-                        <span class="text-xs text-gray-500 font-mono">{{ $item['route'] }}</span>
-                    </div>
-                </div>
-                @endif
-                @endforeach
+                    @include('modules.partials.workflow', ['workflow' => $workflows[$categoryKey], 'items' => $groupedModules[$categoryKey]])
                 </div>
             </div>
         </div>

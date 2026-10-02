@@ -14,6 +14,7 @@ use App\Http\Controllers\ImmunisationController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\TransferPaymentController;
 use App\Http\Controllers\PassportController;
+use App\Http\Controllers\ClubController;
 use App\Http\Controllers\FederationController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\GoogleAssistantController;
@@ -781,6 +782,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/transfers/{transfer}/payments/{payment}', [TransferPaymentController::class, 'destroy']);
 
     // Passeport du jour
+    Route::get('/clubs', [ClubController::class, 'apiIndex']);
     Route::get('/clubs/{club}/players/daily-passport', [PassportController::class, 'clubPassport']);
     Route::get('/federations/{federation}/daily-passport', [PassportController::class, 'federationPassport']);
     Route::get('/players/{player}/transfers', [PassportController::class, 'playerTransfers']);

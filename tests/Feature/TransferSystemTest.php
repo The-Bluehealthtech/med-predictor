@@ -296,6 +296,24 @@ class TransferSystemTest extends TestCase
     }
 
     /** @test */
+    public function daily_passport_club_list_is_scoped_to_authenticated_club()
+    {
+        $this->user->update([
+            'role' => 'club_admin',
+            'club_id' => $this->clubOrigin->id,
+            'tenant_id' => 1,
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->getJson('/api/clubs');
+
+        $response->assertStatus(200)
+            ->assertJson(['success' => true])
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $this->clubOrigin->id);
+    }
+
+    /** @test */
     public function club_passport_returns_eligible_players()
     {
         $this->user->update(['role' => 'system_admin']);

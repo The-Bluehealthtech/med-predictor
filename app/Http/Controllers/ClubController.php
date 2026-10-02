@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Club;
 use App\Models\Association;
@@ -22,6 +23,32 @@ class ClubController extends Controller
         $association = null;
         
         return view('modules.clubs.index', compact('clubs', 'filtered', 'association'));
+    }
+
+    /**
+     * Liste JSON des clubs accessibles pour les composants authentifiés.
+     */
+    public function apiIndex(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($user, 401);
+
+        $query = Club::query()->orderBy('name');
+
+        if ($user->isSystemAdmin()) {
+            // Tous les clubs.
+        } elseif ($user->isClubUser() && $user->club_id) {
+            $query->whereKey($user->club_id);
+        } elseif ($user->isAssociationUser() && $user->association_id) {
+            $query->where('association_id', $user->association_id);
+        } else {
+            $query->whereRaw('1 = 0');
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $query->get(['id', 'name', 'association_id', 'federation_id']),
+        ]);
     }
 
     /**

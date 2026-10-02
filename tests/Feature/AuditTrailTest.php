@@ -159,4 +159,19 @@ class AuditTrailTest extends TestCase
         $this->actingAs(User::factory()->create(['role' => 'club_admin', 'status' => 'active']))
             ->get('/admin/audit-trail')->assertStatus(302)->assertDontSee('Visible dans l');
     }
+
+    public function test_retention_purge_is_simulated_by_default_and_journaled_when_forced(): void
+    {
+        $old = DB::table('audit_logs')->insertGetId(['event_type' => 'system', 'model_type' => 'system', 'action' => 'ancien',
+            'severity' => 'info', 'created_at' => now()->subYears(config('audit.retention_years') + 1), 'updated_at' => now()]);
+
+        $this->artisan('audit:retention')->assertExitCode(0);
+        $this->assertTrue(DB::table('audit_logs')->where('id', $old)->exists(), 'simulation : rien n\'est supprimé');
+
+        $this->artisan('audit:retention', ['--force' => true])->assertExitCode(0);
+        $this->assertFalse(DB::table('audit_logs')->where('id', $old)->exists());
+        $purge = $this->lastLog();
+        $this->assertSame('retention_purge', $purge->action);
+        $this->assertGreaterThanOrEqual(1, $purge->metadata['deleted']);
+    }
 }

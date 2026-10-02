@@ -34,6 +34,7 @@ class DeployFit extends Command
         'database/migrations/2026_10_02_230000_repoint_lineups_and_rosters_to_matches.php',
         'database/migrations/2026_10_02_230100_repoint_player_detailed_stats_to_players.php',
         'database/migrations/2026_10_03_090000_create_platform_activities_table.php',
+        'database/migrations/2026_10_03_100000_protect_audit_logs_append_only.php',
     ];
 
     protected $signature = 'fit:deploy

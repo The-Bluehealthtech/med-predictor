@@ -5,6 +5,10 @@
 // sensibles. « sensitive » : pour les données de santé, seuls les noms des
 // champs modifiés sont journalisés, jamais leurs valeurs.
 return [
+    // Durée de conservation (années) avant purge par « php artisan audit:retention --force ».
+    // Valeur par défaut à faire valider par le DPO / la direction ; en deçà, rien n'est effaçable.
+    'retention_years' => (int) env('AUDIT_RETENTION_YEARS', 6),
+
     'models' => [
         App\Models\User::class => ['module' => 'comptes'],
         App\Models\Player::class => ['module' => 'joueurs'],

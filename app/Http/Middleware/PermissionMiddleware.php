@@ -44,7 +44,6 @@ class PermissionMiddleware
                         'message' => 'Forbidden. Insufficient permissions.',
                         'error' => 'INSUFFICIENT_PERMISSIONS',
                         'required_permission' => $permission,
-                        'user_permissions' => $userPermissions
                     ], 403);
                 }
                 
@@ -58,7 +57,6 @@ class PermissionMiddleware
                         'message' => 'Forbidden. Insufficient permissions.',
                         'error' => 'INSUFFICIENT_PERMISSIONS',
                         'required_permission' => $permission,
-                        'user_role' => $user->role
                     ], 403);
                 }
                 

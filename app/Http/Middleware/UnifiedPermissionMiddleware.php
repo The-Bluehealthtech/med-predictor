@@ -35,12 +35,10 @@ class UnifiedPermissionMiddleware
         if (!$this->rbacService->userHasPermission($user, $permission)) {
             Log::warning('Permission denied', [
                 'user_id' => $user->id,
-                'email' => $user->email,
                 'role' => $user->role,
                 'required_permission' => $permission,
-                'user_permissions' => $this->rbacService->getUserPermissions($user),
                 'url' => $request->url(),
-                'method' => $request->method()
+                'method' => $request->method(),
             ]);
 
             return $this->handleInsufficientPermissions($request, $permission);

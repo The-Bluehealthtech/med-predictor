@@ -367,9 +367,18 @@ class HealthRecordController extends Controller
         $vigilance = request()->boolean('legacy')
             ? null
             : app(\App\Services\PlayerVigilanceService::class)->assess($healthRecord->player);
-        $vigilanceModels = request()->boolean('legacy')
-            ? null
-            : app(\App\Services\MedicalVigilanceModelRegistry::class)->forPlayer($healthRecord->player);
+        $vigilanceModels = null;
+        if (!request()->boolean('legacy')) {
+            try {
+                $vigilanceModels = app(\App\Services\MedicalVigilanceModelRegistry::class)->forPlayer($healthRecord->player);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('Vigilance model readiness unavailable', [
+                    'player_id' => $healthRecord->player_id,
+                    'health_record_id' => $healthRecord->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
 
         $view = request()->boolean('legacy') ? 'health-records.show' : 'health-records.workspace';
 

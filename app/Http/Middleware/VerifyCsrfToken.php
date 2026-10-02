@@ -19,6 +19,5 @@ class VerifyCsrfToken extends Middleware
         'api/v1/association/fraud-detection/*',
         'api/v1/clinical/*',
         'google-assistant/*',
-        'account-request',
     ];
 } 

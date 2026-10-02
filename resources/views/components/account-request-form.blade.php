@@ -369,7 +369,7 @@ function accountRequestForm() {
 
         async loadFootballTypes() {
             try {
-                const response = await fetch('/account-request/football-types');
+                const response = await fetch('/account-request/fit-football-types');
                 const data = await response.json();
                 this.footballTypes = data.data;
             } catch (error) {
@@ -379,7 +379,7 @@ function accountRequestForm() {
 
         async loadOrganizationTypes() {
             try {
-                const response = await fetch('/account-request/organization-types');
+                const response = await fetch('/account-request/fit-organization-types');
                 const data = await response.json();
                 this.organizationTypes = data.data;
             } catch (error) {
@@ -389,7 +389,7 @@ function accountRequestForm() {
 
         async loadFifaAssociations() {
             try {
-                const response = await fetch('/account-request/fifa-associations');
+                const response = await fetch('/account-request/fit-associations');
                 const data = await response.json();
                 this.fifaAssociations = data.data;
             } catch (error) {
@@ -399,7 +399,7 @@ function accountRequestForm() {
 
         async loadFifaConnectTypes() {
             try {
-                const response = await fetch('/account-request/fifa-connect-types');
+                const response = await fetch('/account-request/fit-fifa-connect-types');
                 const data = await response.json();
                 this.fifaConnectTypes = data.data;
             } catch (error) {
@@ -447,7 +447,7 @@ function accountRequestForm() {
                     setTimeout(() => {
                         console.log('Timeout executed, redirecting...');
                         this.closeSuccess();
-                        window.location.href = 'http://localhost:8080/';
+                        window.location.href = @js(route('landing'));
                     }, 3000);
                 } else {
                     if (data.errors) {

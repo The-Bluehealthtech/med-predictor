@@ -5,7 +5,9 @@ use App\Http\Controllers\AccountRequestController;
 
 // Account Request Routes (completely public, no middleware)
 Route::get('/account-request', [AccountRequestController::class, 'create'])->name('account.request');
-Route::post('/account-request', [AccountRequestController::class, 'store'])->name('account-request.store');
+Route::post('/account-request', [AccountRequestController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('account-request.store');
 
 // Account Request Data Routes (public)
 Route::get('/account-request/football-types', function () {
@@ -79,5 +81,46 @@ Route::get('/account-request/fifa-connect-types', function () {
             'physiotherapist' => 'Physiothérapeute',
             'sports_scientist' => 'Scientifique du Sport'
         ]
+    ]);
+});
+
+// Canonical FIT options used by the current public request form. Legacy
+// endpoints above remain available for backwards compatibility.
+Route::get('/account-request/fit-football-types', function () {
+    return response()->json([
+        'success' => true,
+        'data' => \App\Models\AccountRequest::FOOTBALL_TYPES,
+    ]);
+});
+
+Route::get('/account-request/fit-organization-types', function () {
+    return response()->json([
+        'success' => true,
+        'data' => \App\Models\AccountRequest::ORGANIZATION_TYPES,
+    ]);
+});
+
+Route::get('/account-request/fit-fifa-connect-types', function () {
+    return response()->json([
+        'success' => true,
+        'data' => \App\Models\AccountRequest::FIFA_CONNECT_TYPES,
+    ]);
+});
+
+Route::get('/account-request/fit-associations', function () {
+    $data = \App\Models\Association::query()
+        ->orderBy('confederation')
+        ->orderBy('name')
+        ->get(['id', 'name', 'confederation'])
+        ->groupBy(static fn ($association) => $association->confederation ?: 'Associations')
+        ->map(static fn ($items) => $items->map(static fn ($association) => [
+            'id' => $association->id,
+            'full_name' => $association->name,
+        ])->values())
+        ->all();
+
+    return response()->json([
+        'success' => true,
+        'data' => $data,
     ]);
 });

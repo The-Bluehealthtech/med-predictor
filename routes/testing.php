@@ -6,6 +6,8 @@ Route::get('/', function () {
     return response()->json(['status' => 'ok']);
 });
 
+Route::post('/account-request', [\App\Http\Controllers\AccountRequestController::class, 'store'])->name('account-request.store');
+
 // Test route for PerformanceChart component
 Route::get('/test-performance-chart', function () {
     $chartData = request('chartData', []);

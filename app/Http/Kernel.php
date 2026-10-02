@@ -69,6 +69,7 @@ class Kernel extends HttpKernel
         'referee.access' => \App\Http\Middleware\RefereeAccessMiddleware::class,
         'referee' => \App\Http\Middleware\IsReferee::class,
         'v3.api' => \App\Http\Middleware\V3ApiMiddleware::class,
+        'google.assistant.auth' => \App\Http\Middleware\GoogleAssistantAuthMiddleware::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'rbac' => \App\Http\Middleware\RBACMiddleware::class,
         'tenant.enforce' => \App\Http\Middleware\TenantEnforcer::class,

@@ -117,6 +117,16 @@ Route::post(
     '/modules/coach-cockpit/role-evaluation/compute',
     [\App\Http\Controllers\CoachCockpitController::class, 'computeRoleEvaluations']
 )->middleware(['auth', 'auth.unified', 'permission.unified:record-performance-metrics'])->name('modules.coach-cockpit.role-evaluation.compute');
+Route::middleware(['auth', 'auth.unified', 'permission.unified:record-performance-metrics'])
+    ->prefix('/modules/coach-cockpit/role-evaluation/settings')->name('modules.coach-cockpit.role-evaluation.settings')->group(function () {
+        Route::get('/', [\App\Http\Controllers\RoleEvaluationSettingsController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\RoleEvaluationSettingsController::class, 'store'])->name('.store');
+        Route::post('/import', [\App\Http\Controllers\RoleEvaluationSettingsController::class, 'import'])->name('.import');
+        Route::put('/{version}', [\App\Http\Controllers\RoleEvaluationSettingsController::class, 'update'])->name('.update');
+        Route::get('/{version}/export', [\App\Http\Controllers\RoleEvaluationSettingsController::class, 'export'])->name('.export');
+        Route::post('/{version}/publish', [\App\Http\Controllers\RoleEvaluationSettingsController::class, 'publish'])->name('.publish');
+        Route::post('/{version}/archive', [\App\Http\Controllers\RoleEvaluationSettingsController::class, 'archive'])->name('.archive');
+    });
 
 // Analyse des performances : même contrôleur qu'en production.
 Route::get(

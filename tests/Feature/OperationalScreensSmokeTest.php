@@ -58,9 +58,9 @@ class OperationalScreensSmokeTest extends TestCase
         $selection->setRelation('club', null);
         $selection->setRelation('departure', null);
         $selection->setRelation('returnReport', null);
-        $dtn = view('dtn.index', [
-            'todo' => collect([$selection]), 'ongoing' => collect(), 'history' => collect(),
-            'canConvoke' => false, 'side' => 'club',
+        $dtn = view('dtn.federation.index', [
+            'groups' => [['title' => 'En attente du club', 'subtitle' => '', 'items' => collect([$selection]), 'empty' => '']],
+            'canConvoke' => false,
         ])->render();
         $this->assertStringContainsString('25/09/2026', $dtn);
     }

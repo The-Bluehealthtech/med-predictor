@@ -40,7 +40,9 @@ class DtnSelectionWorkflowTest extends TestCase
         $this->playerId = (int) DB::table('match_participations')
             ->join('teams', 'teams.id', '=', 'match_participations.team_id')
             ->where('teams.club_id', $this->clubId)->value('match_participations.player_id');
-        $this->associationId = (int) DB::table('associations')->value('id');
+        // Deux fédérations propres au test (la base de test peut ne pas en contenir)
+        $this->associationId = (int) DB::table('associations')->insertGetId(['name' => 'Fédération test', 'country' => 'Tunisie', 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('associations')->insert(['name' => 'Autre fédération test', 'country' => 'Maroc', 'created_at' => now(), 'updated_at' => now()]);
     }
 
     private function user(string $role, array $attributes = []): User
@@ -83,17 +85,19 @@ class DtnSelectionWorkflowTest extends TestCase
 
         // Le club complète et envoie l'état de départ
         $coach = $this->user('club_admin', ['club_id' => $this->clubId]);
-        $this->actingAs($coach)->post(route('dtn.selections.departure', $selection), [
+        $this->actingAs($coach)->post(route('club.selections.departure', $selection), [
             'availability' => 'available_limited', 'load_recommendation' => '60 minutes maximum', 'action' => 'send',
         ])->assertRedirect();
         $this->assertSame(NationalSelection::STATUS_DEPARTURE_SENT, $selection->fresh()->status);
         $this->assertSame('60 minutes maximum', $selection->fresh()->departure->content['load_recommendation']);
 
-        // Le club ne peut plus le modifier ; la DTN ne peut pas écrire l'état de départ
-        $this->actingAs($coach)->post(route('dtn.selections.departure', $selection), ['action' => 'save'])->assertForbidden();
-        $this->actingAs($dtn)->post(route('dtn.selections.departure', $selection), ['action' => 'save'])->assertForbidden();
-        // Le club ne peut pas écrire l'état de retour
-        $this->actingAs($coach)->post(route('dtn.selections.return', $selection), ['action' => 'save'])->assertForbidden();
+        // Le club ne peut plus le modifier ; la DTN n'a pas accès à l'espace club
+        $this->actingAs($coach)->post(route('club.selections.departure', $selection), ['action' => 'save'])->assertForbidden();
+        $this->actingAs($dtn)->post(route('club.selections.departure', $selection), ['action' => 'save'])->assertRedirect(route('dashboard'));
+        $this->assertSame(NationalSelection::STATUS_DEPARTURE_SENT, $selection->fresh()->status);
+        // Le club n'a pas accès à l'espace fédération
+        $this->actingAs($coach)->post(route('dtn.selections.return', $selection), ['action' => 'save'])->assertRedirect(route('dashboard'));
+        $this->assertNull($selection->fresh()->returnReport);
 
         // La DTN envoie l'état de retour
         $this->actingAs($dtn)->post(route('dtn.selections.return', $selection), [
@@ -102,11 +106,11 @@ class DtnSelectionWorkflowTest extends TestCase
         ])->assertRedirect();
         $this->assertSame(NationalSelection::STATUS_RETURN_SENT, $selection->fresh()->status);
 
-        $page = $this->actingAs($coach)->get(route('dtn.selections.show', $selection))->assertOk();
+        $page = $this->actingAs($coach)->get(route('club.selections.show', $selection))->assertOk();
         $this->assertEqualsWithDelta(74.0, $page->viewData('performance')['index'], 0.01, '0,6 × 70 + 0,4 × 80');
 
         // Le club accuse réception : clôture
-        $this->actingAs($coach)->post(route('dtn.selections.acknowledge', $selection))->assertRedirect();
+        $this->actingAs($coach)->post(route('club.selections.acknowledge', $selection))->assertRedirect();
         $this->assertSame(NationalSelection::STATUS_CLOSED, $selection->fresh()->status);
         $this->assertSame(NationalSelectionReport::STATUS_ACKNOWLEDGED, $selection->fresh()->returnReport->status);
     }
@@ -118,7 +122,7 @@ class DtnSelectionWorkflowTest extends TestCase
 
         // Un non-médical du club ne peut pas écrire la partie médicale
         $coach = $this->user('club_admin', ['club_id' => $this->clubId]);
-        $this->actingAs($coach)->post(route('dtn.selections.departure', $selection), [
+        $this->actingAs($coach)->post(route('club.selections.departure', $selection), [
             'medical' => ['current_injuries' => 'NE DOIT PAS ETRE ENREGISTRE'], 'fitness_status' => 'unfit', 'action' => 'save',
         ]);
         $this->assertEmpty($selection->fresh()->departure->medical);
@@ -126,7 +130,7 @@ class DtnSelectionWorkflowTest extends TestCase
 
         // Le médecin du club la renseigne
         $doctor = $this->user('club_medical', ['club_id' => $this->clubId]);
-        $this->actingAs($doctor)->post(route('dtn.selections.departure', $selection), [
+        $this->actingAs($doctor)->post(route('club.selections.departure', $selection), [
             'medical' => ['current_injuries' => 'Gêne aux ischio-jambiers'], 'fitness_status' => 'fit_with_restrictions', 'action' => 'send',
         ])->assertRedirect();
         $departure = $selection->fresh()->departure;
@@ -136,8 +140,9 @@ class DtnSelectionWorkflowTest extends TestCase
         // Visible par le médecin de la fédération, invisible pour le DTN, l'entraîneur et l'admin système
         $fedDoctor = $this->user('association_medical', ['association_id' => $this->associationId]);
         $this->actingAs($fedDoctor)->get(route('dtn.selections.show', $selection))->assertOk()->assertSee('Gêne aux ischio-jambiers');
-        foreach ([$dtn, $coach, $this->user('system_admin')] as $viewer) {
-            $response = $this->actingAs($viewer)->get(route('dtn.selections.show', $selection))->assertOk();
+        $this->actingAs($doctor)->get(route('club.selections.show', $selection))->assertOk()->assertSee('Gêne aux ischio-jambiers');
+        foreach ([[$dtn, 'dtn.selections.show'], [$coach, 'club.selections.show'], [$this->user('system_admin'), 'dtn.selections.show']] as [$viewer, $route]) {
+            $response = $this->actingAs($viewer)->get(route($route, $selection))->assertOk();
             $response->assertDontSee('Gêne aux ischio-jambiers');
             $response->assertSee('Apte avec restrictions');
             $this->assertNull($response->viewData('departureMedical'));
@@ -147,16 +152,17 @@ class DtnSelectionWorkflowTest extends TestCase
     public function test_selections_are_partitioned_by_club_and_federation(): void
     {
         $selection = $this->convoke($this->user('dtn', ['association_id' => $this->associationId]));
-        $otherAssociation = (int) DB::table('associations')->where('id', '!=', $this->associationId)->value('id');
+        $otherAssociation = (int) DB::table('associations')->where('id', '!=', $this->associationId)->max('id');
 
         $this->actingAs($this->user('club_admin', ['club_id' => $this->otherClubId]))
-            ->get(route('dtn.selections.show', $selection))->assertNotFound();
+            ->get(route('club.selections.show', $selection))->assertNotFound();
         $this->actingAs($this->user('dtn', ['association_id' => $otherAssociation]))
             ->get(route('dtn.selections.show', $selection))->assertNotFound();
 
-        $list = $this->actingAs($this->user('club_admin', ['club_id' => $this->clubId]))->get(route('dtn.index'))->assertOk();
-        $this->assertTrue($list->viewData('todo')->contains('id', $selection->id), 'le club doit préparer l\'état de départ');
-        $this->assertFalse($list->viewData('canConvoke'), 'un club ne convoque pas');
+        $list = $this->actingAs($this->user('club_admin', ['club_id' => $this->clubId]))->get(route('club.selections.index'))->assertOk();
+        $this->assertTrue($list->viewData('groups')[0]['items']->contains('id', $selection->id), 'le club doit préparer l\'état de départ');
+        $this->assertFalse($this->actingAs($this->user('club_admin', ['club_id' => $this->otherClubId]))
+            ->get(route('club.selections.index'))->viewData('groups')[0]['items']->contains('id', $selection->id));
     }
 
     public function test_demo_command_creates_three_stages_once(): void
@@ -182,10 +188,67 @@ class DtnSelectionWorkflowTest extends TestCase
 
     public function test_only_the_federation_side_can_convoke_and_players_are_refused(): void
     {
-        $this->actingAs($this->user('club_admin', ['club_id' => $this->clubId]))->get(route('dtn.selections.create'))->assertForbidden();
-        $this->actingAs($this->user('player'))->get(route('dtn.index'))->assertForbidden();
+        $this->actingAs($this->user('association_medical', ['association_id' => $this->associationId]))->get(route('dtn.selections.create'))->assertForbidden();
+        $this->actingAs($this->user('player'))->get(route('dtn.index'))->assertRedirect(route('dashboard'));
+        $this->actingAs($this->user('player'))->get(route('club.selections.index'))->assertRedirect(route('dashboard'));
 
         $this->app['auth']->forgetGuards();
         $this->get(route('dtn.index'))->assertRedirect(route('login'));
+    }
+
+    public function test_the_two_spaces_are_separated_by_rbac_in_the_interface(): void
+    {
+        $dtn = $this->user('dtn', ['association_id' => $this->associationId]);
+        $coach = $this->user('club_admin', ['club_id' => $this->clubId]);
+
+        // Espace fédération : DTN oui, club non
+        $this->actingAs($dtn)->get(route('dtn.index'))->assertOk()->assertSee('Espace fédération');
+        $this->actingAs($dtn)->get(route('dtn.players.index'))->assertOk();
+        $this->actingAs($dtn)->get(route('dtn.players.show', $this->playerId))->assertOk()->assertSee('Historique des sélections');
+        $this->actingAs($dtn)->get(route('dtn.selections.create', ['player_id' => $this->playerId]))->assertOk();
+        foreach (['dtn.index', 'dtn.players.index', 'dtn.selections.create', 'dtn.api-access'] as $route) {
+            $this->actingAs($coach)->get(route($route))->assertRedirect(route('dashboard'));
+        }
+        $this->actingAs($coach)->post(route('dtn.selections.store'), ['player_id' => $this->playerId])->assertRedirect(route('dashboard'));
+        $this->assertSame(0, NationalSelection::query()->count());
+
+        // Espace club : club oui, DTN non
+        $this->actingAs($coach)->get(route('club.selections.index'))->assertOk()->assertSee('Joueurs sélectionnés');
+        foreach (['club.selections.index', 'club.selections.api-access'] as $route) {
+            $this->actingAs($dtn)->get(route($route))->assertRedirect(route('dashboard'));
+        }
+
+        // Une sélection s'ouvre dans l'espace de chacun, jamais dans celui de l'autre
+        $selection = $this->convoke($dtn);
+        $this->actingAs($dtn)->get(route('club.selections.show', $selection))->assertRedirect(route('dashboard'));
+        $this->actingAs($coach)->get(route('dtn.selections.show', $selection))->assertRedirect(route('dashboard'));
+
+        // Page des modules : une carte par espace (visibilité calculée par DtnAccess)
+        $access = app(\App\Services\Dtn\DtnAccess::class);
+        $this->assertTrue($access->isDtnSide($dtn) && !$access->isClubSide($dtn));
+        $this->assertTrue($access->isClubSide($coach) && !$access->isDtnSide($coach));
+    }
+
+    public function test_each_space_creates_and_revokes_its_own_tokens(): void
+    {
+        $dtn = $this->user('dtn', ['association_id' => $this->associationId]);
+        $this->actingAs($dtn)->post(route('dtn.api-access.store'), ['name' => 'Logiciel DTN', 'expires_in_days' => 90, 'with_medical' => 1])
+            ->assertRedirect(route('dtn.api-access'))->assertSessionHas('plain_token');
+        $this->actingAs($dtn)->get(route('dtn.api-access'))->assertOk()->assertSee('dtn:players:read')->assertSee('/dtn/selections/{id}/return');
+        $token = $dtn->tokens()->firstOrFail();
+        $this->assertSame('dtn-federation:Logiciel DTN', $token->name);
+        $this->assertEqualsCanonicalizing(['dtn:players:read', 'dtn:selections:read', 'dtn:selections:write'], $token->abilities,
+            'pas de droit médical pour un DTN non médical');
+        $this->assertNotNull($token->expires_at);
+
+        $doctor = $this->user('club_medical', ['club_id' => $this->clubId]);
+        $this->actingAs($doctor)->post(route('club.selections.api-access.store'), ['name' => 'Logiciel médical', 'expires_in_days' => 30, 'with_medical' => 1]);
+        $this->assertContains('selections:medical', $doctor->tokens()->firstOrFail()->abilities);
+        $this->actingAs($doctor)->get(route('club.selections.api-access'))->assertOk()->assertSee('Logiciel médical')->assertSee('/club/selections/{id}/departure');
+
+        // Un espace ne voit ni ne révoque les jetons de l'autre
+        $this->actingAs($doctor)->delete(route('club.selections.api-access.destroy', $token->id))->assertNotFound();
+        $this->actingAs($dtn)->delete(route('dtn.api-access.destroy', $token->id))->assertRedirect(route('dtn.api-access'));
+        $this->assertSame(0, $dtn->tokens()->count());
     }
 }

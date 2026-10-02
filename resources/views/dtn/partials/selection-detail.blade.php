@@ -1,7 +1,5 @@
-@extends('layouts.app')
-
-@section('title', 'Sélection — ' . trim(($selection->player->first_name ?? '') . ' ' . ($selection->player->last_name ?? '')))
-
+{{-- Détail d'une sélection, partagé par l'espace fédération et l'espace club.
+     $space vaut 'federation' ou 'club' ; seules les actions de l'espace sont activées par le contrôleur. --}}
 @php
     $playerName = trim(($selection->player->first_name ?? '') . ' ' . ($selection->player->last_name ?? ''));
     $clubName = str_replace(' (Démo)', '', $selection->club->name ?? '—');
@@ -20,8 +18,6 @@
     $availability = ['available' => 'Disponible', 'available_limited' => 'Disponible avec gestion de la charge', 'unavailable' => 'Indisponible'];
     $input = 'mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm';
 @endphp
-
-@section('content')
 <div class="max-w-6xl mx-auto px-4 py-8 space-y-6">
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -30,13 +26,13 @@
             <p class="text-sm text-gray-600">{{ $clubName }} → {{ $selection->association->name ?? 'Fédération' }} · {{ $selection->event_name }}@if($selection->opponent) ({{ $selection->opponent }})@endif · du {{ $selection->start_date->format('d/m/Y') }} au {{ $selection->end_date->format('d/m/Y') }}</p>
         </div>
         <div class="flex items-center gap-3">
-            @if($canCancel)
+            @if($canCancel ?? false)
                 <form method="POST" action="{{ route('dtn.selections.cancel', $selection) }}" onsubmit="return window.confirm('Annuler cette convocation ?')">
                     @csrf
                     <button class="text-sm text-red-600 hover:text-red-800">Annuler la convocation</button>
                 </form>
             @endif
-            <a href="{{ route('dtn.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">← Sélections</a>
+            <a href="{{ $space === 'federation' ? route('dtn.index') : route('club.selections.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">← {{ $space === 'federation' ? 'Espace fédération' : 'Sélections du club' }}</a>
         </div>
     </div>
 
@@ -118,8 +114,8 @@
 
         {{-- Saisie du club --}}
         <div class="border-t p-5">
-            @if($canEditDeparture)
-                <form method="POST" action="{{ route('dtn.selections.departure', $selection) }}" class="space-y-4">
+            @if($canEditDeparture ?? false)
+                <form method="POST" action="{{ route('club.selections.departure', $selection) }}" class="space-y-4">
                     @csrf
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Informations du staff du club</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -139,7 +135,7 @@
                             <textarea name="technical_notes" rows="2" maxlength="2000" class="{{ $input }}" placeholder="Poste et rôle actuels au club, points travaillés…">{{ $dc['technical_notes'] ?? '' }}</textarea>
                         </label>
                     </div>
-                    @include('dtn.partials.medical-departure', ['editable' => $canEditDepartureMedical, 'medical' => $departureMedical, 'report' => $departure])
+                    @include('dtn.partials.medical-departure', ['editable' => $canEditDepartureMedical ?? false, 'medical' => $departureMedical, 'report' => $departure])
                     <div class="flex flex-wrap justify-end gap-3 pt-2">
                         <button name="action" value="refresh" class="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">Actualiser les données du joueur</button>
                         <button name="action" value="save" class="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">Enregistrer le brouillon</button>
@@ -159,7 +155,7 @@
     </section>
 
     {{-- ================= ÉTAT DE RETOUR ================= --}}
-    @if($returnReport || $canEditReturn)
+    @if($returnReport || ($canEditReturn ?? false))
         <section class="bg-white rounded-lg shadow overflow-hidden">
             <div class="px-5 py-4 border-b flex flex-wrap items-baseline justify-between gap-3">
                 <div>
@@ -196,7 +192,7 @@
             @endif
 
             <div class="p-5">
-                @if($canEditReturn)
+                @if($canEditReturn ?? false)
                     <form method="POST" action="{{ route('dtn.selections.return', $selection) }}" class="space-y-4">
                         @csrf
                         <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Performances en sélection</p>
@@ -215,7 +211,7 @@
                             <label class="block text-sm font-medium text-gray-700">Risque de blessure<select name="injury_risk" class="{{ $input }}"><option value="">—</option>@foreach($levels as $k => $l)<option value="{{ $k }}" @selected(($rc['injury_risk'] ?? '') === $k)>{{ $l }}</option>@endforeach</select></label>
                             <label class="block text-sm font-medium text-gray-700 md:col-span-2">Recommandations au club<textarea name="recommendations" rows="2" maxlength="2000" class="{{ $input }}" placeholder="Récupération, charge des prochains jours…">{{ $rc['recommendations'] ?? '' }}</textarea></label>
                         </div>
-                        @include('dtn.partials.medical-return', ['editable' => $canEditReturnMedical, 'medical' => $returnMedical, 'report' => $returnReport])
+                        @include('dtn.partials.medical-return', ['editable' => $canEditReturnMedical ?? false, 'medical' => $returnMedical, 'report' => $returnReport])
                         <div class="flex justify-end gap-3 pt-2">
                             <button name="action" value="save" class="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">Enregistrer le brouillon</button>
                             <button name="action" value="send" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700" onclick="return window.confirm('Envoyer l\'état de retour au club ?')">Envoyer au club</button>
@@ -237,8 +233,8 @@
                     @include('dtn.partials.medical-return', ['editable' => false, 'medical' => $returnMedical, 'report' => $returnReport])
                 @endif
 
-                @if($canAcknowledge)
-                    <form method="POST" action="{{ route('dtn.selections.acknowledge', $selection) }}" class="mt-5 flex justify-end">
+                @if($canAcknowledge ?? false)
+                    <form method="POST" action="{{ route('club.selections.acknowledge', $selection) }}" class="mt-5 flex justify-end">
                         @csrf
                         <button class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">Accuser réception et clôturer</button>
                     </form>
@@ -249,4 +245,3 @@
         <div class="rounded-lg border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600">L'état de retour sera rédigé par la Direction technique nationale à la fin du rassemblement.</div>
     @endif
 </div>
-@endsection

@@ -1333,3 +1333,22 @@ Route::post(
     'auth.unified',
     'permission.unified:verify-performance-metrics',
 ])->name('api.fit.performance-metrics.verify');
+
+// Sélections nationales (API v1) — jetons Sanctum ; droits du jeton + permission RBAC du compte vérifiés à chaque appel
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::prefix('dtn')->group(function () {
+        Route::get('/players', [\App\Http\Controllers\Api\V1\Selections\FederationApiController::class, 'players']);
+        Route::get('/players/{player}', [\App\Http\Controllers\Api\V1\Selections\FederationApiController::class, 'player'])->whereNumber('player');
+        Route::get('/selections', [\App\Http\Controllers\Api\V1\Selections\FederationApiController::class, 'selections']);
+        Route::post('/selections', [\App\Http\Controllers\Api\V1\Selections\FederationApiController::class, 'convoke']);
+        Route::get('/selections/{selection}', [\App\Http\Controllers\Api\V1\Selections\FederationApiController::class, 'selection']);
+        Route::put('/selections/{selection}/return', [\App\Http\Controllers\Api\V1\Selections\FederationApiController::class, 'submitReturn']);
+        Route::post('/selections/{selection}/cancel', [\App\Http\Controllers\Api\V1\Selections\FederationApiController::class, 'cancel']);
+    });
+    Route::prefix('club')->group(function () {
+        Route::get('/selections', [\App\Http\Controllers\Api\V1\Selections\ClubSelectionApiController::class, 'selections']);
+        Route::get('/selections/{selection}', [\App\Http\Controllers\Api\V1\Selections\ClubSelectionApiController::class, 'selection']);
+        Route::put('/selections/{selection}/departure', [\App\Http\Controllers\Api\V1\Selections\ClubSelectionApiController::class, 'submitDeparture']);
+        Route::post('/selections/{selection}/acknowledge', [\App\Http\Controllers\Api\V1\Selections\ClubSelectionApiController::class, 'acknowledge']);
+    });
+});

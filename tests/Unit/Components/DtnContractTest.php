@@ -16,23 +16,33 @@ class DtnContractTest extends TestCase
         return dirname(__DIR__, 3) . '/' . $relative;
     }
 
-    public function test_dtn_routes_use_the_selection_controller_behind_auth(): void
+    public function test_the_two_spaces_are_separate_route_groups_behind_rbac(): void
     {
         $routes = file_get_contents($this->projectPath('routes/web.php'));
 
-        $this->assertStringContainsString("DtnController::class, 'index']\n)->middleware(['auth'])->name('dtn.index');", $routes);
-        $this->assertStringContainsString("Route::middleware(['auth'])->group(function () {\n    Route::get('/dtn/selections/create'", $routes);
-        foreach (['dtn.selections.store', 'dtn.selections.show', 'dtn.selections.departure', 'dtn.selections.return', 'dtn.selections.acknowledge'] as $name) {
+        $this->assertStringContainsString("FederationController::class, 'index']\n    )->middleware(['auth'])->name('dtn.index');", $routes);
+        $this->assertStringContainsString("Route::middleware(['auth', 'auth.unified', 'permission.unified:dtn-federation-space'])->group(", $routes);
+        $this->assertStringContainsString("Route::middleware(['auth', 'auth.unified', 'permission.unified:club-selections-space'])->group(", $routes);
+        foreach (['dtn.players.index', 'dtn.players.show', 'dtn.selections.store', 'dtn.selections.show', 'dtn.selections.return', 'dtn.api-access',
+            'club.selections.index', 'club.selections.show', 'club.selections.departure', 'club.selections.acknowledge', 'club.selections.api-access'] as $name) {
             $this->assertStringContainsString("->name('{$name}')", $routes);
         }
+        $this->assertFileDoesNotExist($this->projectPath('app/Http/Controllers/DtnController.php'));
     }
 
-    public function test_every_controller_action_goes_through_dtn_access(): void
+    public function test_every_action_goes_through_dtn_access_and_the_api_checks_token_and_rbac(): void
     {
-        $controller = file_get_contents($this->projectPath('app/Http/Controllers/DtnController.php'));
+        $workflow = file_get_contents($this->projectPath('app/Services/Dtn/SelectionWorkflow.php'));
+        foreach (['canConvoke', 'canEditDeparture', 'canEditReturn', 'canAcknowledge', 'canCancel', 'canEditMedical'] as $check) {
+            $this->assertStringContainsString("{$check}(", $workflow);
+        }
+        $this->assertStringContainsString('canViewAsFederation(', file_get_contents($this->projectPath('app/Http/Controllers/Dtn/FederationController.php')));
+        $this->assertStringContainsString('canViewAsClub(', file_get_contents($this->projectPath('app/Http/Controllers/Dtn/ClubSelectionController.php')));
 
-        foreach (['canUseTool', 'canConvoke', 'canView', 'canEditDeparture', 'canEditReturn', 'canAcknowledge', 'canCancel', 'canSeeMedical', 'canEditMedical'] as $check) {
-            $this->assertStringContainsString("access->{$check}(", $controller);
+        foreach (['FederationApiController' => 'FEDERATION_PERMISSION', 'ClubSelectionApiController' => 'CLUB_PERMISSION'] as $class => $permission) {
+            $api = file_get_contents($this->projectPath("app/Http/Controllers/Api/V1/Selections/{$class}.php"));
+            $this->assertSame(substr_count($api, '): JsonResponse'), substr_count($api, '$this->requireAbility('), "{$class} : droit du jeton sur chaque action");
+            $this->assertSame(substr_count($api, '$this->requireAbility('), substr_count($api, "DtnAccess::{$permission})"), "{$class} : permission RBAC sur chaque action");
         }
     }
 

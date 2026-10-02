@@ -6,11 +6,11 @@
 <div class="max-w-3xl mx-auto px-4 py-8 space-y-6">
     <div class="flex items-start justify-between gap-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Direction technique nationale</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-700">Direction technique nationale · Espace fédération</p>
             <h1 class="text-2xl font-bold text-gray-900">Convoquer un joueur</h1>
             <p class="text-sm text-gray-600">Le club du joueur recevra une demande d'état de départ, pré-rempli à partir de ses données de match.</p>
         </div>
-        <a href="{{ route('dtn.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">← Sélections</a>
+        <a href="{{ route('dtn.players.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">← Fiches joueurs</a>
     </div>
 
     @if($errors->any())
@@ -23,17 +23,16 @@
     <form method="POST" action="{{ route('dtn.selections.store') }}" class="bg-white rounded-lg shadow p-6 space-y-5">
         @csrf
         <div>
-            <label for="player_id" class="block text-sm font-medium text-gray-700">Joueur</label>
-            <select id="player_id" name="player_id" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                <option value="">Choisir un joueur…</option>
-                @foreach($players->groupBy(fn ($p) => str_replace(' (Démo)', '', $p->club->name ?? 'Sans club'))->sortKeys() as $clubName => $clubPlayers)
-                    <optgroup label="{{ $clubName }}">
-                        @foreach($clubPlayers as $p)
-                            <option value="{{ $p->id }}" @selected((int) old('player_id') === $p->id)>{{ $p->last_name }} {{ $p->first_name }}@if($p->position) · {{ $p->position }}@endif</option>
-                        @endforeach
-                    </optgroup>
-                @endforeach
-            </select>
+            <span class="block text-sm font-medium text-gray-700">Joueur</span>
+            @if($player)
+                <input type="hidden" name="player_id" value="{{ $player->id }}">
+                <div class="mt-1 flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 text-sm">
+                    <span><b>{{ $player->first_name }} {{ $player->last_name }}</b> · {{ str_replace(' (Démo)', '', $player->club->name ?? '—') }}@if($player->position) · {{ $player->position }}@endif</span>
+                    <a href="{{ route('dtn.players.show', $player->id) }}" class="text-indigo-700 hover:text-indigo-900">Voir la fiche</a>
+                </div>
+            @else
+                <p class="mt-1 text-sm text-gray-600">Choisissez d'abord un joueur dans les <a href="{{ route('dtn.players.index') }}" class="text-indigo-700 underline">fiches joueurs</a>, après avoir consulté ses données.</p>
+            @endif
         </div>
 
         @if($associations->isNotEmpty())
@@ -85,7 +84,7 @@
 
         <div class="flex justify-end gap-3">
             <a href="{{ route('dtn.index') }}" class="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">Annuler</a>
-            <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">Envoyer la convocation</button>
+            <button type="submit" @disabled(!$player) class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50">Envoyer la convocation</button>
         </div>
     </form>
 </div>

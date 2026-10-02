@@ -304,7 +304,9 @@ function filterByCategory(category, event) {
                                     'record-performance-metrics'
                                 ),
                         'dtn.index' => auth()->check()
-                            && app(\App\Services\Dtn\DtnAccess::class)->canUseTool(auth()->user()),
+                            && app(\App\Services\Dtn\DtnAccess::class)->isDtnSide(auth()->user()),
+                        'club.selections.index' => auth()->check()
+                            && app(\App\Services\Dtn\DtnAccess::class)->isClubSide(auth()->user()),
                         default => true,
                     };
                 @endphp
@@ -440,6 +442,7 @@ function handleModuleClick(route, moduleName, event) {
         'performances.fit-metrics': '/performances/fit-metrics',
         'modules.coach-cockpit': '/modules/coach-cockpit',
         'dtn.index': '/dtn',
+        'club.selections.index': '/club/selections',
         'rpm.index': '/rpm',
         'gemini.index': '/gemini',
         'fifa.dashboard': '/fifa/dashboard',

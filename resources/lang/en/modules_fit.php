@@ -24,6 +24,8 @@ return [
         'Analyses de performance' => 'Performance analytics',
         'Saisie et vérification des métriques du score FIT canonique' => 'Record and verify canonical FIT score metrics',
         'Module DTN (Digital Twin Network)' => 'Digital Twin Network module',
+        'DTN — Espace fédération' => 'National team — Federation space',
+        'Sélections nationales — Espace club' => 'National selections — Club space',
         'Module RPM (Real-time Performance Monitoring)' => 'Real-time Performance Monitoring module',
         'Module Gemini IA de Google' => 'Google Gemini AI module',
         'Portail des appareils connectés' => 'Connected devices portal',

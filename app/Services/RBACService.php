@@ -13,8 +13,8 @@ class RBACService
      * Cache key for permissions
      */
     private const PERMISSIONS_CACHE_KEY = 'rbac_permissions';
-    private const ROLE_PERMISSIONS_CACHE_KEY = 'rbac_role_permissions';
-    private const USER_PERMISSIONS_CACHE_KEY = 'rbac_user_permissions';
+    private const ROLE_PERMISSIONS_CACHE_KEY = 'rbac_role_permissions_v2';
+    private const USER_PERMISSIONS_CACHE_KEY = 'rbac_user_permissions_v2';
 
     /**
      * Default permissions for the system
@@ -101,6 +101,10 @@ class RBACService
         // Performance Metrics
         'record-performance-metrics' => 'Record performance metrics for canonical FIT scoring',
         'verify-performance-metrics' => 'Verify performance metrics for canonical FIT scoring',
+
+        // Sélections nationales : deux espaces séparés
+        'dtn-federation-space' => 'Espace fédération (DTN) : fiches joueurs, convocations, états de retour',
+        'club-selections-space' => 'Espace club : convocations reçues, états de départ, retours de sélection',
     ];
 
     /**
@@ -132,6 +136,7 @@ class RBACService
             'association_view', 'association_edit',
             'match_management', 'match_view', 'match_create', 'match_edit',
             'referee_management', 'referee_view', 'referee_create', 'referee_edit',
+            'dtn-federation-space',
         ],
         'association_registrar' => [
             'user_view', 'user_create', 'user_edit',
@@ -143,6 +148,7 @@ class RBACService
             'association_view',
             'match_view', 'match_create', 'match_edit',
             'referee_view', 'referee_create', 'referee_edit',
+            'dtn-federation-space',
         ],
         'association_medical' => [
             'user_view',
@@ -154,6 +160,7 @@ class RBACService
             'association_view',
             'match_view',
             'referee_view',
+            'dtn-federation-space',
         ],
         'club_admin' => [
             'user_view', 'user_create', 'user_edit',
@@ -165,6 +172,7 @@ class RBACService
             'association_view',
             'match_view',
             'referee_view',
+            'club-selections-space',
         ],
         'club_manager' => [
             'user_view',
@@ -176,6 +184,7 @@ class RBACService
             'association_view',
             'match_view',
             'referee_view',
+            'club-selections-space',
         ],
         'club_medical' => [
             'user_view',
@@ -187,6 +196,7 @@ class RBACService
             'association_view',
             'match_view',
             'referee_view',
+            'club-selections-space',
         ],
         'referee' => [
             'user_view',
@@ -215,6 +225,16 @@ class RBACService
             'healthcare_access',
             'record-performance-metrics',
             'verify-performance-metrics',
+        ],
+        'dtn' => [
+            'player_view', 'club_view', 'association_view', 'match_view',
+            'dtn-federation-space',
+        ],
+        'team_doctor' => [
+            'club-selections-space',
+        ],
+        'team_official' => [
+            'club-selections-space',
         ],
     ];
 
@@ -267,7 +287,8 @@ class RBACService
             $permissions = array_merge($permissions, $rolePermissions);
             
             // Get user-specific permissions
-            $userPermissions = $user->permissions ?? [];
+            // Colonne JSON users.permissions (et non la relation permissions())
+            $userPermissions = $user->getAttributeValue('permissions') ?? [];
             if (is_string($userPermissions)) {
                 $userPermissions = json_decode($userPermissions, true) ?? [];
             }

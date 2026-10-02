@@ -1255,10 +1255,19 @@ Route::middleware(['auth'])->group(function () {
                     
                     // 🤖 IA & TECHNOLOGIE
                     [
-                        'name' => 'DTN — Sélections nationales',
-                        'description' => 'Partage club ↔ Direction technique nationale : état de départ et état de retour des joueurs sélectionnés',
+                        'name' => 'DTN — Espace fédération',
+                        'description' => 'Direction technique nationale : fiches joueurs, convocations, état de départ reçu du club et état de retour de sélection',
                     'icon' => '🇹🇳',
                         'route' => 'dtn.index',
+                        'status' => 'active',
+                    'color' => 'purple',
+                    'category' => 'analytics'
+                    ],
+                    [
+                        'name' => 'Sélections nationales — Espace club',
+                        'description' => 'Club : convocations reçues, état de départ des joueurs et état de retour de sélection',
+                    'icon' => '🎽',
+                        'route' => 'club.selections.index',
                         'status' => 'active',
                     'color' => 'purple',
                     'category' => 'analytics'
@@ -3594,19 +3603,33 @@ Route::get('/performance', function () {
     return view('performance.index');
 })->name('performance.index');
 
-// DTN : sélections nationales, partage de données club ↔ Direction technique nationale
-Route::get(
-    '/dtn',
-    [\App\Http\Controllers\DtnController::class, 'index']
-)->middleware(['auth'])->name('dtn.index');
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dtn/selections/create', [\App\Http\Controllers\DtnController::class, 'create'])->name('dtn.selections.create');
-    Route::post('/dtn/selections', [\App\Http\Controllers\DtnController::class, 'store'])->name('dtn.selections.store');
-    Route::get('/dtn/selections/{selection}', [\App\Http\Controllers\DtnController::class, 'show'])->name('dtn.selections.show');
-    Route::post('/dtn/selections/{selection}/departure', [\App\Http\Controllers\DtnController::class, 'saveDeparture'])->name('dtn.selections.departure');
-    Route::post('/dtn/selections/{selection}/return', [\App\Http\Controllers\DtnController::class, 'saveReturn'])->name('dtn.selections.return');
-    Route::post('/dtn/selections/{selection}/acknowledge', [\App\Http\Controllers\DtnController::class, 'acknowledge'])->name('dtn.selections.acknowledge');
-    Route::post('/dtn/selections/{selection}/cancel', [\App\Http\Controllers\DtnController::class, 'cancel'])->name('dtn.selections.cancel');
+// Sélections nationales — deux espaces séparés par le RBAC
+// Espace fédération (DTN) : fiches joueurs, convocations, états de retour
+Route::middleware(['auth', 'auth.unified', 'permission.unified:dtn-federation-space'])->group(function () {
+    Route::get(
+        '/dtn',
+        [\App\Http\Controllers\Dtn\FederationController::class, 'index']
+    )->middleware(['auth'])->name('dtn.index');
+    Route::get('/dtn/players', [\App\Http\Controllers\Dtn\FederationController::class, 'players'])->name('dtn.players.index');
+    Route::get('/dtn/players/{player}', [\App\Http\Controllers\Dtn\FederationController::class, 'player'])->whereNumber('player')->name('dtn.players.show');
+    Route::get('/dtn/selections/create', [\App\Http\Controllers\Dtn\FederationController::class, 'create'])->name('dtn.selections.create');
+    Route::post('/dtn/selections', [\App\Http\Controllers\Dtn\FederationController::class, 'store'])->name('dtn.selections.store');
+    Route::get('/dtn/selections/{selection}', [\App\Http\Controllers\Dtn\FederationController::class, 'show'])->name('dtn.selections.show');
+    Route::post('/dtn/selections/{selection}/return', [\App\Http\Controllers\Dtn\FederationController::class, 'saveReturn'])->name('dtn.selections.return');
+    Route::post('/dtn/selections/{selection}/cancel', [\App\Http\Controllers\Dtn\FederationController::class, 'cancel'])->name('dtn.selections.cancel');
+    Route::get('/dtn/api-access', [\App\Http\Controllers\Dtn\ApiTokenController::class, 'index'])->defaults('space', 'federation')->name('dtn.api-access');
+    Route::post('/dtn/api-access', [\App\Http\Controllers\Dtn\ApiTokenController::class, 'store'])->defaults('space', 'federation')->name('dtn.api-access.store');
+    Route::delete('/dtn/api-access/{token}', [\App\Http\Controllers\Dtn\ApiTokenController::class, 'destroy'])->defaults('space', 'federation')->whereNumber('token')->name('dtn.api-access.destroy');
+});
+// Espace club : convocations reçues, états de départ, retours de sélection
+Route::middleware(['auth', 'auth.unified', 'permission.unified:club-selections-space'])->group(function () {
+    Route::get('/club/selections', [\App\Http\Controllers\Dtn\ClubSelectionController::class, 'index'])->name('club.selections.index');
+    Route::get('/club/selections/api-access', [\App\Http\Controllers\Dtn\ApiTokenController::class, 'index'])->defaults('space', 'club')->name('club.selections.api-access');
+    Route::post('/club/selections/api-access', [\App\Http\Controllers\Dtn\ApiTokenController::class, 'store'])->defaults('space', 'club')->name('club.selections.api-access.store');
+    Route::delete('/club/selections/api-access/{token}', [\App\Http\Controllers\Dtn\ApiTokenController::class, 'destroy'])->defaults('space', 'club')->whereNumber('token')->name('club.selections.api-access.destroy');
+    Route::get('/club/selections/{selection}', [\App\Http\Controllers\Dtn\ClubSelectionController::class, 'show'])->name('club.selections.show');
+    Route::post('/club/selections/{selection}/departure', [\App\Http\Controllers\Dtn\ClubSelectionController::class, 'saveDeparture'])->name('club.selections.departure');
+    Route::post('/club/selections/{selection}/acknowledge', [\App\Http\Controllers\Dtn\ClubSelectionController::class, 'acknowledge'])->name('club.selections.acknowledge');
 });
 
 // RPM routes

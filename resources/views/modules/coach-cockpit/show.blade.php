@@ -253,6 +253,122 @@
     </form>
   </div>
 </div>
+
+<div class="cc" style="padding-top:0">
+  <div class="wrap">
+    <section class="panel" aria-labelledby="h-role-eval-activation">
+      <div class="section-head">
+        <h2 id="h-role-eval-activation">Évaluation joueur — rôle et apport</h2>
+        <p>
+          Pipeline canonique : importer des observations réelles, les valider par dry-run,
+          puis calculer les scores dans PostgreSQL. Les données de démonstration restent séparées.
+        </p>
+      </div>
+
+      @if(session('success'))
+        <div style="margin-bottom:12px;padding:10px 12px;border-radius:8px;background:#e9f8ef;color:#176b37">
+          {{ session('success') }}
+        </div>
+      @endif
+      @if(session('error'))
+        <div style="margin-bottom:12px;padding:10px 12px;border-radius:8px;background:#fff1f0;color:#a61b1b">
+          {{ session('error') }}
+        </div>
+      @endif
+
+      <div class="kpis" style="margin-bottom:18px">
+        @foreach([
+          ['Participations réelles', $roleEvaluationStatus['real_participations']],
+          ['Stats réelles', $roleEvaluationStatus['real_stats']],
+          ['Évaluations réelles', $roleEvaluationStatus['real_evaluations']],
+          ['Évaluations démo', $roleEvaluationStatus['demo_evaluations']],
+        ] as [$label, $value])
+          <div class="kpi">
+            <span class="eyebrow">{{ $label }}</span>
+            <strong style="font-size:1.55rem">{{ number_format($value, 0, ',', ' ') }}</strong>
+          </div>
+        @endforeach
+      </div>
+
+      @if($roleEvaluationStatus['published_configs']->isEmpty())
+        <div style="margin-bottom:18px;padding:12px 14px;border:1px solid #e8b04a;border-radius:10px;background:#fff9e8">
+          <strong>Calcul réel verrouillé.</strong>
+          <span>
+            Aucune configuration de poids n'est publiée. La configuration de démonstration reste en brouillon
+            et ne sera jamais utilisée comme résultat réel.
+          </span>
+        </div>
+      @endif
+
+      <div class="grid-2">
+        <div>
+          <h3 style="margin-bottom:8px">1. Importer des observations réelles</h3>
+          <p class="note" style="margin-bottom:10px">
+            Le système effectue d'abord un dry-run transactionnel. Si une ligne est rejetée,
+            aucune donnée n'est écrite.
+          </p>
+          <form method="post"
+                enctype="multipart/form-data"
+                action="{{ route('modules.coach-cockpit.role-evaluation.import') }}"
+                style="display:grid;gap:10px">
+            @csrf
+            <label class="field">Type de données
+              <select name="type" required>
+                <option value="participations">Participations</option>
+                <option value="player-match-stats">Statistiques joueur / match</option>
+                <option value="team-stats">Statistiques équipe / match</option>
+                <option value="events">Événements de match</option>
+              </select>
+            </label>
+            <label class="field">Source
+              <input type="text" name="source" placeholder="Ex. fournisseur officiel, club, fédération">
+            </label>
+            <label class="field">Fichier CSV
+              <input type="file" name="csv_file" accept=".csv,text/csv,text/plain" required>
+            </label>
+            <label class="field">Mapping JSON
+              <input type="file" name="mapping_file" accept=".json,application/json,text/plain" required>
+            </label>
+            <button type="submit">Valider puis importer</button>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:8px">2. Calculer les évaluations réelles</h3>
+          <p class="note" style="margin-bottom:10px">
+            Le calcul utilise exclusivement <code>is_demo=0</code> et exige une configuration publiée.
+          </p>
+          <form method="post"
+                action="{{ route('modules.coach-cockpit.role-evaluation.compute') }}"
+                style="display:grid;gap:10px">
+            @csrf
+            <input type="hidden" name="club_id" value="{{ $clubId }}">
+            <label class="field">Configuration publiée
+              <select name="config_version" required @disabled($roleEvaluationStatus['published_configs']->isEmpty())>
+                @forelse($roleEvaluationStatus['published_configs'] as $config)
+                  <option value="{{ $config->id }}">#{{ $config->id }} — {{ $config->label }}</option>
+                @empty
+                  <option value="">Aucune configuration publiée</option>
+                @endforelse
+              </select>
+            </label>
+            <button type="submit" @disabled($roleEvaluationStatus['published_configs']->isEmpty())>
+              Calculer les scores réels
+            </button>
+          </form>
+
+          @if($roleEvaluationStatus['draft_configs']->isNotEmpty())
+            <p class="note" style="margin-top:12px">
+              Brouillon présent :
+              {{ $roleEvaluationStatus['draft_configs']->map(fn ($c) => '#'.$c->id.' '.$c->label)->implode(', ') }}.
+            </p>
+          @endif
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
 @if(!$cockpit)
 <div class="cc"><div class="wrap"><div class="panel"><h2>Aucune donnée de match</h2><p class="note" style="margin-top:8px">Aucun match joué avec feuille de match n'est enregistré pour cette équipe. Le cockpit s'affiche dès que des matchs sont saisis.</p></div></div></div>
 @else

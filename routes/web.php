@@ -3017,6 +3017,24 @@ Route::get('/test-pdf', function() {
         [\App\Http\Controllers\CoachCockpitController::class, 'show']
     )->name('modules.coach-cockpit');
 
+    Route::post(
+        '/modules/coach-cockpit/role-evaluation/import',
+        [\App\Http\Controllers\CoachCockpitController::class, 'importRoleEvaluationData']
+    )->middleware([
+        'auth',
+        'auth.unified',
+        'permission.unified:record-performance-metrics',
+    ])->name('modules.coach-cockpit.role-evaluation.import');
+
+    Route::post(
+        '/modules/coach-cockpit/role-evaluation/compute',
+        [\App\Http\Controllers\CoachCockpitController::class, 'computeRoleEvaluations']
+    )->middleware([
+        'auth',
+        'auth.unified',
+        'permission.unified:record-performance-metrics',
+    ])->name('modules.coach-cockpit.role-evaluation.compute');
+
     // Performances Analytics routes
     Route::get(
         '/performances/analytics',

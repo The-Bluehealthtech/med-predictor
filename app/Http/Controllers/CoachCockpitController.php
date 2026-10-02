@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Services\CoachCockpit\CoachCockpitData;
+use App\Services\RoleEvaluationImport\ImportMapping;
+use App\Services\RoleEvaluationImport\RoleEvaluationImporter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Cockpit entraîneur (module Analytics & Performance) : bilan, pronostic,
@@ -17,18 +21,26 @@ class CoachCockpitController extends Controller
         $user = $request->user();
         abort_if($user->isPlayer(), 403, 'Accès réservé au staff et aux administrateurs.');
 
-        // Un compte de club ne voit que son club ; les autres rôles choisissent librement.
         $clubs = $data->availableClubs();
         if ($user->isClubUser()) {
             $clubs = $clubs->where('id', (int) $user->club_id)->values();
         }
 
-        $requested = $request->filled('club_id') ? filter_var($request->query('club_id'), FILTER_VALIDATE_INT) : null;
+        $requested = $request->filled('club_id')
+            ? filter_var($request->query('club_id'), FILTER_VALIDATE_INT)
+            : null;
+
         if ($requested !== null) {
-            abort_if($requested === false || !$clubs->contains('id', $requested), 404, 'Équipe introuvable ou non autorisée.');
+            abort_if(
+                $requested === false || ! $clubs->contains('id', $requested),
+                404,
+                'Équipe introuvable ou non autorisée.'
+            );
             $clubId = $requested;
         } else {
-            $clubId = $clubs->contains('id', (int) $user->club_id) ? (int) $user->club_id : $clubs->first()?->id;
+            $clubId = $clubs->contains('id', (int) $user->club_id)
+                ? (int) $user->club_id
+                : $clubs->first()?->id;
         }
 
         $cockpit = $clubId !== null ? $data->forClub((int) $clubId) : null;
@@ -37,6 +49,126 @@ class CoachCockpitController extends Controller
             'clubs' => $clubs,
             'clubId' => $clubId,
             'cockpit' => $cockpit,
+            'roleEvaluationStatus' => $this->roleEvaluationStatus(),
         ]);
+    }
+
+    public function importRoleEvaluationData(Request $request)
+    {
+        $validated = $request->validate([
+            'type' => ['required', 'in:participations,player-match-stats,team-stats,events'],
+            'source' => ['nullable', 'string', 'max:120'],
+            'csv_file' => ['required', 'file', 'max:20480'],
+            'mapping_file' => ['required', 'file', 'max:2048'],
+        ]);
+
+        try {
+            $mapping = ImportMapping::fromFile($request->file('mapping_file')->getRealPath());
+
+            if ($mapping->type !== $validated['type']) {
+                return back()->with('error', 'Le type choisi ne correspond pas au type déclaré dans le mapping.');
+            }
+
+            $csvPath = $request->file('csv_file')->getRealPath();
+            $source = $validated['source'] ?? null;
+
+            $dryRun = new RoleEvaluationImporter($mapping, true);
+            $dryRun->run($csvPath, $source);
+
+            if ($dryRun->report->rowsRejected() > 0) {
+                return back()->with('error', sprintf(
+                    'Import refusé après dry-run : %d ligne(s) rejetée(s) sur %d. Corrigez le fichier avant écriture.',
+                    $dryRun->report->rowsRejected(),
+                    $dryRun->report->rowsRead
+                ));
+            }
+
+            $importer = new RoleEvaluationImporter($mapping, false);
+            $batchId = $importer->run($csvPath, $source);
+
+            return back()->with('success', sprintf(
+                'Import réel terminé dans PostgreSQL : lot #%d, %s.',
+                $batchId,
+                $importer->report->summaryLine()
+            ));
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return back()->with('error', 'Échec de l’import rôle/apport : '.$exception->getMessage());
+        }
+    }
+
+    public function computeRoleEvaluations(Request $request)
+    {
+        $validated = $request->validate([
+            'config_version' => ['required', 'integer'],
+            'club_id' => ['nullable', 'integer'],
+        ]);
+
+        $config = DB::table('role_config_versions')->find((int) $validated['config_version']);
+        if (! $config || $config->status !== 'published') {
+            return back()->with('error', 'Le calcul réel exige une configuration de poids au statut published.');
+        }
+
+        $playerIds = null;
+        if (! empty($validated['club_id'])) {
+            $playerIds = DB::table('players')
+                ->where('club_id', (int) $validated['club_id'])
+                ->pluck('id')
+                ->implode(',');
+
+            if ($playerIds === '') {
+                return back()->with('error', 'Aucun joueur trouvé pour ce club.');
+            }
+        }
+
+        $arguments = [
+            '--config-version' => (string) $config->id,
+            '--is-demo' => '0',
+            '--no-interaction' => true,
+        ];
+
+        if ($playerIds !== null) {
+            $arguments['--players'] = $playerIds;
+        }
+
+        $dryCode = Artisan::call('role-eval:compute', $arguments + ['--dry-run' => true]);
+        $dryOutput = trim(Artisan::output());
+
+        if ($dryCode !== 0) {
+            return back()->with('error', 'Dry-run du calcul refusé : '.$dryOutput);
+        }
+
+        if (str_contains($dryOutput, 'Aucun joueur à évaluer')) {
+            return back()->with('error', 'Aucune donnée réelle éligible n’est disponible pour ce calcul.');
+        }
+
+        $code = Artisan::call('role-eval:compute', $arguments);
+        $output = trim(Artisan::output());
+
+        if ($code !== 0) {
+            return back()->with('error', 'Échec du calcul rôle/apport : '.$output);
+        }
+
+        return back()->with('success', 'Évaluations réelles calculées : '.$output);
+    }
+
+    private function roleEvaluationStatus(): array
+    {
+        $publishedConfigs = DB::table('role_config_versions')
+            ->where('status', 'published')
+            ->orderByDesc('id')
+            ->get();
+
+        return [
+            'real_participations' => DB::table('match_participations')->where('is_demo', false)->count(),
+            'demo_participations' => DB::table('match_participations')->where('is_demo', true)->count(),
+            'real_stats' => DB::table('player_match_detailed_stats')->where('is_demo', false)->count(),
+            'demo_stats' => DB::table('player_match_detailed_stats')->where('is_demo', true)->count(),
+            'real_evaluations' => DB::table('player_role_evaluations')->where('is_demo', false)->count(),
+            'demo_evaluations' => DB::table('player_role_evaluations')->where('is_demo', true)->count(),
+            'published_configs' => $publishedConfigs,
+            'draft_configs' => DB::table('role_config_versions')->where('status', 'draft')->orderByDesc('id')->get(),
+        ];
     }
 }

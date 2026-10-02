@@ -847,7 +847,7 @@ Route::prefix('fifa-tms')->group(function () {
 // Public demo route for doctor signoff
 Route::get('/pcma/doctor-signoff-demo', function () {
     return view('pcma.doctor-signoff-demo', ['athlete' => null]);
-})->name('pcma.doctor-signoff-demo');
+})->middleware('auth:sanctum')->name('pcma.doctor-signoff-demo');
 
 // ========================================
 // ROUTES API POUR CLI FIT - MODULES MÉDICAUX

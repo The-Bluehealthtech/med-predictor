@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('v3')->name('v3.')->middleware(['v3.api'])->group(function () {
+Route::prefix('v3')->name('v3.')->middleware(['auth:sanctum', 'v3.api'])->group(function () {
     
     /*
     |--------------------------------------------------------------------------

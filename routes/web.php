@@ -881,7 +881,7 @@ Route::get('/create-health-record/{playerId?}', function ($playerId = null) {
     }
     
     return redirect($url);
-})->name('create-health-record');
+})->middleware(['auth'])->name('create-health-record');
 
 // Test route to verify both pages use the same appointment data
 
@@ -1498,7 +1498,7 @@ Route::get('/health-records-simple', function () {
         \Log::error('Health records simple test route error: ' . $e->getMessage());
         return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);
     }
-})->name('health.records.simple');
+})->middleware(['auth'])->name('health.records.simple');
 
 
 
@@ -3831,7 +3831,7 @@ Route::get('/fifa-ultimate-working', fn () => abort(410))->name('fifa-ultimate-w
 
 Route::get('/medical-tabs', function () {
     return view('health-records.create-tabs');
-})->name('medical-tabs');
+})->middleware(['auth'])->name('medical-tabs');
 
 
 
@@ -3854,7 +3854,7 @@ Route::get('/fifa-complete', fn () => abort(410))->name('fifa-complete');
 // Route fixe pour le portail patient
 Route::get('/portail-patient', function () {
     return response()->file(public_path('portail-patient.html'));
-})->name('portail-patient');
+})->middleware(['auth'])->name('portail-patient');
 
 // Route fixe pour le portail joueur (dynamique) - SUPPRIMÉE car remplacée par PlayerPortalController
 

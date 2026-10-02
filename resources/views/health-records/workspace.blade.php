@@ -365,6 +365,11 @@
                 <p class="text-sm text-slate-500 mt-1">Évaluations préventives et aptitude.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <a href="{{ route('medical-imaging.index', ['healthRecord'=>$healthRecord,'purpose'=>'age_u17']) }}" class="module-card">
+                    <div class="module-icon">U‑17</div>
+                    <div><div class="font-semibold text-slate-900">Vérification de l’âge</div><div class="text-sm text-slate-500 mt-1">IRM du poignet & revue documentaire</div></div>
+                    <span class="module-arrow">→</span>
+                </a>
                 <a href="{{ route('pcma.create', ['player_id'=>$healthRecord->player_id]) }}" class="module-card">
                     <div class="module-icon">🩺</div>
                     <div>

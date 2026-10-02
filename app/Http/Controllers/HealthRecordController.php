@@ -416,8 +416,13 @@ class HealthRecordController extends Controller
         ]);
     }
 
-    public function module(HealthRecord $healthRecord, string $module): View
+    public function module(HealthRecord $healthRecord, string $module): View|RedirectResponse
     {
+        if (in_array($module, ['imaging','mri','scintigraphy'], true) && !request()->boolean('legacy')) {
+            $this->authorizeRecord($healthRecord);
+            return redirect()->route('medical-imaging.index', ['healthRecord'=>$healthRecord,
+                'modality'=>match($module) {'mri'=>'MR','scintigraphy'=>'NM',default=>'MR'}]);
+        }
         $this->authorizeRecord($healthRecord);
         $healthRecord = $this->baseRecordFor($healthRecord);
 

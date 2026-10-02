@@ -34,7 +34,7 @@ class MedicalWorkspaceRenderTest extends TestCase
         app('view')->getFinder()->prependLocation($this->layoutDirectory);
 
         foreach (['health-records.show', 'health-records.edit', 'health-records.assistant',
-            'health-records.modules.show', 'pcma.create', 'medical-aut.choose'] as $name) {
+            'health-records.modules.show', 'pcma.create', 'medical-aut.choose', 'medical-imaging.index'] as $name) {
             if (!Route::has($name)) {
                 Route::get('/workspace-fixture/'.str_replace('.', '/', $name).'/{healthRecord?}', fn () => '')->name($name);
             }

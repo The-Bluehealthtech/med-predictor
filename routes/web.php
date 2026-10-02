@@ -1977,6 +1977,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/health-records/{record}/aut/{aut}', [App\Http\Controllers\MedicalAutController::class, 'update'])->name('medical-aut.update');
     Route::get('/health-records/{record}/aut/{aut}/documents/{index}', [App\Http\Controllers\MedicalAutController::class, 'document'])->name('medical-aut.document');
 
+    require base_path('routes/medical-imaging.php');
+
     Route::get('/health-records/{healthRecord}/modules/{module}', [App\Http\Controllers\HealthRecordController::class, 'module'])
         ->name('health-records.modules.show');
     Route::post('/health-records/{healthRecord}/modules/{module}', [App\Http\Controllers\HealthRecordController::class, 'storeModule'])

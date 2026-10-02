@@ -14,6 +14,7 @@ class DeployFit extends Command
         'database/migrations/2024_01_15_000006_create_tue_requests_table.php',
         'database/migrations/2026_10_01_000001_add_icd11_and_aut_to_health_records.php',
         'database/migrations/2026_10_01_000002_create_health_record_documents.php',
+        'database/migrations/2026_10_02_000001_create_medical_imaging_workspace.php',
         'database/migrations/2026_09_30_110000_create_medication_catalogue_table.php',
         'database/migrations/2026_09_24_160000_create_fit_score_snapshots_table.php',
         'database/migrations/2026_09_24_170000_add_tenant_id_to_fit_score_snapshots_table.php',

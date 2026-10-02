@@ -100,6 +100,15 @@ final class PlayerVigilanceService
             }
         }
 
+        try {
+            $ageReview = app(AgeVerificationService::class)->assess($player, false);
+            $flags = array_merge($flags, $ageReview['flags']);
+            $confirmed = array_merge($confirmed, $ageReview['confirmed']);
+        } catch (\Throwable $e) {
+            \Log::warning('Age review unavailable', ['player_id'=>$player->id]);
+            $flags[] = $this->flag('incomplete', 'Revue U-17 temporairement indisponible.', 'FIT');
+        }
+
         return $this->axis(
             'Identité / âge',
             $flags,

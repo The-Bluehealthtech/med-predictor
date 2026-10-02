@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     libpq-dev \
+    python3 python3-venv \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql zip \
     && pecl install redis \
     && docker-php-ext-enable redis \
@@ -26,6 +27,10 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
+
+RUN python3 -m venv /opt/fit-imaging \
+    && /opt/fit-imaging/bin/pip install --no-cache-dir pydicom==3.0.1 numpy==2.2.6 Pillow==11.3.0
+RUN printf 'upload_max_filesize=20M\npost_max_size=105M\nmax_file_uploads=100\nmemory_limit=512M\n' > /usr/local/etc/php/conf.d/medical-imaging.ini
 
 COPY . .
 

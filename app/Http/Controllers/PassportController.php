@@ -126,6 +126,91 @@ class PassportController extends Controller
         ]);
     }
 
+    public function players(Request $request): JsonResponse
+    {
+        $players = $this->scopePlayersForUser($request, Player::query())
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->limit(200)
+            ->get();
+
+        $clubIds = $players
+            ->flatMap(fn (Player $player) => [$player->current_club_id, $player->club_id])
+            ->filter()
+            ->unique()
+            ->values();
+
+        $clubs = Club::query()
+            ->whereIn('id', $clubIds)
+            ->get(['id', 'name'])
+            ->keyBy('id');
+
+        return response()->json([
+            'success' => true,
+            'data' => $players->map(function (Player $player) use ($clubs) {
+                $clubId = $player->current_club_id ?: $player->club_id;
+                $club = $clubId ? $clubs->get($clubId) : null;
+
+                return [
+                    'id' => $player->id,
+                    'name' => trim((string) ($player->name ?: ($player->first_name . ' ' . $player->last_name))),
+                    'position' => $player->position,
+                    'nationality' => $player->nationality,
+                    'fifa_license_status' => $player->fifa_license_status,
+                    'current_club' => $club ? [
+                        'id' => $club->id,
+                        'name' => $club->name,
+                    ] : null,
+                ];
+            })->values(),
+        ]);
+    }
+
+    public function statistics(Request $request): JsonResponse
+    {
+        $transfers = $this->scopeTransfersForUser($request, Transfer::query());
+        $players = $this->scopePlayersForUser($request, Player::query());
+
+        $eligiblePlayers = (clone $players)
+            ->where('is_transfer_eligible', true)
+            ->where(function (Builder $query) {
+                $query->whereNull('fifa_license_status')
+                    ->orWhereNotIn('fifa_license_status', ['suspended', 'expired', 'revoked']);
+            })
+            ->count();
+
+        $pendingItc = (clone $transfers)
+            ->where('is_international', true)
+            ->where(function (Builder $query) {
+                $query->whereNull('itc_status')
+                    ->orWhereNotIn('itc_status', ['approved', 'not_required']);
+            })
+            ->count();
+
+        $alerts = (clone $transfers)
+            ->where(function (Builder $query) {
+                $query->where('is_minor_transfer', true)
+                    ->orWhere(function (Builder $international) {
+                        $international->where('is_international', true)
+                            ->where(function (Builder $itc) {
+                                $itc->whereNull('itc_status')
+                                    ->orWhereNotIn('itc_status', ['approved', 'not_required']);
+                            });
+                    });
+            })
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'eligiblePlayers' => $eligiblePlayers,
+                'approvedTransfers' => (clone $transfers)->where('transfer_status', 'approved')->count(),
+                'pendingItc' => $pendingItc,
+                'alerts' => $alerts,
+            ],
+        ]);
+    }
+
     public function playerTransfers(Request $request, Player $player): JsonResponse
     {
         $query = $this->scopeTransfersForUser($request, Transfer::with(['clubOrigin', 'clubDestination']))
@@ -142,6 +227,8 @@ class PassportController extends Controller
                 'transfer_date' => $transfer->transfer_date?->format('Y-m-d'),
                 'contract_start_date' => $transfer->contract_start_date?->format('Y-m-d'),
                 'contract_end_date' => $transfer->contract_end_date?->format('Y-m-d'),
+                'transfer_fee' => $transfer->transfer_fee,
+                'currency' => $transfer->currency,
                 'is_international' => (bool) $transfer->is_international,
                 'itc_status' => $transfer->itc_status,
                 'club_origin' => [
@@ -197,6 +284,49 @@ class PassportController extends Controller
         }
 
         abort(403);
+    }
+
+    private function scopePlayersForUser(Request $request, Builder $query): Builder
+    {
+        $user = $request->user();
+        abort_unless($user, 401);
+
+        if ($user->isSystemAdmin()) {
+            return $query;
+        }
+
+        if ($user->isPlayer()) {
+            return $user->player_id
+                ? $query->whereKey($user->player_id)
+                : $query->whereRaw('1 = 0');
+        }
+
+        if ($user->isClubUser()) {
+            return $user->club_id
+                ? $query->where(function (Builder $players) use ($user) {
+                    $players->where('club_id', $user->club_id)
+                        ->orWhere('current_club_id', $user->club_id);
+                })
+                : $query->whereRaw('1 = 0');
+        }
+
+        if ($user->isAssociationUser()) {
+            if (!$user->association_id) {
+                return $query->whereRaw('1 = 0');
+            }
+
+            $clubIds = Club::query()
+                ->where('association_id', $user->association_id)
+                ->pluck('id');
+
+            return $query->where(function (Builder $players) use ($user, $clubIds) {
+                $players->where('association_id', $user->association_id)
+                    ->orWhereIn('club_id', $clubIds)
+                    ->orWhereIn('current_club_id', $clubIds);
+            });
+        }
+
+        return $query->whereRaw('1 = 0');
     }
 
     private function scopeTransfersForUser(Request $request, Builder $query): Builder

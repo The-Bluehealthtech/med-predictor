@@ -369,7 +369,7 @@ export default {
     }
 
     const loadPlayers = async () => {
-      const response = await fetch('/api/players')
+      const response = await fetch('/api/daily-passport/players')
       const data = await response.json()
       if (data.success) {
         players.value = data.data
@@ -377,7 +377,7 @@ export default {
     }
 
     const loadStats = async () => {
-      const response = await fetch('/api/transfers/statistics')
+      const response = await fetch('/api/daily-passport/statistics')
       const data = await response.json()
       if (data.success) {
         Object.assign(stats, data.data)

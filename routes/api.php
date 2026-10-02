@@ -782,6 +782,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/transfers/{transfer}/payments/{payment}', [TransferPaymentController::class, 'destroy']);
 
     // Passeport du jour
+    Route::get('/daily-passport/players', [PassportController::class, 'players']);
+    Route::get('/daily-passport/statistics', [PassportController::class, 'statistics']);
     Route::get('/clubs', [ClubController::class, 'apiIndex']);
     Route::get('/clubs/{club}/players/daily-passport', [PassportController::class, 'clubPassport']);
     Route::get('/federations/{federation}/daily-passport', [PassportController::class, 'federationPassport']);

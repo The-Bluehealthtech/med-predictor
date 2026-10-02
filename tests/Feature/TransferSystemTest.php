@@ -314,6 +314,48 @@ class TransferSystemTest extends TestCase
     }
 
     /** @test */
+    public function daily_passport_player_directory_matches_component_contract()
+    {
+        $this->user->update(['role' => 'system_admin']);
+
+        $response = $this->actingAs($this->user)
+            ->getJson('/api/daily-passport/players');
+
+        $response->assertStatus(200)
+            ->assertJson(['success' => true])
+            ->assertJsonStructure([
+                'data' => [[
+                    'id',
+                    'name',
+                    'position',
+                    'nationality',
+                    'fifa_license_status',
+                    'current_club',
+                ]],
+            ]);
+    }
+
+    /** @test */
+    public function daily_passport_statistics_match_component_contract()
+    {
+        $this->user->update(['role' => 'system_admin']);
+
+        $response = $this->actingAs($this->user)
+            ->getJson('/api/daily-passport/statistics');
+
+        $response->assertStatus(200)
+            ->assertJson(['success' => true])
+            ->assertJsonStructure([
+                'data' => [
+                    'eligiblePlayers',
+                    'approvedTransfers',
+                    'pendingItc',
+                    'alerts',
+                ],
+            ]);
+    }
+
+    /** @test */
     public function club_passport_returns_eligible_players()
     {
         $this->user->update(['role' => 'system_admin']);

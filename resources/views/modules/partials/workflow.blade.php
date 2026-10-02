@@ -7,6 +7,8 @@
     $cols = [3 => 'lg:grid-cols-3', 4 => 'lg:grid-cols-4', 5 => 'lg:grid-cols-5'];
     $badge = fn (array $step) => $step['tone'] ?? $workflow['tone'];
     $arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="m9 6 6 6-6 6"/></svg>';
+    $todo = $todo ?? [];
+    $todoTone = ['action' => 'bg-amber-100 text-amber-800 ring-amber-200', 'info' => 'bg-slate-100 text-slate-700 ring-slate-200'];
     $tools = collect($workflow['tools'] ?? [])->map(fn ($r) => $byRoute[$r] ?? null)->filter()->values();
 @endphp
 
@@ -21,6 +23,9 @@
                 <div class="flex items-center gap-2">
                     <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-sm font-bold {{ $badge($step) }}">{{ $i + 1 }}</span>
                     <span class="font-semibold text-gray-900">{{ $tr($step['label']) }}</span>
+                    @if(isset($step['todo'], $todo[$step['todo']]) && $cards->isNotEmpty())
+                        <span class="ml-auto inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ring-1 {{ $todoTone[$todo[$step['todo']]['tone']] ?? $todoTone['info'] }}" data-todo="{{ $step['todo'] }}">{{ $todo[$step['todo']]['count'] }} {{ $tr($todo[$step['todo']]['label']) }}</span>
+                    @endif
                 </div>
                 <p class="mt-1 text-xs text-gray-500">{{ $tr($step['role']) }}</p>
                 <div class="mt-3 space-y-2 flex-1">
@@ -53,6 +58,9 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-sm font-bold {{ $laneOpen ? $lane['tone'] : 'bg-gray-300' }}">{{ $i + 1 }}</span>
                                 <span class="font-semibold text-gray-900">{{ $tr($step['label']) }}</span>
+                                @if($laneOpen && isset($step['todo'], $todo[$step['todo']]))
+                                    <span class="ml-auto inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ring-1 {{ $todoTone[$todo[$step['todo']]['tone']] ?? $todoTone['info'] }}" data-todo="{{ $step['todo'] }}">{{ $todo[$step['todo']]['count'] }} {{ $tr($todo[$step['todo']]['label']) }}</span>
+                                @endif
                             </div>
                             <p class="mt-1 text-xs text-gray-500">{{ $tr($step['role']) }}</p>
                             @if($laneOpen)

@@ -30,6 +30,9 @@
         return isset($spaceVisible[$group]) ? $spaceVisible[$group] : true;
     };
 
+    // Ce qui reste à faire à chaque étape, pour ce compte (nombres seulement, dans son périmètre).
+    $todo = ($authUser && is_array($modules) && isset($modules[0]['name']))
+        ? app(\App\Services\Modules\WorkflowCounters::class)->forUser($authUser) : [];
     $visibleModules = (is_array($modules) && isset($modules[0]['name']))
         ? collect($modules)->filter(fn ($m) => $moduleVisible($m))->values()
         : collect($modules);
@@ -160,15 +163,15 @@ function filterByCategory(category, event) {
             // Parcours de chaque section : étapes ordonnées, rôle et production de chaque étape.
             $workflows = [
                 'clinique' => ['type' => 'flow', 'tone' => 'bg-red-600', 'steps' => [
-                    ['label' => 'Accueil', 'role' => 'Secrétariat médical', 'output' => 'Rendez-vous pris, dossier ouvert', 'routes' => ['secretary.dashboard']],
-                    ['label' => 'Prise en charge', 'role' => 'Médecin', 'output' => 'Consultation et orientation', 'routes' => ['modules.medical.index']],
-                    ['label' => 'Dossier médical', 'role' => 'Médecin', 'output' => 'Diagnostic, traitement, AUT, imagerie', 'routes' => ['modules.healthcare.index']],
-                    ['label' => 'Aptitude', 'role' => 'Médecin', 'output' => 'Aptitude à jouer transmise au staff', 'routes' => ['pcma.index']],
+                    ['label' => 'Accueil', 'todo' => 'clinic_today', 'role' => 'Secrétariat médical', 'output' => 'Rendez-vous pris, dossier ouvert', 'routes' => ['secretary.dashboard']],
+                    ['label' => 'Prise en charge', 'todo' => 'clinic_waiting', 'role' => 'Médecin', 'output' => 'Consultation et orientation', 'routes' => ['modules.medical.index']],
+                    ['label' => 'Dossier médical', 'todo' => 'clinic_aut', 'role' => 'Médecin', 'output' => 'Diagnostic, traitement, AUT, imagerie', 'routes' => ['modules.healthcare.index']],
+                    ['label' => 'Aptitude', 'todo' => 'clinic_pcma', 'role' => 'Médecin', 'output' => 'Aptitude à jouer transmise au staff', 'routes' => ['pcma.index']],
                 ]],
                 'performance' => ['type' => 'flow', 'tone' => 'bg-blue-600', 'steps' => [
                     ['label' => 'Collecter', 'role' => 'Préparateur physique', 'output' => 'Métriques et données des capteurs', 'routes' => ['performances.fit-metrics', 'portal.devices']],
                     ['label' => 'Surveiller', 'role' => 'Préparateur physique', 'output' => 'Charge et état de forme', 'routes' => ['rpm.index']],
-                    ['label' => 'Évaluer', 'role' => 'Analyste, entraîneur adjoint', 'output' => 'Forme, temps de jeu, alertes par joueur', 'routes' => ['performances.analytics']],
+                    ['label' => 'Évaluer', 'todo' => 'perf_alerts', 'role' => 'Analyste, entraîneur adjoint', 'output' => 'Forme, temps de jeu, alertes par joueur', 'routes' => ['performances.analytics']],
                     ['label' => 'Décider', 'role' => 'Entraîneur', 'output' => 'Composition et plan du prochain match', 'routes' => ['modules.coach-cockpit']],
                 ], 'tools' => ['analytics.digital-twin'], 'tools_label' => 'Pour aller plus loin'],
                 'selections' => ['type' => 'lanes', 'lanes' => [
@@ -176,16 +179,16 @@ function filterByCategory(category, event) {
                     'club' => ['label' => 'Club', 'tone' => 'bg-emerald-600', 'text' => 'text-emerald-700'],
                 ], 'steps' => [
                     ['lane' => 'dtn', 'label' => 'Observer', 'role' => 'DTN', 'output' => 'Joueurs ciblés', 'routes' => ['dtn.players.index']],
-                    ['lane' => 'dtn', 'label' => 'Convoquer', 'role' => 'DTN', 'output' => 'Convocation envoyée au club', 'routes' => ['dtn.index']],
-                    ['lane' => 'club', 'label' => 'État de départ', 'role' => 'Staff et médecin du club', 'output' => 'Données du joueur envoyées à la DTN', 'routes' => ['club.selections.index']],
-                    ['lane' => 'dtn', 'label' => 'État de retour', 'role' => 'DTN, après le rassemblement', 'output' => 'Incidents, performances et risques', 'routes' => ['dtn.index']],
-                    ['lane' => 'club', 'label' => 'Accusé de réception', 'role' => 'Club', 'output' => 'Sélection clôturée', 'routes' => ['club.selections.returns']],
+                    ['lane' => 'dtn', 'label' => 'Convoquer', 'todo' => 'dtn_waiting_club', 'role' => 'DTN', 'output' => 'Convocation envoyée au club', 'routes' => ['dtn.index']],
+                    ['lane' => 'club', 'label' => 'État de départ', 'todo' => 'club_departures', 'role' => 'Staff et médecin du club', 'output' => 'Données du joueur envoyées à la DTN', 'routes' => ['club.selections.index']],
+                    ['lane' => 'dtn', 'label' => 'État de retour', 'todo' => 'dtn_returns', 'role' => 'DTN, après le rassemblement', 'output' => 'Incidents, performances et risques', 'routes' => ['dtn.index']],
+                    ['lane' => 'club', 'label' => 'Accusé de réception', 'todo' => 'club_returns', 'role' => 'Club', 'output' => 'Sélection clôturée', 'routes' => ['club.selections.returns']],
                 ], 'tools' => ['dtn.api-access', 'club.selections.api-access'], 'tools_label' => 'Connexion des logiciels (API)'],
                 'administration' => ['type' => 'flow', 'tone' => 'bg-slate-600', 'steps' => [
                     ['label' => 'Structurer', 'role' => 'Administration', 'output' => 'Clubs et fédérations en place', 'routes' => ['modules.clubs.index', 'modules.associations.index', 'modules.confederations.index']],
                     ['label' => 'Enregistrer', 'role' => 'Secrétariat du club', 'output' => 'Joueurs et équipes inscrits', 'routes' => ['modules.players.index', 'modules.teams.index']],
-                    ['label' => 'Licencier', 'role' => 'Club, puis ligue ou fédération', 'output' => 'Licences validées', 'routes' => ['modules.licenses.index', 'licenses.validation']],
-                    ['label' => 'Transférer', 'role' => 'Club et fédération', 'output' => 'Mutations enregistrées', 'routes' => ['admin.transfer-management.index', 'fifa.dashboard']],
+                    ['label' => 'Licencier', 'todo' => 'licences_pending', 'role' => 'Club, puis ligue ou fédération', 'output' => 'Licences validées', 'routes' => ['modules.licenses.index', 'licenses.validation']],
+                    ['label' => 'Transférer', 'todo' => 'transfers_pending', 'role' => 'Club et fédération', 'output' => 'Mutations enregistrées', 'routes' => ['admin.transfer-management.index', 'fifa.dashboard']],
                     ['label' => 'Organiser', 'role' => 'Ligue ou fédération', 'output' => 'Compétitions et arbitres désignés', 'routes' => ['modules.competitions.index', 'referee-portal.index']],
                 ], 'tools' => ['modules.finance.dashboard', 'modules.administration.index', 'admin.content-management.index', 'gemini.index'], 'tools_label' => 'Outils transverses'],
             ];
@@ -248,7 +251,7 @@ function filterByCategory(category, event) {
                 
                 <!-- Parcours de la section -->
                 <div class="p-6">
-                    @include('modules.partials.workflow', ['workflow' => $workflows[$categoryKey], 'items' => $groupedModules[$categoryKey]])
+                    @include('modules.partials.workflow', ['workflow' => $workflows[$categoryKey], 'items' => $groupedModules[$categoryKey], 'todo' => $todo])
                 </div>
             </div>
         </div>

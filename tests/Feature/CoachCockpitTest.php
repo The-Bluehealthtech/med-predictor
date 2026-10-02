@@ -118,6 +118,12 @@ class CoachCockpitTest extends TestCase
                 'raw_data' => json_encode(['Position' => 'CDM', 'Nationality' => 'Tunisia']), 'created_at' => now(), 'updated_at' => now()]);
         }
 
+        // Cas de la prod : un score saisi dans le module compétitions, sans feuille de match.
+        $competitionId = (int) DB::table('matches')->max('competition_id');
+        $opponent = $this->clubIds[0];
+        DB::table('matches')->insert(['competition_id' => $competitionId, 'home_club_id' => $clubId, 'away_club_id' => $opponent,
+            'home_score' => 1, 'away_score' => 0, 'match_date' => '2026-09-20', 'created_at' => now(), 'updated_at' => now()]);
+
         $clubs = $this->get(route('modules.coach-cockpit'))->assertOk()->viewData('clubs');
         $this->assertTrue($clubs->contains(fn ($c) => $c->id === $clubId && !$c->has_matches), 'tous les clubs de la base sont proposés');
 

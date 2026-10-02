@@ -47,14 +47,17 @@ final class CoachCockpitData
 
     public function forClub(int $clubId): ?array
     {
-        return Cache::remember("coach-cockpit:v1:club:{$clubId}", now()->addMinutes(15), fn () => $this->build($clubId));
+        return Cache::remember("coach-cockpit:v2:club:{$clubId}", now()->addMinutes(15), fn () => $this->build($clubId));
     }
 
     private function build(int $clubId): ?array
     {
+        // Même règle que le sélecteur : seuls comptent les matchs joués avec feuille
+        // de match ; un score saisi sans composition ouvre la fiche club.
         $competitionId = DB::table('matches')
             ->where(fn ($q) => $q->where('home_club_id', $clubId)->orWhere('away_club_id', $clubId))
             ->whereNotNull('home_score')
+            ->whereIn('id', DB::table('match_participations')->select('match_id'))
             ->select('competition_id', DB::raw('count(*) as n'))
             ->groupBy('competition_id')->orderByDesc('n')->value('competition_id');
         if ($competitionId === null) {

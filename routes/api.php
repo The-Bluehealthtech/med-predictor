@@ -1186,14 +1186,6 @@ require __DIR__.'/api-v3.php';
 // =============================================================================
 require __DIR__.'/google-assistant.php';
 
-// Google Assistant routes
-Route::prefix('google-assistant')->group(function () {
-    Route::post('/webhook', [GoogleAssistantController::class, 'handleIntent']);
-    Route::post('/submit-pcma', [GoogleAssistantController::class, 'submitPcmaToFit']);
-    Route::get('/fit-health', [GoogleAssistantController::class, 'checkFitApiHealth']);
-    Route::get('/health', [GoogleAssistantController::class, 'health']);
-});
-
 // Route pour récupérer les données de session PCMA
 Route::get('/google-assistant/session/{sessionId}', [GoogleAssistantController::class, 'getSessionData'])->middleware(['auth:sanctum']);
 

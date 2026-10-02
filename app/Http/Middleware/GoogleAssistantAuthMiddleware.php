@@ -17,22 +17,22 @@ class GoogleAssistantAuthMiddleware
     public function handle(Request $request, Closure $next)
     {
         try {
-            // Vérifier si c'est une requête de Google Assistant
-            if ($this->isGoogleAssistantRequest($request)) {
-                // Authentifier l'utilisateur via Google Assistant
-                $this->authenticateGoogleAssistantUser($request);
+            $this->verifyWebhookTransport($request);
+
+            if (!$this->isGoogleAssistantRequest($request)) {
+                throw new \RuntimeException('Requête Google Assistant non reconnue.');
             }
 
-            // Continuer le traitement
-            return $next($request);
+            $this->authenticateGoogleAssistantUser($request);
 
-        } catch (\Exception $e) {
-            Log::error('Erreur d\'authentification Google Assistant', [
-                'error' => $e->getMessage(),
-                'request' => $request->all()
+            return $next($request);
+        } catch (\Throwable $e) {
+            Log::warning('Google Assistant webhook authentication rejected', [
+                'reason' => $e->getMessage(),
+                'path' => $request->path(),
+                'ip' => $request->ip(),
             ]);
 
-            // Retourner une erreur d'authentification
             return response()->json([
                 'fulfillmentText' => 'Erreur d\'authentification. Veuillez vous connecter via l\'interface web.',
                 'fulfillmentMessages' => [
@@ -43,6 +43,37 @@ class GoogleAssistantAuthMiddleware
                     ]
                 ]
             ], 401);
+        }
+    }
+
+    private function verifyWebhookTransport(Request $request): void
+    {
+        if (!config('google-assistant.auth.enabled', true)) {
+            return;
+        }
+
+        $secret = (string) config('google-assistant.webhook.secret', '');
+
+        // Local/test environments may exercise the integration without a
+        // production webhook secret. Production fails closed.
+        if ($secret === '') {
+            if (app()->environment(['local', 'testing'])) {
+                return;
+            }
+
+            throw new \RuntimeException('Webhook secret non configuré.');
+        }
+
+        $provided = (string) $request->header('X-FIT-Webhook-Secret', '');
+        if ($provided === '') {
+            $authorization = (string) $request->header('Authorization', '');
+            if (str_starts_with($authorization, 'Bearer ')) {
+                $provided = substr($authorization, 7);
+            }
+        }
+
+        if ($provided === '' || !hash_equals($secret, $provided)) {
+            throw new \RuntimeException('Secret webhook invalide.');
         }
     }
 
@@ -92,7 +123,6 @@ class GoogleAssistantAuthMiddleware
                 Auth::login($user);
                 Log::info('Utilisateur authentifié via Google Assistant', [
                     'user_id' => $userId,
-                    'email' => $user->email
                 ]);
                 return;
             }

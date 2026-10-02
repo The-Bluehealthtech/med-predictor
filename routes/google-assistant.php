@@ -15,14 +15,21 @@ use App\Http\Controllers\GoogleAssistantController;
 
 Route::prefix('google-assistant')->name('google.assistant.')->group(function () {
     
-    // Point d'entrée principal pour Google Assistant
+    // Points d'entrée d'écriture : authentification du webhook obligatoire.
     Route::post('/webhook', [GoogleAssistantController::class, 'handleIntent'])
         ->name('webhook')
         ->middleware('google.assistant.auth');
-    
-    // Endpoint de santé pour Google Assistant
+
+    Route::post('/submit-pcma', [GoogleAssistantController::class, 'submitPcmaToFit'])
+        ->name('submit-pcma')
+        ->middleware('google.assistant.auth');
+
+    // Endpoints de santé uniquement, sans données métier.
     Route::get('/health', [GoogleAssistantController::class, 'health'])
         ->name('health');
+
+    Route::get('/fit-health', [GoogleAssistantController::class, 'checkFitApiHealth'])
+        ->name('fit-health');
     
     // Endpoint de test pour le développement
     Route::post('/test', [GoogleAssistantController::class, 'handleIntent'])

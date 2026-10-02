@@ -54,7 +54,7 @@ require __DIR__.'/account-requests.php';
 
     Route::get('/pcma/voice-fallback', function () {
         return view('pcma.voice-fallback');
-    })->name('pcma.voice-fallback');
+    })->middleware(['auth'])->name('pcma.voice-fallback');
 
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\DashboardController;

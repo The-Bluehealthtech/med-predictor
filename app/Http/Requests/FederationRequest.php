@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class FederationRequest extends FormRequest
@@ -12,7 +13,7 @@ class FederationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('manage_federations');
+        return auth()->check() && Gate::allows('manage_federations');
     }
 
     /**

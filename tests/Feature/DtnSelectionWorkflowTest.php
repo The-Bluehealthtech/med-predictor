@@ -235,29 +235,49 @@ class DtnSelectionWorkflowTest extends TestCase
 
         // Page des modules : une section par espace, visible seulement avec la permission de l'espace
         $cards = [
-            ['name' => 'Convocations et retours', 'description' => 'x', 'icon' => 'x', 'route' => 'dtn.index', 'status' => 'active', 'color' => 'indigo', 'category' => 'dtn'],
-            ['name' => 'Fiches joueurs', 'description' => 'x', 'icon' => 'x', 'route' => 'dtn.players.index', 'status' => 'active', 'color' => 'indigo', 'category' => 'dtn'],
-            ['name' => 'Convocations reçues', 'description' => 'x', 'icon' => 'x', 'route' => 'club.selections.index', 'status' => 'active', 'color' => 'emerald', 'category' => 'club_selections'],
-            ['name' => 'Retours de sélection', 'description' => 'x', 'icon' => 'x', 'route' => 'club.selections.returns', 'status' => 'active', 'color' => 'emerald', 'category' => 'club_selections'],
+            ['name' => 'Convocations et retours', 'description' => 'x', 'icon' => 'x', 'route' => 'dtn.index', 'status' => 'active', 'color' => 'indigo', 'group' => 'dtn', 'category' => 'selections'],
+            ['name' => 'Fiches joueurs', 'description' => 'x', 'icon' => 'x', 'route' => 'dtn.players.index', 'status' => 'active', 'color' => 'indigo', 'group' => 'dtn', 'category' => 'selections'],
+            ['name' => 'Convocations reçues', 'description' => 'x', 'icon' => 'x', 'route' => 'club.selections.index', 'status' => 'active', 'color' => 'emerald', 'group' => 'club', 'category' => 'selections'],
+            ['name' => 'Retours de sélection', 'description' => 'x', 'icon' => 'x', 'route' => 'club.selections.returns', 'status' => 'active', 'color' => 'emerald', 'group' => 'club', 'category' => 'selections'],
         ];
         if (!\Illuminate\Support\Facades\Route::has('logout')) {
             \Illuminate\Support\Facades\Route::post('/logout', fn () => null)->name('logout');
             \Illuminate\Support\Facades\Route::getRoutes()->refreshNameLookups();
         }
+        app()->setLocale('fr');
         $this->actingAs($dtn);
         $html = view('modules.index', ['modules' => $cards])->render();
-        $this->assertStringContainsString('data-category="dtn"', $html);
-        $this->assertStringNotContainsString('data-category="club_selections"', $html);
+        $this->assertStringContainsString('Espace DTN — fédération', $html);
+        $this->assertStringNotContainsString('Espace club', $html);
         $this->assertStringNotContainsString('Retours de sélection', $html);
         $this->actingAs($coach);
         $html = view('modules.index', ['modules' => $cards])->render();
-        $this->assertStringContainsString('data-category="club_selections"', $html);
-        $this->assertStringNotContainsString('data-category="dtn"', $html);
+        $this->assertStringContainsString('Espace club', $html);
+        $this->assertStringNotContainsString('Espace DTN', $html);
         $this->assertStringNotContainsString('Fiches joueurs', $html);
         $this->actingAs($this->user('system_admin'));
         $html = view('modules.index', ['modules' => $cards])->render();
-        $this->assertStringContainsString('data-category="dtn"', $html);
-        $this->assertStringContainsString('data-category="club_selections"', $html);
+        $this->assertStringContainsString('Espace DTN — fédération', $html);
+        $this->assertStringContainsString('Espace club', $html);
+
+        // La clinique n'apparaît qu'aux rôles médicaux (et le secrétariat au rôle secretary).
+        $clinic = [
+            ['name' => 'Dossiers médicaux', 'description' => 'x', 'icon' => 'x', 'route' => 'modules.healthcare.index', 'status' => 'active', 'color' => 'red', 'category' => 'clinique'],
+            ['name' => 'Secrétariat médical', 'description' => 'x', 'icon' => 'x', 'route' => 'secretary.dashboard', 'status' => 'active', 'color' => 'red', 'category' => 'clinique'],
+            ['name' => 'Cockpit entraîneur', 'description' => 'x', 'icon' => 'x', 'route' => 'modules.coach-cockpit', 'status' => 'active', 'color' => 'blue', 'category' => 'performance'],
+        ];
+        $this->actingAs($coach);
+        $html = view('modules.index', ['modules' => $clinic])->render();
+        $this->assertStringNotContainsString('data-category="clinique"', $html);
+        $this->assertStringContainsString('data-category="performance"', $html);
+        $this->actingAs($this->user('club_medical', ['club_id' => $this->clubId]));
+        $html = view('modules.index', ['modules' => $clinic])->render();
+        $this->assertStringContainsString('data-category="clinique"', $html);
+        $this->assertStringContainsString('Dossiers médicaux', $html);
+        $this->actingAs($this->user('secretary', ['club_id' => $this->clubId]));
+        $html = view('modules.index', ['modules' => $clinic])->render();
+        $this->assertStringContainsString('Secrétariat médical', $html);
+        $this->assertStringNotContainsString('Dossiers médicaux', $html);
 
         // Visibilité calculée par DtnAccess
         $access = app(\App\Services\Dtn\DtnAccess::class);

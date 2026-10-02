@@ -3,6 +3,28 @@
 @section('title', 'Modules - FIT Platform')
 
 @section('content')
+@php
+    // Visibilité : la clinique pour les rôles médicaux (plus le secrétariat), chaque espace
+    // des sélections pour les comptes qui ont sa permission RBAC. Une section sans carte est masquée.
+    $authUser = auth()->user();
+    $dtnAccess = app(\App\Services\Dtn\DtnAccess::class);
+    $spaceVisible = [
+        'dtn' => $authUser && $dtnAccess->isDtnSide($authUser),
+        'club' => $authUser && $dtnAccess->isClubSide($authUser),
+    ];
+    $isMedical = $authUser && $authUser->hasAnyRole(['system_admin', 'association_medical', 'club_medical', 'doctor', 'team_doctor', 'medical_staff']);
+    $moduleVisible = function (array $module) use ($spaceVisible, $isMedical, $authUser) {
+        if (($module['category'] ?? null) === 'clinique') {
+            return $isMedical || (($module['route'] ?? null) === 'secretary.dashboard' && ($authUser?->role === 'secretary'));
+        }
+        $group = $module['group'] ?? null;
+        return isset($spaceVisible[$group]) ? $spaceVisible[$group] : true;
+    };
+
+    $visibleModules = (is_array($modules) && isset($modules[0]['name']))
+        ? collect($modules)->filter(fn ($m) => $moduleVisible($m))->values()
+        : collect($modules);
+@endphp
 <script>
 // Filter functions - defined early to ensure availability
 function showAllCategories(event) {
@@ -101,11 +123,11 @@ function filterByCategory(category, event) {
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            {{ $totalModules ?? count($modules) }} {{ app()->getLocale() === 'en' ? 'modules available' : 'modules disponibles' }}
+                            {{ $visibleModules->count() }} {{ app()->getLocale() === 'en' ? 'modules available' : 'modules disponibles' }}
                         </div>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                            {{ collect($modules)->pluck('category')->filter()->unique()->count() }} {{ app()->getLocale() === 'en' ? 'organized categories' : 'catégories organisées' }}
+                            {{ $visibleModules->pluck('category')->filter()->unique()->count() }} {{ app()->getLocale() === 'en' ? 'sections' : 'sections' }}
                         </div>
                     </div>
                 </div>
@@ -119,116 +141,31 @@ function filterByCategory(category, event) {
 
         @if($isFlat)
         @php
-            // Organiser les modules par catégories
+            // Quatre sections métier ; l'administration est découpée en sous-groupes.
             $categories = [
-                'dtn' => [
-                    'name' => '🇹🇳 Direction technique nationale',
-                    'description' => 'Espace fédération : fiches joueurs, convocations et retours de sélection',
-                    'color' => 'indigo',
-                    'bg_color' => 'bg-indigo-50',
-                    'border_color' => 'border-indigo-200',
-                    'text_color' => 'text-indigo-800'
-                ],
-                'club_selections' => [
-                    'name' => '🎽 Club — Sélections nationales',
-                    'description' => 'Espace club : convocations reçues, états de départ et retours de sélection',
-                    'color' => 'emerald',
-                    'bg_color' => 'bg-emerald-50',
-                    'border_color' => 'border-emerald-200',
-                    'text_color' => 'text-emerald-800'
-                ],
-                'health' => [
-                    'name' => '🏥 Santé & Médecine',
-                    'description' => 'Gestion médicale et suivi de santé des athlètes',
-                    'color' => 'red',
-                    'bg_color' => 'bg-red-50',
-                    'border_color' => 'border-red-200',
-                    'text_color' => 'text-red-800'
-                ],
-                'sport' => [
-                    'name' => '⚽ Gestion du Football',
-                    'description' => 'Joueurs, équipes, compétitions et arbitres',
-                    'color' => 'green',
-                    'bg_color' => 'bg-green-50',
-                    'border_color' => 'border-green-200',
-                    'text_color' => 'text-green-800'
-                ],
-                'institutional' => [
-                    'name' => '🏢 Organisations',
-                    'description' => 'Clubs, associations et confédérations',
-                    'color' => 'blue',
-                    'bg_color' => 'bg-blue-50',
-                    'border_color' => 'border-blue-200',
-                    'text_color' => 'text-blue-800'
-                ],
-                'documents' => [
-                    'name' => '📋 Licences & Documents',
-                    'description' => 'Gestion des licences et documents officiels',
-                    'color' => 'indigo',
-                    'bg_color' => 'bg-indigo-50',
-                    'border_color' => 'border-indigo-200',
-                    'text_color' => 'text-indigo-800'
-                ],
-                'analytics' => [
-                    'name' => '📊 Analytics & Performance',
-                    'description' => 'Analyses de données et performance des athlètes',
-                    'color' => 'purple',
-                    'bg_color' => 'bg-purple-50',
-                    'border_color' => 'border-purple-200',
-                    'text_color' => 'text-purple-800'
-                ],
-                'data_entry' => [
-                    'name' => '📝 Données & saisie',
-                    'description' => 'Saisie et vérification des données qui alimentent les scores',
-                    'color' => 'purple',
-                    'bg_color' => 'bg-purple-50',
-                    'border_color' => 'border-purple-200',
-                    'text_color' => 'text-purple-800'
-                ],
-                'technology' => [
-                    'name' => '🤖 IA & Technologie',
-                    'description' => 'Intelligence artificielle et technologies avancées',
-                    'color' => 'purple',
-                    'bg_color' => 'bg-purple-50',
-                    'border_color' => 'border-purple-200',
-                    'text_color' => 'text-purple-800'
-                ],
-                'portals' => [
-                    'name' => '🌐 Portails & Connectivité',
-                    'description' => 'Portails utilisateurs et connectivité FIFA',
-                    'color' => 'cyan',
-                    'bg_color' => 'bg-cyan-50',
-                    'border_color' => 'border-cyan-200',
-                    'text_color' => 'text-cyan-800'
-                ],
-                'administration' => [
-                    'name' => '⚙️ Administration Management',
-                    'description' => 'Gestion administrative et financière',
-                    'color' => 'gray',
-                    'bg_color' => 'bg-gray-50',
-                    'border_color' => 'border-gray-200',
-                    'text_color' => 'text-gray-800'
-                ]
+                'clinique' => ['name' => 'La clinique', 'description' => 'Staff médical : prise en charge, dossiers, bilans et secrétariat', 'icon' => 'pulse', 'tone' => 'bg-red-50 text-red-600 ring-red-100'],
+                'performance' => ['name' => 'Le centre de performance', 'description' => 'Staff sportif : cockpit, analyses, charge et métriques FIT', 'icon' => 'chart', 'tone' => 'bg-blue-50 text-blue-600 ring-blue-100'],
+                'selections' => ['name' => 'Les sélections nationales', 'description' => 'Relation club ↔ Direction technique nationale', 'icon' => 'flag', 'tone' => 'bg-indigo-50 text-indigo-600 ring-indigo-100'],
+                'administration' => ['name' => 'L\'administration', 'description' => 'Organisations, sport, licences, finance et système', 'icon' => 'briefcase', 'tone' => 'bg-slate-100 text-slate-600 ring-slate-200'],
             ];
-            
-            // Grouper les modules par catégorie
+            // Teinte des pastilles d'icône, par couleur de carte (classes écrites en entier pour Tailwind).
+            $iconTone = [
+                'red' => 'bg-red-50 text-red-600', 'blue' => 'bg-blue-50 text-blue-600', 'indigo' => 'bg-indigo-50 text-indigo-600',
+                'emerald' => 'bg-emerald-50 text-emerald-600', 'gray' => 'bg-slate-100 text-slate-600',
+            ];
+            $groupLabels = [
+                'dtn' => 'Espace DTN — fédération', 'club' => 'Espace club',
+                'organisations' => 'Organisations', 'sport' => 'Sport', 'licences' => 'Licences, transferts et FIFA',
+                'finance' => 'Finance', 'systeme' => 'Système',
+            ];
+            $groupTone = ['dtn' => 'text-indigo-700', 'club' => 'text-emerald-700'];
+
             $groupedModules = [];
-            // Les deux espaces des sélections nationales ne sont montrés qu'aux comptes
-            // qui ont la permission RBAC de l'espace (section et filtre masqués sinon).
-            $dtnAccess = app(\App\Services\Dtn\DtnAccess::class);
-            $spaceVisible = [
-                'dtn' => auth()->check() && $dtnAccess->isDtnSide(auth()->user()),
-                'club_selections' => auth()->check() && $dtnAccess->isClubSide(auth()->user()),
-            ];
-            foreach($modules as $module) {
-                $category = $module['category'] ?? 'administration';
-                if (isset($spaceVisible[$category]) && !$spaceVisible[$category]) {
+            foreach ($modules as $module) {
+                if (!$moduleVisible($module)) {
                     continue;
                 }
-                if(!isset($groupedModules[$category])) {
-                    $groupedModules[$category] = [];
-                }
-                $groupedModules[$category][] = $module;
+                $groupedModules[$module['category'] ?? 'administration'][] = $module;
             }
         @endphp
 
@@ -241,9 +178,9 @@ function filterByCategory(category, event) {
                         {{ app()->getLocale() === 'en' ? 'All categories' : 'Toutes les catégories' }}
                     </button>
                     @foreach($categories as $key => $category)
-                    @continue(isset($spaceVisible[$key]) && !$spaceVisible[$key])
+                    @continue(empty($groupedModules[$key]))
                     <button onclick="filterByCategory('{{ $key }}', event)" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors category-filter" data-category="{{ $key }}">
-                        {{ app()->getLocale() === 'en' ? (trans('modules_fit.categories')[$key] ?? $category['name']) : $category['name'] }}
+                        <span class="inline-flex items-center gap-2">@include('modules.partials.icon', ['name' => $category['icon'] ?? '', 'class' => 'w-4 h-4'])<span>{{ app()->getLocale() === 'en' ? (trans('modules_fit.categories')[$key] ?? $category['name']) : $category['name'] }}</span></span>
                     </button>
                     @endforeach
                 </div>
@@ -259,19 +196,7 @@ function filterByCategory(category, event) {
                 <div class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-lg">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <span class="text-2xl mr-3">
-                                @if($categoryKey === 'dtn') 🇹🇳
-                                @elseif($categoryKey === 'club_selections') 🎽
-                                @elseif($categoryKey === 'health') 🏥
-                                @elseif($categoryKey === 'sport') ⚽
-                                @elseif($categoryKey === 'institutional') 🏢
-                                @elseif($categoryKey === 'documents') 📋
-                                @elseif($categoryKey === 'analytics') 📊
-                                @elseif($categoryKey === 'technology') 🤖
-                                @elseif($categoryKey === 'portals') 🌐
-                                @elseif($categoryKey === 'administration') ⚙️
-                                @endif
-                            </span>
+                            <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg ring-1 mr-3 {{ $categoryInfo['tone'] ?? 'bg-slate-100 text-slate-600 ring-slate-200' }}">@include('modules.partials.icon', ['name' => $categoryInfo['icon'] ?? '', 'class' => 'w-5 h-5'])</span>
                             <h3 class="text-xl font-semibold text-gray-900">{{ app()->getLocale() === 'en' ? (trans('modules_fit.categories')[$categoryKey] ?? $categoryInfo['name']) : $categoryInfo['name'] }}</h3>
                         </div>
                         <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
@@ -283,7 +208,14 @@ function filterByCategory(category, event) {
                 <!-- Modules Grid -->
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                @php $previousGroup = null; @endphp
                 @foreach($groupedModules[$categoryKey] as $item)
+                @if(($item['group'] ?? null) && $item['group'] !== $previousGroup)
+                    <div class="md:col-span-2 lg:col-span-3 {{ $previousGroup ? 'mt-2 pt-4 border-t border-gray-100' : '' }}">
+                        <h4 class="text-xs font-semibold uppercase tracking-wider {{ $groupTone[$item['group']] ?? 'text-gray-500' }}">{{ app()->getLocale() === 'en' ? (trans('modules_fit.groups')[$item['group']] ?? $groupLabels[$item['group']]) : ($groupLabels[$item['group']] ?? $item['group']) }}</h4>
+                    </div>
+                @endif
+                @php $previousGroup = $item['group'] ?? null; @endphp
                 @php
                     $routeName = $item['route'] ?? null;
                     $gateMap = [
@@ -332,7 +264,7 @@ function filterByCategory(category, event) {
                                     'record-performance-metrics'
                                 ),
                         'dtn.index', 'dtn.players.index', 'dtn.api-access' => $spaceVisible['dtn'],
-                        'club.selections.index', 'club.selections.returns', 'club.selections.api-access' => $spaceVisible['club_selections'],
+                        'club.selections.index', 'club.selections.returns', 'club.selections.api-access' => $spaceVisible['club'],
                         default => true,
                     };
                 @endphp
@@ -354,7 +286,7 @@ function filterByCategory(category, event) {
                                 @endphp
                                 {{ $cardNumber }}
                             </div>
-                            <span class="text-2xl mr-2">{{ $item['icon'] }}</span>
+                            <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg {{ $iconTone[$item['color'] ?? 'gray'] ?? 'bg-slate-100 text-slate-600' }}">@include('modules.partials.icon', ['name' => $item['icon'] ?? '', 'class' => 'w-5 h-5'])</span>
                         </div>
                         <div class="w-3 h-3 rounded-full 
                             @if($item['color'] === 'red') bg-red-500
@@ -395,7 +327,7 @@ function filterByCategory(category, event) {
         <!-- Fallback pour les modules non plats -->
         <div class="mb-8">
             <div class="flex items-center mb-4">
-                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-2xl mr-4 bg-gray-100 text-gray-600">📦</div>
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center mr-4 bg-gray-100 text-gray-600">@include('modules.partials.icon', ['name' => 'layers', 'class' => 'w-6 h-6'])</div>
                 <div>
                     <h3 class="text-xl font-semibold text-gray-900">{{ app()->getLocale() === 'en' ? 'Available modules' : 'Modules disponibles' }}</h3>
                     <p class="text-sm text-gray-600">{{ app()->getLocale() === 'en' ? 'Access features' : 'Accès aux fonctionnalités' }}</p>
@@ -408,8 +340,8 @@ function filterByCategory(category, event) {
                     <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 p-6 group cursor-pointer" 
                          onclick="window.location.href='{{ route($item['route']) }}'">
                         <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 bg-gray-100 text-gray-600">
-                                {{ $item['icon'] }}
+                            <div class="w-12 h-12 rounded-lg flex items-center justify-center mr-4 bg-gray-100 text-gray-600">
+                                @include('modules.partials.icon', ['name' => $item['icon'] ?? '', 'class' => 'w-6 h-6'])
                             </div>
                             <div class="flex-1">
                                 <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
@@ -518,7 +450,7 @@ function showModuleInfo(moduleName, url) {
     notification.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
     notification.innerHTML = `
         <div class="bg-white rounded-lg p-8 max-w-md mx-4 text-center shadow-xl">
-            <div class="text-4xl mb-4">🚀</div>
+            <div class="mb-4 flex justify-center text-gray-400">@include('modules.partials.icon', ['name' => 'layers', 'class' => 'w-10 h-10'])</div>
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Accès au module</h3>
             <p class="text-gray-600 mb-4">${moduleName}</p>
             <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm font-mono mb-4">

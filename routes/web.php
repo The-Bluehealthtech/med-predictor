@@ -1043,307 +1043,311 @@ Route::middleware(['auth'])->group(function () {
         return view('modules.index', [
             'footballType' => $footballType,
             'modules' => [
-                    // 🏥 SANTÉ & MÉDECINE
-                            [
-                'name' => 'Prise en charge médicale',
-                'description' => 'File d’attente clinique et prise en charge des joueurs transmis par le secrétariat',
-                'icon' => '🏥',
-                'route' => 'modules.medical.index',
+                    // LA CLINIQUE — staff médical uniquement
+                    [
+                        'name' => 'Prise en charge médicale',
+                        'description' => 'File d’attente clinique : prise en charge des joueurs transmis par le secrétariat',
+                        'icon' => 'stethoscope',
+                        'route' => 'modules.medical.index',
                         'status' => 'active',
                         'color' => 'red',
-                        'category' => 'health'
+                        'category' => 'clinique'
                     ],
                     [
                         'name' => 'Dossiers médicaux',
-                        'description' => 'Accès longitudinal aux dossiers santé des joueurs',
-                        'icon' => '📋',
+                        'description' => 'Dossier de santé de chaque joueur : diagnostics CIM-11, AUT, antidopage, dentaire, imagerie, médicaments',
+                        'icon' => 'folder',
                         'route' => 'modules.healthcare.index',
                         'status' => 'active',
                         'color' => 'red',
-                        'category' => 'health'
-            ],
-                [
-                    'name' => 'PCMA',
-                        'description' => 'Plateforme de Contrôle Médical des Athlètes',
-                        'icon' => '🏥',
+                        'category' => 'clinique'
+                    ],
+                    [
+                        'name' => 'Bilan médical pré-compétition (PCMA)',
+                        'description' => 'Évaluations médicales avant compétition (Pre-Competition Medical Assessment)',
+                        'icon' => 'clipboard-check',
                         'route' => 'pcma.index',
                         'status' => 'active',
                         'color' => 'red',
-                        'category' => 'health'
+                        'category' => 'clinique'
                     ],
                     [
-                        'name' => 'Secrétariat Médical',
-                        'description' => 'Gestion des rendez-vous et documents médicaux',
-                        'icon' => '📅',
+                        'name' => 'Secrétariat médical',
+                        'description' => 'Accueil, rendez-vous et documents médicaux',
+                        'icon' => 'calendar',
                         'route' => 'secretary.dashboard',
                         'status' => 'active',
-                        'color' => 'blue',
-                        'category' => 'health'
+                        'color' => 'red',
+                        'category' => 'clinique'
                     ],
-                    
-                    // ⚽ GESTION DU FOOTBALL
-                    [
-                        'name' => 'Players',
-                        'description' => 'Gestion des joueurs et licences',
-                        'icon' => '👥',
-                        'route' => 'modules.players.index',
-                        'status' => 'active',
-                        'color' => 'green',
-                        'category' => 'sport'
-                    ],
-                    [
-                        'name' => 'Teams',
-                        'description' => 'Gestion des équipes',
-                    'icon' => '⚽',
-                        'route' => 'modules.teams.index',
-                        'status' => 'active',
-                        'color' => 'green',
-                        'category' => 'sport'
-                    ],
-                    [
-                        'name' => 'Competitions',
-                        'description' => 'Gestion des compétitions',
-                        'icon' => '🏆',
-                        'route' => 'modules.competitions.index',
-                        'status' => 'active',
-                    'color' => 'green',
-                    'category' => 'sport'
-                ],
-                [
-                        'name' => 'Referees',
-                        'description' => 'Gestion des arbitres',
-                        'icon' => '👨‍⚖️',
-                        'route' => 'modules.referees.index',
-                        'status' => 'active',
-                        'color' => 'green',
-                        'category' => 'sport'
-                    ],
-                    
-                    // 🏢 ORGANISATIONS
-                    [
-                        'name' => 'Clubs',
-                        'description' => 'Gestion des clubs',
-                        'icon' => '🏟️',
-                        'route' => 'modules.clubs.index',
-                        'status' => 'active',
-                        'color' => 'blue',
-                        'category' => 'institutional'
-                    ],
-                    [
-                        'name' => 'Associations',
-                        'description' => 'Gestion des associations',
-                        'icon' => '🏛️',
-                        'route' => 'modules.associations.index',
-                        'status' => 'active',
-                        'color' => 'blue',
-                        'category' => 'institutional'
-                    ],
-                    [
-                        'name' => 'Confederations',
-                        'description' => 'Gestion des confédérations continentales',
-                        'icon' => '🌐',
-                        'route' => 'modules.confederations.index',
-                        'status' => 'active',
-                        'color' => 'blue',
-                        'category' => 'institutional'
-                    ],
-                    
-                    // 📋 LICENCES & DOCUMENTS
-                [
-                    'name' => 'Licenses',
-                        'description' => 'Gestion des licences',
-                        'icon' => '📄',
-                    'route' => 'modules.licenses.index',
-                        'status' => 'active',
-                        'color' => 'indigo',
-                        'category' => 'documents'
-                    ],
-                    [
-                        'name' => 'Validation de Licence',
-                        'description' => 'Validation et vérification des licences côté ligue/fédération',
-                        'icon' => '✅',
-                        'route' => 'licenses.validation',
-                        'status' => 'active',
-                        'color' => 'green',
-                        'category' => 'documents'
-                    ],
-                    
-                    // 🌍 FIFA & CONNECTIVITÉ
-                    [
-                        'name' => 'FIFA Connect',
-                        'description' => 'Intégration FIFA et connectivité mondiale',
-                        'icon' => '🌍',
-                        'route' => 'fifa.dashboard',
-                        'status' => 'active',
-                    'color' => 'purple',
-                    'category' => 'portals'
-                ],
-                [
-                        'name' => 'FIFA Portal',
-                        'description' => 'Portail FIFA intégré',
-                        'icon' => '🚪',
-                        'route' => 'fifa.portal.integrated',
-                        'status' => 'active',
-                        'color' => 'purple',
-                        'category' => 'portals'
-                    ],
-                    [
-                        'name' => 'FIFA Analytics',
-                        'description' => 'Analyses et statistiques FIFA',
-                        'icon' => '📊',
-                        'route' => 'fifa.analytics',
-                        'status' => 'active',
-                        'color' => 'purple',
-                        'category' => 'analytics'
-                    ],
-                    [
-                        'name' => 'Player Portal',
-                        'description' => 'Portail personnel des joueurs',
-                        'icon' => '👤',
-                        'route' => 'players.list',
-                        'status' => 'active',
-                        'color' => 'blue',
-                        'category' => 'portals'
-                    ],
-                    [
-                        'name' => 'Referee Portal',
-                        'description' => 'Portail des arbitres et officiels',
-                        'icon' => '👨‍⚖️',
-                        'route' => 'referee-portal.index',
-                        'status' => 'active',
-                        'color' => 'green',
-                        'category' => 'portals'
-                    ],
-                    
-                    // 📊 ANALYTICS & PERFORMANCE
-                    [
-                        'name' => 'Digital Twin',
-                        'description' => 'Jumeau numérique des athlètes',
-                        'icon' => '👤',
-                        'route' => 'analytics.digital-twin',
-                        'status' => 'active',
-                        'color' => 'yellow',
-                        'category' => 'technology'
-                    ],
-                    [
-                        'name' => 'Performance Analytics',
-                        'description' => 'Analyses de performance',
-                        'icon' => '🏃',
-                        'route' => 'performances.analytics',
-                        'status' => 'active',
-                        'color' => 'yellow',
-                        'category' => 'analytics'
-                    ],
+
+                    // LE CENTRE DE PERFORMANCE — staff sportif
                     [
                         'name' => 'Cockpit entraîneur',
-                        'description' => 'Performance de l\'équipe, pronostic du prochain match, onze optimal et grille des postes',
-                        'icon' => '🧭',
+                        'description' => 'Performance de l’équipe, pronostic du prochain match, onze optimal et grille des postes',
+                        'icon' => 'target',
                         'route' => 'modules.coach-cockpit',
                         'status' => 'active',
-                        'color' => 'green',
-                        'category' => 'analytics'
+                        'color' => 'blue',
+                        'category' => 'performance'
+                    ],
+                    [
+                        'name' => 'Analyse des performances',
+                        'description' => 'Statistiques de saison issues des feuilles de match',
+                        'icon' => 'chart',
+                        'route' => 'performances.analytics',
+                        'status' => 'active',
+                        'color' => 'blue',
+                        'category' => 'performance'
+                    ],
+                    [
+                        'name' => 'Suivi de la charge (RPM)',
+                        'description' => 'Charge et état de forme des joueurs (intégration des capteurs à venir)',
+                        'icon' => 'gauge',
+                        'route' => 'rpm.index',
+                        'status' => 'active',
+                        'color' => 'blue',
+                        'category' => 'performance'
                     ],
                     [
                         'name' => 'Saisie des métriques FIT',
                         'description' => 'Saisie et vérification des métriques du score FIT canonique',
-                        'icon' => '🎯',
+                        'icon' => 'pencil',
                         'route' => 'performances.fit-metrics',
                         'status' => 'active',
-                        'color' => 'purple',
-                        'category' => 'data_entry'
+                        'color' => 'blue',
+                        'category' => 'performance'
                     ],
-                    
-                    // 🤖 IA & TECHNOLOGIE
-                    // Sélections nationales : espace fédération (DTN) puis espace club
-                    ['name' => 'Convocations et retours', 'description' => 'Convoquer des joueurs, recevoir l\'état de départ du club et envoyer l\'état de retour de sélection', 'icon' => '🇹🇳', 'route' => 'dtn.index', 'status' => 'active', 'color' => 'indigo', 'category' => 'dtn'],
-                    ['name' => 'Fiches joueurs', 'description' => 'Données sportives des joueurs de tous les clubs pour préparer une convocation', 'icon' => '📇', 'route' => 'dtn.players.index', 'status' => 'active', 'color' => 'indigo', 'category' => 'dtn'],
-                    ['name' => 'Accès API — DTN', 'description' => 'Jetons et documentation de l\'API pour le logiciel de la Direction technique nationale', 'icon' => '🔑', 'route' => 'dtn.api-access', 'status' => 'active', 'color' => 'indigo', 'category' => 'dtn'],
-                    ['name' => 'Convocations reçues', 'description' => 'Convocations de vos joueurs par la DTN : préparer et envoyer l\'état de départ', 'icon' => '🎽', 'route' => 'club.selections.index', 'status' => 'active', 'color' => 'emerald', 'category' => 'club_selections'],
-                    ['name' => 'Retours de sélection', 'description' => 'États de retour reçus de la DTN : incidents, performances, risques, indice de performance', 'icon' => '📥', 'route' => 'club.selections.returns', 'status' => 'active', 'color' => 'emerald', 'category' => 'club_selections'],
-                    ['name' => 'Accès API — club', 'description' => 'Jetons et documentation de l\'API pour le logiciel du club', 'icon' => '🔑', 'route' => 'club.selections.api-access', 'status' => 'active', 'color' => 'emerald', 'category' => 'club_selections'],
                     [
-                        'name' => 'RPM',
-                        'description' => 'Module RPM (Real-time Performance Monitoring)',
-                        'icon' => '⚡',
-                        'route' => 'rpm.index',
+                        'name' => 'Jumeau numérique (simulation)',
+                        'description' => 'Scénarios simulés à partir du profil de chaque joueur',
+                        'icon' => 'layers',
+                        'route' => 'analytics.digital-twin',
                         'status' => 'active',
-                    'color' => 'purple',
-                    'category' => 'analytics'
-                ],
-                [
-                        'name' => 'Gemini',
-                        'description' => 'Module Gemini IA de Google',
-                        'icon' => '💎',
-                        'route' => 'gemini.index',
-                        'status' => 'active',
-                        'color' => 'purple',
-                        'category' => 'technology'
+                        'color' => 'blue',
+                        'category' => 'performance'
                     ],
-                    
-                    // 📱 DEVICES & CONNECTIVITÉ
                     [
-                        'name' => 'Devices Portal',
-                        'description' => 'Portail des appareils connectés',
-                        'icon' => '📱',
+                        'name' => 'Appareils connectés',
+                        'description' => 'Montres, capteurs et appareils synchronisés par les joueurs',
+                        'icon' => 'watch',
                         'route' => 'portal.devices',
                         'status' => 'active',
                         'color' => 'blue',
-                        'category' => 'portals'
+                        'category' => 'performance'
                     ],
+
+                    // LES SÉLECTIONS NATIONALES — deux espaces séparés par le RBAC
                     [
-                        'name' => 'Portail Patient',
-                        'description' => 'Portail patient pour saisie de symptômes',
-                        'icon' => '👤',
-                        'route' => 'clinical.patient-portal',
+                        'name' => 'Convocations et retours',
+                        'description' => 'Convoquer des joueurs, recevoir l’état de départ du club et envoyer l’état de retour de sélection',
+                        'icon' => 'flag',
+                        'route' => 'dtn.index',
                         'status' => 'active',
-                        'color' => 'blue',
-                        'category' => 'portals'
+                        'color' => 'indigo',
+                        'group' => 'dtn',
+                        'category' => 'selections'
                     ],
                     [
-                        'name' => 'Portail Clinicien',
-                        'description' => 'Portail clinicien pour consultations et diagnostic',
-                        'icon' => '👨‍⚕️',
-                        'route' => 'clinical.clinician-portal',
+                        'name' => 'Fiches joueurs',
+                        'description' => 'Données sportives des joueurs de tous les clubs pour préparer une convocation',
+                        'icon' => 'id-card',
+                        'route' => 'dtn.players.index',
                         'status' => 'active',
-                        'color' => 'green',
-                        'category' => 'portals'
+                        'color' => 'indigo',
+                        'group' => 'dtn',
+                        'category' => 'selections'
                     ],
-                    
-                    // ⚙️ ADMINISTRATION
                     [
-                        'name' => 'Administration Management',
-                        'description' => 'Gestion administrative',
-                        'icon' => '⚙️',
+                        'name' => 'Accès API — DTN',
+                        'description' => 'Jetons et documentation de l’API pour le logiciel de la Direction technique nationale',
+                        'icon' => 'key',
+                        'route' => 'dtn.api-access',
+                        'status' => 'active',
+                        'color' => 'indigo',
+                        'group' => 'dtn',
+                        'category' => 'selections'
+                    ],
+                    [
+                        'name' => 'Convocations reçues',
+                        'description' => 'Convocations de vos joueurs par la DTN : préparer et envoyer l’état de départ',
+                        'icon' => 'mail',
+                        'route' => 'club.selections.index',
+                        'status' => 'active',
+                        'color' => 'emerald',
+                        'group' => 'club',
+                        'category' => 'selections'
+                    ],
+                    [
+                        'name' => 'Retours de sélection',
+                        'description' => 'États de retour reçus de la DTN : incidents, performances, risques, indice de performance',
+                        'icon' => 'clipboard-list',
+                        'route' => 'club.selections.returns',
+                        'status' => 'active',
+                        'color' => 'emerald',
+                        'group' => 'club',
+                        'category' => 'selections'
+                    ],
+                    [
+                        'name' => 'Accès API — club',
+                        'description' => 'Jetons et documentation de l’API pour le logiciel du club',
+                        'icon' => 'key',
+                        'route' => 'club.selections.api-access',
+                        'status' => 'active',
+                        'color' => 'emerald',
+                        'group' => 'club',
+                        'category' => 'selections'
+                    ],
+
+                    // L'ADMINISTRATION
+                    [
+                        'name' => 'Clubs',
+                        'description' => 'Gestion des clubs',
+                        'icon' => 'building',
+                        'route' => 'modules.clubs.index',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'organisations',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Fédérations',
+                        'description' => 'Gestion des fédérations nationales',
+                        'icon' => 'landmark',
+                        'route' => 'modules.associations.index',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'organisations',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Confédérations',
+                        'description' => 'Gestion des confédérations continentales',
+                        'icon' => 'globe',
+                        'route' => 'modules.confederations.index',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'organisations',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Joueurs',
+                        'description' => 'Liste des joueurs, fiches et licences',
+                        'icon' => 'users',
+                        'route' => 'modules.players.index',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'sport',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Équipes',
+                        'description' => 'Gestion des équipes',
+                        'icon' => 'shield',
+                        'route' => 'modules.teams.index',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'sport',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Compétitions',
+                        'description' => 'Gestion des compétitions',
+                        'icon' => 'trophy',
+                        'route' => 'modules.competitions.index',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'sport',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Arbitres',
+                        'description' => 'Gestion des arbitres et officiels',
+                        'icon' => 'whistle',
+                        'route' => 'referee-portal.index',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'sport',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Licences',
+                        'description' => 'Demandes et suivi des licences des joueurs',
+                        'icon' => 'badge',
+                        'route' => 'modules.licenses.index',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'licences',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Validation des licences',
+                        'description' => 'Validation et vérification des licences par la ligue ou la fédération',
+                        'icon' => 'check-circle',
+                        'route' => 'licenses.validation',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'licences',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Transferts',
+                        'description' => 'Gestion des transferts de joueurs',
+                        'icon' => 'transfer',
+                        'route' => 'admin.transfer-management.index',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'licences',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'FIFA Connect',
+                        'description' => 'Identifiants FIFA Connect des joueurs, clubs et fédérations',
+                        'icon' => 'globe',
+                        'route' => 'fifa.dashboard',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'licences',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Finance',
+                        'description' => 'Gestion financière et comptabilité',
+                        'icon' => 'banknote',
+                        'route' => 'modules.finance.dashboard',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'finance',
+                        'category' => 'administration'
+                    ],
+                    [
+                        'name' => 'Administration du système',
+                        'description' => 'Comptes, demandes d’accès, journal d’audit et paramètres',
+                        'icon' => 'sliders',
                         'route' => 'modules.administration.index',
                         'status' => 'active',
                         'color' => 'gray',
+                        'group' => 'systeme',
                         'category' => 'administration'
                     ],
                     [
-                        'name' => 'Content Management',
-                        'description' => 'Gérer les articles, pages, médias et contenu du site',
-                        'icon' => '📝',
+                        'name' => 'Contenu du site',
+                        'description' => 'Articles, pages et médias du site',
+                        'icon' => 'file',
                         'route' => 'admin.content-management.index',
                         'status' => 'active',
-                        'color' => 'pink',
+                        'color' => 'gray',
+                        'group' => 'systeme',
                         'category' => 'administration'
                     ],
                     [
-                        'name' => 'Gestion des Transferts',
-                        'description' => 'Gérer les transferts de joueurs connecté à FIFA TMS',
-                        'icon' => '🔄',
-                        'route' => 'admin.transfer-management.index',
+                        'name' => 'IA Gemini',
+                        'description' => 'Configuration du modèle d’IA Google Gemini',
+                        'icon' => 'chip',
+                        'route' => 'gemini.index',
                         'status' => 'active',
-                        'color' => 'teal',
-                        'category' => 'documents'
-                    ],
-                    [
-                        'name' => 'Finance Management',
-                        'description' => 'Gestion financière et comptabilité',
-                        'icon' => '💰',
-                        'route' => 'modules.finance.dashboard',
-                        'status' => 'active',
-                        'color' => 'green',
+                        'color' => 'gray',
+                        'group' => 'systeme',
                         'category' => 'administration'
                     ],
                 ]

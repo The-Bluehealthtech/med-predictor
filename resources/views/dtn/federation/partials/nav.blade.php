@@ -9,7 +9,7 @@
 <div class="rounded-xl bg-indigo-700 text-white shadow">
     <div class="px-5 pt-4 pb-3 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-            <span class="text-2xl" aria-hidden="true">🇹🇳</span>
+            <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/15">@include('modules.partials.icon', ['name' => 'flag', 'class' => 'w-6 h-6'])</span>
             <div>
                 <p class="text-[11px] font-semibold uppercase tracking-widest text-indigo-200">Espace fédération</p>
                 <p class="text-lg font-bold leading-tight">Direction technique nationale</p>

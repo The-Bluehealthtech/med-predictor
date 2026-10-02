@@ -14,6 +14,7 @@
         ['GET', '/dtn/selections/{id}', 'dtn:selections:read', 'Détail d\'une sélection (?include_medical=1 : partie médicale, droit selections:medical requis)'],
         ['PUT', '/dtn/selections/{id}/return', 'dtn:selections:write', 'État de retour : matches, starts, minutes, goals, assists, yellow_cards, red_cards, avg_rating, training_sessions, incidents, staff_evaluation, evaluation_comment, fatigue_level, injury_risk, recommendations ; send=true pour l\'envoyer ; medical{} et fitness_status avec selections:medical'],
         ['POST', '/dtn/selections/{id}/cancel', 'dtn:selections:write', 'Annuler une convocation'],
+        ['GET', '/passports/medical/{id}?purpose=transfer|selection', 'selections:medical', 'Passeport médical du joueur en HL7 FHIR (Bundle IPS de type document), pour un transfert ou une sélection ; compte médical ayant accès au joueur'],
     ];
 @endphp
 

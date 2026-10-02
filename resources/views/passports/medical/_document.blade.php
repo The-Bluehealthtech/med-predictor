@@ -21,7 +21,14 @@
 <div class="ips-notice">
     Résumé établi à partir des {{ $doc['records_count'] }} dossier(s) médical(aux) enregistré(s) dans FIT{{ $doc['last_record_date'] ? ' (dernier le ' . $d($doc['last_record_date']) . ')' : '' }}.
     Une section vide signifie qu'aucune information n'est enregistrée, et non l'absence de problème.
-    <strong>Document non attesté</strong> : à signer par le médecin responsable avant tout usage officiel.
+    @php $att = $attestation ?? ['state' => 'none']; @endphp
+    @if($att['state'] === 'valid')
+        <strong>Document attesté</strong> par {{ $att['attestation']->signer_name }}@if($att['attestation']->signer_license) (n° {{ $att['attestation']->signer_license }})@endif le {{ $att['attestation']->signed_at->format('d/m/Y à H:i') }} — signature électronique simple, empreinte SHA-256 {{ substr($att['attestation']->content_sha256, 0, 16) }}….
+    @elseif($att['state'] === 'outdated')
+        <strong>Attestation périmée</strong> : les données ont changé depuis la signature de {{ $att['attestation']->signer_name }} le {{ $att['attestation']->signed_at->format('d/m/Y') }}. Une nouvelle attestation est nécessaire.
+    @else
+        <strong>Document non attesté</strong> : à signer par le médecin responsable avant tout usage officiel.
+    @endif
 </div>
 
 @foreach($sections as $key => $meta)

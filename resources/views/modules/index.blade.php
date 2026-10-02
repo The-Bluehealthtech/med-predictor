@@ -186,7 +186,7 @@ function filterByCategory(category, event) {
                     ['lane' => 'club', 'label' => 'Accusé de réception', 'todo' => 'club_returns', 'role' => 'Club', 'output' => 'Sélection clôturée', 'routes' => ['club.selections.returns']],
                 ], 'tools' => ['dtn.api-access', 'club.selections.api-access'], 'tools_label' => 'Connexion des logiciels (API)'],
                 'administration' => ['type' => 'flow', 'tone' => 'bg-slate-600', 'steps' => [
-                    ['label' => 'Structurer', 'role' => 'Administration', 'output' => 'Clubs et fédérations en place', 'routes' => ['modules.clubs.index', 'modules.associations.index', 'modules.confederations.index']],
+                    ['label' => 'Structurer', 'role' => 'Administration', 'output' => 'Clubs et fédérations en place', 'routes' => ['modules.clubs.index', 'club-officials.index', 'modules.associations.index', 'modules.confederations.index']],
                     ['label' => 'Enregistrer', 'role' => 'Secrétariat du club', 'output' => 'Joueurs et équipes inscrits', 'routes' => ['modules.players.index', 'modules.teams.index']],
                     ['label' => 'Licencier', 'todo' => 'licences_pending', 'role' => 'Club, puis ligue ou fédération', 'output' => 'Licences validées', 'routes' => ['modules.licenses.index', 'licenses.validation']],
                     ['label' => 'Transférer', 'todo' => 'transfers_pending', 'role' => 'Club et fédération', 'output' => 'Mutations enregistrées', 'routes' => ['admin.transfer-management.index', 'passports.transfer.index', 'fifa.dashboard']],
@@ -335,6 +335,7 @@ function handleModuleClick(route, moduleName, event) {
         'performances.fit-metrics': '/performances/fit-metrics',
         'modules.coach-cockpit': '/modules/coach-cockpit',
         'passports.medical.index': '/passports/medical',
+        'club-officials.index': '/club-officials',
         'passports.transfer.index': '/passports/transfer',
         'dtn.index': '/dtn',
         'dtn.players.index': '/dtn/players',

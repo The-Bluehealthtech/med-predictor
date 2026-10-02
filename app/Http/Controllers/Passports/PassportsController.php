@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Passports;
 
 use App\Http\Controllers\Controller;
 use App\Models\Player;
+use App\Services\Passports\IpsFhirBundle;
 use App\Services\Passports\MedicalSummary;
 use App\Services\Passports\PassportAccess;
+use App\Services\Passports\PassportAttestations;
 use App\Services\Passports\TransferPassport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -22,6 +24,7 @@ class PassportsController extends Controller
         private readonly PassportAccess $access,
         private readonly MedicalSummary $medical,
         private readonly TransferPassport $transfer,
+        private readonly PassportAttestations $attestations,
     ) {
     }
 
@@ -44,7 +47,26 @@ class PassportsController extends Controller
         $summary = $this->medical->build($model, $purpose, $request->user()->name);
         $this->audit($request, $model, $purpose, 'view');
 
-        return view('passports.medical.show', ['summary' => $summary, 'purposes' => MedicalSummary::PURPOSES, 'sections' => MedicalSummary::SECTIONS]);
+        return view('passports.medical.show', ['summary' => $summary, 'purposes' => MedicalSummary::PURPOSES, 'sections' => MedicalSummary::SECTIONS,
+            'attestation' => $this->attestations->status($model, $summary), 'canAttest' => $this->attestations->canAttest($request->user(), $model)]);
+    }
+
+    /** Signature électronique simple : le médecin confirme par son mot de passe ; l'empreinte du contenu est conservée. */
+    public function medicalAttest(Request $request, int $player)
+    {
+        [$model, $purpose] = $this->medicalContext($request, $player);
+        abort_unless($this->attestations->canAttest($request->user(), $model), 403);
+        $data = $request->validate([
+            'password' => ['required', 'current_password'],
+            'license' => ['nullable', 'string', 'max:60'],
+            'confirm' => ['accepted'],
+        ], ['password.current_password' => 'Mot de passe incorrect.', 'confirm.accepted' => 'Confirmez avoir vérifié le contenu du résumé.']);
+        $summary = $this->medical->build($model, $purpose, $request->user()->name);
+        $attestation = $this->attestations->attest($request->user(), $model, $summary, $purpose, $data['license'] ?? null, $request->ip());
+        $this->audit($request, $model, $purpose, 'attest');
+
+        return redirect()->route('passports.medical.show', ['player' => $model->id, 'purpose' => $purpose])
+            ->with('status', 'Passeport médical attesté le ' . $attestation->signed_at->format('d/m/Y à H:i') . '.');
     }
 
     public function medicalPdf(Request $request, int $player)
@@ -53,8 +75,22 @@ class PassportsController extends Controller
         $summary = $this->medical->build($model, $purpose, $request->user()->name);
         $this->audit($request, $model, $purpose, 'pdf');
 
-        return $this->pdf('passports.medical.pdf', ['summary' => $summary, 'sections' => MedicalSummary::SECTIONS],
+        return $this->pdf('passports.medical.pdf', ['summary' => $summary, 'sections' => MedicalSummary::SECTIONS, 'attestation' => $this->attestations->status($model, $summary)],
             'passeport-medical-ips-' . $model->id . '.pdf');
+    }
+
+    /** Téléchargement du passeport médical en HL7 FHIR (Bundle IPS de type document). */
+    public function medicalFhir(Request $request, int $player, IpsFhirBundle $fhir)
+    {
+        [$model, $purpose] = $this->medicalContext($request, $player);
+        $summary = $this->medical->build($model, $purpose, $request->user()->name);
+        $this->audit($request, $model, $purpose, 'fhir');
+
+        return response()->json($fhir->build($summary, $this->attestations->status($model, $summary)), 200, [
+            'Content-Type' => 'application/fhir+json',
+            'Content-Disposition' => 'attachment; filename="passeport-medical-ips-' . $model->id . '.fhir.json"',
+            'Cache-Control' => 'private, no-store',
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     }
 
     public function transferIndex(Request $request)

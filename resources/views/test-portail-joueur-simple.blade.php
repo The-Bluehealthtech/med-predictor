@@ -20,6 +20,7 @@
                     <span>{{ __('Retour à la Liste') }}</span>
                 </a>
             @endunless
+            @include('passports.partials.portal-links')
             
             <!-- Connection Status Button -->
             @php

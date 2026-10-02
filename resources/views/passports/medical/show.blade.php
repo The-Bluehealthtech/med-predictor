@@ -30,9 +30,25 @@
         </form>
         <div class="flex items-center gap-3 text-sm">
             <a href="{{ route('passports.medical.pdf', ['player' => $summary['patient']['id'], 'purpose' => $summary['document']['purpose']]) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-700 text-white font-semibold hover:bg-red-800">@include('modules.partials.icon', ['name' => 'file', 'class' => 'w-4 h-4']) Télécharger le PDF</a>
+            <a href="{{ route('passports.medical.fhir', ['player' => $summary['patient']['id'], 'purpose' => $summary['document']['purpose']]) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-red-200 text-red-800 font-semibold hover:bg-red-50">FHIR (IPS)</a>
             @unless(auth()->user()->isPlayer())<a href="{{ route('passports.medical.index') }}" class="text-blue-600 hover:text-blue-800">← Passeports médicaux</a>@endunless
         </div>
     </div>
+    @if(session('status'))<div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('status') }}</div>@endif
     <div class="ips-doc">@include('passports.medical._document')</div>
+    @if($canAttest)
+        <form method="POST" action="{{ route('passports.medical.attest', ['player' => $summary['patient']['id'], 'purpose' => $summary['document']['purpose']]) }}" class="bg-white rounded-lg shadow p-5 space-y-3">
+            @csrf
+            <h2 class="font-semibold text-gray-900">{{ ($attestation['state'] ?? 'none') === 'valid' ? 'Attester à nouveau' : 'Attester ce passeport médical' }}</h2>
+            <p class="text-xs text-gray-500">Signature électronique simple : votre identité FIT et votre mot de passe confirment que vous avez vérifié ce résumé. L'empreinte SHA-256 du contenu est conservée ; toute modification ultérieure des données rendra l'attestation périmée.</p>
+            @if($errors->any())<div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">@foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach</div>@endif
+            <div class="flex flex-wrap items-end gap-3">
+                <label class="block text-sm font-medium text-gray-700">Numéro d'ordre (facultatif)<input name="license" maxlength="60" class="mt-1 block w-48 rounded-lg border-gray-300 shadow-sm text-sm"></label>
+                <label class="block text-sm font-medium text-gray-700">Mot de passe<input type="password" name="password" required autocomplete="current-password" class="mt-1 block w-56 rounded-lg border-gray-300 shadow-sm text-sm"></label>
+                <label class="flex items-center gap-2 text-sm text-gray-700 pb-2"><input type="checkbox" name="confirm" value="1" required class="rounded border-gray-300"> J'ai vérifié le contenu de ce résumé</label>
+                <button class="px-4 py-2 rounded-lg bg-red-700 text-white text-sm font-semibold hover:bg-red-800">Attester</button>
+            </div>
+        </form>
+    @endif
 </div>
 @endsection

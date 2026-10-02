@@ -11,6 +11,7 @@
         ['GET', '/club/selections/{id}', 'club:selections:read', 'Convocation, état de départ (données pré-remplies) et état de retour de sélection (?include_medical=1 avec selections:medical)'],
         ['PUT', '/club/selections/{id}/departure', 'club:selections:write', 'État de départ : availability, load_recommendation, vigilance, technical_notes, contact ; refresh_data=true pour actualiser les données ; send=true pour l\'envoyer ; medical{} et fitness_status avec selections:medical'],
         ['POST', '/club/selections/{id}/acknowledge', 'club:selections:write', 'Accuser réception de l\'état de retour (clôture la sélection)'],
+        ['GET', '/passports/medical/{id}?purpose=transfer|selection', 'selections:medical', 'Passeport médical du joueur en HL7 FHIR (Bundle IPS de type document), pour un transfert ou une sélection ; compte médical ayant accès au joueur'],
     ];
 @endphp
 

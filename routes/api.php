@@ -1346,6 +1346,8 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
         Route::put('/selections/{selection}/return', [\App\Http\Controllers\Api\V1\Dtn\SelectionApiController::class, 'submitReturn']);
         Route::post('/selections/{selection}/cancel', [\App\Http\Controllers\Api\V1\Dtn\SelectionApiController::class, 'cancel']);
     });
+    // Passeport médical : Bundle FHIR IPS (transfert, sélection), droit médical requis
+    Route::get('/passports/medical/{player}', [\App\Http\Controllers\Api\V1\Passports\MedicalPassportApiController::class, 'show'])->whereNumber('player');
     // Espace club — Sélections nationales
     Route::prefix('club')->group(function () {
         Route::get('/selections', [\App\Http\Controllers\Api\V1\Club\SelectionApiController::class, 'selections']);

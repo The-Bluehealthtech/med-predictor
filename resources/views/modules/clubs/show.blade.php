@@ -335,6 +335,7 @@ page    <title>{{ $club->name }} - {{ __('Détails du Club - Plateforme FIT') }}
                     </div>
                 </div>
                 @endif
+                @include('club-officials.partials.head-coach', ['club' => $club])
                 <!-- Section des équipes -->
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     <div class="flex items-center justify-between mb-6">

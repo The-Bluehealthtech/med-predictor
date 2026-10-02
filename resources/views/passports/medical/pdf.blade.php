@@ -24,6 +24,10 @@
 </head>
 <body>
 @include('passports.medical._document')
-<table class="sign"><tr><td style="width:50%">Médecin responsable — nom, date et signature</td><td>Accord du joueur pour ce partage — date et signature</td></tr></table>
+@php $att = $attestation ?? ['state' => 'none']; @endphp
+<table class="sign"><tr>
+    <td style="width:50%">@if($att['state'] === 'valid')<strong>Attesté électroniquement</strong><br>{{ $att['attestation']->signer_name }}@if($att['attestation']->signer_license) · n° {{ $att['attestation']->signer_license }}@endif<br>le {{ $att['attestation']->signed_at->format('d/m/Y à H:i') }}<br><span style="font-size:7px">SHA-256 {{ $att['attestation']->content_sha256 }}</span>@else Médecin responsable — nom, date et signature @endif</td>
+    <td>Accord du joueur pour ce partage — date et signature</td>
+</tr></table>
 </body>
 </html>

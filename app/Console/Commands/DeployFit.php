@@ -24,6 +24,8 @@ class DeployFit extends Command
         'database/migrations/2026_10_02_090000_create_national_selections_tables.php',
         'database/migrations/2026_10_02_130000_add_performance_score_provenance.php',
         'database/migrations/2026_10_02_140000_create_external_entity_links_table.php',
+        'database/migrations/2026_10_02_150000_create_club_officials_table.php',
+        'database/migrations/2026_10_02_160000_create_passport_attestations_table.php',
     ];
 
     protected $signature = 'fit:deploy

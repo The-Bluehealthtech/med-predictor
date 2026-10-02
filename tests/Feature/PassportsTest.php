@@ -25,6 +25,9 @@ class PassportsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        if (!\Illuminate\Support\Facades\Schema::hasTable('passport_attestations')) {
+            (require base_path('database/migrations/2026_10_02_160000_create_passport_attestations_table.php'))->up();
+        }
         $this->artisan('role-eval:generate-demo', ['--seed' => 7, '--clubs' => 4])->assertExitCode(0);
         $clubs = DB::table('teams')->whereIn('id', DB::table('match_participations')->distinct()->pluck('team_id'))->pluck('club_id')->unique()->sort()->values();
         [$this->clubId, $this->otherClubId] = [(int) $clubs[0], (int) $clubs[1]];
@@ -113,5 +116,77 @@ class PassportsTest extends TestCase
         $this->actingAs($this->user('association_admin', ['association_id' => $this->associationId]))->get(route('passports.transfer.show', $this->playerId))->assertOk();
         $list = $this->actingAs($coach)->get(route('passports.transfer.index'))->assertOk();
         $this->assertTrue($list->viewData('players')->getCollection()->every(fn ($p) => (int) $p->club_id === $this->clubId));
+    }
+
+    public function test_physician_attests_and_attestation_expires_when_data_change(): void
+    {
+        $doctor = $this->user('club_medical', ['club_id' => $this->clubId]);
+        $url = route('passports.medical.attest', ['player' => $this->playerId, 'purpose' => 'transfer']);
+        $this->actingAs($doctor)->post($url, ['password' => 'mauvais', 'confirm' => '1'])->assertSessionHasErrors('password');
+        $this->actingAs($doctor)->post($url, ['password' => 'password'])->assertSessionHasErrors('confirm');
+        $this->actingAs($doctor)->post($url, ['password' => 'password', 'confirm' => '1', 'license' => 'ORD-123'])->assertRedirect();
+
+        $page = $this->actingAs($doctor)->get(route('passports.medical.show', ['player' => $this->playerId, 'purpose' => 'transfer']))->assertOk();
+        $page->assertSee('Document attesté')->assertSee('ORD-123');
+        $this->assertSame('valid', $page->viewData('attestation')['state']);
+        $fhir = $this->actingAs($doctor)->get(route('passports.medical.fhir', ['player' => $this->playerId, 'purpose' => 'transfer']))->assertOk()->json();
+        $this->assertSame('final', $fhir['entry'][0]['resource']['status']);
+        $this->assertSame('legal', $fhir['entry'][0]['resource']['attester'][0]['mode']);
+
+        // Nouvelle donnée médicale : l'attestation devient périmée
+        DB::table('health_records')->insert(['user_id' => $doctor->id, 'player_id' => $this->playerId, 'record_date' => '2026-09-28', 'status' => 'active',
+            'allergies' => json_encode(['Arachide']), 'created_at' => now(), 'updated_at' => now()]);
+        $after = $this->actingAs($doctor)->get(route('passports.medical.show', ['player' => $this->playerId, 'purpose' => 'transfer']))->assertOk();
+        $after->assertSee('Attestation périmée');
+        $this->assertSame('preliminary', $this->actingAs($doctor)->get(route('passports.medical.fhir', $this->playerId))->json('entry.0.resource.status'));
+
+        // Ni l'admin système ni le joueur ne signent
+        $this->actingAs($this->user('system_admin', ['tenant_id' => null]))->post($url, ['password' => 'password', 'confirm' => '1'])->assertForbidden();
+        $this->actingAs($this->user('player', ['player_id' => $this->playerId]))->post($url, ['password' => 'password', 'confirm' => '1'])->assertForbidden();
+    }
+
+    public function test_fhir_ips_bundle_and_token_api(): void
+    {
+        $doctor = $this->user('club_medical', ['club_id' => $this->clubId]);
+        $bundle = $this->actingAs($doctor)->get(route('passports.medical.fhir', ['player' => $this->playerId, 'purpose' => 'selection']))->assertOk();
+        $this->assertStringContainsString('application/fhir+json', $bundle->headers->get('Content-Type'));
+        $json = $bundle->json();
+        $this->assertSame(['Bundle', 'document'], [$json['resourceType'], $json['type']]);
+        $composition = $json['entry'][0]['resource'];
+        $this->assertSame('60591-5', $composition['type']['coding'][0]['code']);
+        $this->assertSame('preliminary', $composition['status']);
+        $resources = collect($json['entry'])->pluck('resource');
+        $this->assertTrue($resources->contains(fn ($r) => $r['resourceType'] === 'Condition' && ($r['code']['coding'][0]['system'] ?? null) === 'http://id.who.int/icd/release/11/mms' && $r['code']['coding'][0]['code'] === 'CA23'));
+        $this->assertTrue($resources->contains(fn ($r) => $r['resourceType'] === 'AllergyIntolerance' && $r['code']['text'] === 'Pénicilline'));
+        $this->assertTrue($resources->contains(fn ($r) => $r['resourceType'] === 'Patient'));
+
+        // Joueur sans données : entrées « aucune information » des sections obligatoires
+        $other = (int) DB::table('players')->where('club_id', $this->clubId)->where('id', '!=', $this->playerId)->value('id');
+        $empty = collect($this->actingAs($doctor)->get(route('passports.medical.fhir', $other))->json('entry'))->pluck('resource');
+        foreach (['no-allergy-info', 'no-problem-info', 'no-medication-info'] as $code) {
+            $this->assertTrue($empty->contains(fn ($r) => json_encode($r) && str_contains(json_encode($r), $code)), $code);
+        }
+
+        // API à jeton : droit médical + accès au joueur
+        \Laravel\Sanctum\Sanctum::actingAs($doctor, ['selections:medical']);
+        $this->getJson("/api/v1/passports/medical/{$this->playerId}?purpose=transfer")->assertOk()->assertJsonPath('resourceType', 'Bundle');
+        \Laravel\Sanctum\Sanctum::actingAs($doctor, ['club:selections:read']);
+        $this->getJson("/api/v1/passports/medical/{$this->playerId}")->assertForbidden();
+        \Laravel\Sanctum\Sanctum::actingAs($this->user('club_medical', ['club_id' => $this->otherClubId]), ['selections:medical']);
+        $this->getJson("/api/v1/passports/medical/{$this->playerId}")->assertForbidden();
+    }
+
+    public function test_player_portal_shows_passport_links_by_right(): void
+    {
+        $player = \App\Models\Player::withoutGlobalScopes()->with('club')->findOrFail($this->playerId);
+        $this->actingAs($this->user('player', ['player_id' => $this->playerId]));
+        $html = view('passports.partials.portal-links', ['player' => $player])->render();
+        $this->assertStringContainsString('Mon passeport médical', $html);
+        $this->assertStringContainsString('Mon passeport de transfert', $html);
+
+        $this->actingAs($this->user('club_admin', ['club_id' => $this->clubId]));
+        $html = view('passports.partials.portal-links', ['player' => $player])->render();
+        $this->assertStringNotContainsString('passeport médical', mb_strtolower($html));
+        $this->assertStringContainsString('Passeport de transfert', $html);
     }
 }

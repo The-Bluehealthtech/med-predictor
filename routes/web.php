@@ -1241,6 +1241,16 @@ Route::middleware(['auth'])->group(function () {
                         'category' => 'administration'
                     ],
                     [
+                        'name' => 'Dirigeants et staff',
+                        'description' => 'Fiches des entraîneurs, du staff et des dirigeants de chaque club au format FIFA Connect',
+                        'icon' => 'users',
+                        'route' => 'club-officials.index',
+                        'status' => 'active',
+                        'color' => 'gray',
+                        'group' => 'organisations',
+                        'category' => 'administration'
+                    ],
+                    [
                         'name' => 'Joueurs',
                         'description' => 'Liste des joueurs, fiches et licences',
                         'icon' => 'users',
@@ -1979,9 +1989,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/passports/medical', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalIndex'])->name('passports.medical.index');
     Route::get('/passports/medical/{player}', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalShow'])->whereNumber('player')->name('passports.medical.show');
     Route::get('/passports/medical/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalPdf'])->whereNumber('player')->name('passports.medical.pdf');
+    Route::post('/passports/medical/{player}/attest', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalAttest'])->whereNumber('player')->name('passports.medical.attest');
+    Route::get('/passports/medical/{player}/fhir', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalFhir'])->whereNumber('player')->name('passports.medical.fhir');
     Route::get('/passports/transfer', [\App\Http\Controllers\Passports\PassportsController::class, 'transferIndex'])->name('passports.transfer.index');
     Route::get('/passports/transfer/{player}', [\App\Http\Controllers\Passports\PassportsController::class, 'transferShow'])->whereNumber('player')->name('passports.transfer.show');
     Route::get('/passports/transfer/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'transferPdf'])->whereNumber('player')->name('passports.transfer.pdf');
+
+    // Dirigeants et staff des clubs (fiches au format FIFA Connect).
+    Route::get('/club-officials', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'index'])->name('club-officials.index');
+    Route::get('/clubs/{club}/officials', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'club'])->name('club-officials.club');
+    Route::get('/clubs/{club}/officials/create', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'create'])->name('club-officials.create');
+    Route::post('/clubs/{club}/officials', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'store'])->name('club-officials.store');
+    Route::get('/clubs/{club}/officials/{official}', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'show'])->whereNumber('official')->name('club-officials.show');
+    Route::get('/clubs/{club}/officials/{official}/edit', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'edit'])->whereNumber('official')->name('club-officials.edit');
+    Route::put('/clubs/{club}/officials/{official}', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'update'])->whereNumber('official')->name('club-officials.update');
+    Route::get('/clubs/{club}/officials/{official}/pdf', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'pdf'])->whereNumber('official')->name('club-officials.pdf');
     
     Route::get('/player-portal/medical-records/{record}', [App\Http\Controllers\PlayerMedicalRecordController::class,'show'])->whereNumber('record')->name('player-medical.show');
     Route::get('/player-portal/medical-records/{record}/documents/{document}', [App\Http\Controllers\PlayerMedicalRecordController::class,'document'])->whereNumber('record')->whereNumber('document')->name('player-medical.document');

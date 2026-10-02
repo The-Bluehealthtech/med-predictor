@@ -47,6 +47,7 @@ return [
         'IA Gemini' => 'Gemini AI',
         'Passeport médical (IPS)' => 'Medical passport (IPS)',
         'Passeport de transfert' => 'Transfer passport',
+        'Dirigeants et staff' => 'Club officials and staff',
         'Convocations et retours' => 'Call-ups and return reports',
         'Fiches joueurs' => 'Player profiles',
         'Accès API — DTN' => 'API access — National technical department',

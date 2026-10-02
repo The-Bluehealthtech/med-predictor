@@ -146,10 +146,67 @@ document.addEventListener('DOMContentLoaded', () => {
             </x-slot:meta>
         </x-page-header>
 
-        <!-- Modules organisés par catégories -->
         @php
+            // Raccourcis d'action : mêmes compteurs et mêmes périmètres que les workflows ci-dessous.
+            // Aucun droit supplémentaire : WorkflowCounters ne retourne que les actions visibles pour ce compte.
+            $todoRoutes = [
+                'clinic_today' => ['route' => 'secretary.dashboard', 'title' => 'Accueil médical'],
+                'clinic_waiting' => ['route' => 'modules.medical.index', 'title' => 'Prises en charge en attente'],
+                'clinic_aut' => ['route' => 'modules.healthcare.index', 'title' => 'AUT à préparer'],
+                'clinic_pcma' => ['route' => 'pcma.index', 'title' => 'PCMA en attente'],
+                'dtn_waiting_club' => ['route' => 'dtn.index', 'title' => 'Convocations en attente du club'],
+                'dtn_returns' => ['route' => 'dtn.index', 'title' => 'Retours de sélection à rédiger'],
+                'club_departures' => ['route' => 'club.selections.index', 'title' => 'Départs en sélection à préparer'],
+                'club_returns' => ['route' => 'club.selections.returns', 'title' => 'Retours de sélection à lire'],
+                'licences_pending' => ['route' => 'licenses.validation', 'title' => 'Licences à examiner'],
+                'licences_info_requested' => ['route' => 'modules.licenses.index', 'title' => 'Licences à compléter'],
+                'transfers_pending' => ['route' => 'admin.transfer-management.index', 'title' => 'Transferts en attente'],
+                'perf_alerts' => ['route' => 'performances.analytics', 'title' => 'Points d’attention performance'],
+            ];
+            $priorityActions = collect($todo)
+                ->map(function ($item, $key) use ($todoRoutes) {
+                    if (!isset($todoRoutes[$key])) {
+                        return null;
+                    }
+                    return array_merge($item, $todoRoutes[$key], ['key' => $key]);
+                })
+                ->filter()
+                ->values();
+
             $isFlat = is_array($modules) && isset($modules[0]) && is_array($modules[0]) && array_key_exists('name', $modules[0]) && !array_key_exists('items', $modules[0]);
         @endphp
+
+        @if($priorityActions->isNotEmpty())
+            <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="modules-todo-title">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500">À faire maintenant</p>
+                        <h2 id="modules-todo-title" class="mt-1 text-xl font-semibold text-slate-900">
+                            {{ $priorityActions->sum('count') }} action(s) nécessitent votre attention
+                        </h2>
+                        <p class="mt-1 text-sm text-slate-600">Accédez directement aux dossiers qui demandent une intervention de votre part.</p>
+                    </div>
+                </div>
+                <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                    @foreach($priorityActions as $action)
+                        <a href="{{ route($action['route']) }}" class="group flex items-center justify-between gap-4 rounded-xl border border-slate-200 px-4 py-3 hover:border-slate-300 hover:bg-slate-50">
+                            <span>
+                                <span class="block font-semibold text-slate-900">{{ $action['title'] }}</span>
+                                <span class="block text-sm text-slate-500">{{ $action['label'] }}</span>
+                            </span>
+                            <span class="inline-flex min-w-8 items-center justify-center rounded-full px-2.5 py-1 text-sm font-bold {{ ($action['tone'] ?? 'info') === 'action' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800' }}">{{ $action['count'] }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @else
+            <section class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4" aria-label="État des actions">
+                <p class="font-semibold text-emerald-900">Aucune action urgente dans votre périmètre.</p>
+                <p class="mt-1 text-sm text-emerald-800">Vous pouvez accéder aux parcours métier ci-dessous.</p>
+            </section>
+        @endif
+
+        <!-- Modules organisés par catégories -->
 
         @if($isFlat)
         @php

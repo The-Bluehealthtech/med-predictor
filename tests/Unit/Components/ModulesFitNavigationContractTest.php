@@ -18,12 +18,13 @@ class ModulesFitNavigationContractTest extends TestCase
         $start = strpos($routes, "Route::get('/modules', function () {");
         $this->assertNotFalse($start);
 
-        $slice = substr($routes, $start, 16000);
+        // Jusqu'au nom de la route, quelle que soit la longueur du catalogue des modules.
+        $end = strpos($routes, "->name('modules.index');", $start);
+        $this->assertNotFalse($end, 'route modules.index introuvable après sa déclaration');
+        $declaration = substr($routes, $start, $end - $start);
 
-        $this->assertStringContainsString(
-            "->middleware(['auth'])->name('modules.index');",
-            $slice
-        );
+        $this->assertSame(1, substr_count($declaration, 'Route::'), 'le nom appartient bien à la route /modules');
+        $this->assertStringEndsWith("})->middleware(['auth'])", $declaration);
     }
 
     public function test_fit_metrics_entry_is_declared_in_data_entry_modules(): void

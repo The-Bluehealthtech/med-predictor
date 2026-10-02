@@ -376,19 +376,6 @@ class HealthRecordController extends Controller
                 ]);
             }
         }
-        $vigilanceModels = null;
-        if (!request()->boolean('legacy')) {
-            try {
-                $vigilanceModels = app(\App\Services\MedicalVigilanceModelRegistry::class)->forPlayer($healthRecord->player);
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::warning('Vigilance model readiness unavailable', [
-                    'player_id' => $healthRecord->player_id,
-                    'health_record_id' => $healthRecord->id,
-                    'error' => $e->getMessage(),
-                ]);
-            }
-        }
-
         $view = request()->boolean('legacy') ? 'health-records.show' : 'health-records.workspace';
 
         return view($view, compact(
@@ -400,8 +387,7 @@ class HealthRecordController extends Controller
             'sectionDocuments',
             'intakeDocuments',
             'posturalAssessments',
-            'vigilance',
-            'vigilanceModels'
+            'vigilance'
         ));
     }
 

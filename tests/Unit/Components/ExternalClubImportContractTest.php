@@ -7,6 +7,21 @@ use Tests\TestCase;
 
 class ExternalClubImportContractTest extends TestCase
 {
+    public function test_player_picture_url_falls_back_to_external_face_when_local_file_is_missing(): void
+    {
+        $player = new \App\Models\Player([
+            'player_picture' => 'external/footmercato/players/mory-konate.png',
+            'player_face_url' => 'https://assets-fr.imgfoot.com/media/cache/150x150/portrait/mory-konate.png',
+        ]);
+
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $this->assertSame(
+            'https://assets-fr.imgfoot.com/media/cache/150x150/portrait/mory-konate.png',
+            $player->player_picture_url
+        );
+    }
+
     public function test_footmercato_parser_extracts_club_and_squad_fields(): void
     {
         $html = <<<'HTML'

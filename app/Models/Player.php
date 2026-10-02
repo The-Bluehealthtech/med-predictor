@@ -520,19 +520,25 @@ class Player extends Model
     {
         // First try uploaded player picture
         if ($this->player_picture) {
-            // Check if it's an external URL (like DiceBear)
+            // External URL stored directly.
             if (filter_var($this->player_picture, FILTER_VALIDATE_URL)) {
                 return $this->player_picture;
             }
-            // Check if it's a local image in public/images/players/
+
+            // Image shipped directly in public/.
             if (str_starts_with($this->player_picture, 'images/players/')) {
                 return asset($this->player_picture);
             }
-            // Otherwise, it's a stored file in storage
-            return asset('storage/' . $this->player_picture);
+
+            // Public-disk file: only expose /storage when the file actually exists.
+            // Imported media may be referenced in DB before it is present on a given
+            // Render instance; in that case fall through to player_face_url below.
+            if (\Illuminate\Support\Facades\Storage::disk('public')->exists($this->player_picture)) {
+                return asset('storage/' . $this->player_picture);
+            }
         }
         
-        // Then try FIFA face URL
+        // Then try FIFA / external face URL
         if ($this->player_face_url) {
             // Check if it's a local image in public/images/players/
             if (str_starts_with($this->player_face_url, 'images/players/')) {

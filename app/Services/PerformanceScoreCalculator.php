@@ -373,6 +373,10 @@ final class PerformanceScoreCalculator
         }
         $models = [];
         foreach ($groups as $family => $players) {
+            // Profils « approximé » sous le seuil de minutes de la référence : leur
+            // variance approchée (quelques minutes) écraserait le modèle de la famille.
+            $modelPlayers = array_values(array_filter($players, fn ($p) => $p['mode'] !== 'approximé' || $p['minutes'] >= $this->cfg['min_reference_minutes']));
+            $players = $modelPlayers ?: $players;
             $within = [];
             foreach ($players as $player) {
                 $pairs = $player['scores_match'];
@@ -385,7 +389,9 @@ final class PerformanceScoreCalculator
             $means = array_column($players, 'score_brut_interne');
             $mean = array_sum($means) / count($means);
             $between = array_sum(array_map(fn ($x) => (($x - $mean) / $this->cfg['score_scale']) ** 2, $means)) / count($means);
-            $noise = array_sum(array_map(fn ($p) => $sigma / $p['n_eff'], $players)) / count($players);
+            // Profil « approximé » (moyennes de période, une seule entrée) : pas de
+            // série de matchs pour estimer sigma ; son bruit est sa variance approchée.
+            $noise = array_sum(array_map(fn ($p) => $p['mode'] === 'approximé' ? $p['approx_variance'] : $sigma / $p['n_eff'], $players)) / count($players);
             $dimensionModels = [];
             foreach (array_keys($players[0]['dimensions']) as $dimension) {
                 $dimensionPlayers = array_filter($players, fn ($p) => count($p['scores_dimension_interne'][$dimension] ?? []) > 0);
@@ -401,12 +407,12 @@ final class PerformanceScoreCalculator
                         $dimensionWithin[] = array_sum(array_map(fn ($item) => $item[1] * ($item[0] - $average) ** 2, $items)) /
                             array_sum(array_column($items, 1));
                     }
-                    $dimensionNoise[] = $effective;
+                    $dimensionNoise[] = $p['mode'] === 'approximé' ? ['variance' => $p['approx_variance']] : $effective;
                 }
                 $dsigma = count($dimensionWithin) ? array_sum($dimensionWithin) / count($dimensionWithin) : 1;
                 $dm = array_sum($dimensionMeans) / count($dimensionMeans);
                 $dbetween = array_sum(array_map(fn ($z) => ($z - $dm) ** 2, $dimensionMeans)) / count($dimensionMeans);
-                $dnoise = array_sum(array_map(fn ($n) => $dsigma / $n, $dimensionNoise)) / count($dimensionNoise);
+                $dnoise = array_sum(array_map(fn ($n) => is_array($n) ? $n['variance'] : $dsigma / $n, $dimensionNoise)) / count($dimensionNoise);
                 $dimensionModels[$dimension] = ['sigma' => $dsigma, 'tau' => max($this->cfg['tau_variance_floor'], $dbetween - $dnoise)];
             }
             $models[$family] = ['sigma' => $sigma, 'tau' => max($this->cfg['tau_variance_floor'], $between - $noise),

@@ -30,7 +30,7 @@ class PerformanceAnalyticsController extends Controller
             'min_matches' => ['nullable', 'integer', 'min:1', 'max:20'],
         ]);
 
-        $clubs = $this->clubsFor($user, $cockpit->availableClubs());
+        $clubs = $this->clubsFor($user, $cockpit->availableClubs()->where('has_matches', true)->values());
         if (isset($filters['club_id'])) {
             $clubId = (int) $filters['club_id'];
             abort_unless($clubs->contains('id', $clubId), 404, 'Club introuvable ou non autorisé.');

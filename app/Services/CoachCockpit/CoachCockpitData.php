@@ -22,21 +22,27 @@ final class CoachCockpitData
     }
 
     /**
-     * Clubs proposés dans le sélecteur : clubs ayant au moins un match joué avec feuille de match.
+     * Clubs proposés dans le sélecteur : tous les clubs de la base, avec
+     * l'indication de ceux qui ont des matchs joués avec feuille de match
+     * (cockpit complet) ; les autres s'ouvrent sur leur fiche club.
      *
-     * @return Collection<int, object{id:int, name:string}>
+     * @return Collection<int, object{id:int, name:string, association:?string, has_matches:bool}>
      */
     public function availableClubs(): Collection
     {
+        $withMatches = collect();
         $matchIds = DB::table('match_participations')->distinct()->pluck('match_id');
-        if ($matchIds->isEmpty()) {
-            return collect();
+        if ($matchIds->isNotEmpty()) {
+            $withMatches = DB::table('matches')->whereIn('id', $matchIds)->whereNotNull('home_score')
+                ->get(['home_club_id', 'away_club_id'])
+                ->flatMap(fn ($m) => [$m->home_club_id, $m->away_club_id])->filter()->map(fn ($id) => (int) $id)->unique()->flip();
         }
-        $clubIds = DB::table('matches')->whereIn('id', $matchIds)->whereNotNull('home_score')
-            ->get(['home_club_id', 'away_club_id'])
-            ->flatMap(fn ($m) => [$m->home_club_id, $m->away_club_id])->filter()->unique();
+        $associations = DB::table('associations')->pluck('name', 'id');
 
-        return DB::table('clubs')->whereIn('id', $clubIds)->orderBy('name')->get(['id', 'name']);
+        return DB::table('clubs')->orderBy('name')->get(['id', 'name', 'association_id'])
+            ->map(fn ($c) => (object) ['id' => (int) $c->id, 'name' => $c->name,
+                'association' => $c->association_id ? ($associations[$c->association_id] ?? null) : null,
+                'has_matches' => $withMatches->has((int) $c->id)]);
     }
 
     public function forClub(int $clubId): ?array

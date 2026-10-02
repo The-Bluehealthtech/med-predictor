@@ -40,7 +40,7 @@ class CoachCockpitController extends Controller
         } else {
             $clubId = $clubs->contains('id', (int) $user->club_id)
                 ? (int) $user->club_id
-                : $clubs->first()?->id;
+                : ($clubs->firstWhere('has_matches', true) ?? $clubs->first())?->id;
         }
 
         $cockpit = $clubId !== null ? $data->forClub((int) $clubId) : null;
@@ -49,6 +49,8 @@ class CoachCockpitController extends Controller
             'clubs' => $clubs,
             'clubId' => $clubId,
             'cockpit' => $cockpit,
+            // Club sans feuille de match : fiche club (identité, staff, effectif, profils de saison).
+            'sheet' => $cockpit === null && $clubId !== null ? app(\App\Services\CoachCockpit\ClubSheet::class)->forClub((int) $clubId) : null,
             'roleEvaluationStatus' => $this->roleEvaluationStatus(),
         ]);
     }
@@ -114,43 +116,64 @@ class CoachCockpitController extends Controller
         if (! empty($validated['club_id'])) {
             $playerIds = DB::table('players')
                 ->where('club_id', (int) $validated['club_id'])
-                ->pluck('id')
-                ->implode(',');
+                ->pluck('id');
 
-            if ($playerIds === '') {
+            if ($playerIds->isEmpty()) {
                 return back()->with('error', 'Aucun joueur trouvé pour ce club.');
             }
         }
 
-        $arguments = [
-            '--config-version' => (string) $config->id,
-            '--is-demo' => '1',
-            '--no-interaction' => true,
+        // Deux sources possibles : statistiques match par match (démonstration)
+        // et profils de période importés depuis les exports « Player statistics »
+        // (données réelles). Chacune n'est calculée que si elle a des joueurs.
+        $periodPlayers = (new \App\Services\RoleEvaluationEngine\PeriodStatsDataSource)->playerIds();
+        $runs = [
+            'matches' => ['--is-demo' => '1', 'players' => $playerIds?->all()],
+            'period' => ['--is-demo' => '0', 'players' => $playerIds === null ? $periodPlayers : array_values(array_intersect($playerIds->all(), $periodPlayers))],
         ];
 
-        if ($playerIds !== null) {
-            $arguments['--players'] = $playerIds;
+        $messages = [];
+        foreach ($runs as $source => $run) {
+            if ($run['players'] === []) {
+                continue;
+            }
+            $arguments = [
+                '--config-version' => (string) $config->id,
+                '--is-demo' => $run['--is-demo'],
+                '--source' => $source,
+                '--no-interaction' => true,
+            ];
+            if ($run['players'] !== null) {
+                $arguments['--players'] = implode(',', $run['players']);
+            }
+
+            $dryCode = Artisan::call('role-eval:compute', $arguments + ['--dry-run' => true]);
+            $dryOutput = trim(Artisan::output());
+            if ($dryCode !== 0) {
+                return back()->with('error', 'Dry-run du calcul refusé : '.$dryOutput);
+            }
+            if (str_contains($dryOutput, 'Aucun joueur à évaluer') || str_starts_with($dryOutput, '0 ligne')) {
+                if ($source === 'period') {
+                    $periodWithoutScore = true;
+                }
+                continue;
+            }
+
+            $code = Artisan::call('role-eval:compute', $arguments);
+            $output = trim(Artisan::output());
+            if ($code !== 0) {
+                return back()->with('error', 'Échec du calcul rôle/apport : '.$output);
+            }
+            $messages[] = ($source === 'period' ? 'profils de saison importés — ' : 'matchs — ').$output;
         }
 
-        $dryCode = Artisan::call('role-eval:compute', $arguments + ['--dry-run' => true]);
-        $dryOutput = trim(Artisan::output());
-
-        if ($dryCode !== 0) {
-            return back()->with('error', 'Dry-run du calcul refusé : '.$dryOutput);
+        if ($messages === []) {
+            return back()->with('error', ! empty($periodWithoutScore)
+                ? 'Profils de saison lus, mais aucun score n’atteint la fiabilité minimale : la référence par poste est trop petite. Importez les exports « Player statistics » des autres clubs de la compétition pour comparer chaque joueur aux joueurs de son poste.'
+                : 'Aucune donnée de performance éligible n’est disponible pour ce calcul.');
         }
 
-        if (str_contains($dryOutput, 'Aucun joueur à évaluer')) {
-            return back()->with('error', 'Aucune donnée de performance éligible n’est disponible pour ce calcul.');
-        }
-
-        $code = Artisan::call('role-eval:compute', $arguments);
-        $output = trim(Artisan::output());
-
-        if ($code !== 0) {
-            return back()->with('error', 'Échec du calcul rôle/apport : '.$output);
-        }
-
-        return back()->with('success', 'Évaluations calculées : '.$output);
+        return back()->with('success', 'Évaluations calculées : '.implode(' ; ', $messages));
     }
 
     private function roleEvaluationStatus(): array

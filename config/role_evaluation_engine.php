@@ -36,6 +36,11 @@ return [
     // poids (jamais sur données de démonstration).
     'min_reference_minutes' => 270,
     'min_reference_players' => 30,
+    // Profils de saison (exports « Player statistics ») : un export couvre un
+    // seul club, la référence d'un poste est donc d'abord l'effectif lui-même,
+    // élargi automatiquement à chaque nouveau club importé. Seuil plus bas
+    // assumé et tracé (model_version « -period », taille de la référence).
+    'period_min_reference_players' => 12,
     'half_life_matches' => 8,
     'minute_weight_denominator' => 60,
     'rate_prior_attempts' => 15,

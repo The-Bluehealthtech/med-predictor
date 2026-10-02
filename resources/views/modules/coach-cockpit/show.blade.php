@@ -239,7 +239,7 @@
 @endphp
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
   <x-page-header
-      :title="$cockpit ? 'Cockpit entraîneur — '.$clubShort : 'Cockpit entraîneur'"
+      :title="$cockpit ? 'Cockpit entraîneur — '.$clubShort : ($sheet ? 'Cockpit entraîneur — '.$sheet['club']['name'] : 'Cockpit entraîneur')"
       subtitle="Bilan, trajectoire, forme, pronostic, composition et évaluation des joueurs."
       eyebrow="Centre de performance"
       :back-href="route('modules.index')"
@@ -250,8 +250,12 @@
               <label for="club-select" class="text-xs font-semibold text-slate-600">Équipe
                   <select id="club-select" name="club_id" onchange="this.form.submit()"
                           class="mt-1 rounded-xl border-slate-300 text-sm focus:border-emerald-500 focus:ring-emerald-500">
-                      @foreach($clubs as $club)
-                          <option value="{{ $club->id }}" @selected((int) $club->id === (int) $clubId)>{{ str_replace(' (Démo)', '', $club->name) }}</option>
+                      @foreach($clubs->groupBy(fn ($c) => $c->association ?? (str_contains($c->name, '(Démo)') ? 'Démonstration' : 'Autres clubs')) as $group => $groupClubs)
+                          <optgroup label="{{ $group }}">
+                              @foreach($groupClubs as $club)
+                                  <option value="{{ $club->id }}" @selected((int) $club->id === (int) $clubId)>{{ str_replace(' (Démo)', '', $club->name) }}{{ $club->has_matches ? '' : ' — fiche club' }}</option>
+                              @endforeach
+                          </optgroup>
                       @endforeach
                   </select>
               </label>
@@ -265,7 +269,7 @@
 </div>
 
 @if(!$cockpit)
-<div class="cc"><div class="wrap"><div class="panel"><h2>Aucune donnée de match</h2><p class="note" style="margin-top:8px">Aucun match joué avec feuille de match n'est enregistré pour cette équipe. Le cockpit s'affiche dès que des matchs sont saisis.</p></div></div></div>
+@include('modules.coach-cockpit.partials.club-sheet')
 @else
 <div class="cc">
 <div class="wrap">

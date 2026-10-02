@@ -40,9 +40,20 @@ final class RoleFitEvaluator
     // jusqu'à la méthode exacte qui l'a produite.
     public const MODEL_VERSION = 'role-fit-v1+phase1-calculator@1.1.0';
 
+    // Même méthode, appliquée aux profils de période (exports « Player
+    // statistics », mode « approximé » du calculateur) : tracé à part.
+    public const PERIOD_MODEL_VERSION = 'role-fit-v1-period+phase1-calculator@1.1.0';
+
+    /**
+     * Avec $periodSource, la population est faite des profils de période
+     * (tous les joueurs qui en ont un, pour que la référence de chaque
+     * famille ne se limite pas à l'effectif évalué) ; seuls les joueurs
+     * demandés reçoivent des lignes.
+     */
     public function __construct(
         private readonly MatchStatsDataSource $dataSource,
         private readonly CalculatorConfigBuilder $configBuilder,
+        private readonly ?PeriodStatsDataSource $periodSource = null,
     ) {
     }
 
@@ -55,8 +66,14 @@ final class RoleFitEvaluator
     public function evaluate(array $playerIds, int $roleConfigVersionId, bool $isDemo, ?array $matchIds = null): array
     {
         $cfg = $this->configBuilder->build($roleConfigVersionId);
-        $cfg['version'] = self::MODEL_VERSION; // lu par PerformanceScoreCalculator::scorePlayer()
-        $population = $this->dataSource->forPlayers($playerIds, $isDemo, $matchIds);
+        $cfg['version'] = $this->periodSource ? self::PERIOD_MODEL_VERSION : self::MODEL_VERSION; // lu par PerformanceScoreCalculator::scorePlayer()
+        if ($this->periodSource) {
+            $cfg['min_reference_players'] = (int) config('role_evaluation_engine.period_min_reference_players', $cfg['min_reference_players']);
+        }
+        $population = $this->periodSource
+            ? $this->periodSource->forPlayers()
+            : $this->dataSource->forPlayers($playerIds, $isDemo, $matchIds);
+        $requested = array_flip(array_map('intval', $playerIds));
 
         if ($population === []) {
             return [];
@@ -71,6 +88,9 @@ final class RoleFitEvaluator
         $rows = [];
         foreach ($population as $playerEntry) {
             $playerId = $playerEntry['id'];
+            if (!isset($requested[$playerId])) {
+                continue; // membre de la population de référence seulement
+            }
             $played = $playedByPlayer[$playerId] ?? null;
 
             if ($played === null || ($played['famille'] ?? null) === null) {
@@ -116,11 +136,15 @@ final class RoleFitEvaluator
         ));
 
         $probeEntry = $playerEntry;
-        $probeEntry['matches'] = array_map(function (array $match) {
-            $match['position'] = self::SYNTHETIC_POSITION_CODE;
+        if (isset($playerEntry['average']) && empty($playerEntry['matches'])) {
+            $probeEntry['position'] = self::SYNTHETIC_POSITION_CODE;
+        } else {
+            $probeEntry['matches'] = array_map(function (array $match) {
+                $match['position'] = self::SYNTHETIC_POSITION_CODE;
 
-            return $match;
-        }, $playerEntry['matches']);
+                return $match;
+            }, $playerEntry['matches']);
+        }
 
         $calculator = new PerformanceScoreCalculator($cfg);
         foreach ($calculator->calculate(array_merge($realFamilyPlayers, [$probeEntry])) as $row) {
@@ -134,6 +158,10 @@ final class RoleFitEvaluator
 
     private function dominantFamily(array $playerEntry, array $cfg): ?string
     {
+        if (empty($playerEntry['matches'])) {
+            return $cfg['positions'][$playerEntry['position'] ?? ''] ?? null; // profil de période : un seul poste
+        }
+
         $minutesByFamily = [];
         foreach ($playerEntry['matches'] as $match) {
             $family = $cfg['positions'][$match['position']] ?? null;

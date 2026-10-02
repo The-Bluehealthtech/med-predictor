@@ -35,7 +35,7 @@ class RoleEvaluationPanelTest extends TestCase
         DB::table('role_config_versions')->update(['status' => 'draft']);
         $page = $this->actingAs($this->user('system_admin'))->get(route('modules.coach-cockpit', ['club_id' => $this->clubId]))->assertOk();
         $page->assertSee('data-role-eval-state="locked"', false)->assertSee('Calcul impossible pour l')
-            ->assertSee('Grille de pondération')->assertSee('Publier une grille')->assertSee('Données de match')->assertSee('Calcul des scores')
+            ->assertSee('Grille de pondération')->assertSee('Publier une grille')->assertSee('Données de performance')->assertSee('Calcul des scores')
             ->assertSee('Comment lire le score ?')->assertDontSee('dry-run')->assertDontSee('PostgreSQL');
 
         $teamIds = DB::table('teams')->where('club_id', $this->clubId)->pluck('id');

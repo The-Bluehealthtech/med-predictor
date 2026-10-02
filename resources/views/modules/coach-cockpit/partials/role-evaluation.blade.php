@@ -5,14 +5,15 @@
     $c = $re['club'];
     $states = [
         'locked' => ['Calcul impossible pour l\'instant', 'Aucune grille de pondération n\'est publiée : il faut en publier une avant de calculer les scores.', 're-warn'],
-        'no_data' => ['Pas encore de données', 'Aucun match avec feuille de match n\'est enregistré pour cette équipe.', 're-warn'],
-        'to_compute' => ['Scores à calculer', 'Les données de match sont là, mais aucun joueur de l\'équipe n\'a encore de score.', 're-warn'],
+        'no_data' => ['Pas encore de données', 'Aucune donnée de performance pour cette équipe : ni statistiques de match, ni export de saison importé.', 're-warn'],
+        'to_compute' => ['Scores à calculer', 'Les données de performance sont là, mais aucun joueur de l\'équipe n\'a encore de score.', 're-warn'],
         'partial' => ['Scores partiels', 'Certains joueurs ayant joué n\'ont pas encore de score : relancez le calcul après les derniers matchs.', 're-info'],
         'up_to_date' => ['Scores à jour', 'Tous les joueurs ayant joué ont un score « Rôle et apport ».', 're-ok'],
     ];
     [$stateTitle, $stateText, $stateClass] = $states[$re['state']];
     $grid = $re['published']->first();
     $stepClass = fn (bool $done) => $done ? 're-step re-done' : 're-step';
+    $hasData = $c['participations'] > 0 || $c['period_profiles'] > 0;
 @endphp
 <style>
     .cc .re-intro { color: var(--ink-2); font-size: .92rem; max-width: 70ch; margin: 2px 0 16px; }
@@ -75,10 +76,10 @@
                 <a href="{{ route('modules.coach-cockpit.role-evaluation.settings') }}" class="re-btn secondary">{{ $grid ? 'Voir ou modifier la grille' : 'Publier une grille' }}</a>
             </div>
 
-            <div class="{{ $stepClass($c['participations'] > 0) }}">
-                <h4>Données de match</h4>
-                <p>Les scores reposent sur les feuilles de match et les statistiques par joueur.</p>
-                <span class="re-state">{{ number_format($c['participations'], 0, ',', ' ') }} participations · {{ number_format($c['detailed_stats'], 0, ',', ' ') }} statistiques détaillées pour cette équipe</span>
+            <div class="{{ $stepClass($hasData) }}">
+                <h4>Données de performance</h4>
+                <p>Les scores reposent sur les statistiques match par match ou, à défaut, sur les moyennes de saison des exports « Player statistics ».</p>
+                <span class="re-state">{{ number_format($c['period_profiles'], 0, ',', ' ') }} profil(s) de saison importé(s) · {{ number_format($c['participations'], 0, ',', ' ') }} participations · {{ number_format($c['detailed_stats'], 0, ',', ' ') }} statistiques détaillées</span>
                 <a href="{{ route('player-stats-import.create', ['club_id' => $clubId]) }}" class="re-btn">Importer un export de statistiques joueurs (Excel)</a>
                 <details class="re-details">
                     <summary>Import avancé : CSV avec fichier de correspondance</summary>
@@ -121,8 +122,8 @@
                     @elseif($grid)
                         <input type="hidden" name="config_version" value="{{ $grid->id }}">
                     @endif
-                    <button type="submit" class="re-btn" @disabled(!$grid || $c['participations'] === 0)>Calculer les scores de l'équipe</button>
-                    @if(!$grid)<span class="note">Publiez d'abord une grille (étape 1).</span>@elseif($c['participations'] === 0)<span class="note">Importez d'abord des données de match (étape 2).</span>@endif
+                    <button type="submit" class="re-btn" @disabled(!$grid || !$hasData)>Calculer les scores de l'équipe</button>
+                    @if(!$grid)<span class="note">Publiez d'abord une grille (étape 1).</span>@elseif(!$hasData)<span class="note">Importez d'abord des données de performance (étape 2).</span>@endif
                 </form>
             </div>
         </div>

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Services\RoleEvaluationEngine\CalculatorConfigBuilder;
 use App\Services\RoleEvaluationEngine\MatchStatsDataSource;
+use App\Services\RoleEvaluationEngine\PeriodStatsDataSource;
 use App\Services\RoleEvaluationEngine\RoleFitEvaluator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +37,7 @@ class RoleEvaluationComputeCommand extends Command
         {--is-demo= : 1 pour traiter les données de démonstration, 0 pour les données réelles (obligatoire)}
         {--players= : Liste d\'identifiants players.id séparés par des virgules ; sinon, tous les joueurs avec au moins une participation correspondant à --is-demo (et --matches, si fourni)}
         {--matches= : Liste d\'identifiants matches.id séparés par des virgules, pour restreindre la population et les statistiques utilisées}
+        {--source=matches : matches (statistiques match par match) ou period (exports « Player statistics » de période, données réelles uniquement)}
         {--dry-run : N\'écrit rien, affiche seulement combien de lignes seraient produites}';
 
     protected $description = 'Calcule score, fiabilité, intervalle et adéquation au rôle pour des joueurs, à partir d\'une version de configuration de poids';
@@ -73,10 +75,25 @@ class RoleEvaluationComputeCommand extends Command
                 'les poids réels attendent de vraies données.');
         }
 
+        $source = (string) $this->option('source');
+        if (!in_array($source, ['matches', 'period'], true)) {
+            $this->error('--source doit valoir matches ou period.');
+
+            return self::FAILURE;
+        }
+        if ($source === 'period' && $isDemo) {
+            $this->error('Les profils de période sont des données réelles : utilisez --is-demo=0.');
+
+            return self::FAILURE;
+        }
+        $periodSource = $source === 'period' ? new PeriodStatsDataSource : null;
+
         $matchIds = $this->parseIdList($this->option('matches'));
 
         $playerIds = $this->parseIdList($this->option('players'));
-        if ($playerIds === null) {
+        if ($playerIds === null && $periodSource) {
+            $playerIds = $periodSource->playerIds();
+        } elseif ($playerIds === null) {
             $query = DB::table('match_participations')->where('is_demo', $isDemo);
             if ($matchIds !== null) {
                 $query->whereIn('match_id', $matchIds);
@@ -90,7 +107,7 @@ class RoleEvaluationComputeCommand extends Command
             return self::SUCCESS;
         }
 
-        $evaluator = new RoleFitEvaluator(new MatchStatsDataSource, new CalculatorConfigBuilder);
+        $evaluator = new RoleFitEvaluator(new MatchStatsDataSource, new CalculatorConfigBuilder, $periodSource);
 
         try {
             $rows = $evaluator->evaluate($playerIds, $roleConfigVersionId, $isDemo, $matchIds);
@@ -109,7 +126,7 @@ class RoleEvaluationComputeCommand extends Command
         $now = now();
         $toInsert = array_map(fn (array $row) => $row + [
             'role_config_version_id' => $roleConfigVersionId,
-            'model_version' => RoleFitEvaluator::MODEL_VERSION,
+            'model_version' => $periodSource ? RoleFitEvaluator::PERIOD_MODEL_VERSION : RoleFitEvaluator::MODEL_VERSION,
             'is_demo' => $isDemo,
             'source_import_batch_id' => null,
             'source_demo_batch_id' => null,

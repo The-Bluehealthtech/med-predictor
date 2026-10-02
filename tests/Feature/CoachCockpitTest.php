@@ -106,4 +106,27 @@ class CoachCockpitTest extends TestCase
     {
         $this->get(route('modules.coach-cockpit'))->assertRedirect(route('login'));
     }
+
+    public function test_a_club_without_match_sheets_opens_on_its_club_sheet_with_season_profiles(): void
+    {
+        $this->actingAsRole('system_admin');
+        $clubId = (int) DB::table('clubs')->insertGetId(['name' => 'Club Fiche Test', 'founded_year' => 1957, 'created_at' => now(), 'updated_at' => now()]);
+        $playerId = (int) DB::table('players')->insertGetId(['name' => 'Karim Fiche', 'first_name' => 'Karim', 'last_name' => 'Fiche', 'club_id' => $clubId, 'created_at' => now(), 'updated_at' => now()]);
+        foreach (['minutes_played' => 799, 'goals' => 0.25, 'passes_accuracy' => 0.9018] as $name => $value) {
+            DB::table('external_player_performance_metrics')->insert(['player_id' => $playerId, 'metric_name' => $name, 'metric_value' => $value,
+                'source' => 'TEST', 'season' => '2026/27', 'competition' => 'Ligue test', 'measured_at' => '2026-09-27', 'score_origin' => 'observed',
+                'raw_data' => json_encode(['Position' => 'CDM', 'Nationality' => 'Tunisia']), 'created_at' => now(), 'updated_at' => now()]);
+        }
+
+        $clubs = $this->get(route('modules.coach-cockpit'))->assertOk()->viewData('clubs');
+        $this->assertTrue($clubs->contains(fn ($c) => $c->id === $clubId && !$c->has_matches), 'tous les clubs de la base sont proposés');
+
+        $response = $this->get(route('modules.coach-cockpit', ['club_id' => $clubId]))->assertOk();
+        $this->assertNull($response->viewData('cockpit'));
+        $sheet = $response->viewData('sheet');
+        $this->assertSame(1, $sheet['summary']['profiles']);
+        $this->assertSame('CDM', $sheet['squad'][0]['position']);
+        $response->assertSee('data-club-sheet', false)->assertSee('Club Fiche Test')->assertSee('Fondé en 1957')
+            ->assertSee('Karim Fiche')->assertSee('90 %')->assertSee('Ligue test 2026/27')->assertSee('fiche club');
+    }
 }

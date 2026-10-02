@@ -26,9 +26,8 @@ class FitPcmaIntegrationService
     public function submitPcmaData(VoiceSession $session): array
     {
         try {
-            Log::info("Submitting PCMA data to FIT API", [
+            Log::info('Submitting PCMA data to FIT API', [
                 'session_id' => $session->id,
-                'player_name' => $session->player_name
             ]);
 
             // Extraire les données de la session
@@ -178,9 +177,10 @@ class FitPcmaIntegrationService
         try {
             $url = $this->baseUrl . $endpoint;
             
-            Log::info("Calling FIT API", [
-                'url' => $url,
-                'data' => $data
+            Log::info('Calling FIT API', [
+                'endpoint' => $endpoint,
+                'has_player_identity' => isset($data['player_identity']),
+                'has_voice_session' => isset($data['voice_session']),
             ]);
             
             // SIMULATION POUR LES TESTS - Commenter cette ligne pour utiliser la vraie API
@@ -215,9 +215,8 @@ class FitPcmaIntegrationService
             if ($response->successful()) {
                 $responseData = $response->json();
                 
-                Log::info("FIT API response successful", [
+                Log::info('FIT API response successful', [
                     'status' => $response->status(),
-                    'data' => $responseData
                 ]);
                 
                 return [

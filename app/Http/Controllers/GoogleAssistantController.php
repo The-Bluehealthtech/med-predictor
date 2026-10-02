@@ -48,10 +48,12 @@ class GoogleAssistantController extends Controller
                 $sessionId = $queryResult['session'];
             }
             
-            \Log::info("Intent:", ['intent' => $intent]);
-            \Log::info("Parameters:", $parameters);
-            \Log::info("Contexts:", $contexts);
-            \Log::info("Session ID:", ['session' => $sessionId]);
+            \Log::info('Google Assistant intent received', [
+                'intent' => $intent,
+                'parameter_keys' => array_keys($parameters),
+                'contexts_count' => count($contexts),
+                'has_session' => (bool) $sessionId,
+            ]);
             
             // Extraire ou créer une session de conversation
             $session = $this->getOrCreateSession($sessionId);
@@ -79,7 +81,10 @@ class GoogleAssistantController extends Controller
             
             $response = $this->generateContextualResponse($intent, $session, $parameters);
             
-            \Log::info("Response generated:", $response);
+            \Log::info('Google Assistant response generated', [
+                'intent' => $intent,
+                'session_id' => $session->id ?? null,
+            ]);
             
             return response()->json($response);
             
@@ -121,10 +126,9 @@ class GoogleAssistantController extends Controller
         $session = VoiceSession::where('dialogflow_session', $sessionId)->first();
         
         if ($session) {
-            \Log::info("Existing session found:", [
-                'id' => $session->id,
-                'dialogflow_session' => $session->dialogflow_session ?? 'unknown',
-                'player_name' => $session->player_name
+            \Log::info('Existing voice session found', [
+                'session_id' => $session->id,
+                'user_id' => $session->user_id,
             ]);
         } else {
             \Log::info("No existing session found, creating new one");
@@ -147,11 +151,9 @@ class GoogleAssistantController extends Controller
                     'language' => 'fr'
                 ]);
                 
-                \Log::info("New session created successfully:", [
-                    'id' => $session->id,
-                    'dialogflow_session' => $session->dialogflow_session,
+                \Log::info('New voice session created', [
+                    'session_id' => $session->id,
                     'user_id' => $session->user_id,
-                    'player_name' => $session->player_name
                 ]);
                 
             } catch (\Exception $e) {
@@ -267,8 +269,10 @@ class GoogleAssistantController extends Controller
     
     private function generateAnswerFieldResponse($session, $newParameters)
     {
-        \Log::info("=== generateAnswerFieldResponse DEBUG ===");
-        \Log::info("New parameters received:", $newParameters);
+        \Log::info('Generating voice field response', [
+            'session_id' => $session->id,
+            'parameter_keys' => array_keys($newParameters),
+        ]);
         
         // Combiner les nouveaux paramètres avec les données de session existantes
         $sessionData = $session->session_data ?? [];
@@ -425,7 +429,6 @@ class GoogleAssistantController extends Controller
     {
         try {
             $data = $request->all();
-            \Log::info("Submit PCMA to FIT request:", $data);
             
             $queryResult = $data['queryResult'] ?? null;
             if (!$queryResult) {
@@ -434,6 +437,11 @@ class GoogleAssistantController extends Controller
             
             $intent = $queryResult['intent']['displayName'] ?? 'unknown';
             $sessionId = $data['session'] ?? null;
+
+            \Log::info('PCMA voice submission requested', [
+                'intent' => $intent,
+                'has_session' => (bool) $sessionId,
+            ]);
             
             if ($intent !== 'submit_pcma') {
                 return response()->json(['error' => 'Invalid intent for PCMA submission']);
@@ -609,9 +617,12 @@ class GoogleAssistantController extends Controller
      */
     private function handleCorrection($session, $parameters)
     {
-        \Log::info("Handling field correction:", ['parameters' => $parameters, 'session_id' => $session->id]);
-        
         $fieldToCorrect = $parameters['field'] ?? $parameters['correction_field'] ?? null;
+
+        \Log::info('Handling voice field correction', [
+            'field' => $fieldToCorrect,
+            'session_id' => $session->id,
+        ]);
         $sessionData = $session->session_data ?? [];
         
         switch ($fieldToCorrect) {

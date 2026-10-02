@@ -108,6 +108,16 @@ Route::get(
     [\App\Http\Controllers\CoachCockpitController::class, 'show']
 )->middleware(['auth'])->name('modules.coach-cockpit');
 
+// Évaluation de rôle depuis le cockpit : mêmes routes et middleware qu'en production.
+Route::post(
+    '/modules/coach-cockpit/role-evaluation/import',
+    [\App\Http\Controllers\CoachCockpitController::class, 'importRoleEvaluationData']
+)->middleware(['auth', 'auth.unified', 'permission.unified:record-performance-metrics'])->name('modules.coach-cockpit.role-evaluation.import');
+Route::post(
+    '/modules/coach-cockpit/role-evaluation/compute',
+    [\App\Http\Controllers\CoachCockpitController::class, 'computeRoleEvaluations']
+)->middleware(['auth', 'auth.unified', 'permission.unified:record-performance-metrics'])->name('modules.coach-cockpit.role-evaluation.compute');
+
 // Analyse des performances : même contrôleur qu'en production.
 Route::get(
     '/performances/analytics',

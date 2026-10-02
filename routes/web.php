@@ -3071,6 +3071,13 @@ Route::get('/test-pdf', function() {
         Route::post('/{version}/archive', [\App\Http\Controllers\RoleEvaluationSettingsController::class, 'archive'])->name('.archive');
     });
 
+    // Exports « Player statistics » des clubs (Excel/CSV) : reconnaissance, aperçu, import.
+    Route::middleware(['auth', 'auth.unified', 'permission.unified:record-performance-metrics'])->prefix('/modules/coach-cockpit/player-stats-import')->name('player-stats-import.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PlayerStatsImportController::class, 'create'])->name('create');
+        Route::post('/preview', [\App\Http\Controllers\PlayerStatsImportController::class, 'preview'])->name('preview');
+        Route::post('/', [\App\Http\Controllers\PlayerStatsImportController::class, 'store'])->name('store');
+    });
+
     // Performances Analytics routes
     Route::get(
         '/performances/analytics',

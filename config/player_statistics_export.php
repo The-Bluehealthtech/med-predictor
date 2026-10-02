@@ -1,0 +1,78 @@
+<?php
+
+// Modèle « Player statistics » des exports de compétition fournis par les clubs (type InStat) :
+// une feuille, une ligne par joueur. Sert à reconnaître un fichier téléversé sans correspondance JSON.
+// Les noms d'indicateurs enregistrés suivent la même règle que l'import KSA existant
+// (config/ksa_metrics.php, sinon le libellé de colonne en slug) pour rester lisibles par les portails.
+return [
+    'name' => 'Player statistics (export compétition, type InStat)',
+    // Colonnes d'identité du joueur (non enregistrées comme indicateurs).
+    'identity' => ['№', 'Player', 'Age', 'Height', 'Weight', 'Nationality', 'Position'],
+    // Colonnes obligatoires pour reconnaître le modèle.
+    'required' => ['Player', 'Minutes played', 'Position'],
+    // Part minimale de colonnes connues pour accepter le fichier.
+    'min_known_ratio' => 0.8,
+    // Au-delà, un fichier est un cumul de période (moyennes par match) et non un match unique.
+    'single_match_max_minutes' => 130,
+    'metrics' => [
+        'Index',
+        'Minutes played',
+        'Mistakes leading to goals',
+        'Mistakes leading to chances',
+        'Goals',
+        'Assists',
+        'Chances',
+        'Chances successful',
+        'Chances successful, %',
+        'Chances created',
+        'Involvement in scoring attacks',
+        'Yellow cards',
+        'Red cards',
+        'Fouls',
+        'Fouls suffered',
+        'Shots',
+        'Shots on target',
+        'Goals by head',
+        'Free-kick shots',
+        'Free-kick goals',
+        'Passes',
+        'Passes accurate, %',
+        'Key passes',
+        'Key passes accurate, %',
+        'Crosses',
+        'Crosses accurate, %',
+        'Progressive passes',
+        'Progressive passes accurate, %',
+        'Progressive open passes',
+        'Short passes',
+        'Short passes accurate, %',
+        'Long passes',
+        'Long passes accurate, %',
+        'Passes forward to the final third',
+        'Passes forward to the final third accurate, %',
+        'Passes into the penalty box',
+        'Passes into the penalty box accurate, %',
+        'Passes for a shot',
+        'Super long passes',
+        'Super long passes accurate, %',
+        'Challenges',
+        'Challenges won, %',
+        'Defensive challenges',
+        'Defensive challenges won, %',
+        'Attacking challenges',
+        'Attacking challenges won, %',
+        'Aerial challenges',
+        'Aerial challenges won, %',
+        'Dribbles',
+        'Dribbles successful, %',
+        'Dribbling in the final third',
+        'Dribbling in the final third successful, %',
+        'Tackles',
+        'Tackles successful, %',
+        'Interceptions',
+        'Loose ball recoveries',
+        'xG (expected goals)',
+    ],
+    // Nom de fichier type : « 27.09.2026 - Al-Hazem SC - Player statistics.xlsx ».
+    'filename_pattern' => '/^(?<day>\\d{2})\\.(?<month>\\d{2})\\.(?<year>\\d{4})\\s*-\\s*(?<club>.+?)\\s*-\\s*player statistics/i',
+];

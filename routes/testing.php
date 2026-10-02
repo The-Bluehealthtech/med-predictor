@@ -156,6 +156,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clubs/{club}/officials/{official}/pdf', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'pdf'])->whereNumber('official')->name('club-officials.pdf');
 });
 
+// Exports « Player statistics » des clubs (Excel/CSV) : reconnaissance, aperçu, import.
+Route::middleware(['auth', 'auth.unified', 'permission.unified:record-performance-metrics'])->prefix('/modules/coach-cockpit/player-stats-import')->name('player-stats-import.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\PlayerStatsImportController::class, 'create'])->name('create');
+    Route::post('/preview', [\App\Http\Controllers\PlayerStatsImportController::class, 'preview'])->name('preview');
+    Route::post('/', [\App\Http\Controllers\PlayerStatsImportController::class, 'store'])->name('store');
+});
+
 // Minimal language switch target required by the application layout during tests.
 Route::post('/language', function () {
     return redirect()->back();

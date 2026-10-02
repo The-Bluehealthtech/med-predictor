@@ -79,8 +79,9 @@
                 <h4>Données de match</h4>
                 <p>Les scores reposent sur les feuilles de match et les statistiques par joueur.</p>
                 <span class="re-state">{{ number_format($c['participations'], 0, ',', ' ') }} participations · {{ number_format($c['detailed_stats'], 0, ',', ' ') }} statistiques détaillées pour cette équipe</span>
+                <a href="{{ route('player-stats-import.create', ['club_id' => $clubId]) }}" class="re-btn">Importer un export de statistiques joueurs (Excel)</a>
                 <details class="re-details">
-                    <summary>Importer un fichier de données</summary>
+                    <summary>Import avancé : CSV avec fichier de correspondance</summary>
                     <form method="post" enctype="multipart/form-data" action="{{ route('modules.coach-cockpit.role-evaluation.import') }}">
                         @csrf
                         <label class="field">Que contient le fichier ?

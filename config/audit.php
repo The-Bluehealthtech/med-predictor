@@ -20,6 +20,9 @@ return [
         App\Models\NationalSelection::class => ['module' => 'selections'],
         App\Models\NationalSelectionReport::class => ['module' => 'selections'],
         App\Models\RoleConfigVersion::class => ['module' => 'performance'],
+        App\Models\LicenseAgeCategory::class => ['module' => 'licences'],
+        App\Models\LicenseScaleSetting::class => ['module' => 'licences'],
+        App\Models\PlayerLicense::class => ['module' => 'licences'],
         App\Models\PCMA::class => ['module' => 'medical', 'sensitive' => true],
         App\Models\HealthRecord::class => ['module' => 'medical', 'sensitive' => true],
         App\Models\TUERequest::class => ['module' => 'medical', 'sensitive' => true],
@@ -43,6 +46,7 @@ return [
         'pcma.show', 'pcma.edit', 'pcma.pdf', 'pcma.index',
         'passports.medical.show', 'passports.medical.pdf', 'passports.medical.fhir',
         'medical-aut.pdf', 'medical-aut.edit', 'medical-aut.source',
+        'licenses.document', // pièces de licence : certificat médical, pièce d'identité
         '/api/v1/passports/medical/*',
     ],
 ];

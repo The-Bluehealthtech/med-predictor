@@ -57,18 +57,12 @@ class PlayerLicenseWorkflowContractTest extends TestCase
             $routes
         );
 
-        $this->assertStringContainsString(
-            "'player_id' => " . '$player->id',
-            $controller
-        );
-        $this->assertStringContainsString(
-            "'status' => 'pending'",
-            $controller
-        );
-        $this->assertStringContainsString(
-            "'approval_status' => 'pending'",
-            $controller
-        );
+        // La création passe par le service du circuit (pièces, historique, notifications).
+        $workflow = file_get_contents($this->projectPath('app/Services/Licensing/LicenseWorkflow.php'));
+        $this->assertStringContainsString('$this->workflow->submitPlayer($player', $controller);
+        $this->assertStringContainsString("'player_id' => " . '$player->id', $workflow);
+        $this->assertStringContainsString("'status' => 'pending'", $workflow);
+        $this->assertStringContainsString("'approval_status' => 'pending'", $workflow);
     }
 
     public function test_license_module_button_uses_license_workflow_not_player_registration(): void

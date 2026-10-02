@@ -89,7 +89,7 @@ class PlayerDirectoryController extends Controller
             return $query;
         }
         if ($user->isAssociationUser() && $user->association_id) {
-            return $query->whereIn('club_id', Club::query()->where('association_id', $user->association_id)->select('id'));
+            return $query->whereIn('club_id', DB::table('clubs')->where('association_id', $user->association_id)->select('id'));
         }
         if ($user->club_id) {
             return $query->where('club_id', $user->club_id);

@@ -54,6 +54,14 @@ return [
         'password' => env('PACS_PASSWORD'),
     ],
 
+    // Registre d'identité FIFA ID (facultatif) consulté pendant l'approbation des licences.
+    // Non configuré : l'approbation reste possible, la vérification est affichée « non connectée ».
+    'fifa_id' => [
+        'url' => env('FIFA_ID_REGISTRY_URL'),
+        'token' => env('FIFA_ID_REGISTRY_TOKEN'),
+        'timeout' => (int) env('FIFA_ID_REGISTRY_TIMEOUT', 10),
+    ],
+
     'fifa_connect' => [
         'base_url' => env('FIFA_CONNECT_BASE_URL', 'https://api.fifa.com/v1'),
         'api_key' => env('FIFA_CONNECT_API_KEY'),

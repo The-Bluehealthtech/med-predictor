@@ -449,9 +449,11 @@
                         <ul class="max-h-80 overflow-y-auto">
                             @auth
                                 @forelse(auth()->user()->notifications()->latest()->take(10)->get() as $notification)
-                                    <li class="px-4 py-2 border-b hover:bg-blue-50 {{ $notification->read_at ? 'text-gray-500' : 'text-blue-900 font-semibold' }}">
-                                        {{ $notification->data['message'] ?? 'Notification' }}
-                                        <div class="text-xs text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</div>
+                                    <li class="border-b {{ $notification->read_at ? 'text-gray-500' : 'text-blue-900 font-semibold' }}">
+                                        <a href="{{ Route::has('notifications.open') ? route('notifications.open', $notification->id) : '#' }}" class="block px-4 py-2 hover:bg-blue-50">
+                                            {{ $notification->data['message'] ?? 'Notification' }}
+                                            <span class="block text-xs font-normal text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</span>
+                                        </a>
                                     </li>
                                 @empty
                                     <li class="px-4 py-2 text-gray-400">{{ __('dashboard.no_notifications') }}</li>
@@ -469,7 +471,7 @@
                         </ul>
                         @auth
                         <div class="p-2 text-center">
-                            <a href="#" class="text-blue-600 hover:underline text-sm">{{ __('dashboard.view_all_notifications') }}</a>
+                            <a href="{{ Route::has('notifications.index') ? route('notifications.index') : '#' }}" class="text-blue-600 hover:underline text-sm">{{ __('dashboard.view_all_notifications') }}</a>
                         </div>
                         @endauth
                     </div>

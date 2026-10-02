@@ -94,15 +94,15 @@ class WorkflowCountersTest extends TestCase
             $this->assertArrayNotHasKey($key, $counters, 'aucun compteur médical pour un compte non médical');
         }
 
-        // La base de test locale peut avoir une table licenses réduite : le compteur est alors ignoré sans erreur.
-        if (Schema::hasColumns('licenses', ['club_id', 'association_id', 'license_type'])) {
-            DB::table('clubs')->where('id', $this->clubId)->update(['association_id' => $this->associationId]);
-            DB::table('licenses')->insert(['license_type' => 'player', 'applicant_name' => 'Test Licence', 'club_id' => $this->clubId,
-                'association_id' => $this->associationId, 'status' => 'pending', 'created_at' => now(), 'updated_at' => now()]);
-            $admin = $this->user('association_admin', ['association_id' => $this->associationId]);
-            $this->assertGreaterThanOrEqual(1, $this->counters($admin)['licences_pending']['count']);
-            $this->assertArrayNotHasKey('licences_pending', $this->counters($coach), 'la validation est réservée à la fédération');
-        }
+        // Licences (player_licenses) : à approuver pour la fédération, compléments à fournir pour le club.
+        DB::table('clubs')->where('id', $this->clubId)->update(['association_id' => $this->associationId]);
+        $playerId = DB::table('players')->insertGetId(['name' => 'Licence Test', 'first_name' => 'Licence', 'last_name' => 'Test', 'club_id' => $this->clubId, 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('player_licenses')->insert(['player_id' => $playerId, 'club_id' => $this->clubId, 'status' => 'pending', 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('player_licenses')->insert(['player_id' => $playerId, 'club_id' => $this->clubId, 'status' => 'justification_requested', 'created_at' => now(), 'updated_at' => now()]);
+        $admin = $this->user('association_admin', ['association_id' => $this->associationId]);
+        $this->assertSame(1, $this->counters($admin)['licences_pending']['count']);
+        $this->assertArrayNotHasKey('licences_pending', $this->counters($coach), 'l\'approbation est réservée à la fédération');
+        $this->assertSame(1, $this->counters($coach)['licences_info_requested']['count'], 'le club voit les compléments à fournir');
     }
 
     public function test_modules_page_shows_counters_only_on_visible_steps(): void

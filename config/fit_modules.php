@@ -252,24 +252,37 @@ return [
             'category' => 'administration'
         ],
         [
-            'name' => 'Licences',
-            'description' => 'Demandes et suivi des licences des joueurs',
+            'name' => 'Demande de licence',
+            'description' => 'Côté club : licences des joueurs, officiels d’équipe et dirigeants (FIFA Connect) ; envoi à la fédération, suivi et compléments',
             'icon' => 'badge',
             'route' => 'modules.licenses.index',
             'status' => 'active',
             'color' => 'gray',
             'group' => 'licences',
+            'audience' => 'club',
             'category' => 'administration'
         ],
         [
-            'name' => 'Validation des licences',
-            'description' => 'Validation et vérification des licences par la ligue ou la fédération',
+            'name' => 'Approbation des licences',
+            'description' => 'Côté fédération : examiner la demande, vérifier l’identité via FIFA ID (facultatif), approuver, demander un complément ou refuser',
             'icon' => 'check-circle',
             'route' => 'licenses.validation',
             'status' => 'active',
             'color' => 'gray',
             'group' => 'licences',
+            'audience' => 'federation',
             'category' => 'administration'
+        ],
+        [
+            'name' => 'Barème des licences',
+            'description' => 'Côté fédération : par genre et discipline (FIFA Connect), catégories d’âge de U-15 à senior, niveaux, tarifs, PCMA, pièces ; tarifs des officiels',
+            'icon' => 'clipboard-check',
+            'route' => 'licenses.scale',
+            'status' => 'active',
+            'color' => 'gray',
+            'group' => 'licences',
+            'category' => 'administration',
+            'audience' => 'federation',
         ],
         [
             'name' => 'Transferts',
@@ -292,8 +305,8 @@ return [
             'category' => 'administration'
         ],
         [
-            'name' => 'FIFA Connect',
-            'description' => 'Identifiants FIFA Connect des joueurs, clubs et fédérations',
+            'name' => 'FIFA Connect · FIFA ID',
+            'description' => 'Identifiants FIFA des joueurs, clubs et fédérations ; registre d’identité externe consulté (facultatif) pour approuver les licences',
             'icon' => 'globe',
             'route' => 'fifa.dashboard',
             'status' => 'active',

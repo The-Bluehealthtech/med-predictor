@@ -71,6 +71,24 @@ class PlayerLicense extends Model
         'requested_by',
         'rejection_reason',
         'transfer_status',
+        // Circuit de licence : vérification FIFA ID facultative et réponse du club à un complément.
+        'identity_check_status',
+        'identity_checked_at',
+        'identity_check',
+        'club_response',
+        'age_category',
+        'fee_amount',
+        'fee_currency',
+        // Enregistrement FIFA Connect
+        'club_official_id',
+        'registration_type',
+        'discipline',
+        'level',
+        'registration_nature',
+        'team_official_role',
+        'organisation_official_role',
+        'gender',
+        'season',
     ];
 
     protected $casts = [
@@ -82,7 +100,27 @@ class PlayerLicense extends Model
         'approved_at' => 'datetime',
         'fitness_certificate' => 'boolean',
         'international_clearance' => 'boolean',
+        'identity_checked_at' => 'datetime',
+        'identity_check' => 'array',
     ];
+
+    /** Officiel d'équipe ou dirigeant titulaire (licences TeamOfficial / OrganisationOfficial). */
+    public function clubOfficial()
+    {
+        return $this->belongsTo(ClubOfficial::class);
+    }
+
+    /** Pièces justificatives de la demande. */
+    public function documents()
+    {
+        return $this->hasMany(PlayerLicenseDocument::class);
+    }
+
+    /** Historique de la demande (du plus ancien au plus récent). */
+    public function events()
+    {
+        return $this->hasMany(PlayerLicenseEvent::class)->orderBy('created_at')->orderBy('id');
+    }
 
     /**
      * Relation avec le joueur

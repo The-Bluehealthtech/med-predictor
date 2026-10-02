@@ -48,6 +48,11 @@ final class ModuleCatalog
         if (($module['category'] ?? null) === 'clinique') {
             return $this->isMedical($user) || (($module['route'] ?? null) === 'secretary.dashboard' && $user?->role === 'secretary');
         }
+        if (isset($module['audience'])) {
+            $licensing = app(\App\Services\Licensing\LicenseWorkflow::class);
+
+            return $user !== null && ($module['audience'] === 'federation' ? $licensing->canApprove($user) : $licensing->canRequest($user));
+        }
         if (($module['route'] ?? null) === 'performances.fit-metrics') {
             return $user !== null && $this->rbac->userHasPermission($user, 'record-performance-metrics');
         }

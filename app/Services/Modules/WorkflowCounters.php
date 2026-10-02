@@ -3,7 +3,6 @@
 namespace App\Services\Modules;
 
 use App\Models\Appointment;
-use App\Models\License;
 use App\Models\NationalSelection;
 use App\Models\PCMA;
 use App\Models\Player;
@@ -91,16 +90,13 @@ final class WorkflowCounters
                 ->where('status', NationalSelection::STATUS_RETURN_SENT)->count());
         }
 
-        // Licences à valider : même périmètre que la page de validation (admin système ou fédération).
-        if ($user->isSystemAdmin() || ($user->isAssociationUser() && $user->association_id)) {
-            $this->add($counters, 'licences_pending', 'à valider', 'action', function () use ($user) {
-                $query = License::query()->where('status', 'pending');
-                if (!$user->isSystemAdmin()) {
-                    $query->whereHas('club', fn ($c) => $c->where('association_id', $user->association_id));
-                }
-
-                return $query->count();
-            });
+        // Licences : demandes à approuver (fédération) et compléments à fournir (club), même périmètre que leurs pages.
+        $licensing = app(\App\Services\Licensing\LicenseWorkflow::class);
+        if ($licensing->canApprove($user)) {
+            $this->add($counters, 'licences_pending', 'à approuver', 'action', fn () => $licensing->licenses($user)->where('status', 'pending')->count());
+        }
+        if ($licensing->canRequest($user)) {
+            $this->add($counters, 'licences_info_requested', 'compléments à fournir', 'action', fn () => $licensing->licenses($user)->where('status', 'justification_requested')->count());
         }
 
         // Transferts en attente : même périmètre que la gestion des transferts.

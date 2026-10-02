@@ -17,6 +17,11 @@
         if (($module['category'] ?? null) === 'clinique') {
             return $isMedical || (($module['route'] ?? null) === 'secretary.dashboard' && ($authUser?->role === 'secretary'));
         }
+        // Licences : la demande côté club (et fédération), l'approbation côté fédération seulement.
+        if (isset($module['audience'])) {
+            $licensing = app(\App\Services\Licensing\LicenseWorkflow::class);
+            return $authUser !== null && ($module['audience'] === 'federation' ? $licensing->canApprove($authUser) : $licensing->canRequest($authUser));
+        }
         // La saisie FIT suit la permission RBAC canonique de sa route de destination.
         $routeRule = match ($module['route'] ?? null) {
             'performances.fit-metrics' => auth()->check()
@@ -183,7 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 'administration' => ['type' => 'flow', 'tone' => 'bg-slate-600', 'steps' => [
                     ['label' => 'Structurer', 'role' => 'Administration', 'output' => 'Clubs et fédérations en place', 'routes' => ['modules.clubs.index', 'club-officials.index', 'modules.associations.index', 'modules.confederations.index']],
                     ['label' => 'Enregistrer', 'role' => 'Secrétariat du club', 'output' => 'Joueurs et équipes inscrits', 'routes' => ['modules.players.index', 'modules.teams.index']],
-                    ['label' => 'Licencier', 'todo' => 'licences_pending', 'role' => 'Club, puis ligue ou fédération', 'output' => 'Licences validées', 'routes' => ['modules.licenses.index', 'licenses.validation']],
+                    ['label' => 'Demander une licence', 'todo' => 'licences_info_requested', 'role' => 'Club', 'output' => 'Demande envoyée à la fédération', 'routes' => ['modules.licenses.index']],
+                    ['label' => 'Approuver', 'todo' => 'licences_pending', 'role' => 'Fédération · identité FIFA ID facultative', 'output' => 'Licence active, complément demandé ou refus motivé', 'routes' => ['licenses.validation']],
                     ['label' => 'Transférer', 'todo' => 'transfers_pending', 'role' => 'Club et fédération', 'output' => 'Mutations enregistrées', 'routes' => ['admin.transfer-management.index', 'passports.transfer.index', 'fifa.dashboard']],
                     ['label' => 'Organiser', 'role' => 'Ligue ou fédération', 'output' => 'Compétitions et arbitres désignés', 'routes' => ['modules.competitions.index', 'referee-portal.index']],
                 ], 'tools' => ['modules.finance.dashboard', 'modules.administration.index', 'admin.content-management.index', 'gemini.index'], 'tools_label' => 'Outils transverses'],

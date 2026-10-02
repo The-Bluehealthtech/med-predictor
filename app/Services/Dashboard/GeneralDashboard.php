@@ -39,7 +39,8 @@ final class GeneralDashboard
         'dtn_returns' => ['selections', 'Rapports de retour à rédiger', 'dtn.index'],
         'club_departures' => ['selections', 'Départs en sélection à préparer', 'club.selections.index'],
         'club_returns' => ['selections', 'Rapports de retour à lire', 'club.selections.returns'],
-        'licences_pending' => ['administration', 'Licences à valider', 'licenses.validation'],
+        'licences_pending' => ['administration', 'Demandes de licence à approuver', 'licenses.validation'],
+        'licences_info_requested' => ['administration', 'Compléments de licence à fournir', 'modules.licenses.index'],
         'transfers_pending' => ['administration', 'Transferts en attente', 'admin.transfer-management.index'],
     ];
 
@@ -140,7 +141,7 @@ final class GeneralDashboard
                 ],
                 'administration' => [
                     ['Clubs', $this->safe(fn () => $this->clubCount($user))],
-                    $c('Licences à valider', 'licences_pending'),
+                    $c('Licences à approuver', 'licences_pending'),
                     $c('Transferts en attente', 'transfers_pending'),
                 ],
             };

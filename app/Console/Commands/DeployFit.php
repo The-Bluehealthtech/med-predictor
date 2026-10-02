@@ -35,6 +35,10 @@ class DeployFit extends Command
         'database/migrations/2026_10_02_230100_repoint_player_detailed_stats_to_players.php',
         'database/migrations/2026_10_03_090000_create_platform_activities_table.php',
         'database/migrations/2026_10_03_100000_protect_audit_logs_append_only.php',
+        'database/migrations/2026_10_03_110000_add_identity_check_to_player_licenses.php',
+        'database/migrations/2026_10_03_120000_create_player_license_documents_and_events.php',
+        'database/migrations/2026_10_03_130000_create_license_age_scale.php',
+        'database/migrations/2026_10_03_140000_convert_demo_licenses_to_fifa_connect.php',
     ];
 
     protected $signature = 'fit:deploy

@@ -1215,7 +1215,13 @@ Route::middleware(['auth'])->group(function () {
     
     // Licenses routes
     // Ensure validation route does not get captured by /licenses/{license}
-    Route::get('/licenses/validation', [LicenseController::class, 'validation'])->name('licenses.validation');
+    // Approbation des licences (fédération) : file, examen, vérification FIFA ID facultative, décision.
+    Route::get('/licenses/validation', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'index'])->name('licenses.validation');
+    Route::get('/licenses/scale', [\App\Http\Controllers\Licensing\LicenseScaleController::class, 'index'])->name('licenses.scale');
+    Route::post('/licenses/scale', [\App\Http\Controllers\Licensing\LicenseScaleController::class, 'update'])->name('licenses.scale.update');
+    Route::get('/licenses/review/{license}', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'show'])->whereNumber('license')->name('licenses.review');
+    Route::post('/licenses/review/{license}/identity', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'verifyIdentity'])->whereNumber('license')->name('licenses.verify-identity');
+    Route::post('/licenses/review/{license}/decision', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'decide'])->whereNumber('license')->name('licenses.decide');
     Route::get('/licenses/create', [LicenseController::class, 'create'])->name('licenses.create');
     Route::resource('licenses', LicenseController::class)->except(['show', 'create', 'edit', 'update', 'destroy']);
     Route::patch('/licenses/{license}/approve', [LicenseController::class, 'approve'])->name('licenses.approve');
@@ -2768,9 +2774,10 @@ Route::get('/test-pdf', function() {
     })->name('profile.show');
     
     // Notifications routes
-    Route::post('/notifications/{id}/mark-as-read', function ($id) {
-        return redirect()->back();
-    })->name('notifications.markAsRead');
+    Route::get('/notifications', [\App\Http\Controllers\NotificationCenterController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/{id}/open', [\App\Http\Controllers\NotificationCenterController::class, 'open'])->name('notifications.open');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationCenterController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::post('/notifications/{id}/mark-as-read', [\App\Http\Controllers\NotificationCenterController::class, 'open'])->name('notifications.markAsRead');
     
     // License Requests routes
     Route::get('/license-requests/{id}', function ($id) {
@@ -3094,6 +3101,36 @@ Route::get('/test-pdf', function() {
         '/modules/licenses/players/{player}/request',
         [\App\Http\Controllers\PlayerLicenseWorkflowController::class, 'store']
     )->name('player-licenses.request.store');
+
+    Route::get(
+        '/modules/licenses/officials/{official}/request',
+        [\App\Http\Controllers\PlayerLicenseWorkflowController::class, 'createOfficial']
+    )->whereNumber('official')->name('official-licenses.request.create');
+
+    Route::post(
+        '/modules/licenses/officials/{official}/request',
+        [\App\Http\Controllers\PlayerLicenseWorkflowController::class, 'storeOfficial']
+    )->whereNumber('official')->name('official-licenses.request.store');
+
+    Route::get(
+        '/modules/licenses/requests/{license}',
+        [\App\Http\Controllers\PlayerLicenseWorkflowController::class, 'show']
+    )->whereNumber('license')->name('player-licenses.show');
+
+    Route::post(
+        '/modules/licenses/requests/{license}/documents',
+        [\App\Http\Controllers\PlayerLicenseWorkflowController::class, 'addDocuments']
+    )->whereNumber('license')->name('player-licenses.documents');
+
+    Route::get(
+        '/licenses/documents/{document}',
+        [\App\Http\Controllers\Licensing\LicenseDocumentController::class, 'show']
+    )->whereNumber('document')->name('licenses.document');
+
+    Route::post(
+        '/modules/licenses/requests/{license}/respond',
+        [\App\Http\Controllers\PlayerLicenseWorkflowController::class, 'respond']
+    )->whereNumber('license')->name('player-licenses.respond');
 
     // Routes dupliquées supprimées - elles existent déjà ailleurs dans le fichier
 

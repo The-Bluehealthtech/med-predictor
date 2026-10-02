@@ -3690,10 +3690,7 @@ Route::get('/fifa-test-public', fn () => abort(410))->name('fifa-test-public');
 // Test route basique sans CSS
 
 // Player module requires authentication.
-Route::get('/modules/players', function () {
-    $players = \App\Models\Player::with(['club'])->orderBy('last_name')->orderBy('first_name')->paginate(20);
-    return view('modules.players.index', compact('players'));
-})->middleware(['auth'])->name('modules.players.index');
+Route::get('/modules/players', [\App\Http\Controllers\PlayerDirectoryController::class, 'index'])->middleware(['auth'])->name('modules.players.index');
 
 
 

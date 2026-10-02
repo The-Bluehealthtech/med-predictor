@@ -1901,12 +1901,18 @@ Route::middleware(['auth'])->group(function () {
                 'total_users' => $users->count()
             ]);
         } catch (\Exception $e) {
+            \Log::error('Failed to apply predefined roles', [
+                'error_class' => $e::class,
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'application des rôles: ' . $e->getMessage()
+                'message' => 'Erreur lors de l\'application des rôles.',
             ], 400);
         }
-    });
+    })->middleware('role:system_admin');
     
     // Audit Trail routes
     Route::get('/audit-trail', function () {

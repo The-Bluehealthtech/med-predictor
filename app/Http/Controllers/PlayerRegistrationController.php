@@ -571,6 +571,8 @@ class PlayerRegistrationController extends Controller
      */
     public function healthRecords(Player $player)
     {
+        app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(), $player, null);
+
         $player->load(['healthRecords', 'medicalNotes', 'injuries']);
         
         return view('modules.player-registration.health-records', compact('player'));

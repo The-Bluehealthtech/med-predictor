@@ -388,6 +388,8 @@ class PlayerController extends Controller
      */
     public function healthRecords(Player $player)
     {
+        app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(), $player, null);
+
         $player->load(['healthRecords', 'club', 'association']);
         return view('players.health-records', compact('player'));
     }

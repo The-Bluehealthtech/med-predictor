@@ -102,7 +102,9 @@ Route::middleware(['auth:sanctum'])->prefix('players')->group(function () {
         ]);
     });
     
-    Route::get('/{player}/health-records', function (\App\Models\Player $player) {
+    Route::get('/{player}/health-records', function (\Illuminate\Http\Request $request, \App\Models\Player $player) {
+        app(\App\Services\MedicalRecordAccess::class)->authorize($request->user(), $player, null);
+
         $healthRecords = $player->healthRecords()->latest()->limit(10)->get();
         
         return response()->json([

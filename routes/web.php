@@ -3346,6 +3346,10 @@ Route::get('/test-pdf', function() {
     
     Route::get('/modules/clubs', [App\Http\Controllers\ClubController::class, 'index'])->name('modules.clubs.index');
     Route::get('/modules/clubs/{club}', [App\Http\Controllers\ClubController::class, 'show'])->name('modules.clubs.show');
+    Route::post('/modules/clubs/{club}/external-import/preview', [App\Http\Controllers\ClubController::class, 'previewExternalImport'])
+        ->name('modules.clubs.external-import.preview');
+    Route::post('/modules/clubs/{club}/external-import/sync', [App\Http\Controllers\ClubController::class, 'syncExternalImport'])
+        ->name('modules.clubs.external-import.sync');
     
     Route::get('/modules/administration', function () {
         return view('modules.administration.index', ['footballType' => 'association']);

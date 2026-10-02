@@ -41,6 +41,108 @@ page    <title>{{ $club->name }} - {{ __('Détails du Club - Plateforme FIT') }}
             </div>
         @endif
 
+        <!-- Enrichissement externe -->
+        <div class="mb-8 bg-white rounded-lg shadow-lg p-6 border border-indigo-100">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">Enrichissement Foot Mercato</h2>
+                    <p class="mt-1 text-sm text-gray-600">
+                        Prévisualisez l'effectif externe puis synchronisez les données directement dans la base FIT.
+                    </p>
+                </div>
+                @if(isset($externalPreview))
+                    <span class="inline-flex px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium">
+                        {{ data_get($externalPreview, 'summary.players_found', 0) }} joueurs détectés
+                    </span>
+                @endif
+            </div>
+
+            <form method="POST"
+                  action="{{ route('modules.clubs.external-import.preview', $club) }}"
+                  class="mt-5 flex flex-col lg:flex-row gap-3">
+                @csrf
+                <input type="url"
+                       name="source_url"
+                       required
+                       value="{{ old('source_url', $sourceUrl ?? '') }}"
+                       placeholder="https://www.footmercato.net/club/.../effectif/"
+                       class="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <button type="submit"
+                        class="px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700">
+                    Prévisualiser
+                </button>
+            </form>
+
+            @error('source_url')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+
+            @if(isset($externalPreview))
+                @php($summary = $externalPreview['summary'])
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
+                    @foreach([
+                        'Joueurs' => $summary['players_found'],
+                        'Déjà FIT' => $summary['players_matched'],
+                        'Nouveaux' => $summary['players_new'],
+                        'Photos' => $summary['photos_found'],
+                        'DOB' => $summary['dob_found'],
+                        'Nationalités' => $summary['nationalities_found'],
+                        'Tailles' => $summary['height_found'],
+                        'Poids' => $summary['weight_found'],
+                    ] as $label => $value)
+                        <div class="rounded-lg bg-gray-50 border border-gray-200 px-3 py-3 text-center">
+                            <div class="text-xl font-bold text-gray-900">{{ $value }}</div>
+                            <div class="text-xs text-gray-500">{{ $label }}</div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="mt-5 max-h-80 overflow-auto rounded-lg border border-gray-200">
+                    <table class="min-w-full text-sm">
+                        <thead class="sticky top-0 bg-gray-100 text-left text-gray-600">
+                            <tr>
+                                <th class="px-3 py-2">#</th>
+                                <th class="px-3 py-2">Joueur</th>
+                                <th class="px-3 py-2">Poste</th>
+                                <th class="px-3 py-2">Âge</th>
+                                <th class="px-3 py-2">FIT</th>
+                                <th class="px-3 py-2">Photo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @foreach($externalPreview['data']['players'] as $externalPlayer)
+                                @php($match = collect($externalPreview['player_matches'])->firstWhere('external_id', $externalPlayer['external_id']))
+                                <tr>
+                                    <td class="px-3 py-2">{{ $externalPlayer['jersey_number'] ?? '—' }}</td>
+                                    <td class="px-3 py-2 font-medium text-gray-900">{{ $externalPlayer['name'] }}</td>
+                                    <td class="px-3 py-2">{{ $externalPlayer['position'] ?? '—' }}</td>
+                                    <td class="px-3 py-2">{{ $externalPlayer['age'] ?? '—' }}</td>
+                                    <td class="px-3 py-2">{{ data_get($match, 'local_id') ? 'Existant' : 'Nouveau' }}</td>
+                                    <td class="px-3 py-2">{{ $externalPlayer['photo_url'] ? 'Oui' : 'Non' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <form method="POST"
+                      action="{{ route('modules.clubs.external-import.sync', $club) }}"
+                      class="mt-5 flex flex-wrap items-center gap-4">
+                    @csrf
+                    <input type="hidden" name="source_url" value="{{ $externalPreview['data']['source_url'] }}">
+                    <input type="hidden" name="download_media" value="1">
+                    <button type="submit"
+                            class="px-5 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700"
+                            onclick="return confirm('Synchroniser cet effectif dans la base FIT ?')">
+                        Synchroniser dans FIT
+                    </button>
+                    <span class="text-xs text-gray-500">
+                        La synchronisation écrit dans les tables clubs/players et conserve les identifiants Foot Mercato en base.
+                    </span>
+                </form>
+            @endif
+        </div>
+
         <!-- Club Details -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <!-- Informations principales -->

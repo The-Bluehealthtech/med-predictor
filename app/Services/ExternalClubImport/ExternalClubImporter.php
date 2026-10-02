@@ -17,10 +17,10 @@ class ExternalClubImporter
     {
     }
 
-    public function preview(string $url): array
+    public function preview(string $url, ?Club $targetClub = null): array
     {
         $data = $this->footMercato->fetchClub($url);
-        $club = $this->matchClub($data['club']);
+        $club = $targetClub ?? $this->matchClub($data['club']);
         $matches = collect($data['players'])->map(function (array $player) use ($club) {
             return $this->previewPlayerMatch($player, $club);
         })->all();
@@ -41,14 +41,16 @@ class ExternalClubImporter
             ],
         ];
     }
-    public function import(string $url, bool $downloadMedia = true): array
+    public function import(string $url, bool $downloadMedia = true, ?Club $targetClub = null): array
     {
-        $preview = $this->preview($url);
+        $preview = $this->preview($url, $targetClub);
         $data = $preview['data'];
 
-        return DB::transaction(function () use ($data, $downloadMedia) {
+        return DB::transaction(function () use ($data, $downloadMedia, $targetClub) {
             $batchId = $this->startImportBatch($data, $downloadMedia);
-            $club = $this->upsertClub($data['club'], $data, $downloadMedia);
+            $club = $targetClub
+                ? $this->updateTargetClub($targetClub, $data['club'], $downloadMedia)
+                : $this->upsertClub($data['club'], $data, $downloadMedia);
             $created = 0;
             $updated = 0;
             $externalLinks = [];
@@ -61,9 +63,25 @@ class ExternalClubImporter
                 $this->fillPlayer($player, $externalPlayer, $club, $downloadMedia, $isNew ? $batchId : null);
                 $player->save();
 
+                $this->persistExternalLink(
+                    'player',
+                    $externalPlayer['external_id'],
+                    $player->id,
+                    $data['season'] ?? null,
+                    $externalPlayer['profile_url'] ?? null
+                );
+
                 $externalLinks[$externalPlayer['external_id']] = $player->id;
                 $isNew ? $created++ : $updated++;
             }
+
+            $this->persistExternalLink(
+                'club',
+                $data['club']['external_id'],
+                $club->id,
+                $data['season'] ?? null,
+                $data['source_url'] ?? null
+            );
 
             $result = [
                 'club_id' => $club->id,
@@ -123,9 +141,23 @@ class ExternalClubImporter
 
     private function matchPlayer(array $external, Club $club): ?Player
     {
-        $historical = $this->matchPlayerFromImportHistory($external['external_id'], $club);
-        if ($historical) {
-            return $historical;
+        $linkedId = Schema::hasTable('external_entity_links')
+            ? DB::table('external_entity_links')
+                ->where('source', FootMercatoProvider::SOURCE)
+                ->where('entity_type', 'player')
+                ->where('external_id', $external['external_id'])
+                ->value('local_id')
+            : null;
+
+        if ($linkedId) {
+            $linked = Player::query()
+                ->where('id', $linkedId)
+                ->where('club_id', $club->id)
+                ->first();
+
+            if ($linked) {
+                return $linked;
+            }
         }
 
         $query = Player::query()->where('club_id', $club->id);
@@ -141,38 +173,35 @@ class ExternalClubImporter
             ->whereRaw('LOWER(name) = ?', [mb_strtolower($external['name'])])
             ->first();
     }
-    private function matchPlayerFromImportHistory(string $externalId, Club $club): ?Player
+    private function updateTargetClub(Club $club, array $external, bool $downloadMedia): Club
     {
-        if (! Schema::hasTable('import_batches') || ! Schema::hasColumn('import_batches', 'report')) {
-            return null;
+        if (! empty($external['short_name']) && ! $club->short_name) {
+            $club->short_name = $external['short_name'];
         }
 
-        $reports = DB::table('import_batches')
-            ->where('source_label', FootMercatoProvider::SOURCE)
-            ->where('status', 'completed')
-            ->whereNotNull('report')
-            ->orderByDesc('id')
-            ->limit(50)
-            ->pluck('report');
+        $club->league = $club->league ?: 'Saudi Pro League';
 
-        foreach ($reports as $rawReport) {
-            $report = is_array($rawReport) ? $rawReport : json_decode((string) $rawReport, true);
-            $localId = $report['result']['external_links'][$externalId] ?? null;
-            if (! $localId) {
-                continue;
-            }
+        if ($external['logo_url'] ?? null) {
+            $club->logo_url = $external['logo_url'];
 
-            $player = Player::query()
-                ->where('id', $localId)
-                ->where('club_id', $club->id)
-                ->first();
+            if ($downloadMedia) {
+                $path = $this->downloadMedia(
+                    $external['logo_url'],
+                    'clubs/'.Str::slug($club->name)
+                );
 
-            if ($player) {
-                return $player;
+                if ($path) {
+                    $club->logo_path = $path;
+                    if (Schema::hasColumn('clubs', 'logo_image')) {
+                        $club->logo_image = $path;
+                    }
+                }
             }
         }
 
-        return null;
+        $club->save();
+
+        return $club;
     }
 
     private function upsertClub(array $external, array $data, bool $downloadMedia): Club
@@ -269,6 +298,30 @@ class ExternalClubImporter
             return null;
         }
     }
+    private function persistExternalLink(
+        string $entityType,
+        string $externalId,
+        int $localId,
+        ?string $season,
+        ?string $sourceUrl
+    ): void {
+        DB::table('external_entity_links')->updateOrInsert(
+            [
+                'source' => FootMercatoProvider::SOURCE,
+                'entity_type' => $entityType,
+                'external_id' => $externalId,
+            ],
+            [
+                'local_id' => $localId,
+                'season' => $season,
+                'source_url' => $sourceUrl,
+                'last_seen_at' => now(),
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
+    }
+
     private function normalizeClubName(?string $name): string
     {
         return (string) Str::of((string) $name)

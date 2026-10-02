@@ -1973,6 +1973,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/health-records/{record}/aut/create', [App\Http\Controllers\MedicalAutController::class, 'create'])->name('medical-aut.create');
     Route::get('/health-records/{record}/aut/source', [App\Http\Controllers\MedicalAutController::class, 'source'])->name('medical-aut.source');
     Route::post('/health-records/{record}/aut', [App\Http\Controllers\MedicalAutController::class, 'store'])->name('medical-aut.store');
+    // Formulaire FIFA d'AUT rempli, en PDF (aperçu non enregistré, ou demande enregistrée) — à signer puis déposer dans ADAMS.
+    // POST depuis la création, PUT depuis la modification (champ _method du formulaire).
+    Route::match(['post', 'put'], '/health-records/{record}/aut/preview', [App\Http\Controllers\MedicalAutController::class, 'previewPdf'])->name('medical-aut.preview');
+    Route::get('/health-records/{record}/aut/{aut}/pdf', [App\Http\Controllers\MedicalAutController::class, 'pdf'])->name('medical-aut.pdf');
     Route::get('/health-records/{record}/aut/{aut}/edit', [App\Http\Controllers\MedicalAutController::class, 'edit'])->name('medical-aut.edit');
     Route::put('/health-records/{record}/aut/{aut}', [App\Http\Controllers\MedicalAutController::class, 'update'])->name('medical-aut.update');
     Route::get('/health-records/{record}/aut/{aut}/documents/{index}', [App\Http\Controllers\MedicalAutController::class, 'document'])->name('medical-aut.document');

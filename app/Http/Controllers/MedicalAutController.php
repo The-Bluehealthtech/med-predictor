@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use App\Models\{HealthRecord, TUERequest, MedicalAutDocument};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 final class MedicalAutController extends Controller
 {
     private function record($id): HealthRecord
@@ -99,8 +100,34 @@ final class MedicalAutController extends Controller
     }
     private function save(Request $request,HealthRecord $record,?TUERequest $item=null)
     {
-        $this->persistDraft($request,$record,$this->validateDraft($request),$item);
-        return redirect()->route('medical-aut.index',$record->id)->with('success',__('medical_aut.saved'));
+        $item=$this->persistDraft($request,$record,$this->validateDraft($request),$item);
+        $redirect=redirect()->route('medical-aut.index',$record->id)->with('success',__('medical_aut.saved'));
+        // « Enregistrer et générer le PDF » : la page des demandes propose le PDF et le lien ADAMS.
+        return $request->input('then')==='pdf'?$redirect->with('aut_pdf',$item->id):$redirect;
+    }
+    /** Formulaire FIFA d'AUT rempli à partir d'une demande enregistrée. */
+    public function pdf(Request $request,$record,$aut)
+    {
+        $healthRecord=$this->record($record);$item=$this->item($healthRecord,$aut);
+        app(\App\Services\MedicalRecordAccess::class)->authorize($request->user(),$healthRecord->player,null);
+        return $this->renderPdf($healthRecord,$item->aut_form_data['fields']??[],$item,false,'AUT-FIFA-'.$item->id.'.pdf');
+    }
+    /** Aperçu du formulaire saisi, sans enregistrement ni pièce jointe. */
+    public function previewPdf(Request $request,$record)
+    {
+        $healthRecord=$this->record($record);
+        app(\App\Services\MedicalRecordAccess::class)->authorize($request->user(),$healthRecord->player,null);
+        $data=$this->validateDraft($request);
+        return $this->renderPdf($healthRecord,$data['form'],null,true,'AUT-FIFA-apercu.pdf');
+    }
+    private function renderPdf(HealthRecord $healthRecord,array $fields,?TUERequest $item,bool $preview,string $filename)
+    {
+        $response=Pdf::loadView('health-records.aut-pdf',['healthRecord'=>$healthRecord,'item'=>$item,'fields'=>$fields,
+            'sections'=>config('medical_aut.sections'),'source'=>$this->sourceText(),'preview'=>$preview,
+            'generatedAt'=>now()])->setPaper('a4')->setOption('isRemoteEnabled',false)->download($filename);
+        $response->headers->set('Cache-Control','private, no-store');
+        $response->headers->set('X-Content-Type-Options','nosniff');
+        return $response;
     }
     public function document($record,$aut,$index)
     {

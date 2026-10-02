@@ -14,13 +14,17 @@ $values=old('form',$item?->aut_form_data['fields'] ?? $prefill);
 <p>{{ $healthRecord->player?->full_name }} · {{ config('medical_aut.source') }}</p>
 <p class="whitespace-pre-line my-4">{{ $source['instructions'] }}</p>
 <p class="bg-yellow-50 border rounded-lg p-4 my-4">{{ __('medical_aut.draft_note') }}</p>
-<a href="{{ route('medical-aut.source',$healthRecord->id) }}">{{ __('medical_aut.source') }}</a>
+@include('health-records.aut-submission', ['autId' => $item?->id])
 @if($errors->any())<div role="alert" class="border rounded p-4">@foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach</div>@endif
 <form method="post" enctype="multipart/form-data"
  action="{{ $item ? route('medical-aut.update',[$healthRecord->id,$item->id]) : route('medical-aut.store',$healthRecord->id) }}">
 @csrf @if($item) @method('PUT') @endif
 @include('health-records.aut-fields')
+<div class="flex flex-wrap items-center gap-3">
 <button type="submit" class="bg-blue-600 text-white rounded-lg px-6 py-3">{{ __('medical_aut.save') }}</button>
+<button type="submit" name="then" value="pdf" class="bg-indigo-700 text-white rounded-lg px-6 py-3">{{ __('medical_aut.save_pdf') }}</button>
+<button type="submit" formaction="{{ route('medical-aut.preview',$healthRecord->id) }}" formnovalidate class="border border-gray-300 rounded-lg px-6 py-3">{{ __('medical_aut.pdf_preview') }}</button>
+</div>
 <a class="ml-4" href="{{ route('medical-aut.index',$healthRecord->id) }}">{{ __('medical_aut.back') }}</a>
 </form>
 </div>

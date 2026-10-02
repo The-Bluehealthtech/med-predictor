@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Licensing;
 
 use App\Http\Controllers\Controller;
+use App\Models\LicenseIntegrityReview;
 use App\Models\PlayerLicense;
 use App\Models\User;
 use App\Services\Licensing\FifaIdRegistry;
 use App\Services\Licensing\LicenseWorkflow;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 /**
@@ -58,6 +60,7 @@ class LicenseApprovalController extends Controller
             'player.club', 'player.passport', 'clubOfficial', 'club.association', 'photo',
             'documents:id,player_license_id,document_type,original_name,mime_type,size,created_at',
             'events.user:id,name',
+            'integrityReviews.reviewer:id,name',
         ]);
 
         return view('licenses.approval.show', [
@@ -127,6 +130,63 @@ class LicenseApprovalController extends Controller
         abort_unless($licenses->count() === $ids->count(), 403);
 
         return view('licenses.cards.batch', ['licenses' => $licenses]);
+    }
+
+    public function recordIntegrityReview(Request $request, PlayerLicense $license)
+    {
+        $user = $request->user();
+        $this->authorizeLicense($user, $license);
+        abort_if((bool) $license->club_official_id, 404);
+        $statuses = implode(',', array_keys(LicenseIntegrityReview::STATUSES));
+        $data = $request->validate([
+            'photo_status' => 'required|in:' . $statuses,
+            'signature_status' => 'required|in:' . $statuses,
+            'identity_status' => 'required|in:' . $statuses,
+            'age_status' => 'required|in:' . $statuses,
+            'notes' => 'nullable|string|max:2000',
+        ]);
+        $license->loadMissing(['player.passport', 'documents']);
+        $player = $license->player;
+        $passport = $player?->passport;
+        DB::transaction(function () use ($license, $user, $data, $player, $passport) {
+            $review = $license->integrityReviews()->create([
+                'reviewer_id' => $user->id,
+                'photo_status' => $data['photo_status'],
+                'signature_status' => $data['signature_status'],
+                'identity_status' => $data['identity_status'],
+                'age_status' => $data['age_status'],
+                'notes' => $data['notes'] ?? null,
+                'reviewed_at' => now(),
+                'evidence' => [
+                    'mode' => 'human_review',
+                    'photo_sources' => [
+                        'license_photo' => (bool) $license->photo,
+                        'player_profile' => (bool) $player?->player_picture_url,
+                        'passport' => (bool) $passport?->photo_url,
+                        'submitted_photo_document_id' => $license->documents->where('document_type', 'photo')->sortByDesc('id')->first()?->id,
+                        'identity_document_id' => $license->documents->where('document_type', 'identity')->sortByDesc('id')->first()?->id,
+                    ],
+                    'signature_sources' => [
+                        'passport_signature' => (bool) $passport?->signature_url,
+                        'identity_document_id' => $license->documents->where('document_type', 'identity')->sortByDesc('id')->first()?->id,
+                        'contract_document_id' => $license->documents->where('document_type', 'contract')->sortByDesc('id')->first()?->id,
+                    ],
+                    'date_of_birth_sources' => [
+                        'fit' => $player?->date_of_birth?->toDateString(),
+                        'passport' => $passport?->fifa_date_of_birth?->toDateString(),
+                        'fifa_registry' => data_get($license->identity_check, 'registry.date_of_birth'),
+                    ],
+                    'identity_check_status' => $license->identity_check_status,
+                ],
+            ]);
+            $license->events()->create([
+                'user_id' => $user->id,
+                'action' => 'integrity_review',
+                'message' => 'Revue anti-fraude #' . $review->id . ' enregistrée.',
+            ]);
+        });
+
+        return redirect()->route('licenses.review', $license)->with('success', 'Revue anti-fraude enregistrée.');
     }
 
     private function authorizeLicense(User $user, PlayerLicense $license): void

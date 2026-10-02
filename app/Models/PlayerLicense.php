@@ -122,6 +122,12 @@ class PlayerLicense extends Model
         return $this->hasMany(PlayerLicenseEvent::class)->orderBy('created_at')->orderBy('id');
     }
 
+    /** Revues anti-fraude ajoutées par la fédération, conservées en historique. */
+    public function integrityReviews()
+    {
+        return $this->hasMany(LicenseIntegrityReview::class)->orderByDesc('reviewed_at')->orderByDesc('id');
+    }
+
     /**
      * Relation avec le joueur
      */

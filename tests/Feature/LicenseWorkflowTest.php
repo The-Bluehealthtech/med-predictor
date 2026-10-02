@@ -50,6 +50,7 @@ class LicenseWorkflowTest extends TestCase
             Route::post('/_t/approval/{license}/decision', [LicenseApprovalController::class, 'decide'])->name('licenses.decide');
             Route::get('/_t/approval/cards/{license}', [LicenseApprovalController::class, 'card'])->name('licenses.card');
             Route::post('/_t/approval/cards/batch', [LicenseApprovalController::class, 'cardsBatch'])->name('licenses.cards.batch');
+            Route::post('/_t/approval/{license}/integrity', [LicenseApprovalController::class, 'recordIntegrityReview'])->name('licenses.integrity-review');
         });
         app('router')->getRoutes()->refreshNameLookups();
 
@@ -371,4 +372,31 @@ class LicenseWorkflowTest extends TestCase
         $this->actingAs($this->club())->get("/_t/approval/cards/{$license->id}")->assertForbidden();
         $this->actingAs($this->club())->post('/_t/approval/cards/batch', ['license_ids' => [$license->id]])->assertForbidden();
     }
+    public function test_federation_integrity_reviews_are_append_only_and_audited(): void
+    {
+        $license = $this->request();
+        $federation = $this->federation();
+        $payload = [
+            'photo_status' => 'coherent',
+            'signature_status' => 'insufficient',
+            'identity_status' => 'coherent',
+            'age_status' => 'uncertain',
+            'notes' => 'Contrôle visuel réalisé, justificatif âge à compléter.',
+        ];
+
+        $this->actingAs($federation)->post("/_t/approval/{$license->id}/integrity", $payload)
+            ->assertRedirect(route('licenses.review', $license))->assertSessionHas('success');
+        $this->assertDatabaseHas('license_integrity_reviews', [
+            'player_license_id' => $license->id, 'reviewer_id' => $federation->id,
+            'photo_status' => 'coherent', 'age_status' => 'uncertain',
+        ]);
+        $this->actingAs($federation)->post("/_t/approval/{$license->id}/integrity", array_merge($payload, ['age_status' => 'coherent']));
+        $this->assertSame(2, DB::table('license_integrity_reviews')->where('player_license_id', $license->id)->count());
+        $this->assertSame(2, $license->events()->where('action', 'integrity_review')->count());
+
+        $this->actingAs($this->club())->post("/_t/approval/{$license->id}/integrity", $payload)->assertForbidden();
+        $this->actingAs($federation)->get("/_t/approval/{$license->id}")
+            ->assertOk()->assertSee('Historique des revues')->assertSee('Contrôle visuel réalisé');
+    }
+
 }

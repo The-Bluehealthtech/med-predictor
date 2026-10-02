@@ -14,6 +14,7 @@ class PlayerLicenseEvent extends Model
         'submitted' => 'Demande envoyée à la fédération',
         'document_added' => 'Pièce justificative ajoutée',
         'identity_checked' => 'Identité vérifiée auprès de FIFA ID',
+        'integrity_review' => 'Revue anti-fraude enregistrée',
         'info_requested' => 'Complément demandé au club',
         'responded' => 'Complément fourni par le club',
         'approved' => 'Licence approuvée',

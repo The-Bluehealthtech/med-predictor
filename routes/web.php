@@ -3575,24 +3575,8 @@ Route::prefix('api')->middleware(['auth'])->group(function () {
         }
     });
     
-    // Get player health records
-    Route::get('/players/{id}/health-records', function ($id) {
-        try {
-            $healthRecords = App\Models\HealthRecord::where('player_id', $id)
-                ->orderBy('record_date', 'desc')
-                ->get();
-            
-            return response()->json([
-                'success' => true,
-                'data' => $healthRecords
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    });
+    // /api/players/{player}/health-records is defined once in routes/api.php
+    // with Sanctum authentication and MedicalRecordAccess scoping.
 });
 
 // Test simple du fichier Blade - AMÉLIORÉ avec plus de données

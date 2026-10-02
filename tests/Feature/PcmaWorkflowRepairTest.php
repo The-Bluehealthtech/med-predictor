@@ -768,6 +768,8 @@ final class PcmaWorkflowRepairTest extends TestCase
         $this->putJson('/healthcare/records/'.$other->id,['record_date'=>'2026-09-30'])->assertNotFound();
         $this->deleteJson('/healthcare/records/'.$other->id)->assertNotFound();
         $this->getJson('/health-records/'.$other->id)->assertForbidden();
+        $this->getJson('/api/players/'.$own->player_id.'/health-records')->assertOk();
+        $this->getJson('/api/players/'.$other->player_id.'/health-records')->assertNotFound();
         $this->actingAs((new User(['role'=>'player']))->forceFill(['tenant_id'=>1]));
         $this->getJson('/modules/healthcare')->assertForbidden();
         $this->getJson('/healthcare/predictions')->assertForbidden();

@@ -4528,9 +4528,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         resolve(img);
                     };
-                    img.onerror = (error) => {
-                        console.error('Image loading error:', error);
-                        reject(error);
+                    img.onerror = () => {
+                        reject(new Error('Format non affichable par le navigateur (TIFF, BMP…) : aperçu disponible après enregistrement.'));
                     };
                     img.src = e.target.result;
                 };
@@ -4664,10 +4663,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             if (isDicom) {
-                console.log('Loading DICOM file...');
-                await dicomViewer.loadImage(file);
-                showViewer();
-                updateMetadata(file, selectedType, 'DICOM');
+                // Le DICOM n'est pas décodé dans le navigateur : visionneuse du dossier après enregistrement.
+                showError('Fichier DICOM : aperçu disponible après enregistrement, dans la visionneuse du dossier (rendu côté serveur).');
             } else if (isImage) {
                 console.log('Loading image file...');
                 await dicomViewer.loadImage(file);

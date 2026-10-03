@@ -239,7 +239,7 @@ class PlayerSeeder extends Seeder
         // Generate 40 players for each EPL club
         $eplClubs = Club::where('league', 'Premier League')->get();
         $positions = ['GK', 'RB', 'CB', 'CB', 'LB', 'CDM', 'CM', 'CM', 'RM', 'LM', 'CAM', 'RW', 'LW', 'ST', 'CF'];
-        $nationalities = ['England', 'France', 'Spain', 'Germany', 'Brazil', 'Portugal', 'Netherlands', 'Belgium', 'Italy', 'Argentina', 'Nigeria', 'Senegal', 'Ivory Coast', 'USA', 'Japan', 'South Korea', 'Norway', 'Sweden', 'Denmark', 'Scotland'];
+        $nationalities = ['England', 'France', 'Spain', 'Germany', 'Brazil', 'Portugal', 'Netherlands', 'Belgium', 'Italy', 'Argentina', 'Nigeria', 'Senegal', "Côte d'Ivoire", 'USA', 'Japan', 'South Korea', 'Norway', 'Sweden', 'Denmark', 'Scotland'];
         $firstNames = ['John', 'James', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Joseph', 'Thomas', 'Charles', 'Daniel', 'Matthew', 'Anthony', 'Mark', 'Donald', 'Steven', 'Paul', 'Andrew', 'Joshua', 'Kenneth'];
         $lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'];
         $associationId = Association::where('name', 'The Football Association')->first()?->id;

@@ -106,7 +106,7 @@ class LicenseWorkflowTest extends TestCase
     /** Licence joueur FIFA Connect : Football, niveau pro, enregistrement, saison en cours. */
     private function payload(array $overrides = []): array
     {
-        return array_merge(['discipline' => 'Football', 'level' => 'pro', 'registration_nature' => 'Registration', 'season' => $this->season(),
+        return array_merge(['discipline' => 'Football', 'level' => 'pro', 'request_reason' => 'first', 'season' => $this->season(),
             'notes' => 'Nouveau contrat', 'documents' => $this->documents()], $overrides);
     }
 

@@ -28,8 +28,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Décodage DICOM côté serveur : pydicom + Pillow (JPEG Baseline, JPEG 2000) + GDCM (licence BSD :
+# JPEG Lossless, JPEG-LS). JPEG Extended 12 bits n'a pas de décodeur sous licence permissive.
 RUN python3 -m venv /opt/fit-imaging \
-    && /opt/fit-imaging/bin/pip install --no-cache-dir pydicom==3.0.1 numpy==2.2.6 Pillow==11.3.0
+    && /opt/fit-imaging/bin/pip install --no-cache-dir pydicom==3.0.1 numpy==2.2.6 Pillow==11.3.0 python-gdcm==3.0.26
 RUN printf 'upload_max_filesize=20M\npost_max_size=105M\nmax_file_uploads=100\nmemory_limit=512M\n' > /usr/local/etc/php/conf.d/medical-imaging.ini
 
 COPY . .

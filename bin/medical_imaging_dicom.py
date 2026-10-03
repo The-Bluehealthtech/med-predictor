@@ -103,6 +103,32 @@ def render(p):
     return {'content':base64.b64encode(buf.getvalue()).decode()}
 
 
+def describe(p):
+    # Caractéristiques techniques pour la visionneuse ; aucune donnée d'identité du patient.
+    ds=pydicom.dcmread(io.BytesIO(base64.b64decode(p['content'],validate=True)))  # pixels lus, non décodés
+    def first(v):
+        if v is None: return None
+        try: return float(v[0]) if hasattr(v,'__len__') and not isinstance(v,(str,bytes)) else float(v)
+        except Exception: return None
+    has_pixels='PixelData' in ds or 'FloatPixelData' in ds or 'DoubleFloatPixelData' in ds
+    return {'pixels':has_pixels,'frames':int(getattr(ds,'NumberOfFrames',1) or 1),'rows':int(getattr(ds,'Rows',0) or 0),'columns':int(getattr(ds,'Columns',0) or 0),
+        'modality':str(getattr(ds,'Modality','')),'photometric':str(getattr(ds,'PhotometricInterpretation','')),'samples':int(getattr(ds,'SamplesPerPixel',1) or 1),
+        'window_center':first(getattr(ds,'WindowCenter',None)),'window_width':first(getattr(ds,'WindowWidth',None)),
+        'transfer_syntax':str(ds.file_meta.TransferSyntaxUID.name) if 'TransferSyntaxUID' in ds.file_meta else '',
+        'sop_class':str(getattr(ds,'SOPClassUID',''))}
+
+
+def raster(p):
+    # Images TIFF / BMP (non affichées par tous les navigateurs) converties en PNG, première page.
+    img=Image.open(io.BytesIO(base64.b64decode(p['content'],validate=True)))
+    if img.width*img.height>50000000: raise ValueError('image dimensions')
+    img.seek(0)
+    if img.mode not in ('RGB','RGBA','L','LA'): img=img.convert('RGB')
+    img.thumbnail((2048,2048))
+    buf=io.BytesIO(); img.save(buf,format='PNG')
+    return {'content':base64.b64encode(buf.getvalue()).decode()}
+
+
 def item(kind, concept, relationship='CONTAINS'):
     d=Dataset(); d.ValueType=kind; d.RelationshipType=relationship; d.ConceptNameCodeSequence=Sequence([concept]); return d
 
@@ -164,7 +190,7 @@ def sr(p):
 
 if __name__=='__main__':
     try:
-        payload=json.load(sys.stdin); result={'inspect':inspect,'render':render,'sr':sr}[sys.argv[1]](payload); json.dump(result,sys.stdout,ensure_ascii=False)
+        payload=json.load(sys.stdin); result={'inspect':inspect,'render':render,'sr':sr,'describe':describe,'raster':raster}[sys.argv[1]](payload); json.dump(result,sys.stdout,ensure_ascii=False)
     except Exception:
         # Patient data must not reach application logs.
         sys.stderr.write('DICOM operation failed\n'); sys.exit(1)

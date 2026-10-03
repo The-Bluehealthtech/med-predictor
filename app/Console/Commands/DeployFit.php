@@ -43,6 +43,12 @@ class DeployFit extends Command
         'database/migrations/2026_10_03_160000_create_license_integrity_reviews.php',
         'database/migrations/2026_10_03_170000_create_license_biometric_checks.php',
         'database/migrations/2026_10_03_180000_create_document_signature_requests.php',
+        'database/migrations/2026_10_03_220000_add_request_reason_to_player_licenses.php',
+        'database/migrations/2026_10_03_221000_add_fifa_connect_person_fields.php',
+        'database/migrations/2026_10_03_222000_add_pcma_visit_type.php',
+        'database/migrations/2026_10_03_223000_create_fhir_patient_links_table.php',
+        'database/migrations/2026_10_03_224000_create_fhir_documents_table.php',
+        'database/migrations/2026_10_03_225000_create_medical_files_table.php',
     ];
 
     protected $signature = 'fit:deploy

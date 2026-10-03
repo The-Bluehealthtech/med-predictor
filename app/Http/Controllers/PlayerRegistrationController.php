@@ -211,6 +211,8 @@ class PlayerRegistrationController extends Controller
             'last_name' => 'required|string|max:255',
             'date_of_birth' => 'required|date|before:today',
             'nationality' => 'required|string|max:255',
+            'country_of_birth' => ['nullable', 'string', 'size:2', \Illuminate\Validation\Rule::in(array_keys(config('iso_countries', [])))],
+            'place_of_birth' => 'nullable|string|max:100',
             'position' => 'required|string|max:255',
             'club_id' => 'required|exists:clubs,id',
             'association_id' => 'required|exists:associations,id',
@@ -260,6 +262,9 @@ class PlayerRegistrationController extends Controller
                 
                 // Mettre à jour les champs de la demande de licence
                 $player->update([
+                    // Identité figée : les champs de naissance ne sont complétés que s'ils sont vides.
+                    'country_of_birth' => $player->country_of_birth ?: ($validated['country_of_birth'] ?? null),
+                    'place_of_birth' => $player->place_of_birth ?: ($validated['place_of_birth'] ?? null),
                     'address' => $validated['address'] ?? null,
                     'contact_phone' => $validated['contact_phone'] ?? null,
                     'contact_email' => $validated['contact_email'] ?? null,
@@ -302,6 +307,9 @@ class PlayerRegistrationController extends Controller
                 
                 // Mettre à jour les champs de la demande de licence
                 $player->update([
+                    // Identité figée : les champs de naissance ne sont complétés que s'ils sont vides.
+                    'country_of_birth' => $player->country_of_birth ?: ($validated['country_of_birth'] ?? null),
+                    'place_of_birth' => $player->place_of_birth ?: ($validated['place_of_birth'] ?? null),
                     'address' => $validated['address'] ?? null,
                     'contact_phone' => $validated['contact_phone'] ?? null,
                     'contact_email' => $validated['contact_email'] ?? null,
@@ -346,6 +354,8 @@ class PlayerRegistrationController extends Controller
                     'last_name' => $validated['last_name'],
                     'date_of_birth' => $validated['date_of_birth'],
                     'nationality' => $validated['nationality'],
+                    'country_of_birth' => $validated['country_of_birth'] ?? null,
+                    'place_of_birth' => $validated['place_of_birth'] ?? null,
                     'position' => $validated['position'],
                     'club_id' => $validated['club_id'],
                     'association_id' => $validated['association_id'],
@@ -481,6 +491,8 @@ class PlayerRegistrationController extends Controller
             'last_name' => 'required|string|max:255',
             'date_of_birth' => 'required|date|before:today',
             'nationality' => 'required|string|max:255',
+            'country_of_birth' => ['nullable', 'string', 'size:2', \Illuminate\Validation\Rule::in(array_keys(config('iso_countries', [])))],
+            'place_of_birth' => 'nullable|string|max:100',
             'position' => 'required|string|max:255',
             'club_id' => 'required|exists:clubs,id',
             'association_id' => 'required|exists:associations,id',
@@ -510,6 +522,8 @@ class PlayerRegistrationController extends Controller
                 'last_name' => $validated['last_name'],
                 'date_of_birth' => $validated['date_of_birth'],
                 'nationality' => $validated['nationality'],
+                'country_of_birth' => $validated['country_of_birth'] ?? null,
+                'place_of_birth' => $validated['place_of_birth'] ?? null,
                 'position' => $validated['position'],
                 'club_id' => $validated['club_id'],
                 'association_id' => $validated['association_id'],

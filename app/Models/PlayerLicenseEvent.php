@@ -20,6 +20,7 @@ class PlayerLicenseEvent extends Model
         'responded' => 'Complément fourni par le club',
         'approved' => 'Licence approuvée',
         'rejected' => 'Demande refusée',
+        'closed' => 'Enregistrement clôturé (FIFA Connect : inactive)',
     ];
 
     protected $guarded = ['id'];

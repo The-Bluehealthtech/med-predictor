@@ -1,6 +1,7 @@
 /**
- * Viewer d'Images Médicales Avancé
- * Supporte DICOM et formats standards (JPG, PNG, TIFF)
+ * Aperçu d'images médicales avant enregistrement (JPG, PNG, GIF, WebP, affichés par le navigateur).
+ * Le DICOM et le TIFF ne sont pas décodés ici : ils sont lisibles après enregistrement dans la
+ * visionneuse du dossier (rendu côté serveur). Aucune image ni métadonnée n'est simulée.
  */
 
 class MedicalImageViewer {
@@ -319,14 +320,9 @@ class MedicalImageViewer {
     }
 
     loadDicomImage(data) {
-        // Simulation du chargement DICOM
-        // En production, utilisez une bibliothèque comme cornerstone.js
-        console.log('Chargement DICOM...');
-        
-        // Créer une image de test pour la démo
-        this.createTestImage();
-        this.dicomData = this.parseDicomData(data);
-        this.showDicomInfo();
+        // Pas de décodage DICOM dans le navigateur : message explicite, jamais d'image de substitution.
+        this.dicomData = null;
+        this.showUnavailable('Fichier DICOM : aperçu disponible après enregistrement, dans la visionneuse du dossier.');
     }
 
     loadStandardImage(data) {
@@ -336,56 +332,24 @@ class MedicalImageViewer {
             this.renderImage();
             this.updateImageInfo();
         };
+        img.onerror = () => this.showUnavailable('Format non affichable par le navigateur (TIFF, BMP…) : aperçu disponible après enregistrement.');
         img.src = URL.createObjectURL(new Blob([data]));
     }
 
-    createTestImage() {
-        // Créer une image de test pour la démo
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-        
-        // Créer un motif de test
-        ctx.fillStyle = '#f0f0f0';
-        ctx.fillRect(0, 0, 512, 512);
-        
-        // Ajouter des lignes de grille
-        ctx.strokeStyle = '#cccccc';
-        ctx.lineWidth = 1;
-        for (let i = 0; i < 512; i += 32) {
-            ctx.beginPath();
-            ctx.moveTo(i, 0);
-            ctx.lineTo(i, 512);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.moveTo(0, i);
-            ctx.lineTo(512, i);
-            ctx.stroke();
+    showUnavailable(message) {
+        this.currentImage = null;
+        const canvas = document.getElementById('viewer-canvas');
+        if (canvas) {
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
         }
-        
-        // Ajouter du texte
-        ctx.fillStyle = '#000000';
-        ctx.font = '16px Arial';
-        ctx.fillText('Image DICOM de Test', 20, 30);
-        ctx.fillText('512x512 pixels', 20, 50);
-        
-        this.currentImage = canvas;
-        this.renderImage();
-    }
-
-    parseDicomData(data) {
-        // Simulation du parsing DICOM
-        return {
-            'Patient Name': 'Test Patient',
-            'Patient ID': '12345',
-            'Study Date': '2024-01-15',
-            'Modality': 'CT',
-            'Image Size': '512x512',
-            'Window Center': 40,
-            'Window Width': 400
-        };
+        const info = document.getElementById('image-info');
+        if (info) {
+            info.textContent = message;
+        }
+        const panel = document.getElementById('dicom-info-panel');
+        if (panel) {
+            panel.style.display = 'none';
+        }
     }
 
     renderImage() {

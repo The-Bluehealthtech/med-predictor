@@ -58,5 +58,63 @@
             </div>
         </form>
     @endif
+
+    @unless(auth()->user()->isPlayer())
+    <section class="bg-white rounded-lg shadow p-5 space-y-4" aria-labelledby="h-ips-sharing">
+        <div>
+            <h2 id="h-ips-sharing" class="font-semibold text-gray-900">Partage de l'IPS (IHE sIPS)</h2>
+            <p class="text-xs text-gray-500">Publication du résumé attesté sur le serveur FHIR de FIT (validé contre le profil HL7 IPS, publié selon IHE MHD), et consultation des IPS publiés par les établissements pour ce joueur.</p>
+        </div>
+        @if($errors->ips->any())<div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800" role="alert">{{ $errors->ips->first('ips') }}</div>@endif
+
+        @if($canAttest)
+            @if($ipsSharing['blockers'])
+                <ul class="text-sm text-amber-800 list-disc pl-5">@foreach($ipsSharing['blockers'] as $blocker)<li>{{ $blocker }}</li>@endforeach</ul>
+            @else
+                <form method="POST" action="{{ route('passports.medical.ips.publish', ['player' => $summary['patient']['id'], 'purpose' => $summary['document']['purpose']]) }}">
+                    @csrf
+                    <button class="px-4 py-2 rounded-lg bg-red-700 text-white text-sm font-semibold hover:bg-red-800">Publier l'IPS attesté</button>
+                </form>
+            @endif
+        @endif
+
+        @if($ipsSharing['published']->isNotEmpty())
+            <div>
+                <h3 class="text-sm font-semibold text-gray-800">Publications de FIT</h3>
+                <ul class="mt-1 text-sm text-gray-700 divide-y">
+                    @foreach($ipsSharing['published'] as $doc)
+                        <li class="py-1.5">{{ $doc->published_at->format('d/m/Y H:i') }} · {{ $purposes[$doc->purpose] ?? $doc->purpose }} · {{ $doc->status === 'current' ? 'en vigueur' : 'remplacé' }} · par {{ $doc->publishedBy?->name ?? '—' }}
+                            <a class="text-blue-600" href="{{ route('passports.medical.ips.show', ['player' => $summary['patient']['id'], 'document' => $doc->document_reference_id]) }}">Consulter</a></li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="text-sm font-semibold text-gray-800">IPS disponibles sur le serveur</h3>
+                @if($ipsSharing['configured'])
+                    <a href="{{ route('passports.medical.show', ['player' => $summary['patient']['id'], 'purpose' => $summary['document']['purpose'], 'ips' => 1]) }}#h-ips-sharing" class="text-sm font-semibold text-blue-600">Rechercher</a>
+                @endif
+            </div>
+            @if(!$ipsSharing['configured'])
+                <p class="text-sm text-gray-500 mt-1">Serveur FHIR de FIT non installé (prévu avant la mise en production).</p>
+            @elseif($ipsSharing['error'])
+                <p class="text-sm text-red-700 mt-1">{{ $ipsSharing['error'] }}</p>
+            @elseif($ipsSharing['documents'] === null)
+                <p class="text-sm text-gray-500 mt-1">Lancez la recherche pour interroger le serveur (Patient de FIT et dossiers d'établissements rattachés).</p>
+            @else
+                <ul class="mt-1 text-sm text-gray-700 divide-y">
+                    @forelse($ipsSharing['documents'] as $doc)
+                        <li class="py-1.5">{{ $doc['date'] ? \Illuminate\Support\Carbon::parse($doc['date'])->format('d/m/Y') : '—' }} · {{ $doc['title'] ?? 'IPS' }} · {{ $doc['own'] ? 'publié par FIT' : ($doc['author'] ?? 'établissement') }}
+                            <a class="text-blue-600" href="{{ route('passports.medical.ips.show', ['player' => $summary['patient']['id'], 'document' => $doc['id']]) }}">Consulter</a></li>
+                    @empty
+                        <li class="py-1.5 text-gray-500">Aucun IPS en vigueur pour ce joueur.</li>
+                    @endforelse
+                </ul>
+            @endif
+        </div>
+    </section>
+    @endunless
 </div>
 @endsection

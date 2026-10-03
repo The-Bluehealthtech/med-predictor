@@ -108,7 +108,7 @@ class LicenseScaleTest extends TestCase
         $this->assertSame(50.0, $scale->playerRules($man, 'Football', 'amateur')['fee']);
 
         $this->actingAs($this->club())->post("/_t/licenses/players/{$man->id}/request", [
-            'discipline' => 'Football', 'level' => 'amateur', 'registration_nature' => 'Registration', 'season' => $this->season(),
+            'discipline' => 'Football', 'level' => 'amateur', 'request_reason' => 'first', 'season' => $this->season(),
             'documents' => collect(['identity', 'photo', 'medical'])->mapWithKeys(fn ($t) => [$t => UploadedFile::fake()->create("{$t}.pdf", 20, 'application/pdf')])->all(),
         ])->assertSessionHasNoErrors()->assertRedirect();
         $license = PlayerLicense::query()->where('player_id', $man->id)->firstOrFail();
@@ -122,12 +122,12 @@ class LicenseScaleTest extends TestCase
         $young = $this->player(now()->subYears(13)->toDateString());
         $this->actingAs($this->club())->get("/_t/licenses/players/{$young->id}/request")->assertOk()->assertSee('Licence de joueur');
         $this->actingAs($this->club())->post("/_t/licenses/players/{$young->id}/request", [
-            'discipline' => 'Football', 'level' => 'pro', 'registration_nature' => 'Registration', 'season' => $this->season(),
+            'discipline' => 'Football', 'level' => 'pro', 'request_reason' => 'first', 'season' => $this->season(),
         ])->assertSessionHas('error', fn ($m) => str_contains($m, 'non autorisé en catégorie U-15'));
 
         $unknown = $this->player(now()->subYears(25)->toDateString(), null);
         $this->actingAs($this->club())->post("/_t/licenses/players/{$unknown->id}/request", [
-            'discipline' => 'Football', 'level' => 'amateur', 'registration_nature' => 'Registration', 'season' => $this->season(),
+            'discipline' => 'Football', 'level' => 'amateur', 'request_reason' => 'first', 'season' => $this->season(),
         ])->assertSessionHasErrors('gender');
     }
 

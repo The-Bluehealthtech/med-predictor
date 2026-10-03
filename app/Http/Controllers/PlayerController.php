@@ -131,6 +131,8 @@ class PlayerController extends Controller
             'last_name' => 'required|string|max:255',
             'date_of_birth' => 'required|date|before:today',
             'nationality' => 'required|string|max:255',
+            'country_of_birth' => ['nullable', 'string', 'size:2', \Illuminate\Validation\Rule::in(array_keys(config('iso_countries', [])))],
+            'place_of_birth' => 'nullable|string|max:100',
             'position' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
@@ -153,6 +155,7 @@ class PlayerController extends Controller
             'email.email' => 'L\'adresse email doit être valide.',
             'club_id.exists' => 'Le club sélectionné n\'existe pas.',
             'association_id.exists' => 'L\'association sélectionnée n\'existe pas.',
+            'country_of_birth.in' => 'Le pays de naissance doit être un code ISO 3166.',
         ]);
 
         try {
@@ -164,6 +167,8 @@ class PlayerController extends Controller
                 'last_name' => $validated['last_name'],
                 'date_of_birth' => $validated['date_of_birth'],
                 'nationality' => $validated['nationality'],
+                'country_of_birth' => $validated['country_of_birth'] ?? null,
+                'place_of_birth' => $validated['place_of_birth'] ?? null,
                 'position' => $validated['position'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
@@ -290,6 +295,8 @@ class PlayerController extends Controller
             'last_name' => 'required|string|max:255',
             'date_of_birth' => 'required|date|before:today',
             'nationality' => 'required|string|max:255',
+            'country_of_birth' => ['nullable', 'string', 'size:2', \Illuminate\Validation\Rule::in(array_keys(config('iso_countries', [])))],
+            'place_of_birth' => 'nullable|string|max:100',
             'position' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
@@ -312,6 +319,7 @@ class PlayerController extends Controller
             'email.email' => 'L\'adresse email doit être valide.',
             'club_id.exists' => 'Le club sélectionné n\'existe pas.',
             'association_id.exists' => 'L\'association sélectionnée n\'existe pas.',
+            'country_of_birth.in' => 'Le pays de naissance doit être un code ISO 3166.',
         ]);
 
         try {
@@ -323,6 +331,8 @@ class PlayerController extends Controller
                 'last_name' => $validated['last_name'],
                 'date_of_birth' => $validated['date_of_birth'],
                 'nationality' => $validated['nationality'],
+                'country_of_birth' => $validated['country_of_birth'] ?? null,
+                'place_of_birth' => $validated['place_of_birth'] ?? null,
                 'position' => $validated['position'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
@@ -442,6 +452,7 @@ class PlayerController extends Controller
             'club_id.exists' => 'Le club sélectionné n\'existe pas.',
             'association_id.required' => 'L\'association est obligatoire.',
             'association_id.exists' => 'L\'association sélectionnée n\'existe pas.',
+            'country_of_birth.in' => 'Le pays de naissance doit être un code ISO 3166.',
         ]);
 
         try {

@@ -88,6 +88,7 @@ class Appointment extends Model
     {
         return match($this->appointment_type) {
             'consultation' => 'Consultation',
+            'pcma' => 'PCMA (licence)',
             'follow_up' => 'Suivi',
             'emergency' => 'Urgence',
             'pre_season' => 'Pré-saison',

@@ -97,8 +97,7 @@ class PCMAController extends Controller
             foreach ($fileFields as $field) {
                 if ($request->hasFile($field)) {
                     $file = $request->file($field);
-                    $filename = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
-                    $path = $file->store('medical_imaging', 'local');
+                    $path = app(\App\Services\MedicalFileStore::class)->put($file, 'pcma', $field)->ref(); // en base : pas de disque persistant
                     $validatedData[$field] = $path;
                 }
             }
@@ -181,8 +180,7 @@ class PCMAController extends Controller
             foreach ($fileFields as $field) {
                 if ($request->hasFile($field)) {
                     $file = $request->file($field);
-                    $filename = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
-                    $path = $file->store('medical_imaging', 'local');
+                    $path = app(\App\Services\MedicalFileStore::class)->put($file, 'pcma', $field)->ref(); // en base : pas de disque persistant
                     $validatedData[$field] = $path;
                 }
             }

@@ -56,39 +56,7 @@
                         @enderror
                     </div>
 
-                    <div>
-                        <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ __('Nationalité *') }}
-                        </label>
-                        <select name="nationality" id="nationality" required
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">{{ __('Sélectionner une nationalité') }}</option>
-                            <option value="Tunisie" {{ old('nationality', $player->nationality) == 'Tunisie' ? 'selected' : '' }}>Tunisie</option>
-                            <option value="Algérie" {{ old('nationality', $player->nationality) == 'Algérie' ? 'selected' : '' }}>{{ __('Algérie') }}</option>
-                            <option value="Maroc" {{ old('nationality', $player->last_name) == 'Maroc' ? 'selected' : '' }}>Maroc</option>
-                            <option value="Égypte" {{ old('nationality', $player->nationality) == 'Égypte' ? 'selected' : '' }}>{{ __('Égypte') }}</option>
-                            <option value="France" {{ old('nationality', $player->nationality) == 'France' ? 'selected' : '' }}>France</option>
-                            <option value="Allemagne" {{ old('nationality', $player->nationality) == 'Allemagne' ? 'selected' : '' }}>Allemagne</option>
-                            <option value="Espagne" {{ old('nationality', $player->nationality) == 'Espagne' ? 'selected' : '' }}>Espagne</option>
-                            <option value="Italie" {{ old('nationality', $player->nationality) == 'Italie' ? 'selected' : '' }}>Italie</option>
-                            <option value="Portugal" {{ old('nationality', $player->nationality) == 'Portugal' ? 'selected' : '' }}>Portugal</option>
-                            <option value="Pays-Bas" {{ old('nationality', $player->nationality) == 'Pays-Bas' ? 'selected' : '' }}>Pays-Bas</option>
-                            <option value="Belgique" {{ old('nationality', $player->nationality) == 'Belgique' ? 'selected' : '' }}>Belgique</option>
-                            <option value="Suisse" {{ old('nationality', $player->nationality) == 'Suisse' ? 'selected' : '' }}>Suisse</option>
-                            <option value="Royaume-Uni" {{ old('nationality', $player->nationality) == 'Royaume-Uni' ? 'selected' : '' }}>Royaume-Uni</option>
-                            <option value="États-Unis" {{ old('nationality', $player->nationality) == 'États-Unis' ? 'selected' : '' }}>{{ __('États-Unis') }}</option>
-                            <option value="Canada" {{ old('nationality', $player->nationality) == 'Canada' ? 'selected' : '' }}>Canada</option>
-                            <option value="Brésil" {{ old('nationality', $player->nationality) == 'Brésil' ? 'selected' : '' }}>{{ __('Brésil') }}</option>
-                            <option value="Argentine" {{ old('nationality', $player->nationality) == 'Argentine' ? 'selected' : '' }}>Argentine</option>
-                            <option value="Japon" {{ old('nationality', $player->nationality) == 'Japon' ? 'selected' : '' }}>Japon</option>
-                            <option value="Chine" {{ old('nationality', $player->nationality) == 'Chine' ? 'selected' : '' }}>Chine</option>
-                            <option value="Australie" {{ old('nationality', $player->nationality) == 'Australie' ? 'selected' : '' }}>Australie</option>
-                            <option value="Afrique du Sud" {{ old('nationality', $player->nationality) == 'Afrique du Sud' ? 'selected' : '' }}>{{ __('Afrique du Sud') }}</option>
-                        </select>
-                        @error('nationality')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    @include('players.partials.fifa-identity', ['player' => $player])
 
                     <div>
                         <label for="position" class="block text-sm font-medium text-gray-700 mb-2">

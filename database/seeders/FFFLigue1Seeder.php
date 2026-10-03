@@ -196,7 +196,7 @@ class FFFLigue1Seeder extends Seeder
         ];
         
         $positions = ['GK', 'DEF', 'MID', 'FWD'];
-        $nationalities = ['France', 'Brazil', 'Argentina', 'Spain', 'Portugal', 'Italy', 'Germany', 'Netherlands', 'Belgium', 'Senegal', 'Morocco', 'Algeria', 'Ivory Coast', 'Cameroon', 'Mali', 'Burkina Faso', 'Tunisia', 'Croatia', 'Serbia', 'Poland'];
+        $nationalities = ['France', 'Brazil', 'Argentina', 'Spain', 'Portugal', 'Italy', 'Germany', 'Netherlands', 'Belgium', 'Senegal', 'Morocco', 'Algeria', "Côte d'Ivoire", 'Cameroon', 'Mali', 'Burkina Faso', 'Tunisia', 'Croatia', 'Serbia', 'Poland'];
         
         $players = [];
         $usedNumbers = [];

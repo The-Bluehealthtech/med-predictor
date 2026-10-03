@@ -89,6 +89,8 @@ class PlayerLicense extends Model
         'organisation_official_role',
         'gender',
         'season',
+        'request_reason',
+        'previous_license_id',
     ];
 
     protected $casts = [

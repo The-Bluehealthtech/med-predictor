@@ -68,9 +68,12 @@
 
         <section class="rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="h-settings">
             <h2 id="h-settings" class="text-base font-semibold text-slate-900">Réglages généraux de la fédération</h2>
-            <div class="mt-3 grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            <div class="mt-3 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
                 <label class="text-sm"><span class="block font-semibold text-slate-700">Devise</span>
                     <input name="currency" value="{{ old('currency', $settings->currency) }}" maxlength="3" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm uppercase"></label>
+                <label class="text-sm"><span class="block font-semibold text-slate-700">Langue des noms locaux</span>
+                    <input name="local_language" value="{{ old('local_language', $settings->local_language) }}" maxlength="3" placeholder="fra, ara…" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm lowercase" aria-describedby="local-language-help">
+                    <span id="local-language-help" class="mt-1 block text-xs text-slate-500">Code ISO 639-2 transmis à FIFA Connect</span></label>
                 <label class="text-sm"><span class="block font-semibold text-slate-700">Début de saison (jour)</span>
                     <input type="number" name="season_start_day" min="1" max="28" value="{{ old('season_start_day', $settings->season_start_day) }}" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"></label>
                 <label class="text-sm"><span class="block font-semibold text-slate-700">… mois</span>

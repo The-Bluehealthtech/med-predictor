@@ -96,6 +96,7 @@ class OrganizationCardController extends Controller
             ];
         } else {
             $rules['association_id'] = ['required', 'exists:associations,id'];
+            $rules['country_code'] = ['nullable', 'string', 'size:2', Rule::in(array_keys(config('iso_countries', [])))];
         }
         $data = $request->validate($rules);
         if ($type === 'clubs' && $request->user()->role === 'association_admin') {

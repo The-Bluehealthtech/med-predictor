@@ -86,10 +86,6 @@
         }
     </style>
     
-    <!-- DICOM Viewer Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/cornerstone-core@2.3.0/dist/cornerstone.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/cornerstone-wado-image-loader@4.19.0/dist/cornerstoneWADOImageLoader.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dicom-parser@1.8.28/dist/dicomParser.min.js"></script>
     
     <!-- Additional styles -->
     @stack('styles')

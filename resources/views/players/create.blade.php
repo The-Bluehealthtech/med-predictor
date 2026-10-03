@@ -55,29 +55,7 @@
                         @enderror
                     </div>
 
-                    <div>
-                        <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ __('Nationalité *') }}
-                        </label>
-                        <select name="nationality" id="nationality" required
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">{{ __('Sélectionner une nationalité') }}</option>
-                            <option value="Tunisie" {{ old('nationality') == 'Tunisie' ? 'selected' : '' }}>Tunisie</option>
-                            <option value="France" {{ old('nationality') == 'France' ? 'selected' : '' }}>France</option>
-                            <option value="Algérie" {{ old('nationality') == 'Algérie' ? 'selected' : '' }}>{{ __('Algérie') }}</option>
-                            <option value="Maroc" {{ old('nationality') == 'Maroc' ? 'selected' : '' }}>Maroc</option>
-                            <option value="Sénégal" {{ old('nationality') == 'Sénégal' ? 'selected' : '' }}>{{ __('Sénégal') }}</option>
-                            <option value="Côte d'Ivoire" {{ old('nationality') == 'Côte d\'Ivoire' ? 'selected' : '' }}>{{ __('Côte d\'Ivoire') }}</option>
-                            <option value="Nigeria" {{ old('nationality') == 'Nigeria' ? 'selected' : '' }}>Nigeria</option>
-                            <option value="Ghana" {{ old('nationality') == 'Ghana' ? 'selected' : '' }}>Ghana</option>
-                            <option value="Cameroun" {{ old('nationality') == 'Cameroun' ? 'selected' : '' }}>Cameroun</option>
-                            <option value="Égypte" {{ old('nationality') == 'Égypte' ? 'selected' : '' }}>{{ __('Égypte') }}</option>
-                            <option value="Autre" {{ old('nationality') == 'Autre' ? 'selected' : '' }}>{{ __('health_records_edit.other') }}</option>
-                        </select>
-                        @error('nationality')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    @include('players.partials.fifa-identity', ['player' => null])
 
                     <div>
                         <label for="position" class="block text-sm font-medium text-gray-700 mb-2">

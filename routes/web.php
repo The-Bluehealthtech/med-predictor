@@ -202,7 +202,8 @@ Route::middleware(['auth'])->group(function () {
                 'email' => 'nullable|email|max:255',
                 'website' => 'nullable|url|max:255',
                 'founded_year' => 'nullable|integer|min:1800|max:2030',
-                'status' => 'required|in:active,inactive,pending'
+                'status' => 'required|in:active,inactive,pending',
+                'country_code' => ['nullable', 'string', 'size:2', \Illuminate\Validation\Rule::in(array_keys(config('iso_countries', [])))],
             ]);
         
             $club->update($validatedData);
@@ -1665,6 +1666,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/passports/medical/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalPdf'])->whereNumber('player')->name('passports.medical.pdf');
     Route::post('/passports/medical/{player}/attest', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalAttest'])->whereNumber('player')->name('passports.medical.attest');
     Route::get('/passports/medical/{player}/fhir', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalFhir'])->whereNumber('player')->name('passports.medical.fhir');
+    // Données cliniques des établissements (serveur FHIR de FIT, IHE QEDm / IID)
+    Route::get('/clinical/players/{player}/external-data', [\App\Http\Controllers\Clinical\ExternalClinicalDataController::class, 'show'])->whereNumber('player')->name('clinical.external-data');
+    Route::post('/passports/medical/{player}/ips/publish', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalIpsPublish'])->whereNumber('player')->name('passports.medical.ips.publish');
+    Route::get('/passports/medical/{player}/ips/{document}', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalIpsShow'])->whereNumber('player')->name('passports.medical.ips.show');
     Route::get('/passports/transfer', [\App\Http\Controllers\Passports\PassportsController::class, 'transferIndex'])->name('passports.transfer.index');
     Route::get('/passports/transfer/{player}', [\App\Http\Controllers\Passports\PassportsController::class, 'transferShow'])->whereNumber('player')->name('passports.transfer.show');
     Route::get('/passports/transfer/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'transferPdf'])->whereNumber('player')->name('passports.transfer.pdf');
@@ -2604,6 +2609,13 @@ Route::get('/test-pdf', function() {
         ->name('secretary.appointments.receive');
     Route::post('/secretary/appointments/{appointment}/documents', [App\Http\Controllers\MedicalSecretaryController::class, 'uploadDocument'])
         ->name('secretary.appointments.documents.store');
+    // Identité clinique du joueur sur le serveur FHIR de FIT (IHE PIXm / PDQm)
+    Route::get('/secretary/players/{player}/identity', [App\Http\Controllers\MedicalSecretaryController::class, 'identity'])
+        ->whereNumber('player')->name('secretary.identity');
+    Route::post('/secretary/players/{player}/identity/feed', [App\Http\Controllers\MedicalSecretaryController::class, 'identityFeed'])
+        ->whereNumber('player')->name('secretary.identity.feed');
+    Route::post('/secretary/players/{player}/identity/decision', [App\Http\Controllers\MedicalSecretaryController::class, 'identityDecision'])
+        ->whereNumber('player')->name('secretary.identity.decision');
 
     // Referee routes
     Route::get('/referee/dashboard', [App\Http\Controllers\RefereeController::class, 'dashboard'])->name('referee.dashboard');
@@ -3482,6 +3494,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pcma/{pcma}/fail', [App\Http\Controllers\PcmaStatusController::class, 'fail'])->name('pcma.fail');
     Route::get('/pcma/{pcma}/files/{field}', [App\Http\Controllers\PcmaDocumentController::class, 'file'])
         ->name('pcma.file');
+    // Visionneuse commune des fichiers médicaux (PCMA, documents du pré-accueil)
+    Route::get('/medical-files/pcma/{pcma}/{field}', [App\Http\Controllers\MedicalFileViewerController::class, 'pcma'])->name('medical-files.pcma');
+    Route::get('/medical-files/pcma/{pcma}/{field}/frame', [App\Http\Controllers\MedicalFileViewerController::class, 'pcmaFrame'])->middleware('throttle:180,1')->name('medical-files.pcma.frame');
+    Route::get('/medical-files/documents/{document}', [App\Http\Controllers\MedicalFileViewerController::class, 'document'])->whereNumber('document')->name('medical-files.document');
+    Route::get('/medical-files/documents/{document}/frame', [App\Http\Controllers\MedicalFileViewerController::class, 'documentFrame'])->whereNumber('document')->middleware('throttle:180,1')->name('medical-files.document.frame');
+    Route::get('/medical-files/documents/{document}/source', [App\Http\Controllers\MedicalFileViewerController::class, 'documentSource'])->whereNumber('document')->name('medical-files.document.source');
     Route::get('/pcma/{pcma}/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'export'])->name('pcma.pdf');
     Route::post('/pcma/{pcma}/digital-signature', [App\Http\Controllers\PcmaDigitalSignatureController::class, 'store'])
         ->name('pcma.digital-signature.store');

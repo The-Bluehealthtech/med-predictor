@@ -86,6 +86,11 @@
                                 @endif
 
                                 <div class="mt-2 flex flex-wrap gap-1.5">
+                                    @if($appointment->appointment_type === 'pcma')
+                                        <span class="px-2 py-1 rounded-md bg-emerald-50 text-emerald-800 text-xs font-semibold">
+                                            Visite PCMA — licence
+                                        </span>
+                                    @endif
                                     @if($allergies)
                                         <span class="px-2 py-1 rounded-md bg-red-50 text-red-700 text-xs font-medium">
                                             Allergies déclarées
@@ -96,18 +101,18 @@
                                             Traitements déclarés
                                         </span>
                                     @endif
-                                    @if($visit?->documents?->count())
-                                        <span class="px-2 py-1 rounded-md bg-slate-100 text-slate-700 text-xs font-medium">
-                                            {{ $visit->documents->count() }} document(s)
-                                        </span>
-                                    @endif
+                                    @foreach($visit?->documents ?? [] as $document)
+                                        <a href="{{ route('medical-files.document', $document) }}" class="px-2 py-1 rounded-md bg-slate-100 text-blue-700 text-xs font-medium hover:bg-slate-200">
+                                            {{ $document->file_name }}
+                                        </a>
+                                    @endforeach
                                 </div>
                             </div>
 
                             <form method="POST" action="{{ route('secretary.appointments.receive', $appointment) }}" class="lg:justify-self-end">
                                 @csrf
                                 <button class="w-full lg:w-auto px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">
-                                    Recevoir et ouvrir le dossier
+                                    {{ $appointment->appointment_type === 'pcma' ? 'Recevoir et ouvrir le PCMA' : 'Recevoir et ouvrir le dossier' }}
                                 </button>
                             </form>
                         </div>

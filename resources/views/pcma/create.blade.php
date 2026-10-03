@@ -352,6 +352,13 @@
                     @csrf
                     <input type="hidden" name="pcma_id" id="pcma_id" value="">
                     <input type="hidden" name="draft_token" value="">
+                    @if(!empty($pcmaVisit))
+                        <input type="hidden" name="visit_id" value="{{ $pcmaVisit->id }}">
+                        <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900" role="status">
+                            <p class="font-semibold">Visite médicale PCMA du {{ $pcmaVisit->visit_date?->format('d/m/Y H:i') }}</p>
+                            <p class="mt-1">Rendez-vous pris par le secrétariat médical{{ $pcmaVisit->appointment?->reason ? ' — '.$pcmaVisit->appointment->reason : '' }}. Votre signature clôt la visite ; le PCMA signé (apte ou apte avec restrictions) remplit la condition médicale des demandes de licence du joueur.</p>
+                        </div>
+                    @endif
 
                     
                     <!-- AI-Assisted Section -->
@@ -728,7 +735,7 @@
                                 >
                                     <option value="">{{ __('pcma.select_athlete_placeholder') }}</option>
                                     @foreach($athletes as $athlete)
-                                        <option value="{{ $athlete->id }}" {{ old('player_id') == $athlete->id ? 'selected' : '' }}>
+                                        <option value="{{ $athlete->id }}" {{ old('player_id', !empty($pcmaVisit) ? $pcmaVisit->athlete?->player_id : null) == $athlete->id ? 'selected' : '' }}>
                                             {{ $athlete->name }} - {{ $athlete->fifa_connect_id ?? __('pcma.no_fifa_id') }}
                                         </option>
                                     @endforeach

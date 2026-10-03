@@ -16,7 +16,7 @@
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <x-page-header
         :title="$name"
-        :subtitle="collect([LicenseWorkflow::describe($license), $license->season ? 'saison ' . $license->season : null, $license->club?->name, $license->fee_amount !== null ? number_format((float) $license->fee_amount, 2, ',', ' ') . ' ' . $license->fee_currency : null])->filter()->implode(' · ')"
+        :subtitle="collect([LicenseWorkflow::describe($license), config('licensing.request_reasons.' . $license->request_reason . '.label'), $license->season ? 'saison ' . $license->season : null, $license->club?->name, $license->fee_amount !== null ? number_format((float) $license->fee_amount, 2, ',', ' ') . ' ' . $license->fee_currency : null])->filter()->implode(' · ')"
         eyebrow="Licences · suivi de la demande"
         :back-href="route('modules.licenses.index')"
         back-label="Retour aux demandes"

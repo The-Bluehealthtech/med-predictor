@@ -62,6 +62,15 @@
                         @endforeach
                     </select>
                 </label>
+                @php($iso = app(\App\Services\FifaConnect\IsoCountries::class))
+                <label class="block">Pays (ISO 3166, FIFA Connect)
+                    <select name="country_code" class="mt-1 block w-full border rounded p-2">
+                        <option value="">Pays de l'association</option>
+                        @foreach($iso->options() as $code => $name)
+                            <option value="{{ $code }}" @selected(old('country_code', $record?->country_code) === $code)>{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </label>
             @endif
             <p class="text-sm text-gray-600">{{ __('Les identifiants et statuts de synchronisation FIFA sont renseignés uniquement par l\'intégration FIFA.') }}</p>
             <button type="submit" class="bg-blue-700 text-white rounded px-5 py-2">{{ __('clinical.save') }}</button>

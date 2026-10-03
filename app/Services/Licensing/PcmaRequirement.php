@@ -55,10 +55,14 @@ final class PcmaRequirement
                 default => 'valid',
             };
 
-            return ['state' => $state, 'label' => self::STATES[$state], 'date' => $date, 'valid' => in_array($state, ['valid', 'conditional'], true)];
+            // PCMA réalisé lors d'une visite médicale planifiée par le secrétariat : date de la visite.
+            $visitDate = !empty($record->visit_id) ? DB::table('visits')->where('id', $record->visit_id)->value('visit_date') : null;
+
+            return ['state' => $state, 'label' => self::STATES[$state], 'date' => $date, 'valid' => in_array($state, ['valid', 'conditional'], true),
+                'visit_date' => $visitDate ? Carbon::parse($visitDate) : null];
         }
 
-        return ['state' => 'missing', 'label' => self::STATES['missing'], 'date' => null, 'valid' => false];
+        return ['state' => 'missing', 'label' => self::STATES['missing'], 'date' => null, 'valid' => false, 'visit_date' => null];
     }
 
     /** Condition et état réunis pour une demande ; « blocking » : l'approbation est impossible. */
@@ -66,7 +70,7 @@ final class PcmaRequirement
     {
         $player = $license->player;
         if ($license->club_official_id || !$player) {
-            return ['required' => false, 'reason' => 'Licence d\'officiel : PCMA non exigé.', 'status' => ['state' => 'missing', 'label' => self::STATES['missing'], 'date' => null, 'valid' => false], 'blocking' => false];
+            return ['required' => false, 'reason' => 'Licence d\'officiel : PCMA non exigé.', 'status' => ['state' => 'missing', 'label' => self::STATES['missing'], 'date' => null, 'valid' => false, 'visit_date' => null], 'blocking' => false];
         }
         // Licence antérieure à l'alignement FIFA Connect : niveau déduit de l'ancien type.
         $level = $license->level ?: ($license->license_type === 'professional' ? 'pro' : 'amateur');

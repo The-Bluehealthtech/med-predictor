@@ -143,6 +143,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/passports/medical/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalPdf'])->whereNumber('player')->name('passports.medical.pdf');
     Route::post('/passports/medical/{player}/attest', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalAttest'])->whereNumber('player')->name('passports.medical.attest');
     Route::get('/passports/medical/{player}/fhir', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalFhir'])->whereNumber('player')->name('passports.medical.fhir');
+    Route::post('/passports/medical/{player}/ips/publish', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalIpsPublish'])->whereNumber('player')->name('passports.medical.ips.publish');
+    Route::get('/passports/medical/{player}/ips/{document}', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalIpsShow'])->whereNumber('player')->name('passports.medical.ips.show');
+    // Visionneuse commune des fichiers médicaux (PCMA, documents du pré-accueil)
+    Route::get('/medical-files/pcma/{pcma}/{field}', [App\Http\Controllers\MedicalFileViewerController::class, 'pcma'])->name('medical-files.pcma');
+    Route::get('/medical-files/pcma/{pcma}/{field}/frame', [App\Http\Controllers\MedicalFileViewerController::class, 'pcmaFrame'])->middleware('throttle:180,1')->name('medical-files.pcma.frame');
+    Route::get('/medical-files/documents/{document}', [App\Http\Controllers\MedicalFileViewerController::class, 'document'])->whereNumber('document')->name('medical-files.document');
+    Route::get('/medical-files/documents/{document}/frame', [App\Http\Controllers\MedicalFileViewerController::class, 'documentFrame'])->whereNumber('document')->middleware('throttle:180,1')->name('medical-files.document.frame');
+    Route::get('/medical-files/documents/{document}/source', [App\Http\Controllers\MedicalFileViewerController::class, 'documentSource'])->whereNumber('document')->name('medical-files.document.source');
+    Route::get('/pcma/{pcma}/files/{field}', [App\Http\Controllers\PcmaDocumentController::class, 'file'])->name('pcma.file');
+    Route::get('/clinical/players/{player}/external-data', [\App\Http\Controllers\Clinical\ExternalClinicalDataController::class, 'show'])->whereNumber('player')->name('clinical.external-data');
     Route::get('/passports/transfer', [\App\Http\Controllers\Passports\PassportsController::class, 'transferIndex'])->name('passports.transfer.index');
     Route::get('/passports/transfer/{player}', [\App\Http\Controllers\Passports\PassportsController::class, 'transferShow'])->whereNumber('player')->name('passports.transfer.show');
     Route::get('/passports/transfer/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'transferPdf'])->whereNumber('player')->name('passports.transfer.pdf');

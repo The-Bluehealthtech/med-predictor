@@ -88,6 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 </p>
             </div>
             <div class="flex space-x-4">
+                @if($healthRecord->player_id)
+                <a href="{{ route('clinical.external-data', ['player' => $healthRecord->player_id, 'back' => url()->current()]) }}"
+                   class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
+                    Données des établissements
+                </a>
+                @endif
                 <a href="{{ route('health-records.edit', $healthRecord) }}"
                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                     ✏️ {{ __('healthcare.edit') }}

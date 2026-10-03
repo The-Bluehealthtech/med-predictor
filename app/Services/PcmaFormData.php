@@ -9,6 +9,7 @@ final class PcmaFormData
         $rules = [
                 'player_id' => 'required|exists:players,id',
                 'pcma_id' => 'nullable|integer',
+                'visit_id' => 'nullable|integer',
                 'draft_token' => 'nullable|uuid',
                 'type' => 'required|in:pcma,cardio,dental,neurological,orthopedic',
                 'assessor_id' => 'required|exists:users,id',

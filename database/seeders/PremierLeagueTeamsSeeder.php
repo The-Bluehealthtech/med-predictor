@@ -108,7 +108,7 @@ class PremierLeagueTeamsSeeder extends Seeder
                     ['name' => 'Billy Gilmour', 'position' => 'MID', 'nationality' => 'Scotland', 'jersey_number' => 27],
                     ['name' => 'Pascal Groß', 'position' => 'MID', 'nationality' => 'Germany', 'jersey_number' => 13],
                     ['name' => 'Kaoru Mitoma', 'position' => 'MID', 'nationality' => 'Japan', 'jersey_number' => 22],
-                    ['name' => 'Simon Adingra', 'position' => 'FWD', 'nationality' => 'Ivory Coast', 'jersey_number' => 24],
+                    ['name' => 'Simon Adingra', 'position' => 'FWD', 'nationality' => "Côte d'Ivoire", 'jersey_number' => 24],
                     ['name' => 'Evan Ferguson', 'position' => 'FWD', 'nationality' => 'Ireland', 'jersey_number' => 28],
                 ]
             ],
@@ -278,10 +278,10 @@ class PremierLeagueTeamsSeeder extends Seeder
                 'real_players' => [
                     ['name' => 'Matt Turner', 'position' => 'GK', 'nationality' => 'USA', 'jersey_number' => 1],
                     ['name' => 'Neco Williams', 'position' => 'DEF', 'nationality' => 'Wales', 'jersey_number' => 7],
-                    ['name' => 'Willy Boly', 'position' => 'DEF', 'nationality' => 'Ivory Coast', 'jersey_number' => 30],
+                    ['name' => 'Willy Boly', 'position' => 'DEF', 'nationality' => "Côte d'Ivoire", 'jersey_number' => 30],
                     ['name' => 'Murillo', 'position' => 'DEF', 'nationality' => 'Brazil', 'jersey_number' => 40],
                     ['name' => 'Ola Aina', 'position' => 'DEF', 'nationality' => 'Nigeria', 'jersey_number' => 43],
-                    ['name' => 'Ibrahim Sangaré', 'position' => 'MID', 'nationality' => 'Ivory Coast', 'jersey_number' => 6],
+                    ['name' => 'Ibrahim Sangaré', 'position' => 'MID', 'nationality' => "Côte d'Ivoire", 'jersey_number' => 6],
                     ['name' => 'Morgan Gibbs-White', 'position' => 'MID', 'nationality' => 'England', 'jersey_number' => 10],
                     ['name' => 'Callum Hudson-Odoi', 'position' => 'MID', 'nationality' => 'England', 'jersey_number' => 14],
                     ['name' => 'Anthony Elanga', 'position' => 'FWD', 'nationality' => 'Sweden', 'jersey_number' => 21],

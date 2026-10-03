@@ -85,17 +85,7 @@
                         @enderror
                     </div>
 
-                    <div>
-                        <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ __('Nationalité *') }}
-                        </label>
-                        <input type="text" name="nationality" id="nationality" 
-                               value="{{ old('nationality', $player->nationality) }}" required
-                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        @error('nationality')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    @include('players.partials.fifa-identity', ['player' => $player])
 
                     <div>
                         <label for="position" class="block text-sm font-medium text-gray-700 mb-2">

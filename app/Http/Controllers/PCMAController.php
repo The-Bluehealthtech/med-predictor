@@ -87,8 +87,21 @@ class PCMAController extends Controller
         $teamDoctorRegistration = $this->activeTeamDoctorRegistration($user);
         // Un médecin peut préparer un brouillon ; seul TeamDoctor peut signer.
         $users = collect([$user]);
-        
-        return view('pcma.create', compact('athletes', 'users', 'teamDoctorRegistration'));
+
+        // PCMA ouvert depuis une visite PCMA du secrétariat médical : joueur imposé, visite rattachée.
+        $pcmaVisit = null;
+        if ($visitId = request()->integer('visit_id')) {
+            $visit = \App\Models\Visit::with('athlete')->findOrFail($visitId);
+            abort_unless($athletes->contains('id', (int) $visit->athlete?->player_id), 403);
+            try {
+                $pcmaVisit = app(\App\Services\Medical\PcmaVisit::class)->linkable($visit->id, (int) $visit->athlete->player_id);
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                abort(422, collect($e->errors())->flatten()->first());
+            }
+            $pcmaVisit->load('appointment');
+        }
+
+        return view('pcma.create', compact('athletes', 'users', 'teamDoctorRegistration', 'pcmaVisit'));
     }
 
     public function store(Request $request)
@@ -113,6 +126,12 @@ class PCMAController extends Controller
         $validated = $this->normalizeFifaIdentifierInput(
             $validated
         );
+        if (!empty($validated['visit_id'])) {
+            // PCMA réalisé pendant une visite PCMA du secrétariat médical.
+            app(\App\Services\Medical\PcmaVisit::class)->linkable((int) $validated['visit_id'], (int) $validated['player_id'], !empty($validated['pcma_id']) ? (int) $validated['pcma_id'] : null);
+        } else {
+            unset($validated['visit_id']); // un brouillon déjà rattaché garde sa visite
+        }
 
         // La sélection client ne constitue pas une preuve d'identité du signataire.
 
@@ -167,12 +186,12 @@ class PCMAController extends Controller
                         throw \Illuminate\Validation\ValidationException::withMessages([
                             'signature_image' => 'Image de signature PNG invalide.']);
                     }
-                    $filename = 'signature_' . \Illuminate\Support\Str::uuid() . '.png';
-                    $path = 'signatures/' . $filename;
-                    
-                    // Store the signature image
-                    Storage::disk('local')->put($path, $imageData);
-                    $validated['signature_image'] = $path;
+                    // En base : le service n'a pas de disque persistant.
+                    $validated['signature_image'] = \App\Models\MedicalFile::query()->create([
+                        'owner_type' => 'pcma', 'field' => 'signature_image', 'file_name' => 'signature.png', 'mime_type' => 'image/png',
+                        'size' => strlen($imageData), 'sha256' => hash('sha256', $imageData), 'content_base64' => base64_encode($imageData),
+                        'uploaded_by' => auth()->id(),
+                    ])->ref();
                 }
             }
         }
@@ -182,8 +201,7 @@ class PCMAController extends Controller
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
-                $filename = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
-                $path = $file->store('medical_imaging', 'local');
+                $path = app(\App\Services\MedicalFileStore::class)->put($file, 'pcma', $field)->ref(); // en base : pas de disque persistant
                 $validated[$field] = $path;
             }
         }
@@ -260,6 +278,14 @@ class PCMAController extends Controller
         $validated = app(\App\Services\PcmaFormData::class)->withoutSignature($validated);
         abort_unless((int) $validated['player_id'] === (int) $pcma->player_id,
             409, 'Le joueur d’un dossier existant ne peut pas être changé.');
+        // La visite d'un PCMA déjà rattaché ne change pas ; un PCMA libre peut être rattaché à une visite PCMA ouverte.
+        if ($pcma->visit_id) {
+            $validated['visit_id'] = $pcma->visit_id;
+        } elseif (!empty($validated['visit_id'])) {
+            app(\App\Services\Medical\PcmaVisit::class)->linkable((int) $validated['visit_id'], (int) $pcma->player_id, $pcma->id);
+        } else {
+            unset($validated['visit_id']);
+        }
         $validated['fifa_compliant'] = false;
         
         // Handle file uploads
@@ -267,8 +293,7 @@ class PCMAController extends Controller
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
-                $filename = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
-                $path = $file->store('medical_imaging', 'local');
+                $path = app(\App\Services\MedicalFileStore::class)->put($file, 'pcma', $field)->ref(); // en base : pas de disque persistant
                 $validated[$field] = $path;
             }
         }

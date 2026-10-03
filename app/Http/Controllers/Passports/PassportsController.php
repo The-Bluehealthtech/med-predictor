@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Passports;
 
 use App\Http\Controllers\Controller;
+use App\Models\FhirDocument;
 use App\Models\Player;
+use App\Services\Fhir\FhirException;
+use App\Services\Fhir\IpsDocumentSharing;
 use App\Services\Passports\IpsFhirBundle;
 use App\Services\Passports\MedicalSummary;
 use App\Services\Passports\PassportAccess;
@@ -50,8 +53,63 @@ class PassportsController extends Controller
         $attestation = $this->attestations->status($model, $summary);
 
         return view('passports.medical.show', ['summary' => $summary, 'purposes' => MedicalSummary::PURPOSES, 'sections' => MedicalSummary::SECTIONS,
-            'attestation' => $attestation, 'canAttest' => $this->attestations->canAttest($request->user(), $model)] +
+            'attestation' => $attestation, 'canAttest' => $this->attestations->canAttest($request->user(), $model),
+            'ipsSharing' => $this->ipsSharing($request, $model, $attestation)] +
             $this->signatureContext($model, 'medical_passport.final_document'));
+    }
+
+    /** Partage IHE sIPS : publications de FIT et, à la demande, IPS des établissements (ITI-67). */
+    private function ipsSharing(Request $request, Player $player, array $attestation): array
+    {
+        $sharing = app(IpsDocumentSharing::class);
+        $documents = null;
+        $error = null;
+        if ($request->boolean('ips') && config('fhir.base_url')) {
+            try {
+                $documents = $sharing->find($player);
+            } catch (FhirException $e) {
+                $error = $e->getMessage();
+            }
+        }
+
+        return ['blockers' => $sharing->blockers($attestation), 'configured' => (bool) config('fhir.base_url'), 'documents' => $documents, 'error' => $error,
+            'published' => FhirDocument::query()->with('publishedBy')->where(['player_id' => $player->id, 'kind' => 'ips'])->latest('published_at')->limit(10)->get()];
+    }
+
+    /** Publication de l'IPS attesté (IHE sIPS : $validate puis MHD ITI-65), réservée au médecin qui peut attester. */
+    public function medicalIpsPublish(Request $request, int $player, IpsDocumentSharing $sharing, IpsFhirBundle $fhir)
+    {
+        [$model, $purpose] = $this->medicalContext($request, $player);
+        abort_unless($this->attestations->canAttest($request->user(), $model), 403);
+        $summary = $this->medical->build($model, $purpose, $request->user()->name);
+        $attestation = $this->attestations->status($model, $summary);
+        $back = route('passports.medical.show', ['player' => $model->id, 'purpose' => $purpose]);
+        if ($blockers = $sharing->blockers($attestation)) {
+            return redirect($back)->withErrors(['ips' => implode(' ', $blockers)], 'ips');
+        }
+        try {
+            $sharing->publish($model, $fhir->build($summary, $attestation), $attestation, $purpose, $request->user());
+        } catch (FhirException $e) {
+            return redirect($back)->withErrors(['ips' => trim($e->getMessage() . ' ' . implode(' ; ', array_slice($e->issues(), 0, 5)))], 'ips');
+        }
+        $this->audit($request, $model, $purpose, 'ips_publish');
+
+        return redirect($back)->with('status', 'IPS publié sur le serveur FHIR de FIT (IHE sIPS).');
+    }
+
+    /** Consultation d'un IPS publié pour le joueur (MHD ITI-68, option View de sIPS). */
+    public function medicalIpsShow(Request $request, int $player, string $document, IpsDocumentSharing $sharing)
+    {
+        abort_unless(preg_match('/^[A-Za-z0-9\-.]{1,64}$/', $document), 404);
+        [$model, $purpose] = $this->medicalContext($request, $player);
+        try {
+            $ips = $sharing->retrieve($model, $document);
+        } catch (FhirException $e) {
+            abort(502, $e->getMessage());
+        }
+        $this->audit($request, $model, $purpose, 'ips_retrieve');
+
+        return view('passports.medical.ips-document', ['player' => $model, 'ips' => $ips, 'purpose' => $purpose]);
     }
 
     /** Signature électronique simple : le médecin confirme par son mot de passe ; l'empreinte du contenu est conservée. */

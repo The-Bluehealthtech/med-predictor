@@ -18,6 +18,11 @@ final class PcmaDraftController extends Controller
         // La signature et la décision d'aptitude ne sont jamais produites par l'autosauvegarde.
         $data = app(PcmaFormData::class)->withoutSignature($request->validate($rules));
         $access->input($request->user(), $data);
+        if (!empty($data['visit_id'])) {
+            app(\App\Services\Medical\PcmaVisit::class)->linkable((int) $data['visit_id'], (int) $data['player_id'], !empty($data['pcma_id']) ? (int) $data['pcma_id'] : null);
+        } else {
+            unset($data['visit_id']);
+        }
         $pcma = DB::transaction(function () use ($data, $request, $access) {
             // Sérialiser les premières sauvegardes du même médecin pour éviter les doublons.
             User::whereKey($request->user()->id)->lockForUpdate()->firstOrFail();
@@ -37,7 +42,7 @@ final class PcmaDraftController extends Controller
                 $payload['signed_at'], $payload['is_signed'], $payload['license_number']);
             foreach (['ecg_file', 'mri_file', 'xray_file', 'ct_scan_file', 'ultrasound_file'] as $field) {
                 if ($request->hasFile($field)) {
-                    $payload[$field] = $request->file($field)->store('medical_imaging', 'local');
+                    $payload[$field] = app(\App\Services\MedicalFileStore::class)->put($request->file($field), 'pcma', $field)->ref();
                 }
             }
             $payload['status'] = 'pending';

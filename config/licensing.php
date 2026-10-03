@@ -15,6 +15,17 @@ return [
     // PlayerRegistrationNatureType
     'natures' => ['Registration' => 'Enregistrement', 'Loan' => 'Prêt'],
 
+    // Motif de la demande (règle nationale ; FIFA Connect ne connaît que Registration / Loan,
+    // les autres mouvements se traduisent par la clôture d'un enregistrement et l'ouverture d'un autre).
+    'request_reasons' => [
+        'first' => ['label' => 'Première licence', 'help' => 'Aucun enregistrement antérieur du joueur.'],
+        'renewal' => ['label' => 'Renouvellement', 'help' => 'Nouvelle saison dans le même club, même niveau.'],
+        'transfer' => ['label' => 'Transfert (changement de club)', 'help' => 'L\'enregistrement au club précédent est clôturé à l\'approbation.'],
+        'loan' => ['label' => 'Prêt (club d\'accueil)', 'help' => 'Enregistrement « Loan » ; le joueur reste lié à son club principal.'],
+        'loan_return' => ['label' => 'Retour de prêt', 'help' => 'Le prêt en cours est clôturé à l\'approbation.'],
+        'level_change' => ['label' => 'Changement de niveau', 'help' => 'Amateur ↔ professionnel dans le même club ; l\'enregistrement précédent est clôturé.'],
+    ],
+
     // Types d'enregistrement couverts par une licence (MatchOfficial : arbitrage, hors périmètre club).
     'registration_types' => ['Player' => 'Joueur', 'TeamOfficial' => 'Officiel d’équipe', 'OrganisationOfficial' => 'Dirigeant'],
 
@@ -64,6 +75,9 @@ return [
     // un médecin « apte » (ou apte avec restrictions), réalisé depuis moins de validity_months,
     // et non synthétique. Les licences d'officiels n'en demandent pas.
     'pcma' => ['validity_months' => 12],
+
+    // Export FIFA Connect (PersonLocal) : langue des noms locaux (ISO 639-2), à défaut d'une valeur sur la personne.
+    'fifa_export' => ['local_language' => env('FIFA_CONNECT_LOCAL_LANGUAGE')],
 
     'max_kilobytes' => 5120,
     'mimes' => ['pdf', 'jpg', 'jpeg', 'png'],

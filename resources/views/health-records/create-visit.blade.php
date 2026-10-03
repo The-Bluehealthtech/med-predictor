@@ -58,9 +58,9 @@
                         <div class="text-xs uppercase tracking-wide font-semibold text-slate-400 mb-2">Documents reçus à l’accueil</div>
                         <div class="flex flex-wrap gap-2">
                             @foreach($visit->documents as $document)
-                                <span class="inline-flex px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-xs text-slate-700">
+                                <a href="{{ route('medical-files.document', $document) }}" class="inline-flex px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-xs text-blue-700 hover:bg-blue-50">
                                     {{ $document->file_name }}
-                                </span>
+                                </a>
                             @endforeach
                         </div>
                     </div>

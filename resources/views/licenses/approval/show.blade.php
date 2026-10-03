@@ -43,6 +43,8 @@
                 <dt class="text-slate-500">Club</dt><dd class="text-slate-900">{{ $license->club?->name ?? '—' }}</dd>
                 <dt class="text-slate-500">Licence (FIFA Connect)</dt><dd class="text-slate-900">{{ LicenseWorkflow::describe($license) }}</dd>
                 <dt class="text-slate-500">Saison</dt><dd class="text-slate-900">{{ $license->season ?: '—' }}</dd>
+                <dt class="text-slate-500">Motif</dt><dd class="text-slate-900">{{ config('licensing.request_reasons.' . $license->request_reason . '.label', '—') }}@if($license->previous_license_id)<span class="block text-xs text-slate-500">Enregistrement précédent : licence n° {{ $license->previous_license_id }}{{ in_array($license->request_reason, ['transfer', 'level_change', 'loan_return'], true) ? ', clôturé à l\'approbation' : '' }}</span>@endif</dd>
+                <dt class="text-slate-500">Statut FIFA Connect</dt><dd class="text-slate-900"><code>{{ LicenseWorkflow::fifaStatus($license) }}</code></dd>
                 <dt class="text-slate-500">Tarif</dt><dd class="text-slate-900">{{ $license->fee_amount !== null ? number_format((float) $license->fee_amount, 2, ',', ' ') . ' ' . $license->fee_currency : 'non défini au dépôt' }}</dd>
                 <dt class="text-slate-500">Validité</dt><dd class="text-slate-900">{{ $license->contract_start_date?->format('d/m/Y') ?? '—' }} → {{ $license->expiry_date?->format('d/m/Y') ?? '—' }}</dd>
                 <dt class="text-slate-500">Demandée par</dt><dd class="text-slate-900">{{ $requester?->name ?? '—' }}, le {{ $license->created_at?->format('d/m/Y') }}</dd>

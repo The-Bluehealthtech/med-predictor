@@ -769,7 +769,7 @@
                         <div class="space-y-2">
                             <div>
                                 <span class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_720601ed64d2') }}</span>
-                                <span class="text-sm text-gray-900">@if($pcma->ecg_file)<a href="{{ route('pcma.file', [$pcma, 'ecg_file']) }}">{{ basename($pcma->ecg_file) }}</a>@else{{ __('pcma_extra.not_recorded') }}@endif</span>
+                                <span class="text-sm text-gray-900">@if($pcma->ecg_file)<a class="text-blue-600 hover:text-blue-800" href="{{ route('medical-files.pcma', [$pcma, 'ecg_file']) }}">{{ app(\App\Services\MedicalFileStore::class)->name($pcma->ecg_file) }} — ouvrir</a>@else{{ __('pcma_extra.not_recorded') }}@endif</span>
                             </div>
                             @if($pcma->result_json['medical_imaging']['ecg_date'] ?? null)
                                 <div>
@@ -798,7 +798,7 @@
                         <div class="space-y-2">
                             <div>
                                 <span class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_720601ed64d2') }}</span>
-                                <span class="text-sm text-gray-900">@if($pcma->mri_file)<a href="{{ route('pcma.file', [$pcma, 'mri_file']) }}">{{ basename($pcma->mri_file) }}</a>@else{{ __('pcma_extra.not_recorded') }}@endif</span>
+                                <span class="text-sm text-gray-900">@if($pcma->mri_file)<a class="text-blue-600 hover:text-blue-800" href="{{ route('medical-files.pcma', [$pcma, 'mri_file']) }}">{{ app(\App\Services\MedicalFileStore::class)->name($pcma->mri_file) }} — ouvrir</a>@else{{ __('pcma_extra.not_recorded') }}@endif</span>
                             </div>
                             @if($pcma->result_json['medical_imaging']['mri_date'] ?? null)
                                 <div>
@@ -833,7 +833,7 @@
                         <div class="space-y-2">
                             <div>
                                 <span class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_720601ed64d2') }}</span>
-                                <span class="text-sm text-gray-900">{{ $pcma->xray_file ?? __('pcma_extra.not_recorded') }}</span>
+                                <span class="text-sm text-gray-900">@if($pcma->xray_file)<a class="text-blue-600 hover:text-blue-800" href="{{ route('medical-files.pcma', [$pcma, 'xray_file']) }}">{{ app(\App\Services\MedicalFileStore::class)->name($pcma->xray_file) }} — ouvrir</a>@else{{ __('pcma_extra.not_recorded') }}@endif</span>
                             </div>
                         </div>
                     </div>
@@ -844,7 +844,7 @@
                         <div class="space-y-2">
                             <div>
                                 <span class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_720601ed64d2') }}</span>
-                                <span class="text-sm text-gray-900">{{ $pcma->ct_scan_file ?? __('pcma_extra.not_recorded') }}</span>
+                                <span class="text-sm text-gray-900">@if($pcma->ct_scan_file)<a class="text-blue-600 hover:text-blue-800" href="{{ route('medical-files.pcma', [$pcma, 'ct_scan_file']) }}">{{ app(\App\Services\MedicalFileStore::class)->name($pcma->ct_scan_file) }} — ouvrir</a>@else{{ __('pcma_extra.not_recorded') }}@endif</span>
                             </div>
                         </div>
                     </div>
@@ -855,7 +855,7 @@
                         <div class="space-y-2">
                             <div>
                                 <span class="text-sm font-medium text-gray-500">{{ __('pcma_extra.label_720601ed64d2') }}</span>
-                                <span class="text-sm text-gray-900">{{ $pcma->ultrasound_file ?? __('pcma_extra.not_recorded') }}</span>
+                                <span class="text-sm text-gray-900">@if($pcma->ultrasound_file)<a class="text-blue-600 hover:text-blue-800" href="{{ route('medical-files.pcma', [$pcma, 'ultrasound_file']) }}">{{ app(\App\Services\MedicalFileStore::class)->name($pcma->ultrasound_file) }} — ouvrir</a>@else{{ __('pcma_extra.not_recorded') }}@endif</span>
                             </div>
                         </div>
                     </div>

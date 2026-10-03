@@ -23,7 +23,7 @@ class NationalityHelper
             'Rwanda', 'Burundi', 'Democratic Republic of the Congo', 'Republic of the Congo',
             'Central African Republic', 'Chad', 'Cameroon', 'Nigeria', 'Niger', 'Mali',
             'Burkina Faso', 'Senegal', 'Gambia', 'Guinea-Bissau', 'Guinea', 'Sierra Leone',
-            'Liberia', 'Ivory Coast', 'Ghana', 'Togo', 'Benin', 'South Africa', 'Namibia',
+            'Liberia', "Côte d'Ivoire", 'Ghana', 'Togo', 'Benin', 'South Africa', 'Namibia',
             'Botswana', 'Zimbabwe', 'Zambia', 'Malawi', 'Mozambique', 'Madagascar',
             'Mauritius', 'Seychelles', 'Comoros', 'Mayotte', 'Reunion', 'China', 'Japan',
             'South Korea', 'North Korea', 'Mongolia', 'Taiwan', 'Hong Kong', 'Macau',

@@ -18,6 +18,7 @@ class Club extends Model
         'name',
         'short_name',
         'association_id',
+        'country_code',
         'logo_path',
         'address',
         'phone',

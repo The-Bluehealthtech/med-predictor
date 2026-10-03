@@ -170,12 +170,20 @@ final class MedicalSummary
                 if (in_array($status, ['stopped', 'completed', 'arrêté', 'terminé'], true)) {
                     continue;
                 }
-                $items[mb_strtolower($name)] = [
+                $rxnorm = is_array($entry) && ($entry['source'] ?? null) === 'RxNorm' && preg_match('/^[0-9]+$/', (string) ($entry['rxcui'] ?? ''));
+                $antidoping = is_array($entry) && (($entry['antidoping']['status'] ?? null) === 'mentions_found')
+                    ? ['version' => (string) ($entry['antidoping']['version'] ?? ''), 'categories' => array_values(array_unique(array_filter(array_column($entry['antidoping']['matches'] ?? [], 'category'))))]
+                    : null;
+                $items[mb_strtolower($name)] = array_filter([
                     'label' => $name,
                     'detail' => is_array($entry) ? trim(implode(' · ', array_filter([$entry['dose'] ?? $entry['dosage'] ?? null, $entry['frequency'] ?? null, $entry['route'] ?? null]))) : null,
                     'status' => $status ?? 'enregistré',
                     'date' => is_array($entry) && !empty($entry['start_date']) ? $entry['start_date'] : $record->record_date,
-                ];
+                    // Concept RxNorm vérifié et correspondance avec la liste des interdictions AMA (alerte, pas décision).
+                    'rxcui' => $rxnorm ? (string) $entry['rxcui'] : null,
+                    'antidoping' => $antidoping,
+                ], fn ($v) => $v !== null);
+                $items[mb_strtolower($name)] += ['detail' => null];
             }
         }
 

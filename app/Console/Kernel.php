@@ -80,6 +80,8 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\GenerateDemoDataCommand::class,
         \App\Console\Commands\RoleEvaluationComputeCommand::class,
         \App\Console\Commands\AuditRetentionCommand::class,
+        \App\Console\Commands\FifaLicensesConformance::class,
+        \App\Console\Commands\FhirConformance::class,
         \App\Console\Commands\MigrateLegacyPosturalDataCommand::class,
         \App\Console\Commands\RoleEvaluationComputeHistoryCommand::class,
         \App\Console\Commands\SeedDemoNationalSelections::class,

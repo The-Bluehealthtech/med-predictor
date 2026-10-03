@@ -17,6 +17,7 @@ final class IpsFhirBundle
     private const LOINC = 'http://loinc.org';
     private const ABSENT = 'http://hl7.org/fhir/uv/ips/CodeSystem/absent-unknown-uv-ips';
     private const ICD11 = 'http://id.who.int/icd/release/11/mms';
+    private const RXNORM = 'http://www.nlm.nih.gov/research/umls/rxnorm';
 
     /** Sections IPS exportées : clé du résumé => [code LOINC, titre]. */
     private const SECTIONS = [
@@ -132,8 +133,12 @@ final class IpsFhirBundle
                 'code' => $this->conditionCode($item), 'subject' => $subject, 'recordedDate' => $this->date($item['date'] ?? null), 'note' => $item['detail'] ? [['text' => $item['detail']]] : null],
             'medications' => ['resourceType' => 'MedicationStatement', 'meta' => ['profile' => [self::IPS . 'MedicationStatement-uv-ips']],
                 'status' => in_array($item['status'] ?? null, ['active', 'enregistré'], true) ? 'active' : 'unknown',
-                'medicationCodeableConcept' => ['text' => $item['label']], 'subject' => $subject,
-                'effectiveDateTime' => $this->date($item['date'] ?? null), 'dosage' => $item['detail'] ? [['text' => $item['detail']]] : null],
+                'medicationCodeableConcept' => $this->medicationCode($item), 'subject' => $subject,
+                'effectiveDateTime' => $this->date($item['date'] ?? null), 'dosage' => $item['detail'] ? [['text' => $item['detail']]] : null,
+                // Liste des interdictions de l'AMA : aucun système de codes FHIR officiel, mention en texte avec sa version.
+                'note' => !empty($item['antidoping']['categories'])
+                    ? [['text' => 'Alerte antidopage — liste des interdictions AMA ' . $item['antidoping']['version'] . ' : ' . implode(' ; ', $item['antidoping']['categories']) . ' (correspondance de substance, à vérifier par le médecin)']]
+                    : null],
             'immunizations' => ['resourceType' => 'Immunization', 'meta' => ['profile' => [self::IPS . 'Immunization-uv-ips']],
                 'status' => 'completed', 'vaccineCode' => ['text' => $item['label']], 'patient' => $subject, 'occurrenceDateTime' => $this->date($item['date'] ?? null)],
             default => ['resourceType' => 'Observation', 'status' => 'final',
@@ -149,6 +154,16 @@ final class IpsFhirBundle
         $code = ['text' => $item['label']];
         if (!empty($item['code']) && str_starts_with($item['code'], 'CIM-11 ')) {
             $code['coding'] = [['system' => self::ICD11, 'code' => substr($item['code'], 7), 'display' => $item['label']]];
+        }
+
+        return $code;
+    }
+
+    private function medicationCode(array $item): array
+    {
+        $code = ['text' => $item['label']];
+        if (!empty($item['rxcui'])) {
+            $code['coding'] = [['system' => self::RXNORM, 'code' => $item['rxcui'], 'display' => $item['label']]];
         }
 
         return $code;

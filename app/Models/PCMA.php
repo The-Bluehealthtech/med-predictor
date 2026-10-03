@@ -119,6 +119,12 @@ class PCMA extends Model
             abort_if((bool) $record->getOriginal('is_signed'), 409,
                 'Un PCMA signé ne peut plus être modifié.');
         });
+        // PCMA de visite : la signature du médecin clôt la visite du secrétariat médical.
+        static::saved(function (PCMA $record) {
+            if ($record->is_signed && $record->visit_id && ($record->wasRecentlyCreated || $record->wasChanged('is_signed'))) {
+                app(\App\Services\Medical\PcmaVisit::class)->close($record);
+            }
+        });
         static::deleting(function (PCMA $record) {
             abort_if((bool) $record->getOriginal('is_signed'), 409,
                 'Un PCMA signé ne peut plus être supprimé.');

@@ -9,6 +9,7 @@ use App\Services\Licensing\LicenseScale;
 use App\Services\Licensing\LicenseWorkflow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -54,6 +55,8 @@ class LicenseScaleController extends Controller
             'gender' => 'required|in:' . implode(',', array_keys(config('licensing.genders'))),
             'discipline' => 'required|in:' . implode(',', array_keys(config('licensing.disciplines'))),
             'currency' => 'required|string|size:3|alpha',
+            // ISO639-2Type (FIFA Connect PersonLocal/LocalLanguage) : langue des noms locaux des personnes.
+            'local_language' => ['nullable', 'string', 'size:3', $this->languageRule()],
             'season_start_month' => 'required|integer|between:1,12',
             'season_start_day' => 'required|integer|between:1,28',
             'reference_month' => 'required|integer|between:1,12',
@@ -103,6 +106,7 @@ class LicenseScaleController extends Controller
             'season_start_month' => $data['season_start_month'], 'season_start_day' => $data['season_start_day'],
             'reference_month' => $data['reference_month'], 'reference_day' => $data['reference_day'],
             'official_fees' => $officialFees,
+            'local_language' => ($data['local_language'] ?? null) ?: null,
         ], ["{$data['gender']}|{$data['discipline']}" => $categories->all()]);
 
         $query = ['gender' => $data['gender'], 'discipline' => $data['discipline']] + ($user->isSystemAdmin() ? ['association_id' => $associationId] : []);
@@ -119,5 +123,15 @@ class LicenseScaleController extends Controller
         }
 
         return (int) $user->association_id;
+    }
+
+    /** Énumération ISO639-2Type du paquet XSD FIFA Connect ; à défaut (paquet absent), trois lettres minuscules. */
+    private function languageRule(): mixed
+    {
+        try {
+            return Rule::in(app(\App\Services\FifaConnect\SchemaCatalog::class)->enumValues('ISO639-2Type'));
+        } catch (\RuntimeException) {
+            return 'regex:/^[a-z]{3}$/';
+        }
     }
 }

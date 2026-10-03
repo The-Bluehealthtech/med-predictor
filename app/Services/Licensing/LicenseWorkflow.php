@@ -147,9 +147,50 @@ final class LicenseWorkflow
         return array_values(array_diff($this->requiredDocuments($license), $present));
     }
 
+    /** Statut FIFA Connect (SimpleStatusType) d'une licence : pending, active ou inactive. */
+    public static function fifaStatus(PlayerLicense $license): string
+    {
+        return match ($license->status) {
+            'pending', 'justification_requested' => 'pending',
+            'active' => 'active',
+            default => 'inactive',
+        };
+    }
+
+    /**
+     * Motifs possibles pour une nouvelle licence de joueur, selon son historique
+     * dans la discipline (enregistrements actifs ou terminés, hors refus) :
+     * [motif => ['allowed' => bool, 'previous' => ?PlayerLicense, 'closes' => bool, 'why' => string]].
+     */
+    public function reasonsFor(Player $player, string $discipline, string $level): array
+    {
+        $history = PlayerLicense::query()->where('player_id', $player->id)->whereIn('status', ['active', 'expired'])
+            ->where(fn ($q) => $q->where('discipline', $discipline)->orWhereNull('discipline'))
+            ->orderByDesc('expiry_date')->orderByDesc('id')->get();
+        $nature = fn ($l) => $l->registration_nature ?: 'Registration';
+        $sameClub = $history->first(fn ($l) => (int) $l->club_id === (int) $player->club_id && $nature($l) === 'Registration');
+        $otherClub = $history->first(fn ($l) => (int) $l->club_id !== (int) $player->club_id && $nature($l) === 'Registration');
+        $activeLoan = $history->first(fn ($l) => $l->status === 'active' && $nature($l) === 'Loan' && (int) $l->club_id !== (int) $player->club_id);
+        $levelOf = fn ($l) => $l->level ?: ($l->license_type === 'professional' ? 'pro' : 'amateur');
+        $r = fn (bool $allowed, ?PlayerLicense $previous, bool $closes, string $why) => compact('allowed', 'previous', 'closes', 'why');
+
+        return [
+            'first' => $r($history->isEmpty(), null, false, $history->isEmpty() ? 'Aucun enregistrement antérieur.' : 'Le joueur a déjà été enregistré dans cette discipline.'),
+            'renewal' => $r($sameClub !== null && $levelOf($sameClub) === $level, $sameClub, false,
+                $sameClub === null ? 'Aucune licence antérieure dans ce club.' : ($levelOf($sameClub) === $level ? 'Licence précédente dans ce club, même niveau.' : 'Le niveau change : choisissez « Changement de niveau ».')),
+            'level_change' => $r($sameClub !== null && $sameClub->status === 'active' && $levelOf($sameClub) !== $level, $sameClub, true,
+                $sameClub !== null && $sameClub->status === 'active' && $levelOf($sameClub) !== $level ? 'Licence active dans ce club à un autre niveau, clôturée à l\'approbation.' : 'Pas de licence active dans ce club à un autre niveau.'),
+            'transfer' => $r($otherClub !== null, $otherClub, $otherClub?->status === 'active',
+                $otherClub ? 'Dernier enregistrement dans un autre club' . ($otherClub->status === 'active' ? ', clôturé à l\'approbation.' : '.') : 'Aucun enregistrement dans un autre club.'),
+            'loan' => $r($otherClub !== null && $otherClub->status === 'active', $otherClub, false,
+                $otherClub !== null && $otherClub->status === 'active' ? 'Enregistrement actif au club principal, qui reste en vigueur pendant le prêt.' : 'Pas d\'enregistrement actif dans un club principal.'),
+            'loan_return' => $r($activeLoan !== null, $activeLoan, true, $activeLoan ? 'Prêt en cours, clôturé à l\'approbation.' : 'Aucun prêt en cours.'),
+        ];
+    }
+
     /**
      * Dépôt d'une licence de joueur (enregistrement FIFA Connect « Player ») :
-     * discipline, niveau, nature, saison ; pièces exigées par le barème.
+     * motif, discipline, niveau, saison ; nature déduite du motif ; pièces du barème.
      */
     public function submitPlayer(Player $player, User $by, array $data, array $files): PlayerLicense
     {
@@ -159,6 +200,13 @@ final class LicenseWorkflow
         if (!empty($data['gender']) && !$player->gender) {
             $player->forceFill(['gender' => $data['gender']])->save(); // FIFA Connect : genre obligatoire sur la personne
         }
+        $reason = $data['request_reason'] ?? null;
+        $check = $this->reasonsFor($player, $data['discipline'], $data['level'])[$reason] ?? throw new InvalidArgumentException('Motif de demande inconnu.');
+        if (!$check['allowed']) {
+            throw new InvalidArgumentException('Motif « ' . config("licensing.request_reasons.{$reason}.label") . ' » impossible : ' . $check['why']);
+        }
+        // FIFA Connect : nature Loan pour un prêt, Registration sinon.
+        $data['registration_nature'] = $reason === 'loan' ? 'Loan' : 'Registration';
         $rules = $scale->playerRules($player, $data['discipline'], $data['level'], $data['registration_nature'], $season);
         if ($rules['gender_missing']) {
             throw new InvalidArgumentException('Le genre du joueur est obligatoire (FIFA Connect).');
@@ -166,10 +214,13 @@ final class LicenseWorkflow
         if (!$rules['allowed']) {
             throw new InvalidArgumentException('Niveau ' . mb_strtolower(config("licensing.levels.{$data['level']}")) . " non autorisé en catégorie {$rules['category_label']} selon le barème de la fédération.");
         }
-        $this->assertNoDuplicate(PlayerLicense::query()->where('player_id', $player->id), $data['discipline'], $season['label']);
+        $this->assertNoDuplicate(PlayerLicense::query()->where('player_id', $player->id), $data['discipline'], $season['label'],
+            (int) $player->club_id, $check['closes'] ? $check['previous']?->id : null);
         $this->assertDocuments($rules['documents'], $files);
 
         $license = PlayerLicense::create([
+            'request_reason' => $reason,
+            'previous_license_id' => $check['previous']?->id,
             'player_id' => $player->id,
             'club_id' => $player->club_id,
             'registration_type' => 'Player',
@@ -203,11 +254,14 @@ final class LicenseWorkflow
         $settings = $scale->settings($scale->associationOfClub($official->club_id));
         $season = $scale->seasonByLabel($settings, $data['season']) ?? throw new InvalidArgumentException('Saison non disponible.');
         $rules = $scale->officialRules($official, $season);
-        $this->assertNoDuplicate(PlayerLicense::query()->where('club_official_id', $official->id), $data['discipline'], $season['label']);
+        $this->assertNoDuplicate(PlayerLicense::query()->where('club_official_id', $official->id), $data['discipline'], $season['label'], (int) $official->club_id);
+        $previous = PlayerLicense::query()->where('club_official_id', $official->id)->whereIn('status', ['active', 'expired'])->latest('id')->first();
         $this->assertDocuments($rules['documents'], $files);
 
         $license = PlayerLicense::create([
             'club_official_id' => $official->id,
+            'request_reason' => $previous ? 'renewal' : 'first',
+            'previous_license_id' => $previous?->id,
             'club_id' => $official->club_id,
             'registration_type' => $official->registration_type,
             'team_official_role' => $official->team_official_role,
@@ -231,10 +285,18 @@ final class LicenseWorkflow
         return $this->afterSubmit($license, $by, $files, $data['notes'] ?? null);
     }
 
-    private function assertNoDuplicate(Builder $query, string $discipline, string $season): void
+    /**
+     * Une seule demande en cours par personne et discipline ; une seule licence active
+     * par club, discipline et saison (hors enregistrement que la demande va clôturer).
+     */
+    private function assertNoDuplicate(Builder $query, string $discipline, string $season, int $clubId, ?int $closing = null): void
     {
-        if ($query->where('discipline', $discipline)->where('season', $season)->whereIn('status', ['pending', 'justification_requested', 'active'])->exists()) {
-            throw new InvalidArgumentException("Une licence active ou une demande en cours existe déjà pour cette discipline et la saison {$season}.");
+        $base = (clone $query)->where('discipline', $discipline);
+        if ((clone $base)->whereIn('status', ['pending', 'justification_requested'])->exists()) {
+            throw new InvalidArgumentException('Une demande est déjà en cours pour cette discipline.');
+        }
+        if ((clone $base)->where('season', $season)->where('club_id', $clubId)->where('status', 'active')->when($closing, fn ($q) => $q->whereKeyNot($closing))->exists()) {
+            throw new InvalidArgumentException("Une licence active existe déjà dans ce club pour cette discipline et la saison {$season}.");
         }
     }
 
@@ -418,5 +480,24 @@ final class LicenseWorkflow
         }
         $license->update(['status' => 'active', 'approval_status' => 'approved', 'approved_by' => $by->id, 'approved_at' => now(),
             'issue_date' => now()->toDateString(), 'issued_date' => now()->toDateString(), 'issued_by' => (string) $by->id]);
+        $this->closePrevious($license, $by);
+    }
+
+    /**
+     * Transfert, changement de niveau, retour de prêt : l'enregistrement précédent est
+     * clôturé (FIFA Connect : Status inactive, RegistrationValidTo la veille du nouveau).
+     */
+    private function closePrevious(PlayerLicense $license, User $by): void
+    {
+        $previous = $license->previous_license_id ? PlayerLicense::query()->find($license->previous_license_id) : null;
+        if (!$previous || $previous->status !== 'active' || !in_array($license->request_reason, ['transfer', 'level_change', 'loan_return'], true)) {
+            return;
+        }
+        $end = ($license->contract_start_date ?? now())->copy()->subDay();
+        if ($previous->contract_start_date && $end->lt($previous->contract_start_date)) {
+            $end = $previous->contract_start_date->copy();
+        }
+        $previous->update(['status' => 'expired', 'expiry_date' => $end->toDateString()]);
+        $this->event($previous, $by, 'closed', config("licensing.request_reasons.{$license->request_reason}.label") . ' : licence n° ' . $license->id . '.');
     }
 }

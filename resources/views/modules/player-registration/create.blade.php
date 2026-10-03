@@ -126,24 +126,7 @@
                             @enderror
                         </div>
 
-                        <div>
-                            <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">
-                                {{ __('Nationalité *') }}
-                            </label>
-                            <select name="nationality" id="nationality" required
-                                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 {{ $isReadOnly ? 'opacity-50 cursor-not-allowed bg-gray-100' : '' }}"
-                                    {{ $isReadOnly ? 'disabled' : '' }}>
-                                <option value="">{{ __('Sélectionner une nationalité') }}</option>
-                                @foreach($nationalities as $nationality)
-                                    <option value="{{ $nationality }}" {{ (old('nationality', $existingPlayer->nationality ?? '') == $nationality) ? 'selected' : '' }}>
-                                        {{ $nationality }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('nationality')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        @include('players.partials.fifa-identity', ['player' => $existingPlayer, 'readOnly' => $isReadOnly])
 
                         <div>
                             <label for="position" class="block text-sm font-medium text-gray-700 mb-2">

@@ -91,12 +91,15 @@
                     </div>
                 </fieldset>
                 <fieldset>
-                    <legend class="text-sm font-semibold text-slate-700">Nature de l'enregistrement</legend>
+                    <legend class="text-sm font-semibold text-slate-700">Motif de la demande</legend>
                     <div class="mt-2 grid gap-2">
-                        @foreach($natures as $value => $label)
-                            <label class="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm"><input type="radio" name="registration_nature" value="{{ $value }}" required @checked(old('registration_nature', 'Registration') === $value)> {{ $label }}</label>
+                        @foreach(config('licensing.request_reasons') as $value => $reason)
+                            <label class="flex items-start gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm" data-reason="{{ $value }}">
+                                <input type="radio" name="request_reason" value="{{ $value }}" required class="mt-1" @checked(old('request_reason') === $value)>
+                                <span><span class="font-medium text-slate-900">{{ $reason['label'] }}</span><span class="block text-xs text-slate-500" data-why>{{ $reason['help'] }}</span></span></label>
                         @endforeach
                     </div>
+                    <p class="mt-2 text-xs text-slate-500">Nature FIFA Connect : <strong id="nature-label">Enregistrement</strong> (« Loan » pour un prêt, « Registration » sinon).</p>
                 </fieldset>
             </div>
 
@@ -137,6 +140,7 @@
     // Barème de la fédération pour ce joueur : [genre][saison][discipline][niveau].
     (function () {
         const rules = @json($rules);
+        const reasons = @json($reasons);
         const natureDocs = @json(config('licensing.nature_documents'));
         const pcmaValid = @json($pcmaStatus['valid']);
         const form = document.getElementById('license-request');
@@ -158,7 +162,19 @@
                 row.querySelector('[data-fee]').textContent = lr ? (lr.allowed ? money(lr) : 'non autorisé en ' + lr.category_label) : '';
                 if (input.disabled && input.checked) input.checked = false;
             });
-            const docs = r ? r.documents.concat(natureDocs[val('registration_nature')] || []) : [];
+            // Motifs possibles pour cette discipline et ce niveau (historique du joueur).
+            const allowedReasons = ((reasons[val('discipline')] || {})[val('level')]) || {};
+            form.querySelectorAll('[data-reason]').forEach((row) => {
+                const info = allowedReasons[row.dataset.reason];
+                const input = row.querySelector('input');
+                input.disabled = !info || !info.allowed;
+                row.classList.toggle('opacity-50', input.disabled);
+                if (info) row.querySelector('[data-why]').textContent = info.why;
+                if (input.disabled && input.checked) input.checked = false;
+            });
+            const nature = val('request_reason') === 'loan' ? 'Loan' : 'Registration';
+            document.getElementById('nature-label').textContent = nature === 'Loan' ? 'Prêt' : 'Enregistrement';
+            const docs = r ? r.documents.concat(natureDocs[nature] || []) : [];
             form.querySelectorAll('[data-doc]').forEach((row) => {
                 const needed = docs.includes(row.dataset.doc);
                 row.querySelector('.doc-required').classList.toggle('hidden', !needed);

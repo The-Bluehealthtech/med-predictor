@@ -31,11 +31,10 @@ final class PcmaDocumentController extends Controller
         app(MedicalRecordAccess::class)->record($request->user(), $pcma);
         abort_unless(in_array($field, ['ecg_file', 'mri_file', 'xray_file', 'ct_scan_file',
             'ultrasound_file', 'signature_image'], true), 404);
-        $path = $pcma->$field;
-        abort_unless(is_string($path) && $path && !str_contains($path, '..'), 404);
-        $disk = \Illuminate\Support\Facades\Storage::disk('local')->exists($path) ? 'local' : 'public';
-        abort_unless(\Illuminate\Support\Facades\Storage::disk($disk)->exists($path), 404);
-        return \Illuminate\Support\Facades\Storage::disk($disk)->response($path);
+        $file = app(\App\Services\MedicalFileStore::class)->read($pcma->$field);
+        abort_unless($file, 404, 'Fichier introuvable.');
+
+        return app(\App\Services\MedicalImageRenderer::class)->download($file);
     }
     private function document(PCMA $pcma, bool $isDraft)
     {

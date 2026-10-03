@@ -43,7 +43,38 @@
         </div>
     </section>
 
-    <section id="new-appointment-panel" class="{{ $sourceVisit ? '' : 'hidden' }} bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+    @if($pcmaNeeded->count())
+        <section class="bg-white border border-emerald-200 rounded-2xl shadow-sm overflow-hidden" aria-labelledby="h-pcma-needed">
+            <div class="px-5 py-4 border-b border-emerald-100 bg-emerald-50">
+                <h2 id="h-pcma-needed" class="font-semibold text-emerald-950">PCMA attendus pour des demandes de licence ({{ $pcmaNeeded->count() }})</h2>
+                <p class="text-sm text-emerald-900 mt-1">La fédération ne peut approuver ces licences qu’avec un PCMA signé par un médecin. Planifiez une visite PCMA.</p>
+            </div>
+            <div class="divide-y">
+                @foreach($pcmaNeeded as $row)
+                    <div class="p-4 grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 md:items-center">
+                        <div>
+                            <div class="font-semibold text-slate-900">{{ $row['player']->full_name ?? $row['player']->name }}</div>
+                            <div class="text-sm text-slate-500">{{ $row['player']->club?->name }} · demande du {{ $row['license']->created_at?->format('d/m/Y') }}</div>
+                        </div>
+                        <div class="text-sm text-slate-700">
+                            {{ $row['status']['label'] }}@if($row['status']['date']) ({{ $row['status']['date']->format('d/m/Y') }})@endif
+                            <div class="text-xs text-slate-500">{{ $row['reason'] }}</div>
+                        </div>
+                        <div class="md:justify-self-end">
+                            @if($row['athlete_id'])
+                                <a href="{{ route('secretary.dashboard', ['athlete_id' => $row['athlete_id'], 'appointment_type' => 'pcma']) }}#new-appointment-panel"
+                                   class="inline-flex px-3 py-2 rounded-lg bg-emerald-700 text-white text-sm font-semibold">Planifier la visite PCMA</a>
+                            @else
+                                <span class="text-sm text-amber-700">Fiche médicale du joueur à créer avant le rendez-vous</span>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    <section id="new-appointment-panel" class="{{ $sourceVisit || request('appointment_type') ? '' : 'hidden' }} bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b">
             <h2 class="font-semibold text-slate-900">Planifier un rendez-vous médical</h2>
             <p class="text-sm text-slate-500 mt-1">Le motif du rendez-vous oriente le parcours, sans créer encore d’acte médical.</p>
@@ -56,7 +87,7 @@
                 <select name="athlete_id" required class="w-full rounded-xl border-slate-300">
                     <option value="">Sélectionner</option>
                     @foreach($athletes as $athlete)
-                        <option value="{{ $athlete->id }}" @selected((int)old('athlete_id', $sourceVisit?->athlete_id) === (int)$athlete->id)>{{ $athlete->name }}</option>
+                        <option value="{{ $athlete->id }}" @selected((int)old('athlete_id', $sourceVisit?->athlete_id ?? request('athlete_id')) === (int)$athlete->id)>{{ $athlete->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -71,8 +102,9 @@
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Objet</label>
                 <select name="appointment_type" required class="w-full rounded-xl border-slate-300">
-                    <option value="consultation">Consultation</option>
-                    <option value="follow_up" @selected($sourceVisit)>Suivi</option>
+                    <option value="consultation" @selected(old('appointment_type') === 'consultation')>Consultation</option>
+                    <option value="pcma" @selected(old('appointment_type', request('appointment_type')) === 'pcma')>PCMA — évaluation pré-compétition (licence)</option>
+                    <option value="follow_up" @selected($sourceVisit && !old('appointment_type'))>Suivi</option>
                     <option value="routine_checkup">Contrôle médical</option>
                     <option value="injury_assessment">Évaluation de blessure</option>
                     <option value="cardiac_evaluation">Évaluation cardiaque</option>
@@ -204,7 +236,7 @@
             @forelse($recentDocuments as $document)
                 <div class="px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
-                        <div class="text-sm font-medium text-slate-900">{{ $document->file_name }}</div>
+                        <a href="{{ route('medical-files.document', $document) }}" class="text-sm font-medium text-blue-700 hover:underline">{{ $document->file_name }}</a>
                         <div class="text-xs text-slate-500 mt-1">{{ $document->visit?->athlete?->player?->full_name ?? $document->visit?->athlete?->name ?? 'Joueur' }} · {{ $document->document_type_label }}</div>
                     </div>
                     <span class="text-xs text-slate-400">{{ $document->created_at?->format('d/m/Y H:i') }}</span>

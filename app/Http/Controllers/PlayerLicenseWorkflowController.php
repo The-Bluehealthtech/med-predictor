@@ -82,6 +82,9 @@ class PlayerLicenseWorkflowController extends Controller
                     ->map(fn ($ll, $level) => $scale->playerRules($person, $d, $level, 'Registration', $season))->all())->all())->all()];
             })->all(),
             'pcmaStatus' => app(\App\Services\Licensing\PcmaRequirement::class)->status($player),
+            // Motifs possibles selon l'historique du joueur : [discipline][niveau][motif] => allowed, why.
+            'reasons' => collect($disciplines)->map(fn ($l, $d) => collect($levels)->map(fn ($ll, $level) => collect($this->workflow->reasonsFor($player, $d, $level))
+                ->map(fn ($r) => ['allowed' => $r['allowed'], 'why' => $r['why']])->all())->all())->all(),
         ]);
     }
 
@@ -91,7 +94,7 @@ class PlayerLicenseWorkflowController extends Controller
         $validated = $request->validate([
             'discipline' => 'required|in:' . implode(',', array_keys(config('licensing.disciplines'))),
             'level' => 'required|in:' . implode(',', array_keys(config('licensing.levels'))),
-            'registration_nature' => 'required|in:' . implode(',', array_keys(config('licensing.natures'))),
+            'request_reason' => 'required|in:' . implode(',', array_keys(config('licensing.request_reasons'))),
             'season' => 'required|string|max:9',
             'gender' => ($player->gender ? 'nullable' : 'required') . '|in:' . implode(',', array_keys(config('licensing.genders'))),
             'notes' => 'nullable|string|max:2000',

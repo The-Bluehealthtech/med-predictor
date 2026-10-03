@@ -113,6 +113,7 @@ class PlayerAthleteBridgeSeeder extends Seeder
             'Germany' => 'DEU',
             'Italy' => 'ITA',
             'Ivory Coast' => 'CIV',
+            "Côte d'Ivoire" => 'CIV',
             'Mali' => 'MLI',
             'Morocco' => 'MAR',
             'Netherlands' => 'NLD',

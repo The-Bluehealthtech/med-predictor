@@ -50,6 +50,13 @@
                     </div>
                 </div>
 
+                @if($appointment->appointment_type === 'pcma')
+                    <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+                        Visite PCMA : le médecin réalise l’évaluation médicale pré-compétition et la signe pendant la visite.
+                        Le PCMA signé remplit la condition médicale des demandes de licence du joueur ; la visite se clôt à la signature.
+                    </div>
+                @endif
+
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Motif confirmé par le joueur</label>
                     <input name="reason_confirmed" value="{{ old('reason_confirmed', data_get($preIntake, 'reason_confirmed', $appointment->reason)) }}"
@@ -98,6 +105,12 @@
                     <div class="mt-2 font-semibold text-amber-800">Premier passage médical</div>
                     <p class="mt-2 text-sm text-slate-600">La consultation médicale initialisera le dossier de base du joueur.</p>
                 @endif
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-2xl p-5">
+                <div class="text-xs uppercase tracking-wide font-semibold text-slate-400">Identité clinique</div>
+                <p class="mt-2 text-sm text-slate-600">Rapprochement avec les dossiers des établissements (serveur FHIR de FIT).</p>
+                <a href="{{ route('secretary.identity', ['player' => $player, 'back' => url()->current()]) }}" class="inline-flex mt-3 text-sm font-semibold text-blue-600">Vérifier l’identité clinique →</a>
             </div>
 
             @if($appointment->visit)

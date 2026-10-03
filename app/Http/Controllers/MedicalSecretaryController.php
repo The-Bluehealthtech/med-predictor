@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Athlete;
 use App\Models\Document;
+use App\Models\FhirPatientLink;
+use App\Models\PCMA;
 use App\Models\Player;
+use App\Models\PlayerLicense;
 use App\Models\User;
 use App\Models\Visit;
+use App\Services\Fhir\FhirException;
+use App\Services\Fhir\PatientIdentity;
+use App\Services\Licensing\PcmaRequirement;
+use App\Services\Medical\PcmaVisit;
 use App\Services\MedicalRecordAccess;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -115,6 +122,8 @@ final class MedicalSecretaryController extends Controller
             abort_unless($sourceVisit, 404);
         }
 
+        $pcmaNeeded = $this->pcmaNeeded();
+
         $athletes = $this->athletesQuery()->with('player')->orderBy('name')->limit(1000)->get();
         $doctors = User::query()
             ->whereIn('role', ['club_medical', 'association_medical', 'doctor'])
@@ -123,6 +132,7 @@ final class MedicalSecretaryController extends Controller
 
         return view('secretary.dashboard', compact(
             'stats',
+            'pcmaNeeded',
             'recentAppointments',
             'recentDocuments',
             'athletes',
@@ -138,7 +148,7 @@ final class MedicalSecretaryController extends Controller
             'athlete_id' => 'required|exists:athletes,id',
             'appointment_date' => 'required|date',
             'appointment_time' => 'required|date_format:H:i',
-            'appointment_type' => 'required|in:consultation,follow_up,emergency,pre_season,post_match,rehabilitation,routine_checkup,injury_assessment,cardiac_evaluation,concussion_assessment',
+            'appointment_type' => 'required|in:consultation,pcma,follow_up,emergency,pre_season,post_match,rehabilitation,routine_checkup,injury_assessment,cardiac_evaluation,concussion_assessment',
             'doctor_id' => 'nullable|exists:users,id',
             'doctor_name' => 'nullable|string|max:255',
             'reason' => 'nullable|string|max:1000',
@@ -247,6 +257,9 @@ final class MedicalSecretaryController extends Controller
             ]);
         });
 
+        // Identité du joueur transmise au serveur FHIR (ITI-104) ; un échec ne bloque pas l'accueil.
+        app(PatientIdentity::class)->feedQuietly($player);
+
         return redirect()->route('secretary.dashboard')
             ->with('success', 'Pré-accueil terminé. Le joueur est placé en salle d’attente médicale.');
     }
@@ -264,6 +277,15 @@ final class MedicalSecretaryController extends Controller
             $visit->update(['status' => 'En cours']);
             $appointment->update(['status' => 'En cours']);
         });
+
+        // Visite PCMA : le médecin reprend le brouillon de la visite ou ouvre un PCMA rattaché à la visite.
+        if ($visit->visit_type === PcmaVisit::TYPE) {
+            $draft = PCMA::query()->where('visit_id', $visit->id)->where('status', 'pending')->where('is_signed', false)->latest('id')->first();
+
+            return $draft
+                ? redirect()->route('pcma.edit', $draft)->with('success', 'Visite PCMA : reprise du bilan en cours.')
+                : redirect()->route('pcma.create', ['visit_id' => $visit->id])->with('success', 'Visite PCMA : le bilan signé par le médecin clôturera la visite.');
+        }
 
         $player = $appointment->athlete->player;
         $dossier = $player->baseHealthRecord()->first();
@@ -296,7 +318,8 @@ final class MedicalSecretaryController extends Controller
         ]);
 
         $file = $request->file('document_file');
-        $path = $file->store('medical-intake/'.$appointment->visit->id, 'local');
+        // En base : le service n'a pas de disque persistant.
+        $path = app(\App\Services\MedicalFileStore::class)->put($file, 'visit_document', $validated['document_type'])->ref();
 
         Document::create([
             'visit_id' => $appointment->visit->id,
@@ -318,10 +341,98 @@ final class MedicalSecretaryController extends Controller
         return back()->with('success', 'Document ajouté à la visite pour le médecin.');
     }
 
+    /** Identité clinique du joueur sur le serveur FHIR : Patient de FIT, liens confirmés, candidats PDQm. */
+    public function identity(Request $request, Player $player): View
+    {
+        $this->authorizePlayer($player);
+        $identity = app(PatientIdentity::class);
+        $candidates = null;
+        $error = null;
+        if ($identity->configured() && $request->boolean('search')) {
+            try {
+                $candidates = $identity->candidates($player);
+            } catch (FhirException $e) {
+                $error = $e->getMessage();
+            }
+        }
+        $links = FhirPatientLink::query()->with('decidedBy')->where('player_id', $player->id)->orderBy('role')->orderByDesc('decided_at')->get();
+
+        return view('secretary.identity', ['player' => $player, 'configured' => $identity->configured(), 'candidates' => $candidates,
+            'error' => $error, 'fitLink' => $links->firstWhere('role', 'fit'), 'externalLinks' => $links->where('role', 'external')->values(),
+            'back' => $request->query('back')]);
+    }
+
+    public function identityDecision(Request $request, Player $player): RedirectResponse
+    {
+        $this->authorizePlayer($player);
+        $data = $request->validate(['patient_id' => 'required|string|max:64|regex:/^[A-Za-z0-9\-\.]{1,64}$/', 'decision' => 'required|in:link,reject',
+            'matched_on' => 'nullable|in:fifa_id,demographics']);
+        $identity = app(PatientIdentity::class);
+        abort_unless($identity->configured(), 503, 'Serveur FHIR de FIT non installé.');
+        try {
+            $data['decision'] === 'link'
+                ? $identity->confirm($player, $data['patient_id'], $request->user(), $data['matched_on'] ?? null)
+                : $identity->reject($player, $data['patient_id'], $request->user());
+        } catch (FhirException $e) {
+            return back()->withErrors(['fhir' => $e->getMessage()]);
+        }
+
+        return redirect()->route('secretary.identity', ['player' => $player, 'search' => 1])
+            ->with('success', $data['decision'] === 'link' ? 'Patient rattaché à l’identité clinique du joueur.' : 'Patient écarté : il ne sera plus proposé.');
+    }
+
+    public function identityFeed(Player $player): RedirectResponse
+    {
+        $this->authorizePlayer($player);
+        $identity = app(PatientIdentity::class);
+        abort_unless($identity->configured(), 503, 'Serveur FHIR de FIT non installé.');
+        try {
+            $identity->feed($player);
+        } catch (FhirException $e) {
+            return back()->withErrors(['fhir' => $e->getMessage()]);
+        }
+
+        return back()->with('success', 'Identité du joueur transmise au serveur FHIR.');
+    }
+
+    /**
+     * Demandes de licence en cours bloquées par la condition PCMA (barème de la fédération),
+     * pour lesquelles aucune visite PCMA n'est encore prévue. Seuls l'état et la date du PCMA
+     * sont exposés au secrétariat, jamais le contenu médical.
+     */
+    private function pcmaNeeded()
+    {
+        $licenses = PlayerLicense::withoutGlobalScopes()->with(['player.club'])
+            ->whereIn('status', ['pending', 'justification_requested'])
+            ->whereNull('club_official_id')
+            ->whereIn('player_id', $this->playersQuery()->select('players.id'))
+            ->orderBy('created_at')
+            ->limit(50)
+            ->get();
+        if ($licenses->isEmpty()) {
+            return collect();
+        }
+        $athletes = Athlete::query()->whereIn('player_id', $licenses->pluck('player_id'))->pluck('id', 'player_id');
+        $planned = Appointment::query()->where('appointment_type', PcmaVisit::TYPE)
+            ->whereIn('status', ['Planifié', 'Confirmé', 'Enregistré', 'En cours'])
+            ->whereIn('athlete_id', $athletes->values())->pluck('athlete_id')->all();
+        $requirement = app(PcmaRequirement::class);
+
+        return $licenses->map(function (PlayerLicense $license) use ($requirement, $athletes, $planned) {
+            $check = $requirement->check($license);
+            $athleteId = $athletes[$license->player_id] ?? null;
+
+            return $check['blocking'] && !in_array($athleteId, $planned, true)
+                ? ['license' => $license, 'player' => $license->player, 'athlete_id' => $athleteId, 'reason' => $check['reason'], 'status' => $check['status']]
+                : null;
+        })->filter()->unique(fn ($row) => $row['player']->id)->values();
+    }
+
     private function appointmentTitle(string $type): string
     {
         return match ($type) {
             'consultation' => 'Consultation médicale',
+            'pcma' => 'PCMA — évaluation médicale pré-compétition',
             'routine_checkup' => 'Contrôle médical',
             'injury_assessment' => 'Évaluation de blessure',
             'cardiac_evaluation' => 'Évaluation cardiaque',

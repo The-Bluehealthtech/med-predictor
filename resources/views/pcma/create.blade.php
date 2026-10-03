@@ -1484,31 +1484,7 @@
                                 <h3 class="text-lg font-semibold text-blue-900">{{ __('pcma.cardio_assessment_title') }}</h3>
                             </div>
                             
-                            <!-- ECG Diagram -->
-                            <div class="text-center mb-6">
-                                <div class="bg-white border border-gray-200 rounded-lg p-4 inline-block">
-                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">{{ __('pcma.ecg_upload_title') }}</h4>
-                                    <svg width="300" height="80" class="mx-auto">
-                                        <defs>
-                                            <linearGradient id="ecgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
-                                                <stop offset="50%" style="stop-color:#1e40af;stop-opacity:1" />
-                                                <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
-                                            </linearGradient>
-                                        </defs>
-                                        <!-- ECG Waveform -->
-                                        <path d="M10,40 Q20,20 30,40 Q40,60 50,40 Q60,20 70,40 Q80,60 90,40 Q100,20 110,40 Q120,60 130,40 Q140,20 150,40 Q160,60 170,40 Q180,20 190,40 Q200,60 210,40 Q220,20 230,40 Q240,60 250,40 Q260,20 270,40 Q280,60 290,40" 
-                                              stroke="url(#ecgGradient)" stroke-width="3" fill="none"/>
-                                        <!-- P Wave -->
-                                        <circle cx="30" cy="35" r="2" fill="#3b82f6"/>
-                                        <!-- QRS Complex -->
-                                        <path d="M50,40 L50,20 L55,20 L55,60 L60,60 L60,40" stroke="#1e40af" stroke-width="2" fill="none"/>
-                                        <!-- T Wave -->
-                                        <path d="M70,40 Q75,25 80,40" stroke="#3b82f6" stroke-width="2" fill="none"/>
-                                    </svg>
-                                    <p class="text-xs text-gray-500 mt-2">{{ __('pcma.sinus_rhythm_note') }}</p>
-                                </div>
-                            </div>
+                            @include('pcma.partials.ecg-preview')
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -1568,29 +1544,7 @@
                                 <h3 class="text-lg font-semibold text-purple-900">{{ __('pcma.neuro_assessment_title') }}</h3>
                             </div>
                             
-                            <!-- Brain Diagram -->
-                            <div class="text-center mb-6">
-                                <div class="bg-white border border-gray-200 rounded-lg p-4 inline-block">
-                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">{{ __('pcma.brain_anatomy_title') }}</h4>
-                                    <svg width="200" height="120" class="mx-auto">
-                                        <!-- Brain Outline -->
-                                        <path d="M100,20 Q120,30 130,50 Q135,70 130,90 Q120,110 100,120 Q80,110 70,90 Q65,70 70,50 Q80,30 100,20" 
-                                              stroke="#8b5cf6" stroke-width="2" fill="#f3e8ff"/>
-                                        <!-- Brain Lobes -->
-                                        <path d="M85,40 Q95,35 105,40 Q110,50 105,60 Q95,65 85,60 Q80,50 85,40" 
-                                              stroke="#7c3aed" stroke-width="1" fill="#ddd6fe"/>
-                                        <path d="M95,70 Q105,65 115,70 Q120,80 115,90 Q105,95 95,90 Q90,80 95,70" 
-                                              stroke="#7c3aed" stroke-width="1" fill="#ddd6fe"/>
-                                        <!-- Brain Stem -->
-                                        <rect x="95" y="100" width="10" height="15" fill="#7c3aed"/>
-                                        <!-- Labels -->
-                                        <text x="50" y="35" class="text-xs" fill="#6b7280">{{ __('pcma.frontal_label') }}</text>
-                                        <text x="140" y="85" class="text-xs" fill="#6b7280">{{ __('pcma.occipital_label') }}</text>
-                                        <text x="100" y="125" class="text-xs" fill="#6b7280">{{ __('pcma.brainstem_label') }}</text>
-                                    </svg>
-                                    <p class="text-xs text-gray-500 mt-2">{{ __('pcma.neuro_exam_normal_note') }}</p>
-                                </div>
-                            </div>
+                            @include('pcma.partials.neuro-map')
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -1655,40 +1609,7 @@
                                 <h3 class="text-lg font-semibold text-orange-900">{{ __('pcma.msk_assessment_title') }}</h3>
                             </div>
                             
-                            <!-- Body Diagram -->
-                            <div class="text-center mb-6">
-                                <div class="bg-white border border-gray-200 rounded-lg p-4 inline-block">
-                                    <h4 class="text-sm font-semibold text-gray-700 mb-3">{{ __('pcma.msk_anatomy_title') }}</h4>
-                                    <svg width="150" height="200" class="mx-auto">
-                                        <!-- Head -->
-                                        <circle cx="75" cy="20" r="15" fill="#f97316" stroke="#ea580c" stroke-width="1"/>
-                                        <!-- Neck -->
-                                        <rect x="70" y="35" width="10" height="15" fill="#f97316"/>
-                                        <!-- Torso -->
-                                        <rect x="50" y="50" width="50" height="60" fill="#f97316" stroke="#ea580c" stroke-width="1"/>
-                                        <!-- Arms -->
-                                        <rect x="20" y="60" width="8" height="40" fill="#f97316"/>
-                                        <rect x="122" y="60" width="8" height="40" fill="#f97316"/>
-                                        <!-- Legs -->
-                                        <rect x="60" y="110" width="8" height="50" fill="#f97316"/>
-                                        <rect x="82" y="110" width="8" height="50" fill="#f97316"/>
-                                        <!-- Joints -->
-                                        <circle cx="75" cy="50" r="3" fill="#ea580c"/>
-                                        <circle cx="24" cy="100" r="3" fill="#ea580c"/>
-                                        <circle cx="126" cy="100" r="3" fill="#ea580c"/>
-                                        <circle cx="64" cy="160" r="3" fill="#ea580c"/>
-                                        <circle cx="86" cy="160" r="3" fill="#ea580c"/>
-                                        <!-- Labels -->
-                                        <text x="75" y="15" class="text-xs" fill="#6b7280">{{ __('pcma.head_label') }}</text>
-                                        <text x="75" y="85" class="text-xs" fill="#6b7280">{{ __('pcma.msk_torso_label') }}</text>
-                                        <text x="15" y="85" class="text-xs" fill="#6b7280">{{ __('pcma.arm_label') }}</text>
-                                        <text x="130" y="85" class="text-xs" fill="#6b7280">{{ __('pcma.arm_label') }}</text>
-                                        <text x="55" y="140" class="text-xs" fill="#6b7280">{{ __('pcma.leg_label') }}</text>
-                                        <text x="85" y="140" class="text-xs" fill="#6b7280">{{ __('pcma.leg_label') }}</text>
-                                    </svg>
-                                    <p class="text-xs text-gray-500 mt-2">{{ __('pcma.msk_exam_normal_note') }}</p>
-                                </div>
-                            </div>
+                            @include('pcma.partials.msk-body-map')
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -7571,4 +7492,30 @@ if (document.readyState === 'loading') {
 }
 </script>
 @endpush
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('ecg_file');
+    const root = document.querySelector('[data-pcma-ecg-preview]');
+    if (!input || !root) return;
+    let previewUrl = null;
+    input.addEventListener('change', () => {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        const file = input.files && input.files[0];
+        const empty = root.querySelector('[data-ecg-empty]');
+        const image = root.querySelector('[data-ecg-image]');
+        const pdf = root.querySelector('[data-ecg-pdf]');
+        const dicom = root.querySelector('[data-ecg-dicom]');
+        const state = root.querySelector('[data-ecg-state]');
+        const filename = root.querySelector('[data-ecg-filename]');
+        [image,pdf,dicom].forEach(el => { el?.classList.add('hidden'); el?.classList.remove('flex'); });
+        if (!file) { empty?.classList.remove('hidden'); state.textContent='Aucun ECG'; filename.textContent='Aucun fichier sélectionné'; return; }
+        empty?.classList.add('hidden'); filename.textContent=file.name; state.textContent='ECG chargé'; previewUrl=URL.createObjectURL(file);
+        const ext=(file.name.split('.').pop()||'').toLowerCase();
+        if (file.type.startsWith('image/')) { image.src=previewUrl; image.classList.remove('hidden'); }
+        else if (file.type==='application/pdf' || ext==='pdf') { pdf.src=previewUrl; pdf.classList.remove('hidden'); }
+        else { dicom.classList.remove('hidden'); dicom.classList.add('flex'); }
+    });
+});
+</script>
 @endsection

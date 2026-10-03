@@ -185,7 +185,9 @@ Ajoutez ou synchronisez les membres du staff dans les fiches <span class="font-s
 <label class="text-sm">Minute<input type="number" min="0" max="180" name="match_minute" class="mt-1 w-full rounded-lg border-slate-300"></label>
 <label class="text-sm">Joueur
 <select name="player_id" class="mt-1 w-full rounded-lg border-slate-300"><option value="">Non identifié / non-joueur</option>
-@foreach($matchPlayers as $player)<option value="{{ $player->id }}">{{ $player->name ?: trim($player->first_name.' '.$player->last_name) }}</option>@endforeach
+@foreach($matchPlayers as $player)
+<option value="{{ $player['id'] }}">#{{ $player['jersey_number'] ?? '—' }} · {{ $player['name'] }} · {{ $player['club_name'] ?? 'Club non renseigné' }}</option>
+@endforeach
 </select></label>
 </div>
 <div class="grid gap-4 md:grid-cols-2">
@@ -237,10 +239,15 @@ Ajoutez ou synchronisez les membres du staff dans les fiches <span class="font-s
 
 @if($incidents->isNotEmpty())
 <div class="mt-5 space-y-2">
+<h3 class="text-sm font-semibold text-slate-900">Historique des incidents ({{ $incidents->count() }})</h3>
 @foreach($incidents as $incident)
 <div class="rounded-xl border border-slate-200 p-4 text-sm">
 <div class="flex flex-wrap items-center justify-between gap-2"><strong>{{ str_replace('_',' ',ucfirst($incident->incident_type)) }}</strong><span class="text-slate-500">{{ $incident->match_minute !== null ? $incident->match_minute.'e min' : 'Minute non renseignée' }}</span></div>
-<p class="mt-1 text-slate-700">{{ $incident->player?->name ?? 'Personne non identifiée' }} · {{ $incident->doctor_name }}</p>
+@php($incidentIdentity=$matchPlayers->firstWhere('id',$incident->player_id))
+<p class="mt-1 text-slate-700">
+@if($incidentIdentity)#{{ $incidentIdentity['jersey_number'] ?? '—' }} · {{ $incidentIdentity['name'] }} · {{ $incidentIdentity['club_name'] ?? 'Club non renseigné' }}@else{{ $incident->player?->name ?? 'Personne non identifiée' }}@endif
+@if($incident->doctor_name) · {{ $incident->doctor_name }}@endif
+</p>
 @if($incident->initial_diagnosis)<p class="mt-1 text-slate-600">{{ $incident->initial_diagnosis }}</p>@endif
 </div>
 @endforeach

@@ -28,7 +28,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
             $this->defaults($match)
         );
 
-        $match->loadMissing(['rosters.players.player','medicalIncidents.player','medicalIncidents.doctor']);
+        $match->loadMissing(['rosters.team.club','rosters.players.player','medicalIncidents.player','medicalIncidents.doctor']);
         $connectMatch = $this->connectMatch($match);
         if ($connectMatch && blank($plan->connect_match_fifa_id)) {
             $plan->forceFill(['connect_match_fifa_id' => $connectMatch->match_fifa_id])->save();
@@ -47,7 +47,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
             'canValidate'=>$this->canValidate($request, $match),
             'canDocumentIncident'=>$this->canDocumentIncident($request, $match),
             'eligibleLeaders'=>$this->eligibleLeaders($match),
-            'matchPlayers'=>$match->rosters->flatMap->players->pluck('player')->filter()->unique('id')->sortBy('name')->values(),
+            'matchPlayers'=>$this->matchSheetPlayers($match),
             'incidents'=>$match->medicalIncidents->sortByDesc('created_at'),
             'roleDefinitions'=>$this->roleDefinitions(),
             'mechanismOptions'=>$this->mechanismOptions(),
@@ -278,6 +278,29 @@ final class MatchMedicalEmergencyPlanController extends Controller
         return $user->role === 'association_medical'
             && $user->association_id
             && (int) $user->association_id === (int) $match->competition?->association_id;
+    }
+
+    private function matchSheetPlayers(MatchModel $match)
+    {
+        return $match->rosters
+            ->flatMap(function ($roster) {
+                return $roster->players->map(function ($rosterPlayer) use ($roster) {
+                    $player = $rosterPlayer->player;
+                    if (!$player) return null;
+
+                    return [
+                        'id' => $player->id,
+                        'name' => $player->name ?: trim(($player->first_name ?? '').' '.($player->last_name ?? '')),
+                        'jersey_number' => $rosterPlayer->jersey_number,
+                        'club_name' => $roster->team?->club?->name ?: $roster->team?->name,
+                        'team_name' => $roster->team?->name,
+                    ];
+                });
+            })
+            ->filter()
+            ->unique('id')
+            ->sortBy(fn ($row) => [$row['club_name'] ?? '', $row['jersey_number'] ?? 999, $row['name']])
+            ->values();
     }
 
     private function mechanismOptions(): array

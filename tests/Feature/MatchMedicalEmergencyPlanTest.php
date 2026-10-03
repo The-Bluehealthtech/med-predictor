@@ -312,6 +312,71 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         $this->assertSame('PERSON-FIFA-MED-1',$plan->connect_role_assignments['black']);
     }
 
+
+    public function test_player_selector_uses_fdm_identity_and_allows_multiple_incidents_for_same_player(): void
+    {
+        $player = \App\Models\Player::factory()->create([
+            'first_name'=>'Karim',
+            'last_name'=>'Testeur',
+            'club_id'=>$this->homeClub->id,
+        ]);
+        if (Schema::hasTable('game_matches')) {
+            \DB::table('game_matches')->updateOrInsert(['id'=>$this->match->id],[
+                'competition_id'=>$this->match->competition_id,
+                'home_team_id'=>$this->match->home_team_id,
+                'away_team_id'=>$this->match->away_team_id,
+                'created_at'=>now(),
+                'updated_at'=>now(),
+            ]);
+        }
+        $roster = \App\Models\MatchRoster::query()->create([
+            'match_id'=>$this->match->id,
+            'team_id'=>$this->match->home_team_id,
+        ]);
+        \App\Models\MatchRosterPlayer::query()->create([
+            'match_roster_id'=>$roster->id,
+            'player_id'=>$player->id,
+            'position'=>'forward',
+            'is_starter'=>true,
+            'jersey_number'=>9,
+        ]);
+        $admin = User::factory()->create(['role'=>'admin','status'=>'active','tenant_id'=>1]);
+
+        $this->actingAs($admin)
+            ->get('/_t/matches/'.$this->match->id.'/medical-emergency-plan')
+            ->assertOk()
+            ->assertSee('#9')
+            ->assertSee('Karim Testeur')
+            ->assertSee($this->homeClub->name);
+
+        foreach ([22, 71] as $minute) {
+            $this->actingAs($admin)
+                ->post('/_t/matches/'.$this->match->id.'/medical-incidents',[
+                    'incident_type'=>'other',
+                    'player_id'=>$player->id,
+                    'match_minute'=>$minute,
+                    'mechanism'=>'direct_blow',
+                    'doctor_name'=>'Dr Terrain',
+                ])
+                ->assertRedirect();
+        }
+
+        $this->assertSame(2, \App\Models\MatchMedicalIncident::query()
+            ->where('match_id',$this->match->id)
+            ->where('player_id',$player->id)
+            ->count());
+
+        $this->actingAs($admin)
+            ->get('/_t/matches/'.$this->match->id.'/medical-emergency-plan')
+            ->assertOk()
+            ->assertSee('Historique des incidents (2)')
+            ->assertSee('22e min')
+            ->assertSee('71e min')
+            ->assertSee('#9')
+            ->assertSee('Karim Testeur')
+            ->assertSee($this->homeClub->name);
+    }
+
     public function test_admin_can_collect_and_persist_matchday_medical_data(): void
     {
         $admin = User::factory()->create([

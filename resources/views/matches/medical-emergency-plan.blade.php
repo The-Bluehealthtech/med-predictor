@@ -25,8 +25,8 @@ $timelineLabels=[
     title="Plan d’urgence médical"
     subtitle="{{ $match->homeTeam?->name ?? 'Équipe domicile' }} vs {{ $match->awayTeam?->name ?? 'Équipe extérieure' }}"
     eyebrow="Medical Matchday · FIFA Emergency Care Protocols"
-    :back-href="route('competition-management.matches.match-sheet',$match)"
-    back-label="Retour à la feuille de match"
+    :back-href="route('competition-management.matches.matchday-preparation',$match)"
+    back-label="Retour à Préparation Match Day"
 />
 
 @if(session('success'))

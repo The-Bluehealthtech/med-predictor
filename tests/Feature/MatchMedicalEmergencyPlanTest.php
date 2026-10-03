@@ -41,6 +41,8 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         }
 
         Route::middleware(['web'])->group(function () {
+            Route::get('/_t/competition-management/matches', fn () => response('matches'))->name('competition-management.matches.index');
+            Route::get('/_t/matches/{match}/matchday-preparation', [\App\Http\Controllers\MatchdayPreparationController::class,'show'])->name('competition-management.matches.matchday-preparation');
             Route::get('/_t/matches/{match}/medical-emergency-plan', [MatchMedicalEmergencyPlanController::class,'show'])->name('matches.medical-emergency-plan');
             Route::put('/_t/matches/{match}/medical-emergency-plan', [MatchMedicalEmergencyPlanController::class,'update'])->name('matches.medical-emergency-plan.update');
             Route::post('/_t/matches/{match}/medical-emergency-plan/validate', [MatchMedicalEmergencyPlanController::class,'validatePlan'])->name('matches.medical-emergency-plan.validate');
@@ -198,6 +200,31 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         $incident=\App\Models\MatchMedicalIncident::query()->where('match_id',$this->match->id)->latest('id')->firstOrFail();
         $this->assertSame('FIFA_HEAD_CERVICAL',$incident->protocol_code);
         $this->assertTrue($incident->protocol_actions['head_neuro']);
+    }
+
+    public function test_association_user_can_open_matchday_preparation_cockpit(): void
+    {
+        $doctor = User::factory()->create([
+            'role'=>'association_medical','association_id'=>$this->association->id,'status'=>'active','tenant_id'=>1,
+        ]);
+
+        $this->actingAs($doctor)
+            ->get('/_t/matches/'.$this->match->id.'/matchday-preparation')
+            ->assertOk()
+            ->assertSee('Préparation Match Day')
+            ->assertSee('Medical Matchday')
+            ->assertSee('Feuille de match');
+    }
+
+    public function test_unrelated_club_cannot_open_matchday_preparation_cockpit(): void
+    {
+        $doctor = User::factory()->create([
+            'role'=>'club_medical','club_id'=>$this->otherClub->id,'status'=>'active','tenant_id'=>1,
+        ]);
+
+        $this->actingAs($doctor)
+            ->get('/_t/matches/'.$this->match->id.'/matchday-preparation')
+            ->assertForbidden();
     }
 
 }

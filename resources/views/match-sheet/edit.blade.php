@@ -19,6 +19,10 @@
                             @else bg-red-100 text-red-800 @endif">
                             {{ $matchSheet->status_label }}
                         </span>
+                        <a href="{{ route('competition-management.matches.matchday-preparation', $match) }}"
+                           class="inline-flex items-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-md font-semibold text-xs text-blue-700 uppercase tracking-widest hover:bg-blue-100">
+                            Préparation Match Day
+                        </a>
                         <a href="{{ route('competition-management.matches.match-sheet', $match) }}" 
                            class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
                             View Match Sheet

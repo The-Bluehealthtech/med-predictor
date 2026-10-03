@@ -198,7 +198,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('competition-management.matches.match.show', $match) }}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
+                                    <a href="{{ route('competition-management.matches.matchday-preparation', $match) }}" class="text-blue-600 hover:text-blue-900 mr-3">Match Day</a>
                                     <a href="{{ route('competition-management.matches.match-sheet', $match) }}" class="text-green-600 hover:text-green-900 mr-3">Match Sheet</a>
                                     <a href="{{ route('competition-management.matches.match.edit', $match) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                 </td>

@@ -12,8 +12,12 @@ Route::post('/language', function (\Illuminate\Http\Request $request) {
 Route::get('/match-sheet/{gameMatch}', [\App\Http\Controllers\MatchSheetController::class, 'show'])
     ->middleware('auth')->name('match-sheet.show');
 
+Route::get('/competition-management/matches', [\App\Http\Controllers\CompetitionManagementController::class, 'matchesIndex'])
+    ->middleware('auth')->name('competition-management.matches.index');
 Route::get('/competition-management/matches/{gameMatch}/match-sheet', [\App\Http\Controllers\MatchSheetController::class, 'show'])
     ->middleware('auth')->name('competition-management.matches.match-sheet');
+Route::get('/competition-management/matches/{match}/matchday-preparation', [\App\Http\Controllers\MatchdayPreparationController::class, 'show'])
+    ->middleware('auth')->whereNumber('match')->name('competition-management.matches.matchday-preparation');
 Route::get('/competition-management/matches/{match}/match-sheet/edit', [\App\Http\Controllers\CompetitionManagementController::class, 'editMatchSheet'])
     ->middleware('auth')->name('competition-management.matches.match-sheet.edit');
 Route::put('/competition-management/matches/{match}/match-sheet', [\App\Http\Controllers\CompetitionManagementController::class, 'updateMatchSheet'])

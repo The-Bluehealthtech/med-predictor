@@ -47,6 +47,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
             'canValidate'=>$this->canValidate($request, $match),
             'canDocumentIncident'=>$this->canDocumentIncident($request, $match),
             'eligibleLeaders'=>$this->eligibleLeaders($match),
+            'evacuationReferences'=>$this->evacuationReferences($match),
             'matchPlayers'=>$this->matchSheetPlayers($match),
             'incidents'=>$match->medicalIncidents->sortByDesc('created_at'),
             'roleDefinitions'=>$this->roleDefinitions(),
@@ -73,6 +74,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
             'nearest_hospital_phone'=>'required|string|max:64',
             'ambulance_contact'=>'required|string|max:128',
             'team_leader_user_id'=>'nullable|exists:users,id',
+            'team_leader_person_fifa_id'=>'nullable|string|max:255',
             'team_leader_name'=>'required|string|max:255',
             'team_leader_phone'=>'required|string|max:64',
             'role_assignments'=>'nullable|array',
@@ -87,7 +89,17 @@ final class MatchMedicalEmergencyPlanController extends Controller
         ]);
 
         $connectMatch = $this->connectMatch($match);
-        $validConnectIds = $this->connectPeople($match)->pluck('person_fifa_id');
+        $identifiedPeople = $this->connectPeople($match);
+        $validConnectIds = $identifiedPeople->pluck('person_fifa_id');
+        if (filled($data['team_leader_person_fifa_id'] ?? null)) {
+            $leader = $identifiedPeople->firstWhere('person_fifa_id', $data['team_leader_person_fifa_id']);
+            if (!$leader) {
+                throw ValidationException::withMessages(['team_leader_person_fifa_id'=>'Ce responsable n’est pas déclaré dans les staffs actifs des clubs du match.']);
+            }
+            $data['team_leader_name'] = $leader['name'];
+            if (filled($leader['phone'] ?? null)) $data['team_leader_phone'] = $leader['phone'];
+            $data['team_leader_user_id'] = null;
+        }
         foreach (($data['connect_role_assignments'] ?? []) as $role => $personFifaId) {
             if (filled($personFifaId) && !$validConnectIds->contains($personFifaId)) {
                 throw ValidationException::withMessages([
@@ -221,14 +233,21 @@ final class MatchMedicalEmergencyPlanController extends Controller
 
     private function eligibleLeaders(MatchModel $match)
     {
-        return User::query()
-            ->whereIn('role',['association_medical','club_medical','team_doctor','doctor','medical_staff'])
-            ->where(function($q)use($match){
-                $q->where('association_id',$match->competition?->association_id)
-                    ->orWhereIn('club_id',array_filter([$match->home_club_id,$match->away_club_id]));
-            })
-            ->orderBy('name')
-            ->get(['id','name','role','club_id','association_id']);
+        return $this->connectPeople($match);
+    }
+
+    private function evacuationReferences(MatchModel $match): array
+    {
+        $query = MatchMedicalEmergencyPlan::query()->where('match_id','!=',$match->id);
+        if ($match->competition?->association_id && Schema::hasTable('competitions')) {
+            $query->whereHas('match.competition', fn ($q) => $q->where('association_id',$match->competition->association_id));
+        }
+        $plans = $query->latest('updated_at')->limit(100)->get(['nearest_hospital','nearest_hospital_phone','ambulance_contact']);
+
+        return [
+            'hospitals'=>$plans->filter(fn($p)=>filled($p->nearest_hospital))->unique(fn($p)=>mb_strtolower($p->nearest_hospital.'|'.$p->nearest_hospital_phone))->values(),
+            'ambulances'=>$plans->pluck('ambulance_contact')->filter()->unique()->values(),
+        ];
     }
 
 
@@ -264,6 +283,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
                 'source' => $official->source ?: 'FIT',
                 'team' => $official->club?->name,
                 'club_id' => $official->club_id,
+                'phone' => $official->phone,
             ])
             ->unique(fn ($row) => $row['club_id'].'|'.$row['person_fifa_id'].'|'.$row['role_connect_id'])
             ->values();

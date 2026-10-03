@@ -53,21 +53,41 @@ $timelineLabels=[
 
 <section class="rounded-2xl border border-slate-200 bg-white p-5">
 <h2 class="font-semibold text-slate-900">1. Contacts & évacuation</h2>
+<p class="mt-1 text-sm text-slate-600">Données Match Day et contacts identifiés. Les structures déjà utilisées dans l’association sont proposées pour éviter les ressaisies.</p>
 <div class="mt-4 grid gap-4 md:grid-cols-2">
-<label class="text-sm">Stade<input name="stadium" value="{{ old('stadium',$plan->stadium) }}" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)></label>
-<label class="text-sm">Hôpital le plus proche<input name="nearest_hospital" value="{{ old('nearest_hospital',$plan->nearest_hospital) }}" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)></label>
-<label class="text-sm">Téléphone hôpital<input name="nearest_hospital_phone" value="{{ old('nearest_hospital_phone',$plan->nearest_hospital_phone) }}" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)></label>
-<label class="text-sm">Ambulance / régulation<input name="ambulance_contact" value="{{ old('ambulance_contact',$plan->ambulance_contact) }}" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)></label>
-<label class="text-sm">Responsable d’équipe
-<select name="team_leader_user_id" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)>
-<option value="">Saisie libre</option>
+<label class="text-sm">Stade / lieu du match
+<input name="stadium" value="{{ old('stadium',$plan->stadium ?: $match->stadium ?: $match->venue) }}" class="mt-1 w-full rounded-lg border-slate-300 bg-slate-50" @disabled(!$canEdit)>
+<span class="mt-1 block text-xs text-slate-500">Prérempli depuis la fiche du match.</span>
+</label>
+<label class="text-sm">Hôpital / structure d’évacuation
+<input name="nearest_hospital" value="{{ old('nearest_hospital',$plan->nearest_hospital) }}" list="known-hospitals" class="mt-1 w-full rounded-lg border-slate-300" placeholder="Sélectionner ou saisir une structure" @disabled(!$canEdit)>
+<datalist id="known-hospitals">@foreach($evacuationReferences['hospitals'] as $hospital)<option value="{{ $hospital->nearest_hospital }}">{{ $hospital->nearest_hospital_phone }}</option>@endforeach</datalist>
+</label>
+<label class="text-sm">Téléphone hôpital / structure
+<input name="nearest_hospital_phone" value="{{ old('nearest_hospital_phone',$plan->nearest_hospital_phone) }}" class="mt-1 w-full rounded-lg border-slate-300" placeholder="Téléphone opérationnel" @disabled(!$canEdit)>
+</label>
+<label class="text-sm">Ambulance / régulation
+<input name="ambulance_contact" value="{{ old('ambulance_contact',$plan->ambulance_contact) }}" list="known-ambulances" class="mt-1 w-full rounded-lg border-slate-300" placeholder="Sélectionner ou saisir le contact" @disabled(!$canEdit)>
+<datalist id="known-ambulances">@foreach($evacuationReferences['ambulances'] as $ambulance)<option value="{{ $ambulance }}"></option>@endforeach</datalist>
+</label>
+<label class="text-sm md:col-span-2">Responsable d’équipe médical / urgence
+<select name="team_leader_person_fifa_id" id="team-leader-person" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)>
+<option value="">— Sélectionner une personne identifiée —</option>
 @foreach($eligibleLeaders as $leader)
-<option value="{{ $leader->id }}" @selected((string)$plan->team_leader_user_id===(string)$leader->id)>{{ $leader->name }} · {{ $leader->role }}</option>
+<option value="{{ $leader['person_fifa_id'] }}" data-name="{{ $leader['name'] }}" data-phone="{{ $leader['phone'] ?? '' }}" @selected((string)old('team_leader_person_fifa_id',$plan->team_leader_person_fifa_id)===(string)$leader['person_fifa_id'])>
+{{ $leader['name'] }} · {{ $leader['role'] }}{{ $leader['team'] ? ' · '.$leader['team'] : '' }} · FIFA {{ $leader['person_fifa_id'] }}{{ filled($leader['phone'] ?? null) ? ' · '.$leader['phone'] : '' }}
+</option>
 @endforeach
 </select>
+@if($eligibleLeaders->isEmpty())<span class="mt-1 block text-xs text-amber-700">Aucune personne identifiée : ajoutez ou synchronisez les responsables dans Dirigeants & staff des clubs.</span>@endif
 </label>
-<label class="text-sm">Nom affiché du responsable<input name="team_leader_name" value="{{ old('team_leader_name',$plan->team_leader_name) }}" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)></label>
-<label class="text-sm">Téléphone responsable<input name="team_leader_phone" value="{{ old('team_leader_phone',$plan->team_leader_phone) }}" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)></label>
+<label class="text-sm">Nom du responsable
+<input name="team_leader_name" id="team-leader-name" value="{{ old('team_leader_name',$plan->team_leader_name) }}" class="mt-1 w-full rounded-lg border-slate-300 bg-slate-50" readonly>
+</label>
+<label class="text-sm">Téléphone responsable
+<input name="team_leader_phone" id="team-leader-phone" value="{{ old('team_leader_phone',$plan->team_leader_phone) }}" class="mt-1 w-full rounded-lg border-slate-300" placeholder="À compléter si absent de la fiche responsable" @disabled(!$canEdit)>
+</label>
+<input type="hidden" name="team_leader_user_id" value="">
 </div>
 </section>
 
@@ -351,3 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 @endsection
+
+<script>document.addEventListener('DOMContentLoaded',()=>{
+ const leader=document.getElementById('team-leader-person');
+ if(leader){ leader.addEventListener('change',()=>{ const option=leader.options[leader.selectedIndex]; const name=document.getElementById('team-leader-name'); const phone=document.getElementById('team-leader-phone'); if(name) name.value=option?.dataset?.name||''; if(phone && option?.dataset?.phone) phone.value=option.dataset.phone; }); }
+});
+</script>

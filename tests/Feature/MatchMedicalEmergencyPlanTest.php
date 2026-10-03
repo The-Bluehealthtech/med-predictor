@@ -42,6 +42,9 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         if (!Schema::hasColumn('match_medical_emergency_plans', 'connect_match_fifa_id')) {
             (require base_path('database/migrations/2026_10_03_229100_add_connect_context_to_match_medical_emergency_plans.php'))->up();
         }
+        if (!Schema::hasColumn('match_medical_emergency_plans', 'team_leader_person_fifa_id')) {
+            (require base_path('database/migrations/2026_10_04_090000_add_team_leader_connect_id_to_match_medical_emergency_plans.php'))->up();
+        }
 
         Route::middleware(['web'])->group(function () {
             Route::get('/_t/competition-management/matches', [\App\Http\Controllers\MatchdayPreparationController::class,'index'])->name('competition-management.matches.index');
@@ -312,6 +315,52 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         $this->assertSame('PERSON-FIFA-MED-1',$plan->connect_role_assignments['black']);
     }
 
+
+
+    public function test_contacts_and_evacuation_use_identified_club_responsible(): void
+    {
+        $admin = User::factory()->create(['role'=>'admin','status'=>'active','tenant_id'=>1]);
+        $official = new \App\Models\ClubOfficial;
+        $official->club_id = $this->homeClub->id;
+        $official->created_by = $admin->id;
+        $official->fill([
+            'person_fifa_id'=>'MED-LEADER-1',
+            'international_first_name'=>'Nadia',
+            'international_last_name'=>'Urgence',
+            'gender'=>'female',
+            'date_of_birth'=>'1981-02-03',
+            'nationality'=>'FR',
+            'registration_type'=>\App\Models\ClubOfficial::TEAM_OFFICIAL,
+            'team_official_role'=>'TeamDoctor',
+            'role_description'=>'TeamDoctor',
+            'phone'=>'+687 12 34 56',
+            'status'=>'active',
+            'discipline'=>'Football',
+            'registration_valid_from'=>today(),
+            'source'=>'FIFAConnect',
+        ]);
+        $official->save();
+
+        $this->actingAs($admin)
+            ->get('/_t/matches/'.$this->match->id.'/medical-emergency-plan')
+            ->assertOk()
+            ->assertSee('Nadia Urgence')
+            ->assertSee('MED-LEADER-1')
+            ->assertSee('+687 12 34 56');
+
+        $payload=$this->completePayload();
+        $payload['team_leader_person_fifa_id']='MED-LEADER-1';
+        $payload['team_leader_name']='Valeur remplacée';
+        $payload['team_leader_phone']='Valeur remplacée';
+        $this->actingAs($admin)
+            ->put('/_t/matches/'.$this->match->id.'/medical-emergency-plan',$payload)
+            ->assertRedirect();
+
+        $plan=MatchMedicalEmergencyPlan::query()->where('match_id',$this->match->id)->firstOrFail();
+        $this->assertSame('MED-LEADER-1',$plan->team_leader_person_fifa_id);
+        $this->assertSame('Nadia Urgence',$plan->team_leader_name);
+        $this->assertSame('+687 12 34 56',$plan->team_leader_phone);
+    }
 
     public function test_player_selector_uses_fdm_identity_and_allows_multiple_incidents_for_same_player(): void
     {

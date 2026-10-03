@@ -22,7 +22,9 @@ This checklist tracks production dependencies that must not be simulated in code
 
 ## FIFA TMS / ITC
 
-- [ ] Obtenir les accès officiels FIFA TMS/ITC et la documentation d’intégration autorisée avant toute activation.
+- [ ] Attendre la réception des credentials officiels du club pour FIFA TMS/ITC avant toute finalisation de l’intégration.
+- [ ] À réception des credentials du club : finaliser et valider l’intégration TMS/ITC de bout en bout dans les environnements FIFA autorisés.
+- [ ] Obtenir/valider la documentation d’intégration autorisée correspondant exactement aux credentials et au périmètre du club.
 - [ ] Installer/configurer le SDK FIFA Connect ID/TMS officiel dans un bridge dédié et autorisé ; FIT ne doit pas inventer d’endpoint TMS direct.
 - [ ] Configurer `FIFA_TMS_CLIENT_ID`, `FIFA_TMS_SECRET_KEY` et `FIFA_TMS_ENVIRONMENT` avec les credentials Azure AD fournis par FIFA, ainsi que `FIFA_TMS_BRIDGE_URL` / `FIFA_TMS_BRIDGE_TOKEN` pour le bridge SDK.
 - [ ] Valider le flux métier : FIT prépare le dossier → transfert réalisé dans FIFA TMS → `tmsTransferId` rattaché → FIT récupère statuts/ITC/provenance depuis TMS.

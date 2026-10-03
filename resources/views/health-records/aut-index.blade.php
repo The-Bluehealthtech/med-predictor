@@ -26,6 +26,7 @@
 <a href="{{ config('medical_aut.adams_url') }}" target="_blank" rel="noopener noreferrer" class="text-indigo-700">{{ __('medical_aut.adams_open') }} ↗</a>
 @if($item->status==='pending')<a href="{{ route('medical-aut.edit',[$healthRecord->id,$item->id]) }}">{{ __('medical_aut.edit') }}</a>@endif
 </div>
+@include('health-records._aut-digital-signature', ['item'=>$item])
 @foreach($item->supporting_documents ?? [] as $i=>$file)
 @if(is_array($file)&&isset($file['document_id']))
 <p><a href="{{ route('medical-aut.document',[$healthRecord->id,$item->id,$i]) }}">{{ $file['name'] ?? __('medical_aut.document') }}</a></p>

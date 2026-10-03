@@ -11,7 +11,7 @@ return [
     'draft_note'=>'Dossier préparatoire enregistré dans FIT. Ni une signature, ni un dépôt auprès de la FIFA, ni une AUT accordée. Les signatures et justificatifs doivent figurer dans les pièces jointes.',
     'source'=>'Télécharger le formulaire FIFA original (PDF)',
     'privacy'=>'Déclaration de confidentialité — texte du document fourni',
-    'signature_note'=>'Saisie préparatoire uniquement. Joignez le formulaire portant les signatures requises ; FIT ne les appose pas.',
+    'signature_note'=>'Les cadres de signature du formulaire restent vides. La signature numérique du PDF, lorsqu’un fournisseur est activé, certifie une version du document mais ne remplace pas les signatures réglementaires requises.',
     'documents'=>'Formulaire signé et justificatifs médicaux',
     'documents_help'=>'PDF, PNG ou JPEG, 10 Mo maximum par fichier. Les pièces sont privées et accessibles uniquement dans le périmètre médical autorisé.',
     'save'=>'Enregistrer le brouillon',

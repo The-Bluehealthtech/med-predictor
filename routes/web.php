@@ -1714,6 +1714,9 @@ Route::middleware(['auth'])->group(function () {
     // POST depuis la création, PUT depuis la modification (champ _method du formulaire).
     Route::match(['post', 'put'], '/health-records/{record}/aut/preview', [App\Http\Controllers\MedicalAutController::class, 'previewPdf'])->name('medical-aut.preview');
     Route::get('/health-records/{record}/aut/{aut}/pdf', [App\Http\Controllers\MedicalAutController::class, 'pdf'])->name('medical-aut.pdf');
+    Route::post('/health-records/{record}/aut/{aut}/digital-signature', [App\Http\Controllers\MedicalAutSignatureController::class, 'store'])->name('medical-aut.digital-signature');
+    Route::post('/health-records/{record}/aut/{aut}/digital-signature/{signature}/sync', [App\Http\Controllers\MedicalAutSignatureController::class, 'sync'])->name('medical-aut.digital-signature.sync');
+    Route::get('/health-records/{record}/aut/{aut}/digital-signature/{signature}/download', [App\Http\Controllers\MedicalAutSignatureController::class, 'download'])->name('medical-aut.digital-signature.download');
     Route::get('/health-records/{record}/aut/{aut}/edit', [App\Http\Controllers\MedicalAutController::class, 'edit'])->name('medical-aut.edit');
     Route::put('/health-records/{record}/aut/{aut}', [App\Http\Controllers\MedicalAutController::class, 'update'])->name('medical-aut.update');
     Route::get('/health-records/{record}/aut/{aut}/documents/{index}', [App\Http\Controllers\MedicalAutController::class, 'document'])->name('medical-aut.document');

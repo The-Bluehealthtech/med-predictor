@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 use App\Models\{HealthRecord, TUERequest, MedicalAutDocument};
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\{DB,Schema};
 use Barryvdh\DomPDF\Facade\Pdf;
 final class MedicalAutController extends Controller
 {
@@ -24,7 +24,14 @@ final class MedicalAutController extends Controller
     {
         $healthRecord=$this->record($record);
         $requests=TUERequest::where('health_record_id',$healthRecord->id)->where('player_id',$healthRecord->player_id)->latest('id')->get();
-        return view('health-records.aut-index',compact('healthRecord','requests'));
+        $signatureService=app(\App\Services\Documents\DocumentSignatureService::class);
+        $signatureProviders=Schema::hasTable('system_settings')
+            ? collect($signatureService->allStatuses())
+            : collect($signatureService->providers())->map(fn($provider,$slug)=>$provider+['slug'=>$slug,'enabled'=>false,'status'=>$provider['configured']?'disabled':'not_configured']);
+        $signatureRequests=Schema::hasTable('document_signature_requests')
+            ? \App\Models\DocumentSignatureRequest::query()->where('workflow','medical_aut.submission_document')->latest('id')->get()->groupBy(fn($item)=>(int)data_get($item->metadata,'document.aut_id'))
+            : collect();
+        return view('health-records.aut-index',compact('healthRecord','requests','signatureProviders','signatureRequests'));
     }
     public function create($record)
     {

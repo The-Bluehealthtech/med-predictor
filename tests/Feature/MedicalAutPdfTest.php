@@ -49,6 +49,8 @@ final class MedicalAutPdfTest extends TestCase
             }
             $t->timestamps();
         });
+        (require $root . '/database/migrations/2025_09_05_164708_create_system_settings_table.php')->up();
+        (require $root . '/database/migrations/2026_10_03_180000_create_document_signature_requests.php')->up();
         (require $root . '/database/migrations/2024_01_15_000006_create_tue_requests_table.php')->up();
         (require $root . '/database/migrations/2026_10_01_000001_add_icd11_and_aut_to_health_records.php')->up();
         \Illuminate\Support\Facades\Event::fake([\App\Events\HealthRecordCreated::class]);
@@ -131,6 +133,25 @@ final class MedicalAutPdfTest extends TestCase
         $this->put(route('medical-aut.preview', $record->id), ['form' => $this->form()])->assertOk();
         $this->assertSame(0, TUERequest::count(), 'un aperçu n’enregistre rien');
         $this->post(route('medical-aut.preview', $record->id), ['form' => ['birth_date' => 'pas une date']])->assertSessionHasErrors('form.birth_date');
+    }
+
+    public function test_aut_pdf_signature_is_bound_to_the_recorded_physician(): void
+    {
+        $record = $this->record();
+        $this->post(route('medical-aut.store', $record->id), ['form' => $this->form()])->assertRedirect();
+        $aut = TUERequest::firstOrFail();
+
+        $this->get(route('medical-aut.index', $record->id))->assertOk()
+            ->assertSee('Signature numérique de cette version PDF')
+            ->assertSee('workflow est prêt pour le Go Live');
+
+        $this->post(route('medical-aut.digital-signature', [$record->id, $aut->id]), ['provider' => 'adobe_sign'])
+            ->assertSessionHas('error');
+
+        DB::table('users')->insert(['id' => 2, 'name' => 'Autre médecin', 'role' => 'doctor', 'club_id' => 1]);
+        $this->actingAs(User::findOrFail(2)->forceFill(['tenant_id' => 1]));
+        $this->post(route('medical-aut.digital-signature', [$record->id, $aut->id]), ['provider' => 'adobe_sign'])
+            ->assertForbidden();
     }
 
     public function test_pdf_stays_inside_the_club_medical_scope(): void

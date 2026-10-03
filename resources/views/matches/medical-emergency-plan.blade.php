@@ -259,16 +259,29 @@ Ajoutez ou synchronisez les membres du staff dans les fiches <span class="font-s
 <div id="fifa-head-protocol" class="hidden rounded-xl border border-amber-300 bg-amber-50 p-4">
 <div><h3 class="font-semibold text-amber-900">Protocole FIFA · Traumatisme crânien / rachis cervical</h3><p class="text-xs text-amber-700">FIFA Emergency Care Protocols · v3 - March 2025 · immobilisation et évaluation structurée par l’équipe médicale.</p></div>
 <div class="mt-3 grid gap-2 md:grid-cols-2">
-@foreach(['head_cervical_control'=>'Contrôle / immobilisation cervicale','head_abcde'=>'Évaluation A©BCDE réalisée','head_neuro'=>'Examen neurologique documenté','head_collar'=>'Minerve envisagée / utilisée selon indication','head_transfer'=>'Transfert scoop / planche et sangles selon indication','head_evacuation'=>'Évacuation organisée si requise'] as $key=>$label)
+@foreach(['head_cervical_control'=>'Contrôle / immobilisation cervicale','head_abcde'=>'Évaluation ABCDE réalisée','head_neuro'=>'Examen neurologique documenté','head_collar'=>'Minerve envisagée / utilisée selon indication','head_transfer'=>'Transfert scoop / planche et sangles selon indication','head_evacuation'=>'Évacuation organisée si requise'] as $key=>$label)
 <label class="flex items-center gap-2 rounded-lg border border-amber-200 bg-white p-3 text-sm"><input type="checkbox" name="protocol_actions[{{ $key }}]" value="1" class="rounded border-slate-300">{{ $label }}</label>
 @endforeach
 </div></div>
 
+@php($abcdeOptions=[
+'a'=>['label'=>'A · Airway','options'=>['patent'=>'Voies aériennes libres','at_risk'=>'Voies aériennes à risque / menace','obstructed'=>'Obstruction suspectée / constatée','adjunct'=>'Dispositif de maintien des voies aériennes en place']],
+'b'=>['label'=>'B · Breathing','options'=>['normal'=>'Respiration spontanée sans anomalie évidente','abnormal'=>'Respiration anormale / détresse suspectée','absent'=>'Respiration absente','assisted'=>'Ventilation / assistance respiratoire en cours']],
+'c'=>['label'=>'C · Circulation','options'=>['stable'=>'Circulation sans anomalie évidente','compromised'=>'Circulation compromise / choc suspecté','major_bleeding'=>'Hémorragie majeure constatée','cpr'=>'RCP / compressions en cours']],
+'d'=>['label'=>'D · Disability','options'=>['alert'=>'Alerte / répond normalement','voice'=>'Répond à la voix','pain'=>'Répond à la douleur','unresponsive'=>'Sans réponse','neuro_abnormal'=>'Anomalie neurologique constatée']],
+'e'=>['label'=>'E · Exposure','options'=>['no_finding'=>'Pas de lésion évidente à l’exposition','injury_found'=>'Lésion / traumatisme visible','temperature_risk'=>'Risque thermique / environnemental','multiple_findings'=>'Lésions multiples constatées']],
+])
 <div class="grid gap-3 md:grid-cols-5">
-@foreach(['a'=>'A · Airway','b'=>'B · Breathing','c'=>'C · Circulation','d'=>'D · Disability','e'=>'E · Exposure'] as $key=>$label)
-<label class="text-xs font-semibold">{{ $label }}<textarea name="abcde_assessment[{{ $key }}]" rows="2" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></textarea></label>
+@foreach($abcdeOptions as $key=>$section)
+<label class="text-xs font-semibold">{{ $section['label'] }}
+<select name="abcde_assessment[{{ $key }}]" class="mt-1 w-full rounded-lg border-slate-300 text-sm">
+<option value="">— Non évalué —</option>
+@foreach($section['options'] as $value=>$label)<option value="{{ $value }}">{{ $label }}</option>@endforeach
+</select>
+</label>
 @endforeach
 </div>
+<p class="-mt-2 text-xs text-slate-500">ABCDE structuré : FIT enregistre les constatations du professionnel ; il ne produit pas de diagnostic autonome.</p>
 <div class="grid gap-2 sm:grid-cols-4">
 @foreach(['loss_of_consciousness'=>'Perte de connaissance','aed_used'=>'DAE utilisé','oxygen_used'=>'Oxygène administré','evacuated'=>'Évacuation'] as $key=>$label)
 <label class="flex items-center gap-2 rounded-lg border border-slate-200 p-3 text-sm"><input type="checkbox" name="{{ $key }}" value="1" class="rounded border-slate-300">{{ $label }}</label>

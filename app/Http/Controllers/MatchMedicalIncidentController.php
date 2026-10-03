@@ -24,8 +24,12 @@ final class MatchMedicalIncidentController extends Controller
             'player_id'=>'nullable|exists:players,id',
             'mechanism'=>'nullable|string|in:collapse_non_contact,player_collision,ground_collision,direct_blow,twist_non_contact,twist_contact,hyperextension_flexion,fall,sprint_overload,other',
             'contact'=>'nullable|boolean',
-            'abcde_assessment'=>'nullable|array',
-            'abcde_assessment.*'=>'nullable|string|max:1000',
+            'abcde_assessment'=>'nullable|array:a,b,c,d,e',
+            'abcde_assessment.a'=>['nullable', Rule::in(array_keys($this->abcdeOptions()['a']))],
+            'abcde_assessment.b'=>['nullable', Rule::in(array_keys($this->abcdeOptions()['b']))],
+            'abcde_assessment.c'=>['nullable', Rule::in(array_keys($this->abcdeOptions()['c']))],
+            'abcde_assessment.d'=>['nullable', Rule::in(array_keys($this->abcdeOptions()['d']))],
+            'abcde_assessment.e'=>['nullable', Rule::in(array_keys($this->abcdeOptions()['e']))],
             'protocol_actions'=>'nullable|array',
             'protocol_actions.*'=>'nullable|boolean',
             'loss_of_consciousness'=>'nullable|boolean',
@@ -100,6 +104,17 @@ final class MatchMedicalIncidentController extends Controller
             $match->homeTeam?->club?->matchday_hospital_name,
             $match->competition?->matchday_hospital_name,
         ])->filter()->unique()->values()->all();
+    }
+
+    private function abcdeOptions(): array
+    {
+        return [
+            'a'=>['patent'=>'Voies aériennes libres','at_risk'=>'Voies aériennes à risque / menace','obstructed'=>'Obstruction suspectée / constatée','adjunct'=>'Dispositif de maintien des voies aériennes en place'],
+            'b'=>['normal'=>'Respiration spontanée sans anomalie évidente','abnormal'=>'Respiration anormale / détresse suspectée','absent'=>'Respiration absente','assisted'=>'Ventilation / assistance respiratoire en cours'],
+            'c'=>['stable'=>'Circulation sans anomalie évidente','compromised'=>'Circulation compromise / choc suspecté','major_bleeding'=>'Hémorragie majeure constatée','cpr'=>'RCP / compressions en cours'],
+            'd'=>['alert'=>'Alerte / répond normalement','voice'=>'Répond à la voix','pain'=>'Répond à la douleur','unresponsive'=>'Sans réponse','neuro_abnormal'=>'Anomalie neurologique constatée'],
+            'e'=>['no_finding'=>'Pas de lésion évidente à l’exposition','injury_found'=>'Lésion / traumatisme visible','temperature_risk'=>'Risque thermique / environnemental','multiple_findings'=>'Lésions multiples constatées'],
+        ];
     }
 
     private function initialDiagnosisOptions(): array

@@ -124,6 +124,101 @@
     <section class="rounded-2xl border border-slate-200 bg-white p-5">
         <div class="flex flex-wrap items-start justify-between gap-4">
             <div>
+                <h2 class="font-semibold text-slate-900">Échéancier & Proof of Payment</h2>
+                <p class="mt-1 text-sm text-slate-600">FIT prépare les données de paiement et conserve la preuve privée ; seule une preuve validée par la fédération est marquée prête pour TMS.</p>
+            </div>
+        </div>
+
+        @if($associationOperator)
+            <form method="POST" action="{{ route('transfers.payments.store',$transfer) }}" class="mt-4 grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-3">
+                @csrf
+                <input type="hidden" name="payer_id" value="{{ $transfer->club_destination_id }}">
+                <input type="hidden" name="payee_id" value="{{ $transfer->club_origin_id }}">
+                <label class="text-sm">Type
+                    <select name="payment_type" class="mt-1 w-full rounded-lg border-slate-300" required>
+                        <option value="transfer_fee">Indemnité de transfert</option>
+                        <option value="training_compensation">Indemnité de formation</option>
+                        <option value="solidarity_contribution">Contribution de solidarité</option>
+                        <option value="other">Autre</option>
+                    </select>
+                </label>
+                <label class="text-sm">Montant
+                    <input name="amount" type="number" min="0.01" step="0.01" class="mt-1 w-full rounded-lg border-slate-300" required>
+                </label>
+                <label class="text-sm">Devise
+                    <input name="currency" value="{{ $transfer->currency ?: 'EUR' }}" maxlength="3" class="mt-1 w-full rounded-lg border-slate-300 uppercase" required>
+                </label>
+                <label class="text-sm">Mode
+                    <select name="payment_method" class="mt-1 w-full rounded-lg border-slate-300" required>
+                        <option value="bank_transfer">Virement bancaire</option>
+                        <option value="check">Chèque</option>
+                        <option value="cash">Espèces</option>
+                        <option value="other">Autre</option>
+                    </select>
+                </label>
+                <label class="text-sm">Échéance
+                    <input name="due_date" type="date" class="mt-1 w-full rounded-lg border-slate-300" required>
+                </label>
+                <div class="flex items-end"><button class="w-full rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Ajouter l’échéance</button></div>
+            </form>
+        @endif
+
+        <div class="mt-4 space-y-3">
+            @forelse($transfer->payments->sortBy('due_date') as $payment)
+                @php($canUploadPaymentProof = $associationOperator || (in_array(auth()->user()->role,['club_admin','club_manager'],true) && (int)auth()->user()->club_id === (int)$payment->payer_id))
+                <div class="rounded-xl border border-slate-200 p-4">
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                            <p class="font-semibold text-slate-900">{{ $payment->payment_type_label }} · {{ $payment->formatted_amount }}</p>
+                            <p class="mt-1 text-xs text-slate-500">Échéance {{ $payment->due_date?->format('d/m/Y') }} · {{ $payment->payment_status_label }}</p>
+                        </div>
+                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $payment->proof_status === 'approved' ? 'bg-emerald-100 text-emerald-800' : ($payment->proof_status === 'rejected' ? 'bg-red-100 text-red-800' : ($payment->proof_status === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700')) }}">
+                            Preuve : {{ ucfirst($payment->proof_status ?? 'missing') }}
+                        </span>
+                    </div>
+
+                    @if($payment->proof_file_path)
+                        <div class="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                            <span>{{ $payment->proof_file_name }}</span>
+                            @if($payment->proof_sha256)<span class="font-mono">SHA-256 {{ substr($payment->proof_sha256,0,12) }}…</span>@endif
+                            <a class="font-semibold text-blue-700" href="{{ route('transfers.payments.proof.download',[$transfer,$payment]) }}">Télécharger</a>
+                        </div>
+                    @endif
+
+                    @if($canUploadPaymentProof)
+                        <form method="POST" action="{{ route('transfers.payments.proof',[$transfer,$payment]) }}" enctype="multipart/form-data" class="mt-3 grid gap-2 md:grid-cols-[1fr_180px_1fr_auto] md:items-end">
+                            @csrf
+                            <label class="text-xs">Preuve
+                                <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full" required>
+                            </label>
+                            <label class="text-xs">Date paiement
+                                <input type="date" name="payment_date" class="mt-1 w-full rounded-lg border-slate-300 text-sm" required>
+                            </label>
+                            <label class="text-xs">Référence transaction
+                                <input name="transaction_id" class="mt-1 w-full rounded-lg border-slate-300 text-sm">
+                            </label>
+                            <button class="rounded-lg bg-blue-700 px-3 py-2 text-xs font-semibold text-white">Déposer</button>
+                        </form>
+                    @endif
+
+                    @if($associationOperator && $payment->proof_status === 'pending')
+                        <form method="POST" action="{{ route('transfers.payments.proof.decision',[$transfer,$payment]) }}" class="mt-3 flex flex-wrap gap-2">
+                            @csrf
+                            <input name="notes" class="min-w-[260px] flex-1 rounded-lg border-slate-300 text-sm" placeholder="Note fédération (obligatoire en cas de refus)">
+                            <button name="decision" value="approve" class="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-semibold text-white">Valider la preuve</button>
+                            <button name="decision" value="reject" class="rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 ring-1 ring-red-200">Refuser</button>
+                        </form>
+                    @endif
+                </div>
+            @empty
+                <p class="text-sm text-slate-500">Aucune échéance de paiement enregistrée.</p>
+            @endforelse
+        </div>
+    </section>
+
+    <section class="rounded-2xl border border-slate-200 bg-white p-5">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
                 <h2 class="font-semibold text-slate-900">Pièces et traçabilité</h2>
                 <p class="mt-1 text-sm text-slate-600">Les fichiers restent privés. Une nouvelle version remplace l’ancienne sans supprimer l’historique.</p>
             </div>

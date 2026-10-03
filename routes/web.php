@@ -1797,6 +1797,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/transfers/{transfer}/documents', [App\Http\Controllers\TransferDocumentController::class, 'store'])->whereNumber('transfer')->name('transfers.documents.store');
     Route::get('/transfers/{transfer}/documents/{document}', [App\Http\Controllers\TransferDocumentController::class, 'download'])->whereNumber('transfer')->whereNumber('document')->name('transfers.documents.download');
     Route::post('/transfers/{transfer}/documents/{document}/decision', [App\Http\Controllers\TransferDocumentController::class, 'decision'])->whereNumber('transfer')->whereNumber('document')->name('transfers.documents.decision');
+    Route::post('/transfers/{transfer}/payments', [App\Http\Controllers\TransferPaymentController::class, 'store'])->whereNumber('transfer')->name('transfers.payments.store');
+    Route::post('/transfers/{transfer}/payments/{payment}/proof', [App\Http\Controllers\TransferPaymentController::class, 'uploadProof'])->whereNumber('transfer')->whereNumber('payment')->name('transfers.payments.proof');
+    Route::get('/transfers/{transfer}/payments/{payment}/proof', [App\Http\Controllers\TransferPaymentController::class, 'downloadProof'])->whereNumber('transfer')->whereNumber('payment')->name('transfers.payments.proof.download');
+    Route::post('/transfers/{transfer}/payments/{payment}/proof/decision', [App\Http\Controllers\TransferPaymentController::class, 'proofDecision'])->whereNumber('transfer')->whereNumber('payment')->name('transfers.payments.proof.decision');
     
     // Performance Recommendations routes
     Route::get('/performance-recommendations', function () {

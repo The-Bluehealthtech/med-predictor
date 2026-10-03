@@ -168,6 +168,11 @@ final class TmsTransferPreparation
                 'currency' => $payment->currency,
                 'due_date' => optional($payment->due_date)->format('Y-m-d'),
                 'payment_date' => optional($payment->payment_date)->format('Y-m-d'),
+                'transaction_id' => $payment->transaction_id,
+                'reference_number' => $payment->reference_number,
+                'proof_status' => $payment->proof_status,
+                'proof_sha256' => $payment->proof_status === 'approved' ? $payment->proof_sha256 : null,
+                'proof_validated_at' => $payment->proof_status === 'approved' ? optional($payment->proof_validated_at)->toIso8601String() : null,
             ])->values()->all(),
             'prepared_by_fit' => true,
         ];
@@ -190,6 +195,7 @@ final class TmsTransferPreparation
                 'applicable' => (float) $transfer->transfer_fee > 0 || $transfer->payments->isNotEmpty(),
                 'label' => 'Proof of Payment',
                 'payments_count' => $transfer->payments->count(),
+                'proofs_ready' => $transfer->payments->where('proof_status', 'approved')->count(),
             ],
             'first_pro_registration' => $firstPro,
         ];

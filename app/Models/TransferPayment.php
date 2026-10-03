@@ -26,6 +26,18 @@ class TransferPayment extends Model
         'transaction_id',
         'reference_number',
         'payment_notes',
+        'proof_status',
+        'proof_file_path',
+        'proof_storage_disk',
+        'proof_file_name',
+        'proof_mime_type',
+        'proof_file_size',
+        'proof_sha256',
+        'proof_uploaded_at',
+        'proof_uploaded_by',
+        'proof_validated_at',
+        'proof_validated_by',
+        'proof_validation_notes',
         'fifa_payment_id',
         'fifa_payment_data',
         'created_by',
@@ -36,6 +48,8 @@ class TransferPayment extends Model
         'due_date' => 'date',
         'payment_date' => 'date',
         'processed_at' => 'datetime',
+        'proof_uploaded_at' => 'datetime',
+        'proof_validated_at' => 'datetime',
         'fifa_payment_data' => 'array',
     ];
 
@@ -194,7 +208,7 @@ class TransferPayment extends Model
         ]);
     }
 
-    public function markAsFailed(string $notes = null): void
+    public function markAsFailed(?string $notes = null): void
     {
         $this->update([
             'payment_status' => 'failed',
@@ -202,7 +216,7 @@ class TransferPayment extends Model
         ]);
     }
 
-    public function cancel(string $notes = null): void
+    public function cancel(?string $notes = null): void
     {
         $this->update([
             'payment_status' => 'cancelled',

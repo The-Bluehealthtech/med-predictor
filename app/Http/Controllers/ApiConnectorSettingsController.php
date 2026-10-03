@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ApiConnectorState;
 use App\Services\Licensing\AwsRekognitionFaceMatcher;
 use App\Services\Licensing\FifaIdRegistry;
 use App\Services\Licensing\SignotecSignatureProvider;
@@ -11,53 +12,101 @@ final class ApiConnectorSettingsController extends Controller
 {
     public function index(
         Request $request,
+        ApiConnectorState $state,
         AwsRekognitionFaceMatcher $rekognition,
         SignotecSignatureProvider $signotec,
         FifaIdRegistry $fifaId,
     ) {
-        abort_unless($request->user() && in_array($request->user()->role, ['system_admin', 'super_admin'], true), 403);
-
-        $connectors = [
-            [
-                'name' => 'AWS Rekognition CompareFaces',
-                'usage' => 'Comparaison photo ↔ photo pour la revue d’identité des licences.',
-                'status' => $rekognition->status()['status'],
-                'label' => $rekognition->status()['label'],
-                'variables' => ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_DEFAULT_REGION', 'AWS_REKOGNITION_SIMILARITY_THRESHOLD'],
-            ],
-            [
-                'name' => 'signotec Biometrics API',
-                'usage' => 'Comparaison dynamique de signatures via le bridge FIT sous licence signotec.',
-                'status' => $signotec->status()['status'],
-                'label' => $signotec->status()['label'],
-                'variables' => ['SIGNOTEC_BRIDGE_URL', 'SIGNOTEC_BRIDGE_TOKEN', 'SIGNOTEC_LICENSE_ID'],
-            ],
-            [
-                'name' => 'FIFA ID Registry',
-                'usage' => 'Contrôle d’identité FIFA pendant l’approbation des licences.',
-                'status' => $fifaId->isConfigured() ? 'ready' : 'not_configured',
-                'label' => $fifaId->isConfigured() ? 'Registre configuré' : 'Registre non connecté',
-                'variables' => ['FIFA_ID_REGISTRY_URL', 'FIFA_ID_REGISTRY_TOKEN'],
-            ],
-            $this->generic('FIFA Connect', 'Échanges FIFA Connect et validation des identifiants/structures.', ['FIFA_CONNECT_BASE_URL', 'FIFA_CONNECT_API_KEY'], [config('services.fifa_connect.base_url'), config('services.fifa_connect.api_key')]),
-            $this->generic('FIFA TMS', 'Synchronisation des données de transfert lorsque les accès officiels sont disponibles.', ['FIFA_TMS_BASE_URL', 'FIFA_TMS_API_KEY'], [config('services.fifa_tms.base_url'), config('services.fifa_tms.api_key')]),
-            $this->generic('FHIR / HL7', 'Interopérabilité avec EMR/LIS et systèmes cliniques.', ['FHIR_BASE_URL', 'HL7_FHIR_BASE_URL'], [config('services.fhir.base_url'), config('services.hl7_fhir.base_url')]),
-            $this->generic('PACS / DICOMweb', 'Accès aux images et objets d’imagerie médicale.', ['PACS_BASE_URL', 'PACS_USERNAME', 'PACS_PASSWORD'], [config('services.pacs.base_url'), config('services.pacs.username'), config('services.pacs.password')]),
-        ];
+        $this->authorizeAdmin($request);
+        $connectors = $this->connectors($state, $rekognition, $signotec, $fifaId);
 
         return view('modules.api-connectors.index', compact('connectors'));
     }
 
-    private function generic(string $name, string $usage, array $variables, array $values): array
+    public function activation(
+        Request $request,
+        string $connector,
+        ApiConnectorState $state,
+        AwsRekognitionFaceMatcher $rekognition,
+        SignotecSignatureProvider $signotec,
+        FifaIdRegistry $fifaId,
+    ) {
+        $this->authorizeAdmin($request);
+        $data = $request->validate(['enabled' => 'required|boolean']);
+        $connectors = collect($this->connectors($state, $rekognition, $signotec, $fifaId))->keyBy('slug');
+        $item = $connectors->get($connector);
+        abort_unless($item, 404);
+
+        $enable = (bool) $data['enabled'];
+        if ($enable && !$item['configured']) {
+            return back()->with('error', $item['name'] . ' ne peut pas être activé : configuration requise incomplète.');
+        }
+
+        $state->setEnabled($connector, $enable, $request->user()->id);
+
+        return back()->with('success', $item['name'] . ($enable ? ' activé.' : ' désactivé.'));
+    }
+
+    public function test(
+        Request $request,
+        string $connector,
+        ApiConnectorState $state,
+        AwsRekognitionFaceMatcher $rekognition,
+        SignotecSignatureProvider $signotec,
+        FifaIdRegistry $fifaId,
+    ) {
+        $this->authorizeAdmin($request);
+        $items = collect($this->connectors($state, $rekognition, $signotec, $fifaId))->keyBy('slug');
+        $item = $items->get($connector);
+        abort_unless($item, 404);
+
+        $result = match ($connector) {
+            'aws_rekognition' => $rekognition->testConnection(),
+            'signotec' => $signotec->testConnection(),
+            'fifa_id' => $fifaId->isConfigured()
+                ? ['ok' => true, 'message' => 'Configuration FIFA ID détectée ; test métier disponible depuis un dossier de licence.']
+                : ['ok' => false, 'message' => 'Configuration FIFA ID incomplète.'],
+            default => $item['configured']
+                ? ['ok' => true, 'message' => 'Pré-requis de configuration détectés.']
+                : ['ok' => false, 'message' => 'Pré-requis de configuration incomplets.'],
+        };
+
+        return back()->with($result['ok'] ? 'success' : 'error', $item['name'] . ' : ' . $result['message']);
+    }
+
+    private function connectors(ApiConnectorState $state, AwsRekognitionFaceMatcher $rekognition, SignotecSignatureProvider $signotec, FifaIdRegistry $fifaId): array
     {
-        $configured = collect($values)->contains(fn ($value) => filled($value));
+        $aws = $rekognition->status();
+        $signature = $signotec->status();
 
         return [
-            'name' => $name,
-            'usage' => $usage,
-            'status' => $configured ? 'partial' : 'not_configured',
-            'label' => $configured ? 'Configuration détectée' : 'Non configuré',
-            'variables' => $variables,
+            $this->item('aws_rekognition', 'AWS Rekognition CompareFaces', 'Comparaison photo ↔ photo pour la revue d’identité des licences.', $rekognition->isConfigured(), $rekognition->isEnabled(), ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_DEFAULT_REGION', 'AWS_REKOGNITION_SIMILARITY_THRESHOLD'], true, $aws['label']),
+            $this->item('signotec', 'signotec Biometrics API', 'Comparaison dynamique de signatures via le bridge FIT sous licence signotec.', $signotec->isConfigured(), $signotec->isEnabled(), ['SIGNOTEC_BRIDGE_URL', 'SIGNOTEC_BRIDGE_TOKEN', 'SIGNOTEC_LICENSE_ID'], true, $signature['label']),
+            $this->item('fifa_id', 'FIFA ID Registry', 'Contrôle d’identité FIFA pendant l’approbation des licences.', $fifaId->isConfigured(), $fifaId->isEnabled(), ['FIFA_ID_REGISTRY_URL', 'FIFA_ID_REGISTRY_TOKEN'], true),
+            $this->item('fifa_connect', 'FIFA Connect', 'Échanges FIFA Connect et validation des identifiants/structures.', filled(config('services.fifa_connect.api_key')), $state->enabled('fifa_connect', false), ['FIFA_CONNECT_BASE_URL', 'FIFA_CONNECT_API_KEY'], false),
+            $this->item('fifa_tms', 'FIFA TMS', 'Synchronisation des données de transfert lorsque les accès officiels sont disponibles.', filled(config('services.fifa_tms.api_key')) && !config('services.fifa_tms.mock_mode'), $state->enabled('fifa_tms', false), ['FIFA_TMS_BASE_URL', 'FIFA_TMS_API_KEY'], false),
+            $this->item('fhir_hl7', 'FHIR / HL7', 'Interopérabilité avec EMR/LIS et systèmes cliniques.', filled(config('services.hl7_fhir.client_id')) && filled(config('services.hl7_fhir.client_secret')), $state->enabled('fhir_hl7', false), ['HL7_FHIR_BASE_URL', 'HL7_FHIR_CLIENT_ID', 'HL7_FHIR_CLIENT_SECRET'], false),
+            $this->item('pacs', 'PACS / DICOMweb', 'Accès aux images et objets d’imagerie médicale.', filled(config('services.pacs.username')) && filled(config('services.pacs.password')), $state->enabled('pacs', false), ['PACS_BASE_URL', 'PACS_USERNAME', 'PACS_PASSWORD'], false),
         ];
+    }
+
+    private function item(string $slug, string $name, string $usage, bool $configured, bool $enabled, array $variables, bool $runtimeEnforced, ?string $providerLabel = null): array
+    {
+        $status = !$configured ? 'not_configured' : ($enabled ? 'ready' : 'disabled');
+
+        return compact('slug', 'name', 'usage', 'configured', 'enabled', 'variables') + [
+            'status' => $status,
+            'label' => $providerLabel ?: match ($status) {
+                'ready' => 'Activé',
+                'disabled' => 'Configuré · désactivé',
+                default => 'Configuration requise',
+            },
+            'runtime_enforced' => $runtimeEnforced,
+        ];
+    }
+
+    private function authorizeAdmin(Request $request): void
+    {
+        abort_unless($request->user() && in_array($request->user()->role, ['system_admin', 'super_admin'], true), 403);
     }
 }

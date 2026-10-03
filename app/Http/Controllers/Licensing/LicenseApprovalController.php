@@ -60,7 +60,7 @@ class LicenseApprovalController extends Controller
             ->paginate(20)->withQueryString();
 
         return view('licenses.approval.index', [
-            'tab' => $tab, 'counts' => $counts, 'licenses' => $licenses, 'registryConnected' => $this->registry->isConfigured(),
+            'tab' => $tab, 'counts' => $counts, 'licenses' => $licenses, 'registryConnected' => $this->registry->isConfigured() && $this->registry->isEnabled(),
         ]);
     }
 
@@ -86,7 +86,7 @@ class LicenseApprovalController extends Controller
 
         return view('licenses.approval.show', [
             'license' => $license,
-            'registryConnected' => $this->registry->isConfigured(),
+            'registryConnected' => $this->registry->isConfigured() && $this->registry->isEnabled(),
             'missing' => $this->workflow->missingDocuments($license),
             'pcma' => app(\App\Services\Licensing\PcmaRequirement::class)->check($license),
             'required' => $this->workflow->requiredDocuments($license),
@@ -164,6 +164,10 @@ class LicenseApprovalController extends Controller
         if (!$this->faceMatcher->isConfigured()) {
             return redirect()->route('licenses.review', $license)
                 ->with('info', 'AWS Rekognition CompareFaces n’est pas encore configuré sur le serveur.');
+        }
+        if (!$this->faceMatcher->isEnabled()) {
+            return redirect()->route('licenses.review', $license)
+                ->with('info', 'AWS Rekognition CompareFaces est configuré mais désactivé dans Configuration des API.');
         }
 
         $sources = $this->faceEvidence->collect($license);

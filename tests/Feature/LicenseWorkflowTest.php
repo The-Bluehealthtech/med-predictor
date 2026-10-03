@@ -407,6 +407,7 @@ class LicenseWorkflowTest extends TestCase
         $this->assertSame('sdk_required', $provider->status()['status']);
 
         config(['services.signotec.bridge_url' => 'https://signotec-bridge.test', 'services.signotec.bridge_token' => 'secret']);
+        app(\App\Services\ApiConnectorState::class)->setEnabled('signotec', true);
         Http::fake([
             'signotec-bridge.test/v1/signatures/compare' => Http::response([
                 'score' => 93.4, 'threshold' => 85, 'classification' => 'match', 'reference' => 'cmp-123',

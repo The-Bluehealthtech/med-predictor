@@ -4,6 +4,7 @@ namespace App\Services\Licensing;
 
 use App\Models\Player;
 use App\Models\PlayerLicense;
+use App\Services\ApiConnectorState;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -19,8 +20,13 @@ use Illuminate\Support\Str;
  */
 final class FifaIdRegistry
 {
+    public function __construct(private readonly ApiConnectorState $connectorState)
+    {
+    }
+
     public const STATUSES = [
         'not_configured' => 'Registre FIFA ID non connecté',
+        'disabled' => 'Registre FIFA ID désactivé',
         'missing_id' => 'Identifiant FIFA absent de la fiche joueur',
         'match' => 'Identité confirmée par FIFA ID',
         'partial' => 'Identité partiellement concordante',
@@ -32,6 +38,11 @@ final class FifaIdRegistry
     public function isConfigured(): bool
     {
         return filled(config('services.fifa_id.url')) && filled(config('services.fifa_id.token'));
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->connectorState->enabled('fifa_id', $this->isConfigured());
     }
 
     public function verify(Player $player): array
@@ -57,6 +68,9 @@ final class FifaIdRegistry
 
         if (!$this->isConfigured()) {
             return $result('not_configured');
+        }
+        if (!$this->isEnabled()) {
+            return $result('disabled');
         }
         $fifaId = trim((string) $person->fifa_connect_id);
         if ($fifaId === '') {

@@ -3094,6 +3094,12 @@ Route::get('/test-pdf', function() {
     Route::get('/modules/api-connectors', [App\Http\Controllers\ApiConnectorSettingsController::class, 'index'])
         ->middleware('role:system_admin,super_admin')
         ->name('modules.api-connectors.index');
+    Route::post('/modules/api-connectors/{connector}/activation', [App\Http\Controllers\ApiConnectorSettingsController::class, 'activation'])
+        ->middleware('role:system_admin,super_admin')
+        ->name('modules.api-connectors.activation');
+    Route::post('/modules/api-connectors/{connector}/test', [App\Http\Controllers\ApiConnectorSettingsController::class, 'test'])
+        ->middleware('role:system_admin,super_admin')
+        ->name('modules.api-connectors.test');
     
     Route::get(
         '/modules/licenses',

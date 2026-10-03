@@ -18,10 +18,14 @@
         $tones = [
             'ready' => 'bg-emerald-50 text-emerald-800 ring-emerald-200',
             'partial' => 'bg-blue-50 text-blue-800 ring-blue-200',
+            'disabled' => 'bg-slate-100 text-slate-700 ring-slate-200',
             'sdk_required' => 'bg-amber-50 text-amber-800 ring-amber-200',
             'not_configured' => 'bg-amber-50 text-amber-800 ring-amber-200',
         ];
     @endphp
+
+    @if(session('success'))<div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">{{ session('success') }}</div>@endif
+    @if(session('error'))<div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">{{ session('error') }}</div>@endif
 
     <div class="mb-6 grid gap-4 sm:grid-cols-2">
         <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
@@ -55,6 +59,27 @@
                         @endforeach
                     </div>
                     <p class="mt-3 text-xs text-slate-500">Les valeurs secrètes restent dans le gestionnaire de secrets du runtime et ne sont pas révélées ici.</p>
+                </div>
+
+                <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">
+                    <form method="POST" action="{{ route('modules.api-connectors.test', $connector['slug']) }}">
+                        @csrf
+                        <button type="submit" class="rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Tester</button>
+                    </form>
+                    @if($connector['enabled'])
+                        <form method="POST" action="{{ route('modules.api-connectors.activation', $connector['slug']) }}">
+                            @csrf
+                            <input type="hidden" name="enabled" value="0">
+                            <button type="submit" class="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-100">Désactiver</button>
+                        </form>
+                    @else
+                        <form method="POST" action="{{ route('modules.api-connectors.activation', $connector['slug']) }}">
+                            @csrf
+                            <input type="hidden" name="enabled" value="1">
+                            <button type="submit" @disabled(!$connector['configured']) class="rounded-xl px-3 py-2 text-sm font-semibold {{ $connector['configured'] ? 'bg-slate-900 text-white hover:bg-slate-800' : 'cursor-not-allowed bg-slate-200 text-slate-500' }}">Activer</button>
+                        </form>
+                    @endif
+                    <span class="ml-auto text-xs {{ $connector['runtime_enforced'] ? 'text-emerald-700' : 'text-amber-700' }}">{{ $connector['runtime_enforced'] ? 'Activation appliquée au runtime FIT' : 'État administratif · centralisation runtime à finaliser' }}</span>
                 </div>
             </article>
         @endforeach

@@ -2,6 +2,7 @@
 
 namespace App\Services\Licensing;
 
+use App\Services\ApiConnectorState;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -10,28 +11,69 @@ use Illuminate\Support\Facades\Http;
  */
 final class SignotecSignatureProvider
 {
+    public function __construct(private readonly ApiConnectorState $connectorState)
+    {
+    }
+
     public function isConfigured(): bool
     {
         return filled(config('services.signotec.bridge_url'))
             && filled(config('services.signotec.bridge_token'));
     }
 
+    public function isEnabled(): bool
+    {
+        return $this->connectorState->enabled('signotec', false);
+    }
+
     public function status(): array
     {
+        $configured = $this->isConfigured();
+        $enabled = $this->isEnabled();
+        $status = !$configured ? 'sdk_required' : ($enabled ? 'ready' : 'disabled');
+
         return [
-            'status' => $this->isConfigured() ? 'ready' : 'sdk_required',
-            'label' => $this->isConfigured()
-                ? 'signotec Biometrics API connectée'
-                : 'signotec prête côté FIT · SDK/licence à connecter',
+            'status' => $status,
+            'label' => match ($status) {
+                'ready' => 'signotec Biometrics API activée',
+                'disabled' => 'signotec configurée · désactivée',
+                default => 'signotec prête côté FIT · SDK/licence à connecter',
+            },
             'provider' => 'signotec',
+            'configured' => $configured,
+            'enabled' => $enabled,
             'mode' => 'licensed_sdk_bridge',
         ];
+    }
+
+    public function testConnection(): array
+    {
+        if (!$this->isConfigured()) {
+            return ['ok' => false, 'message' => 'Bridge/licence signotec non configuré.'];
+        }
+
+        try {
+            $response = Http::timeout((int) config('services.signotec.timeout', 15))
+                ->acceptJson()
+                ->withToken((string) config('services.signotec.bridge_token'))
+                ->get(rtrim((string) config('services.signotec.bridge_url'), '/') . '/health');
+        } catch (\Throwable $e) {
+            report($e);
+            return ['ok' => false, 'message' => 'Bridge signotec injoignable.'];
+        }
+
+        return $response->successful()
+            ? ['ok' => true, 'message' => 'Bridge signotec disponible.']
+            : ['ok' => false, 'message' => 'Bridge signotec répond HTTP ' . $response->status() . '.'];
     }
 
     public function compare(string $referenceId, string $candidateId): array
     {
         if (!$this->isConfigured()) {
             return ['status' => 'sdk_required'] + $this->status();
+        }
+        if (!$this->isEnabled()) {
+            return ['status' => 'disabled', 'provider' => 'signotec'];
         }
 
         try {

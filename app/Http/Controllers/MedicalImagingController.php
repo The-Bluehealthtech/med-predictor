@@ -31,7 +31,14 @@ final class MedicalImagingController extends Controller {
     public function show(Request $request,HealthRecord $healthRecord,ImagingStudy $study) {
         $this->authorizeRecord($healthRecord,$study); $study->load(['instances'=>fn($q)=>$q->metadataOnly(),'reports.validator','player']);
         $report=$study->reports->first(); $revision=$request->boolean('revise') && $report?->status==='validated';
-        return view('health-records.imaging.show',compact('healthRecord','study','report','revision'));
+        $documentSignatureProviders=collect(app(\App\Services\Documents\DocumentSignatureService::class)->allStatuses());
+        $documentSignatureRequests=collect();
+        if ($report?->status==='validated' && Schema::hasTable('document_signature_requests')) {
+            $documentSignatureRequests=\App\Models\DocumentSignatureRequest::query()->where('workflow','imaging_report.final_document')->latest('id')->get()
+                ->filter(fn($item)=>(int)data_get($item->metadata,'document.report_id')===(int)$report->id)->values();
+        }
+        $canSignReport=$report?->status==='validated' && auth()->user()->hasAnyRole(['doctor','team_doctor','club_medical','association_medical']);
+        return view('health-records.imaging.show',compact('healthRecord','study','report','revision','documentSignatureProviders','documentSignatureRequests','canSignReport'));
     }
     public function upload(Request $request,HealthRecord $healthRecord,ImagingStudy $study) {
         $this->authorizeRecord($healthRecord,$study);

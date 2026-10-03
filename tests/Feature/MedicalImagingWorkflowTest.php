@@ -20,6 +20,8 @@ class MedicalImagingWorkflowTest extends TestCase {
         Schema::create('players',function(Blueprint $t){$t->id();$t->string('name');$t->date('date_of_birth')->nullable();$t->unsignedBigInteger('club_id')->nullable();$t->timestamps();});
         Schema::create('health_records',function(Blueprint $t){$t->id();$t->unsignedBigInteger('player_id');$t->unsignedBigInteger('user_id');$t->date('record_date');$t->timestamps();});
         (require base_path('database/migrations/2026_10_02_000001_create_medical_imaging_workspace.php'))->up();
+        (require base_path('database/migrations/2025_09_05_164708_create_system_settings_table.php'))->up();
+        (require base_path('database/migrations/2026_10_03_180000_create_document_signature_requests.php'))->up();
         DB::table('clubs')->insert(['id'=>1,'name'=>'Fixture Club']);
         DB::table('players')->insert(['id'=>1,'name'=>'Fixture Player','date_of_birth'=>'2010-02-01','club_id'=>1]);
         DB::table('health_records')->insert(['id'=>873,'player_id'=>1,'user_id'=>1,'record_date'=>'2026-10-01']);
@@ -55,6 +57,17 @@ class MedicalImagingWorkflowTest extends TestCase {
         $this->assertStringContainsString('fusion complète',$labels);$this->assertStringContainsString('aucun âge réel',$labels);
         $this->assertNotEquals('stored',$report->fresh()->pacs_status);
     }
+    public function test_digital_signature_is_only_available_for_validated_report():void {
+        $study=$this->study();$image=$this->image($study);$report=$this->save($study,$image);
+        $url=route('medical-imaging.report.digital-signature',[873,$study,$report]);
+        $this->post($url,['provider'=>'adobe_sign'])->assertStatus(409);
+
+        $this->post(route('medical-imaging.report.validate',[873,$study,$report]),['confirm'=>1,'edit_revision'=>1])->assertSessionHasNoErrors();
+        $screen=$this->get(route('medical-imaging.show',[873,$study]))->assertOk();
+        $screen->assertSee('Signature numérique du PDF')->assertSee('Aucun fournisseur de signature n’est activé');
+        $this->post($url,['provider'=>'adobe_sign'])->assertSessionHas('error');
+    }
+
     public function test_cross_club_and_cross_study_access_is_denied():void {
         $study=$this->study();$image=$this->image($study);$other=$this->study();
         $this->get(route('medical-imaging.image',[873,$other,$image]))->assertNotFound();

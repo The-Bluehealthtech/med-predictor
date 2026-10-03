@@ -14,4 +14,7 @@ Route::prefix('health-records/{healthRecord}/imaging')->name('medical-imaging.')
     Route::get('/{study}/reports/{report}/dicom',[MedicalImagingController::class,'export'])->name('report.dicom');
     Route::get('/{study}/reports/{report}/pdf',[MedicalImagingController::class,'pdf'])->name('report.pdf');
     Route::post('/{study}/reports/{report}/pacs',[MedicalImagingController::class,'pacs'])->name('report.pacs')->middleware('throttle:5,1');
+    Route::post('/{study}/reports/{report}/digital-signature',[\App\Http\Controllers\ImagingReportSignatureController::class,'store'])->name('report.digital-signature');
+    Route::post('/{study}/reports/{report}/digital-signature/{signature}/sync',[\App\Http\Controllers\ImagingReportSignatureController::class,'sync'])->name('report.digital-signature.sync');
+    Route::get('/{study}/reports/{report}/digital-signature/{signature}/download',[\App\Http\Controllers\ImagingReportSignatureController::class,'download'])->name('report.digital-signature.download');
 });

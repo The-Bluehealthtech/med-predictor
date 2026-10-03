@@ -1,297 +1,151 @@
 @extends('layouts.app')
 
-@section('title', 'Transfer Management')
+@section('title', 'Transferts - FIT')
 
 @section('content')
-<div class="py-8">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 gap-6">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900 flex items-center">
-                    <svg class="w-8 h-8 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                    </svg>
-                    Transfer Management
-                </h1>
-                <p class="text-gray-600 mt-2">Manage player transfers between clubs and federations</p>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-3">
-                <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Back to Dashboard
-                </a>
-                <a href="{{ route('transfers.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    New Transfer
-                </a>
-            </div>
+@php
+    $collection = $transfers->getCollection();
+    $readyCount = $collection->where('tms_sync_status','ready')->count();
+    $linkedCount = $collection->filter(fn($t)=>in_array($t->tms_sync_status,['linked','synced'],true))->count();
+    $blockedCount = $collection->filter(fn($t)=>!($t->tms_readiness_summary['ready'] ?? false))->count();
+@endphp
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <x-page-header
+        title="Transferts"
+        subtitle="FIT prépare et contrôle les dossiers ; FIFA TMS exécute les transferts et reste la source externe des statuts TMS/ITC."
+        eyebrow="Football operations · TMS"
+    >
+        @if($canCreateTransfer)
+            <x-slot:actions>
+                <a href="{{ route('transfers.create') }}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Nouveau transfert</a>
+            </x-slot:actions>
+        @endif
+    </x-page-header>
+
+    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4">
+            <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Dossiers</p>
+            <p class="mt-1 text-2xl font-semibold text-slate-900">{{ $transfers->total() }}</p>
         </div>
-
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Total Transfers</dt>
-                                <dd class="text-lg font-medium text-gray-900">{{ $transfers->total() }}</dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Completed</dt>
-                                <dd class="text-lg font-medium text-gray-900">{{ $transfers->where('transfer_status', 'completed')->count() }}</dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <svg class="h-8 w-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Pending</dt>
-                                <dd class="text-lg font-medium text-gray-900">{{ $transfers->where('transfer_status', 'pending')->count() }}</dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <svg class="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">Total Value</dt>
-                                <dd class="text-lg font-medium text-gray-900">
-                                    @php
-                                        $totalValue = $transfers->sum('transfer_fee');
-                                        echo $totalValue > 0 ? '$' . number_format($totalValue, 0) : 'N/A';
-                                    @endphp
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="rounded-2xl border border-blue-200 bg-blue-50 p-4">
+            <p class="text-xs font-bold uppercase tracking-wide text-blue-700">Prêts pour TMS</p>
+            <p class="mt-1 text-2xl font-semibold text-blue-950">{{ $readyCount }}</p>
         </div>
-
-        <!-- Filters -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8">
-            <div class="p-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
-                <form method="GET" action="{{ route('transfers.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                        <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                            <option value="">Tous les statuts</option>
-                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Brouillon</option>
-                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
-                            <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Soumis</option>
-                            <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>En revue</option>
-                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approuvé</option>
-                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Refusé</option>
-                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Annulé</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
-                        <select id="type" name="type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                            <option value="">All Types</option>
-                            <option value="permanent" {{ request('type') == 'permanent' ? 'selected' : '' }}>Permanent</option>
-                            <option value="loan" {{ request('type') == 'loan' ? 'selected' : '' }}>Loan</option>
-                            <option value="free_agent" {{ request('type') == 'free_agent' ? 'selected' : '' }}>Free Agent</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="club_id" class="block text-sm font-medium text-gray-700">Club</label>
-                        <select id="club_id" name="club_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                            <option value="">All Clubs</option>
-                            @foreach($clubs as $club)
-                                <option value="{{ $club->id }}" {{ request('club_id') == $club->id ? 'selected' : '' }}>
-                                    {{ $club->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                            Filter
-                        </button>
-                    </div>
-                </form>
-            </div>
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+            <p class="text-xs font-bold uppercase tracking-wide text-emerald-700">Liés / synchronisés</p>
+            <p class="mt-1 text-2xl font-semibold text-emerald-950">{{ $linkedCount }}</p>
         </div>
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+            <p class="text-xs font-bold uppercase tracking-wide text-amber-700">Avec blocages</p>
+            <p class="mt-1 text-2xl font-semibold text-amber-950">{{ $blockedCount }}</p>
+        </div>
+    </section>
 
-        <!-- Transfers Table -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">All Transfers</h2>
-                @if($transfers->count() > 0)
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Player</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fee</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut FIT</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TMS</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($transfers as $transfer)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            @if($transfer->player->player_picture_url)
-                                                <img class="h-10 w-10 rounded-full" src="{{ $transfer->player->player_picture_url }}" alt="{{ $transfer->player->first_name }}">
-                                            @else
-                                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                                    <span class="text-sm font-medium text-gray-700">{{ substr($transfer->player->first_name, 0, 1) }}{{ substr($transfer->player->last_name, 0, 1) }}</span>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">{{ $transfer->player->first_name }} {{ $transfer->player->last_name }}</div>
-                                            <div class="text-sm text-gray-500">{{ $transfer->player->position ?? 'N/A' }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $transfer->clubOrigin->name ?? 'N/A' }}</div>
-                                    <div class="text-sm text-gray-500">{{ $transfer->federationOrigin->name ?? 'N/A' }}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $transfer->clubDestination->name ?? 'N/A' }}</div>
-                                    <div class="text-sm text-gray-500">{{ $transfer->federationDestination->name ?? 'N/A' }}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                        {{ $transfer->transfer_type === 'permanent' ? 'bg-blue-100 text-blue-800' : 
-                                           ($transfer->transfer_type === 'loan' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800') }}">
-                                        {{ ucfirst(str_replace('_', ' ', $transfer->transfer_type)) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">
-                                        @if($transfer->transfer_fee)
-                                            {{ $transfer->currency }} {{ number_format($transfer->transfer_fee, 0) }}
-                                        @else
-                                            <span class="text-gray-500">Free</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @php
-                                        $statusColors = [
-                                            'draft' => 'bg-slate-100 text-slate-800',
-                                            'pending' => 'bg-yellow-100 text-yellow-800',
-                                            'submitted' => 'bg-blue-100 text-blue-800',
-                                            'under_review' => 'bg-indigo-100 text-indigo-800',
-                                            'approved' => 'bg-green-100 text-green-800',
-                                            'rejected' => 'bg-red-100 text-red-800',
-                                            'cancelled' => 'bg-gray-100 text-gray-800'
-                                        ];
-                                        $statusColor = $statusColors[$transfer->transfer_status] ?? 'bg-gray-100 text-gray-800';
-                                    @endphp
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColor }}">
-                                        {{ ucfirst($transfer->transfer_status) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @php
-                                        $tmsColors = [
-                                            'not_ready' => 'bg-slate-100 text-slate-700',
-                                            'ready' => 'bg-blue-100 text-blue-800',
-                                            'linked' => 'bg-cyan-100 text-cyan-800',
-                                            'synced' => 'bg-emerald-100 text-emerald-800',
-                                            'stale' => 'bg-amber-100 text-amber-800',
-                                        ];
-                                        $tmsStatus = $transfer->tms_sync_status ?: 'not_ready';
-                                    @endphp
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $tmsColors[$tmsStatus] ?? 'bg-gray-100 text-gray-700' }}">{{ ucfirst(str_replace('_',' ',$tmsStatus)) }}</span>
-                                    @if($transfer->tms_transfer_id)<div class="mt-1 text-xs font-mono text-gray-500">{{ $transfer->tms_transfer_id }}</div>@endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $transfer->transfer_date ? \Carbon\Carbon::parse($transfer->transfer_date)->format('M d, Y') : 'N/A' }}</div>
-                                    <div class="text-sm text-gray-500">{{ $transfer->created_at->diffForHumans() }}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('transfers.show', $transfer) }}" class="font-semibold text-blue-700 hover:text-blue-900">Ouvrir le dossier</a>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                @if($transfers->hasPages())
-                <div class="mt-6">
-                    {{ $transfers->links() }}
-                </div>
-                @endif
-                @else
-                <div class="text-center py-8">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                    </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">No transfers found</h3>
-                    <p class="mt-1 text-sm text-gray-500">Get started by creating a new transfer.</p>
-                    <div class="mt-6">
-                        <a href="{{ route('transfers.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                            Create Transfer
-                        </a>
-                    </div>
-                </div>
+    <section class="rounded-2xl border border-slate-200 bg-white p-5">
+        <form method="GET" action="{{ route('transfers.index') }}" class="grid gap-3 md:grid-cols-4">
+            <label class="text-sm font-medium text-slate-700">Statut FIT
+                <select name="status" class="mt-1 w-full rounded-lg border-slate-300 text-sm">
+                    <option value="">Tous</option>
+                    @foreach(['draft'=>'Brouillon','pending'=>'En attente','submitted'=>'Soumis','under_review'=>'En revue','approved'=>'Approuvé','rejected'=>'Refusé','cancelled'=>'Annulé'] as $value=>$label)
+                        <option value="{{ $value }}" @selected(request('status')===$value)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label class="text-sm font-medium text-slate-700">Type
+                <select name="type" class="mt-1 w-full rounded-lg border-slate-300 text-sm">
+                    <option value="">Tous</option>
+                    <option value="permanent" @selected(request('type')==='permanent')>Permanent</option>
+                    <option value="loan" @selected(request('type')==='loan')>Prêt</option>
+                    <option value="free_agent" @selected(request('type')==='free_agent')>Joueur libre</option>
+                </select>
+            </label>
+            <label class="text-sm font-medium text-slate-700">Club
+                <select name="club_id" class="mt-1 w-full rounded-lg border-slate-300 text-sm">
+                    <option value="">Tous</option>
+                    @foreach($clubs as $club)
+                        <option value="{{ $club->id }}" @selected((string)request('club_id')===(string)$club->id)>{{ $club->name }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <div class="flex items-end gap-2">
+                <button class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Filtrer</button>
+                @if(request()->hasAny(['status','type','club_id','player_id']))
+                    <a href="{{ route('transfers.index') }}" class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Réinitialiser</a>
                 @endif
             </div>
+        </form>
+    </section>
+
+    <section class="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+        <div class="border-b border-slate-100 px-5 py-4">
+            <h2 class="font-semibold text-slate-900">Dossiers de transfert</h2>
+            <p class="mt-1 text-sm text-slate-500">Chaque ligne montre où se trouve le dossier, ce qui bloque et l’état de rattachement TMS.</p>
         </div>
-    </div>
+
+        @forelse($transfers as $transfer)
+            @php
+                $readiness = $transfer->tms_readiness_summary ?? ['ready'=>false,'blockers'=>[]];
+                $blockers = collect($readiness['blockers'] ?? []);
+                $tmsStatus = $transfer->tms_sync_status ?: 'not_ready';
+                $tmsLabels = [
+                    'not_ready'=>'À préparer',
+                    'ready'=>'Prêt pour TMS',
+                    'linked'=>'Référence TMS liée',
+                    'synced'=>'Synchronisé TMS',
+                    'stale'=>'À resynchroniser',
+                ];
+                $tmsClasses = [
+                    'not_ready'=>'bg-slate-100 text-slate-700',
+                    'ready'=>'bg-blue-100 text-blue-800',
+                    'linked'=>'bg-cyan-100 text-cyan-800',
+                    'synced'=>'bg-emerald-100 text-emerald-800',
+                    'stale'=>'bg-amber-100 text-amber-800',
+                ];
+            @endphp
+            <article class="border-b border-slate-100 p-5 last:border-b-0">
+                <div class="grid gap-5 lg:grid-cols-[1.2fr_1.4fr_1fr_auto] lg:items-center">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500">{{ $transfer->is_international ? 'International' : 'National' }} · {{ ucfirst(str_replace('_',' ',$transfer->transfer_type)) }}</p>
+                        <h3 class="mt-1 font-semibold text-slate-900">{{ $transfer->player?->full_name ?: trim(($transfer->player?->first_name ?? '').' '.($transfer->player?->last_name ?? '')) }}</h3>
+                        <p class="mt-1 text-sm text-slate-600">{{ $transfer->clubOrigin?->name ?? 'Club origine' }} → {{ $transfer->clubDestination?->name ?? 'Club destination' }}</p>
+                    </div>
+
+                    <div>
+                        @if($blockers->isEmpty())
+                            <p class="text-sm font-semibold text-emerald-700">Aucun blocage FIT pour la préparation TMS</p>
+                        @else
+                            <p class="text-sm font-semibold text-amber-800">{{ $blockers->count() }} blocage(s)</p>
+                            <p class="mt-1 text-xs text-slate-600">{{ $blockers->take(2)->pluck('label')->implode(' · ') }}@if($blockers->count()>2) · +{{ $blockers->count()-2 }}@endif</p>
+                        @endif
+                        @if($transfer->transfer_fee)
+                            <p class="mt-2 text-xs text-slate-500">Indemnité : {{ number_format((float)$transfer->transfer_fee,2,',',' ') }} {{ $transfer->currency }}</p>
+                        @endif
+                    </div>
+
+                    <div>
+                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $tmsClasses[$tmsStatus] ?? 'bg-slate-100 text-slate-700' }}">{{ $tmsLabels[$tmsStatus] ?? ucfirst(str_replace('_',' ',$tmsStatus)) }}</span>
+                        @if($transfer->tms_transfer_id)
+                            <p class="mt-2 font-mono text-xs text-slate-500">{{ $transfer->tms_transfer_id }}</p>
+                        @elseif($transfer->tms_payload_sha256)
+                            <p class="mt-2 font-mono text-xs text-slate-400">SHA-256 {{ substr($transfer->tms_payload_sha256,0,12) }}…</p>
+                        @endif
+                    </div>
+
+                    <div class="lg:text-right">
+                        <a href="{{ route('transfers.show',$transfer) }}" class="inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Ouvrir le dossier</a>
+                    </div>
+                </div>
+            </article>
+        @empty
+            <div class="px-5 py-12 text-center">
+                <p class="font-medium text-slate-900">Aucun transfert trouvé.</p>
+                <p class="mt-1 text-sm text-slate-500">Ajustez les filtres ou créez un nouveau dossier si votre rôle l’autorise.</p>
+            </div>
+        @endforelse
+
+        @if($transfers->hasPages())
+            <div class="border-t border-slate-100 px-5 py-4">{{ $transfers->links() }}</div>
+        @endif
+    </section>
 </div>
 @endsection

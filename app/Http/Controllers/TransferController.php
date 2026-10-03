@@ -32,7 +32,15 @@ class TransferController extends Controller
     public function index(Request $request): View
     {
         $query = $this->scopeTransfersForUser(
-            Transfer::with(['player', 'clubOrigin', 'clubDestination', 'federationOrigin', 'federationDestination'])
+            Transfer::with([
+                'player',
+                'clubOrigin.association',
+                'clubDestination.association',
+                'federationOrigin',
+                'federationDestination',
+                'documents',
+                'payments.payee',
+            ])
         );
 
         // Filtres
@@ -56,10 +64,17 @@ class TransferController extends Controller
         }
 
         $transfers = $query->orderBy('created_at', 'desc')->paginate(20);
+        $transfers->getCollection()->each(function (Transfer $transfer) {
+            $transfer->setAttribute('tms_readiness_summary', $this->tmsPreparation->readiness($transfer));
+        });
         $clubs = Club::all();
         $players = Player::all();
+        $user = $request->user();
+        $canCreateTransfer = $user && ($user->isSystemAdmin() || in_array($user->role, [
+            'club_admin', 'club_manager', 'association_admin', 'association_registrar',
+        ], true));
 
-        return view('transfers.index', compact('transfers', 'clubs', 'players'));
+        return view('transfers.index', compact('transfers', 'clubs', 'players', 'canCreateTransfer'));
     }
 
     /**

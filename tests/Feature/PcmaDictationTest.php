@@ -97,4 +97,16 @@ class PcmaDictationTest extends TestCase
         $this->assertStringContainsString('window.pcmaDictationReview = function', $view);
         $this->assertStringNotContainsString("            integrateWithSpeechService();\n", $view, 'reconnaissance du navigateur non initialisée');
     }
+
+    public function test_legacy_key_endpoint_never_reveals_the_provider_key(): void
+    {
+        \Illuminate\Support\Facades\Route::middleware('web')->group(base_path('routes/web.php'));
+        app('router')->getRoutes()->refreshNameLookups();
+        config(['services.google_speech.key' => 'cle-serveur']);
+        $response = $this->actingAs($this->doctor())->getJson('/api/google-speech-key')->assertStatus(503);
+        $this->assertArrayNotHasKey('api_key', $response->json());
+        $this->assertStringNotContainsString('cle-serveur', $response->getContent());
+        $this->app['auth']->forgetGuards();
+        $this->getJson('/api/google-speech-key')->assertUnauthorized();
+    }
 }

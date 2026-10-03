@@ -51,13 +51,13 @@ final class PcmaWorkflowRepairTest extends TestCase
             'surfaces'=>['mesial'=>['status'=>'filling','notes'=>'Fixture surface']]]];
         $this->post('/health-records',$this->clinicalPayload()+['capture'=>['dental'=>1],
             'section_dates'=>['dental'=>'2026-10-01'],'dental_data'=>json_encode($data)])->assertRedirect();
-        self::assertSame($data,$record->fresh()->dental_records[0]['values']['dental_data']);
-        $response=$this->get('/health-records/'.$record->id)->assertOk()->assertSee('data-fit-odontogram',false)
+        self::assertSame($data,$this->latestEpisode()->dental_records[0]['values']['dental_data']);
+        $response=$this->get('/health-records/'.$record->id.'?legacy=1')->assertOk()->assertSee('data-fit-odontogram',false)
             ->assertSee('data-readonly="true"',false)->assertSee('js/odontogram.js',false);
         $response->assertDontSee('<script>fixture</script>',false);
-        $create=$this->get('/health-records/create?player_id=10')->assertOk();
+        $create=$this->get('/health-records/create?advanced=1&player_id=10')->assertOk();
         self::assertSame(1,substr_count($create->getContent(),'name="dental_data"'));
-        $edit=$this->get('/health-records/'.$record->id.'/edit')->assertOk();
+        $edit=$this->get('/health-records/'.$record->id.'/edit?advanced=1')->assertOk();
         self::assertSame(1,substr_count($edit->getContent(),'name="dental_data"'));
         $this->actingAs(User::findOrFail(1)->forceFill(['role'=>'player','player_id'=>10,'tenant_id'=>1]));
         $this->get('/player-portal/medical-records/'.$record->id)->assertOk()->assertSee('data-readonly="true"',false);
@@ -128,6 +128,8 @@ final class PcmaWorkflowRepairTest extends TestCase
     protected function tearDown(): void
     {
         DB::purge('pcma_workflow'); DB::setDefaultConnection($this->previous);
+        // Le journal d'audit mémorise l'absence de sa table dans la base en mémoire : ne pas la propager aux tests suivants.
+        (new \ReflectionProperty(\App\Services\Audit\Auditor::class,'ready'))->setValue(null,null);
         parent::tearDown();
     }
     private function input(array $extra = []): array
@@ -540,7 +542,7 @@ final class PcmaWorkflowRepairTest extends TestCase
             'substance_1'=>'Fixture AUT substance','diagnosis'=>'Fixture reason']])->assertRedirect();
         foreach(['/health-records/','/healthcare/records/'] as $prefix){
             foreach(['fr','en'] as $lang){
-                $this->get($prefix.$record->id.'?tab=doping&lang='.$lang)->assertOk()
+                $this->get($prefix.$record->id.'?legacy=1&tab=doping&lang='.$lang)->assertOk()
                     ->assertSee('doping-tab')->assertSee('Fixture laboratory')
                     ->assertSee('Fixture AUT substance')->assertSee('2026-09-29')
                     ->assertSee(route('medical-aut.create',$record->id),false)
@@ -557,15 +559,15 @@ final class PcmaWorkflowRepairTest extends TestCase
             'doctor_name'=>'Fixture collector','visit_type'=>'consultation'];
         $this->post('/health-records',$payload+['doping_test_date'=>'2026-09-30'])->assertRedirect();
         self::assertEmpty($record->fresh()->doping_tests);
-        $this->get('/health-records/'.$record->id.'?lang=fr')->assertOk()
+        $this->get('/health-records/'.$record->id.'?legacy=1&lang=fr')->assertOk()
             ->assertSee('Aucun contrôle antidopage renseigné.');
         $this->post('/health-records',$payload+['doping_test_date'=>'2026-09-29',
             'doping_test_type'=>'blood','doping_test_result'=>'positive'])->assertRedirect();
-        self::assertSame([['date'=>'2026-09-29','type'=>'blood','result'=>'positive']],$record->fresh()->doping_tests);
+        self::assertSame([['date'=>'2026-09-29','type'=>'blood','result'=>'positive']],$this->latestEpisode()->doping_tests);
         $this->post('/health-records',$payload+['doping_test_type'=>'urine','doping_test_result'=>'pending'])->assertRedirect();
-        self::assertCount(2,$record->fresh()->doping_tests);
+        self::assertCount(2,$this->episodeEntries('doping_tests'));
         $this->postJson('/health-records',$payload+['doping_test_result'=>'invented'])->assertUnprocessable();
-        self::assertCount(2,$record->fresh()->doping_tests);
+        self::assertCount(2,$this->episodeEntries('doping_tests'));
     }
 
     private function clinicalDocumentsSchema(): void
@@ -597,7 +599,7 @@ final class PcmaWorkflowRepairTest extends TestCase
                 'capture'=>[$section=>1],'section_dates'=>[$section=>'2026-09-28'],
                 'section_source'=>[$section=>'Fixture source']])->assertRedirect();
             $column=config('medical_sections.sections.'.$section.'.column');
-            $stored=$record->fresh()->$column;
+            $stored=$this->latestEpisode()->$column;
             if(is_string($stored)) $stored=json_decode($stored,true);
             self::assertCount(1,$stored);
             self::assertSame('2026-09-28',$stored[0]['date']);
@@ -606,14 +608,14 @@ final class PcmaWorkflowRepairTest extends TestCase
         }
         $this->put('/health-records/'.$record->id,['record_date'=>'2026-10-01','capture'=>['mapa'=>1],
             'section_dates'=>['mapa'=>'2026-10-01'],'mapa_pas_24h'=>125])->assertRedirect();
-        self::assertCount(2,$record->fresh()->mapa_results);
+        self::assertCount(2,$this->episodeEntries('mapa_results'));
         foreach(['fr','en'] as $lang) {
-            $response=$this->get('/health-records/'.$record->id.'?lang='.$lang)->assertOk();
+            $response=$this->get('/health-records/'.$record->id.'?legacy=1&lang='.$lang)->assertOk();
             file_put_contents('/tmp/fit-clinical-show-fixture.html',$response->getContent());
             $response->assertSee('Fixture image report')->assertSee('Fixture source')->assertSee('2026-09-28')
                 ->assertSee('Fixture tooth')->assertSee('Fixture ECG')->assertDontSee('medical_sections.');
-            $this->get('/healthcare/records/'.$record->id.'?lang='.$lang)->assertOk()->assertSee('Fixture device');
-            $this->get('/health-records/'.$record->id.'/edit?lang='.$lang)->assertOk()->assertSee('125');
+            $this->get('/healthcare/records/'.$record->id.'?legacy=1&lang='.$lang)->assertOk()->assertSee('Fixture device');
+            $this->get('/health-records/'.$record->id.'/edit?advanced=1&lang='.$lang)->assertOk()->assertSee('125');
         }
     }
     public function test_biological_longitudinal_results_keep_provenance_zero_and_null(): void
@@ -626,14 +628,14 @@ final class PcmaWorkflowRepairTest extends TestCase
                 'section_dates'=>['biological'=>$date],'section_source'=>['biological'=>'Fixture lab report'],
                 'lab_rows'=>['biological'=>[$row]]])->assertRedirect();
         }
-        $data=$record->fresh()->biological_profile;
+        $data=$this->episodeEntries('biological_profile');
         self::assertCount(2,$data);self::assertSame('0',$data[0]['values']['lab_rows'][0]['value']);
         self::assertArrayNotHasKey('unit',$data[0]['values']['lab_rows'][0]);
-        $this->get('/health-records/'.$record->id)->assertOk()->assertSee('Fixture marker')->assertSee('Fixture report 2026-09-20');
+        $this->get('/health-records/'.$record->id.'?legacy=1')->assertOk()->assertSee('Fixture marker')->assertSee('Fixture report 2026-09-20');
         $this->postJson('/health-records',$this->clinicalPayload()+['capture'=>['biological'=>1],
             'section_dates'=>['biological'=>'2026-10-01'],'section_source'=>['biological'=>'Fixture lab'],
             'lab_rows'=>['biological'=>[['analyte'=>'Fixture marker','value'=>'5']]]])->assertUnprocessable();
-        self::assertCount(2,$record->fresh()->biological_profile);
+        self::assertCount(2,$this->episodeEntries('biological_profile'));
     }
     public function test_clinical_invalid_dates_values_and_foreign_writes_never_modify_records(): void
     {
@@ -643,10 +645,11 @@ final class PcmaWorkflowRepairTest extends TestCase
         $this->postJson('/health-records',array_replace($base,['scat_headache'=>99,'section_dates'=>['scat'=>'2026-10-01']]))->assertUnprocessable();
         $this->postJson('/health-records',array_replace($base,['player_id'=>20,'section_dates'=>['scat'=>'2026-10-01']]))->assertNotFound();
         self::assertNull($record->fresh()->scat_assessments);
+        self::assertSame(1,\App\Models\HealthRecord::count(),'aucun épisode créé par une saisie refusée');
         $this->post('/health-records',$this->clinicalPayload()+['capture'=>['mapa'=>1],
             'section_dates'=>['mapa'=>'2026-10-01'],'mapa_pas_24h'=>0])->assertRedirect();
-        self::assertSame(0,$record->fresh()->mapa_results[0]['values']['mapa_pas_24h']);
-        self::assertArrayNotHasKey('mapa_pad_24h',$record->fresh()->mapa_results[0]['values']);
+        self::assertSame(0,$this->latestEpisode()->mapa_results[0]['values']['mapa_pas_24h']);
+        self::assertArrayNotHasKey('mapa_pad_24h',$this->latestEpisode()->mapa_results[0]['values']);
     }
     public function test_clinical_files_are_encrypted_in_primary_database_and_player_access_is_private(): void
     {
@@ -658,7 +661,7 @@ final class PcmaWorkflowRepairTest extends TestCase
         $document=\App\Models\HealthRecordDocument::firstOrFail();
         self::assertSame(10,(int)$document->player_id);
         self::assertStringNotContainsString('Fixture clinical bytes',DB::table('health_record_documents')->value('content'));
-        $this->get('/player-portal/medical-records/'.$record->id.'/documents/'.$document->id)->assertOk();
+        $this->get('/player-portal/medical-records/'.$document->health_record_id.'/documents/'.$document->id)->assertOk();
         $this->actingAs(User::findOrFail(1)->forceFill(['role'=>'player','player_id'=>10,'tenant_id'=>1]));
         $portalResponse=$this->get('/player-portal/medical-records/'.$record->id);
         $portalResponse->assertOk()->assertSee('Fixture private MRI')->assertDontSee('name="capture[',false);
@@ -690,10 +693,10 @@ final class PcmaWorkflowRepairTest extends TestCase
             'expected_return_date'=>'2026-10-05'];
         $this->post('/health-records',$this->clinicalPayload()+['capture'=>['fmarc'=>1],
             'section_dates'=>['fmarc'=>'2026-09-30'],'section_values'=>['fmarc'=>$data]])->assertRedirect();
-        $values=$record->fresh()->fifa_fmarc_assessments[0]['values'];
+        $values=$this->latestEpisode()->fifa_fmarc_assessments[0]['values'];
         self::assertSame(5,$values['absence_days']);self::assertArrayNotHasKey('match_minute',$values);
         self::assertSame('2026-10-05',$values['expected_return_date']);
-        $this->get('/health-records/'.$record->id)->assertOk()->assertSee('Fixture cause')->assertSee('2026-10-05');
+        $this->get('/health-records/'.$record->id.'?legacy=1')->assertOk()->assertSee('Fixture cause')->assertSee('2026-10-05');
         $pcma=$this->post('/pcma',$this->input(['type'=>'pcma','final_statement'=>['overall_decision'=>'FIT']]))->assertRedirect();
         self::assertSame('pcma',PCMA::firstOrFail()->type);
         // La base ne définit pas de types distincts standard/advanced : aucun mappage inventé.
@@ -730,6 +733,27 @@ final class PcmaWorkflowRepairTest extends TestCase
     {
         return \App\Models\HealthRecord::create(['player_id'=>$player,'user_id'=>1,
             'status'=>'active','record_date'=>'2026-09-30','diagnosis'=>'Fixture clinical note']);
+    }
+    /** Chaque consultation crée un épisode clinique ; le dossier agrège les épisodes du joueur. */
+    private function latestEpisode(int $player=10): \App\Models\HealthRecord
+    {
+        return \App\Models\HealthRecord::where('player_id',$player)->orderByDesc('id')->firstOrFail();
+    }
+    private function episodeEntries(string $column,int $player=10): array
+    {
+        return \App\Models\HealthRecord::where('player_id',$player)->orderBy('id')->get()
+            ->flatMap(fn($r)=>is_string($r->$column)?json_decode($r->$column,true):($r->$column??[]))->values()->all();
+    }
+    private function careQueueSchema(): void
+    {
+        foreach(['2025_08_02_183302_create_appointments_table','2025_08_02_183220_create_visits_table','2025_08_02_202046_create_documents_table'] as $m)
+            (require dirname(__DIR__,2).'/database/migrations/'.$m.'.php')->up();
+    }
+    private function waitingAppointment(int $player,string $reason): void
+    {
+        $athlete=DB::table('athletes')->insertGetId(['name'=>'Fixture athlete '.$player,'player_id'=>$player]);
+        DB::table('appointments')->insert(['athlete_id'=>$athlete,'created_by'=>1,'doctor_id'=>1,'appointment_date'=>'2026-10-01 09:00:00',
+            'appointment_type'=>'consultation','status'=>'Enregistré','reason'=>$reason,'created_at'=>now(),'updated_at'=>now()]);
     }
     private function dentalSchema(): void
     {
@@ -826,7 +850,7 @@ final class PcmaWorkflowRepairTest extends TestCase
         $record->update(['allergies'=>['Fixture allergy'],'medications'=>['Fixture medication'],'record_date'=>null]);
         $this->get('/modules/healthcare')->assertOk();
         $this->get('/health-records/'.$record->id)->assertOk();
-        $this->get('/healthcare/records/'.$record->id.'/edit')->assertOk()->assertSee('Fixture allergy');
+        $this->get('/healthcare/records/'.$record->id.'/edit?advanced=1')->assertOk()->assertSee('Fixture allergy');
     }
     public function test_healthcare_hl7_export_is_private_and_medically_scoped(): void
     {
@@ -848,8 +872,8 @@ final class PcmaWorkflowRepairTest extends TestCase
         $this->healthcareSchema();$record=$this->healthRecord();
         foreach(['fr','en'] as $lang){
             $this->get('/modules/healthcare?lang='.$lang)->assertOk();
-            $this->get('/health-records?lang='.$lang)->assertOk();
-            $this->get('/health-records/create?player_id=10&lang='.$lang)->assertOk();
+            $this->get('/health-records?lang='.$lang)->assertRedirect(route('modules.medical.index'));
+            $this->get('/health-records/create?advanced=1&player_id=10&lang='.$lang)->assertOk();
             $this->get('/healthcare/records/'.$record->id.'/edit?lang='.$lang)->assertOk();
             $this->get('/healthcare/predictions?lang='.$lang)->assertOk();
             $this->get('/healthcare/export?lang='.$lang)->assertOk();
@@ -868,8 +892,8 @@ final class PcmaWorkflowRepairTest extends TestCase
             'loinc_codes'=>[['code'=>'fixture-loinc']],
         ]);
         $this->record();
-        $this->get('/health-records/'.$record->id)->assertOk()->assertSee('Fixture medication');
-        $this->get('/healthcare/records/'.$record->id)->assertOk()->assertSee('Fixture medication')->assertSee('health-record-page')->assertSee('id="medical-tab"',false);
+        $this->get('/health-records/'.$record->id.'?legacy=1')->assertOk()->assertSee('Fixture medication');
+        $this->get('/healthcare/records/'.$record->id.'?legacy=1')->assertOk()->assertSee('Fixture medication')->assertSee('health-record-page')->assertSee('id="medical-tab"',false);
     }
     public function test_medical_module_scope_dates_links_and_translations(): void
     {
@@ -880,17 +904,21 @@ final class PcmaWorkflowRepairTest extends TestCase
         $foreign->update(['diagnosis'=>'Foreign confidential fixture']);
         $this->record();
         $this->record(['player_id'=>20]);
-        $page=$this->get('/modules/medical?lang=fr')->assertOk();
-        $page->assertSee('Module médical')->assertSee('Dossiers PCMA');
-        $page->assertViewHas('stats',fn($s)=>$s===['records'=>1,'pcmas'=>1,'pending'=>1]);
-        $page->assertDontSee('Foreign confidential fixture');
-        $this->get('/modules/medical?lang=en')->assertOk()->assertSee('Medical module');
+        // Prise en charge médicale : salle d'attente du secrétariat, limitée aux joueurs du périmètre.
+        $this->careQueueSchema();
+        $this->waitingAppointment(10,'Own waiting fixture'); $this->waitingAppointment(20,'Foreign waiting fixture');
+        $page=$this->get('/modules/medical')->assertOk()->assertSee('Prise en charge médicale');
+        $page->assertViewHas('waitingAppointments',fn($w)=>$w->pluck('athlete.player_id')->all()===[10]);
+        $page->assertDontSee('Foreign confidential fixture')->assertDontSee('Foreign waiting fixture');
+        // Dossiers santé : liste des joueurs du périmètre ayant un dossier.
+        $records=$this->get('/modules/healthcare')->assertOk()->assertSee('Dossiers santé des joueurs');
+        $records->assertViewHas('players',fn($p)=>$p->pluck('id')->all()===[10])->assertDontSee('Foreign confidential fixture');
+        $this->get('/modules/healthcare?q=B')->assertOk()->assertViewHas('players',fn($p)=>$p->total()===0);
         $this->get('/modules/medical/athlete/10')->assertOk()->assertSee('Fixture clinical note');
         $this->get('/modules/medical/athlete/20')->assertNotFound();
         $this->get('/modules/medical/athlete/999')->assertNotFound();
         $this->get('/modules/medical/athlete/10/edit')->assertRedirect(route('health-records.edit',$own));
-        $this->get('/modules/medical?q=B')->assertOk()->assertViewHas('players',fn($p)=>$p->total()===0);
-        $this->get('/health-records?player_id=20')->assertNotFound();
+        $this->get('/health-records?player_id=20')->assertRedirect(route('modules.medical.index'));
     }
     public function test_medical_module_refuses_non_medical_roles(): void
     {
@@ -928,8 +956,10 @@ final class PcmaWorkflowRepairTest extends TestCase
         $this->putJson('/medical-predictions/'.$item->id,[])->assertStatus(503);
         $this->deleteJson('/medical-predictions/'.$item->id)->assertStatus(503);
         $this->assertDatabaseCount('medical_predictions',2);
-        DB::table('players')->where('id',10)->update(['first_name'=>'<script>alert(1)</script>']);
-        $this->get('/modules/medical')->assertOk()->assertDontSee('<script>alert(1)</script>',false);
+        DB::table('players')->where('id',10)->update(['first_name'=>'<script>alert(1)</script>','name'=>'<script>alert(1)</script>']);
+        $this->careQueueSchema(); $this->waitingAppointment(10,'Fixture waiting');
+        $this->get('/modules/medical')->assertOk()->assertSee('&lt;script&gt;alert(1)&lt;/script&gt;',false)->assertDontSee('<script>alert(1)</script>',false);
+        $this->get('/modules/healthcare')->assertOk()->assertDontSee('<script>alert(1)</script>',false);
         $this->get('/modules/medical/athlete/10')->assertOk()->assertDontSee('<script>alert(1)</script>',false);
     }
     private function autSchema(): void
@@ -953,8 +983,8 @@ final class PcmaWorkflowRepairTest extends TestCase
             'icd11_selection'=>$choice])->assertRedirect();
         self::assertSame('BA00',$record->fresh()->icd11_diagnoses[0]['code']);
         self::assertSame('Hypertension essentielle',$record->fresh()->icd11_diagnoses[0]['label']);
-        $this->get('/health-records/'.$record->id)->assertOk()->assertSee('BA00');
-        $this->get('/health-records/'.$record->id.'/edit')->assertOk()->assertSee('medical-icd11.js');
+        $this->get('/health-records/'.$record->id.'?legacy=1')->assertOk()->assertSee('BA00');
+        $this->get('/health-records/'.$record->id.'/edit?advanced=1')->assertOk()->assertSee('medical-icd11.js');
         $this->put('/health-records/'.$record->id,['record_date'=>'2026-09-30','diagnosis'=>'Independent text'])->assertRedirect();
         self::assertCount(1,$record->fresh()->icd11_diagnoses);
         $this->putJson('/health-records/'.$record->id,['record_date'=>'2026-09-30',
@@ -1019,7 +1049,7 @@ final class PcmaWorkflowRepairTest extends TestCase
         $record=\App\Models\HealthRecord::firstOrFail();
         self::assertSame('WHO ICD-11 API',$record->icd11_diagnoses[0]['source']);
         self::assertSame('2026-01',$record->icd11_diagnoses[0]['release']);
-        $this->get('/health-records/create?player_id=10')->assertOk()->assertSee('medical-icd11.js');
+        $this->get('/health-records/create?advanced=1&player_id=10')->assertOk()->assertSee('medical-icd11.js');
         Http::swap(new \Illuminate\Http\Client\Factory());Http::preventStrayRequests();
         Http::fake(['https://id.who.int/*'=>Http::response([],503)]);
         $this->putJson('/health-records/'.$record->id,['record_date'=>'2026-09-30',
@@ -1115,7 +1145,7 @@ final class PcmaWorkflowRepairTest extends TestCase
         self::assertSame('Note technique',$meds[0]);
         self::assertSame('RxNorm',$meds[1]['source']);
         self::assertSame('12345',$meds[1]['rxcui']);
-        $this->get('/health-records/'.$record->id.'/edit')->assertOk()->assertSee('rxnorm_selection',false);
+        $this->get('/health-records/'.$record->id.'/edit?advanced=1')->assertOk()->assertSee('rxnorm_selection',false);
     }
     public function test_aut_reference_preserves_version_and_exceptions_without_matching_drugs(): void
     {
@@ -1203,7 +1233,7 @@ final class PcmaWorkflowRepairTest extends TestCase
     {
         $this->importMedicationCatalogue();$this->healthcareSchema();$record=$this->healthRecord();
         $record->update(['medications'=>app(\App\Services\MedicationCatalogue::class)->selections('[{"id":"12345"}]')]);
-        $this->get('/health-records/'.$record->id)->assertOk()->assertSee(__('pcma_medications.alert_title'))->assertSee('2025')->assertSee('GLUCOCORTICO');
+        $this->get('/health-records/'.$record->id.'?legacy=1')->assertOk()->assertSee(__('pcma_medications.alert_title'))->assertSee('2025')->assertSee('GLUCOCORTICO');
         $medication=$record->fresh()->medications[0];
         $medication['antidoping']['matches'][0]['ingredient']['name']='<script>forged</script>';
         $html=view('health-records.medication-antidoping',compact('medication'))->render();
@@ -1217,9 +1247,9 @@ final class PcmaWorkflowRepairTest extends TestCase
         $this->get('/medical-aut')->assertOk()
             ->assertSee('/health-records/'.$own->id.'/aut/create',false)
             ->assertDontSee('/health-records/'.$foreign->id.'/aut/create',false);
-        $this->get('/modules/medical')->assertOk()->assertSee('/medical-aut',false);
-        $this->get('/health-records')->assertOk()->assertSee('/medical-aut',false);
-        $this->get('/health-records/'.$own->id)->assertOk()->assertSee('/health-records/'.$own->id.'/aut/create',false);
+        // Accès depuis le dossier du joueur (carte « AUT » du tableau de bord).
+        $this->get('/health-records/'.$own->id)->assertOk()->assertSee(route('medical-aut.choose',['player_id'=>10]),false);
+        $this->get('/health-records/'.$own->id.'?legacy=1')->assertOk()->assertSee('/health-records/'.$own->id.'/aut/create',false);
         $this->actingAs((new User(['role'=>'player']))->forceFill(['tenant_id'=>1]));
         $this->get('/medical-aut')->assertForbidden();
     }
@@ -1232,7 +1262,7 @@ final class PcmaWorkflowRepairTest extends TestCase
     public function test_aut_full_form_is_inside_antidoping_tab_without_nested_forms(): void
     {
         $this->autSchema();
-        $response=$this->get('/health-records/create?player_id=10')->assertOk()
+        $response=$this->get('/health-records/create?advanced=1&player_id=10')->assertOk()
             ->assertSee('aut_form[substance_1]',false)->assertSee('aut_documents[]',false)
             ->assertSee('multipart/form-data',false)->assertSee('7. Player declaration');
         $html=$response->getContent();
@@ -1247,7 +1277,7 @@ final class PcmaWorkflowRepairTest extends TestCase
         file_put_contents('/tmp/fit-health-create-fixture.html',$html);
         self::assertStringContainsString('autEnabled',$html);
         $this->get('/medical-aut/source')->assertOk()->assertDownload('FIFA-AUT-FR-2024.pdf');
-        $this->get('/health-records/create?player_id=')->assertOk()->assertSee('aut_form[substance_1]',false);
+        $this->get('/health-records/create?advanced=1&player_id=')->assertOk()->assertSee('aut_form[substance_1]',false);
     }
     public function test_embedded_aut_is_saved_with_new_record_and_private_attachment(): void
     {

@@ -197,7 +197,7 @@ function hideICD11Results() {
 // quelques mots-cles fixes dans le texte saisi (ex: presence du mot
 // "douleur") et affichaient un resultat qui avait l'apparence d'une vraie
 // analyse medicale par IA, y compris un "niveau d'urgence" — alors qu'aucun
-// service d'IA n'est reellement connecte (voir ClinicalWorkflowController::
+// service d'IA n'est reellement connecte (ancien ClinicalWorkflowController::
 // analyzeSymptomsWithAI(), deja corrige pour renvoyer un etat honnete cote
 // backend). Presenter une detection de mots-cles comme une analyse clinique
 // IA est trompeur et potentiellement dangereux dans un contexte medical :

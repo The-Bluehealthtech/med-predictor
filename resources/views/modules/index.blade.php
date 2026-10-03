@@ -421,8 +421,6 @@ function handleModuleClick(route, moduleName, event) {
         'referee-portal.index': '/referee-portal',
         'team-portal.dashboard': '/team-portal',
         'portal.devices': '/portal/devices',
-        'clinical.patient-portal': '/clinical/patient-portal',
-        'clinical.clinician-portal': '/clinical/clinician-portal',
         'modules.administration.index': '/modules/administration',
         'modules.api-connectors.index': '/modules/api-connectors',
         'modules.finance.dashboard': '/modules/finance/',

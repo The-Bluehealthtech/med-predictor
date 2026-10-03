@@ -48,7 +48,7 @@
             <div class="divide-y divide-slate-100">
                 @forelse($players as $player)
                     @php
-                        $dossier = $player->baseHealthRecord;
+                        $dossier = $player->baseHealthRecord ?? $player->healthRecords()->orderBy('id')->first();
                         $latest = $player->latestHealthRecord;
                         $latestDate = $latest?->visit_date ?? $latest?->record_date;
                     @endphp

@@ -1225,6 +1225,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/licenses/cards/{license}', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'card'])->whereNumber('license')->name('licenses.card');
     Route::post('/licenses/cards/batch', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'cardsBatch'])->name('licenses.cards.batch');
     Route::post('/licenses/review/{license}/integrity', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'recordIntegrityReview'])->whereNumber('license')->name('licenses.integrity-review');
+    Route::post('/licenses/review/{license}/face-match', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'compareFaces'])->whereNumber('license')->name('licenses.face-match');
     Route::get('/licenses/create', [LicenseController::class, 'create'])->name('licenses.create');
     Route::resource('licenses', LicenseController::class)->except(['show', 'create', 'edit', 'update', 'destroy']);
     Route::patch('/licenses/{license}/approve', [LicenseController::class, 'approve'])->name('licenses.approve');

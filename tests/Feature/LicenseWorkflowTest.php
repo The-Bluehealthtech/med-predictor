@@ -51,6 +51,7 @@ class LicenseWorkflowTest extends TestCase
             Route::get('/_t/approval/cards/{license}', [LicenseApprovalController::class, 'card'])->name('licenses.card');
             Route::post('/_t/approval/cards/batch', [LicenseApprovalController::class, 'cardsBatch'])->name('licenses.cards.batch');
             Route::post('/_t/approval/{license}/integrity', [LicenseApprovalController::class, 'recordIntegrityReview'])->name('licenses.integrity-review');
+            Route::post('/_t/approval/{license}/face-match', [LicenseApprovalController::class, 'compareFaces'])->name('licenses.face-match');
             Route::post('/_t/legacy-fraud', [\App\Http\Controllers\LicenseController::class, 'checkAllLicenses'])->name('licenses.fraud-detection.test-disabled');
         });
         app('router')->getRoutes()->refreshNameLookups();
@@ -379,6 +380,24 @@ class LicenseWorkflowTest extends TestCase
             ->postJson('/_t/legacy-fraud')
             ->assertStatus(410)
             ->assertJson(['error' => 'legacy_fraud_detection_disabled']);
+    }
+
+    public function test_aws_face_match_is_explicitly_inactive_without_server_credentials(): void
+    {
+        config([
+            'services.aws_rekognition.key' => null,
+            'services.aws_rekognition.secret' => null,
+            'services.aws_rekognition.region' => null,
+        ]);
+        $license = $this->request();
+        $federation = $this->federation();
+
+        $this->actingAs($federation)->get("/_t/approval/{$license->id}")
+            ->assertOk()->assertSee('AWS Rekognition installé, identifiants AWS à configurer sur le serveur.');
+        $this->actingAs($federation)->post("/_t/approval/{$license->id}/face-match")
+            ->assertRedirect(route('licenses.review', $license))->assertSessionHas('info');
+        $this->assertSame(0, DB::table('license_biometric_checks')->where('player_license_id', $license->id)->count());
+        $this->actingAs($this->club())->post("/_t/approval/{$license->id}/face-match")->assertForbidden();
     }
 
     public function test_federation_integrity_reviews_are_append_only_and_audited(): void

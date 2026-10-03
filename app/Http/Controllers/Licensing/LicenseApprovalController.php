@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Licensing;
 
 use App\Http\Controllers\Controller;
+use App\Models\LicenseBiometricCheck;
 use App\Models\LicenseIntegrityReview;
 use App\Models\PlayerLicense;
 use App\Models\User;
 use App\Services\AgeVerificationService;
+use App\Services\Licensing\AwsRekognitionFaceMatcher;
+use App\Services\Licensing\BiometricIntegrityProvider;
 use App\Services\Licensing\FifaIdRegistry;
+use App\Services\Licensing\LicenseFaceEvidence;
 use App\Services\Licensing\LicenseWorkflow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +34,9 @@ class LicenseApprovalController extends Controller
         private readonly LicenseWorkflow $workflow,
         private readonly FifaIdRegistry $registry,
         private readonly AgeVerificationService $ageVerification,
+        private readonly BiometricIntegrityProvider $biometricIntegrity,
+        private readonly AwsRekognitionFaceMatcher $faceMatcher,
+        private readonly LicenseFaceEvidence $faceEvidence,
     ) {
     }
 
@@ -65,6 +72,7 @@ class LicenseApprovalController extends Controller
             'documents:id,player_license_id,document_type,original_name,mime_type,size,created_at',
             'events.user:id,name',
             'integrityReviews.reviewer:id,name',
+            'biometricChecks.reviewer:id,name',
         ]);
 
         $ageVerification = ['coverage' => 'Insuffisant', 'flags' => [], 'confirmed' => []];
@@ -83,6 +91,7 @@ class LicenseApprovalController extends Controller
             'pcma' => app(\App\Services\Licensing\PcmaRequirement::class)->check($license),
             'required' => $this->workflow->requiredDocuments($license),
             'ageVerification' => $ageVerification,
+            'biometricProvider' => $this->biometricIntegrity->status(),
 
             'requester' => $license->requested_by ? User::query()->find($license->requested_by, ['id', 'name']) : null,
             'decider' => $license->approved_by ? User::query()->find($license->approved_by, ['id', 'name']) : null,
@@ -144,6 +153,72 @@ class LicenseApprovalController extends Controller
         abort_unless($licenses->count() === $ids->count(), 403);
 
         return view('licenses.cards.batch', ['licenses' => $licenses]);
+    }
+
+    public function compareFaces(Request $request, PlayerLicense $license)
+    {
+        $user = $request->user();
+        $this->authorizeLicense($user, $license);
+        abort_if((bool) $license->club_official_id, 404);
+
+        if (!$this->faceMatcher->isConfigured()) {
+            return redirect()->route('licenses.review', $license)
+                ->with('info', 'AWS Rekognition CompareFaces n’est pas encore configuré sur le serveur.');
+        }
+
+        $sources = $this->faceEvidence->collect($license);
+        if (count($sources) < 2) {
+            return redirect()->route('licenses.review', $license)
+                ->with('info', 'Au moins deux photos locales exploitables sont nécessaires pour la comparaison biométrique.');
+        }
+
+        $referenceKey = array_key_first($sources);
+        $reference = $sources[$referenceKey];
+        $checks = [];
+        foreach ($sources as $targetKey => $target) {
+            if ($targetKey === $referenceKey) {
+                continue;
+            }
+            $result = $this->faceMatcher->compare($reference['bytes'], $target['bytes']);
+            $checks[] = [
+                'target_key' => $targetKey,
+                'target_label' => $target['label'],
+                'result' => $result,
+            ];
+        }
+
+        DB::transaction(function () use ($license, $user, $referenceKey, $reference, $checks) {
+            foreach ($checks as $check) {
+                $result = $check['result'];
+                $license->biometricChecks()->create([
+                    'reviewer_id' => $user->id,
+                    'capability' => 'face_match',
+                    'provider' => 'aws_rekognition',
+                    'source_reference' => $referenceKey,
+                    'target_reference' => $check['target_key'],
+                    'score' => $result['score'] ?? null,
+                    'threshold' => $result['threshold'] ?? null,
+                    'status' => $result['status'] ?? 'error',
+                    'metadata' => [
+                        'source_label' => $reference['label'],
+                        'target_label' => $check['target_label'],
+                        'matched_above_threshold' => $result['matched_above_threshold'] ?? null,
+                        'source_face_confidence' => $result['source_face_confidence'] ?? null,
+                        'target_faces_unmatched' => $result['target_faces_unmatched'] ?? null,
+                        'request_id' => $result['request_id'] ?? null,
+                    ],
+                    'checked_at' => now(),
+                ]);
+            }
+            $license->events()->create([
+                'user_id' => $user->id,
+                'action' => 'biometric_face_check',
+                'message' => count($checks) . ' comparaison(s) faciale(s) AWS Rekognition enregistrée(s).',
+            ]);
+        });
+
+        return redirect()->route('licenses.review', $license)
+            ->with('success', count($checks) . ' comparaison(s) faciale(s) terminée(s).');
     }
 
     public function recordIntegrityReview(Request $request, PlayerLicense $license)

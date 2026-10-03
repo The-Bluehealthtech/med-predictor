@@ -62,6 +62,26 @@ return [
         'timeout' => (int) env('FIFA_ID_REGISTRY_TIMEOUT', 10),
     ],
 
+    // Fournisseur biométrique externe facultatif pour aide à la revue fédération.
+    // Aucun verdict n'est simulé si absent ; FIT conserve la décision humaine.
+    'biometric_integrity' => [
+        'provider' => env('BIOMETRIC_INTEGRITY_PROVIDER'),
+        'url' => env('BIOMETRIC_INTEGRITY_URL'),
+        'token' => env('BIOMETRIC_INTEGRITY_TOKEN'),
+        'timeout' => (int) env('BIOMETRIC_INTEGRITY_TIMEOUT', 15),
+        'face_match' => filter_var(env('BIOMETRIC_INTEGRITY_FACE_MATCH', false), FILTER_VALIDATE_BOOL),
+        'signature_match' => filter_var(env('BIOMETRIC_INTEGRITY_SIGNATURE_MATCH', false), FILTER_VALIDATE_BOOL),
+    ],
+
+    'aws_rekognition' => [
+        'key' => env('AWS_ACCESS_KEY_ID'),
+        'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        'token' => env('AWS_SESSION_TOKEN'),
+        'region' => env('AWS_DEFAULT_REGION', env('AWS_REGION')),
+        'similarity_threshold' => (float) env('AWS_REKOGNITION_SIMILARITY_THRESHOLD', 90),
+        'quality_filter' => env('AWS_REKOGNITION_QUALITY_FILTER', 'AUTO'),
+    ],
+
     'fifa_connect' => [
         'base_url' => env('FIFA_CONNECT_BASE_URL', 'https://api.fifa.com/v1'),
         'api_key' => env('FIFA_CONNECT_API_KEY'),

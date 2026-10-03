@@ -128,6 +128,12 @@ class PlayerLicense extends Model
         return $this->hasMany(LicenseIntegrityReview::class)->orderByDesc('reviewed_at')->orderByDesc('id');
     }
 
+    /** Contrôles biométriques 1:1, sans conservation d'un gabarit biométrique dans FIT. */
+    public function biometricChecks()
+    {
+        return $this->hasMany(LicenseBiometricCheck::class)->orderByDesc('checked_at')->orderByDesc('id');
+    }
+
     /**
      * Relation avec le joueur
      */

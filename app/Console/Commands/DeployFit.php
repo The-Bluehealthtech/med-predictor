@@ -41,6 +41,7 @@ class DeployFit extends Command
         'database/migrations/2026_10_03_140000_convert_demo_licenses_to_fifa_connect.php',
         'database/migrations/2026_10_03_150000_finish_demo_licenses_conversion.php',
         'database/migrations/2026_10_03_160000_create_license_integrity_reviews.php',
+        'database/migrations/2026_10_03_170000_create_license_biometric_checks.php',
     ];
 
     protected $signature = 'fit:deploy

@@ -26,7 +26,12 @@
             <h2 id="h-fraud-check" class="mt-1 text-lg font-semibold text-slate-900">Anti-fraude · identité et âge</h2>
             <p class="mt-1 text-sm text-slate-600">Comparaison des sources disponibles. Aucun score biométrique n’est généré tant qu’un moteur validé n’est pas connecté.</p>
         </div>
-        <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">Revue humaine requise</span>
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">Revue humaine requise</span>
+            <span class="rounded-full px-3 py-1 text-xs font-semibold {{ ($biometricProvider['status'] ?? 'not_configured') === 'ready' ? 'bg-emerald-50 text-emerald-800' : 'bg-amber-50 text-amber-800' }}">
+                {{ $biometricProvider['label'] ?? 'Fournisseur biométrique non connecté' }}
+            </span>
+        </div>
     </div>
 
     <div class="mt-4 grid gap-4 xl:grid-cols-2">
@@ -55,6 +60,33 @@
                 </p>
             @endif
             <p class="mt-3 rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-800">{{ $sources->count() >= 2 ? 'Plusieurs sources photo sont disponibles pour comparaison visuelle.' : 'Une seule source photo est disponible : comparaison insuffisante.' }}</p>
+            <div class="mt-3 flex flex-wrap items-center gap-2">
+                @if(($biometricProvider['face']['status'] ?? 'not_configured') === 'ready')
+                    <form method="POST" action="{{ route('licenses.face-match', $license) }}">
+                        @csrf
+                        <button type="submit" class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Comparer avec AWS Rekognition</button>
+                    </form>
+                    <span class="text-xs text-slate-500">Seuil d’affichage : {{ number_format((float) ($biometricProvider['face']['threshold'] ?? 90), 0) }}%</span>
+                @else
+                    <span class="rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">AWS Rekognition installé, identifiants AWS à configurer sur le serveur.</span>
+                @endif
+            </div>
+            @if($license->biometricChecks->where('capability', 'face_match')->isNotEmpty())
+                <div class="mt-3 border-t border-slate-100 pt-3">
+                    <h4 class="text-sm font-semibold text-slate-900">Dernières comparaisons AWS</h4>
+                    <div class="mt-2 space-y-2">
+                        @foreach($license->biometricChecks->where('capability', 'face_match')->take(5) as $check)
+                            <div class="rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-700">
+                                <div class="flex flex-wrap justify-between gap-2">
+                                    <strong>{{ data_get($check->metadata, 'source_label', $check->source_reference) }} ↔ {{ data_get($check->metadata, 'target_label', $check->target_reference) }}</strong>
+                                    <span>{{ $check->score !== null ? number_format($check->score, 1) . '%' : 'Échec technique' }}</span>
+                                </div>
+                                <p class="mt-1 text-slate-500">Seuil {{ $check->threshold !== null ? number_format($check->threshold, 1) . '%' : '—' }} · {{ $check->checked_at?->format('d/m/Y H:i') }} · {{ $check->reviewer?->name ?? 'Fédération' }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="rounded-xl border border-slate-200 p-4">

@@ -40,6 +40,7 @@ class TmsTransferWorkflowTest extends TestCase
         Route::middleware(['web','auth'])->group(function () {
             Route::get('/_t/transfers/{transfer}', [TransferController::class,'show'])->name('transfers.show');
             Route::post('/_t/transfers/{transfer}/prepare-tms', [TransferController::class,'prepareForTms'])->name('transfers.prepare-tms');
+            Route::get('/_t/transfers/{transfer}/tms-package', [TransferController::class,'exportTmsPackage'])->name('transfers.tms-package');
             Route::post('/_t/transfers/{transfer}/link-tms', [TransferController::class,'linkTmsReference'])->name('transfers.link-tms');
             Route::post('/_t/transfers/{transfer}/sync-tms', [TransferController::class,'syncFromTms'])->name('transfers.sync-tms');
             Route::post('/_t/transfers/{transfer}/submit-fifa', [TransferController::class,'submitToFifa'])->name('transfers.submit-to-fifa');
@@ -209,6 +210,20 @@ class TmsTransferWorkflowTest extends TestCase
         $snapshot = app(\App\Services\Transfers\TmsTransferPreparation::class)->snapshot($this->transfer);
         $this->assertNull($snapshot['player_sync']['person_fifa_id']);
         $this->assertNull($snapshot['player']['fifa_id']);
+    }
+
+    public function test_prepared_tms_package_can_be_exported_only_by_federation(): void
+    {
+        $this->approveRequiredDocuments();
+        $this->actingAs($this->registrar)->postJson(route('transfers.prepare-tms',$this->transfer))->assertOk();
+
+        $response = $this->actingAs($this->registrar)->get(route('transfers.tms-package',$this->transfer))->assertOk();
+        $this->assertStringContainsString('FIT-TMS-PREPARATION/1.0',$response->streamedContent());
+        $this->assertStringContainsString($this->transfer->fresh()->tms_payload_sha256,$response->streamedContent());
+        $this->assertStringNotContainsString('bridge-secret',$response->streamedContent());
+
+        $club = User::factory()->create(['role'=>'club_admin','club_id'=>$this->originId,'status'=>'active','tenant_id'=>1]);
+        $this->actingAs($club)->get(route('transfers.tms-package',$this->transfer))->assertForbidden();
     }
 
     public function test_first_professional_registration_is_detected_from_first_pro_license(): void

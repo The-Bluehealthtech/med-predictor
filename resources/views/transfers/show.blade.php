@@ -99,6 +99,10 @@
                 <button data-transfer-action="{{ route('transfers.prepare-tms',$transfer) }}" class="transfer-action rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Marquer prêt pour TMS</button>
             @endif
 
+            @if($associationOperator && in_array($transfer->tms_sync_status,['ready','linked','synced'],true) && $transfer->tms_snapshot)
+                <a href="{{ route('transfers.tms-package',$transfer) }}" class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700">Télécharger le dossier TMS JSON</a>
+            @endif
+
             @if($associationOperator && $transfer->tms_sync_status === 'ready' && !$transfer->tms_transfer_id)
                 <form method="POST" action="{{ route('transfers.link-tms',$transfer) }}" class="flex flex-wrap items-end gap-2">
                     @csrf

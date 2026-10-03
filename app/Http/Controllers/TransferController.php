@@ -363,6 +363,31 @@ class TransferController extends Controller
         ]);
     }
 
+    public function exportTmsPackage(Request $request, Transfer $transfer)
+    {
+        $this->authorizeAssociationTransfer($request, $transfer);
+        abort_unless(in_array($transfer->tms_sync_status, ['ready', 'linked', 'synced'], true), 409);
+        abort_unless(is_array($transfer->tms_snapshot) && $transfer->tms_payload_sha256, 409);
+
+        $payload = [
+            'schema' => 'FIT-TMS-PREPARATION/1.0',
+            'fit_transfer_id' => $transfer->id,
+            'prepared_at' => optional($transfer->tms_prepared_at)->toIso8601String(),
+            'prepared_by' => $transfer->tms_prepared_by,
+            'payload_sha256' => $transfer->tms_payload_sha256,
+            'tms_transfer_id' => $transfer->tms_transfer_id,
+            'snapshot' => $transfer->tms_snapshot,
+        ];
+
+        return response()->streamDownload(function () use ($payload) {
+            echo json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }, 'FIT-TMS-transfer-'.$transfer->id.'.json', [
+            'Content-Type' => 'application/json; charset=UTF-8',
+            'Cache-Control' => 'private, no-store',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
     public function linkTmsReference(Request $request, Transfer $transfer)
     {
         $this->authorizeAssociationTransfer($request, $transfer);

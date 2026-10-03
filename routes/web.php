@@ -1790,6 +1790,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/transfers', [App\Http\Controllers\TransferController::class, 'store'])->name('transfers.store');
     Route::get('/transfers/{transfer}', [App\Http\Controllers\TransferController::class, 'show'])->whereNumber('transfer')->name('transfers.show');
     Route::post('/transfers/{transfer}/prepare-tms', [App\Http\Controllers\TransferController::class, 'prepareForTms'])->whereNumber('transfer')->name('transfers.prepare-tms');
+    Route::get('/transfers/{transfer}/tms-package', [App\Http\Controllers\TransferController::class, 'exportTmsPackage'])->whereNumber('transfer')->name('transfers.tms-package');
     Route::post('/transfers/{transfer}/link-tms', [App\Http\Controllers\TransferController::class, 'linkTmsReference'])->whereNumber('transfer')->name('transfers.link-tms');
     Route::post('/transfers/{transfer}/sync-tms', [App\Http\Controllers\TransferController::class, 'syncFromTms'])->whereNumber('transfer')->name('transfers.sync-tms');
     Route::post('/transfers/{transfer}/submit-fifa', [App\Http\Controllers\TransferController::class, 'submitToFifa'])->whereNumber('transfer')->name('transfers.submit-to-fifa');

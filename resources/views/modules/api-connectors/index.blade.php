@@ -24,6 +24,11 @@
         ];
     @endphp
 
+    @if(Route::has('admin.fhir-setup'))
+    <a href="{{ route('admin.fhir-setup') }}" class="mb-4 flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-900 hover:bg-blue-100">
+        <span>Mise en service du serveur FHIR : vérification de la chaîne, abonnement des comptes rendus, renvoi des examens</span><span aria-hidden="true">→</span>
+    </a>
+    @endif
     @if(session('success'))<div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">{{ session('success') }}</div>@endif
     @if(session('error'))<div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">{{ session('error') }}</div>@endif
 

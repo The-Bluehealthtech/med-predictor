@@ -24,7 +24,8 @@ spring:
 hapi:
   fhir:
     fhir_version: R4
-    server_address: ${HAPI_SERVER_ADDRESS}
+    # Adresse interne du service (réseau privé Render) : HAPI_HOSTPORT = « hôte:port » fourni par le blueprint.
+    server_address: http://${HAPI_HOSTPORT:localhost:8080}/fhir/
     openapi_enabled: false
     narrative_enabled: false
     mdm_enabled: false

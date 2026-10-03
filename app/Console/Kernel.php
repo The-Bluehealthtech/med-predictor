@@ -84,6 +84,8 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\FhirConformance::class,
         \App\Console\Commands\FhirOrdersSync::class,
         \App\Console\Commands\FhirSubscriptionsInstall::class,
+        \App\Console\Commands\FhirReadiness::class,
+        \App\Console\Commands\FhirOrdersResend::class,
         \App\Console\Commands\MigrateLegacyPosturalDataCommand::class,
         \App\Console\Commands\RoleEvaluationComputeHistoryCommand::class,
         \App\Console\Commands\SeedDemoNationalSelections::class,

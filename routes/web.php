@@ -3134,6 +3134,10 @@ Route::get('/test-pdf', function() {
         return view('modules.administration.index', ['footballType' => 'association']);
     })->name('modules.administration.index');
 
+    // Mise en service du serveur FHIR (administrateur système)
+    Route::get('/admin/fhir-setup', [App\Http\Controllers\Admin\FhirSetupController::class, 'index'])->middleware('role:system_admin,super_admin')->name('admin.fhir-setup');
+    Route::post('/admin/fhir-setup/subscription', [App\Http\Controllers\Admin\FhirSetupController::class, 'installSubscription'])->middleware('role:system_admin,super_admin')->name('admin.fhir-setup.subscription');
+    Route::post('/admin/fhir-setup/resend', [App\Http\Controllers\Admin\FhirSetupController::class, 'resendOrders'])->middleware(['role:system_admin,super_admin', 'throttle:5,1'])->name('admin.fhir-setup.resend');
     Route::get('/modules/api-connectors', [App\Http\Controllers\ApiConnectorSettingsController::class, 'index'])
         ->middleware('role:system_admin,super_admin')
         ->name('modules.api-connectors.index');

@@ -38,3 +38,17 @@ This checklist tracks production dependencies that must not be simulated in code
 - [ ] Provisionner un stockage privé durable dédié aux PDF signés et définir `DOCUMENT_SIGNATURE_DISK=signature_s3` (ou un autre disque privé durable explicitement approuvé).
 - [ ] Configurer les secrets `SIGNATURE_AWS_ACCESS_KEY_ID`, `SIGNATURE_AWS_SECRET_ACCESS_KEY`, `SIGNATURE_AWS_DEFAULT_REGION` et `SIGNATURE_AWS_BUCKET` avec des droits limités au bucket/prefix de signatures.
 - [ ] Vérifier qu'une signature terminée reste téléchargeable après redéploiement/restart Render avant l'ouverture aux utilisateurs.
+
+## Serveur FHIR de FIT (interopérabilité IHE)
+
+Guide pas à pas : `docs/fhir/INSTALLATION.md` ; vérification : `/admin/fhir-setup` (ou `php artisan fhir:readiness`).
+
+- [ ] Créer le blueprint Render `fhir-server/render.yaml` : service privé `fit-fhir` (HAPI FHIR v8.12.0-2) et base `fit-fhir-db`.
+- [ ] Renseigner `FIT_FHIR_BASE_URL` (adresse interne) et `FIT_FHIR_WEBHOOK_SECRET` sur le service web ; vérifier `APP_URL` en HTTPS.
+- [ ] Contrôler la conformité IHE depuis `/admin/fhir-setup` ; installer l'abonnement des comptes rendus ; renvoyer les examens en attente.
+- [ ] Obtenir un OID pour FIT (source documentaire MHD/XDS) et renseigner `FIT_FHIR_SOURCE_OID` ; aucune valeur inventée.
+- [ ] Renseigner `FIT_IID_VIEWER_URL` (visionneuse du PACS, HTTPS).
+- [ ] Installer un serveur d'autorisation OAuth 2.0 et le contrôle des jetons devant HAPI (IHE IUA) ; renseigner `FIT_FHIR_TOKEN_URL`, `FIT_FHIR_CLIENT_ID`, `FIT_FHIR_CLIENT_SECRET`, `FIT_FHIR_SCOPE`.
+- [ ] Publier la politique de confidentialité de chaque fédération ; configurer et activer Adobe Sign pour les consentements (IHE PCF).
+- [ ] Raccorder les sources (EMR, LIS, RIS, PACS) au serveur et tester un circuit complet : prescription, compte rendu, notification, intégration au dossier.
+

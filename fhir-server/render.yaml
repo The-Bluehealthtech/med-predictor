@@ -1,0 +1,37 @@
+# Blueprint Render du serveur FHIR de FIT (HAPI FHIR R4, service privé + Postgres dédiée).
+# À créer dans Render : New > Blueprint > dépôt med-predictor, branche deploy/render,
+# chemin du fichier « fhir-server/render.yaml ». Rien n'est créé tant que le blueprint n'est pas validé.
+# Le service web de FIT existant n'est pas décrit ici et n'est pas modifié.
+services:
+  - type: pserv                      # service privé : aucune URL publique, joignable par le réseau privé Render
+    name: fit-fhir
+    runtime: docker
+    region: virginia                 # même région que le service web de FIT et sa base
+    plan: 1c-2g                      # HAPI (Java) : 2 Go de mémoire au minimum
+    rootDir: fhir-server
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: HAPI_DB_HOST
+        fromDatabase: { name: fit-fhir-db, property: host }
+      - key: HAPI_DB_PORT
+        fromDatabase: { name: fit-fhir-db, property: port }
+      - key: HAPI_DB_DATABASE
+        fromDatabase: { name: fit-fhir-db, property: database }
+      - key: HAPI_DB_USERNAME
+        fromDatabase: { name: fit-fhir-db, property: user }
+      - key: HAPI_DB_PASSWORD
+        fromDatabase: { name: fit-fhir-db, property: password }
+      - key: HAPI_HOSTPORT             # adresse interne « hôte:port », utilisée pour server_address
+        fromService: { name: fit-fhir, type: pserv, property: hostport }
+      - key: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAMPercentage=75
+
+databases:
+  - name: fit-fhir-db
+    region: virginia
+    plan: 0.5c-1g
+    postgresMajorVersion: "17"
+    databaseName: hapi
+    user: hapi
+    ipAllowList: []                  # accès par le réseau privé uniquement

@@ -53,41 +53,60 @@ $timelineLabels=[
 
 <section class="rounded-2xl border border-slate-200 bg-white p-5">
 <h2 class="font-semibold text-slate-900">1. Contacts & évacuation</h2>
-<p class="mt-1 text-sm text-slate-600">Sources : FDM, configuration de la compétition et club recevant. Le club recevant est prioritaire pour les moyens locaux d’urgence.</p>
+<p class="mt-1 text-sm text-slate-600">Lecture seule depuis la FDM, la compétition et le club recevant. Aucune saisie libre n’est autorisée ici.</p>
+
 <div class="mt-4 grid gap-4 md:grid-cols-2">
-<label class="text-sm">Stade / lieu du match
-<input name="stadium" value="{{ old('stadium',$plan->stadium) }}" class="mt-1 w-full rounded-lg border-slate-300 bg-slate-50" @disabled(!$canEdit)>
-<span class="mt-1 block text-xs text-slate-500">Source : {{ $contactContext['stadium_source'] }}.</span>
-</label>
-<label class="text-sm">Hôpital / structure d’évacuation
-<input name="nearest_hospital" value="{{ old('nearest_hospital',$plan->nearest_hospital) }}" class="mt-1 w-full rounded-lg border-slate-300" placeholder="À configurer dans le club recevant ou la compétition" @disabled(!$canEdit)>
-<span class="mt-1 block text-xs text-slate-500">Source : {{ $contactContext['hospital_source'] }}.</span>
-</label>
-<label class="text-sm">Téléphone hôpital / structure
-<input name="nearest_hospital_phone" value="{{ old('nearest_hospital_phone',$plan->nearest_hospital_phone) }}" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)>
-</label>
-<label class="text-sm">Ambulance / régulation
-<input name="ambulance_contact" value="{{ old('ambulance_contact',$plan->ambulance_contact) }}" class="mt-1 w-full rounded-lg border-slate-300" placeholder="À configurer dans le club recevant ou la compétition" @disabled(!$canEdit)>
-<span class="mt-1 block text-xs text-slate-500">Source : {{ $contactContext['ambulance_source'] }}.</span>
-</label>
-<label class="text-sm md:col-span-2">Responsable médical du club recevant
-<select name="team_leader_club_official_id" id="team-leader-person" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)>
-<option value="">— Utiliser le responsable configuré du club/compétition —</option>
+<div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+<p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Stade / lieu du match</p>
+<p class="mt-1 font-semibold text-slate-900">{{ $plan->stadium ?: 'Non configuré' }}</p>
+<p class="mt-1 text-xs text-slate-500">Source : {{ $contactContext['stadium_source'] }}.</p>
+<input type="hidden" name="stadium" value="{{ $plan->stadium }}">
+</div>
+
+<div class="rounded-xl border {{ filled($plan->nearest_hospital) ? 'border-slate-200 bg-slate-50' : 'border-amber-200 bg-amber-50' }} p-4">
+<p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Hôpital / structure d’évacuation</p>
+<p class="mt-1 font-semibold text-slate-900">{{ $plan->nearest_hospital ?: 'Non configuré' }}</p>
+<p class="mt-1 text-sm text-slate-600">{{ $plan->nearest_hospital_phone ?: 'Téléphone non configuré' }}</p>
+<p class="mt-1 text-xs text-slate-500">Source : {{ $contactContext['hospital_source'] }}.</p>
+@if(blank($plan->nearest_hospital))
+<p class="mt-2 text-xs text-amber-800">À renseigner dans @if(\Illuminate\Support\Facades\Route::has('clubs-view.edit'))<a class="font-semibold underline" href="{{ route('clubs-view.edit',$match->home_club_id) }}">le club recevant</a>@else le club recevant @endif @if($match->competition) ou @if(\Illuminate\Support\Facades\Route::has('competitions.edit'))<a class="font-semibold underline" href="{{ route('competitions.edit',$match->competition) }}">la compétition</a>@else la compétition @endif @endif.</p>
+@endif
+<input type="hidden" name="nearest_hospital" value="{{ $plan->nearest_hospital }}">
+<input type="hidden" name="nearest_hospital_phone" value="{{ $plan->nearest_hospital_phone }}">
+</div>
+
+<div class="rounded-xl border {{ filled($plan->ambulance_contact) ? 'border-slate-200 bg-slate-50' : 'border-amber-200 bg-amber-50' }} p-4 md:col-span-2">
+<p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Ambulance / régulation</p>
+<p class="mt-1 font-semibold text-slate-900">{{ $plan->ambulance_contact ?: 'Non configuré' }}</p>
+<p class="mt-1 text-xs text-slate-500">Source : {{ $contactContext['ambulance_source'] }}.</p>
+@if(blank($plan->ambulance_contact))
+<p class="mt-2 text-xs text-amber-800">À renseigner dans @if(\Illuminate\Support\Facades\Route::has('clubs-view.edit'))<a class="font-semibold underline" href="{{ route('clubs-view.edit',$match->home_club_id) }}">le club recevant</a>@else le club recevant @endif @if($match->competition) ou @if(\Illuminate\Support\Facades\Route::has('competitions.edit'))<a class="font-semibold underline" href="{{ route('competitions.edit',$match->competition) }}">la compétition</a>@else la compétition @endif @endif.</p>
+@endif
+<input type="hidden" name="ambulance_contact" value="{{ $plan->ambulance_contact }}">
+</div>
+
+<div class="md:col-span-2 rounded-xl border border-slate-200 p-4">
+<label class="text-sm font-medium text-slate-700">Responsable médical du club recevant
+<select name="team_leader_club_official_id" id="team-leader-person" class="mt-2 w-full rounded-lg border-slate-300" @disabled(!$canEdit || $eligibleLeaders->isEmpty())>
+<option value="">— Responsable configuré du club / compétition —</option>
 @foreach($eligibleLeaders as $leader)
 <option value="{{ $leader['club_official_id'] }}" data-name="{{ $leader['name'] }}" data-phone="{{ $leader['phone'] ?? '' }}" data-fifa="{{ $leader['person_fifa_id'] ?? '' }}" @selected((string)old('team_leader_club_official_id',$plan->team_leader_club_official_id)===(string)$leader['club_official_id'])>{{ $leader['name'] }} · {{ $leader['role'] }} · {{ $leader['team'] }}{{ filled($leader['person_fifa_id'] ?? null) ? ' · FIFA '.$leader['person_fifa_id'] : ' · FIT #'.$leader['club_official_id'] }}{{ filled($leader['phone'] ?? null) ? ' · '.$leader['phone'] : '' }}</option>
 @endforeach
 </select>
-@if($eligibleLeaders->isEmpty())<span class="mt-1 block text-xs text-amber-700">Aucun responsable identifié dans le staff actif du club recevant. Le contact configuré dans le club/compétition est utilisé.</span>@endif
 </label>
-<label class="text-sm">Nom du responsable
-<input name="team_leader_name" id="team-leader-name" value="{{ old('team_leader_name',$plan->team_leader_name) }}" class="mt-1 w-full rounded-lg border-slate-300 bg-slate-50" readonly>
-<span class="mt-1 block text-xs text-slate-500">Source : {{ $contactContext['leader_source'] }}.</span>
-</label>
-<label class="text-sm">Téléphone responsable
-<input name="team_leader_phone" id="team-leader-phone" value="{{ old('team_leader_phone',$plan->team_leader_phone) }}" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)>
-</label>
+@if($eligibleLeaders->isEmpty())
+<p class="mt-2 text-xs text-amber-800">Aucun responsable actif dans le club recevant. @if(\Illuminate\Support\Facades\Route::has('club-officials.club'))<a class="font-semibold underline" href="{{ route('club-officials.club',$match->home_club_id) }}">Configurer Dirigeants & staff</a>@else Configurer Dirigeants & staff @endif.</p>
+@endif
+<div class="mt-3 grid gap-3 sm:grid-cols-2">
+<div class="rounded-lg bg-slate-50 p-3"><p class="text-xs text-slate-500">Nom</p><p id="team-leader-name-display" class="font-semibold text-slate-900">{{ $plan->team_leader_name ?: 'Non configuré' }}</p></div>
+<div class="rounded-lg bg-slate-50 p-3"><p class="text-xs text-slate-500">Téléphone</p><p id="team-leader-phone-display" class="font-semibold text-slate-900">{{ $plan->team_leader_phone ?: 'Non configuré' }}</p></div>
+</div>
+<p class="mt-2 text-xs text-slate-500">Source : {{ $contactContext['leader_source'] }}.</p>
+<input type="hidden" name="team_leader_name" id="team-leader-name" value="{{ $plan->team_leader_name }}">
+<input type="hidden" name="team_leader_phone" id="team-leader-phone" value="{{ $plan->team_leader_phone }}">
 <input type="hidden" name="team_leader_user_id" value="">
-<input type="hidden" name="team_leader_person_fifa_id" id="team-leader-fifa" value="{{ old('team_leader_person_fifa_id',$plan->team_leader_person_fifa_id) }}">
+<input type="hidden" name="team_leader_person_fifa_id" id="team-leader-fifa" value="{{ $plan->team_leader_person_fifa_id }}">
+</div>
 </div>
 </section>
 
@@ -381,6 +400,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>document.addEventListener('DOMContentLoaded',()=>{
  const leader=document.getElementById('team-leader-person');
- if(leader){ leader.addEventListener('change',()=>{ const option=leader.options[leader.selectedIndex]; const name=document.getElementById('team-leader-name'); const phone=document.getElementById('team-leader-phone'); if(name) name.value=option?.dataset?.name||''; if(phone && option?.dataset?.phone) phone.value=option.dataset.phone; const fifa=document.getElementById('team-leader-fifa'); if(fifa) fifa.value=option?.dataset?.fifa||''; }); }
+ if(leader){ leader.addEventListener('change',()=>{ const option=leader.options[leader.selectedIndex]; const name=document.getElementById('team-leader-name'); const phone=document.getElementById('team-leader-phone'); const nameDisplay=document.getElementById('team-leader-name-display'); const phoneDisplay=document.getElementById('team-leader-phone-display'); const selectedName=option?.dataset?.name||''; const selectedPhone=option?.dataset?.phone||''; if(name) name.value=selectedName; if(phone) phone.value=selectedPhone; if(nameDisplay) nameDisplay.textContent=selectedName||'Non configuré'; if(phoneDisplay) phoneDisplay.textContent=selectedPhone||'Non configuré'; const fifa=document.getElementById('team-leader-fifa'); if(fifa) fifa.value=option?.dataset?.fifa||''; }); }
 });
 </script>

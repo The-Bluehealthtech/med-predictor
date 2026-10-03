@@ -104,6 +104,39 @@ class PCMAController extends Controller
         return view('pcma.create', compact('athletes', 'users', 'teamDoctorRegistration', 'pcmaVisit'));
     }
 
+    /**
+     * Recherche d'un joueur pour le PCMA (saisie vocale : FIFA ID ou nom dicté), limitée aux joueurs
+     * auxquels le médecin a accès. Identité minimale, aucune donnée médicale ; rien n'est journalisé.
+     */
+    public function searchPlayers(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($user, 401);
+        $data = $request->validate(['fifa_id' => 'nullable|string|max:20|regex:/^[A-Za-z0-9]+$/', 'name' => 'nullable|string|min:2|max:100']);
+        abort_unless(!empty($data['fifa_id']) || !empty($data['name']), 422, 'FIFA ID ou nom requis.');
+        $query = app(\App\Services\MedicalRecordAccess::class)->scopePlayers($user, Player::query())->with('club');
+        if (!empty($data['fifa_id'])) {
+            $query->where('fifa_connect_id', strtoupper($data['fifa_id']));
+        } else {
+            $term = '%' . str_replace(['%', '_'], ['\\%', '\\_'], trim($data['name'])) . '%';
+            $query->where(fn ($q) => $q->where('name', 'like', $term)->orWhere('first_name', 'like', $term)->orWhere('last_name', 'like', $term));
+        }
+        $player = $query->orderBy('last_name')->first();
+        if (!$player) {
+            return response()->json(['success' => false, 'message' => 'Aucun joueur de votre périmètre ne correspond.']);
+        }
+
+        return response()->json(['success' => true, 'player' => [
+            'id' => $player->id,
+            'name' => trim($player->first_name . ' ' . $player->last_name) ?: $player->name,
+            'fifa_connect_id' => $player->fifa_connect_id,
+            'club' => $player->club?->name,
+            'position' => $player->position,
+            'age' => $player->date_of_birth ? \Illuminate\Support\Carbon::parse($player->date_of_birth)->age : null,
+            'nationality' => $player->nationality,
+        ]]);
+    }
+
     public function store(Request $request)
     {
         try {

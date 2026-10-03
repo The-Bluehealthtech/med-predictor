@@ -2497,13 +2497,7 @@ Route::post('/api/v1/clinical/report', [App\Http\Controllers\ClinicalDataSupport
     })->name('pcma.destroy');
 
     // Additional PCMA routes
-    // PDF routes - specific routes first
-    Route::get('/pcma/pdf', function () {
-        return response()->json([
-            'success' => false,
-            'message' => 'PDF generation requires form data. Please use the PCMA form to generate a PDF.'
-        ], 400);
-    });
+    // (Ancienne route GET /pcma/pdf retirée : inaccessible derrière /pcma/{pcma}, elle ne renvoyait qu'un message.)
 
     // Route pcma.complete supprimée - doublon avec celle du contrôleur
 
@@ -3529,6 +3523,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/pcma/{pcma}', [App\Http\Controllers\PCMAController::class, 'destroy'])->name('pcma.destroy');
     Route::post('/pcma/{pcma}/complete', [App\Http\Controllers\PcmaStatusController::class, 'complete'])->name('pcma.complete');
     Route::post('/pcma/{pcma}/fail', [App\Http\Controllers\PcmaStatusController::class, 'fail'])->name('pcma.fail');
+    Route::get('/pcma/players/search', [App\Http\Controllers\PCMAController::class, 'searchPlayers'])->middleware('throttle:60,1')->name('pcma.players.search');
     Route::get('/pcma/{pcma}/files/{field}', [App\Http\Controllers\PcmaDocumentController::class, 'file'])
         ->name('pcma.file');
     // Visionneuse commune des fichiers médicaux (PCMA, documents du pré-accueil)

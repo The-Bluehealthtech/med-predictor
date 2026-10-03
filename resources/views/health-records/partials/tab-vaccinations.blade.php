@@ -240,13 +240,7 @@
         <div class="space-y-4">
             <div class="flex justify-between items-center">
                 <span class="text-sm text-gray-600">{{ __('health_records_extra.label_76b03fc52dec') }}</span>
-                <button 
-                    type="button" 
-                    id="generate-certificate-btn"
-                    class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
-                >
-                    {{ __('health_records_extra.label_7f6a8590d1f5') }}
-                </button>
+                {{-- Bouton « certificat » retiré : il produisait un faux document (JSON au nom fictif « Nom du patient »). --}}
             </div>
             
             <div id="certificates-list" class="space-y-2">
@@ -298,10 +292,6 @@ function initializeVaccinationManagement() {
         saveVaccination();
     });
     
-    // Generate certificate button
-    document.getElementById('generate-certificate-btn').addEventListener('click', function() {
-        generateVaccinationCertificate();
-    });
 }
 
 function saveVaccination() {
@@ -430,30 +420,4 @@ function updateVaccinationData() {
     document.getElementById('vaccination_data').value = JSON.stringify(vaccinations);
 }
 
-function generateVaccinationCertificate() {
-    if (vaccinations.length === 0) {
-        alert(@json(__('Aucune vaccination enregistrée pour générer un certificat')));
-        return;
-    }
-    
-    // Simulate certificate generation
-    const certificateData = {
-        patient: 'Nom du patient',
-        date: new Date().toLocaleDateString('fr-FR'),
-        vaccinations: vaccinations
-    };
-    
-    // Create and download certificate
-    const blob = new Blob([JSON.stringify(certificateData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'certificat-vaccinal.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    alert(@json(__('Certificat vaccinal généré avec succès !')));
-}
 </script> 

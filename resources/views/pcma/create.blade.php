@@ -1989,13 +1989,7 @@
                             </div>
                             
                             <div class="flex gap-2 mt-3">
-                                <button 
-                                    type="button" 
-                                    onclick="testVoiceAnalysis()" 
-                                    class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-md transition duration-200"
-                                >
-                                    {{ __('pcma.test_voice_analysis_btn') }}
-                                </button>
+                                {{-- Bouton de test de l'analyse vocale retiré (outil de développement). --}}
                                 <!-- Bouton de test SUPPRIMÉ (causait des données de test automatiques) -->
                                 <!-- <button 
                                     type="button" 
@@ -4197,9 +4191,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         voiceStatus.className = 'text-center text-blue-600 font-medium';
                     }
                     
-                    // Lancer la recherche automatique dans la base de données
-                    // Cette fonction va chercher un joueur existant et remplir tous les champs
-                    searchPlayerByFifaConnect();
+                    // Recherche du joueur par le FIFA ID dicté, parmi les joueurs du médecin
+                    searchPlayerByFifaConnect(analysis.fifa_number || null);
                     return; // Sortir de la fonction pour ne pas traiter les autres données
                 }
                 
@@ -4539,8 +4532,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Sélectionne le joueur trouvé dans la liste du formulaire (joueurs auxquels le médecin a accès).
+        function selectPcmaPlayer(playerId) {
+            const select = document.getElementById('player_id');
+            if (!select || !playerId) return;
+            if ([...select.options].some(o => o.value === String(playerId))) {
+                select.value = String(playerId);
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+
         //  NOUVELLE FONCTION : Recherche automatique par ID FIFA CONNECT
-        async function searchPlayerByFifaConnect() {
+        async function searchPlayerByFifaConnect(fifaNumber = null) {
             console.log(' Lancement de la recherche automatique par ID FIFA CONNECT...');
             
             try {
@@ -4554,9 +4557,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Recherche réelle dans la base de données via l'API Laravel
                 console.log(' Recherche réelle dans la base de données...');
                 
-                // Chercher un joueur par défaut pour la démo (Ali Jebali)
-                const searchResponse = await fetch('/api/athletes/search?name=Ali%20Jebali', {
+                // FIFA ID dicté, à défaut celui saisi dans le formulaire ; recherche limitée aux joueurs du médecin.
+                const fifaId = (fifaNumber || document.getElementById('voice_fifa_connect_id')?.value || document.getElementById('fifa_connect_id')?.value || '').trim();
+                if (!fifaId) {
+                    throw new Error(PCMA_LABELS.errPlayerNotFoundDb);
+                }
+                const searchResponse = await fetch(@json(route('pcma.players.search')) + '?fifa_id=' + encodeURIComponent(fifaId), {
                     method: 'GET',
+                    credentials: 'same-origin',
                     headers: {
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -4575,6 +4583,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Données réelles du joueur trouvé
                 const playerData = searchResult.player;
+                selectPcmaPlayer(playerData.id);
                 
                 console.log(' Joueur trouvé dans la base:', playerData);
                 
@@ -5200,81 +5209,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        //  NOUVELLE FONCTION : Test des champs FIFA ID
-        window.testFifaFields = function() {
-            console.log(' Test des champs FIFA ID...');
-            
-            const fifaFields = [
-                'input[name="fifa_id"]',
-                'input[name="fifa_connect_id"]',
-                '#fifa_id',
-                '#fifa_connect_id',
-                '#voice_fifa_connect_id',
-                '#voice_fifa_id'
-            ];
-            
-            console.log(' Vérification de tous les champs FIFA ID:');
-            fifaFields.forEach(selector => {
-                const field = document.querySelector(selector);
-                console.log(`   ${selector}: ${field ? ' TROUVÉ' : '❌ NON TROUVÉ'}`);
-                if (field) {
-                    console.log(`      - Type: ${field.type}`);
-                    console.log(`      - ID: ${field.id}`);
-                    console.log(`      - Name: ${field.name}`);
-                    console.log(`      - Value: "${field.value}"`);
-                    console.log(`      - Visible: ${field.offsetParent !== null ? 'OUI' : 'NON'}`);
-                    console.log(`      - Classes: ${field.className}`);
-                    console.log(`      - Parent: ${field.parentElement ? field.parentElement.tagName : 'N/A'}`);
-                    
-                    //  NOUVEAU : Vérification CSS détaillée
-                    const styles = window.getComputedStyle(field);
-                    console.log(`      - CSS Display: ${styles.display}`);
-                    console.log(`      - CSS Visibility: ${styles.visibility}`);
-                    console.log(`      - CSS Position: ${styles.position}`);
-                    console.log(`      - CSS Opacity: ${styles.opacity}`);
-                    console.log(`      - CSS Width: ${styles.width}`);
-                    console.log(`      - CSS Height: ${styles.height}`);
-                    
-                    // Vérifier si le parent est visible
-                    let parent = field.parentElement;
-                    let level = 0;
-                    while (parent && level < 3) {
-                        const parentStyles = window.getComputedStyle(parent);
-                        console.log(`      - Parent ${level + 1} (${parent.tagName}): Display=${parentStyles.display}, Visible=${parentStyles.visibility}`);
-                        if (parent.id) console.log(`        ID: ${parent.id}`);
-                        if (parent.className) console.log(`        Classes: ${parent.className}`);
-                        parent = parent.parentElement;
-                        level++;
-                    }
-                }
-            });
-            
-            // Test de mise à jour manuelle
-            console.log(' Test de mise à jour manuelle...');
-            const testPlayer = {
-                id: 88,
-                name: 'Ali Jebali',
-                fifa_connect_id: null,
-                position: 'Milieu offensif',
-                age: 24,
-                nationality: 'Tunisie'
-            };
-            
-            console.log(' Appel de updateFormFieldsWithPlayerData avec:', testPlayer);
-            updateFormFieldsWithPlayerData(testPlayer);
-            
-            // Vérification après mise à jour
-            setTimeout(() => {
-                console.log(' Vérification après mise à jour:');
-                fifaFields.forEach(selector => {
-                    const field = document.querySelector(selector);
-                    if (field) {
-                        console.log(`   ${selector}: Value = "${field.value}"`);
-                    }
-                });
-            }, 1000);
-        };
-        
         //  NOUVELLE FONCTION : Forcer la visibilité des champs vocaux FIFA ID
         window.forceFifaFieldsVisibility = function() {
             console.log(' Forçage de la visibilité des champs FIFA ID vocaux...');
@@ -5318,10 +5252,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             try {
                 // Appel à l'API Laravel pour rechercher le joueur
-                const response = await fetch(`/api/athletes/search?name=${encodeURIComponent(playerName)}`, {
+                const response = await fetch(@json(route('pcma.players.search')) + '?name=' + encodeURIComponent(playerName), {
                     method: 'GET',
+                    credentials: 'same-origin',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
@@ -5334,6 +5269,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (data.success && data.player) {
                     // Joueur trouvé !
+                    selectPcmaPlayer(data.player.id);
                     displayPlayerInfo(data.player);
                 } else {
                     // Joueur non trouvé
@@ -6407,17 +6343,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('❌ Callback onResult non configuré !');
         }
         
-        //  TEST DIRECT DE LA COMMANDE FIFA CONNECT
-        setTimeout(() => {
-            console.log(' TEST DIRECT DE LA COMMANDE FIFA CONNECT...');
-            testFifaConnectCommand();
-        }, 2000);
-        
-        //  NOUVEAU : Test de l'intégration directe
-        setTimeout(() => {
-            console.log(' TEST DE L\'INTÉGRATION DIRECTE...');
-            testIntegrationDirecte();
-        }, 3000);
+        // Aucun test automatique au chargement : les phrases d'exemple remplissaient le PCMA avec des données fictives.
     }
     
     //  FONCTION DE TEST DE L'INTÉGRATION DIRECTE
@@ -6567,46 +6493,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     //  FONCTION DE TEST DIRECTE
-    function testFifaConnectCommand() {
-        console.log(' Test direct de la commande FIFA CONNECT...');
-        
-        // 1. Tester l'analyse du texte (avec et sans numéro)
-        const testTexts = [
-            "ID FIFA CONNECT",
-            "ID FIFA CONNECT 001",
-            "FIFA CONNECT 001",
-            "FIFA 001"
-        ];
-        
-        testTexts.forEach((testText, index) => {
-            console.log(`\n Test ${index + 1}: "${testText}"`);
-            
-            const analysis = analyzeVoiceText(testText);
-            console.log(' Résultat de l\'analyse:', analysis);
-            
-            if (analysis.command === 'fifa_connect_search') {
-                console.log(' Commande FIFA CONNECT détectée avec succès !');
-                
-                if (analysis.fifa_number) {
-                    console.log(` Numéro FIFA capturé: ${analysis.fifa_number}`);
-                }
-                
-                // 2. Tester le remplissage des champs
-                console.log(' Test du remplissage des champs...');
-                fillFormFields(analysis);
-                
-                // 3. Tester la recherche automatique
-                console.log(' Test de la recherche automatique...');
-                searchPlayerByFifaConnect();
-                
-            } else {
-                console.error('❌ Commande FIFA CONNECT non détectée !');
-                console.log(' Texte analysé:', testText);
-                console.log(' Résultat obtenu:', analysis);
-            }
-        });
-    }
-    
     //  NOUVELLE FONCTION : Effacer les anciennes données TEST
     function clearOldTestData() {
         console.log('🧹 Effacement des anciennes données TEST...');

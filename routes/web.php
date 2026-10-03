@@ -28,6 +28,8 @@ Route::put('/matches/{match}/medical-emergency-plan', [\App\Http\Controllers\Mat
     ->middleware('auth')->whereNumber('match')->name('matches.medical-emergency-plan.update');
 Route::post('/matches/{match}/medical-emergency-plan/validate', [\App\Http\Controllers\MatchMedicalEmergencyPlanController::class, 'validatePlan'])
     ->middleware('auth')->whereNumber('match')->name('matches.medical-emergency-plan.validate');
+Route::post('/matches/{match}/medical-incidents', [\App\Http\Controllers\MatchMedicalIncidentController::class, 'store'])
+    ->middleware('auth')->whereNumber('match')->name('matches.medical-incidents.store');
 
 // Controllers will be used as needed
 

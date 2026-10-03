@@ -22,12 +22,17 @@ final class MatchMedicalEmergencyPlanController extends Controller
             $this->defaults($match)
         );
 
+        $match->loadMissing(['rosters.players.player','medicalIncidents.player','medicalIncidents.doctor']);
+
         return view('matches.medical-emergency-plan', [
             'match'=>$match,
             'plan'=>$plan,
             'canEdit'=>$this->canEdit($request, $match),
             'canValidate'=>$this->canValidate($request, $match),
+            'canDocumentIncident'=>$this->canDocumentIncident($request, $match),
             'eligibleLeaders'=>$this->eligibleLeaders($match),
+            'matchPlayers'=>$match->rosters->flatMap->players->pluck('player')->filter()->unique('id')->sortBy('name')->values(),
+            'incidents'=>$match->medicalIncidents->sortByDesc('created_at'),
             'roleDefinitions'=>$this->roleDefinitions(),
         ]);
     }
@@ -122,6 +127,20 @@ final class MatchMedicalEmergencyPlanController extends Controller
             && $user->role === 'association_medical'
             && $user->association_id
             && (int)$user->association_id === (int)$match->competition?->association_id;
+    }
+
+    private function canDocumentIncident(Request $request, MatchModel $match): bool
+    {
+        $user=$request->user();
+        if (!$user) return false;
+        if ($user->role === 'association_medical') {
+            return $user->association_id
+                && (int)$user->association_id === (int)$match->competition?->association_id;
+        }
+
+        return in_array($user->role,self::MEDICAL_CLUB_ROLES,true)
+            && $user->club_id
+            && in_array((int)$user->club_id,[(int)$match->home_club_id,(int)$match->away_club_id],true);
     }
 
     private function isReady(MatchMedicalEmergencyPlan $plan): bool

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\MatchMedicalEmergencyPlanController;
+use App\Http\Controllers\MatchMedicalIncidentController;
 use App\Models\Association;
 use App\Models\Club;
 use App\Models\Competition;
@@ -32,11 +33,15 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         if (!Schema::hasTable('match_medical_emergency_plans')) {
             (require base_path('database/migrations/2026_10_03_227400_create_match_medical_emergency_plans.php'))->up();
         }
+        if (!Schema::hasTable('match_medical_incidents')) {
+            (require base_path('database/migrations/2026_10_03_228000_create_match_medical_incidents_table.php'))->up();
+        }
 
         Route::middleware(['web'])->group(function () {
             Route::get('/_t/matches/{match}/medical-emergency-plan', [MatchMedicalEmergencyPlanController::class,'show'])->name('matches.medical-emergency-plan');
             Route::put('/_t/matches/{match}/medical-emergency-plan', [MatchMedicalEmergencyPlanController::class,'update'])->name('matches.medical-emergency-plan.update');
             Route::post('/_t/matches/{match}/medical-emergency-plan/validate', [MatchMedicalEmergencyPlanController::class,'validatePlan'])->name('matches.medical-emergency-plan.validate');
+            Route::post('/_t/matches/{match}/medical-incidents', [MatchMedicalIncidentController::class,'store'])->name('matches.medical-incidents.store');
             Route::get('/_t/match-sheet/{match}', fn () => response('sheet'))->name('competition-management.matches.match-sheet');
         });
         app('router')->getRoutes()->refreshNameLookups();

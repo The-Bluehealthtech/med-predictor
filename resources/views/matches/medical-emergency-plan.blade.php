@@ -112,6 +112,68 @@ $timelineLabels=[
 @endif
 </form>
 
+<section class="rounded-2xl border border-rose-200 bg-white p-5">
+<div class="flex items-start justify-between gap-4">
+<div><h2 class="font-semibold text-slate-900">5. Incidents médicaux terrain</h2>
+<p class="mt-1 text-sm text-slate-600">Traçabilité clinique du match. Le protocole guide l’équipe médicale ; FIT n’autorise aucune décision autonome.</p></div>
+<span class="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">{{ $incidents->count() }} incident(s)</span>
+</div>
+
+@if($canDocumentIncident)
+<form method="POST" action="{{ route('matches.medical-incidents.store',$match) }}" class="mt-5 space-y-4">
+@csrf
+<div class="grid gap-4 md:grid-cols-3">
+<label class="text-sm">Type
+<select name="incident_type" class="mt-1 w-full rounded-lg border-slate-300" required>
+<option value="cardiac_arrest">Arrêt cardiaque suspecté</option>
+<option value="cervical_spine">Rachis cervical</option>
+<option value="fracture">Fracture</option>
+<option value="concussion">Commotion</option>
+<option value="other">Autre</option>
+</select></label>
+<label class="text-sm">Minute<input type="number" min="0" max="180" name="match_minute" class="mt-1 w-full rounded-lg border-slate-300"></label>
+<label class="text-sm">Joueur
+<select name="player_id" class="mt-1 w-full rounded-lg border-slate-300"><option value="">Non identifié / non-joueur</option>
+@foreach($matchPlayers as $player)<option value="{{ $player->id }}">{{ $player->name ?: trim($player->first_name.' '.$player->last_name) }}</option>@endforeach
+</select></label>
+</div>
+<div class="grid gap-4 md:grid-cols-2">
+<label class="text-sm">Mécanisme<input name="mechanism" class="mt-1 w-full rounded-lg border-slate-300" placeholder="Effondrement, choc, torsion…"></label>
+<label class="text-sm">Contact
+<select name="contact" class="mt-1 w-full rounded-lg border-slate-300"><option value="">Non déterminé</option><option value="1">Avec contact</option><option value="0">Sans contact</option></select></label>
+</div>
+<div class="grid gap-3 md:grid-cols-5">
+@foreach(['a'=>'A · Airway','b'=>'B · Breathing','c'=>'C · Circulation','d'=>'D · Disability','e'=>'E · Exposure'] as $key=>$label)
+<label class="text-xs font-semibold">{{ $label }}<textarea name="abcde_assessment[{{ $key }}]" rows="2" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></textarea></label>
+@endforeach
+</div>
+<div class="grid gap-2 sm:grid-cols-4">
+@foreach(['loss_of_consciousness'=>'Perte de connaissance','aed_used'=>'DAE utilisé','oxygen_used'=>'Oxygène administré','evacuated'=>'Évacuation'] as $key=>$label)
+<label class="flex items-center gap-2 rounded-lg border border-slate-200 p-3 text-sm"><input type="checkbox" name="{{ $key }}" value="1" class="rounded border-slate-300">{{ $label }}</label>
+@endforeach
+</div>
+<div class="grid gap-4 md:grid-cols-2">
+<label class="text-sm">Destination évacuation<input name="evacuation_destination" class="mt-1 w-full rounded-lg border-slate-300"></label>
+<label class="text-sm">Médecin / professionnel responsable<input name="doctor_name" required class="mt-1 w-full rounded-lg border-slate-300"></label>
+<label class="text-sm md:col-span-2">Diagnostic initial<textarea name="initial_diagnosis" rows="2" class="mt-1 w-full rounded-lg border-slate-300"></textarea></label>
+</div>
+<div class="flex justify-end"><button class="rounded-xl bg-rose-700 px-5 py-2.5 text-sm font-semibold text-white">Enregistrer l’incident</button></div>
+</form>
+@endif
+
+@if($incidents->isNotEmpty())
+<div class="mt-5 space-y-2">
+@foreach($incidents as $incident)
+<div class="rounded-xl border border-slate-200 p-4 text-sm">
+<div class="flex flex-wrap items-center justify-between gap-2"><strong>{{ str_replace('_',' ',ucfirst($incident->incident_type)) }}</strong><span class="text-slate-500">{{ $incident->match_minute !== null ? $incident->match_minute.'e min' : 'Minute non renseignée' }}</span></div>
+<p class="mt-1 text-slate-700">{{ $incident->player?->name ?? 'Personne non identifiée' }} · {{ $incident->doctor_name }}</p>
+@if($incident->initial_diagnosis)<p class="mt-1 text-slate-600">{{ $incident->initial_diagnosis }}</p>@endif
+</div>
+@endforeach
+</div>
+@endif
+</section>
+
 @if($canValidate)
 <section class="rounded-2xl border {{ $plan->status==='ready' ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50' }} p-5">
 <h2 class="font-semibold text-slate-900">Validation médicale fédération</h2>

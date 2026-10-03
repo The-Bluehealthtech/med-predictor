@@ -8,8 +8,10 @@ use InvalidArgumentException;
 
 final class DocumentSignatureService
 {
-    public function __construct(private readonly ApiConnectorState $state)
-    {
+    public function __construct(
+        private readonly ApiConnectorState $state,
+        private readonly AdobeSignProvider $adobeSign,
+    ) {
     }
 
     public function providers(): array
@@ -84,7 +86,7 @@ final class DocumentSignatureService
             throw new InvalidArgumentException('Document signature: signer.type requis.');
         }
 
-        return DocumentSignatureRequest::query()->create([
+        $request = DocumentSignatureRequest::query()->create([
             'provider' => $provider,
             'workflow' => $workflow,
             'document_type' => $document['type'],
@@ -101,6 +103,75 @@ final class DocumentSignatureService
                 'document' => array_diff_key($document, ['content' => true, 'bytes' => true]),
             ],
             'requested_at' => now(),
+        ]);
+
+        if ($provider === 'adobe_sign') {
+            $this->dispatchAdobe($request, $document, $signer);
+        }
+
+        return $request->fresh();
+    }
+
+    public function sync(DocumentSignatureRequest $request): DocumentSignatureRequest
+    {
+        if ($request->provider !== 'adobe_sign' || blank($request->external_reference)) {
+            return $request;
+        }
+
+        $result = $this->adobeSign->status((string) $request->external_reference);
+        if (($result['status'] ?? null) === 'error') {
+            return $request;
+        }
+
+        $adobeStatus = strtoupper((string) ($result['status'] ?? ''));
+        $mapped = match ($adobeStatus) {
+            'SIGNED', 'APPROVED' => 'signed',
+            'OUT_FOR_SIGNATURE', 'OUT_FOR_APPROVAL', 'IN_PROCESS' => 'sent',
+            'CANCELLED', 'EXPIRED', 'ABORTED' => 'cancelled',
+            default => $request->status,
+        };
+        $metadata = $request->metadata ?? [];
+        $metadata['provider_status'] = $adobeStatus;
+        $metadata['last_synced_at'] = now()->toIso8601String();
+
+        if ($mapped === 'signed' && empty($metadata['signed_path'])) {
+            $bytes = $this->adobeSign->downloadSigned((string) $request->external_reference);
+            if (is_string($bytes) && $bytes !== '') {
+                $path = 'document-signatures/'.$request->id.'/signed.pdf';
+                \Illuminate\Support\Facades\Storage::disk('local')->put($path, $bytes);
+                $metadata['signed_path'] = $path;
+                $metadata['signed_sha256'] = hash('sha256', $bytes);
+            }
+        }
+
+        $request->update([
+            'status' => $mapped,
+            'signed_at' => $mapped === 'signed' ? ($request->signed_at ?: now()) : $request->signed_at,
+            'metadata' => $metadata,
+        ]);
+
+        return $request->fresh();
+    }
+
+    private function dispatchAdobe(DocumentSignatureRequest $request, array $document, array $signer): void
+    {
+        if (blank($document['bytes'] ?? null) || blank($signer['email'] ?? null)) {
+            $request->update(['status' => 'error']);
+            return;
+        }
+
+        $result = $this->adobeSign->send(
+            (string) $document['bytes'],
+            (string) ($document['filename'] ?? ($document['reference'].'.pdf')),
+            (string) ($document['name'] ?? $document['reference']),
+            (string) $signer['email']
+        );
+        $metadata = $request->metadata ?? [];
+        $metadata['dispatch'] = array_diff_key($result, ['raw' => true]);
+        $request->update([
+            'status' => $result['status'] ?? 'error',
+            'external_reference' => $result['external_reference'] ?? null,
+            'metadata' => $metadata,
         ]);
     }
 

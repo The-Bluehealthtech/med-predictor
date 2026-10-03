@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ApiConnectorState;
+use App\Services\Documents\AdobeSignProvider;
 use App\Services\Documents\DocumentSignatureService;
 use App\Services\Licensing\AwsRekognitionFaceMatcher;
 use App\Services\Licensing\FifaIdRegistry;
@@ -67,6 +68,7 @@ final class ApiConnectorSettingsController extends Controller
         $result = match ($connector) {
             'aws_rekognition' => $rekognition->testConnection(),
             'signotec' => $signotec->testConnection(),
+            'adobe_sign' => app(AdobeSignProvider::class)->testConnection(),
             'fifa_id' => $fifaId->isConfigured()
                 ? ['ok' => true, 'message' => 'Configuration FIFA ID détectée ; test métier disponible depuis un dossier de licence.']
                 : ['ok' => false, 'message' => 'Configuration FIFA ID incomplète.'],

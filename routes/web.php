@@ -3481,6 +3481,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pcma/{pcma}/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'export'])->name('pcma.pdf');
     Route::post('/pcma/{pcma}/digital-signature', [App\Http\Controllers\PcmaDigitalSignatureController::class, 'store'])
         ->name('pcma.digital-signature.store');
+    Route::post('/pcma/{pcma}/digital-signature/{signature}/sync', [App\Http\Controllers\PcmaDigitalSignatureController::class, 'sync'])
+        ->whereNumber('signature')->name('pcma.digital-signature.sync');
+    Route::get('/pcma/{pcma}/digital-signature/{signature}/download', [App\Http\Controllers\PcmaDigitalSignatureController::class, 'download'])
+        ->whereNumber('signature')->name('pcma.digital-signature.download');
 });
 
 

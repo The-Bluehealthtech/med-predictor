@@ -985,9 +985,23 @@
                     <div class="mt-5 border-t border-gray-100 pt-4">
                         <h3 class="text-sm font-semibold text-gray-900">Historique</h3>
                         @forelse($documentSignatureRequests as $signatureRequest)
-                            <div class="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2 text-sm">
-                                <span>{{ $signatureRequest->metadata['provider_name'] ?? $signatureRequest->provider }} · {{ $signatureRequest->signer_name ?? 'Signataire' }}</span>
-                                <span class="font-medium text-gray-700">{{ ucfirst($signatureRequest->status) }} · {{ optional($signatureRequest->requested_at)->format('d/m/Y H:i') }}</span>
+                            <div class="mt-2 rounded-lg bg-gray-50 px-3 py-2 text-sm">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <span>{{ $signatureRequest->metadata['provider_name'] ?? $signatureRequest->provider }} · {{ $signatureRequest->signer_name ?? 'Signataire' }}</span>
+                                    <span class="font-medium text-gray-700">{{ ucfirst($signatureRequest->status) }} · {{ optional($signatureRequest->requested_at)->format('d/m/Y H:i') }}</span>
+                                </div>
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    @if($signatureRequest->provider === 'adobe_sign' && $signatureRequest->external_reference && in_array($signatureRequest->status, ['sent', 'pending'], true) && ((int) $pcma->assessor_id === (int) auth()->id() || auth()->user()->isSystemAdmin()))
+                                        <form method="POST" action="{{ route('pcma.digital-signature.sync', [$pcma, $signatureRequest]) }}">
+                                            @csrf
+                                            <button type="submit" class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-100">Synchroniser</button>
+                                        </form>
+                                    @endif
+                                    @if(data_get($signatureRequest->metadata, 'signed_path'))
+                                        <a href="{{ route('pcma.digital-signature.download', [$pcma, $signatureRequest]) }}" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700">Télécharger le PDF signé</a>
+                                        <span class="self-center text-xs text-gray-500">SHA-256 : {{ \Illuminate\Support\Str::limit((string) data_get($signatureRequest->metadata, 'signed_sha256'), 20, '…') }}</span>
+                                    @endif
+                                </div>
                             </div>
                         @empty
                             <p class="mt-2 text-sm text-gray-500">Aucune demande de signature numérique pour ce PCMA.</p>

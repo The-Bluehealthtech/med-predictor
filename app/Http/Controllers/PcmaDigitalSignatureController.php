@@ -40,12 +40,15 @@ final class PcmaDigitalSignatureController extends Controller
         }
 
         try {
-            $signatures->createRequest($data['provider'], [
+            $signatureRequest = $signatures->createRequest($data['provider'], [
                 'type' => 'pcma_pdf',
                 'reference' => $reference,
                 'sha256' => $sha256,
                 'pcma_id' => $pcma->id,
                 'version_updated_at' => optional($pcma->updated_at)->toIso8601String(),
+                'filename' => 'PCMA-'.$pcma->id.'.pdf',
+                'name' => 'PCMA '.$pcma->id.' - '.($pcma->player?->name ?? $pcma->athlete?->name ?? 'Joueur'),
+                'bytes' => $pdfBytes,
             ], [
                 'type' => 'user',
                 'id' => $request->user()->id,
@@ -57,7 +60,41 @@ final class PcmaDigitalSignatureController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', 'Demande de signature numérique créée pour cette version figée du PCMA.');
+        if ($signatureRequest->status === 'error') {
+            return back()->with('error', 'La demande a été créée mais le fournisseur n’a pas accepté l’envoi. Vérifiez Configuration des API.');
+        }
+
+        return back()->with('success', $signatureRequest->status === 'sent'
+            ? 'Document envoyé au fournisseur de signature.'
+            : 'Demande de signature numérique créée pour cette version figée du PCMA.');
+    }
+
+    public function sync(Request $request, PCMA $pcma, DocumentSignatureRequest $signature, DocumentSignatureService $signatures): RedirectResponse
+    {
+        app(MedicalRecordAccess::class)->record($request->user(), $pcma);
+        $this->authorizeSignature($pcma, $signature);
+        abort_unless((int) $pcma->assessor_id === (int) $request->user()->id || $request->user()->isSystemAdmin(), 403);
+
+        $updated = $signatures->sync($signature);
+
+        return back()->with('success', 'Statut de signature synchronisé : '.ucfirst($updated->status).'.');
+    }
+
+    public function download(Request $request, PCMA $pcma, DocumentSignatureRequest $signature)
+    {
+        app(MedicalRecordAccess::class)->record($request->user(), $pcma);
+        $this->authorizeSignature($pcma, $signature);
+        $path = data_get($signature->metadata, 'signed_path');
+        abort_unless(is_string($path) && $path && !str_contains($path, '..'), 404);
+        abort_unless(\Illuminate\Support\Facades\Storage::disk('local')->exists($path), 404);
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->download($path, 'PCMA-'.$pcma->id.'-signed.pdf');
+    }
+
+    private function authorizeSignature(PCMA $pcma, DocumentSignatureRequest $signature): void
+    {
+        abort_unless($signature->workflow === 'pcma.final_document'
+            && (int) data_get($signature->metadata, 'document.pcma_id') === (int) $pcma->id, 404);
     }
 
     private function formData(PCMA $pcma): array

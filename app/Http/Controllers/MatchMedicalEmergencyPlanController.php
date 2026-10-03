@@ -76,6 +76,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
             'nearest_hospital_phone'=>'required|string|max:64',
             'ambulance_contact'=>'required|string|max:128',
             'team_leader_user_id'=>'nullable|exists:users,id',
+            'team_leader_club_official_id'=>'nullable|exists:club_officials,id',
             'team_leader_person_fifa_id'=>'nullable|string|max:255',
             'team_leader_name'=>'required|string|max:255',
             'team_leader_phone'=>'required|string|max:64',
@@ -94,11 +95,21 @@ final class MatchMedicalEmergencyPlanController extends Controller
         $identifiedPeople = $this->connectPeople($match);
         $validConnectIds = $identifiedPeople->pluck('person_fifa_id');
         $homeLeaders = $this->eligibleLeaders($match);
-        if (filled($data['team_leader_person_fifa_id'] ?? null)) {
+        if (filled($data['team_leader_club_official_id'] ?? null)) {
+            $leader = $homeLeaders->firstWhere('club_official_id', (int) $data['team_leader_club_official_id']);
+            if (!$leader) {
+                throw ValidationException::withMessages(['team_leader_club_official_id'=>'Ce responsable n’est pas déclaré dans le staff actif du club recevant.']);
+            }
+            $data['team_leader_name'] = $leader['name'];
+            $data['team_leader_person_fifa_id'] = $leader['person_fifa_id'] ?: null;
+            if (filled($leader['phone'] ?? null)) $data['team_leader_phone'] = $leader['phone'];
+            $data['team_leader_user_id'] = null;
+        } elseif (filled($data['team_leader_person_fifa_id'] ?? null)) {
             $leader = $homeLeaders->firstWhere('person_fifa_id', $data['team_leader_person_fifa_id']);
             if (!$leader) {
                 throw ValidationException::withMessages(['team_leader_person_fifa_id'=>'Ce responsable n’est pas déclaré dans le staff actif du club recevant.']);
             }
+            $data['team_leader_club_official_id'] = $leader['club_official_id'];
             $data['team_leader_name'] = $leader['name'];
             if (filled($leader['phone'] ?? null)) $data['team_leader_phone'] = $leader['phone'];
             $data['team_leader_user_id'] = null;
@@ -250,12 +261,11 @@ final class MatchMedicalEmergencyPlanController extends Controller
             ->with('club:id,name')
             ->where('club_id', $match->home_club_id)
             ->where('status', 'active')
-            ->whereNotNull('person_fifa_id')
-            ->where('person_fifa_id', '!=', '')
             ->orderBy('international_last_name')
             ->orderBy('international_first_name')
             ->get()
             ->map(fn (ClubOfficial $official) => [
+                'club_official_id' => $official->id,
                 'person_fifa_id' => $official->person_fifa_id,
                 'name' => $official->fullName(),
                 'role' => $official->roleLabel(),

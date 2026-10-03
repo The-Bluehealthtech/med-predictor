@@ -48,6 +48,9 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         if (!Schema::hasColumn('clubs', 'matchday_hospital_name') || !Schema::hasColumn('competitions', 'matchday_hospital_name')) {
             (require base_path('database/migrations/2026_10_04_093000_add_matchday_medical_config_to_competitions_and_clubs.php'))->up();
         }
+        if (!Schema::hasColumn('match_medical_emergency_plans', 'team_leader_club_official_id')) {
+            (require base_path('database/migrations/2026_10_04_100000_add_club_official_id_to_match_medical_emergency_plans.php'))->up();
+        }
 
         Route::middleware(['web'])->group(function () {
             Route::get('/_t/competition-management/matches', [\App\Http\Controllers\MatchdayPreparationController::class,'index'])->name('competition-management.matches.index');
@@ -60,6 +63,7 @@ class MatchMedicalEmergencyPlanTest extends TestCase
             Route::get('/_t/matches/{match}/medical-emergency-plan/signatures/{signature}/download', fn () => response('signed'))->name('matches.medical-emergency-plan.signatures.download');
             Route::post('/_t/matches/{match}/medical-incidents', [MatchMedicalIncidentController::class,'store'])->name('matches.medical-incidents.store');
             Route::get('/_t/match-sheet/{match}', fn () => response('sheet'))->name('competition-management.matches.match-sheet');
+            Route::get('/_t/match-sheet/{match}/edit', fn () => response('edit sheet'))->name('competition-management.matches.match-sheet.edit');
         });
         app('router')->getRoutes()->refreshNameLookups();
 
@@ -407,6 +411,32 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         $this->assertSame('MED-LEADER-1',$plan->team_leader_person_fifa_id);
         $this->assertSame('Nadia Urgence',$plan->team_leader_name);
         $this->assertSame('+687 12 34 56',$plan->team_leader_phone);
+    }
+
+
+    public function test_home_club_responsible_can_be_selected_without_fifa_id(): void
+    {
+        $admin=User::factory()->create(['role'=>'admin','status'=>'active','tenant_id'=>1]);
+        $official=new \App\Models\ClubOfficial;
+        $official->club_id=$this->homeClub->id;
+        $official->created_by=$admin->id;
+        $official->fill([
+            'international_first_name'=>'Local',
+            'international_last_name'=>'Responsible',
+            'gender'=>'male','date_of_birth'=>'1980-01-01','nationality'=>'SA',
+            'registration_type'=>\App\Models\ClubOfficial::ORGANISATION_OFFICIAL,
+            'organisation_official_role'=>'President','role_description'=>'President',
+            'status'=>'active','discipline'=>'Football','registration_valid_from'=>today(),'source'=>'FIT',
+        ]);
+        $official->save();
+
+        $payload=$this->completePayload();
+        $payload['team_leader_club_official_id']=$official->id;
+        $this->actingAs($admin)->put('/_t/matches/'.$this->match->id.'/medical-emergency-plan',$payload)->assertRedirect();
+        $plan=MatchMedicalEmergencyPlan::where('match_id',$this->match->id)->firstOrFail();
+        $this->assertSame($official->id,$plan->team_leader_club_official_id);
+        $this->assertSame('Local Responsible',$plan->team_leader_name);
+        $this->assertNull($plan->team_leader_person_fifa_id);
     }
 
     public function test_player_selector_uses_fdm_identity_and_allows_multiple_incidents_for_same_player(): void

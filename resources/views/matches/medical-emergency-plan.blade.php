@@ -71,10 +71,10 @@ $timelineLabels=[
 <span class="mt-1 block text-xs text-slate-500">Source : {{ $contactContext['ambulance_source'] }}.</span>
 </label>
 <label class="text-sm md:col-span-2">Responsable médical du club recevant
-<select name="team_leader_person_fifa_id" id="team-leader-person" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)>
+<select name="team_leader_club_official_id" id="team-leader-person" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)>
 <option value="">— Utiliser le responsable configuré du club/compétition —</option>
 @foreach($eligibleLeaders as $leader)
-<option value="{{ $leader['person_fifa_id'] }}" data-name="{{ $leader['name'] }}" data-phone="{{ $leader['phone'] ?? '' }}" @selected((string)old('team_leader_person_fifa_id',$plan->team_leader_person_fifa_id)===(string)$leader['person_fifa_id'])>{{ $leader['name'] }} · {{ $leader['role'] }} · {{ $leader['team'] }} · FIFA {{ $leader['person_fifa_id'] }}{{ filled($leader['phone'] ?? null) ? ' · '.$leader['phone'] : '' }}</option>
+<option value="{{ $leader['club_official_id'] }}" data-name="{{ $leader['name'] }}" data-phone="{{ $leader['phone'] ?? '' }}" data-fifa="{{ $leader['person_fifa_id'] ?? '' }}" @selected((string)old('team_leader_club_official_id',$plan->team_leader_club_official_id)===(string)$leader['club_official_id'])>{{ $leader['name'] }} · {{ $leader['role'] }} · {{ $leader['team'] }}{{ filled($leader['person_fifa_id'] ?? null) ? ' · FIFA '.$leader['person_fifa_id'] : ' · FIT #'.$leader['club_official_id'] }}{{ filled($leader['phone'] ?? null) ? ' · '.$leader['phone'] : '' }}</option>
 @endforeach
 </select>
 @if($eligibleLeaders->isEmpty())<span class="mt-1 block text-xs text-amber-700">Aucun responsable identifié dans le staff actif du club recevant. Le contact configuré dans le club/compétition est utilisé.</span>@endif
@@ -87,6 +87,7 @@ $timelineLabels=[
 <input name="team_leader_phone" id="team-leader-phone" value="{{ old('team_leader_phone',$plan->team_leader_phone) }}" class="mt-1 w-full rounded-lg border-slate-300" @disabled(!$canEdit)>
 </label>
 <input type="hidden" name="team_leader_user_id" value="">
+<input type="hidden" name="team_leader_person_fifa_id" id="team-leader-fifa" value="{{ old('team_leader_person_fifa_id',$plan->team_leader_person_fifa_id) }}">
 </div>
 </section>
 
@@ -202,12 +203,19 @@ Ajoutez ou synchronisez les membres du staff dans les fiches <span class="font-s
 <option value="other">Autre</option>
 </select></label>
 <label class="text-sm">Minute<input type="number" min="0" max="180" name="match_minute" class="mt-1 w-full rounded-lg border-slate-300"></label>
-<label class="text-sm">Joueur
-<select name="player_id" class="mt-1 w-full rounded-lg border-slate-300"><option value="">Non identifié / non-joueur</option>
+<label class="text-sm">Joueur de la FDM
+@if($matchPlayers->isNotEmpty())
+<select name="player_id" class="mt-1 w-full rounded-lg border-slate-300">
+<option value="">— Incident sans joueur identifié —</option>
 @foreach($matchPlayers as $player)
 <option value="{{ $player['id'] }}">#{{ $player['jersey_number'] ?? '—' }} · {{ $player['name'] }} · {{ $player['club_name'] ?? 'Club non renseigné' }}</option>
 @endforeach
-</select></label>
+</select>
+@else
+<select class="mt-1 w-full rounded-lg border-slate-300 bg-slate-100" disabled><option>FDM sans joueurs enregistrés</option></select>
+<span class="mt-1 block text-xs text-amber-700">La FDM ne contient aucune composition. <a class="font-semibold underline" href="{{ route('competition-management.matches.match-sheet.edit',$match) }}">Compléter la FDM</a> avant d’identifier un joueur dans un incident.</span>
+@endif
+</label>
 </div>
 <div class="grid gap-4 md:grid-cols-2">
 <label class="text-sm">Mécanisme
@@ -373,6 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>document.addEventListener('DOMContentLoaded',()=>{
  const leader=document.getElementById('team-leader-person');
- if(leader){ leader.addEventListener('change',()=>{ const option=leader.options[leader.selectedIndex]; const name=document.getElementById('team-leader-name'); const phone=document.getElementById('team-leader-phone'); if(name) name.value=option?.dataset?.name||''; if(phone && option?.dataset?.phone) phone.value=option.dataset.phone; }); }
+ if(leader){ leader.addEventListener('change',()=>{ const option=leader.options[leader.selectedIndex]; const name=document.getElementById('team-leader-name'); const phone=document.getElementById('team-leader-phone'); if(name) name.value=option?.dataset?.name||''; if(phone && option?.dataset?.phone) phone.value=option.dataset.phone; const fifa=document.getElementById('team-leader-fifa'); if(fifa) fifa.value=option?.dataset?.fifa||''; }); }
 });
 </script>

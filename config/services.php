@@ -82,6 +82,15 @@ return [
         'quality_filter' => env('AWS_REKOGNITION_QUALITY_FILTER', 'AUTO'),
     ],
 
+    // Bridge FIT interne vers le SDK sous licence signotec Biometrics API.
+    // Sans licence/bridge : aucune comparaison n'est simulée.
+    'signotec' => [
+        'bridge_url' => env('SIGNOTEC_BRIDGE_URL'),
+        'bridge_token' => env('SIGNOTEC_BRIDGE_TOKEN'),
+        'timeout' => (int) env('SIGNOTEC_TIMEOUT', 15),
+        'license_id' => env('SIGNOTEC_LICENSE_ID'),
+    ],
+
     'fifa_connect' => [
         'base_url' => env('FIFA_CONNECT_BASE_URL', 'https://api.fifa.com/v1'),
         'api_key' => env('FIFA_CONNECT_API_KEY'),

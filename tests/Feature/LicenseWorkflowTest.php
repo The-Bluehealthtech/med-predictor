@@ -400,6 +400,26 @@ class LicenseWorkflowTest extends TestCase
         $this->actingAs($this->club())->post("/_t/approval/{$license->id}/face-match")->assertForbidden();
     }
 
+    public function test_signotec_bridge_is_explicit_and_never_simulated(): void
+    {
+        config(['services.signotec.bridge_url' => null, 'services.signotec.bridge_token' => null]);
+        $provider = app(\App\Services\Licensing\SignotecSignatureProvider::class);
+        $this->assertSame('sdk_required', $provider->status()['status']);
+
+        config(['services.signotec.bridge_url' => 'https://signotec-bridge.test', 'services.signotec.bridge_token' => 'secret']);
+        Http::fake([
+            'signotec-bridge.test/v1/signatures/compare' => Http::response([
+                'score' => 93.4, 'threshold' => 85, 'classification' => 'match', 'reference' => 'cmp-123',
+            ]),
+        ]);
+        $result = $provider->compare('ref-signature-1', 'candidate-signature-2');
+        $this->assertSame('completed', $result['status']);
+        $this->assertSame('signotec', $result['provider']);
+        $this->assertSame(93.4, $result['score']);
+        $this->assertSame(85.0, $result['threshold']);
+        $this->assertSame('cmp-123', $result['provider_reference']);
+    }
+
     public function test_federation_integrity_reviews_are_append_only_and_audited(): void
     {
         $license = $this->request();

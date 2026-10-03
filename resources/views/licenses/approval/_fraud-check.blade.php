@@ -109,7 +109,11 @@
                     </div>
                 </div>
             </div>
-            <p class="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">La comparaison automatique de signature n’est pas activée. La fédération conserve la décision finale.</p>
+            @if(($biometricProvider['signature']['status'] ?? 'sdk_required') === 'ready')
+                <p class="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-800">signotec Biometrics API est connectée au bridge FIT. La comparaison dynamique de signatures peut être utilisée dès que deux références biométriques signotec sont disponibles.</p>
+            @else
+                <p class="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">Intégration signotec prête côté FIT. Il reste à fournir la licence/SDK signotec et connecter le bridge de capture/vérification. Les signatures scannées restent en revue visuelle humaine.</p>
+            @endif
         </div>
     </div>
 

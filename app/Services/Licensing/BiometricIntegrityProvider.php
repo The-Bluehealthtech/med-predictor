@@ -6,8 +6,10 @@ use Illuminate\Support\Facades\Http;
 
 final class BiometricIntegrityProvider
 {
-    public function __construct(private readonly AwsRekognitionFaceMatcher $faceMatcher)
-    {
+    public function __construct(
+        private readonly AwsRekognitionFaceMatcher $faceMatcher,
+        private readonly SignotecSignatureProvider $signatureProvider,
+    ) {
     }
 
     public const STATUS_LABELS = [
@@ -19,29 +21,25 @@ final class BiometricIntegrityProvider
     public function isConfigured(): bool
     {
         return $this->faceMatcher->isConfigured()
+            || $this->signatureProvider->isConfigured()
             || (filled(config('services.biometric_integrity.url')) && filled(config('services.biometric_integrity.token')));
     }
 
     public function status(): array
     {
         $face = $this->faceMatcher->status();
-        $signatureReady = filled(config('services.biometric_integrity.url'))
-            && filled(config('services.biometric_integrity.token'))
-            && (bool) config('services.biometric_integrity.signature_match', false);
-        $status = ($face['status'] === 'ready' || $signatureReady) ? 'ready' : 'not_configured';
+        $signature = $this->signatureProvider->status();
+        $status = ($face['status'] === 'ready' || $signature['status'] === 'ready') ? 'ready' : 'not_configured';
 
         return [
             'status' => $status,
             'label' => self::STATUS_LABELS[$status],
-            'provider' => $face['status'] === 'ready' ? 'AWS Rekognition' : (config('services.biometric_integrity.provider') ?: null),
+            'provider' => $face['status'] === 'ready' ? 'AWS Rekognition' : ($signature['status'] === 'ready' ? 'signotec' : null),
             'face' => $face,
-            'signature' => [
-                'status' => $signatureReady ? 'ready' : 'not_configured',
-                'provider' => config('services.biometric_integrity.provider') ?: null,
-            ],
+            'signature' => $signature,
             'capabilities' => [
                 'face_match' => $face['status'] === 'ready',
-                'signature_match' => $signatureReady,
+                'signature_match' => $signature['status'] === 'ready',
             ],
         ];
     }

@@ -55,6 +55,8 @@ class DeployFit extends Command
         'database/migrations/2026_10_03_227200_add_tms_workflow_to_transfers.php',
         'database/migrations/2026_10_03_227300_add_proof_workflow_to_transfer_payments.php',
         'database/migrations/2026_10_03_227400_create_match_medical_emergency_plans.php',
+        'database/migrations/2026_10_03_228000_create_match_medical_incidents_table.php',
+        'database/migrations/2026_10_03_229000_add_emergency_protocol_to_match_medical_incidents.php',
     ];
 
     protected $signature = 'fit:deploy

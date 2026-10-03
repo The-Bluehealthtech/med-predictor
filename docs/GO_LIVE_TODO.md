@@ -19,3 +19,10 @@ This checklist tracks production dependencies that must not be simulated in code
 - [ ] Inventory FIT working copies/worktrees and remove only confirmed unused copies.
 - [ ] Provision the licensed FIFA XSD package outside Git and validate `FIFA_CONNECT_XSD_PATH` in CI/Render.
 - [ ] Run final FIFA validation in an authorised environment and archive the result.
+
+## Signature documentaire
+
+- [ ] Choisir/contractualiser au moins un fournisseur de signature documentaire (signotec signoSign/Universal, Adobe Acrobat Sign ou GlobalSign DSS).
+- [ ] Configurer ses secrets Render et l'activer depuis `/modules/api-connectors` après test.
+- [ ] Valider les niveaux de signature requis par type de document et juridiction (simple/avancée/qualifiée, certificat, horodatage, LTV).
+- [ ] Valider le parcours PCMA : PDF figé, signature numérique médecin, audit et nouvelle version en cas de modification.

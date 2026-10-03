@@ -91,6 +91,24 @@ return [
         'license_id' => env('SIGNOTEC_LICENSE_ID'),
     ],
 
+    'signotec_document' => [
+        'base_url' => env('SIGNOTEC_DOCUMENT_BASE_URL'),
+        'instance_token' => env('SIGNOTEC_DOCUMENT_INSTANCE_TOKEN'),
+        'timeout' => (int) env('SIGNOTEC_DOCUMENT_TIMEOUT', 20),
+    ],
+
+    'adobe_sign' => [
+        'base_url' => env('ADOBE_SIGN_BASE_URL'),
+        'access_token' => env('ADOBE_SIGN_ACCESS_TOKEN'),
+        'timeout' => (int) env('ADOBE_SIGN_TIMEOUT', 20),
+    ],
+
+    'globalsign_dss' => [
+        'base_url' => env('GLOBALSIGN_DSS_BASE_URL'),
+        'token' => env('GLOBALSIGN_DSS_TOKEN'),
+        'timeout' => (int) env('GLOBALSIGN_DSS_TIMEOUT', 20),
+    ],
+
     'fifa_connect' => [
         'base_url' => env('FIFA_CONNECT_BASE_URL', 'https://api.fifa.com/v1'),
         'api_key' => env('FIFA_CONNECT_API_KEY'),

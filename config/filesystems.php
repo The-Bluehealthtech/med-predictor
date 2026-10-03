@@ -60,6 +60,20 @@ return [
             'report' => false,
         ],
 
+        'signature_s3' => [
+            'driver' => 's3',
+            'key' => env('SIGNATURE_AWS_ACCESS_KEY_ID'),
+            'secret' => env('SIGNATURE_AWS_SECRET_ACCESS_KEY'),
+            'region' => env('SIGNATURE_AWS_DEFAULT_REGION'),
+            'bucket' => env('SIGNATURE_AWS_BUCKET'),
+            'url' => env('SIGNATURE_AWS_URL'),
+            'endpoint' => env('SIGNATURE_AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('SIGNATURE_AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
         'gcs' => [
             'driver' => 'gcs',
             'project_id' => env('GOOGLE_CLOUD_PROJECT_ID'),

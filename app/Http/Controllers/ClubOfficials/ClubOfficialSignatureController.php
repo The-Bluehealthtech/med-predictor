@@ -10,7 +10,6 @@ use App\Services\ClubOfficials\ClubOfficials;
 use App\Services\Documents\DocumentSignatureService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 final class ClubOfficialSignatureController extends Controller
 {
@@ -97,11 +96,8 @@ final class ClubOfficialSignatureController extends Controller
     ) {
         $this->authorizeOfficial($request, $club, $official, false);
         $this->authorizeSignature($official, $signature);
-        $path = data_get($signature->metadata, 'signed_path');
-        abort_unless(is_string($path) && $path !== '' && !str_contains($path, '..'), 404);
-        abort_unless(Storage::disk('local')->exists($path), 404);
-
-        return Storage::disk('local')->download($path, 'fiche-dirigeant-staff-'.$official->id.'-signee.pdf');
+        return app(\App\Services\Documents\DocumentSignatureStorage::class)
+            ->download($signature, 'fiche-dirigeant-staff-'.$official->id.'-signee.pdf');
     }
 
     private function authorizeOfficial(Request $request, Club $club, ClubOfficial $official, bool $manage): void

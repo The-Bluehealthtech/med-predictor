@@ -9,7 +9,6 @@ use App\Models\ImagingStudy;
 use App\Services\Documents\DocumentSignatureService;
 use App\Services\MedicalRecordAccess;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 final class ImagingReportSignatureController extends Controller
 {
@@ -109,11 +108,8 @@ final class ImagingReportSignatureController extends Controller
     ) {
         $this->authorizeReport($request, $healthRecord, $study, $report, false);
         $this->authorizeSignature($report, $signature);
-        $path = data_get($signature->metadata, 'signed_path');
-        abort_unless(is_string($path) && $path !== '' && !str_contains($path, '..'), 404);
-        abort_unless(Storage::disk('local')->exists($path), 404);
-
-        return Storage::disk('local')->download($path, 'FIT-imaging-'.$study->id.'-v'.$report->version.'-signed.pdf');
+        return app(\App\Services\Documents\DocumentSignatureStorage::class)
+            ->download($signature, 'FIT-imaging-'.$study->id.'-v'.$report->version.'-signed.pdf');
     }
 
     private function authorizeReport(

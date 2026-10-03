@@ -26,3 +26,6 @@ This checklist tracks production dependencies that must not be simulated in code
 - [ ] Configurer ses secrets Render et l'activer depuis `/modules/api-connectors` après test.
 - [ ] Valider les niveaux de signature requis par type de document et juridiction (simple/avancée/qualifiée, certificat, horodatage, LTV).
 - [ ] Valider le parcours PCMA : PDF figé, signature numérique médecin, audit et nouvelle version en cas de modification.
+- [ ] Provisionner un stockage privé durable dédié aux PDF signés et définir `DOCUMENT_SIGNATURE_DISK=signature_s3` (ou un autre disque privé durable explicitement approuvé).
+- [ ] Configurer les secrets `SIGNATURE_AWS_ACCESS_KEY_ID`, `SIGNATURE_AWS_SECRET_ACCESS_KEY`, `SIGNATURE_AWS_DEFAULT_REGION` et `SIGNATURE_AWS_BUCKET` avec des droits limités au bucket/prefix de signatures.
+- [ ] Vérifier qu'une signature terminée reste téléchargeable après redéploiement/restart Render avant l'ouverture aux utilisateurs.

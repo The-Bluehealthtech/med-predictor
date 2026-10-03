@@ -9,7 +9,6 @@ use App\Services\Documents\DocumentSignatureService;
 use App\Services\MedicalRecordAccess;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 final class MedicalAutSignatureController extends Controller
 {
@@ -90,11 +89,8 @@ final class MedicalAutSignatureController extends Controller
     {
         $this->authorizeAut($request, $record, $aut, false);
         $this->authorizeSignature($aut, $signature);
-        $path = data_get($signature->metadata, 'signed_path');
-        abort_unless(is_string($path) && $path !== '' && !str_contains($path, '..'), 404);
-        abort_unless(Storage::disk('local')->exists($path), 404);
-
-        return Storage::disk('local')->download($path, 'AUT-FIFA-'.$aut->id.'-signed.pdf');
+        return app(\App\Services\Documents\DocumentSignatureStorage::class)
+            ->download($signature, 'AUT-FIFA-'.$aut->id.'-signed.pdf');
     }
 
     private function authorizeAut(Request $request, HealthRecord $record, TUERequest $aut, bool $manage): void

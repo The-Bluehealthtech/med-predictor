@@ -25,6 +25,9 @@ Les deux mécanismes peuvent coexister sur le même document.
 - Le fournisseur doit être configuré et activé dans `/modules/api-connectors`.
 - Les demandes et résultats sont audités avec le rôle du signataire et une référence fournisseur.
 - Aucun workflow ne doit simuler une signature ou un certificat externe.
+- Le PDF signé est conservé via le disque privé configuré par `DOCUMENT_SIGNATURE_DISK`. Les nouveaux déploiements Go Live doivent utiliser un stockage durable ; `local` est réservé au développement/test ou à une instance disposant explicitement d'un disque persistant.
+- Le disque `signature_s3` utilise uniquement les secrets `SIGNATURE_AWS_*` et ne réutilise pas implicitement les identifiants AWS Rekognition.
+- Chaque résultat conserve `signed_disk`, `signed_path` et `signed_sha256`. Les anciennes signatures sans `signed_disk` restent lues depuis `local` pour compatibilité.
 
 ## PCMA
 

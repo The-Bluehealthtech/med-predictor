@@ -11,6 +11,7 @@ final class DocumentSignatureService
     public function __construct(
         private readonly ApiConnectorState $state,
         private readonly AdobeSignProvider $adobeSign,
+        private readonly DocumentSignatureStorage $storage,
     ) {
     }
 
@@ -137,10 +138,10 @@ final class DocumentSignatureService
         if ($mapped === 'signed' && empty($metadata['signed_path'])) {
             $bytes = $this->adobeSign->downloadSigned((string) $request->external_reference);
             if (is_string($bytes) && $bytes !== '') {
-                $path = 'document-signatures/'.$request->id.'/signed.pdf';
-                \Illuminate\Support\Facades\Storage::disk('local')->put($path, $bytes);
-                $metadata['signed_path'] = $path;
-                $metadata['signed_sha256'] = hash('sha256', $bytes);
+                $stored = $this->storage->put($request, $bytes);
+                $metadata['signed_disk'] = $stored['disk'];
+                $metadata['signed_path'] = $stored['path'];
+                $metadata['signed_sha256'] = $stored['sha256'];
             }
         }
 

@@ -50,7 +50,32 @@ class DocumentSignatureServiceTest extends TestCase
         $this->assertSame('signed', $signed->status);
         $this->assertNotNull($signed->signed_at);
         $this->assertSame(hash('sha256', '%PDF-signed'), $signed->metadata['signed_sha256']);
+        $this->assertSame('local', $signed->metadata['signed_disk']);
         Storage::disk('local')->assertExists($signed->metadata['signed_path']);
+    }
+
+    public function test_signed_document_can_use_dedicated_private_disk(): void
+    {
+        config([
+            'services.adobe_sign.base_url' => 'https://api.adobesign.com/api/rest/v6',
+            'services.adobe_sign.access_token' => 'secret',
+            'services.document_signatures.disk' => 'signature_s3',
+        ]);
+        app(ApiConnectorState::class)->setEnabled('adobe_sign', true);
+        Storage::fake('signature_s3');
+        Http::fake([
+            'api.adobesign.com/api/rest/v6/transientDocuments' => Http::response(['transientDocumentId' => 'transient-2']),
+            'api.adobesign.com/api/rest/v6/agreements' => Http::response(['id' => 'agreement-2']),
+            'api.adobesign.com/api/rest/v6/agreements/agreement-2' => Http::response(['status' => 'SIGNED']),
+            'api.adobesign.com/api/rest/v6/agreements/agreement-2/combinedDocument' => Http::response('%PDF-durable', 200),
+        ]);
+        $service = app(DocumentSignatureService::class);
+        $request = $service->createRequest('adobe_sign',
+            ['type'=>'passport_pdf','reference'=>'PASS-1','bytes'=>'%PDF-original','filename'=>'pass.pdf','name'=>'Passport'],
+            ['type'=>'user','id'=>12,'role'=>'doctor','name'=>'Doctor','email'=>'doctor@example.test'], 'passport.final');
+        $signed = $service->sync($request);
+        $this->assertSame('signature_s3', $signed->metadata['signed_disk']);
+        Storage::disk('signature_s3')->assertExists($signed->metadata['signed_path']);
     }
 
     public function test_pcma_doctor_signature_request_is_audited_without_document_bytes(): void

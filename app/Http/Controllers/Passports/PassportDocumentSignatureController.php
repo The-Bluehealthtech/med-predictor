@@ -12,7 +12,6 @@ use App\Services\Passports\PassportAttestations;
 use App\Services\Passports\TransferPassport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 final class PassportDocumentSignatureController extends Controller
 {
@@ -98,12 +97,8 @@ final class PassportDocumentSignatureController extends Controller
     {
         $model = $this->player($player);
         $this->authorizeRequest($request, $model, $signature);
-        $path = data_get($signature->metadata, 'signed_path');
-
-        abort_unless(is_string($path) && $path !== '' && !str_contains($path, '..'), 404);
-        abort_unless(Storage::disk('local')->exists($path), 404);
-
-        return Storage::disk('local')->download($path, $signature->document_type . '-' . $model->id . '-signed.pdf');
+        return app(\App\Services\Documents\DocumentSignatureStorage::class)
+            ->download($signature, $signature->document_type . '-' . $model->id . '-signed.pdf');
     }
 
     private function createRequest(Request $request, DocumentSignatureService $signatures, string $provider, Player $player, string $bytes, array $document)

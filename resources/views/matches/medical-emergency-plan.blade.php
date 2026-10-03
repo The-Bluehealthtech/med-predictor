@@ -119,8 +119,25 @@ $timelineLabels=[
 <span class="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">{{ $incidents->count() }} incident(s)</span>
 </div>
 
+<div class="mt-5 grid gap-3 md:grid-cols-2">
+<button type="button" data-protocol-choice="cardiac_arrest" class="group rounded-2xl border-2 border-red-200 bg-red-50 p-4 text-left hover:border-red-400 hover:bg-red-100">
+<div class="flex items-center justify-between gap-3">
+<div><p class="text-xs font-bold uppercase tracking-wide text-red-700">Urgence vitale</p><h3 class="mt-1 text-lg font-bold text-red-950">SCA · Arrêt cardiaque</h3></div>
+<span class="rounded-full bg-white px-3 py-1 text-xs font-bold text-red-700">ACTIVER</span>
+</div>
+<p class="mt-2 text-sm text-red-800">Ouvrir immédiatement le protocole FIFA SCA et documenter l’intervention.</p>
+</button>
+<button type="button" data-protocol-choice="cervical_spine" class="group rounded-2xl border-2 border-amber-200 bg-amber-50 p-4 text-left hover:border-amber-400 hover:bg-amber-100">
+<div class="flex items-center justify-between gap-3">
+<div><p class="text-xs font-bold uppercase tracking-wide text-amber-700">Traumatisme</p><h3 class="mt-1 text-lg font-bold text-amber-950">Traumatisme crânien / cervical</h3></div>
+<span class="rounded-full bg-white px-3 py-1 text-xs font-bold text-amber-700">ACTIVER</span>
+</div>
+<p class="mt-2 text-sm text-amber-800">Ouvrir le protocole FIFA crânio-cervical et l’évaluation structurée.</p>
+</button>
+</div>
+
 @if($canDocumentIncident)
-<form method="POST" action="{{ route('matches.medical-incidents.store',$match) }}" class="mt-5 space-y-4">
+<form id="medical-incident-form" method="POST" action="{{ route('matches.medical-incidents.store',$match) }}" class="mt-5 space-y-4">
 @csrf
 <div class="grid gap-4 md:grid-cols-3">
 <label class="text-sm">Type
@@ -210,6 +227,13 @@ document.addEventListener('DOMContentLoaded', () => {
         sca.classList.toggle('hidden', type.value !== 'cardiac_arrest');
         head.classList.toggle('hidden', !['cervical_spine','concussion'].includes(type.value));
     };
+    document.querySelectorAll('[data-protocol-choice]').forEach((button) => {
+        button.addEventListener('click', () => {
+            type.value = button.dataset.protocolChoice;
+            refreshProtocol();
+            document.getElementById('medical-incident-form')?.scrollIntoView({behavior: 'smooth', block: 'start'});
+        });
+    });
     type.addEventListener('change', refreshProtocol);
     refreshProtocol();
 });

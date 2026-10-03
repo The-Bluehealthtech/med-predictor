@@ -228,8 +228,13 @@ class PCMAController extends Controller
     {
         app(\App\Services\MedicalRecordAccess::class)->record(auth()->user(), $pcma);
         $pcma->load(['player', 'athlete', 'assessor']);
+        $documentSignatureProviders = collect(app(\App\Services\Documents\DocumentSignatureService::class)->allStatuses());
+        $documentSignatureRequests = \App\Models\DocumentSignatureRequest::query()
+            ->where('workflow', 'pcma.final_document')
+            ->whereRaw("metadata->'document'->>'pcma_id' = ?", [(string) $pcma->id])
+            ->latest('id')->get();
         
-        return view('pcma.show', compact('pcma'));
+        return view('pcma.show', compact('pcma', 'documentSignatureProviders', 'documentSignatureRequests'));
     }
 
     public function edit(PCMA $pcma): View

@@ -952,6 +952,49 @@
                     @endif
                 </div>
             </div>
+            <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800">Signature numérique du document</h2>
+                    <p class="text-sm text-gray-600 mt-1">Certifie une version figée du PDF PCMA. La signature manuscrite médicale ci-dessus reste conservée.</p>
+                </div>
+                <div class="p-6">
+                    @php($readySignatureProviders = $documentSignatureProviders->where('status', 'ready'))
+                    @if((int) $pcma->assessor_id === (int) auth()->id() || auth()->user()->isSystemAdmin())
+                        <form method="POST" action="{{ route('pcma.digital-signature.store', $pcma) }}" class="flex flex-col gap-3 sm:flex-row sm:items-end">
+                            @csrf
+                            <div class="flex-1">
+                                <label for="signature-provider" class="block text-sm font-medium text-gray-700">Fournisseur</label>
+                                <select id="signature-provider" name="provider" class="mt-1 w-full rounded-lg border-gray-300" @disabled($readySignatureProviders->isEmpty()) required>
+                                    @forelse($readySignatureProviders as $provider)
+                                        <option value="{{ $provider['slug'] }}">{{ $provider['name'] }}</option>
+                                    @empty
+                                        <option value="">Aucun fournisseur activé</option>
+                                    @endforelse
+                                </select>
+                            </div>
+                            <button type="submit" @disabled($readySignatureProviders->isEmpty()) class="rounded-lg px-4 py-2 font-semibold {{ $readySignatureProviders->isEmpty() ? 'cursor-not-allowed bg-gray-200 text-gray-500' : 'bg-slate-900 text-white hover:bg-slate-800' }}">
+                                Demander la signature numérique
+                            </button>
+                        </form>
+                    @endif
+
+                    @if($readySignatureProviders->isEmpty())
+                        <p class="mt-3 text-sm text-amber-700">Aucun fournisseur de signature documentaire n’est actuellement configuré et activé dans Configuration des API.</p>
+                    @endif
+
+                    <div class="mt-5 border-t border-gray-100 pt-4">
+                        <h3 class="text-sm font-semibold text-gray-900">Historique</h3>
+                        @forelse($documentSignatureRequests as $signatureRequest)
+                            <div class="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2 text-sm">
+                                <span>{{ $signatureRequest->metadata['provider_name'] ?? $signatureRequest->provider }} · {{ $signatureRequest->signer_name ?? 'Signataire' }}</span>
+                                <span class="font-medium text-gray-700">{{ ucfirst($signatureRequest->status) }} · {{ optional($signatureRequest->requested_at)->format('d/m/Y H:i') }}</span>
+                            </div>
+                        @empty
+                            <p class="mt-2 text-sm text-gray-500">Aucune demande de signature numérique pour ce PCMA.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
         @else
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">
                 <div class="flex items-center">

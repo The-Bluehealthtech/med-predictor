@@ -3479,6 +3479,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pcma/{pcma}/files/{field}', [App\Http\Controllers\PcmaDocumentController::class, 'file'])
         ->name('pcma.file');
     Route::get('/pcma/{pcma}/pdf', [App\Http\Controllers\PcmaDocumentController::class, 'export'])->name('pcma.pdf');
+    Route::post('/pcma/{pcma}/digital-signature', [App\Http\Controllers\PcmaDigitalSignatureController::class, 'store'])
+        ->name('pcma.digital-signature.store');
 });
 
 

@@ -1673,6 +1673,9 @@ Route::middleware(['auth'])->group(function () {
     // Données cliniques des établissements (serveur FHIR de FIT, IHE QEDm / IID)
     Route::get('/clinical/players/{player}/external-data', [\App\Http\Controllers\Clinical\ExternalClinicalDataController::class, 'show'])->whereNumber('player')->name('clinical.external-data');
     Route::post('/clinical/players/{player}/external-data/integrate', [\App\Http\Controllers\Clinical\ExternalClinicalDataController::class, 'integrate'])->whereNumber('player')->name('clinical.external-data.integrate');
+    Route::get('/clinical/players/{player}/imaging/{study}', [\App\Http\Controllers\Clinical\ExternalImagingController::class, 'show'])->whereNumber('player')->where('study', '[0-9.]{3,64}')->name('clinical.dicomweb.study');
+    Route::get('/clinical/players/{player}/imaging/{study}/series/{series}/instances/{instance}/frame', [\App\Http\Controllers\Clinical\ExternalImagingController::class, 'frame'])
+        ->whereNumber('player')->where(['study' => '[0-9.]{3,64}', 'series' => '[0-9.]{3,64}', 'instance' => '[0-9.]{3,64}'])->middleware('throttle:300,1')->name('clinical.dicomweb.frame');
     Route::post('/passports/medical/{player}/ips/publish', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalIpsPublish'])->whereNumber('player')->name('passports.medical.ips.publish');
     Route::get('/passports/medical/{player}/ips/{document}', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalIpsShow'])->whereNumber('player')->name('passports.medical.ips.show');
     Route::get('/passports/transfer', [\App\Http\Controllers\Passports\PassportsController::class, 'transferIndex'])->name('passports.transfer.index');

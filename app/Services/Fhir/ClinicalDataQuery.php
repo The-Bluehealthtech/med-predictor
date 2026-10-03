@@ -92,6 +92,7 @@ final class ClinicalDataQuery
             'source' => $r['meta']['source'] ?? collect($r['performer'] ?? [])->map(fn ($p) => $p['display'] ?? ($p['actor']['display'] ?? null))->filter()->first(),
             'patient' => (string) ($r['subject']['reference'] ?? $r['patient']['reference'] ?? ''),
             'viewer' => $type === 'ImagingStudy' ? $this->viewerUrl($r) : null,
+            'study_uid' => $type === 'ImagingStudy' ? $this->studyUid($r) : null,
         ];
     }
 
@@ -159,16 +160,21 @@ final class ClinicalDataQuery
         return trim(($r['description'] ?? 'Examen d\'imagerie') . ($label ? ' (' . $label . ')' : ''));
     }
 
+    /** UID d'étude DICOM de l'ImagingStudy (identifier urn:dicom:uid, valeur urn:oid:…). */
+    private function studyUid(array $r): ?string
+    {
+        $uid = collect($r['identifier'] ?? [])->firstWhere('system', 'urn:dicom:uid')['value'] ?? null;
+        $uid = $uid ? preg_replace('/^urn:oid:/', '', (string) $uid) : null;
+
+        return $uid && preg_match('/^[0-9]+(\.[0-9]+){1,63}$/', $uid) && strlen($uid) <= 64 ? $uid : null;
+    }
+
     /** IHE RAD IID : requestType=STUDY & studyUID, vers la visionneuse configurée (FIT_IID_VIEWER_URL). */
     private function viewerUrl(array $r): ?string
     {
         $viewer = (string) config('fhir.imaging.iid_viewer_url');
-        $uid = collect($r['identifier'] ?? [])->firstWhere('system', 'urn:dicom:uid')['value'] ?? null;
+        $uid = $this->studyUid($r);
         if ($viewer === '' || !$uid || !str_starts_with($viewer, 'https://')) {
-            return null;
-        }
-        $uid = preg_replace('/^urn:oid:/', '', $uid);
-        if (!preg_match('/^[0-9.]{1,64}$/', $uid)) {
             return null;
         }
 

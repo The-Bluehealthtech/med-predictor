@@ -43,6 +43,8 @@ final class ReadinessCheck
         $this->check('FIT_FHIR_SOURCE_OID (publication des IPS)', preg_match('/^[0-2](\.(0|[1-9][0-9]*))+$/', (string) config('fhir.document_sharing.source_oid')) ? 'ok' : 'warn', 'OID de FIT comme source documentaire ; sans lui, la publication des IPS reste désactivée');
         $viewer = (string) config('fhir.imaging.iid_viewer_url');
         $this->check('FIT_IID_VIEWER_URL (visionneuse du PACS)', str_starts_with($viewer, 'https://') ? 'ok' : 'warn', $viewer ?: 'sans elle, les examens des établissements s’affichent sans lien vers les images');
+        $pacs = (string) config('medical_imaging.pacs_url');
+        $this->check('PACS DICOMweb (MEDICAL_PACS_DICOMWEB_URL)', str_starts_with($pacs, 'https://') ? 'ok' : 'warn', $pacs !== '' ? $pacs : 'sans lui, les images des établissements ne s’ouvrent pas dans FIT (IHE RAD WIA)');
         $this->check('Traçabilité BALP (FIT_FHIR_AUDIT)', config('fhir.audit.enabled') ? 'ok' : 'warn', config('fhir.audit.enabled') ? 'AuditEvent déposé pour chaque échange de données de patient' : 'désactivée');
 
         if ($token->enabled()) {

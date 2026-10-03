@@ -48,6 +48,7 @@ Guide pas à pas : `docs/fhir/INSTALLATION.md` ; vérification : `/admin/fhir-se
 - [ ] Contrôler la conformité IHE depuis `/admin/fhir-setup` ; installer l'abonnement des comptes rendus ; renvoyer les examens en attente.
 - [ ] Obtenir un OID pour FIT (source documentaire MHD/XDS) et renseigner `FIT_FHIR_SOURCE_OID` ; aucune valeur inventée.
 - [ ] Renseigner `FIT_IID_VIEWER_URL` (visionneuse du PACS, HTTPS).
+- [ ] Renseigner `MEDICAL_PACS_DICOMWEB_URL` (HTTPS) et `MEDICAL_PACS_TOKEN` : lecture des images des établissements dans FIT (DICOMweb, IHE RAD WIA) ; tester QIDO-RS et WADO-RS sur un examen réel.
 - [ ] Installer un serveur d'autorisation OAuth 2.0 et le contrôle des jetons devant HAPI (IHE IUA) ; renseigner `FIT_FHIR_TOKEN_URL`, `FIT_FHIR_CLIENT_ID`, `FIT_FHIR_CLIENT_SECRET`, `FIT_FHIR_SCOPE`.
 - [ ] Publier la politique de confidentialité de chaque fédération ; configurer et activer Adobe Sign pour les consentements (IHE PCF).
 - [ ] Raccorder les sources (EMR, LIS, RIS, PACS) au serveur et tester un circuit complet : prescription, compte rendu, notification, intégration au dossier.

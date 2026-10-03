@@ -32,6 +32,7 @@ Rien n'est créé sur Render tant que vous ne validez pas le blueprint (étape 1
 | `FIT_FHIR_WEBHOOK_SECRET` | valeur aléatoire d'au moins 32 caractères | oui |
 | `APP_URL` | `https://fit.tbhc.uk` (point de notification `/api/fhir/notify`) | oui |
 | `FIT_FHIR_SOURCE_OID` | OID de FIT comme source documentaire (registre d'OID, ex. numéro d'entreprise privée IANA) | pour publier les IPS |
+| `MEDICAL_PACS_DICOMWEB_URL`, `MEDICAL_PACS_TOKEN` | point DICOMweb HTTPS du PACS (IHE RAD WIA : QIDO-RS, WADO-RS, STOW-RS) | pour lire les images des établissements dans FIT |
 | `FIT_IID_VIEWER_URL` | URL HTTPS de la visionneuse du PACS (IHE RAD IID) | pour ouvrir les images des établissements |
 | `FIT_FHIR_TOKEN_URL`, `FIT_FHIR_CLIENT_ID`, `FIT_FHIR_CLIENT_SECRET`, `FIT_FHIR_SCOPE` | serveur d'autorisation OAuth 2.0 (IHE IUA) | recommandé (voir §5) |
 | `FIT_FHIR_AUDIT` | `true` (par défaut) : AuditEvent BALP pour chaque échange | non |
@@ -82,4 +83,5 @@ Les EMR, LIS, RIS et PACS alimentent le serveur par leurs propres connecteurs. C
 d'un moteur d'intégration qui convertit les messages HL7 v2 en FHIR. Points attendus par FIT :
 - Patient avec identifiants : rapprochés par le secrétariat (fiche « Identité clinique ») ;
 - DiagnosticReport et Observation : rattachés aux demandes de FIT par `basedOn = ServiceRequest/<id>` ;
-- ImagingStudy avec l'UID d'étude (`urn:dicom:uid`) pour l'ouverture dans la visionneuse du PACS.
+- ImagingStudy avec l'UID d'étude (`urn:dicom:uid`) : les images sont lues sur le PACS en DICOMweb et affichées dans la
+  visionneuse de FIT, ou ouvertes dans la visionneuse du PACS (IID).

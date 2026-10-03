@@ -48,6 +48,7 @@
                                 <td class="px-4 py-2 text-slate-800">{{ $item['value'] ?? '—' }}</td>
                                 <td class="px-4 py-2 text-slate-700">
                                     {{ $item['detail'] ?? '' }}
+                                    @if(!empty($item['study_uid']) && app(\App\Services\DicomWeb\DicomWebClient::class)->configured())<div><a href="{{ route('clinical.dicomweb.study', ['player' => $player, 'study' => $item['study_uid'], 'back' => $back]) }}" class="text-blue-600 font-semibold">Ouvrir les images dans FIT</a></div>@endif
                                     @if($item['viewer'])<div><a href="{{ $item['viewer'] }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 font-semibold">Ouvrir les images (visionneuse PACS)</a></div>@endif
                                     @if($tab === 'reports')
                                         @if(in_array($item['id'], $integrated, true))

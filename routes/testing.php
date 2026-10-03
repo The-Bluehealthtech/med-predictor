@@ -154,6 +154,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pcma/{pcma}/files/{field}', [App\Http\Controllers\PcmaDocumentController::class, 'file'])->name('pcma.file');
     Route::get('/clinical/players/{player}/external-data', [\App\Http\Controllers\Clinical\ExternalClinicalDataController::class, 'show'])->whereNumber('player')->name('clinical.external-data');
     Route::post('/clinical/players/{player}/external-data/integrate', [\App\Http\Controllers\Clinical\ExternalClinicalDataController::class, 'integrate'])->whereNumber('player')->name('clinical.external-data.integrate');
+    Route::get('/clinical/players/{player}/imaging/{study}', [\App\Http\Controllers\Clinical\ExternalImagingController::class, 'show'])->whereNumber('player')->where('study', '[0-9.]{3,64}')->name('clinical.dicomweb.study');
+    Route::get('/clinical/players/{player}/imaging/{study}/series/{series}/instances/{instance}/frame', [\App\Http\Controllers\Clinical\ExternalImagingController::class, 'frame'])
+        ->whereNumber('player')->where(['study' => '[0-9.]{3,64}', 'series' => '[0-9.]{3,64}', 'instance' => '[0-9.]{3,64}'])->middleware('throttle:300,1')->name('clinical.dicomweb.frame');
     Route::get('/passports/transfer', [\App\Http\Controllers\Passports\PassportsController::class, 'transferIndex'])->name('passports.transfer.index');
     Route::get('/passports/transfer/{player}', [\App\Http\Controllers\Passports\PassportsController::class, 'transferShow'])->whereNumber('player')->name('passports.transfer.show');
     Route::get('/passports/transfer/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'transferPdf'])->whereNumber('player')->name('passports.transfer.pdf');

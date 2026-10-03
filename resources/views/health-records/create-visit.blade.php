@@ -421,6 +421,55 @@
                     </div>
                 </div>
 
+                <div id="referral-fields" class="border border-blue-200 rounded-xl p-4 bg-blue-50/40 space-y-3 {{ in_array('specialist', old('prescribed_modules', []), true) ? '' : 'hidden' }}">
+                    <div class="text-sm font-semibold text-slate-800">Avis spécialiste — courrier d’adressage</div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <label class="text-sm font-medium text-gray-700">Spécialité
+                            <select name="referral_specialty" class="mt-1 w-full border-gray-300 rounded-lg">
+                                <option value="">Choisir</option>
+                                @foreach(\App\Services\Medical\ClinicalOrderDocuments::SPECIALTIES as $code => $label)<option value="{{ $code }}" @selected(old('referral_specialty') === $code)>{{ $label }}</option>@endforeach
+                            </select></label>
+                        <label class="text-sm font-medium text-gray-700">Si autre, laquelle
+                            <input name="referral_specialty_other" maxlength="120" value="{{ old('referral_specialty_other') }}" class="mt-1 w-full border-gray-300 rounded-lg"></label>
+                        <label class="text-sm font-medium text-gray-700">Délai
+                            <select name="referral_urgency" class="mt-1 w-full border-gray-300 rounded-lg">
+                                <option value="routine" @selected(old('referral_urgency', 'routine') === 'routine')>Habituel</option>
+                                <option value="urgent" @selected(old('referral_urgency') === 'urgent')>Urgent</option>
+                            </select></label>
+                    </div>
+                    <label class="block text-sm font-medium text-gray-700">Motif et question posée au spécialiste
+                        <textarea name="referral_reason" rows="3" maxlength="3000" class="mt-1 w-full border-gray-300 rounded-lg" placeholder="Contexte clinique, examens déjà réalisés, question précise">{{ old('referral_reason') }}</textarea></label>
+                </div>
+
+                <div id="physio-fields" class="border border-emerald-200 rounded-xl p-4 bg-emerald-50/40 space-y-3 {{ in_array('physiotherapy', old('prescribed_modules', []), true) ? '' : 'hidden' }}">
+                    <div class="text-sm font-semibold text-slate-800">Kinésithérapie — prescription</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <label class="text-sm font-medium text-gray-700">Nombre de séances
+                            <input type="number" name="physio_sessions" min="1" max="60" value="{{ old('physio_sessions') }}" class="mt-1 w-full border-gray-300 rounded-lg" placeholder="Laisser vide : à l’appréciation du kinésithérapeute"></label>
+                        <label class="text-sm font-medium text-gray-700">Rythme
+                            <input name="physio_frequency" maxlength="120" value="{{ old('physio_frequency') }}" class="mt-1 w-full border-gray-300 rounded-lg" placeholder="Ex. 3 séances par semaine"></label>
+                    </div>
+                    <label class="block text-sm font-medium text-gray-700">Indication
+                        <textarea name="physio_indication" rows="2" maxlength="2000" class="mt-1 w-full border-gray-300 rounded-lg" placeholder="Ex. rééducation après entorse latérale de la cheville droite">{{ old('physio_indication') }}</textarea></label>
+                    <label class="block text-sm font-medium text-gray-700">Techniques et consignes (facultatif)
+                        <textarea name="physio_instructions" rows="2" maxlength="2000" class="mt-1 w-full border-gray-300 rounded-lg" placeholder="Ex. renforcement des fibulaires, proprioception, reprise de la course progressive">{{ old('physio_instructions') }}</textarea></label>
+                </div>
+
+                <script>
+                (() => {
+                    const toggle = (module, id) => {
+                        const box = document.querySelector('.prescribed-module[value="' + module + '"]');
+                        const section = document.getElementById(id);
+                        if (!box || !section) return;
+                        const sync = () => section.classList.toggle('hidden', !box.checked);
+                        box.addEventListener('change', sync);
+                        sync();
+                    };
+                    toggle('specialist', 'referral-fields');
+                    toggle('physiotherapy', 'physio-fields');
+                })();
+                </script>
+
                 <div>
                     <label for="order_details" class="block text-sm font-medium text-gray-700 mb-1">Précisions sur les examens demandés (laboratoire, imagerie, IRM)</label>
                     <textarea id="order_details" name="order_details" rows="2" maxlength="1000" class="w-full border-gray-300 rounded-lg"

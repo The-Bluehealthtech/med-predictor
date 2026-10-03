@@ -467,13 +467,20 @@
             </div>
             <div class="divide-y">
                 @foreach($intakeDocuments as $document)
-                    <div class="p-5 grid grid-cols-1 md:grid-cols-[140px_1fr_180px] gap-4">
+                    @php
+                        $origin = match (data_get($document->metadata, 'source')) {
+                            'fit_prescription' => 'Établi en consultation',
+                            'fhir' => 'Établissement (serveur FHIR)' . (data_get($document->metadata, 'origin') ? ' · ' . data_get($document->metadata, 'origin') : ''),
+                            default => 'Pièce de pré-accueil',
+                        };
+                    @endphp
+                    <div class="p-5 grid grid-cols-1 md:grid-cols-[140px_1fr_220px] gap-4">
                         <div class="text-sm text-gray-500">{{ $document->created_at?->format('d/m/Y') ?? '—' }}</div>
                         <div>
-                            <div class="font-medium text-gray-900">{{ $document->file_name }}</div>
-                            <div class="text-sm text-gray-500">Secrétariat · {{ $document->document_type_label }}</div>
+                            <a href="{{ route('medical-files.document', $document) }}" class="font-medium text-blue-700 hover:underline">{{ $document->description ?: $document->file_name }}</a>
+                            <div class="text-sm text-gray-500">{{ $document->document_type_label }} · {{ $document->file_name }}</div>
                         </div>
-                        <div class="text-xs text-gray-400 md:text-right">Pièce de pré-accueil</div>
+                        <div class="text-xs text-gray-500 md:text-right">{{ $origin }}</div>
                     </div>
                 @endforeach
 

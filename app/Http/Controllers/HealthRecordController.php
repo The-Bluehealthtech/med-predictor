@@ -176,6 +176,15 @@ class HealthRecordController extends Controller
             'prescribed_modules' => 'nullable|array|max:20',
             'prescribed_modules.*' => 'string|in:pcma,fmarc,scat,imaging,mri,mapa,ecg_effort,laboratory,dental,postural,specialist,physiotherapy',
             'order_details' => 'nullable|string|max:1000',
+            // Avis spécialiste et kinésithérapie : courrier d'adressage et prescription établis en consultation.
+            'referral_specialty' => ['nullable', \Illuminate\Validation\Rule::requiredIf(fn () => in_array('specialist', (array) $request->input('prescribed_modules', []), true)), \Illuminate\Validation\Rule::in(array_keys(\App\Services\Medical\ClinicalOrderDocuments::SPECIALTIES))],
+            'referral_specialty_other' => 'nullable|required_if:referral_specialty,autre|string|max:120',
+            'referral_reason' => ['nullable', \Illuminate\Validation\Rule::requiredIf(fn () => in_array('specialist', (array) $request->input('prescribed_modules', []), true)), 'string', 'max:3000'],
+            'referral_urgency' => 'nullable|in:routine,urgent',
+            'physio_indication' => ['nullable', \Illuminate\Validation\Rule::requiredIf(fn () => in_array('physiotherapy', (array) $request->input('prescribed_modules', []), true)), 'string', 'max:2000'],
+            'physio_sessions' => 'nullable|integer|min:1|max:60',
+            'physio_frequency' => 'nullable|string|max:120',
+            'physio_instructions' => 'nullable|string|max:2000',
         ] + $this->extraRules($request));
 
         app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),Player::findOrFail($validated['player_id']),null);
@@ -246,6 +255,7 @@ class HealthRecordController extends Controller
                 // Examens de laboratoire et d'imagerie : demandes transmises au serveur FHIR (ServiceRequest).
                 if ($healthRecord->player_id && ($player = \App\Models\Player::withoutGlobalScopes()->find($healthRecord->player_id))) {
                     app(\App\Services\Fhir\FhirOrders::class)->dispatch($visit, $player, $visitData['prescribed_modules'], $validated['order_details'] ?? null, $request->user());
+                    app(\App\Services\Medical\ClinicalOrderDocuments::class)->generate($visit, $player, $request->user(), $visitData['prescribed_modules'], $validated);
                 }
             }
         }

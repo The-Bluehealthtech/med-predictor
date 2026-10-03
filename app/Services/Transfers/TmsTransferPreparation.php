@@ -128,9 +128,14 @@ final class TmsTransferPreparation
             'payments.payee',
         ]);
 
+        $playerSync = $this->playerSyncPayload($transfer);
+        $domestic = $this->domesticTransferDeclaration($transfer);
+
         return [
             'message_id' => 'FIT-TRANSFER-'.$transfer->id,
             'fit_transfer_id' => $transfer->id,
+            'player_sync' => $playerSync,
+            'domestic_transfer_declaration' => $domestic,
             'player' => [
                 'fifa_id' => $this->officialFifaId($transfer->player?->fifa_player_id),
                 'first_name' => $transfer->player?->first_name,
@@ -175,6 +180,65 @@ final class TmsTransferPreparation
                 'proof_validated_at' => $payment->proof_status === 'approved' ? optional($payment->proof_validated_at)->toIso8601String() : null,
             ])->values()->all(),
             'prepared_by_fit' => true,
+        ];
+    }
+
+    private function playerSyncPayload(Transfer $transfer): array
+    {
+        $payload = [
+            'person_fifa_id' => $this->officialFifaId($transfer->player?->fifa_player_id),
+            'first_name' => $transfer->player?->first_name,
+            'last_name' => $transfer->player?->last_name,
+            'date_of_birth' => optional($transfer->player?->date_of_birth)->format('Y-m-d'),
+            'gender' => $transfer->player?->gender,
+            'nationality' => $transfer->player?->nationality,
+            'place_of_birth' => $transfer->player?->place_of_birth,
+            'current_club_fifa_id' => $this->officialFifaId($transfer->clubOrigin?->fifa_club_id),
+            'source' => 'FIT',
+            'fit_player_id' => $transfer->player_id,
+        ];
+
+        return $payload + [
+            'sha256' => hash('sha256', json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)),
+        ];
+    }
+
+    private function domesticTransferDeclaration(Transfer $transfer): array
+    {
+        if ($transfer->is_international) {
+            return [
+                'applicable' => false,
+                'reason' => 'Transfert international : déclaration nationale non applicable.',
+            ];
+        }
+
+        $payments = $transfer->payments->map(fn ($payment) => [
+            'payment_id' => $payment->id,
+            'amount' => $payment->amount,
+            'currency' => $payment->currency,
+            'due_date' => optional($payment->due_date)->format('Y-m-d'),
+            'payment_date' => optional($payment->payment_date)->format('Y-m-d'),
+            'proof_status' => $payment->proof_status,
+            'proof_sha256' => $payment->proof_status === 'approved' ? $payment->proof_sha256 : null,
+        ])->values()->all();
+
+        $payload = [
+            'applicable' => true,
+            'fit_transfer_id' => $transfer->id,
+            'person_fifa_id' => $this->officialFifaId($transfer->player?->fifa_player_id),
+            'releasing_club_fifa_id' => $this->officialFifaId($transfer->clubOrigin?->fifa_club_id),
+            'engaging_club_fifa_id' => $this->officialFifaId($transfer->clubDestination?->fifa_club_id),
+            'transfer_date' => optional($transfer->transfer_date)->format('Y-m-d'),
+            'contract_start_date' => optional($transfer->contract_start_date)->format('Y-m-d'),
+            'contract_end_date' => optional($transfer->contract_end_date)->format('Y-m-d'),
+            'transfer_fee' => $transfer->transfer_fee,
+            'currency' => $transfer->currency,
+            'payments' => $payments,
+            'source' => 'FIT',
+        ];
+
+        return $payload + [
+            'sha256' => hash('sha256', json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)),
         ];
     }
 

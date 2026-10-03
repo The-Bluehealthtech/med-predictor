@@ -172,6 +172,45 @@ class TmsTransferWorkflowTest extends TestCase
         $this->assertSame('linked',$this->transfer->fresh()->tms_sync_status);
     }
 
+    public function test_player_sync_payload_is_hashable_and_uses_only_official_fifa_ids(): void
+    {
+        $this->approveRequiredDocuments();
+        $this->actingAs($this->registrar)->postJson(route('transfers.prepare-tms',$this->transfer))->assertOk();
+
+        $sync = $this->transfer->fresh()->tms_snapshot['player_sync'];
+        $this->assertSame('PLAYER-TMS-1',$sync['person_fifa_id']);
+        $this->assertSame('CLUB-TMS-ORIGIN',$sync['current_club_fifa_id']);
+        $this->assertSame($this->playerId,$sync['fit_player_id']);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/',$sync['sha256']);
+    }
+
+    public function test_domestic_transfer_declaration_is_prepared_only_for_domestic_transfer(): void
+    {
+        $this->transfer->forceFill(['is_international'=>false])->save();
+        $this->approveRequiredDocuments();
+
+        $this->actingAs($this->registrar)->postJson(route('transfers.prepare-tms',$this->transfer))->assertOk();
+        $domestic = $this->transfer->fresh()->tms_snapshot['domestic_transfer_declaration'];
+        $this->assertTrue($domestic['applicable']);
+        $this->assertSame('PLAYER-TMS-1',$domestic['person_fifa_id']);
+        $this->assertSame('CLUB-TMS-ORIGIN',$domestic['releasing_club_fifa_id']);
+        $this->assertSame('CLUB-TMS-DEST',$domestic['engaging_club_fifa_id']);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/',$domestic['sha256']);
+
+        $this->transfer->forceFill(['is_international'=>true,'tms_sync_status'=>'not_ready','tms_snapshot'=>null,'tms_payload_sha256'=>null])->save();
+        $readiness = app(\App\Services\Transfers\TmsTransferPreparation::class)->snapshot($this->transfer);
+        $this->assertFalse($readiness['domestic_transfer_declaration']['applicable']);
+    }
+
+    public function test_local_fit_identifiers_are_not_exported_as_fifa_ids(): void
+    {
+        DB::table('players')->where('id',$this->playerId)->update(['fifa_player_id'=>'FIT-PLAYER-LOCAL']);
+        $this->transfer->load(['player','clubOrigin.association','clubDestination.association','documents','payments.payee']);
+        $snapshot = app(\App\Services\Transfers\TmsTransferPreparation::class)->snapshot($this->transfer);
+        $this->assertNull($snapshot['player_sync']['person_fifa_id']);
+        $this->assertNull($snapshot['player']['fifa_id']);
+    }
+
     public function test_first_professional_registration_is_detected_from_first_pro_license(): void
     {
         $this->approveRequiredDocuments();

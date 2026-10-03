@@ -23,6 +23,7 @@
     <div class="license-print-area">
         @include('licenses.cards._card', ['license' => $license])
     </div>
+    @include('licenses.cards._digital-signature')
     <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600 no-print">
         <strong class="text-slate-900">Format :</strong> CR80 85,6 × 53,98 mm. L’impression produit une page recto puis une page verso ; activez le mode recto-verso de l’imprimante si disponible.
         @unless($license->photo || $license->player?->player_picture_url)

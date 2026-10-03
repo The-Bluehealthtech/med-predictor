@@ -13,6 +13,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 /**
@@ -49,12 +50,19 @@ class LicenseWorkflowTest extends TestCase
             Route::post('/_t/approval/{license}/identity', [LicenseApprovalController::class, 'verifyIdentity'])->name('licenses.verify-identity');
             Route::post('/_t/approval/{license}/decision', [LicenseApprovalController::class, 'decide'])->name('licenses.decide');
             Route::get('/_t/approval/cards/{license}', [LicenseApprovalController::class, 'card'])->name('licenses.card');
+            Route::get('/_t/approval/cards/{license}/pdf', [\App\Http\Controllers\Licensing\LicenseCardSignatureController::class, 'pdf'])->name('licenses.card.pdf');
+            Route::post('/_t/approval/cards/{license}/digital-signature', [\App\Http\Controllers\Licensing\LicenseCardSignatureController::class, 'store'])->name('licenses.card.digital-signature');
+            Route::post('/_t/approval/cards/{license}/digital-signature/{signature}/sync', [\App\Http\Controllers\Licensing\LicenseCardSignatureController::class, 'sync'])->name('licenses.card.digital-signature.sync');
+            Route::get('/_t/approval/cards/{license}/digital-signature/{signature}/download', [\App\Http\Controllers\Licensing\LicenseCardSignatureController::class, 'download'])->name('licenses.card.digital-signature.download');
             Route::post('/_t/approval/cards/batch', [LicenseApprovalController::class, 'cardsBatch'])->name('licenses.cards.batch');
             Route::post('/_t/approval/{license}/integrity', [LicenseApprovalController::class, 'recordIntegrityReview'])->name('licenses.integrity-review');
             Route::post('/_t/approval/{license}/face-match', [LicenseApprovalController::class, 'compareFaces'])->name('licenses.face-match');
             Route::post('/_t/legacy-fraud', [\App\Http\Controllers\LicenseController::class, 'checkAllLicenses'])->name('licenses.fraud-detection.test-disabled');
         });
         app('router')->getRoutes()->refreshNameLookups();
+        if (!Schema::hasTable('document_signature_requests')) {
+            (require base_path('database/migrations/2026_10_03_180000_create_document_signature_requests.php'))->up();
+        }
 
         $this->associationId = (int) DB::table('associations')->insertGetId(['name' => 'Fédération Licences Test', 'country' => 'Tunisie', 'created_at' => now(), 'updated_at' => now()]);
         $this->clubId = (int) DB::table('clubs')->insertGetId(['name' => 'Club Licences Test', 'association_id' => $this->associationId, 'created_at' => now(), 'updated_at' => now()]);
@@ -362,6 +370,25 @@ class LicenseWorkflowTest extends TestCase
             ->assertOk()->assertSee('Carte de licence')->assertSee('CR80')->assertSee('Samir')->assertSee('Club Licences Test');
         $this->actingAs($federation)->post('/_t/approval/cards/batch', ['license_ids' => [$license->id]])
             ->assertOk()->assertSee('Impression en batch')->assertSee('1 carte');
+    }
+
+    public function test_approved_card_pdf_and_signature_are_federation_scoped(): void
+    {
+        $this->pcma();
+        $license = $this->request();
+        $federation = $this->federation();
+        $this->actingAs($federation)->post("/_t/approval/{$license->id}/decision", ['decision' => 'approve'])->assertRedirect();
+
+        $pdf = $this->actingAs($federation)->get(route('licenses.card.pdf', $license))->assertOk();
+        $this->assertStringStartsWith('%PDF-', $pdf->getContent());
+        $this->actingAs($federation)->get(route('licenses.card', $license))->assertOk()
+            ->assertSee('Certification numérique de la carte')->assertSee('prêt pour le Go Live');
+        $this->actingAs($federation)->post(route('licenses.card.digital-signature', $license), ['provider' => 'adobe_sign'])
+            ->assertSessionHas('error');
+
+        $system = $this->user('system_admin', ['tenant_id' => null]);
+        $this->actingAs($system)->post(route('licenses.card.digital-signature', $license), ['provider' => 'adobe_sign'])->assertForbidden();
+        $this->actingAs($this->club())->post(route('licenses.card.digital-signature', $license), ['provider' => 'adobe_sign'])->assertForbidden();
     }
 
     public function test_club_cannot_open_federation_license_cards(): void

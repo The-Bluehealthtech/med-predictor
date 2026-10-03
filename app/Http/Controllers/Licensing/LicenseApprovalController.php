@@ -131,8 +131,17 @@ class LicenseApprovalController extends Controller
         $this->authorizeLicense($request->user(), $license);
         abort_unless($license->status === 'active' && !$license->club_official_id, 404);
         $license->load(['player.passport', 'club.association', 'photo']);
+        $signatureService = app(\App\Services\Documents\DocumentSignatureService::class);
+        $signatureProviders = \Illuminate\Support\Facades\Schema::hasTable('system_settings')
+            ? collect($signatureService->allStatuses())
+            : collect($signatureService->providers())->map(fn($provider,$slug)=>$provider+['slug'=>$slug,'enabled'=>false,'status'=>$provider['configured']?'disabled':'not_configured']);
+        $signatureRequests = \Illuminate\Support\Facades\Schema::hasTable('document_signature_requests')
+            ? \App\Models\DocumentSignatureRequest::query()->where('workflow','license_card.approved_document')->latest('id')->get()
+                ->filter(fn($item)=>(int)data_get($item->metadata,'document.license_id')===(int)$license->id)->values()
+            : collect();
+        $canSignCard = in_array($request->user()->role, ['association_admin','association_registrar'], true);
 
-        return view('licenses.cards.show', ['license' => $license]);
+        return view('licenses.cards.show', compact('license','signatureProviders','signatureRequests','canSignCard'));
     }
 
     public function cardsBatch(Request $request)

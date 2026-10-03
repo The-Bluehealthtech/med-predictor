@@ -1224,6 +1224,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/licenses/review/{license}/identity', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'verifyIdentity'])->whereNumber('license')->name('licenses.verify-identity');
     Route::post('/licenses/review/{license}/decision', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'decide'])->whereNumber('license')->name('licenses.decide');
     Route::get('/licenses/cards/{license}', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'card'])->whereNumber('license')->name('licenses.card');
+    Route::get('/licenses/cards/{license}/pdf', [\App\Http\Controllers\Licensing\LicenseCardSignatureController::class, 'pdf'])->whereNumber('license')->name('licenses.card.pdf');
+    Route::post('/licenses/cards/{license}/digital-signature', [\App\Http\Controllers\Licensing\LicenseCardSignatureController::class, 'store'])->whereNumber('license')->name('licenses.card.digital-signature');
+    Route::post('/licenses/cards/{license}/digital-signature/{signature}/sync', [\App\Http\Controllers\Licensing\LicenseCardSignatureController::class, 'sync'])->whereNumber('license')->whereNumber('signature')->name('licenses.card.digital-signature.sync');
+    Route::get('/licenses/cards/{license}/digital-signature/{signature}/download', [\App\Http\Controllers\Licensing\LicenseCardSignatureController::class, 'download'])->whereNumber('license')->whereNumber('signature')->name('licenses.card.digital-signature.download');
     Route::post('/licenses/cards/batch', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'cardsBatch'])->name('licenses.cards.batch');
     Route::post('/licenses/review/{license}/integrity', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'recordIntegrityReview'])->whereNumber('license')->name('licenses.integrity-review');
     Route::post('/licenses/review/{license}/face-match', [\App\Http\Controllers\Licensing\LicenseApprovalController::class, 'compareFaces'])->whereNumber('license')->name('licenses.face-match');

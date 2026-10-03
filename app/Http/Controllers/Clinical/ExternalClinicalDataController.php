@@ -27,7 +27,8 @@ class ExternalClinicalDataController extends Controller
         $items = null;
         $error = null;
         $linked = $query->patientIds($player);
-        if ($configured && $linked !== []) {
+        $consent = app(\App\Services\Privacy\PlayerConsents::class)->allowsExternalSharing($player);
+        if ($configured && $linked !== [] && $consent) {
             try {
                 $items = $query->fetch($player, $tab);
             } catch (FhirException $e) {
@@ -36,7 +37,7 @@ class ExternalClinicalDataController extends Controller
         }
 
         return view('clinical.external-data', ['player' => $player, 'tab' => $tab, 'categories' => ClinicalDataQuery::CATEGORIES,
-            'configured' => $configured, 'linked' => $linked, 'items' => $items, 'error' => $error, 'back' => $request->query('back'),
+            'configured' => $configured, 'linked' => $linked, 'items' => $items, 'consent' => $consent, 'error' => $error, 'back' => $request->query('back'),
             'integrated' => $tab === 'reports' ? app(ReportIntegration::class)->integrated($player) : []]);
     }
 

@@ -19,6 +19,7 @@ use Tests\TestCase;
 class FhirClinicalDataTest extends TestCase
 {
     use DatabaseTransactions;
+    use \Tests\Concerns\GrantsSharingConsent;
 
     private const BASE = 'http://fit-fhir.test/fhir';
 
@@ -42,6 +43,7 @@ class FhirClinicalDataTest extends TestCase
         FhirPatientLink::query()->create(['player_id' => $id, 'role' => 'fit', 'patient_id' => 'fit-1', 'status' => 'linked']);
         FhirPatientLink::query()->create(['player_id' => $id, 'role' => 'external', 'patient_id' => 'lab-3', 'status' => 'linked']);
         FhirPatientLink::query()->create(['player_id' => $id, 'role' => 'external', 'patient_id' => 'emr-9', 'status' => 'rejected']);
+        $this->grantSharingConsent($this->player); // partage hors du club consenti (IHE PCF)
     }
 
     private function doctor(?int $clubId = null): User

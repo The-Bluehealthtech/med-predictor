@@ -110,6 +110,7 @@ final class PatientIdentity
      */
     public function candidates(Player $player): array
     {
+        app(\App\Services\Privacy\PlayerConsents::class)->assertExternalSharing($player); // dossiers d'établissements
         $own = $this->fitPatientId($player) ?? $this->feed($player);
         $decided = FhirPatientLink::query()->where(['player_id' => $player->id, 'role' => 'external'])->pluck('patient_id')->all();
         $queries = [];
@@ -141,6 +142,7 @@ final class PatientIdentity
     /** Rattachement confirmé : lien « seealso » ajouté au Patient de FIT. */
     public function confirm(Player $player, string $patientId, User $user, ?string $matchedOn = null): void
     {
+        app(\App\Services\Privacy\PlayerConsents::class)->assertExternalSharing($player);
         $this->decide($player, $patientId, $user, 'linked', $matchedOn);
         $this->feed($player);
     }

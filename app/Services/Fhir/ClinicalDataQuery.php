@@ -49,6 +49,7 @@ final class ClinicalDataQuery
     public function fetch(Player $player, string $category): array
     {
         abort_unless(isset(self::CATEGORIES[$category]), 404);
+        app(\App\Services\Privacy\PlayerConsents::class)->assertExternalSharing($player);
         $patients = $this->patientIds($player);
         if ($patients === []) {
             return [];

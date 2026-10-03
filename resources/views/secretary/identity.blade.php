@@ -13,6 +13,83 @@
     @if(session('success'))<p class="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-900" role="status">{{ session('success') }}</p>@endif
     @if($errors->has('fhir') || $error)<p class="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-900" role="alert">{{ $errors->first('fhir') ?: $error }}</p>@endif
 
+    <section class="bg-white border border-slate-200 rounded-2xl overflow-hidden" aria-labelledby="h-consent">
+        <div class="px-5 py-4 border-b">
+            <h2 id="h-consent" class="font-semibold text-slate-900">Consentement au partage hors du club (IHE PCF)</h2>
+            <p class="text-sm text-slate-500">Exigé pour publier l’IPS et consulter les dossiers des établissements. Les soins du club n’en dépendent pas.</p>
+        </div>
+        <div class="p-5 space-y-4">
+            <p class="text-sm font-semibold {{ $consentAllowed ? 'text-emerald-700' : 'text-amber-800' }}" role="status">
+                {{ $consentAllowed ? '✓ Partage hors du club autorisé par un consentement signé.' : 'Aucun consentement actif autorisant le partage hors du club.' }}
+            </p>
+
+            @if($consentHistory->isNotEmpty())
+                <ul class="divide-y text-sm">
+                    @foreach($consentHistory as $consent)
+                        <li class="py-2 flex flex-wrap items-center justify-between gap-2">
+                            <span>
+                                <strong>{{ $consent->decision === 'permit' ? 'Autorise' : 'Refuse' }}</strong> ·
+                                {{ ['pending_signature' => 'en attente de signature', 'active' => 'actif', 'superseded' => 'remplacé', 'revoked' => 'révoqué', 'cancelled' => 'annulé'][$consent->status] ?? $consent->status }}
+                                · {{ $consent->performer_name }}{{ $consent->performer_type === 'guardian' ? ' (représentant légal)' : '' }}
+                                · politique v{{ $consent->policy?->version }}
+                                @if($consent->signed_at) · signé le {{ $consent->signed_at->format('d/m/Y') }}@endif
+                                @if($consent->period_end) · jusqu’au {{ $consent->period_end->format('d/m/Y') }}@endif
+                                @if($consent->sync_error)<span class="block text-xs text-red-700">Serveur FHIR : {{ $consent->sync_error }}</span>@endif
+                            </span>
+                            <span class="flex gap-2">
+                                @if($consent->status === 'pending_signature')
+                                    <form method="POST" action="{{ route('privacy.consents.refresh', $consent) }}">@csrf<button class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold">Vérifier la signature</button></form>
+                                @endif
+                                @if(data_get($consent->signatureRequest?->metadata, 'signed_path'))
+                                    <a href="{{ route('privacy.consents.document', $consent) }}" class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold">PDF signé</a>
+                                @endif
+                                @if(in_array($consent->status, ['active', 'pending_signature'], true))
+                                    <form method="POST" action="{{ route('privacy.consents.revoke', $consent) }}">@csrf<button class="px-3 py-1.5 rounded-lg border border-red-200 text-xs font-semibold text-red-700">Révoquer</button></form>
+                                @endif
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+
+            @if(!$policy)
+                <p class="text-sm text-amber-800">La fédération n’a pas encore publié de politique de confidentialité : le consentement ne peut pas être recueilli.</p>
+            @elseif($signatureProviders->isEmpty())
+                <p class="text-sm text-amber-800">Aucun fournisseur de signature électronique n’est activé (carte « Connecteurs API » des modules).</p>
+            @else
+                <form method="POST" action="{{ route('privacy.consents.store', $player) }}" class="grid grid-cols-1 md:grid-cols-2 gap-3 border-t pt-4">
+                    @csrf
+                    <fieldset class="md:col-span-2 flex flex-wrap gap-4 text-sm"><legend class="text-sm font-medium text-slate-700 mb-1">Décision</legend>
+                        <label class="flex items-center gap-2"><input type="radio" name="decision" value="permit" checked> Autorise le partage</label>
+                        <label class="flex items-center gap-2"><input type="radio" name="decision" value="deny"> Refuse le partage</label>
+                    </fieldset>
+                    <label class="text-sm font-medium text-slate-700">Signataire
+                        <select name="performer_type" class="mt-1 w-full rounded-lg border-slate-300">
+                            <option value="player">Le joueur</option>
+                            <option value="guardian" @selected($player->date_of_birth && \Illuminate\Support\Carbon::parse($player->date_of_birth)->age < 18)>Représentant légal (joueur mineur)</option>
+                        </select></label>
+                    <label class="text-sm font-medium text-slate-700">Lien (représentant légal)
+                        <select name="performer_relationship" class="mt-1 w-full rounded-lg border-slate-300">
+                            <option value="">—</option>
+                            @foreach($relationships as $code => $label)<option value="{{ $code }}">{{ $label }}</option>@endforeach
+                        </select></label>
+                    <label class="text-sm font-medium text-slate-700">Nom du signataire
+                        <input name="performer_name" required maxlength="255" value="{{ old('performer_name', trim(($player->first_name ?? '') . ' ' . ($player->last_name ?? ''))) }}" class="mt-1 w-full rounded-lg border-slate-300"></label>
+                    <label class="text-sm font-medium text-slate-700">E-mail du signataire
+                        <input type="email" name="performer_email" required maxlength="255" value="{{ old('performer_email', $player->contact_email ?? $player->email ?? '') }}" class="mt-1 w-full rounded-lg border-slate-300"></label>
+                    <label class="text-sm font-medium text-slate-700">Fin de validité (facultatif)
+                        <input type="date" name="period_end" value="{{ old('period_end') }}" class="mt-1 w-full rounded-lg border-slate-300"></label>
+                    <label class="text-sm font-medium text-slate-700">Signature électronique
+                        <select name="provider" class="mt-1 w-full rounded-lg border-slate-300">
+                            @foreach($signatureProviders as $provider)<option value="{{ $provider['slug'] }}">{{ $provider['name'] }}</option>@endforeach
+                        </select></label>
+                    <p class="md:col-span-2 text-xs text-slate-500">Le formulaire reprend la politique « {{ $policy->title }} » (v{{ $policy->version }}, <a class="text-blue-600" href="{{ route('privacy-policies.show', $policy) }}" target="_blank" rel="noopener">lire</a>). Il est envoyé au signataire ; le consentement devient actif à la signature.</p>
+                    <div class="md:col-span-2"><button class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">Envoyer à la signature</button></div>
+                </form>
+            @endif
+        </div>
+    </section>
+
     @unless($configured)
         <section class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">
             Le serveur FHIR de FIT n’est pas encore installé (prévu avant la mise en production). L’identité clinique sera transmise au premier pré-accueil suivant son installation.
@@ -65,9 +142,13 @@
                     <h2 id="h-candidates" class="font-semibold text-slate-900">Dossiers correspondants possibles</h2>
                     <p class="text-sm text-slate-500">Recherche PDQm par FIFA ID, puis par nom et date de naissance. Vérifiez l’identité avant de rattacher.</p>
                 </div>
-                <a href="{{ route('secretary.identity', ['player' => $player, 'search' => 1]) }}" class="px-3 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">Rechercher</a>
+                @if($consentAllowed)
+                    <a href="{{ route('secretary.identity', ['player' => $player, 'search' => 1]) }}" class="px-3 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">Rechercher</a>
+                @endif
             </div>
-            @if($candidates === null)
+            @if(!$consentAllowed)
+                <p class="p-5 text-sm text-amber-800">La recherche dans les dossiers des établissements exige le consentement du joueur au partage (section ci-dessus).</p>
+            @elseif($candidates === null)
                 <p class="p-5 text-sm text-slate-500">Lancez la recherche pour interroger le serveur.</p>
             @else
                 @forelse($candidates as $candidate)

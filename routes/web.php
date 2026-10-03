@@ -2626,6 +2626,13 @@ Route::get('/test-pdf', function() {
     // Examens transmis au serveur FHIR (ServiceRequest) : vérification des comptes rendus, renvoi
     Route::post('/secretary/orders/sync', [App\Http\Controllers\MedicalSecretaryController::class, 'syncOrders'])->middleware('throttle:10,1')->name('secretary.orders.sync');
     Route::post('/secretary/orders/{order}/retry', [App\Http\Controllers\MedicalSecretaryController::class, 'retryOrder'])->whereNumber('order')->name('secretary.orders.retry');
+    // Consentement au partage hors du club (IHE PCF) et politique de confidentialité de la fédération
+    Route::post('/secretary/players/{player}/consents', [App\Http\Controllers\MedicalSecretaryController::class, 'prepareConsent'])->whereNumber('player')->name('privacy.consents.store');
+    Route::post('/secretary/consents/{consent}/refresh', [App\Http\Controllers\MedicalSecretaryController::class, 'refreshConsent'])->whereNumber('consent')->name('privacy.consents.refresh');
+    Route::post('/secretary/consents/{consent}/revoke', [App\Http\Controllers\MedicalSecretaryController::class, 'revokeConsent'])->whereNumber('consent')->name('privacy.consents.revoke');
+    Route::get('/secretary/consents/{consent}/document', [App\Http\Controllers\MedicalSecretaryController::class, 'consentDocument'])->whereNumber('consent')->name('privacy.consents.document');
+    Route::get('/privacy-policies', [App\Http\Controllers\Privacy\PrivacyPolicyController::class, 'index'])->name('privacy-policies.index');
+    Route::post('/privacy-policies', [App\Http\Controllers\Privacy\PrivacyPolicyController::class, 'store'])->name('privacy-policies.store');
     // Identité clinique du joueur sur le serveur FHIR de FIT (IHE PIXm / PDQm)
     Route::get('/secretary/players/{player}/identity', [App\Http\Controllers\MedicalSecretaryController::class, 'identity'])
         ->whereNumber('player')->name('secretary.identity');
@@ -4233,3 +4240,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Route de test pour toutes les cartes des modules
+
+// Politique de confidentialité d'une fédération : adresse publique référencée par les consentements FHIR (IHE PCF)
+Route::get('/privacy-policies/{policy}', [App\Http\Controllers\Privacy\PrivacyPolicyController::class, 'show'])->whereNumber('policy')->name('privacy-policies.show');

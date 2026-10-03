@@ -9,6 +9,7 @@ use App\Models\FhirOrder;
 use App\Models\FhirPatientLink;
 use App\Models\PCMA;
 use App\Models\Player;
+use App\Models\PlayerConsent;
 use App\Models\PlayerLicense;
 use App\Models\User;
 use App\Models\Visit;
@@ -17,6 +18,7 @@ use App\Services\Fhir\FhirOrders;
 use App\Services\Fhir\PatientIdentity;
 use App\Services\Licensing\PcmaRequirement;
 use App\Services\Medical\PcmaVisit;
+use App\Services\Privacy\PlayerConsents;
 use App\Services\MedicalRecordAccess;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -348,6 +350,59 @@ final class MedicalSecretaryController extends Controller
         return back()->with('success', 'Document ajouté à la visite pour le médecin.');
     }
 
+    /** Consentement au partage hors du club : formulaire envoyé à la signature électronique (IHE PCF). */
+    public function prepareConsent(Request $request, Player $player): RedirectResponse
+    {
+        $this->authorizePlayer($player);
+        $providers = collect(app(\App\Services\Documents\DocumentSignatureService::class)->allStatuses())->where('status', 'ready')->pluck('slug')->all();
+        $data = $request->validate([
+            'decision' => 'required|in:permit,deny',
+            'performer_type' => 'required|in:player,guardian',
+            'performer_name' => 'required|string|max:255',
+            'performer_relationship' => 'required_if:performer_type,guardian|nullable|in:' . implode(',', array_keys(PlayerConsents::RELATIONSHIPS)),
+            'performer_email' => 'required|email|max:255',
+            'period_end' => 'nullable|date|after:today',
+            'provider' => ['required', \Illuminate\Validation\Rule::in($providers)],
+        ], ['provider.in' => 'Aucun fournisseur de signature électronique activé.']);
+        try {
+            $consent = app(PlayerConsents::class)->prepare($player, $data, $request->user());
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back()->with($consent->status === 'cancelled' ? 'error' : 'success', $consent->status === 'cancelled'
+            ? 'La demande de signature n’a pas pu être envoyée.'
+            : 'Formulaire envoyé à la signature de ' . $consent->performer_name . ' (' . $consent->performer_email . ').');
+    }
+
+    public function refreshConsent(PlayerConsent $consent): RedirectResponse
+    {
+        $this->authorizePlayer(Player::withoutGlobalScopes()->findOrFail($consent->player_id));
+        $consent = app(PlayerConsents::class)->refresh($consent);
+
+        return back()->with('success', match ($consent->status) {
+            'active' => 'Consentement signé : il est actif.',
+            'cancelled' => 'Signature annulée ou expirée.',
+            default => 'Signature toujours en attente.',
+        });
+    }
+
+    public function revokeConsent(Request $request, PlayerConsent $consent): RedirectResponse
+    {
+        $this->authorizePlayer(Player::withoutGlobalScopes()->findOrFail($consent->player_id));
+        app(PlayerConsents::class)->revoke($consent, $request->user());
+
+        return back()->with('success', 'Consentement révoqué : le partage hors du club est désormais refusé.');
+    }
+
+    public function consentDocument(PlayerConsent $consent)
+    {
+        $this->authorizePlayer(Player::withoutGlobalScopes()->findOrFail($consent->player_id));
+        abort_unless($consent->signatureRequest && data_get($consent->signatureRequest->metadata, 'signed_path'), 404);
+
+        return app(\App\Services\Documents\DocumentSignatureStorage::class)->download($consent->signatureRequest, 'consentement-partage-' . $consent->id . '-signe.pdf');
+    }
+
     /** Vérification manuelle des comptes rendus (en complément de l'abonnement FHIR). */
     public function syncOrders(): RedirectResponse
     {
@@ -379,7 +434,7 @@ final class MedicalSecretaryController extends Controller
         $identity = app(PatientIdentity::class);
         $candidates = null;
         $error = null;
-        if ($identity->configured() && $request->boolean('search')) {
+        if ($identity->configured() && $request->boolean('search') && app(PlayerConsents::class)->allowsExternalSharing($player)) {
             try {
                 $candidates = $identity->candidates($player);
             } catch (FhirException $e) {
@@ -388,7 +443,13 @@ final class MedicalSecretaryController extends Controller
         }
         $links = FhirPatientLink::query()->with('decidedBy')->where('player_id', $player->id)->orderBy('role')->orderByDesc('decided_at')->get();
 
+        $consents = app(PlayerConsents::class);
+
         return view('secretary.identity', ['player' => $player, 'configured' => $identity->configured(), 'candidates' => $candidates,
+            'consentAllowed' => $consents->allowsExternalSharing($player), 'policy' => $consents->currentPolicy($player),
+            'consentHistory' => PlayerConsent::query()->with(['policy', 'signatureRequest'])->where('player_id', $player->id)->latest()->limit(10)->get(),
+            'signatureProviders' => collect(app(\App\Services\Documents\DocumentSignatureService::class)->allStatuses())->where('status', 'ready')->values(),
+            'relationships' => PlayerConsents::RELATIONSHIPS,
             'error' => $error, 'fitLink' => $links->firstWhere('role', 'fit'), 'externalLinks' => $links->where('role', 'external')->values(),
             'back' => $request->query('back')]);
     }

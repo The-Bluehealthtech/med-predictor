@@ -64,7 +64,7 @@ class PassportsController extends Controller
         $sharing = app(IpsDocumentSharing::class);
         $documents = null;
         $error = null;
-        if ($request->boolean('ips') && config('fhir.base_url')) {
+        if ($request->boolean('ips') && config('fhir.base_url') && app(\App\Services\Privacy\PlayerConsents::class)->allowsExternalSharing($player)) {
             try {
                 $documents = $sharing->find($player);
             } catch (FhirException $e) {
@@ -72,7 +72,9 @@ class PassportsController extends Controller
             }
         }
 
-        return ['blockers' => $sharing->blockers($attestation), 'configured' => (bool) config('fhir.base_url'), 'documents' => $documents, 'error' => $error,
+        $allowed = app(\App\Services\Privacy\PlayerConsents::class)->allowsExternalSharing($player);
+
+        return ['blockers' => $sharing->blockers($attestation, $player), 'consent' => $allowed, 'configured' => (bool) config('fhir.base_url'), 'documents' => $documents, 'error' => $error,
             'published' => FhirDocument::query()->with('publishedBy')->where(['player_id' => $player->id, 'kind' => 'ips'])->latest('published_at')->limit(10)->get()];
     }
 
@@ -84,7 +86,7 @@ class PassportsController extends Controller
         $summary = $this->medical->build($model, $purpose, $request->user()->name);
         $attestation = $this->attestations->status($model, $summary);
         $back = route('passports.medical.show', ['player' => $model->id, 'purpose' => $purpose]);
-        if ($blockers = $sharing->blockers($attestation)) {
+        if ($blockers = $sharing->blockers($attestation, $model)) {
             return redirect($back)->withErrors(['ips' => implode(' ', $blockers)], 'ips');
         }
         try {

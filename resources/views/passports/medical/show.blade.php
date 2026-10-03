@@ -93,12 +93,14 @@
         <div>
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <h3 class="text-sm font-semibold text-gray-800">IPS disponibles sur le serveur</h3>
-                @if($ipsSharing['configured'])
+                @if($ipsSharing['configured'] && $ipsSharing['consent'])
                     <a href="{{ route('passports.medical.show', ['player' => $summary['patient']['id'], 'purpose' => $summary['document']['purpose'], 'ips' => 1]) }}#h-ips-sharing" class="text-sm font-semibold text-blue-600">Rechercher</a>
                 @endif
             </div>
             @if(!$ipsSharing['configured'])
                 <p class="text-sm text-gray-500 mt-1">Serveur FHIR de FIT non installé (prévu avant la mise en production).</p>
+            @elseif(!$ipsSharing['consent'])
+                <p class="text-sm text-amber-800 mt-1">Consultation impossible sans consentement actif du joueur au partage hors du club (IHE PCF).</p>
             @elseif($ipsSharing['error'])
                 <p class="text-sm text-red-700 mt-1">{{ $ipsSharing['error'] }}</p>
             @elseif($ipsSharing['documents'] === null)

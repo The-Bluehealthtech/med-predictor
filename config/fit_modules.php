@@ -285,6 +285,17 @@ return [
             'audience' => 'federation',
         ],
         [
+            'name' => 'Politique de confidentialité',
+            'description' => 'Côté fédération : texte versionné présenté au joueur lorsqu’il consent au partage de ses données de santé hors du club (IHE PCF)',
+            'icon' => 'shield',
+            'route' => 'privacy-policies.index',
+            'status' => 'active',
+            'color' => 'gray',
+            'group' => 'licences',
+            'category' => 'administration',
+            'audience' => 'federation',
+        ],
+        [
             'name' => 'Transferts',
             'description' => 'Gestion des transferts de joueurs',
             'icon' => 'transfer',

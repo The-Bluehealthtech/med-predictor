@@ -37,6 +37,7 @@ final class ReportIntegration
 
     public function integrate(Player $player, string $reportId, User $doctor): Document
     {
+        app(\App\Services\Privacy\PlayerConsents::class)->assertExternalSharing($player);
         abort_if(in_array($reportId, $this->integrated($player), true), 409, 'Ce compte rendu est déjà intégré au dossier.');
         $report = $this->client->read('DiagnosticReport', $reportId);
         $subject = Str::after((string) ($report['subject']['reference'] ?? ''), 'Patient/');

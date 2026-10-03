@@ -27,6 +27,7 @@ use Tests\TestCase;
 class FhirOrdersTest extends TestCase
 {
     use DatabaseTransactions;
+    use \Tests\Concerns\GrantsSharingConsent;
 
     private const BASE = 'http://fit-fhir.test/fhir';
 
@@ -64,6 +65,7 @@ class FhirOrdersTest extends TestCase
         $appointment = Appointment::create(['athlete_id' => $athleteId, 'created_by' => $this->secretary->id, 'doctor_id' => $this->doctor->id, 'appointment_date' => now(), 'appointment_type' => 'consultation', 'status' => 'Terminé']);
         $this->visit = Visit::create(['athlete_id' => $athleteId, 'appointment_id' => $appointment->id, 'doctor_id' => $this->doctor->id, 'visit_date' => now(), 'visit_type' => 'consultation', 'status' => 'Terminé']);
         FhirPatientLink::query()->create(['player_id' => $id, 'role' => 'fit', 'patient_id' => 'fit-1', 'status' => 'linked']);
+        $this->grantSharingConsent($this->player); // partage hors du club consenti (IHE PCF)
     }
 
     private function sentOrder(string $module = 'laboratory', string $request = 'sr-1'): FhirOrder

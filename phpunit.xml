@@ -41,5 +41,7 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <!-- AuditEvent FHIR (BALP) : testé explicitement, désactivé ailleurs pour éviter des requêtes non simulées. -->
+        <env name="FIT_FHIR_AUDIT" value="false"/>
     </php>
 </phpunit>

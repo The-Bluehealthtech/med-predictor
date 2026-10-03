@@ -34,9 +34,12 @@ final class IpsDocumentSharing
     }
 
     /** Conditions de publication non remplies (vide = publication possible). */
-    public function blockers(array $attestation): array
+    public function blockers(array $attestation, ?Player $player = null): array
     {
         $blockers = [];
+        if ($player && !app(\App\Services\Privacy\PlayerConsents::class)->allowsExternalSharing($player)) {
+            $blockers[] = 'Aucun consentement actif du joueur au partage hors du club (IHE PCF) : à recueillir sur sa fiche « Identité clinique ».';
+        }
         if (!$this->client->configured()) {
             $blockers[] = 'Serveur FHIR de FIT non installé.';
         }
@@ -57,7 +60,7 @@ final class IpsDocumentSharing
      */
     public function publish(Player $player, array $ips, array $attestation, string $purpose, User $user): FhirDocument
     {
-        abort_unless($this->blockers($attestation) === [], 422, implode(' ', $this->blockers($attestation)));
+        abort_unless($this->blockers($attestation, $player) === [], 422, implode(' ', $this->blockers($attestation, $player)));
 
         $outcome = $this->client->validate($ips, self::IPS_BUNDLE);
         $errors = collect($outcome['issue'] ?? [])->whereIn('severity', ['error', 'fatal']);
@@ -170,6 +173,7 @@ final class IpsDocumentSharing
      */
     public function find(Player $player): array
     {
+        app(\App\Services\Privacy\PlayerConsents::class)->assertExternalSharing($player);
         $patients = $this->patientIds($player);
         if ($patients === []) {
             return [];
@@ -198,6 +202,7 @@ final class IpsDocumentSharing
     /** ITI-68 : IPS d'une DocumentReference du joueur, résumé pour affichage (option View). */
     public function retrieve(Player $player, string $documentReferenceId): array
     {
+        app(\App\Services\Privacy\PlayerConsents::class)->assertExternalSharing($player);
         $reference = $this->client->read('DocumentReference', $documentReferenceId);
         $subject = Str::after((string) ($reference['subject']['reference'] ?? ''), 'Patient/');
         abort_unless(in_array($subject, $this->patientIds($player), true), 403, 'Ce document ne concerne pas ce joueur.');

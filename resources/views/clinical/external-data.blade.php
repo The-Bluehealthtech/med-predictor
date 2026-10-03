@@ -12,6 +12,8 @@
 
     @if(!$configured)
         <p class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">Serveur FHIR de FIT non installé (prévu avant la mise en production).</p>
+    @elseif(!$consent)
+        <p class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">La consultation des dossiers des établissements exige le consentement du joueur au partage hors du club (IHE PCF). Le secrétariat médical le recueille sur la fiche « Identité clinique » du joueur.</p>
     @elseif($linked === [])
         <p class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">L’identité clinique du joueur n’est pas encore transmise au serveur : elle l’est au pré-accueil du secrétariat médical, qui rattache aussi les dossiers des établissements.</p>
     @else

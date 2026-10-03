@@ -9,6 +9,21 @@ return [
 
     'fhir_version' => '4.0.1',
 
+    // Autorisation IHE IUA (ITI-71, OAuth 2.0 client credentials) : FIT obtient un jeton auprès du
+    // serveur d'autorisation et le présente au serveur FHIR. Désactivé tant que token_url est vide.
+    'auth' => [
+        'token_url' => env('FIT_FHIR_TOKEN_URL'),
+        'client_id' => env('FIT_FHIR_CLIENT_ID'),
+        'client_secret' => env('FIT_FHIR_CLIENT_SECRET'),
+        'scope' => env('FIT_FHIR_SCOPE'),
+        'resource' => env('FIT_FHIR_RESOURCE'),
+    ],
+
+    // Traçabilité IHE BALP : AuditEvent déposé sur le serveur pour chaque échange de données de patient.
+    'audit' => [
+        'enabled' => (bool) env('FIT_FHIR_AUDIT', true),
+    ],
+
     // Systèmes d'identifiants des Patients alimentés par FIT (domaine de FIT ; FIFA ne
     // publie pas de système FHIR pour le FIFA ID). Les sources gardent leurs propres systèmes.
     'identifier_systems' => [

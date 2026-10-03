@@ -23,6 +23,7 @@ use Tests\TestCase;
 class FhirPatientIdentityTest extends TestCase
 {
     use DatabaseTransactions;
+    use \Tests\Concerns\GrantsSharingConsent;
 
     private const BASE = 'http://fit-fhir.test/fhir';
 
@@ -40,6 +41,12 @@ class FhirPatientIdentityTest extends TestCase
         Route::get('/_t/identity/{player}', fn () => 'ok')->name('secretary.identity');
         Route::post('/_t/identity/{player}/feed', fn () => 'ok')->name('secretary.identity.feed');
         Route::post('/_t/identity/{player}/decision', fn () => 'ok')->name('secretary.identity.decision');
+        Route::post('/_t/consents/{player}', fn () => 'ok')->name('privacy.consents.store');
+        foreach (['refresh', 'revoke'] as $action) {
+            Route::post("/_t/consent/{consent}/{$action}", fn () => 'ok')->name("privacy.consents.{$action}");
+        }
+        Route::get('/_t/consent/{consent}/document', fn () => 'ok')->name('privacy.consents.document');
+        Route::get('/_t/policy/{policy}', fn () => 'ok')->name('privacy-policies.show');
         app('router')->getRoutes()->refreshNameLookups();
 
         $associationId = (int) DB::table('associations')->insertGetId(['name' => 'Fédération FHIR', 'country' => 'Tunisie', 'created_at' => now(), 'updated_at' => now()]);
@@ -49,6 +56,7 @@ class FhirPatientIdentityTest extends TestCase
         $this->player = Player::query()->findOrFail($id);
         $this->secretary = User::factory()->create(['role' => 'secretary', 'club_id' => $clubId, 'status' => 'active']);
         $this->actingAs($this->secretary);
+        $this->grantSharingConsent($this->player); // partage hors du club consenti (IHE PCF)
     }
 
     private function patient(string $id, string $family, string $birthDate, array $identifiers = []): array

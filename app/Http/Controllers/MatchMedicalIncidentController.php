@@ -76,6 +76,7 @@ final class MatchMedicalIncidentController extends Controller
     {
         $user = $request->user();
         if (!$user) return false;
+        if ($user->isSystemAdmin() || $user->role === 'admin') return true;
 
         if ($user->role === 'association_medical') {
             return $user->association_id

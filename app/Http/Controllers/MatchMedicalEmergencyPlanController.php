@@ -97,7 +97,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
     {
         $user=$request->user();
         if (!$user) return false;
-        if ($user->isSystemAdmin()) return true;
+        if ($user->isSystemAdmin() || $user->role === 'admin') return true;
 
         $associationId=$match->competition?->association_id;
         if (in_array($user->role,self::ASSOCIATION_VIEW_ROLES,true)) {
@@ -114,8 +114,10 @@ final class MatchMedicalEmergencyPlanController extends Controller
     private function canEdit(Request $request, MatchModel $match): bool
     {
         $user=$request->user();
-        return $user
-            && in_array($user->role,self::ASSOCIATION_EDIT_ROLES,true)
+        if (!$user) return false;
+        if ($user->isSystemAdmin() || $user->role === 'admin') return true;
+
+        return in_array($user->role,self::ASSOCIATION_EDIT_ROLES,true)
             && $user->association_id
             && (int)$user->association_id === (int)$match->competition?->association_id;
     }
@@ -133,6 +135,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
     {
         $user=$request->user();
         if (!$user) return false;
+        if ($user->isSystemAdmin() || $user->role === 'admin') return true;
         if ($user->role === 'association_medical') {
             return $user->association_id
                 && (int)$user->association_id === (int)$match->competition?->association_id;

@@ -112,7 +112,7 @@ final class MatchdayPreparationController extends Controller
     {
         $user = $request->user();
         if (!$user) return false;
-        if ($user->isSystemAdmin()) return true;
+        if ($user->isSystemAdmin() || $user->role === 'admin') return true;
 
         if (in_array($user->role, ['association_admin','association_medical'], true)) {
             return $user->association_id

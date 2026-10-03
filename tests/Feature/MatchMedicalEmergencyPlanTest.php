@@ -246,4 +246,45 @@ class MatchMedicalEmergencyPlanTest extends TestCase
             ->assertSee('Ouvrir le cockpit Match Day');
     }
 
+    public function test_admin_can_collect_and_persist_matchday_medical_data(): void
+    {
+        $admin = User::factory()->create([
+            'role'=>'admin','status'=>'active','tenant_id'=>1,
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/_t/matches/'.$this->match->id.'/medical-emergency-plan')
+            ->assertOk()
+            ->assertSee('Enregistrer le plan')
+            ->assertSee('Enregistrer l’incident');
+
+        $this->actingAs($admin)
+            ->put('/_t/matches/'.$this->match->id.'/medical-emergency-plan',$this->completePayload())
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $plan = MatchMedicalEmergencyPlan::query()->where('match_id',$this->match->id)->firstOrFail();
+        $this->assertSame('Hôpital Central',$plan->nearest_hospital);
+        $this->assertSame('ready',$plan->status);
+        $this->assertSame($admin->id,$plan->prepared_by);
+
+        $this->actingAs($admin)
+            ->post('/_t/matches/'.$this->match->id.'/medical-incidents',[
+                'incident_type'=>'cardiac_arrest',
+                'doctor_name'=>'Dr Admin Test',
+                'match_minute'=>12,
+                'protocol_actions'=>['sca_cpr'=>1,'sca_aed'=>1],
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $incident=\App\Models\MatchMedicalIncident::query()->where('match_id',$this->match->id)->latest('id')->firstOrFail();
+        $this->assertSame('FIFA_SCA',$incident->protocol_code);
+        $this->assertSame(12,$incident->match_minute);
+
+        $this->actingAs($admin)
+            ->post('/_t/matches/'.$this->match->id.'/medical-emergency-plan/validate')
+            ->assertForbidden();
+    }
+
 }

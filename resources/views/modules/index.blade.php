@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ['label' => 'Demander une licence', 'todo' => 'licences_info_requested', 'role' => 'Club', 'output' => 'Demande envoyée à la fédération', 'routes' => ['modules.licenses.index']],
                     ['label' => 'Approuver', 'todo' => 'licences_pending', 'role' => 'Fédération · identité FIFA ID facultative', 'output' => 'Licence active, complément demandé ou refus motivé', 'routes' => ['licenses.validation']],
                     ['label' => 'Transférer', 'todo' => 'transfers_pending', 'role' => 'Club et fédération', 'output' => 'Mutations enregistrées', 'routes' => ['admin.transfer-management.index', 'passports.transfer.index', 'fifa.dashboard']],
-                    ['label' => 'Organiser', 'role' => 'Ligue ou fédération', 'output' => 'Compétitions et arbitres désignés', 'routes' => ['modules.competitions.index', 'referee-portal.index']],
+                    ['label' => 'Organiser', 'role' => 'Ligue ou fédération', 'output' => 'Compétitions, Match Day et arbitres organisés', 'routes' => ['modules.competitions.index', 'competition-management.matches.index', 'referee-portal.index']],
                 ], 'tools' => ['modules.finance.dashboard', 'modules.api-connectors.index', 'modules.administration.index', 'admin.content-management.index', 'gemini.index'], 'tools_label' => 'Outils transverses'],
             ];
             // Teinte des pastilles d'icône, par couleur de carte (classes écrites en entier pour Tailwind).

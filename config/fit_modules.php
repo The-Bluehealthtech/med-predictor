@@ -242,6 +242,16 @@ return [
             'category' => 'administration'
         ],
         [
+            'name' => 'Préparation Match Day',
+            'description' => 'Cockpit de préparation du match : feuille de match, officiels, stade, Medical Matchday, contrôles pré-match et clôture documentaire',
+            'icon' => 'clipboard-list',
+            'route' => 'competition-management.matches.index',
+            'status' => 'active',
+            'color' => 'gray',
+            'group' => 'sport',
+            'category' => 'administration'
+        ],
+        [
             'name' => 'Arbitres',
             'description' => 'Gestion des arbitres et officiels',
             'icon' => 'whistle',

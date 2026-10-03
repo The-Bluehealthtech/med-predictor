@@ -1668,6 +1668,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/passports/transfer', [\App\Http\Controllers\Passports\PassportsController::class, 'transferIndex'])->name('passports.transfer.index');
     Route::get('/passports/transfer/{player}', [\App\Http\Controllers\Passports\PassportsController::class, 'transferShow'])->whereNumber('player')->name('passports.transfer.show');
     Route::get('/passports/transfer/{player}/pdf', [\App\Http\Controllers\Passports\PassportsController::class, 'transferPdf'])->whereNumber('player')->name('passports.transfer.pdf');
+    Route::post('/passports/medical/{player}/digital-signature', [\App\Http\Controllers\Passports\PassportDocumentSignatureController::class, 'medical'])->whereNumber('player')->name('passports.medical.digital-signature');
+    Route::post('/passports/transfer/{player}/digital-signature', [\App\Http\Controllers\Passports\PassportDocumentSignatureController::class, 'transfer'])->whereNumber('player')->name('passports.transfer.digital-signature');
+    Route::post('/passports/{player}/digital-signature/{signature}/sync', [\App\Http\Controllers\Passports\PassportDocumentSignatureController::class, 'sync'])->whereNumber('player')->whereNumber('signature')->name('passports.digital-signature.sync');
+    Route::get('/passports/{player}/digital-signature/{signature}/download', [\App\Http\Controllers\Passports\PassportDocumentSignatureController::class, 'download'])->whereNumber('player')->whereNumber('signature')->name('passports.digital-signature.download');
 
     // Dirigeants et staff des clubs (fiches au format FIFA Connect).
     Route::get('/club-officials', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'index'])->name('club-officials.index');

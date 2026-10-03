@@ -36,6 +36,14 @@
     </div>
     @if(session('status'))<div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('status') }}</div>@endif
     <div class="ips-doc">@include('passports.medical._document')</div>
+    @include('passports._digital-signature', [
+        'passportPlayerId' => $summary['patient']['id'],
+        'canRequestDigitalSignature' => $canAttest && ($attestation['state'] ?? 'none') === 'valid',
+        'canManageDigitalSignature' => $canAttest,
+        'digitalSignatureAction' => route('passports.medical.digital-signature', $summary['patient']['id']),
+        'digitalSignaturePurpose' => $summary['document']['purpose'],
+        'digitalSignatureBlockedMessage' => $canAttest ? 'Attestez d’abord la version médicale courante avant sa signature numérique.' : 'La signature numérique du passeport médical est réservée au médecin autorisé.',
+    ])
     @if($canAttest)
         <form method="POST" action="{{ route('passports.medical.attest', ['player' => $summary['patient']['id'], 'purpose' => $summary['document']['purpose']]) }}" class="bg-white rounded-lg shadow p-5 space-y-3">
             @csrf

@@ -20,5 +20,12 @@
         @unless(auth()->user()->isPlayer())<a href="{{ route('passports.transfer.index') }}" class="text-blue-600 hover:text-blue-800">← Passeports de transfert</a>@endunless
     </div>
     <div class="tp-doc">@include('passports.transfer._document')</div>
+    @include('passports._digital-signature', [
+        'passportPlayerId' => $passport['player']['id'],
+        'canRequestDigitalSignature' => auth()->user()->isClubUser() || auth()->user()->isAssociationUser(),
+        'canManageDigitalSignature' => auth()->user()->isClubUser() || auth()->user()->isAssociationUser(),
+        'digitalSignatureAction' => route('passports.transfer.digital-signature', $passport['player']['id']),
+        'digitalSignatureBlockedMessage' => 'La signature numérique du passeport de transfert est réservée aux acteurs club ou fédération autorisés.',
+    ])
 </div>
 @endsection

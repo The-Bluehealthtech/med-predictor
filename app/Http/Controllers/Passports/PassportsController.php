@@ -47,8 +47,11 @@ class PassportsController extends Controller
         $summary = $this->medical->build($model, $purpose, $request->user()->name);
         $this->audit($request, $model, $purpose, 'view');
 
+        $attestation = $this->attestations->status($model, $summary);
+
         return view('passports.medical.show', ['summary' => $summary, 'purposes' => MedicalSummary::PURPOSES, 'sections' => MedicalSummary::SECTIONS,
-            'attestation' => $this->attestations->status($model, $summary), 'canAttest' => $this->attestations->canAttest($request->user(), $model)]);
+            'attestation' => $attestation, 'canAttest' => $this->attestations->canAttest($request->user(), $model)] +
+            $this->signatureContext($model, 'medical_passport.final_document'));
     }
 
     /** Signature électronique simple : le médecin confirme par son mot de passe ; l'empreinte du contenu est conservée. */
@@ -111,7 +114,8 @@ class PassportsController extends Controller
         $model = $this->player($player);
         abort_unless($this->access->canViewTransfer($request->user(), $model), 403);
 
-        return view('passports.transfer.show', ['passport' => $this->transfer->build($model)]);
+        return view('passports.transfer.show', ['passport' => $this->transfer->build($model)] +
+            $this->signatureContext($model, 'transfer_passport.final_document'));
     }
 
     public function transferPdf(Request $request, int $player)
@@ -154,6 +158,24 @@ class PassportsController extends Controller
         $response->headers->set('X-Content-Type-Options', 'nosniff');
 
         return $response;
+    }
+
+    private function signatureContext(Player $player, string $workflow): array
+    {
+        $providers = collect(app(\App\Services\Documents\DocumentSignatureService::class)->allStatuses());
+        $requests = \Illuminate\Support\Facades\Schema::hasTable('document_signature_requests')
+            ? \App\Models\DocumentSignatureRequest::query()
+                ->where('workflow', $workflow)
+                ->latest('id')
+                ->get()
+                ->filter(fn ($item) => (int) data_get($item->metadata, 'document.player_id') === (int) $player->id)
+                ->values()
+            : collect();
+
+        return [
+            'documentSignatureProviders' => $providers,
+            'documentSignatureRequests' => $requests,
+        ];
     }
 
     private function audit(Request $request, Player $player, string $purpose, string $action): void

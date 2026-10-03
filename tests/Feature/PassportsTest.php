@@ -176,6 +176,40 @@ class PassportsTest extends TestCase
         $this->getJson("/api/v1/passports/medical/{$this->playerId}")->assertForbidden();
     }
 
+    public function test_medical_passport_digital_signature_requires_current_attestation(): void
+    {
+        $doctor = $this->user('club_medical', ['club_id' => $this->clubId]);
+        $url = route('passports.medical.digital-signature', $this->playerId);
+
+        $this->actingAs($doctor)->post($url, [
+            'purpose' => 'transfer',
+            'provider' => 'adobe_sign',
+        ])->assertStatus(409);
+
+        $this->actingAs($this->user('club_admin', ['club_id' => $this->clubId]))->post($url, [
+            'purpose' => 'transfer',
+            'provider' => 'adobe_sign',
+        ])->assertForbidden();
+
+        $page = $this->actingAs($doctor)->get(route('passports.medical.show', ['player' => $this->playerId, 'purpose' => 'transfer']))->assertOk();
+        $page->assertSee('Signature numérique du passeport')->assertSee('Attestez d’abord la version médicale courante');
+    }
+
+    public function test_transfer_passport_signature_is_reserved_to_club_or_association(): void
+    {
+        $url = route('passports.transfer.digital-signature', $this->playerId);
+        $player = $this->user('player', ['player_id' => $this->playerId]);
+        $admin = $this->user('system_admin', ['tenant_id' => null]);
+
+        $this->actingAs($player)->post($url, ['provider' => 'adobe_sign'])->assertForbidden();
+        $this->actingAs($admin)->post($url, ['provider' => 'adobe_sign'])->assertForbidden();
+        $this->actingAs($this->user('club_admin', ['club_id' => $this->otherClubId]))->post($url, ['provider' => 'adobe_sign'])->assertForbidden();
+
+        $club = $this->user('club_admin', ['club_id' => $this->clubId]);
+        $page = $this->actingAs($club)->get(route('passports.transfer.show', $this->playerId))->assertOk();
+        $page->assertSee('Signature numérique du passeport')->assertSee('Go Live');
+    }
+
     public function test_player_portal_shows_passport_links_by_right(): void
     {
         $player = \App\Models\Player::withoutGlobalScopes()->with('club')->findOrFail($this->playerId);

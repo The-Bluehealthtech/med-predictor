@@ -45,6 +45,9 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         if (!Schema::hasColumn('match_medical_emergency_plans', 'team_leader_person_fifa_id')) {
             (require base_path('database/migrations/2026_10_04_090000_add_team_leader_connect_id_to_match_medical_emergency_plans.php'))->up();
         }
+        if (!Schema::hasColumn('clubs', 'matchday_hospital_name') || !Schema::hasColumn('competitions', 'matchday_hospital_name')) {
+            (require base_path('database/migrations/2026_10_04_093000_add_matchday_medical_config_to_competitions_and_clubs.php'))->up();
+        }
 
         Route::middleware(['web'])->group(function () {
             Route::get('/_t/competition-management/matches', [\App\Http\Controllers\MatchdayPreparationController::class,'index'])->name('competition-management.matches.index');
@@ -316,6 +319,50 @@ class MatchMedicalEmergencyPlanTest extends TestCase
     }
 
 
+
+    public function test_contacts_are_prefilled_from_fdm_home_club_then_competition(): void
+    {
+        $this->homeClub->update([
+            'stadium_name'=>'Stade Club Recevant',
+            'matchday_medical_contact_name'=>'Dr Club Recevant',
+            'matchday_medical_contact_phone'=>'111-CLUB',
+            'matchday_hospital_name'=>'Hôpital Club',
+            'matchday_hospital_phone'=>'222-CLUB',
+            'matchday_ambulance_contact'=>'Ambulance Club 333',
+        ]);
+        $this->match->competition->update([
+            'matchday_medical_contact_name'=>'Dr Compétition',
+            'matchday_medical_contact_phone'=>'111-COMP',
+            'matchday_hospital_name'=>'Hôpital Compétition',
+            'matchday_hospital_phone'=>'222-COMP',
+            'matchday_ambulance_contact'=>'Ambulance Compétition 333',
+        ]);
+        \App\Models\MatchSheet::query()->updateOrCreate(
+            ['match_id'=>$this->match->id],
+            ['stadium_venue'=>'Stade FDM']
+        );
+        $admin=User::factory()->create(['role'=>'admin','status'=>'active','tenant_id'=>1]);
+
+        $this->actingAs($admin)
+            ->get('/_t/matches/'.$this->match->id.'/medical-emergency-plan')
+            ->assertOk()
+            ->assertSee('Stade FDM')
+            ->assertSee('Hôpital Club')
+            ->assertSee('222-CLUB')
+            ->assertSee('Ambulance Club 333')
+            ->assertSee('Dr Club Recevant')
+            ->assertSee('111-CLUB')
+            ->assertSee('Source : FDM')
+            ->assertSee('Source : Club recevant');
+
+        $plan=MatchMedicalEmergencyPlan::query()->where('match_id',$this->match->id)->firstOrFail();
+        $this->assertSame('Stade FDM',$plan->stadium);
+        $this->assertSame('Hôpital Club',$plan->nearest_hospital);
+        $this->assertSame('222-CLUB',$plan->nearest_hospital_phone);
+        $this->assertSame('Ambulance Club 333',$plan->ambulance_contact);
+        $this->assertSame('Dr Club Recevant',$plan->team_leader_name);
+        $this->assertSame('111-CLUB',$plan->team_leader_phone);
+    }
 
     public function test_contacts_and_evacuation_use_identified_club_responsible(): void
     {

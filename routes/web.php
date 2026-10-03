@@ -222,6 +222,14 @@ Route::middleware(['auth'])->group(function () {
                 'founded_year' => 'nullable|integer|min:1800|max:2030',
                 'status' => 'required|in:active,inactive,pending',
                 'country_code' => ['nullable', 'string', 'size:2', \Illuminate\Validation\Rule::in(array_keys(config('iso_countries', [])))],
+                'stadium' => 'nullable|string|max:255',
+                'stadium_name' => 'nullable|string|max:255',
+                'stadium_capacity' => 'nullable|integer|min:0',
+                'matchday_medical_contact_name' => 'nullable|string|max:255',
+                'matchday_medical_contact_phone' => 'nullable|string|max:64',
+                'matchday_hospital_name' => 'nullable|string|max:255',
+                'matchday_hospital_phone' => 'nullable|string|max:64',
+                'matchday_ambulance_contact' => 'nullable|string|max:128',
             ]);
         
             $club->update($validatedData);

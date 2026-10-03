@@ -133,6 +133,21 @@
                         </div>
                     </div>
                     
+                    <!-- Configuration Medical Match Day -->
+                    <div class="mb-8 rounded-xl border border-rose-200 bg-rose-50 p-5">
+                        <h2 class="text-lg font-semibold text-rose-900 mb-1">Medical Match Day · Club recevant</h2>
+                        <p class="text-sm text-rose-700 mb-4">Ces informations alimentent automatiquement le plan d’urgence des matches reçus par le club.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Stade principal</label><input type="text" name="stadium_name" value="{{ old('stadium_name',$club->stadium_name ?: $club->stadium) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Capacité</label><input type="number" name="stadium_capacity" value="{{ old('stadium_capacity',$club->stadium_capacity) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Responsable médical Match Day</label><input type="text" name="matchday_medical_contact_name" value="{{ old('matchday_medical_contact_name',$club->matchday_medical_contact_name) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Téléphone responsable médical</label><input type="text" name="matchday_medical_contact_phone" value="{{ old('matchday_medical_contact_phone',$club->matchday_medical_contact_phone) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Hôpital / structure de référence</label><input type="text" name="matchday_hospital_name" value="{{ old('matchday_hospital_name',$club->matchday_hospital_name) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-2">Téléphone hôpital</label><input type="text" name="matchday_hospital_phone" value="{{ old('matchday_hospital_phone',$club->matchday_hospital_phone) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
+                            <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-2">Ambulance / régulation</label><input type="text" name="matchday_ambulance_contact" value="{{ old('matchday_ambulance_contact',$club->matchday_ambulance_contact) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Nom / numéro / consigne opérationnelle"></div>
+                        </div>
+                    </div>
+
                     <!-- Statut -->
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('clinical.table_status') }}</label>

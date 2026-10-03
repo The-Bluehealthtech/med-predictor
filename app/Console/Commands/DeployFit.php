@@ -59,6 +59,7 @@ class DeployFit extends Command
         'database/migrations/2026_10_03_229000_add_emergency_protocol_to_match_medical_incidents.php',
         'database/migrations/2026_10_03_229100_add_connect_context_to_match_medical_emergency_plans.php',
         'database/migrations/2026_10_04_090000_add_team_leader_connect_id_to_match_medical_emergency_plans.php',
+        'database/migrations/2026_10_04_093000_add_matchday_medical_config_to_competitions_and_clubs.php',
     ];
 
     protected $signature = 'fit:deploy

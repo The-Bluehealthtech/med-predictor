@@ -26,6 +26,9 @@ class Club extends Model
         'website',
         'founded_year',
         'status',
+        'stadium','stadium_name','stadium_capacity',
+        'matchday_medical_contact_name','matchday_medical_contact_phone',
+        'matchday_hospital_name','matchday_hospital_phone','matchday_ambulance_contact',
         'created_at',
         'updated_at',
     ];

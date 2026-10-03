@@ -22,11 +22,13 @@ final class MatchMedicalEmergencyPlanController extends Controller
     public function show(Request $request, MatchModel $match)
     {
         $this->authorizeView($request, $match);
-        $match->loadMissing(['competition','homeTeam.club','awayTeam.club']);
+        $match->loadMissing(['competition','homeTeam.club','awayTeam.club','matchSheet']);
         $plan = MatchMedicalEmergencyPlan::query()->firstOrCreate(
             ['match_id'=>$match->id],
             $this->defaults($match)
         );
+        $contactContext = $this->contactContext($match);
+        $this->hydratePlanContacts($plan, $contactContext);
 
         $match->loadMissing(['rosters.team.club','rosters.players.player','medicalIncidents.player','medicalIncidents.doctor']);
         $connectMatch = $this->connectMatch($match);
@@ -47,7 +49,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
             'canValidate'=>$this->canValidate($request, $match),
             'canDocumentIncident'=>$this->canDocumentIncident($request, $match),
             'eligibleLeaders'=>$this->eligibleLeaders($match),
-            'evacuationReferences'=>$this->evacuationReferences($match),
+            'contactContext'=>$contactContext,
             'matchPlayers'=>$this->matchSheetPlayers($match),
             'incidents'=>$match->medicalIncidents->sortByDesc('created_at'),
             'roleDefinitions'=>$this->roleDefinitions(),
@@ -91,10 +93,11 @@ final class MatchMedicalEmergencyPlanController extends Controller
         $connectMatch = $this->connectMatch($match);
         $identifiedPeople = $this->connectPeople($match);
         $validConnectIds = $identifiedPeople->pluck('person_fifa_id');
+        $homeLeaders = $this->eligibleLeaders($match);
         if (filled($data['team_leader_person_fifa_id'] ?? null)) {
-            $leader = $identifiedPeople->firstWhere('person_fifa_id', $data['team_leader_person_fifa_id']);
+            $leader = $homeLeaders->firstWhere('person_fifa_id', $data['team_leader_person_fifa_id']);
             if (!$leader) {
-                throw ValidationException::withMessages(['team_leader_person_fifa_id'=>'Ce responsable n’est pas déclaré dans les staffs actifs des clubs du match.']);
+                throw ValidationException::withMessages(['team_leader_person_fifa_id'=>'Ce responsable n’est pas déclaré dans le staff actif du club recevant.']);
             }
             $data['team_leader_name'] = $leader['name'];
             if (filled($leader['phone'] ?? null)) $data['team_leader_phone'] = $leader['phone'];
@@ -210,10 +213,18 @@ final class MatchMedicalEmergencyPlanController extends Controller
 
     private function defaults(MatchModel $match): array
     {
+        $match->loadMissing(['competition','homeTeam.club','matchSheet']);
+        $context = $this->contactContext($match);
+
         return [
             'protocol_name'=>'FIFA Emergency Care Protocols',
             'protocol_version'=>'v3 - March 2025',
-            'stadium'=>$match->stadium ?: $match->venue,
+            'stadium'=>$context['stadium'],
+            'nearest_hospital'=>$context['hospital'],
+            'nearest_hospital_phone'=>$context['hospital_phone'],
+            'ambulance_contact'=>$context['ambulance'],
+            'team_leader_name'=>$context['leader_name'],
+            'team_leader_phone'=>$context['leader_phone'],
             'role_assignments'=>array_fill_keys(['black','red','orange','blue','green','white'],null),
             'connect_role_assignments'=>array_fill_keys(['black','red','orange','blue','green','white'],null),
             'equipment_checklist'=>array_fill_keys($this->equipmentKeys(),false),
@@ -233,21 +244,56 @@ final class MatchMedicalEmergencyPlanController extends Controller
 
     private function eligibleLeaders(MatchModel $match)
     {
-        return $this->connectPeople($match);
+        if (!Schema::hasTable('club_officials')) return collect();
+
+        return ClubOfficial::query()
+            ->with('club:id,name')
+            ->where('club_id', $match->home_club_id)
+            ->where('status', 'active')
+            ->whereNotNull('person_fifa_id')
+            ->where('person_fifa_id', '!=', '')
+            ->orderBy('international_last_name')
+            ->orderBy('international_first_name')
+            ->get()
+            ->map(fn (ClubOfficial $official) => [
+                'person_fifa_id' => $official->person_fifa_id,
+                'name' => $official->fullName(),
+                'role' => $official->roleLabel(),
+                'team' => $official->club?->name,
+                'phone' => $official->phone,
+            ])->values();
     }
 
-    private function evacuationReferences(MatchModel $match): array
+    private function contactContext(MatchModel $match): array
     {
-        $query = MatchMedicalEmergencyPlan::query()->where('match_id','!=',$match->id);
-        if ($match->competition?->association_id && Schema::hasTable('competitions')) {
-            $query->whereHas('match.competition', fn ($q) => $q->where('association_id',$match->competition->association_id));
-        }
-        $plans = $query->latest('updated_at')->limit(100)->get(['nearest_hospital','nearest_hospital_phone','ambulance_contact']);
+        $competition = $match->competition;
+        $homeClub = $match->homeTeam?->club;
+        $fdm = $match->matchSheet;
+        $pick = fn (...$values) => collect($values)->first(fn ($value) => filled($value));
 
         return [
-            'hospitals'=>$plans->filter(fn($p)=>filled($p->nearest_hospital))->unique(fn($p)=>mb_strtolower($p->nearest_hospital.'|'.$p->nearest_hospital_phone))->values(),
-            'ambulances'=>$plans->pluck('ambulance_contact')->filter()->unique()->values(),
+            'stadium' => $pick($fdm?->stadium_venue, $match->stadium, $homeClub?->stadium_name, $homeClub?->stadium, $competition?->main_stadium, $match->venue),
+            'stadium_source' => filled($fdm?->stadium_venue) ? 'FDM' : (filled($match->stadium) ? 'Match' : (filled($homeClub?->stadium_name) || filled($homeClub?->stadium) ? 'Club recevant' : 'Compétition')),
+            'hospital' => $pick($homeClub?->matchday_hospital_name, $competition?->matchday_hospital_name),
+            'hospital_phone' => $pick($homeClub?->matchday_hospital_phone, $competition?->matchday_hospital_phone),
+            'hospital_source' => filled($homeClub?->matchday_hospital_name) ? 'Club recevant' : (filled($competition?->matchday_hospital_name) ? 'Compétition' : 'Non configuré'),
+            'ambulance' => $pick($homeClub?->matchday_ambulance_contact, $competition?->matchday_ambulance_contact),
+            'ambulance_source' => filled($homeClub?->matchday_ambulance_contact) ? 'Club recevant' : (filled($competition?->matchday_ambulance_contact) ? 'Compétition' : 'Non configuré'),
+            'leader_name' => $pick($homeClub?->matchday_medical_contact_name, $competition?->matchday_medical_contact_name, $competition?->responsible_person),
+            'leader_phone' => $pick($homeClub?->matchday_medical_contact_phone, $competition?->matchday_medical_contact_phone, $competition?->contact_phone, $homeClub?->phone),
+            'leader_source' => filled($homeClub?->matchday_medical_contact_name) ? 'Club recevant' : (filled($competition?->matchday_medical_contact_name) || filled($competition?->responsible_person) ? 'Compétition' : 'Non configuré'),
+            'home_club' => $homeClub,
+            'competition' => $competition,
         ];
+    }
+
+    private function hydratePlanContacts(MatchMedicalEmergencyPlan $plan, array $context): void
+    {
+        $changes = [];
+        foreach (['stadium'=>'stadium','nearest_hospital'=>'hospital','nearest_hospital_phone'=>'hospital_phone','ambulance_contact'=>'ambulance','team_leader_name'=>'leader_name','team_leader_phone'=>'leader_phone'] as $field=>$key) {
+            if (blank($plan->{$field}) && filled($context[$key] ?? null)) $changes[$field] = $context[$key];
+        }
+        if ($changes) $plan->forceFill($changes)->save();
     }
 
 

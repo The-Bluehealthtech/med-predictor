@@ -46,7 +46,9 @@ class Competition extends Model
         'rules',
         'min_teams',
         'max_teams',
-        'registration_deadline'
+        'registration_deadline',
+        'matchday_medical_contact_name','matchday_medical_contact_phone',
+        'matchday_hospital_name','matchday_hospital_phone','matchday_ambulance_contact'
     ];
 
     protected $casts = [

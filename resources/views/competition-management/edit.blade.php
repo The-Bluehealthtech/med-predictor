@@ -130,6 +130,22 @@
                             </div>
                         </div>
 
+                        <!-- Configuration Medical Match Day -->
+                        <div class="rounded-lg border border-rose-200 bg-rose-50 p-5 space-y-4">
+                            <div><h3 class="font-semibold text-rose-900">Medical Match Day · Configuration compétition</h3><p class="text-sm text-rose-700">Valeurs par défaut utilisées lorsque le club recevant n’a pas renseigné sa configuration locale.</p></div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><x-input-label for="main_stadium" :value="__('Stade principal / lieu de référence')" /><x-text-input id="main_stadium" name="main_stadium" class="mt-1 block w-full" :value="old('main_stadium',$competition->main_stadium)" /></div>
+                                <div><x-input-label for="responsible_person" :value="__('Responsable compétition')" /><x-text-input id="responsible_person" name="responsible_person" class="mt-1 block w-full" :value="old('responsible_person',$competition->responsible_person)" /></div>
+                                <div><x-input-label for="contact_phone" :value="__('Téléphone compétition')" /><x-text-input id="contact_phone" name="contact_phone" class="mt-1 block w-full" :value="old('contact_phone',$competition->contact_phone)" /></div>
+                                <div><x-input-label for="contact_email" :value="__('Email compétition')" /><x-text-input id="contact_email" name="contact_email" type="email" class="mt-1 block w-full" :value="old('contact_email',$competition->contact_email)" /></div>
+                                <div><x-input-label for="matchday_medical_contact_name" :value="__('Responsable médical par défaut')" /><x-text-input id="matchday_medical_contact_name" name="matchday_medical_contact_name" class="mt-1 block w-full" :value="old('matchday_medical_contact_name',$competition->matchday_medical_contact_name)" /></div>
+                                <div><x-input-label for="matchday_medical_contact_phone" :value="__('Téléphone médical par défaut')" /><x-text-input id="matchday_medical_contact_phone" name="matchday_medical_contact_phone" class="mt-1 block w-full" :value="old('matchday_medical_contact_phone',$competition->matchday_medical_contact_phone)" /></div>
+                                <div><x-input-label for="matchday_hospital_name" :value="__('Hôpital / structure de référence')" /><x-text-input id="matchday_hospital_name" name="matchday_hospital_name" class="mt-1 block w-full" :value="old('matchday_hospital_name',$competition->matchday_hospital_name)" /></div>
+                                <div><x-input-label for="matchday_hospital_phone" :value="__('Téléphone hôpital')" /><x-text-input id="matchday_hospital_phone" name="matchday_hospital_phone" class="mt-1 block w-full" :value="old('matchday_hospital_phone',$competition->matchday_hospital_phone)" /></div>
+                                <div class="md:col-span-2"><x-input-label for="matchday_ambulance_contact" :value="__('Ambulance / régulation par défaut')" /><x-text-input id="matchday_ambulance_contact" name="matchday_ambulance_contact" class="mt-1 block w-full" :value="old('matchday_ambulance_contact',$competition->matchday_ambulance_contact)" /></div>
+                            </div>
+                        </div>
+
                         <!-- Description et règles -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>

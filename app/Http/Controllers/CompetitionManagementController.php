@@ -231,6 +231,15 @@ class CompetitionManagementController extends Controller
             'fifa_sync_enabled' => 'nullable|boolean',
             'clubs' => 'nullable|array',
             'clubs.*' => 'exists:clubs,id',
+            'main_stadium' => 'nullable|string|max:255',
+            'responsible_person' => 'nullable|string|max:255',
+            'contact_email' => 'nullable|email|max:255',
+            'contact_phone' => 'nullable|string|max:64',
+            'matchday_medical_contact_name' => 'nullable|string|max:255',
+            'matchday_medical_contact_phone' => 'nullable|string|max:64',
+            'matchday_hospital_name' => 'nullable|string|max:255',
+            'matchday_hospital_phone' => 'nullable|string|max:64',
+            'matchday_ambulance_contact' => 'nullable|string|max:128',
         ]);
 
         DB::beginTransaction();
@@ -256,6 +265,15 @@ class CompetitionManagementController extends Controller
                 'prize_pool' => $validated['prize_pool'],
                 'require_federation_license' => $request->has('require_federation_license'),
                 'fifa_connect_id' => $competition->fifa_connect_id,
+                'main_stadium' => $validated['main_stadium'] ?? null,
+                'responsible_person' => $validated['responsible_person'] ?? null,
+                'contact_email' => $validated['contact_email'] ?? null,
+                'contact_phone' => $validated['contact_phone'] ?? null,
+                'matchday_medical_contact_name' => $validated['matchday_medical_contact_name'] ?? null,
+                'matchday_medical_contact_phone' => $validated['matchday_medical_contact_phone'] ?? null,
+                'matchday_hospital_name' => $validated['matchday_hospital_name'] ?? null,
+                'matchday_hospital_phone' => $validated['matchday_hospital_phone'] ?? null,
+                'matchday_ambulance_contact' => $validated['matchday_ambulance_contact'] ?? null,
             ]);
 
             // Update clubs if provided

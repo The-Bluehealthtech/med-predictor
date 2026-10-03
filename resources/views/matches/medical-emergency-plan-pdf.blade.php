@@ -50,8 +50,13 @@ th{background:#f3f4f6}.ok{font-weight:bold}
 <h2>Notes opérationnelles</h2><div class="box">{{ $plan->notes }}</div>
 @endif
 
-<h2>Validation</h2>
+<h2>Validation fédérale</h2>
 <div class="box">
+@php($medicalValidator=$match->competition?->association?->medicalValidator)
+Responsable médical fédéral : {{ $medicalValidator?->name ?? 'Non configuré' }}<br>
+Association : {{ $match->competition?->association?->name ?? '—' }}<br>
+Identité : {{ $medicalValidator?->fifa_connect_id ? 'FIFA '.$medicalValidator->fifa_connect_id : ($medicalValidator ? 'FIT #'.$medicalValidator->id : '—') }}<br>
+Email : {{ $medicalValidator?->email ?? '—' }}<br>
 Statut : {{ strtoupper($plan->status) }}<br>
 Préparé le : {{ optional($plan->prepared_at)->format('d/m/Y H:i') ?? '—' }}<br>
 Validé le : {{ optional($plan->validated_at)->format('d/m/Y H:i') ?? '—' }}<br>

@@ -22,7 +22,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
     public function show(Request $request, MatchModel $match)
     {
         $this->authorizeView($request, $match);
-        $match->loadMissing(['competition','homeTeam.club','awayTeam.club','matchSheet']);
+        $match->loadMissing(['competition.association.medicalValidator','homeTeam.club','awayTeam.club','matchSheet']);
         $plan = MatchMedicalEmergencyPlan::query()->firstOrCreate(
             ['match_id'=>$match->id],
             $this->defaults($match)
@@ -59,6 +59,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
             'signatureProviders'=>$signatureProviders,
             'signatureRequests'=>$signatureRequests,
             'canRequestSignature'=>$this->canRequestSignature($request, $match, $plan),
+            'federationMedicalValidator'=>$match->competition?->association?->medicalValidator,
         ]);
     }
 
@@ -348,7 +349,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
     private function canRequestSignature(Request $request, MatchModel $match, MatchMedicalEmergencyPlan $plan): bool
     {
         $user = $request->user();
-        if (!$user || $plan->status !== 'validated') return false;
+        if (!$user || $plan->status !== 'validated' || !$match->competition?->association?->medical_validator_user_id) return false;
         if ($user->isSystemAdmin() || $user->role === 'admin') return true;
 
         return $user->role === 'association_medical'

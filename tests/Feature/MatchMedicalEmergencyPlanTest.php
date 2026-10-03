@@ -51,6 +51,9 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         if (!Schema::hasColumn('match_medical_emergency_plans', 'team_leader_club_official_id')) {
             (require base_path('database/migrations/2026_10_04_100000_add_club_official_id_to_match_medical_emergency_plans.php'))->up();
         }
+        if (!Schema::hasColumn('associations', 'medical_validator_user_id')) {
+            (require base_path('database/migrations/2026_10_04_103000_add_medical_validator_to_associations.php'))->up();
+        }
 
         Route::middleware(['web'])->group(function () {
             Route::get('/_t/competition-management/matches', [\App\Http\Controllers\MatchdayPreparationController::class,'index'])->name('competition-management.matches.index');

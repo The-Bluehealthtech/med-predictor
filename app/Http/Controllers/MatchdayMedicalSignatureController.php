@@ -26,7 +26,9 @@ final class MatchdayMedicalSignatureController extends Controller
             'provider' => 'required|string|in:signotec_document,adobe_sign,globalsign_dss',
         ]);
 
-        $match->loadMissing(['competition','homeTeam','awayTeam']);
+        $match->loadMissing(['competition.association.medicalValidator','homeTeam','awayTeam']);
+        $validator = $match->competition?->association?->medicalValidator;
+        abort_unless($validator && $validator->role === 'association_medical' && $validator->status === 'active', 409, 'Le responsable médical fédéral doit être configuré dans la fiche de l’association.');
         $pdfBytes = Pdf::loadView('matches.medical-emergency-plan-pdf', [
             'match' => $match,
             'plan' => $plan,
@@ -38,7 +40,7 @@ final class MatchdayMedicalSignatureController extends Controller
         $existing = DocumentSignatureRequest::query()
             ->where('workflow', 'matchday_medical_plan.final_document')
             ->where('document_reference', $reference)
-            ->where('signer_id', $request->user()->id)
+            ->where('signer_id', $validator->id)
             ->whereIn('status', ['pending','sent','signed'])
             ->latest('id')->first();
 
@@ -54,17 +56,18 @@ final class MatchdayMedicalSignatureController extends Controller
                 'plan_id' => $plan->id,
                 'match_id' => $match->id,
                 'match_fifa_id' => $plan->connect_match_fifa_id,
-                'signer_fifa_connect_id' => $request->user()->fifa_connect_id,
+                'signer_fifa_connect_id' => $validator->fifa_connect_id,
+                'federation_medical_validator_user_id' => $validator->id,
                 'version_updated_at' => optional($plan->updated_at)->toIso8601String(),
                 'filename' => 'Medical-Matchday-'.$match->id.'.pdf',
                 'name' => 'Medical Matchday '.$match->id.' - '.($match->homeTeam?->name ?? 'Home').' vs '.($match->awayTeam?->name ?? 'Away'),
                 'bytes' => $pdfBytes,
             ], [
                 'type' => 'user',
-                'id' => $request->user()->id,
-                'role' => $request->user()->role,
-                'name' => $request->user()->name,
-                'email' => $request->user()->email,
+                'id' => $validator->id,
+                'role' => $validator->role,
+                'name' => $validator->name,
+                'email' => $validator->email,
             ], 'matchday_medical_plan.final_document');
         } catch (\InvalidArgumentException $e) {
             return back()->with('error', $e->getMessage());

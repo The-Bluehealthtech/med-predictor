@@ -321,6 +321,19 @@ Ajoutez ou synchronisez les membres du staff dans les fiches <span class="font-s
 {{ $plan->status==='validated' ? 'Document éligible à la signature' : 'Validation médicale requise' }}
 </span>
 </div>
+<div class="mt-4 rounded-xl border {{ $federationMedicalValidator ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50' }} p-4">
+<p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Signataire de validation fédérale</p>
+@if($federationMedicalValidator)
+<p class="mt-1 font-semibold text-slate-900">{{ $federationMedicalValidator->name }}</p>
+<p class="text-sm text-slate-600">{{ $federationMedicalValidator->email }} · Responsable médical de {{ $match->competition?->association?->name }}{{ $federationMedicalValidator->fifa_connect_id ? ' · FIFA '.$federationMedicalValidator->fifa_connect_id : ' · FIT #'.$federationMedicalValidator->id }}</p>
+@else
+<p class="mt-1 font-semibold text-amber-900">Responsable médical fédéral non configuré</p>
+<p class="mt-1 text-sm text-amber-800">La signature est bloquée. Configurez le responsable médical dans la fiche de l’association.</p>
+@if($match->competition?->association && \Illuminate\Support\Facades\Route::has('associations-view.edit'))
+<a class="mt-2 inline-block text-sm font-semibold text-amber-900 underline" href="{{ route('associations-view.edit',$match->competition->association->id) }}">Configurer l’association</a>
+@endif
+@endif
+</div>
 @php($readySignatureProviders=$signatureProviders->where('status','ready'))
 @if($canRequestSignature)
 <form method="POST" action="{{ route('matches.medical-emergency-plan.signatures.store',$match) }}" class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">

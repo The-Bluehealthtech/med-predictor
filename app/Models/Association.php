@@ -26,7 +26,8 @@ class Association extends Model
         'last_updated',
         'fifa_sync_status',
         'fifa_sync_date',
-        'fifa_last_error'
+        'fifa_last_error',
+        'medical_validator_user_id'
     ];
 
     protected $casts = [
@@ -43,6 +44,11 @@ class Association extends Model
     public function players(): HasMany
     {
         return $this->hasMany(Player::class);
+    }
+
+    public function medicalValidator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'medical_validator_user_id');
     }
 
     /**

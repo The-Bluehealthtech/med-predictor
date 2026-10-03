@@ -86,6 +86,23 @@
                     </div>
                 </div>
 
+                <div class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-5">
+                    <h3 class="text-lg font-semibold text-gray-800">Responsable médical fédéral · Validation Medical Matchday</h3>
+                    <p class="mt-1 text-sm text-gray-600">Le signataire est obligatoirement un compte actif avec le rôle Association Medical de cette association. Aucun nom, email ou identifiant n’est saisi librement.</p>
+                    <label class="mt-4 block text-sm font-medium text-gray-700">Responsable médical de validation</label>
+                    <select name="medical_validator_user_id" class="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="">— Aucun responsable médical configuré —</option>
+                        @foreach($medicalValidators ?? collect() as $validator)
+                            <option value="{{ $validator->id }}" @selected((string)old('medical_validator_user_id',$association->medical_validator_user_id)===(string)$validator->id)>
+                                {{ $validator->name }} · {{ $validator->email }}{{ $validator->fifa_connect_id ? ' · FIFA '.$validator->fifa_connect_id : ' · FIT #'.$validator->id }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if(($medicalValidators ?? collect())->isEmpty())
+                        <p class="mt-2 text-sm text-amber-800">Aucun compte Association Medical actif n’est rattaché à cette association. Créez ou rattachez d’abord le responsable dans la gestion des utilisateurs.</p>
+                    @endif
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
                     <div>
                         <h4 class="text-lg font-medium text-gray-700 mb-4">{{ __('Logo de l\'association') }}</h4>

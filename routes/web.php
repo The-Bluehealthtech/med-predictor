@@ -439,7 +439,12 @@ Route::middleware(['auth'])->group(function () {
         $association = \App\Models\Association::findOrFail($id);
         abort_unless(\App\Http\Controllers\OrganizationCardController::canEdit(auth()->user(), 'associations', $association), 403);
         $confederations = \App\Models\Confederation::orderBy('name')->get();
-        return view('modules.associations.edit', compact('association', 'confederations'));
+        $medicalValidators = \App\Models\User::query()
+            ->where('association_id', $association->id)
+            ->where('role', 'association_medical')
+            ->where('status', 'active')
+            ->orderBy('name')->get(['id','name','email','phone','fifa_connect_id']);
+        return view('modules.associations.edit', compact('association', 'confederations', 'medicalValidators'));
     })->name('associations-view.edit');
 
     // Route pour mettre à jour une association
@@ -456,7 +461,14 @@ Route::middleware(['auth'])->group(function () {
                 'website' => 'nullable|url|max:255',
                 'founded_year' => 'nullable|integer|min:1800|max:2030',
                 'status' => 'required|in:active,inactive,pending',
-                'confederation_id' => 'required|exists:confederations,id'
+                'confederation_id' => 'required|exists:confederations,id',
+                'medical_validator_user_id' => [
+                    'nullable',
+                    \Illuminate\Validation\Rule::exists('users','id')->where(fn($q) => $q
+                        ->where('association_id', $association->id)
+                        ->where('role','association_medical')
+                        ->where('status','active')),
+                ],
             ]);
         
             $association->update($validatedData);

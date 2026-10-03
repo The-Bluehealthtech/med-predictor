@@ -1781,10 +1781,13 @@ Route::middleware(['auth'])->group(function () {
     
 
     
-    // Transfers routes
-    Route::get('/transfers', function () {
-        return view('modules.transfers.index');
-    })->name('transfers.index');
+    // Transfers routes - circuit web canonique.
+    Route::get('/transfers', [App\Http\Controllers\TransferController::class, 'index'])->name('transfers.index');
+    Route::get('/transfers/create', [App\Http\Controllers\TransferController::class, 'create'])->name('transfers.create');
+    Route::post('/transfers', [App\Http\Controllers\TransferController::class, 'store'])->name('transfers.store');
+    Route::get('/transfers/{transfer}', [App\Http\Controllers\TransferController::class, 'show'])->whereNumber('transfer')->name('transfers.show');
+    Route::post('/transfers/{transfer}/submit-fifa', [App\Http\Controllers\TransferController::class, 'submitToFifa'])->whereNumber('transfer')->name('transfers.submit-to-fifa');
+    Route::post('/transfers/{transfer}/check-itc', [App\Http\Controllers\TransferController::class, 'checkItcStatus'])->whereNumber('transfer')->name('transfers.check-itc');
     
     // Performance Recommendations routes
     Route::get('/performance-recommendations', function () {

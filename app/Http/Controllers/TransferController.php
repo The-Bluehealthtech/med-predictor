@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class TransferController extends Controller
 {
@@ -98,9 +99,18 @@ class TransferController extends Controller
         ]);
 
         try {
-            $player = Player::findOrFail($request->player_id);
-            $clubOrigin = Club::findOrFail($request->club_origin_id);
-            $clubDestination = Club::findOrFail($request->club_destination_id);
+            $player = Player::withoutGlobalScopes()->findOrFail($request->player_id);
+            $clubOrigin = Club::withoutGlobalScopes()->findOrFail($request->club_origin_id);
+            $clubDestination = Club::withoutGlobalScopes()->findOrFail($request->club_destination_id);
+            $this->authorizeTransferParties($player, $clubOrigin, $clubDestination);
+
+            // Le club d'origine doit correspondre au club courant du joueur dans FIT.
+            if ((int) $player->club_id !== (int) $clubOrigin->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Le club d’origine ne correspond pas au club actuel du joueur dans FIT.',
+                ], 422);
+            }
 
             // Vérifier si le joueur est éligible au transfert
             if (!$player->is_transfer_eligible) {
@@ -131,7 +141,9 @@ class TransferController extends Controller
                 'federation_destination_id' => $clubDestination->federation_id,
                 'transfer_type' => $request->transfer_type,
                 'transfer_status' => 'draft',
-                'itc_status' => $isInternational ? 'not_requested' : 'not_required',
+                // Le schéma canonique des transferts n'a pas de valeur « not_required ».
+                // Pour un transfert national, is_international=false porte la sémantique « ITC non requis ».
+                'itc_status' => 'not_requested',
                 'transfer_window_start' => now()->startOfMonth(),
                 'transfer_window_end' => now()->endOfMonth()->addDays(7),
                 'transfer_date' => $request->transfer_date,
@@ -176,6 +188,9 @@ class TransferController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            if ($e instanceof HttpExceptionInterface) {
+                throw $e;
+            }
             Log::error('Error creating transfer', [
                 'error_class' => $e::class,
                 'error' => $e->getMessage(),
@@ -199,12 +214,19 @@ class TransferController extends Controller
         $this->authorizeTransferAccess($transfer);
 
         $transfer->load([
-            'player', 'clubOrigin', 'clubDestination', 
+            'player', 'clubOrigin', 'clubDestination',
             'federationOrigin', 'federationDestination',
             'contract', 'documents', 'payments'
         ]);
+        $requiredDocuments = ['passport', 'contract'];
+        if ($transfer->is_minor_transfer) {
+            $requiredDocuments[] = 'parental_consent';
+        }
+        $approvedDocuments = $transfer->documents->where('validation_status', 'approved')->pluck('document_type')->all();
+        $missingDocuments = array_values(array_diff($requiredDocuments, $approvedDocuments));
+        $fifaConfigured = $this->fifaService->isConfigured();
 
-        return view('transfers.show', compact('transfer'));
+        return view('transfers.show', compact('transfer', 'requiredDocuments', 'approvedDocuments', 'missingDocuments', 'fifaConfigured'));
     }
 
     /**
@@ -359,11 +381,12 @@ class TransferController extends Controller
                     'fifa_transfer_id' => $result['fifa_transfer_id'],
                 ]);
             } else {
+                $notConfigured = ($result['code'] ?? null) === 'not_configured';
                 return response()->json([
                     'success' => false,
-                    'message' => 'Erreur lors de la soumission à FIFA',
+                    'message' => $notConfigured ? 'Connexion FIFA TMS/ITC non configurée dans FIT.' : 'Erreur lors de la soumission à FIFA',
                     'error' => $result['error'],
-                ], 500);
+                ], $notConfigured ? 503 : 500);
             }
 
         } catch (\Exception $e) {
@@ -398,11 +421,12 @@ class TransferController extends Controller
                     'data' => $result['data'],
                 ]);
             } else {
+                $notConfigured = ($result['code'] ?? null) === 'not_configured';
                 return response()->json([
                     'success' => false,
-                    'message' => 'Erreur lors de la vérification du statut ITC',
+                    'message' => $notConfigured ? 'Connexion FIFA TMS/ITC non configurée dans FIT.' : 'Erreur lors de la vérification du statut ITC',
                     'error' => $result['error'],
-                ], 500);
+                ], $notConfigured ? 503 : 500);
             }
 
         } catch (\Exception $e) {
@@ -434,7 +458,7 @@ class TransferController extends Controller
                 : $query->whereRaw('1 = 0');
         }
 
-        if ($user->isClubUser()) {
+        if (in_array($user->role, ['club_admin', 'club_manager'], true)) {
             return $user->club_id
                 ? $query->where(function ($q) use ($user) {
                     $q->where('club_origin_id', $user->club_id)
@@ -443,7 +467,7 @@ class TransferController extends Controller
                 : $query->whereRaw('1 = 0');
         }
 
-        if ($user->isAssociationUser()) {
+        if (in_array($user->role, ['association_admin', 'association_registrar'], true)) {
             if (!$user->association_id) {
                 return $query->whereRaw('1 = 0');
             }
@@ -467,8 +491,7 @@ class TransferController extends Controller
         abort_unless(
             $user && (
                 $user->isSystemAdmin()
-                || $user->isClubUser()
-                || $user->isAssociationUser()
+                || in_array($user->role, ['club_admin', 'club_manager', 'association_admin', 'association_registrar'], true)
             ),
             403
         );
@@ -481,6 +504,32 @@ class TransferController extends Controller
         )->exists();
 
         abort_unless($visible, 403);
+    }
+
+    private function authorizeTransferParties(Player $player, Club $origin, Club $destination): void
+    {
+        $user = Auth::user();
+        abort_unless($user, 401);
+
+        if ($user->isSystemAdmin()) {
+            return;
+        }
+
+        if (in_array($user->role, ['club_admin', 'club_manager'], true)) {
+            abort_unless($user->club_id && in_array((int) $user->club_id, [(int) $origin->id, (int) $destination->id], true), 403);
+            return;
+        }
+
+        if (in_array($user->role, ['association_admin', 'association_registrar'], true)) {
+            abort_unless(
+                $user->association_id
+                && in_array((int) $user->association_id, [(int) $origin->association_id, (int) $destination->association_id], true),
+                403
+            );
+            return;
+        }
+
+        abort(403);
     }
 
     /**

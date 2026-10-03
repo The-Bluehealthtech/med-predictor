@@ -20,10 +20,22 @@ class FifaTransferService
 
     public function __construct()
     {
-        $this->baseUrl = config('fifa.api_url', 'https://api.fifa.com');
-        $this->apiKey = config('fifa.api_key', '');
-        $this->apiSecret = config('fifa.api_secret', '');
+        $this->baseUrl = (string) config('fifa.api_url', '');
+        $this->apiKey = (string) config('fifa.api_key', '');
+        $this->apiSecret = (string) config('fifa.api_secret', '');
         $this->timeout = config('fifa.timeout', 30);
+    }
+
+    public function isConfigured(): bool
+    {
+        return filled($this->baseUrl) && filled($this->apiKey) && filled($this->apiSecret)
+            && !in_array($this->apiKey, ['dummy_key', 'test', 'changeme'], true)
+            && !in_array($this->apiSecret, ['dummy_secret', 'test', 'changeme'], true);
+    }
+
+    private function unavailable(): array
+    {
+        return ['success' => false, 'error' => 'FIFA TMS/ITC non configuré dans FIT.', 'code' => 'not_configured'];
     }
 
     /**
@@ -31,6 +43,10 @@ class FifaTransferService
      */
     public function createTransfer(Transfer $transfer): array
     {
+        if (!$this->isConfigured()) {
+            return $this->unavailable();
+        }
+
         try {
             $payload = $this->buildTransferPayload($transfer);
             
@@ -98,6 +114,9 @@ class FifaTransferService
      */
     public function requestItc(Transfer $transfer): array
     {
+        if (!$this->isConfigured()) {
+            return $this->unavailable();
+        }
         if (!$transfer->isItcRequired()) {
             return [
                 'success' => false,
@@ -169,6 +188,9 @@ class FifaTransferService
      */
     public function checkItcStatus(Transfer $transfer): array
     {
+        if (!$this->isConfigured()) {
+            return $this->unavailable();
+        }
         if (!$transfer->fifa_itc_id) {
             return [
                 'success' => false,
@@ -227,6 +249,9 @@ class FifaTransferService
      */
     public function updateTransfer(Transfer $transfer): array
     {
+        if (!$this->isConfigured()) {
+            return $this->unavailable();
+        }
         if (!$transfer->fifa_transfer_id) {
             return [
                 'success' => false,

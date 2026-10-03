@@ -223,9 +223,11 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @php
                                         $statusColors = [
+                                            'draft' => 'bg-slate-100 text-slate-800',
                                             'pending' => 'bg-yellow-100 text-yellow-800',
+                                            'submitted' => 'bg-blue-100 text-blue-800',
+                                            'under_review' => 'bg-indigo-100 text-indigo-800',
                                             'approved' => 'bg-green-100 text-green-800',
-                                            'completed' => 'bg-blue-100 text-blue-800',
                                             'rejected' => 'bg-red-100 text-red-800',
                                             'cancelled' => 'bg-gray-100 text-gray-800'
                                         ];
@@ -240,11 +242,7 @@
                                     <div class="text-sm text-gray-500">{{ $transfer->created_at->diffForHumans() }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('transfers.show', $transfer) }}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
-                                    <a href="{{ route('transfers.edit', $transfer) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                                    @if($transfer->transfer_status === 'pending')
-                                        <a href="{{ route('transfers.submit-to-fifa', $transfer) }}" class="text-green-600 hover:text-green-900">Submit to FIFA</a>
-                                    @endif
+                                    <a href="{{ route('transfers.show', $transfer) }}" class="font-semibold text-blue-700 hover:text-blue-900">Ouvrir le dossier</a>
                                 </td>
                             </tr>
                             @endforeach

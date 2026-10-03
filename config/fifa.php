@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'api_url' => env('FIFA_API_URL', 'https://api.fifa.com'),
-    'api_key' => env('FIFA_API_KEY', 'dummy_key'),
-    'api_secret' => env('FIFA_API_SECRET', 'dummy_secret'),
+    'api_url' => env('FIFA_API_URL'),
+    'api_key' => env('FIFA_API_KEY'),
+    'api_secret' => env('FIFA_API_SECRET'),
     'timeout' => env('FIFA_TIMEOUT', 30),
 ]; 

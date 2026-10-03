@@ -765,12 +765,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Transferts
     Route::get('/transfers', [TransferController::class, 'index']);
     Route::post('/transfers', [TransferController::class, 'store']);
+    Route::get('/transfers/statistics', [TransferController::class, 'statistics']);
     Route::get('/transfers/{transfer}', [TransferController::class, 'show']);
     Route::put('/transfers/{transfer}', [TransferController::class, 'update']);
     Route::delete('/transfers/{transfer}', [TransferController::class, 'destroy']);
     Route::post('/transfers/{transfer}/submit-fifa', [TransferController::class, 'submitToFifa']);
     Route::post('/transfers/{transfer}/check-itc', [TransferController::class, 'checkItcStatus']);
-    Route::get('/transfers/statistics', [TransferController::class, 'statistics']);
 
     // Documents de transfert
 

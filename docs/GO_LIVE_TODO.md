@@ -20,6 +20,14 @@ This checklist tracks production dependencies that must not be simulated in code
 - [ ] Provision the licensed FIFA XSD package outside Git and validate `FIFA_CONNECT_XSD_PATH` in CI/Render.
 - [ ] Run final FIFA validation in an authorised environment and archive the result.
 
+## FIFA TMS / ITC
+
+- [ ] Obtenir les accès officiels FIFA TMS/ITC et la documentation d’intégration autorisée avant toute activation.
+- [ ] Configurer `FIFA_API_URL`, `FIFA_API_KEY` et `FIFA_API_SECRET` dans les secrets Render ; aucune valeur factice ou par défaut n’est acceptée par FIT.
+- [ ] Vérifier les endpoints transfert/ITC et le mécanisme d’authentification avec la documentation fournie à l’organisation avant le premier appel réel.
+- [ ] Tester un transfert international de bout en bout dans l’environnement autorisé : soumission, référence externe, demande ITC, statut ITC et journal d’audit.
+- [ ] Valider l’authenticité et la vérification cryptographique des webhooks FIFA avant de laisser un webhook modifier un statut de transfert.
+
 ## Signature documentaire
 
 - [ ] Choisir/contractualiser au moins un fournisseur de signature documentaire (signotec signoSign/Universal, Adobe Acrobat Sign ou GlobalSign DSS).

@@ -19,9 +19,10 @@ class TransferManagementContractTest extends TestCase
 
         $this->assertStringContainsString('scopeTransfersForUser', $controller);
         $this->assertStringContainsString('$user->isSystemAdmin()', $controller);
-        $this->assertStringContainsString('$user->isClubUser()', $controller);
-        $this->assertStringContainsString('$user->isAssociationUser()', $controller);
+        $this->assertStringContainsString("['club_admin', 'club_manager']", $controller);
+        $this->assertStringContainsString("['association_admin', 'association_registrar']", $controller);
         $this->assertStringContainsString('$user->isPlayer()', $controller);
+        $this->assertStringNotContainsString("['club_admin', 'club_manager', 'club_medical']", $controller);
         $this->assertStringContainsString(
             "where('transfer_status', 'approved')->count()",
             $controller
@@ -45,6 +46,21 @@ class TransferManagementContractTest extends TestCase
                 $method
             );
         }
+    }
+
+    public function test_tms_actions_are_federation_scoped_and_direct_submission_is_disabled(): void
+    {
+        $controller = file_get_contents($this->projectPath('app/Http/Controllers/TransferController.php'));
+
+        foreach (['prepareForTms', 'linkTmsReference', 'syncFromTms'] as $method) {
+            $start = strpos($controller, 'public function ' . $method);
+            $this->assertNotFalse($start, $method);
+            $segment = substr($controller, $start, 900);
+            $this->assertStringContainsString('authorizeAssociationTransfer', $segment, $method);
+        }
+
+        $this->assertStringContainsString('direct_tms_submission_disabled', $controller);
+        $this->assertStringContainsString('direct_itc_check_disabled', $controller);
     }
 
     public function test_transfer_transaction_starts_after_eligibility_checks(): void
@@ -81,7 +97,8 @@ class TransferManagementContractTest extends TestCase
         $this->assertStringNotContainsString('rand(', $controller);
         $this->assertStringNotContainsString('Mohamed Salah', $controller);
         $this->assertStringNotContainsString('Ahmed Ben Ali', $controller);
-        $this->assertStringNotContainsString("'status' => 'connected'", $controller);
+        $this->assertStringContainsString('TmsTransferBridge', $controller);
+        $this->assertStringContainsString('tms_sync_status', $controller);
     }
 
     public function test_legacy_transfer_routes_are_authenticated_redirects(): void
@@ -110,6 +127,7 @@ class TransferManagementContractTest extends TestCase
         $this->assertStringNotContainsString('Simulate different stats', $view);
         $this->assertStringNotContainsString('total: 45', $view);
         $this->assertStringNotContainsString('total: 67', $view);
-        $this->assertStringContainsString('Synchronisation TMS reportée', $view);
+        $this->assertStringContainsString('Ouvrir les dossiers TMS', $view);
+        $this->assertStringNotContainsString('Synchronisation TMS reportée', $view);
     }
 }

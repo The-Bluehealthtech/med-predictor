@@ -37,39 +37,63 @@
     </section>
 
     <section class="rounded-2xl border border-slate-200 bg-white p-5">
-        <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Blocages</p>
-        <div class="mt-3 space-y-2">
-            @if($missingDocuments)
-                <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                    Pièces approuvées manquantes : {{ collect($missingDocuments)->map(fn($t)=>['passport'=>'passeport','contract'=>'contrat','parental_consent'=>'consentement parental'][$t] ?? $t)->implode(', ') }}.
-                </div>
-            @else
-                <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">Pièces obligatoires approuvées dans FIT.</div>
-            @endif
-            @unless($transfer->is_in_transfer_window)
-                <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">La fenêtre de transfert enregistrée dans ce dossier n’est pas ouverte aujourd’hui.</div>
-            @endunless
-            @unless($fifaConfigured)
-                <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">Connexion FIFA TMS/ITC non activée. FIT n’effectuera aucune soumission externe tant que les accès officiels ne sont pas configurés au Go Live.</div>
-            @endunless
+        <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Préparation TMS</p>
+                <h2 class="mt-1 font-semibold text-slate-900">FIT prépare le dossier ; FIFA TMS exécute le transfert</h2>
+            </div>
+            <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $transfer->tms_sync_status === 'linked' ? 'bg-emerald-100 text-emerald-800' : ($transfer->tms_sync_status === 'ready' ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-700') }}">{{ ucfirst(str_replace('_',' ',$transfer->tms_sync_status ?? 'not_ready')) }}</span>
         </div>
+
+        <div class="mt-4 space-y-2">
+            @forelse($tmsReadiness['blockers'] as $blocker)
+                <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{{ $blocker['label'] }}</div>
+            @empty
+                <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">Dossier FIT complet : données, identifiants FIFA et pièces approuvées sont prêts pour TMS.</div>
+            @endforelse
+        </div>
+
+        @if($transfer->tms_payload_sha256)
+            <p class="mt-3 font-mono text-xs text-slate-500">Empreinte dossier TMS : {{ $transfer->tms_payload_sha256 }}</p>
+        @endif
+        @if($transfer->tms_transfer_id)
+            <p class="mt-2 text-sm text-slate-700">Référence TMS rattachée : <strong>{{ $transfer->tms_transfer_id }}</strong></p>
+        @endif
+        @if($transfer->tms_remote_status)
+            <p class="mt-1 text-sm text-slate-700">Statut TMS : <strong>{{ $transfer->tms_remote_status }}</strong></p>
+        @endif
+        @if($transfer->tms_last_synced_at)
+            <p class="mt-1 text-xs text-slate-500">Dernière synchronisation : {{ $transfer->tms_last_synced_at->format('d/m/Y H:i') }}</p>
+        @endif
     </section>
 
     <section class="rounded-2xl border border-slate-200 bg-white p-5">
         <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Prochaine action</p>
         <div class="mt-3 flex flex-wrap gap-3">
             <a href="{{ route('passports.transfer.show',$transfer->player_id) }}" class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Passeport de transfert</a>
-            @if($transfer->transfer_status === 'draft')
-                @if($transfer->canBeSubmitted() && $fifaConfigured)
-                    <button data-transfer-action="{{ route('transfers.submit-to-fifa',$transfer) }}" class="transfer-action rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Soumettre à FIFA/TMS</button>
-                @elseif($missingDocuments)
-                    <span class="rounded-xl bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800">Compléter et faire valider les pièces</span>
-                @elseif(!$fifaConfigured)
-                    <span class="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-600">Attente activation FIFA TMS au Go Live</span>
-                @endif
+
+            @if($associationOperator && $tmsReadiness['ready'] && !in_array($transfer->tms_sync_status,['ready','linked'],true))
+                <button data-transfer-action="{{ route('transfers.prepare-tms',$transfer) }}" class="transfer-action rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Marquer prêt pour TMS</button>
             @endif
-            @if($transfer->is_international && $transfer->fifa_itc_id && in_array($transfer->itc_status,['requested','pending'],true) && $fifaConfigured)
-                <button data-transfer-action="{{ route('transfers.check-itc',$transfer) }}" class="transfer-action rounded-xl border border-blue-300 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800">Vérifier le statut ITC</button>
+
+            @if($associationOperator && $transfer->tms_sync_status === 'ready' && !$transfer->tms_transfer_id)
+                <form method="POST" action="{{ route('transfers.link-tms',$transfer) }}" class="flex flex-wrap items-end gap-2">
+                    @csrf
+                    <label class="text-sm font-medium text-slate-700">Référence TMS
+                        <input name="tms_transfer_id" class="mt-1 rounded-lg border-slate-300" placeholder="tmsTransferId" required>
+                    </label>
+                    <button class="rounded-xl border border-blue-300 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800">Rattacher TMS</button>
+                </form>
+            @endif
+
+            @if(!$tmsReadiness['ready'])
+                <span class="rounded-xl bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800">Lever les blocages avant passage dans TMS</span>
+            @elseif($associationOperator && $transfer->tms_transfer_id && $tmsBridgeConfigured)
+                <form method="POST" action="{{ route('transfers.sync-tms',$transfer) }}">@csrf
+                    <button class="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800">Synchroniser depuis TMS</button>
+                </form>
+            @elseif($transfer->tms_transfer_id)
+                <span class="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-600">Référence TMS liée · synchronisation automatique à activer au Go Live</span>
             @endif
         </div>
     </section>

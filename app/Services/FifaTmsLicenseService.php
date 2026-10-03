@@ -16,7 +16,7 @@ class FifaTmsLicenseService
 
     public function __construct()
     {
-        $this->baseUrl = config('services.fifa_tms.base_url', 'https://api.fifa.com/tms/v1');
+        $this->baseUrl = config('services.fifa_tms.base_url');
         $this->apiKey = config('services.fifa_tms.api_key');
         $this->timeout = config('services.fifa_tms.timeout', 15);
         $this->mockMode = (bool) config('services.fifa_tms.mock_mode', false);
@@ -37,6 +37,9 @@ class FifaTmsLicenseService
 
             if ($this->mockMode) {
                 return $this->getMockLicenses($fifaId);
+            }
+            if (!$this->apiKey || !$this->baseUrl) {
+                return [];
             }
 
             $response = Http::timeout($this->timeout)
@@ -88,6 +91,9 @@ class FifaTmsLicenseService
 
             if ($this->mockMode) {
                 return $this->getMockTransferHistory($fifaId);
+            }
+            if (!$this->apiKey || !$this->baseUrl) {
+                return [];
             }
 
             $response = Http::timeout($this->timeout)
@@ -290,14 +296,14 @@ class FifaTmsLicenseService
             ];
         }
 
-        if (!$this->apiKey) {
+        if (!$this->apiKey || !$this->baseUrl) {
             return [
                 'connected' => false,
                 'status' => 'unconfigured',
                 'response_time' => null,
                 'timestamp' => now()->toISOString(),
                 'mock_mode' => false,
-                'message' => 'FIFA TMS API key is not configured.',
+                'message' => 'Legacy FIFA TMS read-only connector is not configured.',
             ];
         }
 

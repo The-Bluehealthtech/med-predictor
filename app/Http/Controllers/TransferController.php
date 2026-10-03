@@ -6,7 +6,8 @@ use App\Models\Transfer;
 use App\Models\Player;
 use App\Models\Club;
 use App\Models\Federation;
-use App\Services\FifaTransferService;
+use App\Services\Transfers\TmsTransferBridge;
+use App\Services\Transfers\TmsTransferPreparation;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -18,11 +19,10 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class TransferController extends Controller
 {
-    private FifaTransferService $fifaService;
-
-    public function __construct(FifaTransferService $fifaService)
-    {
-        $this->fifaService = $fifaService;
+    public function __construct(
+        private readonly TmsTransferPreparation $tmsPreparation,
+        private readonly TmsTransferBridge $tmsBridge,
+    ) {
         $this->middleware('auth');
     }
 
@@ -224,7 +224,8 @@ class TransferController extends Controller
         }
         $approvedDocuments = $transfer->documents->where('validation_status', 'approved')->pluck('document_type')->all();
         $missingDocuments = array_values(array_diff($requiredDocuments, $approvedDocuments));
-        $fifaConfigured = $this->fifaService->isConfigured();
+        $tmsReadiness = $this->tmsPreparation->readiness($transfer);
+        $tmsBridgeConfigured = $this->tmsBridge->isConfigured();
         $user = $request->user();
         $clubOperator = $user && in_array($user->role, ['club_admin', 'club_manager'], true)
             && $user->club_id && in_array((int) $user->club_id, [(int) $transfer->club_origin_id, (int) $transfer->club_destination_id], true);
@@ -235,8 +236,8 @@ class TransferController extends Controller
         $canDownloadDocuments = ($user?->isSystemAdmin() ?? false) || $clubOperator || $associationOperator;
 
         return view('transfers.show', compact(
-            'transfer', 'requiredDocuments', 'approvedDocuments', 'missingDocuments', 'fifaConfigured',
-            'canUploadDocuments', 'canValidateDocuments', 'canDownloadDocuments'
+            'transfer', 'requiredDocuments', 'approvedDocuments', 'missingDocuments', 'tmsReadiness', 'tmsBridgeConfigured',
+            'canUploadDocuments', 'canValidateDocuments', 'canDownloadDocuments', 'associationOperator'
         ));
     }
 
@@ -282,16 +283,8 @@ class TransferController extends Controller
                 'updated_by' => Auth::id(),
             ]);
 
-            // Si le transfert est déjà soumis à FIFA, le mettre à jour
-            if ($transfer->fifa_transfer_id) {
-                $result = $this->fifaService->updateTransfer($transfer);
-                
-                if (!$result['success']) {
-                    Log::warning('Failed to update transfer in FIFA', [
-                        'transfer_id' => $transfer->id,
-                        'error' => $result['error'],
-                    ]);
-                }
+            if (in_array($transfer->tms_sync_status, ['ready', 'linked', 'synced'], true)) {
+                $transfer->forceFill(['tms_sync_status' => 'stale'])->save();
             }
 
             DB::commit();
@@ -354,104 +347,99 @@ class TransferController extends Controller
         }
     }
 
-    /**
-     * Soumettre un transfert à FIFA
-     */
+    public function prepareForTms(Request $request, Transfer $transfer)
+    {
+        $this->authorizeAssociationTransfer($request, $transfer);
+        $prepared = $this->tmsPreparation->prepare($transfer, $request->user());
+        if (!$request->expectsJson()) {
+            return redirect()->route('transfers.show', $transfer)->with('success', 'Dossier FIT prêt pour traitement dans FIFA TMS.');
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dossier FIT prêt pour traitement dans FIFA TMS.',
+            'tms_sync_status' => $prepared->tms_sync_status,
+            'payload_sha256' => $prepared->tms_payload_sha256,
+        ]);
+    }
+
+    public function linkTmsReference(Request $request, Transfer $transfer)
+    {
+        $this->authorizeAssociationTransfer($request, $transfer);
+        $data = $request->validate(['tms_transfer_id' => 'required|string|max:255']);
+        $linked = $this->tmsPreparation->link($transfer, $data['tms_transfer_id']);
+        if (!$request->expectsJson()) {
+            return redirect()->route('transfers.show', $transfer)->with('success', 'Référence TMS rattachée au dossier FIT.');
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Référence TMS rattachée au dossier FIT.',
+            'tms_transfer_id' => $linked->tms_transfer_id,
+            'tms_sync_status' => $linked->tms_sync_status,
+        ]);
+    }
+
+    public function syncFromTms(Request $request, Transfer $transfer)
+    {
+        $this->authorizeAssociationTransfer($request, $transfer);
+        abort_unless($transfer->tms_transfer_id, 409);
+
+        $result = $this->tmsBridge->fetchTransfer($transfer->tms_transfer_id);
+        if (!$result['success']) {
+            $status = in_array(($result['code'] ?? null), ['not_configured', 'disabled'], true) ? 503 : 502;
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $result['error']], $status);
+            }
+            return back()->with('error', $result['error']);
+        }
+
+        $data = $result['data'];
+        abort_unless(($data['tms_transfer_id'] ?? $transfer->tms_transfer_id) === $transfer->tms_transfer_id, 409);
+
+        $updates = [
+            'tms_sync_status' => 'synced',
+            'tms_remote_status' => $data['status'] ?? null,
+            'tms_last_synced_at' => now(),
+            'tms_last_response' => $data,
+        ];
+        if (!empty($data['itc_id'])) {
+            $updates['fifa_itc_id'] = $data['itc_id'];
+        }
+        if (in_array($data['itc_status'] ?? null, ['not_requested', 'requested', 'pending', 'approved', 'rejected', 'expired'], true)) {
+            $updates['itc_status'] = $data['itc_status'];
+        }
+        $transfer->forceFill($updates)->save();
+
+        if (!$request->expectsJson()) {
+            return redirect()->route('transfers.show', $transfer)->with('success', 'Données FIFA TMS synchronisées dans FIT.');
+        }
+
+        return response()->json(['success' => true, 'data' => $data]);
+    }
+
     public function submitToFifa(Transfer $transfer): JsonResponse
     {
         $this->authorizeTransferManagement();
         $this->authorizeTransferAccess($transfer);
 
-        try {
-            // Vérifier si le transfert peut être soumis
-            if (!$transfer->canBeSubmitted()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Le transfert ne peut pas être soumis (documents manquants ou fenêtre de transfert fermée)',
-                ], 400);
-            }
-
-            $result = $this->fifaService->createTransfer($transfer);
-
-            if ($result['success']) {
-                // Si c'est un transfert international, demander l'ITC
-                if ($transfer->isItcRequired()) {
-                    $itcResult = $this->fifaService->requestItc($transfer);
-                    
-                    if (!$itcResult['success']) {
-                        Log::warning('Failed to request ITC', [
-                            'transfer_id' => $transfer->id,
-                            'error' => $itcResult['error'],
-                        ]);
-                    }
-                }
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Transfert soumis à FIFA avec succès',
-                    'fifa_transfer_id' => $result['fifa_transfer_id'],
-                ]);
-            } else {
-                $notConfigured = ($result['code'] ?? null) === 'not_configured';
-                return response()->json([
-                    'success' => false,
-                    'message' => $notConfigured ? 'Connexion FIFA TMS/ITC non configurée dans FIT.' : 'Erreur lors de la soumission à FIFA',
-                    'error' => $result['error'],
-                ], $notConfigured ? 503 : 500);
-            }
-
-        } catch (\Exception $e) {
-            Log::error('Error submitting transfer to FIFA', [
-                'transfer_id' => $transfer->id,
-                'error' => $e->getMessage(),
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la soumission à FIFA',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => false,
+            'code' => 'direct_tms_submission_disabled',
+            'message' => 'FIT prépare le dossier ; le transfert doit être réalisé dans FIFA TMS puis rattaché dans FIT.',
+        ], 410);
     }
 
-    /**
-     * Vérifier le statut ITC
-     */
     public function checkItcStatus(Transfer $transfer): JsonResponse
     {
         $this->authorizeTransferManagement();
         $this->authorizeTransferAccess($transfer);
 
-        try {
-            $result = $this->fifaService->checkItcStatus($transfer);
-
-            if ($result['success']) {
-                return response()->json([
-                    'success' => true,
-                    'status' => $result['status'],
-                    'data' => $result['data'],
-                ]);
-            } else {
-                $notConfigured = ($result['code'] ?? null) === 'not_configured';
-                return response()->json([
-                    'success' => false,
-                    'message' => $notConfigured ? 'Connexion FIFA TMS/ITC non configurée dans FIT.' : 'Erreur lors de la vérification du statut ITC',
-                    'error' => $result['error'],
-                ], $notConfigured ? 503 : 500);
-            }
-
-        } catch (\Exception $e) {
-            Log::error('Error checking ITC status', [
-                'transfer_id' => $transfer->id,
-                'error' => $e->getMessage(),
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la vérification du statut ITC',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => false,
+            'code' => 'direct_itc_check_disabled',
+            'message' => 'Le statut ITC doit provenir de FIFA TMS ; FIT ne lance plus de contrôle ITC direct.',
+        ], 410);
     }
 
     private function scopeTransfersForUser(Builder $query): Builder
@@ -515,6 +503,13 @@ class TransferController extends Controller
         )->exists();
 
         abort_unless($visible, 403);
+    }
+
+    private function authorizeAssociationTransfer(Request $request, Transfer $transfer): void
+    {
+        $user = $request->user();
+        abort_unless($user && in_array($user->role, ['association_admin', 'association_registrar'], true), 403);
+        $this->authorizeTransferAccess($transfer);
     }
 
     private function authorizeTransferParties(Player $player, Club $origin, Club $destination): void

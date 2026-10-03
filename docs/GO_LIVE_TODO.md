@@ -23,9 +23,11 @@ This checklist tracks production dependencies that must not be simulated in code
 ## FIFA TMS / ITC
 
 - [ ] Obtenir les accès officiels FIFA TMS/ITC et la documentation d’intégration autorisée avant toute activation.
-- [ ] Configurer `FIFA_API_URL`, `FIFA_API_KEY` et `FIFA_API_SECRET` dans les secrets Render ; aucune valeur factice ou par défaut n’est acceptée par FIT.
-- [ ] Vérifier les endpoints transfert/ITC et le mécanisme d’authentification avec la documentation fournie à l’organisation avant le premier appel réel.
-- [ ] Tester un transfert international de bout en bout dans l’environnement autorisé : soumission, référence externe, demande ITC, statut ITC et journal d’audit.
+- [ ] Installer/configurer le SDK FIFA Connect ID/TMS officiel dans un bridge dédié et autorisé ; FIT ne doit pas inventer d’endpoint TMS direct.
+- [ ] Configurer `FIFA_TMS_CLIENT_ID`, `FIFA_TMS_SECRET_KEY` et `FIFA_TMS_ENVIRONMENT` avec les credentials Azure AD fournis par FIFA, ainsi que `FIFA_TMS_BRIDGE_URL` / `FIFA_TMS_BRIDGE_TOKEN` pour le bridge SDK.
+- [ ] Valider le flux métier : FIT prépare le dossier → transfert réalisé dans FIFA TMS → `tmsTransferId` rattaché → FIT récupère statuts/ITC/provenance depuis TMS.
+- [ ] Tester les environnements FIFA autorisés dans l’ordre Beta → Preproduction → Production, sans mélange de credentials ou de données.
+- [ ] Tester un transfert international de bout en bout dans l’environnement autorisé : préparation FIT, exécution TMS, rattachement de la référence, synchronisation ITC et journal d’audit.
 - [ ] Valider l’authenticité et la vérification cryptographique des webhooks FIFA avant de laisser un webhook modifier un statut de transfert.
 - [ ] Configurer `TRANSFER_DOCUMENT_DISK` sur un stockage privé durable approuvé et vérifier qu’une pièce de transfert reste téléchargeable après redéploiement/restart Render.
 

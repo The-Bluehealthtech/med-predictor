@@ -9,6 +9,7 @@ use App\Services\Documents\DocumentSignatureStorage;
 use App\Services\Licensing\AwsRekognitionFaceMatcher;
 use App\Services\Licensing\FifaIdRegistry;
 use App\Services\Licensing\SignotecSignatureProvider;
+use App\Services\Transfers\TmsTransferBridge;
 use Illuminate\Http\Request;
 
 final class ApiConnectorSettingsController extends Controller
@@ -75,6 +76,7 @@ final class ApiConnectorSettingsController extends Controller
             'fifa_id' => $fifaId->isConfigured()
                 ? ['ok' => true, 'message' => 'Configuration FIFA ID détectée ; test métier disponible depuis un dossier de licence.']
                 : ['ok' => false, 'message' => 'Configuration FIFA ID incomplète.'],
+            'fifa_tms' => app(TmsTransferBridge::class)->testConnection(),
             default => $item['configured']
                 ? ['ok' => true, 'message' => 'Pré-requis de configuration détectés.']
                 : ['ok' => false, 'message' => 'Pré-requis de configuration incomplets.'],
@@ -88,6 +90,7 @@ final class ApiConnectorSettingsController extends Controller
         $aws = $rekognition->status();
         $signature = $signotec->status();
         $documentProviders = collect($documentSignatures->allStatuses())->keyBy('slug');
+        $tmsBridge = app(TmsTransferBridge::class);
 
         return [
             $this->item('aws_rekognition', 'AWS Rekognition CompareFaces', 'Comparaison photo ↔ photo pour la revue d’identité des licences.', $rekognition->isConfigured(), $rekognition->isEnabled(), ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_DEFAULT_REGION', 'AWS_REKOGNITION_SIMILARITY_THRESHOLD'], true, $aws['label']),
@@ -97,7 +100,7 @@ final class ApiConnectorSettingsController extends Controller
             $this->item('globalsign_dss', 'GlobalSign DSS', 'Signature numérique PDF par certificat, horodatage et validation long terme des documents FIT.', (bool) $documentProviders['globalsign_dss']['configured'], (bool) $documentProviders['globalsign_dss']['enabled'], $documentProviders['globalsign_dss']['variables'], true, $documentProviders['globalsign_dss']['label']),
             $this->item('fifa_id', 'FIFA ID Registry', 'Contrôle d’identité FIFA pendant l’approbation des licences.', $fifaId->isConfigured(), $fifaId->isEnabled(), ['FIFA_ID_REGISTRY_URL', 'FIFA_ID_REGISTRY_TOKEN'], true),
             $this->item('fifa_connect', 'FIFA Connect', 'Échanges FIFA Connect et validation des identifiants/structures.', filled(config('services.fifa_connect.api_key')), $state->enabled('fifa_connect', false), ['FIFA_CONNECT_BASE_URL', 'FIFA_CONNECT_API_KEY'], false),
-            $this->item('fifa_tms', 'FIFA TMS', 'Synchronisation des données de transfert lorsque les accès officiels sont disponibles.', filled(config('services.fifa_tms.api_key')) && !config('services.fifa_tms.mock_mode'), $state->enabled('fifa_tms', false), ['FIFA_TMS_BASE_URL', 'FIFA_TMS_API_KEY'], false),
+            $this->item('fifa_tms', 'FIFA TMS', 'FIT prépare les dossiers ; le transfert est exécuté dans TMS puis les références, statuts et ITC sont récupérés via le bridge SDK officiel.', $tmsBridge->isConfigured(), $tmsBridge->isEnabled(), ['FIFA_TMS_BRIDGE_URL', 'FIFA_TMS_BRIDGE_TOKEN', 'FIFA_TMS_CLIENT_ID', 'FIFA_TMS_SECRET_KEY', 'FIFA_TMS_ENVIRONMENT'], true),
             $this->item('fhir_hl7', 'Serveur FHIR de FIT (HL7 FHIR R4, IHE)', 'Serveur HAPI dédié alimenté par les EMR, LIS, RIS et PACS : identité clinique, IPS, examens et comptes rendus, consentement. Vérification et mise en service : page « Mise en service FHIR ».', filled(config('fhir.base_url')) && filled(config('fhir.webhook_secret')), $state->enabled('fhir_hl7', false), ['FIT_FHIR_BASE_URL', 'FIT_FHIR_WEBHOOK_SECRET', 'FIT_FHIR_SOURCE_OID', 'FIT_IID_VIEWER_URL', 'FIT_FHIR_TOKEN_URL', 'FIT_FHIR_CLIENT_ID', 'FIT_FHIR_CLIENT_SECRET', 'FIT_FHIR_SCOPE'], false),
             $this->item('pacs', 'PACS / DICOMweb', 'Accès aux images et objets d’imagerie médicale.', filled(config('services.pacs.username')) && filled(config('services.pacs.password')), $state->enabled('pacs', false), ['PACS_BASE_URL', 'PACS_USERNAME', 'PACS_PASSWORD'], false),
         ];

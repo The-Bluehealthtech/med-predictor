@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transfer;
+use App\Services\Transfers\TmsTransferBridge;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +25,7 @@ class TransferManagementController extends Controller
             'rejected_transfers' => (clone $query)
                 ->where('transfer_status', 'rejected')->count(),
             'fifa_tms_synced' => (clone $query)
-                ->whereNotNull('fifa_transfer_id')->count(),
+                ->where('tms_sync_status', 'synced')->count(),
             'local_transfers' => (clone $query)
                 ->where('is_international', false)->count(),
         ];
@@ -100,16 +101,14 @@ class TransferManagementController extends Controller
     {
         $this->authorizeManagement();
 
-        if (!config('services.fifa_tms.api_key')) {
+        $bridge = app(TmsTransferBridge::class);
+        if (!$bridge->isReady()) {
             return redirect()->route('admin.transfer-management.index')
-                ->with('error', 'FIFA TMS non configuré : clé API absente.');
+                ->with('error', 'Bridge SDK FIFA TMS non configuré ou désactivé.');
         }
 
         return redirect()->route('admin.transfer-management.index')
-            ->with(
-                'error',
-                'Synchronisation FIFA TMS live reportée jusqu’à configuration et validation des clés.'
-            );
+            ->with('success', 'Le connecteur TMS est prêt. La synchronisation se déclenche depuis chaque dossier lié à une référence TMS.');
     }
 
     public function approve(int $id)
@@ -223,8 +222,7 @@ class TransferManagementController extends Controller
         abort_unless(
             $user && (
                 $user->isSystemAdmin()
-                || $user->isClubUser()
-                || $user->isAssociationUser()
+                || in_array($user->role, ['club_admin', 'club_manager', 'association_admin', 'association_registrar'], true)
             ),
             403
         );
@@ -239,7 +237,7 @@ class TransferManagementController extends Controller
             return $query;
         }
 
-        if ($user->isClubUser()) {
+        if (in_array($user->role, ['club_admin', 'club_manager'], true)) {
             abort_unless($user->club_id, 403);
 
             return $query->where(function ($q) use ($user) {
@@ -248,7 +246,7 @@ class TransferManagementController extends Controller
             });
         }
 
-        abort_unless($user->isAssociationUser() && $user->association_id, 403);
+        abort_unless(in_array($user->role, ['association_admin', 'association_registrar'], true) && $user->association_id, 403);
 
         return $query->where(function ($q) use ($user) {
             $q->whereHas('clubOrigin', fn ($club) =>
@@ -261,18 +259,21 @@ class TransferManagementController extends Controller
 
     private function fifaTmsStatus(): array
     {
-        if (!config('services.fifa_tms.api_key')) {
+        $bridge = app(TmsTransferBridge::class);
+        if (!$bridge->isConfigured()) {
             return [
                 'status' => 'unconfigured',
-                'message' => 'Clé API FIFA TMS non configurée',
+                'message' => 'Bridge SDK FIFA TMS non configuré',
                 'last_sync' => null,
             ];
         }
 
         return [
-            'status' => 'configured',
-            'message' => 'Configuration FIFA TMS présente ; connexion live non testée.',
-            'last_sync' => null,
+            'status' => $bridge->isEnabled() ? 'connected' : 'configured',
+            'message' => $bridge->isEnabled()
+                ? 'Bridge SDK FIFA TMS configuré et activé.'
+                : 'Bridge SDK FIFA TMS configuré mais désactivé.',
+            'last_sync' => Transfer::query()->max('tms_last_synced_at'),
         ];
     }
 
@@ -297,7 +298,7 @@ class TransferManagementController extends Controller
             'transfer_type' => $type,
             'status' => $transfer->transfer_status,
             'transfer_fee' => $transfer->formatted_transfer_fee,
-            'fifa_tms_id' => $transfer->fifa_transfer_id,
+            'fifa_tms_id' => $transfer->tms_transfer_id ?: $transfer->fifa_transfer_id,
             'created_at' => $transfer->created_at,
         ];
     }

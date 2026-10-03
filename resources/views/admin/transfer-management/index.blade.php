@@ -18,7 +18,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900">
                                     {{ __('Gestion des Transferts') }}
                                 </h1>
-                                <p class="text-sm text-gray-600">{{ __('Gérer les transferts de joueurs connecté à FIFA TMS') }}</p>
+                                <p class="text-sm text-gray-600">{{ __('Préparer les dossiers FIT et suivre leur rattachement à FIFA TMS') }}</p>
                             </div>
                         </div>
                     </div>
@@ -61,15 +61,14 @@
                         @elseif($fifaTmsStatus['status'] === 'configured')
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                                 <span class="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>{{ __('Configuration présente') }}</span>
+                        @elseif($fifaTmsStatus['status'] === 'connected')
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>{{ __('Bridge TMS activé') }}</span>
                         @else
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                                Statut indisponible
-                            </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">Statut indisponible</span>
                         @endif
 
-                        <button type="button" disabled
-                            class="bg-gray-300 text-gray-600 px-4 py-2 rounded-lg cursor-not-allowed"
-                            title="{{ __('La synchronisation FIFA TMS sera activée après configuration et validation des clés API.') }}">{{ __('🔄 Synchronisation TMS reportée') }}</button>
+                        <a href="{{ route('transfers.index') }}" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-semibold">{{ __('Ouvrir les dossiers TMS') }}</a>
                     </div>
                 </div>
                 

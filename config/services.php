@@ -141,8 +141,13 @@ return [
     ],
 
     'fifa_tms' => [
-        'base_url' => env('FIFA_TMS_BASE_URL', 'https://api.fifa.com/tms/v1'),
-        'api_key' => env('FIFA_TMS_API_KEY'),
+        'base_url' => env('FIFA_TMS_BASE_URL'),
+        'api_key' => env('FIFA_TMS_API_KEY'), // legacy read-only connector
+        'bridge_url' => env('FIFA_TMS_BRIDGE_URL'),
+        'bridge_token' => env('FIFA_TMS_BRIDGE_TOKEN'),
+        'client_id' => env('FIFA_TMS_CLIENT_ID'),
+        'secret_key' => env('FIFA_TMS_SECRET_KEY'),
+        'environment' => env('FIFA_TMS_ENVIRONMENT', 'beta'),
         'timeout' => env('FIFA_TMS_TIMEOUT', 15),
         'cache_ttl' => env('FIFA_TMS_CACHE_TTL', 3600),
         'retry_attempts' => env('FIFA_TMS_RETRY_ATTEMPTS', 2),

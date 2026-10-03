@@ -72,6 +72,35 @@ class ApiConnectorSettingsTest extends TestCase
             ->assertSee('Durable')->assertSee('signature_s3');
     }
 
+    public function test_tms_connector_uses_sdk_bridge_and_never_displays_credentials(): void
+    {
+        config([
+            'services.fifa_tms.bridge_url' => 'https://tms-bridge.test',
+            'services.fifa_tms.bridge_token' => 'bridge-secret-value',
+            'services.fifa_tms.client_id' => 'azure-client-id-secret-value',
+            'services.fifa_tms.secret_key' => 'azure-secret-key-value',
+            'services.fifa_tms.mock_mode' => false,
+        ]);
+        \Illuminate\Support\Facades\Http::fake([
+            'https://tms-bridge.test/health' => \Illuminate\Support\Facades\Http::response(['status' => 'ok'], 200),
+        ]);
+        $system = User::factory()->create(['role' => 'system_admin', 'status' => 'active']);
+
+        $this->actingAs($system)->get('/_t/api-connectors')->assertOk()
+            ->assertSee('FIFA TMS')
+            ->assertSee('FIFA_TMS_BRIDGE_URL')
+            ->assertSee('FIFA_TMS_CLIENT_ID')
+            ->assertDontSee('bridge-secret-value')
+            ->assertDontSee('azure-client-id-secret-value')
+            ->assertDontSee('azure-secret-key-value');
+
+        $this->actingAs($system)->post('/_t/api-connectors/fifa_tms/test')
+            ->assertRedirect()->assertSessionHas('success');
+        $this->actingAs($system)->post('/_t/api-connectors/fifa_tms/activation', ['enabled' => 1])
+            ->assertRedirect()->assertSessionHas('success');
+        $this->assertTrue(app(\App\Services\ApiConnectorState::class)->enabled('fifa_tms', false));
+    }
+
     public function test_non_admin_cannot_open_api_configuration_page(): void
     {
         $club = User::factory()->create(['role' => 'club_admin', 'status' => 'active']);

@@ -769,6 +769,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/transfers/{transfer}', [TransferController::class, 'show']);
     Route::put('/transfers/{transfer}', [TransferController::class, 'update']);
     Route::delete('/transfers/{transfer}', [TransferController::class, 'destroy']);
+    Route::post('/transfers/{transfer}/prepare-tms', [TransferController::class, 'prepareForTms']);
+    Route::post('/transfers/{transfer}/link-tms', [TransferController::class, 'linkTmsReference']);
+    Route::post('/transfers/{transfer}/sync-tms', [TransferController::class, 'syncFromTms']);
     Route::post('/transfers/{transfer}/submit-fifa', [TransferController::class, 'submitToFifa']);
     Route::post('/transfers/{transfer}/check-itc', [TransferController::class, 'checkItcStatus']);
 

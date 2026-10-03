@@ -120,12 +120,14 @@
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
                         <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                            <option value="">All Status</option>
-                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            <option value="">Tous les statuts</option>
+                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Brouillon</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
+                            <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Soumis</option>
+                            <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>En revue</option>
+                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approuvé</option>
+                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Refusé</option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Annulé</option>
                         </select>
                     </div>
                     <div>
@@ -171,7 +173,8 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fee</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut FIT</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TMS</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
@@ -236,6 +239,20 @@
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColor }}">
                                         {{ ucfirst($transfer->transfer_status) }}
                                     </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @php
+                                        $tmsColors = [
+                                            'not_ready' => 'bg-slate-100 text-slate-700',
+                                            'ready' => 'bg-blue-100 text-blue-800',
+                                            'linked' => 'bg-cyan-100 text-cyan-800',
+                                            'synced' => 'bg-emerald-100 text-emerald-800',
+                                            'stale' => 'bg-amber-100 text-amber-800',
+                                        ];
+                                        $tmsStatus = $transfer->tms_sync_status ?: 'not_ready';
+                                    @endphp
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $tmsColors[$tmsStatus] ?? 'bg-gray-100 text-gray-700' }}">{{ ucfirst(str_replace('_',' ',$tmsStatus)) }}</span>
+                                    @if($transfer->tms_transfer_id)<div class="mt-1 text-xs font-mono text-gray-500">{{ $transfer->tms_transfer_id }}</div>@endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ $transfer->transfer_date ? \Carbon\Carbon::parse($transfer->transfer_date)->format('M d, Y') : 'N/A' }}</div>

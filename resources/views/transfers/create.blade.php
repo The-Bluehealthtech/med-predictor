@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Create New Transfer')
+@section('title', 'Préparer un dossier de transfert')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Create New Transfer</h1>
+        <div><h1 class="text-3xl font-bold text-gray-900">Préparer un dossier de transfert</h1><p class="mt-1 text-sm text-gray-600">FIT prépare les données et pièces ; le transfert est exécuté dans FIFA TMS.</p></div>
         <a href="{{ route('transfers.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
             <i class="fas fa-arrow-left mr-2"></i>Back to Transfers
         </a>
@@ -209,7 +209,7 @@
                 </a>
                 <button type="submit" 
                         class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
-                    <i class="fas fa-save mr-2"></i>Create Transfer
+                    <i class="fas fa-save mr-2"></i>Créer le dossier FIT
                 </button>
             </div>
         </form>

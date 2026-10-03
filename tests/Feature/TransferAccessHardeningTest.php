@@ -10,6 +10,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class TransferAccessHardeningTest extends TestCase
@@ -26,11 +27,18 @@ class TransferAccessHardeningTest extends TestCase
     {
         parent::setUp();
 
+        if (!Schema::hasColumn('transfers', 'tms_transfer_id')) {
+            (require base_path('database/migrations/2026_10_03_227200_add_tms_workflow_to_transfers.php'))->up();
+        }
+
         Route::middleware(['web','auth'])->group(function () {
             Route::get('/_t/transfers', [TransferController::class,'index'])->name('transfers.index');
             Route::get('/_t/transfers/create', [TransferController::class,'create'])->name('transfers.create');
             Route::post('/_t/transfers', [TransferController::class,'store'])->name('transfers.store');
             Route::get('/_t/transfers/{transfer}', [TransferController::class,'show'])->name('transfers.show');
+            Route::post('/_t/transfers/{transfer}/prepare-tms', [TransferController::class,'prepareForTms'])->name('transfers.prepare-tms');
+            Route::post('/_t/transfers/{transfer}/link-tms', [TransferController::class,'linkTmsReference'])->name('transfers.link-tms');
+            Route::post('/_t/transfers/{transfer}/sync-tms', [TransferController::class,'syncFromTms'])->name('transfers.sync-tms');
             Route::post('/_t/transfers/{transfer}/submit-fifa', [TransferController::class,'submitToFifa'])->name('transfers.submit-to-fifa');
             Route::post('/_t/transfers/{transfer}/check-itc', [TransferController::class,'checkItcStatus'])->name('transfers.check-itc');
             Route::post('/_t/transfers/{transfer}/documents', [\App\Http\Controllers\TransferDocumentController::class,'store'])->name('transfers.documents.store');
@@ -118,7 +126,7 @@ class TransferAccessHardeningTest extends TestCase
         $this->actingAs($operator)->get('/_t/transfers')->assertOk()->assertSee('Ouvrir le dossier');
         $this->actingAs($operator)->get('/_t/transfers/'.$transfer->id)->assertOk()
             ->assertSee('Dossier de transfert')
-            ->assertSee('Connexion FIFA TMS/ITC non activée');
+            ->assertSee('FIT prépare le dossier ; FIFA TMS exécute le transfert');
     }
 
     public function test_fifa_transfer_service_is_fail_closed_without_real_credentials(): void

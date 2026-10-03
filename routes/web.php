@@ -1687,6 +1687,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clubs/{club}/officials/{official}/edit', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'edit'])->whereNumber('official')->name('club-officials.edit');
     Route::put('/clubs/{club}/officials/{official}', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'update'])->whereNumber('official')->name('club-officials.update');
     Route::get('/clubs/{club}/officials/{official}/pdf', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'pdf'])->whereNumber('official')->name('club-officials.pdf');
+    Route::post('/clubs/{club}/officials/{official}/digital-signature', [\App\Http\Controllers\ClubOfficials\ClubOfficialSignatureController::class, 'store'])->whereNumber('official')->name('club-officials.digital-signature');
+    Route::post('/clubs/{club}/officials/{official}/digital-signature/{signature}/sync', [\App\Http\Controllers\ClubOfficials\ClubOfficialSignatureController::class, 'sync'])->whereNumber('official')->whereNumber('signature')->name('club-officials.digital-signature.sync');
+    Route::get('/clubs/{club}/officials/{official}/digital-signature/{signature}/download', [\App\Http\Controllers\ClubOfficials\ClubOfficialSignatureController::class, 'download'])->whereNumber('official')->whereNumber('signature')->name('club-officials.digital-signature.download');
     
     Route::get('/player-portal/medical-records/{record}', [App\Http\Controllers\PlayerMedicalRecordController::class,'show'])->whereNumber('record')->name('player-medical.show');
     Route::get('/player-portal/medical-records/{record}/documents/{document}', [App\Http\Controllers\PlayerMedicalRecordController::class,'document'])->whereNumber('record')->whereNumber('document')->name('player-medical.document');

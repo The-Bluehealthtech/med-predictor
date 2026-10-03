@@ -28,6 +28,9 @@ class ClubOfficialsTest extends TestCase
         if (!Schema::hasTable('club_officials')) {
             (require base_path('database/migrations/2026_10_02_150000_create_club_officials_table.php'))->up();
         }
+        if (!Schema::hasTable('document_signature_requests')) {
+            (require base_path('database/migrations/2026_10_03_180000_create_document_signature_requests.php'))->up();
+        }
         $this->associationId = (int) DB::table('associations')->insertGetId(['name' => 'Fédération test', 'country' => 'Tunisie', 'created_at' => now(), 'updated_at' => now()]);
         $this->clubId = (int) DB::table('clubs')->insertGetId(['name' => 'Club test', 'association_id' => $this->associationId, 'fifa_connect_id' => 'ORG123', 'created_at' => now(), 'updated_at' => now()]);
         $this->otherClubId = (int) DB::table('clubs')->insertGetId(['name' => 'Autre club', 'created_at' => now(), 'updated_at' => now()]);
@@ -93,6 +96,20 @@ class ClubOfficialsTest extends TestCase
         $this->assertSame('President', $president->organisation_official_role);
         $this->assertNull($president->team_official_role);
         $this->assertFalse($president->is_head_coach);
+    }
+
+    public function test_signature_workflow_is_scoped_to_club_and_federation_admins(): void
+    {
+        $admin = $this->user('club_admin', ['club_id' => $this->clubId]);
+        $this->actingAs($admin)->post(route('club-officials.store', $this->clubId), $this->coach())->assertRedirect();
+        $coach = ClubOfficial::query()->firstOrFail();
+
+        $this->actingAs($admin)->get(route('club-officials.show', [$this->clubId, $coach]))->assertOk()
+            ->assertSee('Certification numérique de la fiche')->assertSee('prêt pour le Go Live');
+        $this->actingAs($this->user('club_manager', ['club_id' => $this->clubId]))
+            ->post(route('club-officials.digital-signature', [$this->clubId, $coach]), ['provider' => 'adobe_sign'])->assertForbidden();
+        $this->actingAs($this->user('club_admin', ['club_id' => $this->otherClubId]))
+            ->post(route('club-officials.digital-signature', [$this->clubId, $coach]), ['provider' => 'adobe_sign'])->assertForbidden();
     }
 
     public function test_access_follows_club_and_federation(): void

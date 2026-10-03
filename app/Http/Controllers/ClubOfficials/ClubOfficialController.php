@@ -68,7 +68,17 @@ class ClubOfficialController extends Controller
     {
         $this->authorizeView($request, $club, $official);
 
-        return view('club-officials.show', ['club' => $club, 'official' => $official, 'canManage' => $this->officials->canManage($request->user(), $club)]);
+        $signatureService = app(\App\Services\Documents\DocumentSignatureService::class);
+        $signatureProviders = \Illuminate\Support\Facades\Schema::hasTable('system_settings')
+            ? collect($signatureService->allStatuses())
+            : collect($signatureService->providers())->map(fn($provider,$slug)=>$provider+['slug'=>$slug,'enabled'=>false,'status'=>$provider['configured']?'disabled':'not_configured']);
+        $signatureRequests = \Illuminate\Support\Facades\Schema::hasTable('document_signature_requests')
+            ? \App\Models\DocumentSignatureRequest::query()->where('workflow','club_official.profile_document')->latest('id')->get()
+                ->filter(fn($item)=>(int)data_get($item->metadata,'document.official_id')===(int)$official->id)->values()
+            : collect();
+        $canSign = in_array($request->user()->role, ['club_admin','association_admin'], true) && $this->officials->canManage($request->user(), $club);
+
+        return view('club-officials.show', compact('club','official','signatureProviders','signatureRequests','canSign') + ['canManage' => $this->officials->canManage($request->user(), $club)]);
     }
 
     public function edit(Request $request, Club $club, ClubOfficial $official)

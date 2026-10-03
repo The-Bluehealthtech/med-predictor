@@ -19,6 +19,7 @@
     </div>
     @if(session('status'))<div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('status') }}</div>@endif
     <div class="bg-white rounded-lg shadow p-5">@include('club-officials.partials._sheet')</div>
+    @include('club-officials._digital-signature')
     <p class="text-xs text-gray-500">Champs nommés comme dans FIFA Connect (Person, Registration, Certification). L'e-mail et le téléphone sont des données locales, non transmises à FIFA Connect.</p>
 </div>
 @endsection

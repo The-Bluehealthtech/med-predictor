@@ -170,6 +170,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clubs/{club}/officials/{official}/edit', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'edit'])->whereNumber('official')->name('club-officials.edit');
     Route::put('/clubs/{club}/officials/{official}', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'update'])->whereNumber('official')->name('club-officials.update');
     Route::get('/clubs/{club}/officials/{official}/pdf', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'pdf'])->whereNumber('official')->name('club-officials.pdf');
+    Route::post('/clubs/{club}/officials/{official}/digital-signature', [\App\Http\Controllers\ClubOfficials\ClubOfficialSignatureController::class, 'store'])->whereNumber('official')->name('club-officials.digital-signature');
+    Route::post('/clubs/{club}/officials/{official}/digital-signature/{signature}/sync', [\App\Http\Controllers\ClubOfficials\ClubOfficialSignatureController::class, 'sync'])->whereNumber('official')->whereNumber('signature')->name('club-officials.digital-signature.sync');
+    Route::get('/clubs/{club}/officials/{official}/digital-signature/{signature}/download', [\App\Http\Controllers\ClubOfficials\ClubOfficialSignatureController::class, 'download'])->whereNumber('official')->whereNumber('signature')->name('club-officials.digital-signature.download');
 });
 
 // Exports « Player statistics » des clubs (Excel/CSV) : reconnaissance, aperçu, import.

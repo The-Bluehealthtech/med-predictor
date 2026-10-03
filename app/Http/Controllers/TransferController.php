@@ -209,7 +209,7 @@ class TransferController extends Controller
     /**
      * Afficher un transfert spécifique
      */
-    public function show(Transfer $transfer): View
+    public function show(Request $request, Transfer $transfer): View
     {
         $this->authorizeTransferAccess($transfer);
 
@@ -225,8 +225,19 @@ class TransferController extends Controller
         $approvedDocuments = $transfer->documents->where('validation_status', 'approved')->pluck('document_type')->all();
         $missingDocuments = array_values(array_diff($requiredDocuments, $approvedDocuments));
         $fifaConfigured = $this->fifaService->isConfigured();
+        $user = $request->user();
+        $clubOperator = $user && in_array($user->role, ['club_admin', 'club_manager'], true)
+            && $user->club_id && in_array((int) $user->club_id, [(int) $transfer->club_origin_id, (int) $transfer->club_destination_id], true);
+        $associationOperator = $user && in_array($user->role, ['association_admin', 'association_registrar'], true)
+            && $user->association_id && in_array((int) $user->association_id, [(int) $transfer->clubOrigin?->association_id, (int) $transfer->clubDestination?->association_id], true);
+        $canUploadDocuments = in_array($transfer->transfer_status, ['draft', 'rejected'], true) && ($clubOperator || $associationOperator);
+        $canValidateDocuments = $associationOperator;
+        $canDownloadDocuments = ($user?->isSystemAdmin() ?? false) || $clubOperator || $associationOperator;
 
-        return view('transfers.show', compact('transfer', 'requiredDocuments', 'approvedDocuments', 'missingDocuments', 'fifaConfigured'));
+        return view('transfers.show', compact(
+            'transfer', 'requiredDocuments', 'approvedDocuments', 'missingDocuments', 'fifaConfigured',
+            'canUploadDocuments', 'canValidateDocuments', 'canDownloadDocuments'
+        ));
     }
 
     /**

@@ -75,12 +75,59 @@
     </section>
 
     <section class="rounded-2xl border border-slate-200 bg-white p-5">
-        <h2 class="font-semibold text-slate-900">Pièces et traçabilité</h2>
-        <div class="mt-3 divide-y divide-slate-100">
-            @forelse($transfer->documents as $document)
-                <div class="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
-                    <span>{{ $document->document_type_label }} · {{ $document->file_name ?: $document->document_name }}</span>
-                    <span class="{{ $document->validation_status === 'approved' ? 'text-emerald-700' : ($document->validation_status === 'rejected' ? 'text-red-700' : 'text-amber-700') }} font-semibold">{{ $document->validation_status_label }}</span>
+        <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+                <h2 class="font-semibold text-slate-900">Pièces et traçabilité</h2>
+                <p class="mt-1 text-sm text-slate-600">Les fichiers restent privés. Une nouvelle version remplace l’ancienne sans supprimer l’historique.</p>
+            </div>
+        </div>
+
+        @if($canUploadDocuments)
+            <form method="POST" action="{{ route('transfers.documents.store',$transfer) }}" enctype="multipart/form-data" class="mt-4 grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[220px_1fr_auto] md:items-end">
+                @csrf
+                <label class="text-sm font-medium text-slate-700">Type de pièce
+                    <select name="document_type" class="mt-1 w-full rounded-lg border-slate-300" required>
+                        <option value="passport">Passeport</option>
+                        <option value="contract">Contrat</option>
+                        @if($transfer->is_minor_transfer)<option value="parental_consent">Consentement parental</option>@endif
+                        <option value="work_permit">Permis de travail</option>
+                        <option value="identity_card">Carte d’identité</option>
+                        <option value="birth_certificate">Acte de naissance</option>
+                        <option value="transfer_form">Formulaire de transfert</option>
+                    </select>
+                </label>
+                <label class="text-sm font-medium text-slate-700">Fichier
+                    <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full text-sm" required>
+                </label>
+                <button class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Déposer</button>
+            </form>
+        @endif
+
+        <div class="mt-4 divide-y divide-slate-100">
+            @forelse($transfer->documents->sortByDesc('id') as $document)
+                <div class="py-3 text-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <span class="font-medium text-slate-900">{{ $document->document_type_label }}</span>
+                            <span class="text-slate-500"> · {{ $document->file_name ?: $document->document_name }}</span>
+                            @if($document->sha256)<span class="ml-2 font-mono text-[11px] text-slate-400">SHA-256 {{ substr($document->sha256,0,12) }}…</span>@endif
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="{{ $document->validation_status === 'approved' ? 'text-emerald-700' : ($document->validation_status === 'rejected' ? 'text-red-700' : ($document->validation_status === 'expired' ? 'text-slate-500' : 'text-amber-700')) }} font-semibold">{{ $document->validation_status_label }}</span>
+                            @if($canDownloadDocuments)
+                                <a class="font-semibold text-blue-700" href="{{ route('transfers.documents.download',[$transfer,$document]) }}">Télécharger</a>
+                            @endif
+                        </div>
+                    </div>
+                    @if($document->validation_notes)<p class="mt-1 text-xs text-slate-500">{{ $document->validation_notes }}</p>@endif
+                    @if($canValidateDocuments && $document->validation_status === 'pending')
+                        <form method="POST" action="{{ route('transfers.documents.decision',[$transfer,$document]) }}" class="mt-2 flex flex-wrap items-center gap-2">
+                            @csrf
+                            <input name="notes" class="min-w-[260px] flex-1 rounded-lg border-slate-300 text-sm" placeholder="Note fédération (obligatoire en cas de refus)">
+                            <button name="decision" value="approve" class="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-semibold text-white">Approuver</button>
+                            <button name="decision" value="reject" class="rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 ring-1 ring-red-200">Refuser</button>
+                        </form>
+                    @endif
                 </div>
             @empty
                 <p class="py-3 text-sm text-slate-500">Aucune pièce de transfert enregistrée.</p>

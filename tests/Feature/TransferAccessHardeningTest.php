@@ -33,6 +33,9 @@ class TransferAccessHardeningTest extends TestCase
             Route::get('/_t/transfers/{transfer}', [TransferController::class,'show'])->name('transfers.show');
             Route::post('/_t/transfers/{transfer}/submit-fifa', [TransferController::class,'submitToFifa'])->name('transfers.submit-to-fifa');
             Route::post('/_t/transfers/{transfer}/check-itc', [TransferController::class,'checkItcStatus'])->name('transfers.check-itc');
+            Route::post('/_t/transfers/{transfer}/documents', [\App\Http\Controllers\TransferDocumentController::class,'store'])->name('transfers.documents.store');
+            Route::get('/_t/transfers/{transfer}/documents/{document}', [\App\Http\Controllers\TransferDocumentController::class,'download'])->name('transfers.documents.download');
+            Route::post('/_t/transfers/{transfer}/documents/{document}/decision', [\App\Http\Controllers\TransferDocumentController::class,'decision'])->name('transfers.documents.decision');
             Route::get('/_t/passports/transfer/{player}', fn () => response('passport'))->name('passports.transfer.show');
         });
         app('router')->getRoutes()->refreshNameLookups();

@@ -51,6 +51,7 @@ class DeployFit extends Command
         'database/migrations/2026_10_03_225000_create_medical_files_table.php',
         'database/migrations/2026_10_03_226000_create_fhir_orders_table.php',
         'database/migrations/2026_10_03_227000_create_privacy_consent_tables.php',
+        'database/migrations/2026_10_03_227100_add_storage_integrity_to_transfer_documents.php',
     ];
 
     protected $signature = 'fit:deploy

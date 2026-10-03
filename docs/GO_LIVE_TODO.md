@@ -27,6 +27,7 @@ This checklist tracks production dependencies that must not be simulated in code
 - [ ] Vérifier les endpoints transfert/ITC et le mécanisme d’authentification avec la documentation fournie à l’organisation avant le premier appel réel.
 - [ ] Tester un transfert international de bout en bout dans l’environnement autorisé : soumission, référence externe, demande ITC, statut ITC et journal d’audit.
 - [ ] Valider l’authenticité et la vérification cryptographique des webhooks FIFA avant de laisser un webhook modifier un statut de transfert.
+- [ ] Configurer `TRANSFER_DOCUMENT_DISK` sur un stockage privé durable approuvé et vérifier qu’une pièce de transfert reste téléchargeable après redéploiement/restart Render.
 
 ## Signature documentaire
 

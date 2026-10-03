@@ -1788,6 +1788,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/transfers/{transfer}', [App\Http\Controllers\TransferController::class, 'show'])->whereNumber('transfer')->name('transfers.show');
     Route::post('/transfers/{transfer}/submit-fifa', [App\Http\Controllers\TransferController::class, 'submitToFifa'])->whereNumber('transfer')->name('transfers.submit-to-fifa');
     Route::post('/transfers/{transfer}/check-itc', [App\Http\Controllers\TransferController::class, 'checkItcStatus'])->whereNumber('transfer')->name('transfers.check-itc');
+    Route::post('/transfers/{transfer}/documents', [App\Http\Controllers\TransferDocumentController::class, 'store'])->whereNumber('transfer')->name('transfers.documents.store');
+    Route::get('/transfers/{transfer}/documents/{document}', [App\Http\Controllers\TransferDocumentController::class, 'download'])->whereNumber('transfer')->whereNumber('document')->name('transfers.documents.download');
+    Route::post('/transfers/{transfer}/documents/{document}/decision', [App\Http\Controllers\TransferDocumentController::class, 'decision'])->whereNumber('transfer')->whereNumber('document')->name('transfers.documents.decision');
     
     // Performance Recommendations routes
     Route::get('/performance-recommendations', function () {

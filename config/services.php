@@ -113,6 +113,10 @@ return [
         'disk' => env('DOCUMENT_SIGNATURE_DISK', 'local'),
     ],
 
+    'transfers' => [
+        'document_disk' => env('TRANSFER_DOCUMENT_DISK', 'local'),
+    ],
+
     'fifa_connect' => [
         'base_url' => env('FIFA_CONNECT_BASE_URL', 'https://api.fifa.com/v1'),
         'api_key' => env('FIFA_CONNECT_API_KEY'),

@@ -83,30 +83,31 @@ $timelineLabels=[
 <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">Aucun match Connect lié</span>
 @endif
 </div>
+@if($connectPeople->isEmpty())
+<div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+<strong>Aucune personne identifiée disponible.</strong>
+Ajoutez ou synchronisez les membres du staff dans les fiches <span class="font-semibold">Dirigeants & staff</span> des deux clubs du match. Le lien avec un match FIFA Connect n’est pas requis pour affecter ces rôles.
+</div>
+@else
 <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
 @foreach($roleDefinitions as $key=>$label)
 <div class="rounded-xl border border-slate-200 p-4">
 <label class="block">
 <span class="text-xs font-bold uppercase tracking-wide">{{ ucfirst($key) }} · {{ $label }}</span>
-<input name="role_assignments[{{ $key }}]" data-role-name="{{ $key }}" value="{{ old('role_assignments.'.$key,$roles[$key]??'') }}" class="mt-3 w-full rounded-lg border-slate-300" placeholder="Nom du professionnel" @disabled(!$canEdit)>
-</label>
-@if($connectPeople->isNotEmpty())
-<label class="mt-3 block text-xs font-semibold text-slate-500">Identité FIFA Connect
-<select name="connect_role_assignments[{{ $key }}]" data-role-connect="{{ $key }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm" @disabled(!$canEdit)>
-<option value="">Saisie libre / non liée</option>
+<select name="connect_role_assignments[{{ $key }}]" data-role-connect="{{ $key }}" class="mt-3 w-full rounded-lg border-slate-300 text-sm" @disabled(!$canEdit)>
+<option value="">— Sélectionner une personne —</option>
 @foreach($connectPeople as $person)
 <option value="{{ $person['person_fifa_id'] }}" data-person-name="{{ $person['name'] }}" @selected((string)old('connect_role_assignments.'.$key,$connectRoles[$key]??'')===(string)$person['person_fifa_id'])>
-{{ $person['name'] }} · {{ $person['role'] }} [{{ $person['role_connect_id'] ?: 'Role Connect non renseigné' }}]{{ $person['team'] ? ' · '.$person['team'] : '' }} · FIFA {{ $person['person_fifa_id'] }}
+{{ $person['name'] }} · {{ $person['role'] }}{{ $person['team'] ? ' · '.$person['team'] : '' }}{{ $person['person_fifa_id'] ? ' · FIFA '.$person['person_fifa_id'] : '' }}
 </option>
 @endforeach
 </select>
+<input type="hidden" name="role_assignments[{{ $key }}]" data-role-name="{{ $key }}" value="{{ old('role_assignments.'.$key,$roles[$key]??'') }}">
 </label>
-@endif
 </div>
 @endforeach
 </div>
-@if($connectPeople->isNotEmpty())
-<p class="mt-3 text-xs text-slate-500">{{ $connectPeople->count() }} officiel(s) / membre(s) de staff issus du modèle FIFA Connect sont disponibles pour l’affectation.</p>
+<p class="mt-3 text-xs text-slate-500">{{ $connectPeople->count() }} personne(s) identifiée(s) dans les staffs actifs des clubs du match. Une même personne peut être affectée à plusieurs responsabilités si l’organisation médicale le prévoit.</p>
 @endif
 </section>
 

@@ -299,7 +299,7 @@ class MatchMedicalEmergencyPlanTest extends TestCase
             ->assertSee('MATCH-FIFA-'.$this->match->id)
             ->assertSee('PERSON-FIFA-MED-1')
             ->assertSee('Amina Doctor')
-            ->assertSee('[TeamDoctor]');
+            ->assertSee('PERSON-FIFA-MED-1');
 
         $payload=$this->completePayload();
         $payload['connect_role_assignments']=['black'=>'PERSON-FIFA-MED-1'];

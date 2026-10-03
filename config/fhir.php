@@ -29,6 +29,17 @@ return [
         'language' => 'fr-FR',
     ],
 
+    // Prescriptions transmises aux laboratoires et services d'imagerie (ServiceRequest) : acte FIT
+    // => catégorie du service (HL7 v2 table 0074, utilisée aussi par DiagnosticReport.category).
+    'orders' => [
+        'laboratory' => ['label' => 'Examen de laboratoire', 'category' => 'LAB', 'category_display' => 'Laboratory'],
+        'imaging' => ['label' => 'Imagerie', 'category' => 'RAD', 'category_display' => 'Radiology'],
+        'mri' => ['label' => 'IRM', 'category' => 'RAD', 'category_display' => 'Radiology'],
+    ],
+
+    // Notification du serveur FHIR (Subscription rest-hook) : secret partagé, envoyé en en-tête.
+    'webhook_secret' => env('FIT_FHIR_WEBHOOK_SECRET'),
+
     // Imagerie : visionneuse du PACS appelée selon IHE RAD Invoke Image Display (IID), en HTTPS.
     'imaging' => [
         'iid_viewer_url' => env('FIT_IID_VIEWER_URL'),

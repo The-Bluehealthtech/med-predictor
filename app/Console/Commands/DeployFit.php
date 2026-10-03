@@ -49,6 +49,7 @@ class DeployFit extends Command
         'database/migrations/2026_10_03_223000_create_fhir_patient_links_table.php',
         'database/migrations/2026_10_03_224000_create_fhir_documents_table.php',
         'database/migrations/2026_10_03_225000_create_medical_files_table.php',
+        'database/migrations/2026_10_03_226000_create_fhir_orders_table.php',
     ];
 
     protected $signature = 'fit:deploy

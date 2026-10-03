@@ -23,6 +23,8 @@
             @endforeach
         </nav>
 
+        @if(session('success'))<p class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900" role="status">{{ session('success') }}</p>@endif
+        @if($errors->has('fhir'))<p class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{{ $errors->first('fhir') }}</p>@endif
         @if($error)
             <p class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{{ $error }}</p>
         @else
@@ -45,6 +47,16 @@
                                 <td class="px-4 py-2 text-slate-700">
                                     {{ $item['detail'] ?? '' }}
                                     @if($item['viewer'])<div><a href="{{ $item['viewer'] }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 font-semibold">Ouvrir les images (visionneuse PACS)</a></div>@endif
+                                    @if($tab === 'reports')
+                                        @if(in_array($item['id'], $integrated, true))
+                                            <div class="mt-1 text-xs font-semibold text-emerald-700">Intégré au dossier FIT</div>
+                                        @else
+                                            <form method="POST" action="{{ route('clinical.external-data.integrate', $player) }}" class="mt-1">@csrf
+                                                <input type="hidden" name="report_id" value="{{ $item['id'] }}">
+                                                <button class="text-sm font-semibold text-blue-700 hover:underline">Intégrer au dossier</button>
+                                            </form>
+                                        @endif
+                                    @endif
                                 </td>
                                 <td class="px-4 py-2 text-slate-600">{{ $item['source'] ?? '—' }}</td>
                             </tr>

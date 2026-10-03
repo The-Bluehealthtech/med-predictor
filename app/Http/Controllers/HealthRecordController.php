@@ -175,6 +175,7 @@ class HealthRecordController extends Controller
             'visit_notes' => 'nullable|string',
             'prescribed_modules' => 'nullable|array|max:20',
             'prescribed_modules.*' => 'string|in:pcma,fmarc,scat,imaging,mri,mapa,ecg_effort,laboratory,dental,postural,specialist,physiotherapy',
+            'order_details' => 'nullable|string|max:1000',
         ] + $this->extraRules($request));
 
         app(\App\Services\MedicalRecordAccess::class)->authorize(auth()->user(),Player::findOrFail($validated['player_id']),null);
@@ -242,6 +243,10 @@ class HealthRecordController extends Controller
                     'administrative_data' => $visitData,
                 ]);
                 $visit->appointment?->update(['status' => 'Terminé']);
+                // Examens de laboratoire et d'imagerie : demandes transmises au serveur FHIR (ServiceRequest).
+                if ($healthRecord->player_id && ($player = \App\Models\Player::withoutGlobalScopes()->find($healthRecord->player_id))) {
+                    app(\App\Services\Fhir\FhirOrders::class)->dispatch($visit, $player, $visitData['prescribed_modules'], $validated['order_details'] ?? null, $request->user());
+                }
             }
         }
 

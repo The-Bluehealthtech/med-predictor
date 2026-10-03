@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Athlete;
 use App\Models\Document;
+use App\Models\FhirOrder;
 use App\Models\FhirPatientLink;
 use App\Models\PCMA;
 use App\Models\Player;
@@ -12,6 +13,7 @@ use App\Models\PlayerLicense;
 use App\Models\User;
 use App\Models\Visit;
 use App\Services\Fhir\FhirException;
+use App\Services\Fhir\FhirOrders;
 use App\Services\Fhir\PatientIdentity;
 use App\Services\Licensing\PcmaRequirement;
 use App\Services\Medical\PcmaVisit;
@@ -123,6 +125,10 @@ final class MedicalSecretaryController extends Controller
         }
 
         $pcmaNeeded = $this->pcmaNeeded();
+        // Examens transmis aux laboratoires et à l'imagerie (statut seulement, aucun résultat médical).
+        $fhirOrders = FhirOrder::query()->with(['player.club'])
+            ->whereIn('player_id', $this->playersQuery()->select('players.id'))
+            ->where('created_at', '>=', now()->subDays(60))->latest()->limit(30)->get();
 
         $athletes = $this->athletesQuery()->with('player')->orderBy('name')->limit(1000)->get();
         $doctors = User::query()
@@ -133,6 +139,7 @@ final class MedicalSecretaryController extends Controller
         return view('secretary.dashboard', compact(
             'stats',
             'pcmaNeeded',
+            'fhirOrders',
             'recentAppointments',
             'recentDocuments',
             'athletes',
@@ -339,6 +346,30 @@ final class MedicalSecretaryController extends Controller
         ]);
 
         return back()->with('success', 'Document ajouté à la visite pour le médecin.');
+    }
+
+    /** Vérification manuelle des comptes rendus (en complément de l'abonnement FHIR). */
+    public function syncOrders(): RedirectResponse
+    {
+        try {
+            $completed = app(FhirOrders::class)->sync();
+        } catch (FhirException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back()->with('success', $completed ? "{$completed} examen(s) avec compte rendu reçu." : 'Aucun nouveau compte rendu.');
+    }
+
+    /** Nouvel envoi d'une demande d'examen non transmise (erreur, ou serveur installé depuis). */
+    public function retryOrder(FhirOrder $order): RedirectResponse
+    {
+        $this->authorizePlayer(Player::withoutGlobalScopes()->findOrFail($order->player_id));
+        abort_unless(in_array($order->status, ['pending', 'error'], true), 422);
+        app(FhirOrders::class)->retry($order);
+        $order->refresh();
+
+        return back()->with($order->status === 'active' ? 'success' : 'error',
+            $order->status === 'active' ? 'Demande d’examen transmise.' : 'Transmission impossible : ' . ($order->error ?? 'serveur FHIR non installé.'));
     }
 
     /** Identité clinique du joueur sur le serveur FHIR : Patient de FIT, liens confirmés, candidats PDQm. */

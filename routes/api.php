@@ -1354,3 +1354,6 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
         Route::post('/selections/{selection}/acknowledge', [\App\Http\Controllers\Api\V1\Club\SelectionApiController::class, 'acknowledge']);
     });
 });
+
+// Notification de l'abonnement FHIR R4 (rest-hook) du serveur FHIR de FIT : comptes rendus d'examens
+Route::post('/fhir/notify', \App\Http\Controllers\Fhir\SubscriptionNotificationController::class)->middleware('throttle:60,1')->name('api.fhir.notify');

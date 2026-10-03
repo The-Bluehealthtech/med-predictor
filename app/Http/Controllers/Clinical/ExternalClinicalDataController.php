@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Player;
 use App\Services\Fhir\ClinicalDataQuery;
 use App\Services\Fhir\FhirException;
+use App\Services\Fhir\ReportIntegration;
 use App\Services\MedicalRecordAccess;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -35,6 +36,21 @@ class ExternalClinicalDataController extends Controller
         }
 
         return view('clinical.external-data', ['player' => $player, 'tab' => $tab, 'categories' => ClinicalDataQuery::CATEGORIES,
-            'configured' => $configured, 'linked' => $linked, 'items' => $items, 'error' => $error, 'back' => $request->query('back')]);
+            'configured' => $configured, 'linked' => $linked, 'items' => $items, 'error' => $error, 'back' => $request->query('back'),
+            'integrated' => $tab === 'reports' ? app(ReportIntegration::class)->integrated($player) : []]);
+    }
+
+    /** Compte rendu joint au dossier FIT sur décision du médecin. */
+    public function integrate(Request $request, Player $player, ReportIntegration $integration, MedicalRecordAccess $access)
+    {
+        $access->authorize($request->user(), $player, null);
+        $data = $request->validate(['report_id' => 'required|string|regex:/^[A-Za-z0-9\-.]{1,64}$/']);
+        try {
+            $document = $integration->integrate($player, $data['report_id'], $request->user());
+        } catch (FhirException $e) {
+            return back()->withErrors(['fhir' => $e->getMessage()]);
+        }
+
+        return back()->with('success', 'Compte rendu joint à la visite du ' . $document->visit->visit_date->format('d/m/Y') . ' dans le dossier FIT.');
     }
 }

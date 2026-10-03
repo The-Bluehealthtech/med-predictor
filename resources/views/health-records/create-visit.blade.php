@@ -422,6 +422,13 @@
                 </div>
 
                 <div>
+                    <label for="order_details" class="block text-sm font-medium text-gray-700 mb-1">Précisions sur les examens demandés (laboratoire, imagerie, IRM)</label>
+                    <textarea id="order_details" name="order_details" rows="2" maxlength="1000" class="w-full border-gray-300 rounded-lg"
+                              placeholder="Ex. NFS, CRP, ferritine ; IRM du genou droit">{{ old('order_details') }}</textarea>
+                    <p class="text-xs text-slate-500 mt-1">Transmis au laboratoire ou au service d’imagerie avec la demande d’examen (serveur FHIR de FIT).</p>
+                </div>
+
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Ordonnance / prescription</label>
                     <textarea id="prescription-detail" rows="2" class="w-full border-gray-300 rounded-lg"
                               placeholder="Médicaments, posologie ou autres prescriptions décidées par le médecin">{{ old('prescriptions') }}</textarea>

@@ -1668,6 +1668,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/passports/medical/{player}/fhir', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalFhir'])->whereNumber('player')->name('passports.medical.fhir');
     // Données cliniques des établissements (serveur FHIR de FIT, IHE QEDm / IID)
     Route::get('/clinical/players/{player}/external-data', [\App\Http\Controllers\Clinical\ExternalClinicalDataController::class, 'show'])->whereNumber('player')->name('clinical.external-data');
+    Route::post('/clinical/players/{player}/external-data/integrate', [\App\Http\Controllers\Clinical\ExternalClinicalDataController::class, 'integrate'])->whereNumber('player')->name('clinical.external-data.integrate');
     Route::post('/passports/medical/{player}/ips/publish', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalIpsPublish'])->whereNumber('player')->name('passports.medical.ips.publish');
     Route::get('/passports/medical/{player}/ips/{document}', [\App\Http\Controllers\Passports\PassportsController::class, 'medicalIpsShow'])->whereNumber('player')->name('passports.medical.ips.show');
     Route::get('/passports/transfer', [\App\Http\Controllers\Passports\PassportsController::class, 'transferIndex'])->name('passports.transfer.index');
@@ -2615,6 +2616,9 @@ Route::get('/test-pdf', function() {
         ->name('secretary.appointments.receive');
     Route::post('/secretary/appointments/{appointment}/documents', [App\Http\Controllers\MedicalSecretaryController::class, 'uploadDocument'])
         ->name('secretary.appointments.documents.store');
+    // Examens transmis au serveur FHIR (ServiceRequest) : vérification des comptes rendus, renvoi
+    Route::post('/secretary/orders/sync', [App\Http\Controllers\MedicalSecretaryController::class, 'syncOrders'])->middleware('throttle:10,1')->name('secretary.orders.sync');
+    Route::post('/secretary/orders/{order}/retry', [App\Http\Controllers\MedicalSecretaryController::class, 'retryOrder'])->whereNumber('order')->name('secretary.orders.retry');
     // Identité clinique du joueur sur le serveur FHIR de FIT (IHE PIXm / PDQm)
     Route::get('/secretary/players/{player}/identity', [App\Http\Controllers\MedicalSecretaryController::class, 'identity'])
         ->whereNumber('player')->name('secretary.identity');

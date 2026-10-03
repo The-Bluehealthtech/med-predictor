@@ -172,6 +172,50 @@
     </section>
     @endif
 
+    @if($fhirOrders->isNotEmpty())
+    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" aria-labelledby="h-fhir-orders">
+        <div class="px-5 py-4 border-b flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <h2 id="h-fhir-orders" class="font-semibold text-slate-950">Examens transmis aux laboratoires et à l’imagerie</h2>
+                <p class="text-sm text-slate-500 mt-1">Demandes d’examen envoyées par le serveur FHIR de FIT ; le compte rendu est consultable par le médecin.</p>
+            </div>
+            <form method="POST" action="{{ route('secretary.orders.sync') }}">@csrf
+                <button class="px-3 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50">Vérifier les résultats</button>
+            </form>
+        </div>
+        <div class="divide-y">
+            @foreach($fhirOrders as $order)
+                @php
+                    [$label, $style] = match($order->status) {
+                        'active' => ['Transmis', 'bg-blue-50 text-blue-800'],
+                        'results_received' => ['Compte rendu reçu', 'bg-emerald-50 text-emerald-800'],
+                        'error' => ['Échec d’envoi', 'bg-red-50 text-red-700'],
+                        default => ['En attente d’envoi', 'bg-amber-50 text-amber-800'],
+                    };
+                @endphp
+                <div class="p-4 grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 md:items-center">
+                    <div>
+                        <div class="font-semibold text-slate-900">{{ $order->player?->full_name ?? $order->player?->name }}</div>
+                        <div class="text-sm text-slate-500">{{ $order->label() }} · prescrit le {{ $order->created_at->format('d/m/Y') }}</div>
+                    </div>
+                    <div class="text-sm">
+                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold {{ $style }}">{{ $label }}</span>
+                        @if($order->results_at)<span class="text-slate-500 ml-2">le {{ $order->results_at->format('d/m/Y') }}</span>@endif
+                        @if($order->status === 'error' && $order->error)<div class="text-xs text-red-700 mt-1">{{ $order->error }}</div>@endif
+                    </div>
+                    <div>
+                        @if(in_array($order->status, ['pending', 'error'], true))
+                            <form method="POST" action="{{ route('secretary.orders.retry', $order) }}">@csrf
+                                <button class="px-3 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold">Renvoyer</button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
     <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b">
             <h2 class="font-semibold text-slate-950">Flux des patients</h2>

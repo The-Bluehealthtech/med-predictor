@@ -39,6 +39,12 @@ hapi:
     # Patient/$summary (IPS) : génération de l'IPS à partir des données du serveur.
     ips_enabled: true
 
+    # Abonnements FHIR R4 (rest-hook) : le serveur prévient FIT quand un compte rendu arrive
+    # (Subscription créée par php artisan fhir:subscriptions:install).
+    subscription:
+      resthook_enabled: true
+      websocket_enabled: false
+
     implementationguides:
       ips:
         name: hl7.fhir.uv.ips

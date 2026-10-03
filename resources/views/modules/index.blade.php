@@ -388,6 +388,7 @@ function handleModuleClick(route, moduleName, event) {
         'modules.players.index': '/modules/players',
         'modules.teams.index': '/modules/teams',
         'modules.competitions.index': '/modules/competitions',
+        'competition-management.matches.index': '/competition-management/matches',
         'modules.referees.index': '/modules/referees',
         'modules.clubs.index': '/modules/clubs',
         'modules.associations.index': '/modules/associations',

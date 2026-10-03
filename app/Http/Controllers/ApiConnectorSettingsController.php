@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\ApiConnectorState;
 use App\Services\Documents\AdobeSignProvider;
 use App\Services\Documents\DocumentSignatureService;
+use App\Services\Documents\DocumentSignatureStorage;
 use App\Services\Licensing\AwsRekognitionFaceMatcher;
 use App\Services\Licensing\FifaIdRegistry;
 use App\Services\Licensing\SignotecSignatureProvider;
@@ -19,11 +20,13 @@ final class ApiConnectorSettingsController extends Controller
         SignotecSignatureProvider $signotec,
         FifaIdRegistry $fifaId,
         DocumentSignatureService $documentSignatures,
+        DocumentSignatureStorage $signatureStorage,
     ) {
         $this->authorizeAdmin($request);
         $connectors = $this->connectors($state, $rekognition, $signotec, $fifaId, $documentSignatures);
+        $signatureStorageStatus = $signatureStorage->status();
 
-        return view('modules.api-connectors.index', compact('connectors'));
+        return view('modules.api-connectors.index', compact('connectors', 'signatureStorageStatus'));
     }
 
     public function activation(

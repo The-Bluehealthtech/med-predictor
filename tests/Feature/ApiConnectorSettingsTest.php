@@ -59,6 +59,19 @@ class ApiConnectorSettingsTest extends TestCase
             ->assertDontSee('signotec-secret');
     }
 
+    public function test_signature_storage_readiness_is_visible_without_secrets(): void
+    {
+        $system = User::factory()->create(['role' => 'system_admin', 'status' => 'active']);
+        config(['services.document_signatures.disk' => 'local']);
+        $this->actingAs($system)->get('/_t/api-connectors')->assertOk()
+            ->assertSee('Stockage PDF signés')->assertSee('Conservation des documents signés')
+            ->assertSee('Le stockage est actuellement')->assertSee('DOCUMENT_SIGNATURE_DISK');
+
+        config(['services.document_signatures.disk' => 'signature_s3']);
+        $this->actingAs($system)->get('/_t/api-connectors')->assertOk()
+            ->assertSee('Durable')->assertSee('signature_s3');
+    }
+
     public function test_non_admin_cannot_open_api_configuration_page(): void
     {
         $club = User::factory()->create(['role' => 'club_admin', 'status' => 'active']);

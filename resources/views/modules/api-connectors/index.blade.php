@@ -27,7 +27,7 @@
     @if(session('success'))<div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">{{ session('success') }}</div>@endif
     @if(session('error'))<div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">{{ session('error') }}</div>@endif
 
-    <div class="mb-6 grid gap-4 sm:grid-cols-2">
+    <div class="mb-6 grid gap-4 sm:grid-cols-3">
         <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
             <p class="text-xs font-bold uppercase tracking-wide text-emerald-700">Connecteurs prêts</p>
             <p class="mt-1 text-3xl font-semibold text-emerald-950">{{ $ready }}</p>
@@ -35,6 +35,11 @@
         <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
             <p class="text-xs font-bold uppercase tracking-wide text-amber-700">À configurer ou valider</p>
             <p class="mt-1 text-3xl font-semibold text-amber-950">{{ $attention }}</p>
+        </div>
+        <div class="rounded-2xl border {{ $signatureStorageStatus['durable'] ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50' }} p-4">
+            <p class="text-xs font-bold uppercase tracking-wide {{ $signatureStorageStatus['durable'] ? 'text-emerald-700' : 'text-amber-700' }}">Stockage PDF signés</p>
+            <p class="mt-1 text-lg font-semibold {{ $signatureStorageStatus['durable'] ? 'text-emerald-950' : 'text-amber-950' }}">{{ $signatureStorageStatus['durable'] ? 'Durable' : 'Local' }}</p>
+            <p class="mt-1 text-xs text-slate-600">{{ $signatureStorageStatus['disk'] }} · {{ $signatureStorageStatus['driver'] }}</p>
         </div>
     </div>
 
@@ -84,6 +89,15 @@
             </article>
         @endforeach
     </div>
+
+    <section class="mt-6 rounded-2xl border {{ $signatureStorageStatus['durable'] ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50' }} p-5">
+        <h2 class="font-semibold text-slate-900">Conservation des documents signés</h2>
+        @if($signatureStorageStatus['durable'])
+            <p class="mt-1 text-sm text-slate-700">Le moteur de signature utilise un stockage privé durable : <code>{{ $signatureStorageStatus['disk'] }}</code>. Les PDF signés restent accessibles via les droits FIT, sans URL publique directe.</p>
+        @else
+            <p class="mt-1 text-sm text-amber-800">Le stockage est actuellement <code>local</code>. Avant le Go Live, configurez un disque privé durable avec <code>DOCUMENT_SIGNATURE_DISK</code> et validez la conservation après un redéploiement Render.</p>
+        @endif
+    </section>
 
     <section class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
         <h2 class="font-semibold text-slate-900">Règle d’activation</h2>

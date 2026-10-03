@@ -16,9 +16,6 @@
         </button>
     </header>
 
-    @if(session('success'))
-        <div class="px-4 py-3 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm">{{ session('success') }}</div>
-    @endif
 
     <section class="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div class="bg-white border rounded-2xl p-4">
@@ -74,7 +71,7 @@
         </section>
     @endif
 
-    <section id="new-appointment-panel" class="{{ $sourceVisit || request('appointment_type') ? '' : 'hidden' }} bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+    <section id="new-appointment-panel" class="scroll-mt-28 {{ $sourceVisit || request('appointment_type') ? '' : 'hidden' }} bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b">
             <h2 class="font-semibold text-slate-900">Planifier un rendez-vous médical</h2>
             <p class="text-sm text-slate-500 mt-1">Le motif du rendez-vous oriente le parcours, sans créer encore d’acte médical.</p>
@@ -216,7 +213,7 @@
     </section>
     @endif
 
-    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+    <section id="patient-flow" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden scroll-mt-28">
         <div class="px-5 py-4 border-b">
             <h2 class="font-semibold text-slate-950">Flux des patients</h2>
             <p class="text-sm text-slate-500 mt-1">Le statut indique l’étape réelle du parcours de soins.</p>

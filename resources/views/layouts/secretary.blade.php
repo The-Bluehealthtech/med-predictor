@@ -23,68 +23,40 @@
     
     @stack('styles')
 </head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <h1 class="text-xl font-bold text-gray-900">
-                            <i class="fas fa-user-md text-blue-600 mr-2"></i>
-                            {{ __('secretary.page_title') }}
-                        </h1>
-                    </div>
-                </div>
-                
-                <div class="flex items-center space-x-4">
-                    <div class="text-sm text-gray-700">
-                        <i class="fas fa-user-circle mr-1"></i>
-                        {{ auth()->user()->name ?? __('secretary.test_user_fallback') }}
-                    </div>
-                    @if(auth()->check())
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="text-gray-500 hover:text-gray-700">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </form>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </nav>
+<body class="font-sans antialiased">
+    <div class="min-h-screen bg-gray-100" style="padding-top: 8rem;">
+        {{-- Même haut de page que les autres modules (layouts.app). --}}
+        @include('partials.top-bar')
 
-    <!-- Sidebar et Contenu Principal -->
-    <div class="flex h-screen bg-gray-50">
-        <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-lg">
-            <nav class="mt-5 px-2">
-                <a href="{{ route('secretary.dashboard') }}" 
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('secretary.dashboard') ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-                    <i class="fas fa-tachometer-alt mr-3"></i>
-                    {{ __('secretary.nav_dashboard') }}
-                </a>
-                
-                <div class="mt-5 px-2 text-xs uppercase tracking-wider text-gray-400 font-semibold">
-                    Flux médical
-                </div>
-                <a href="{{ route('secretary.dashboard') }}#new-appointment-panel"
-                   class="group flex items-center px-2 py-2 mt-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900">
-                    <i class="fas fa-calendar-plus mr-3"></i>
-                    Nouveau rendez-vous
-                </a>
-                <a href="{{ route('secretary.dashboard') }}#patient-flow"
-                   class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900">
-                    <i class="fas fa-users mr-3"></i>
-                    Parcours patients
-                </a>
-            </nav>
-        </div>
+        <main>
+            @include('partials.back-links')
 
-        <!-- Contenu Principal -->
-        <div class="flex-1 overflow-auto">
-            <main class="p-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6">
+                <!-- Menu du secrétariat médical -->
+                <aside class="lg:w-60 shrink-0">
+                    <nav class="bg-white rounded-2xl border border-slate-200 shadow-sm p-2 lg:sticky lg:top-24" aria-label="Secrétariat médical">
+                        <a href="{{ route('secretary.dashboard') }}"
+                           @if(request()->routeIs('secretary.dashboard')) aria-current="page" @endif
+                           class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg {{ request()->routeIs('secretary.dashboard') ? 'bg-blue-100 text-blue-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                            <i class="fas fa-tachometer-alt mr-3" aria-hidden="true"></i>
+                            {{ __('secretary.nav_dashboard') }}
+                        </a>
+                        <div class="mt-4 px-3 text-xs uppercase tracking-wider text-gray-400 font-semibold">Flux médical</div>
+                        <a href="{{ route('secretary.dashboard') }}#new-appointment-panel"
+                           class="group flex items-center px-3 py-2 mt-1 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <i class="fas fa-calendar-plus mr-3" aria-hidden="true"></i>
+                            Nouveau rendez-vous
+                        </a>
+                        <a href="{{ route('secretary.dashboard') }}#patient-flow"
+                           class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                            <i class="fas fa-users mr-3" aria-hidden="true"></i>
+                            Parcours patients
+                        </a>
+                    </nav>
+                </aside>
+
+                <!-- Contenu principal -->
+                <div class="flex-1 min-w-0">
                 @if(session('success'))
                     <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
                         {{ session('success') }}
@@ -97,9 +69,10 @@
                     </div>
                 @endif
 
-                @yield('content')
-            </main>
-        </div>
+                    @yield('content')
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- Scripts -->

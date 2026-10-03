@@ -189,7 +189,14 @@ Ajoutez ou synchronisez les membres du staff dans les fiches <span class="font-s
 </select></label>
 </div>
 <div class="grid gap-4 md:grid-cols-2">
-<label class="text-sm">Mécanisme<input name="mechanism" class="mt-1 w-full rounded-lg border-slate-300" placeholder="Effondrement, choc, torsion…"></label>
+<label class="text-sm">Mécanisme
+<select name="mechanism" class="mt-1 w-full rounded-lg border-slate-300">
+<option value="">— Sélectionner —</option>
+@foreach($mechanismOptions as $value=>$label)
+<option value="{{ $value }}">{{ $label }}</option>
+@endforeach
+</select>
+</label>
 <label class="text-sm">Contact
 <select name="contact" class="mt-1 w-full rounded-lg border-slate-300"><option value="">Non déterminé</option><option value="1">Avec contact</option><option value="0">Sans contact</option></select></label>
 </div>

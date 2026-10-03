@@ -50,6 +50,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
             'matchPlayers'=>$match->rosters->flatMap->players->pluck('player')->filter()->unique('id')->sortBy('name')->values(),
             'incidents'=>$match->medicalIncidents->sortByDesc('created_at'),
             'roleDefinitions'=>$this->roleDefinitions(),
+            'mechanismOptions'=>$this->mechanismOptions(),
             'connectMatch'=>$connectMatch,
             'connectPeople'=>$connectPeople,
             'signatureProviders'=>$signatureProviders,
@@ -277,6 +278,22 @@ final class MatchMedicalEmergencyPlanController extends Controller
         return $user->role === 'association_medical'
             && $user->association_id
             && (int) $user->association_id === (int) $match->competition?->association_id;
+    }
+
+    private function mechanismOptions(): array
+    {
+        return [
+            'collapse_non_contact' => 'Effondrement sans contact',
+            'player_collision' => 'Collision avec un joueur',
+            'ground_collision' => 'Impact avec le sol',
+            'direct_blow' => 'Choc / coup direct',
+            'twist_non_contact' => 'Torsion sans contact',
+            'twist_contact' => 'Torsion avec contact',
+            'hyperextension_flexion' => 'Hyperextension / hyperflexion',
+            'fall' => 'Chute',
+            'sprint_overload' => 'Sprint / surcharge / effort',
+            'other' => 'Autre mécanisme',
+        ];
     }
 
     private function roleDefinitions(): array

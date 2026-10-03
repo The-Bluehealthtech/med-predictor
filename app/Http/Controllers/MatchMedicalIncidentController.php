@@ -19,7 +19,7 @@ final class MatchMedicalIncidentController extends Controller
             'incident_type'=>'required|in:cardiac_arrest,cervical_spine,fracture,concussion,other',
             'match_minute'=>'nullable|integer|min:0|max:180',
             'player_id'=>'nullable|exists:players,id',
-            'mechanism'=>'nullable|string|max:255',
+            'mechanism'=>'nullable|string|in:collapse_non_contact,player_collision,ground_collision,direct_blow,twist_non_contact,twist_contact,hyperextension_flexion,fall,sprint_overload,other',
             'contact'=>'nullable|boolean',
             'abcde_assessment'=>'nullable|array',
             'abcde_assessment.*'=>'nullable|string|max:1000',

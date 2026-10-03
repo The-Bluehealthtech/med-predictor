@@ -325,6 +325,16 @@ return [
             'category' => 'administration'
         ],
         [
+            'name' => 'Configuration des API',
+            'description' => 'État et configuration des connecteurs externes : biométrie, FIFA, FHIR/HL7, PACS et autres API',
+            'icon' => 'key',
+            'route' => 'modules.api-connectors.index',
+            'status' => 'active',
+            'color' => 'gray',
+            'group' => 'systeme',
+            'category' => 'administration'
+        ],
+        [
             'name' => 'Administration du système',
             'description' => 'Comptes, demandes d’accès, journal d’audit et paramètres',
             'icon' => 'sliders',

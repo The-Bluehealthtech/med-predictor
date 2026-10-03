@@ -56,6 +56,9 @@ final class ModuleCatalog
         if (($module['route'] ?? null) === 'performances.fit-metrics') {
             return $user !== null && $this->rbac->userHasPermission($user, 'record-performance-metrics');
         }
+        if (($module['route'] ?? null) === 'modules.api-connectors.index') {
+            return $user !== null && in_array($user->role, ['system_admin', 'super_admin'], true);
+        }
 
         return match ($module['group'] ?? null) {
             'dtn' => $user !== null && $this->dtn->isDtnSide($user),

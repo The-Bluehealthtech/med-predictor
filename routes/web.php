@@ -3090,6 +3090,10 @@ Route::get('/test-pdf', function() {
     Route::get('/modules/administration', function () {
         return view('modules.administration.index', ['footballType' => 'association']);
     })->name('modules.administration.index');
+
+    Route::get('/modules/api-connectors', [App\Http\Controllers\ApiConnectorSettingsController::class, 'index'])
+        ->middleware('role:system_admin,super_admin')
+        ->name('modules.api-connectors.index');
     
     Route::get(
         '/modules/licenses',

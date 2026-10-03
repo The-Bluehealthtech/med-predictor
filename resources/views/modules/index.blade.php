@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ['label' => 'Approuver', 'todo' => 'licences_pending', 'role' => 'Fédération · identité FIFA ID facultative', 'output' => 'Licence active, complément demandé ou refus motivé', 'routes' => ['licenses.validation']],
                     ['label' => 'Transférer', 'todo' => 'transfers_pending', 'role' => 'Club et fédération', 'output' => 'Mutations enregistrées', 'routes' => ['admin.transfer-management.index', 'passports.transfer.index', 'fifa.dashboard']],
                     ['label' => 'Organiser', 'role' => 'Ligue ou fédération', 'output' => 'Compétitions et arbitres désignés', 'routes' => ['modules.competitions.index', 'referee-portal.index']],
-                ], 'tools' => ['modules.finance.dashboard', 'modules.administration.index', 'admin.content-management.index', 'gemini.index'], 'tools_label' => 'Outils transverses'],
+                ], 'tools' => ['modules.finance.dashboard', 'modules.api-connectors.index', 'modules.administration.index', 'admin.content-management.index', 'gemini.index'], 'tools_label' => 'Outils transverses'],
             ];
             // Teinte des pastilles d'icône, par couleur de carte (classes écrites en entier pour Tailwind).
             $iconTone = [
@@ -423,6 +423,7 @@ function handleModuleClick(route, moduleName, event) {
         'clinical.patient-portal': '/clinical/patient-portal',
         'clinical.clinician-portal': '/clinical/clinician-portal',
         'modules.administration.index': '/modules/administration',
+        'modules.api-connectors.index': '/modules/api-connectors',
         'modules.finance.dashboard': '/modules/finance/',
         'admin.content-management.index': '/admin/content-management',
         'admin.transfer-management.index': '/admin/transfer-management'

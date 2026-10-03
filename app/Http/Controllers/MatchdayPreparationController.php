@@ -3,11 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Models\MatchModel;
+use App\Models\MatchSheet;
 use Illuminate\Http\Request;
 
 final class MatchdayPreparationController extends Controller
 {
     private const MEDICAL_CLUB_ROLES = ['club_medical','team_doctor','doctor','medical_staff'];
+
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        abort_unless($user, 403);
+
+        $query = MatchSheet::query()
+            ->with(['match.competition','match.homeTeam.club','match.awayTeam.club'])
+            ->whereHas('match');
+
+        if (!$user->isSystemAdmin() && $user->role !== 'admin') {
+            if (str_starts_with((string) $user->role, 'association_')) {
+                $query->whereHas('match.competition', fn ($q) => $q->where('association_id', $user->association_id));
+            } else {
+                $query->whereHas('match', fn ($q) => $q
+                    ->where('home_club_id', $user->club_id)
+                    ->orWhere('away_club_id', $user->club_id));
+            }
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->string('status'));
+        }
+
+        if ($request->filled('q')) {
+            $term = '%'.$request->string('q').'%';
+            $query->whereHas('match', fn ($q) => $q
+                ->whereHas('homeTeam', fn ($t) => $t->where('name', 'like', $term))
+                ->orWhereHas('awayTeam', fn ($t) => $t->where('name', 'like', $term))
+                ->orWhereHas('competition', fn ($c) => $c->where('name', 'like', $term)));
+        }
+
+        $sheets = $query->orderByDesc('id')->paginate(20)->withQueryString();
+
+        return view('competition-management.matches.matchday-selector', compact('sheets'));
+    }
 
     public function show(Request $request, MatchModel $match)
     {

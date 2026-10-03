@@ -41,7 +41,7 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         }
 
         Route::middleware(['web'])->group(function () {
-            Route::get('/_t/competition-management/matches', fn () => response('matches'))->name('competition-management.matches.index');
+            Route::get('/_t/competition-management/matches', [\App\Http\Controllers\MatchdayPreparationController::class,'index'])->name('competition-management.matches.index');
             Route::get('/_t/matches/{match}/matchday-preparation', [\App\Http\Controllers\MatchdayPreparationController::class,'show'])->name('competition-management.matches.matchday-preparation');
             Route::get('/_t/matches/{match}/medical-emergency-plan', [MatchMedicalEmergencyPlanController::class,'show'])->name('matches.medical-emergency-plan');
             Route::put('/_t/matches/{match}/medical-emergency-plan', [MatchMedicalEmergencyPlanController::class,'update'])->name('matches.medical-emergency-plan.update');
@@ -225,6 +225,25 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         $this->actingAs($doctor)
             ->get('/_t/matches/'.$this->match->id.'/matchday-preparation')
             ->assertForbidden();
+    }
+
+    public function test_admin_sees_match_sheet_selector_before_opening_matchday_cockpit(): void
+    {
+        $admin = User::factory()->create([
+            'role'=>'admin','status'=>'active','tenant_id'=>1,
+        ]);
+        \App\Models\MatchSheet::factory()->create([
+            'match_id'=>$this->match->id,
+            'status'=>'draft',
+            'match_number'=>'FDM-001',
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/_t/competition-management/matches')
+            ->assertOk()
+            ->assertSee('Choisissez la feuille de match')
+            ->assertSee('FDM #')
+            ->assertSee('Ouvrir le cockpit Match Day');
     }
 
 }

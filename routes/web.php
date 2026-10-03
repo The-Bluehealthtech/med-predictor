@@ -12,7 +12,7 @@ Route::post('/language', function (\Illuminate\Http\Request $request) {
 Route::get('/match-sheet/{gameMatch}', [\App\Http\Controllers\MatchSheetController::class, 'show'])
     ->middleware('auth')->name('match-sheet.show');
 
-Route::get('/competition-management/matches', [\App\Http\Controllers\CompetitionManagementController::class, 'matchesIndex'])
+Route::get('/competition-management/matches', [\App\Http\Controllers\MatchdayPreparationController::class, 'index'])
     ->middleware('auth')->name('competition-management.matches.index');
 Route::get('/competition-management/matches/{gameMatch}/match-sheet', [\App\Http\Controllers\MatchSheetController::class, 'show'])
     ->middleware('auth')->name('competition-management.matches.match-sheet');

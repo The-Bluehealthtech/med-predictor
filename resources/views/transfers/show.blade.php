@@ -53,6 +53,29 @@
             @endforelse
         </div>
 
+        <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            @foreach($tmsReadiness['flows'] as $key => $flow)
+                <div class="rounded-xl border {{ ($flow['applicable'] ?? false) ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-slate-50' }} p-3">
+                    <p class="text-xs font-bold uppercase tracking-wide {{ ($flow['applicable'] ?? false) ? 'text-emerald-700' : 'text-slate-500' }}">{{ $flow['label'] }}</p>
+                    @if($key === 'first_pro_registration')
+                        @if($flow['applicable'] ?? false)
+                            <p class="mt-1 text-sm font-semibold text-emerald-900">Oui · première licence pro liée à ce transfert</p>
+                            <p class="mt-1 text-xs text-emerald-800">Licence {{ $flow['license_number'] ?: '#'.$flow['first_license_id'] }} · {{ $flow['effective_date'] ?? 'date non renseignée' }}</p>
+                        @elseif(!empty($flow['first_license_id']))
+                            <p class="mt-1 text-sm text-slate-700">Non pour ce transfert</p>
+                            <p class="mt-1 text-xs text-slate-500">Première licence pro historique : {{ $flow['license_number'] ?: '#'.$flow['first_license_id'] }} · {{ $flow['effective_date'] ?? 'date non renseignée' }}</p>
+                        @else
+                            <p class="mt-1 text-sm text-slate-600">Non détecté dans l’historique FIT</p>
+                        @endif
+                    @elseif($key === 'proof_of_payment')
+                        <p class="mt-1 text-sm text-slate-700">{{ ($flow['applicable'] ?? false) ? ($flow['payments_count'].' paiement(s) préparé(s)') : 'Non applicable actuellement' }}</p>
+                    @else
+                        <p class="mt-1 text-sm text-slate-700">{{ ($flow['applicable'] ?? false) ? 'Applicable' : 'Non applicable' }}</p>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+
         @if($transfer->tms_payload_sha256)
             <p class="mt-3 font-mono text-xs text-slate-500">Empreinte dossier TMS : {{ $transfer->tms_payload_sha256 }}</p>
         @endif

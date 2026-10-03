@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\TransferController;
+use App\Models\PlayerLicense;
 use App\Models\Transfer;
 use App\Models\TransferDocument;
 use App\Models\User;
@@ -169,6 +170,52 @@ class TmsTransferWorkflowTest extends TestCase
             ->assertJsonPath('tms_transfer_id','TMS-12345');
 
         $this->assertSame('linked',$this->transfer->fresh()->tms_sync_status);
+    }
+
+    public function test_first_professional_registration_is_detected_from_first_pro_license(): void
+    {
+        $this->approveRequiredDocuments();
+        PlayerLicense::withoutGlobalScopes()->create([
+            'player_id'=>$this->playerId,
+            'club_id'=>$this->destinationId,
+            'license_number'=>'PRO-FIRST-1',
+            'level'=>'pro',
+            'status'=>'active',
+            'approval_status'=>'approved',
+            'issue_date'=>$this->transfer->transfer_date,
+            'approved_at'=>now(),
+        ]);
+
+        $this->actingAs($this->registrar)
+            ->postJson(route('transfers.prepare-tms',$this->transfer))
+            ->assertOk();
+
+        $flow = $this->transfer->fresh()->tms_snapshot['flows']['first_pro_registration'];
+        $this->assertTrue($flow['applicable']);
+        $this->assertTrue($flow['matches_this_transfer']);
+        $this->assertSame('PRO-FIRST-1',$flow['license_number']);
+        $this->assertSame('player_licenses.level=pro',$flow['rule']);
+    }
+
+    public function test_previous_professional_license_prevents_first_pro_flag_on_later_transfer(): void
+    {
+        $previousClub = $this->club('Ancien club pro','CLUB-TMS-PREV');
+        PlayerLicense::withoutGlobalScopes()->create([
+            'player_id'=>$this->playerId,
+            'club_id'=>$previousClub,
+            'license_number'=>'PRO-OLD-1',
+            'license_type'=>PlayerLicense::LICENSE_TYPE_PROFESSIONAL,
+            'status'=>'expired',
+            'approval_status'=>'approved',
+            'issue_date'=>$this->transfer->transfer_date->copy()->subYears(2),
+            'approved_at'=>now()->subYears(2),
+        ]);
+
+        $readiness = app(\App\Services\Transfers\TmsTransferPreparation::class)->readiness($this->transfer);
+        $flow = $readiness['flows']['first_pro_registration'];
+        $this->assertFalse($flow['applicable']);
+        $this->assertFalse($flow['matches_this_transfer']);
+        $this->assertSame('PRO-OLD-1',$flow['license_number']);
     }
 
     public function test_sync_recovers_whitelisted_tms_and_itc_data(): void

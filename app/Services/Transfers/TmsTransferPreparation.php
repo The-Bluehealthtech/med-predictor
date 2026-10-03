@@ -2,6 +2,7 @@
 
 namespace App\Services\Transfers;
 
+use App\Models\PlayerLicense;
 use App\Models\Transfer;
 use App\Models\User;
 
@@ -77,6 +78,7 @@ final class TmsTransferPreparation
             'blockers' => $blockers,
             'required_documents' => $requiredDocuments,
             'approved_documents' => $approved,
+            'flows' => $this->flows($transfer),
         ];
     }
 
@@ -150,6 +152,7 @@ final class TmsTransferPreparation
                 'contract_start_date' => optional($transfer->contract_start_date)->format('Y-m-d'),
                 'contract_end_date' => optional($transfer->contract_end_date)->format('Y-m-d'),
             ],
+            'flows' => $this->flows($transfer),
             'documents' => $transfer->documents
                 ->where('validation_status', 'approved')
                 ->map(fn ($document) => [
@@ -167,6 +170,73 @@ final class TmsTransferPreparation
                 'payment_date' => optional($payment->payment_date)->format('Y-m-d'),
             ])->values()->all(),
             'prepared_by_fit' => true,
+        ];
+    }
+
+    private function flows(Transfer $transfer): array
+    {
+        $firstPro = $this->firstProfessionalRegistration($transfer);
+
+        return [
+            'player_sync' => [
+                'applicable' => true,
+                'label' => 'Synchronisation joueur TMS',
+            ],
+            'domestic_transfer_declaration' => [
+                'applicable' => !(bool) $transfer->is_international,
+                'label' => 'Domestic Transfer Declaration',
+            ],
+            'proof_of_payment' => [
+                'applicable' => (float) $transfer->transfer_fee > 0 || $transfer->payments->isNotEmpty(),
+                'label' => 'Proof of Payment',
+                'payments_count' => $transfer->payments->count(),
+            ],
+            'first_pro_registration' => $firstPro,
+        ];
+    }
+
+    private function firstProfessionalRegistration(Transfer $transfer): array
+    {
+        $license = PlayerLicense::withoutGlobalScopes()
+            ->where('player_id', $transfer->player_id)
+            ->whereNull('club_official_id')
+            ->whereIn('status', ['active', 'expired'])
+            ->where(function ($query) {
+                $query->where('level', 'pro')
+                    ->orWhere('license_type', PlayerLicense::LICENSE_TYPE_PROFESSIONAL);
+            })
+            ->orderByRaw('COALESCE(issue_date, approved_at, contract_start_date, created_at) asc')
+            ->orderBy('id')
+            ->first();
+
+        if (!$license) {
+            return [
+                'applicable' => false,
+                'label' => 'Premier enregistrement professionnel',
+                'reason' => 'Aucune licence professionnelle délivrée dans FIT.',
+            ];
+        }
+
+        $effective = $license->issue_date ?: $license->approved_at ?: $license->contract_start_date ?: $license->created_at;
+        $periodStart = $transfer->transfer_date ?: $transfer->contract_start_date ?: $transfer->created_at;
+        $periodEnd = $transfer->contract_end_date ?: ($periodStart ? $periodStart->copy()->addMonths(18) : null);
+        $sameClub = (int) $license->club_id === (int) $transfer->club_destination_id;
+        $samePeriod = $effective && $periodStart && $periodEnd
+            ? $effective->copy()->startOfDay()->between(
+                $periodStart->copy()->subMonths(3)->startOfDay(),
+                $periodEnd->copy()->endOfDay()
+            )
+            : false;
+
+        return [
+            'applicable' => $sameClub && $samePeriod,
+            'label' => 'Premier enregistrement professionnel',
+            'first_license_id' => $license->id,
+            'club_id' => $license->club_id,
+            'license_number' => $license->license_number,
+            'effective_date' => optional($effective)->format('Y-m-d'),
+            'matches_this_transfer' => $sameClub && $samePeriod,
+            'rule' => $license->level === 'pro' ? 'player_licenses.level=pro' : 'player_licenses.license_type=professional',
         ];
     }
 

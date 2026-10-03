@@ -89,6 +89,21 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         ]);
     }
 
+    private function medicalOfficial(): \App\Models\ClubOfficial
+    {
+        $creator=User::factory()->create(['role'=>'admin','status'=>'active','tenant_id'=>1]);
+        $official=new \App\Models\ClubOfficial;
+        $official->club_id=$this->homeClub->id;
+        $official->created_by=$creator->id;
+        $official->fill([
+            'international_first_name'=>'Dr','international_last_name'=>'Terrain','gender'=>'male','date_of_birth'=>'1980-01-01','nationality'=>'SA',
+            'registration_type'=>\App\Models\ClubOfficial::TEAM_OFFICIAL,'team_official_role'=>'TeamDoctor','role_description'=>'TeamDoctor',
+            'status'=>'active','discipline'=>'Football','registration_valid_from'=>today(),'source'=>'FIT',
+        ]);
+        $official->save();
+        return $official;
+    }
+
     private function completePayload(): array
     {
         return [
@@ -189,13 +204,14 @@ class MatchMedicalEmergencyPlanTest extends TestCase
     }
     public function test_cardiac_incident_activates_versioned_fifa_protocol(): void
     {
+        $medicalOfficial=$this->medicalOfficial();
         $doctor = User::factory()->create([
             'role'=>'association_medical','association_id'=>$this->association->id,'status'=>'active','tenant_id'=>1,
         ]);
 
         $this->actingAs($doctor)->post('/_t/matches/'.$this->match->id.'/medical-incidents', [
             'incident_type'=>'cardiac_arrest',
-            'doctor_name'=>'Dr Terrain',
+            'doctor_club_official_id'=>$medicalOfficial->id,
             'protocol_actions'=>[
                 'sca_responsiveness_breathing'=>1,
                 'sca_cpr'=>1,
@@ -212,13 +228,14 @@ class MatchMedicalEmergencyPlanTest extends TestCase
 
     public function test_head_or_cervical_incident_activates_fifa_head_protocol(): void
     {
+        $medicalOfficial=$this->medicalOfficial();
         $doctor = User::factory()->create([
             'role'=>'club_medical','club_id'=>$this->homeClub->id,'status'=>'active','tenant_id'=>1,
         ]);
 
         $this->actingAs($doctor)->post('/_t/matches/'.$this->match->id.'/medical-incidents', [
             'incident_type'=>'concussion',
-            'doctor_name'=>'Dr Club',
+            'doctor_club_official_id'=>$medicalOfficial->id,
             'protocol_actions'=>['head_cervical_control'=>1,'head_neuro'=>1],
         ])->assertRedirect();
 
@@ -444,6 +461,7 @@ class MatchMedicalEmergencyPlanTest extends TestCase
 
     public function test_player_selector_uses_fdm_identity_and_allows_multiple_incidents_for_same_player(): void
     {
+        $medicalOfficial=$this->medicalOfficial();
         $player = \App\Models\Player::factory()->create([
             'first_name'=>'Karim',
             'last_name'=>'Testeur',
@@ -485,7 +503,7 @@ class MatchMedicalEmergencyPlanTest extends TestCase
                     'player_id'=>$player->id,
                     'match_minute'=>$minute,
                     'mechanism'=>'direct_blow',
-                    'doctor_name'=>'Dr Terrain',
+                    'doctor_club_official_id'=>$medicalOfficial->id,
                 ])
                 ->assertRedirect();
         }
@@ -508,6 +526,7 @@ class MatchMedicalEmergencyPlanTest extends TestCase
 
     public function test_admin_can_collect_and_persist_matchday_medical_data(): void
     {
+        $medicalOfficial=$this->medicalOfficial();
         $admin = User::factory()->create([
             'role'=>'admin','status'=>'active','tenant_id'=>1,
         ]);
@@ -531,7 +550,7 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         $this->actingAs($admin)
             ->post('/_t/matches/'.$this->match->id.'/medical-incidents',[
                 'incident_type'=>'cardiac_arrest',
-                'doctor_name'=>'Dr Admin Test',
+                'doctor_club_official_id'=>$medicalOfficial->id,
                 'match_minute'=>12,
                 'protocol_actions'=>['sca_cpr'=>1,'sca_aed'=>1],
             ])

@@ -275,9 +275,34 @@ Ajoutez ou synchronisez les membres du staff dans les fiches <span class="font-s
 @endforeach
 </div>
 <div class="grid gap-4 md:grid-cols-2">
-<label class="text-sm">Destination évacuation<input name="evacuation_destination" class="mt-1 w-full rounded-lg border-slate-300"></label>
-<label class="text-sm">Médecin / professionnel responsable<input name="doctor_name" required class="mt-1 w-full rounded-lg border-slate-300"></label>
-<label class="text-sm md:col-span-2">Diagnostic initial<textarea name="initial_diagnosis" rows="2" class="mt-1 w-full rounded-lg border-slate-300"></textarea></label>
+<label class="text-sm">Destination évacuation
+<select name="evacuation_destination" class="mt-1 w-full rounded-lg border-slate-300" @disabled($incidentEvacuationDestinations->isEmpty())>
+<option value="">{{ $incidentEvacuationDestinations->isEmpty() ? 'Aucune structure configurée' : '— Sélectionner la structure configurée —' }}</option>
+@foreach($incidentEvacuationDestinations as $destination)
+<option value="{{ $destination['value'] }}">{{ $destination['label'] }} · {{ $destination['source'] }}</option>
+@endforeach
+</select>
+@if($incidentEvacuationDestinations->isEmpty())<span class="mt-1 block text-xs text-amber-700">Configurez la structure d’évacuation dans le club recevant ou la compétition.</span>@endif
+</label>
+<label class="text-sm">Médecin / professionnel responsable
+<select name="doctor_club_official_id" id="incident-doctor" required class="mt-1 w-full rounded-lg border-slate-300" @disabled($incidentMedicalProfessionals->isEmpty())>
+<option value="">{{ $incidentMedicalProfessionals->isEmpty() ? 'Aucun professionnel médical identifié' : '— Sélectionner dans le staff médical —' }}</option>
+@foreach($incidentMedicalProfessionals as $professional)
+<option value="{{ $professional['id'] }}" data-name="{{ $professional['name'] }}">{{ $professional['name'] }} · {{ $professional['role'] }} · {{ $professional['club'] }}{{ $professional['fifa_id'] ? ' · FIFA '.$professional['fifa_id'] : ' · FIT #'.$professional['id'] }}</option>
+@endforeach
+</select>
+<input type="hidden" name="doctor_name" id="incident-doctor-name" value="">
+@if($incidentMedicalProfessionals->isEmpty())<span class="mt-1 block text-xs text-amber-700">Ajoutez le médecin/kinésithérapeute dans Dirigeants & staff du club.</span>@endif
+</label>
+<label class="text-sm md:col-span-2">Diagnostic initial
+<select name="initial_diagnosis" class="mt-1 w-full rounded-lg border-slate-300">
+<option value="">— Sélectionner après évaluation clinique —</option>
+@foreach($initialDiagnosisOptions as $code=>$label)
+<option value="{{ $code }}">{{ $label }}</option>
+@endforeach
+</select>
+<span class="mt-1 block text-xs text-slate-500">Nomenclature structurée ; le diagnostic reste sous validation du professionnel de santé.</span>
+</label>
 </div>
 <div class="flex justify-end"><button class="rounded-xl bg-rose-700 px-5 py-2.5 text-sm font-semibold text-white">Enregistrer l’incident</button></div>
 </form>

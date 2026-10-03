@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\MatchMedicalIncident;
 use App\Models\MatchModel;
 use App\Models\MatchRosterPlayer;
+use App\Models\ClubOfficial;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 
 final class MatchMedicalIncidentController extends Controller
@@ -31,10 +34,28 @@ final class MatchMedicalIncidentController extends Controller
             'evacuated'=>'nullable|boolean',
             'evacuation_destination'=>'nullable|string|max:255',
             'doctor_user_id'=>'nullable|exists:users,id',
-            'doctor_name'=>'required|string|max:255',
-            'initial_diagnosis'=>'nullable|string|max:4000',
+            'doctor_club_official_id'=>'required|exists:club_officials,id',
+            'doctor_name'=>'nullable|string|max:255',
+            'initial_diagnosis'=>['nullable', Rule::in(array_keys($this->initialDiagnosisOptions()))],
             'notes'=>'nullable|string|max:4000',
         ]);
+
+        $professional = ClubOfficial::query()
+            ->whereKey((int) $data['doctor_club_official_id'])
+            ->whereIn('club_id', array_filter([$match->home_club_id, $match->away_club_id]))
+            ->where('status','active')
+            ->where(function ($q) {
+                $q->whereIn('team_official_role', ['TeamDoctor','Physiotherapist'])
+                  ->orWhereIn('role_description', ['TeamDoctor','Doctor','Physiotherapist','Médecin d’équipe','Médecin','Kinésithérapeute']);
+            })->first();
+        abort_unless($professional, 422, 'Le professionnel doit appartenir au staff médical identifié du match.');
+        $data['doctor_name'] = $professional->fullName();
+        unset($data['doctor_club_official_id']);
+
+        $allowedDestinations = $this->evacuationDestinations($match);
+        if (filled($data['evacuation_destination'] ?? null)) {
+            abort_unless(in_array($data['evacuation_destination'], $allowedDestinations, true), 422, 'La destination doit provenir de la configuration Medical Matchday.');
+        }
 
         if (!empty($data['player_id'])) {
             abort_unless(
@@ -70,6 +91,27 @@ final class MatchMedicalIncidentController extends Controller
         MatchMedicalIncident::query()->create($data);
 
         return back()->with('success', 'Incident médical terrain enregistré.');
+    }
+
+    private function evacuationDestinations(MatchModel $match): array
+    {
+        $match->loadMissing(['competition','homeTeam.club']);
+        return collect([
+            $match->homeTeam?->club?->matchday_hospital_name,
+            $match->competition?->matchday_hospital_name,
+        ])->filter()->unique()->values()->all();
+    }
+
+    private function initialDiagnosisOptions(): array
+    {
+        return [
+            'cardiac_arrest'=>'Arrêt cardiaque suspecté / confirmé cliniquement',
+            'cervical_spine'=>'Traumatisme crânien / cervical suspecté',
+            'concussion'=>'Commotion cérébrale suspectée',
+            'fracture'=>'Fracture / lésion osseuse suspectée',
+            'soft_tissue'=>'Lésion musculo-tendineuse / ligamentaire suspectée',
+            'other_pending'=>'Autre / diagnostic à préciser après évaluation clinique',
+        ];
     }
 
     private function canDocument(Request $request, MatchModel $match): bool

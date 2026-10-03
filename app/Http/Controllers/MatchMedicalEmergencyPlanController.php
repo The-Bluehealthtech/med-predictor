@@ -56,6 +56,9 @@ final class MatchMedicalEmergencyPlanController extends Controller
             'mechanismOptions'=>$this->mechanismOptions(),
             'connectMatch'=>$connectMatch,
             'connectPeople'=>$connectPeople,
+            'incidentMedicalProfessionals'=>$this->incidentMedicalProfessionals($match),
+            'incidentEvacuationDestinations'=>$this->incidentEvacuationDestinations($match, $contactContext),
+            'initialDiagnosisOptions'=>$this->initialDiagnosisOptions(),
             'signatureProviders'=>$signatureProviders,
             'signatureRequests'=>$signatureRequests,
             'canRequestSignature'=>$this->canRequestSignature($request, $match, $plan),
@@ -344,6 +347,47 @@ final class MatchMedicalEmergencyPlanController extends Controller
             ])
             ->unique(fn ($row) => $row['club_id'].'|'.$row['person_fifa_id'].'|'.$row['role_connect_id'])
             ->values();
+    }
+
+    private function incidentMedicalProfessionals(MatchModel $match)
+    {
+        if (!Schema::hasTable('club_officials')) return collect();
+
+        return ClubOfficial::query()
+            ->with('club:id,name')
+            ->whereIn('club_id', array_filter([$match->home_club_id, $match->away_club_id]))
+            ->where('status', 'active')
+            ->where(function ($q) {
+                $q->whereIn('team_official_role', ['TeamDoctor','Physiotherapist'])
+                  ->orWhereIn('role_description', ['TeamDoctor','Doctor','Physiotherapist','Médecin d’équipe','Médecin','Kinésithérapeute']);
+            })
+            ->orderBy('international_last_name')->orderBy('international_first_name')
+            ->get()->map(fn (ClubOfficial $official) => [
+                'id'=>$official->id,
+                'name'=>$official->fullName(),
+                'role'=>$official->roleLabel(),
+                'club'=>$official->club?->name,
+                'fifa_id'=>$official->person_fifa_id,
+            ])->values();
+    }
+
+    private function incidentEvacuationDestinations(MatchModel $match, array $contactContext)
+    {
+        return collect([
+            ['value'=>$contactContext['hospital'] ?? null, 'label'=>$contactContext['hospital'] ?? null, 'source'=>$contactContext['hospital_source'] ?? 'Configuration'],
+        ])->filter(fn ($row) => filled($row['value']))->unique('value')->values();
+    }
+
+    private function initialDiagnosisOptions(): array
+    {
+        return [
+            'cardiac_arrest' => 'Arrêt cardiaque suspecté / confirmé cliniquement',
+            'cervical_spine' => 'Traumatisme crânien / cervical suspecté',
+            'concussion' => 'Commotion cérébrale suspectée',
+            'fracture' => 'Fracture / lésion osseuse suspectée',
+            'soft_tissue' => 'Lésion musculo-tendineuse / ligamentaire suspectée',
+            'other_pending' => 'Autre / diagnostic à préciser après évaluation clinique',
+        ];
     }
 
     private function canRequestSignature(Request $request, MatchModel $match, MatchMedicalEmergencyPlan $plan): bool

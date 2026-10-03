@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 final class MatchMedicalIncident extends Model
 {
     protected $fillable = [
-        'match_id','player_id','health_record_id','injury_id','incident_type','match_minute',
-        'mechanism','contact','abcde_assessment','loss_of_consciousness','aed_used','oxygen_used',
+        'match_id','player_id','health_record_id','injury_id','incident_type','protocol_code','protocol_version','match_minute',
+        'mechanism','contact','abcde_assessment','protocol_actions','protocol_activated_at','loss_of_consciousness','aed_used','oxygen_used',
         'evacuated','evacuation_destination','doctor_user_id','doctor_name','initial_diagnosis',
         'notes','created_by',
     ];
@@ -17,6 +17,8 @@ final class MatchMedicalIncident extends Model
     protected $casts = [
         'contact'=>'boolean',
         'abcde_assessment'=>'array',
+        'protocol_actions'=>'array',
+        'protocol_activated_at'=>'datetime',
         'loss_of_consciousness'=>'boolean',
         'aed_used'=>'boolean',
         'oxygen_used'=>'boolean',

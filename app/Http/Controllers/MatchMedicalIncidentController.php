@@ -23,6 +23,8 @@ final class MatchMedicalIncidentController extends Controller
             'contact'=>'nullable|boolean',
             'abcde_assessment'=>'nullable|array',
             'abcde_assessment.*'=>'nullable|string|max:1000',
+            'protocol_actions'=>'nullable|array',
+            'protocol_actions.*'=>'nullable|boolean',
             'loss_of_consciousness'=>'nullable|boolean',
             'aed_used'=>'nullable|boolean',
             'oxygen_used'=>'nullable|boolean',
@@ -46,6 +48,22 @@ final class MatchMedicalIncidentController extends Controller
             $data[$field] = $request->boolean($field);
         }
         $data['contact'] = $request->has('contact') ? $request->boolean('contact') : null;
+        $protocols = [
+            'cardiac_arrest' => 'FIFA_SCA',
+            'cervical_spine' => 'FIFA_HEAD_CERVICAL',
+            'concussion' => 'FIFA_HEAD_CERVICAL',
+        ];
+        if (isset($protocols[$data['incident_type']])) {
+            $data['protocol_code'] = $protocols[$data['incident_type']];
+            $data['protocol_version'] = 'FIFA Emergency Care Protocols v3 - March 2025';
+            $data['protocol_activated_at'] = now();
+            $data['protocol_actions'] = collect($data['protocol_actions'] ?? [])
+                ->map(fn ($value) => filter_var($value, FILTER_VALIDATE_BOOLEAN))
+                ->all();
+        } else {
+            unset($data['protocol_actions']);
+        }
+
         $data['match_id'] = $match->id;
         $data['created_by'] = $request->user()->id;
 

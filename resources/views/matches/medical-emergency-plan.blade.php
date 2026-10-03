@@ -124,7 +124,7 @@ $timelineLabels=[
 @csrf
 <div class="grid gap-4 md:grid-cols-3">
 <label class="text-sm">Type
-<select name="incident_type" class="mt-1 w-full rounded-lg border-slate-300" required>
+<select name="incident_type" id="incident_type" class="mt-1 w-full rounded-lg border-slate-300" required>
 <option value="cardiac_arrest">Arrêt cardiaque suspecté</option>
 <option value="cervical_spine">Rachis cervical</option>
 <option value="fracture">Fracture</option>
@@ -142,6 +142,22 @@ $timelineLabels=[
 <label class="text-sm">Contact
 <select name="contact" class="mt-1 w-full rounded-lg border-slate-300"><option value="">Non déterminé</option><option value="1">Avec contact</option><option value="0">Sans contact</option></select></label>
 </div>
+<div id="fifa-sca-protocol" class="hidden rounded-xl border border-red-300 bg-red-50 p-4">
+<div class="flex flex-wrap items-center justify-between gap-2"><div><h3 class="font-semibold text-red-900">Protocole FIFA · Arrêt cardiaque / SCA</h3><p class="text-xs text-red-700">FIFA Emergency Care Protocols · v3 - March 2025 · aide-mémoire, décision clinique humaine.</p></div><span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-red-700">URGENCE TERRAIN</span></div>
+<div class="mt-3 grid gap-2 md:grid-cols-2">
+@foreach(['sca_responsiveness_breathing'=>'Conscience et respiration vérifiées','sca_cpr'=>'Compressions / RCP débutées','sca_aed'=>'DAE apporté / utilisé selon indication','sca_oxygen'=>'Oxygène disponible / administré selon indication','sca_ambulance'=>'Ambulance / régulation activée','sca_evacuation'=>'Évacuation organisée'] as $key=>$label)
+<label class="flex items-center gap-2 rounded-lg border border-red-200 bg-white p-3 text-sm"><input type="checkbox" name="protocol_actions[{{ $key }}]" value="1" class="rounded border-slate-300">{{ $label }}</label>
+@endforeach
+</div></div>
+
+<div id="fifa-head-protocol" class="hidden rounded-xl border border-amber-300 bg-amber-50 p-4">
+<div><h3 class="font-semibold text-amber-900">Protocole FIFA · Traumatisme crânien / rachis cervical</h3><p class="text-xs text-amber-700">FIFA Emergency Care Protocols · v3 - March 2025 · immobilisation et évaluation structurée par l’équipe médicale.</p></div>
+<div class="mt-3 grid gap-2 md:grid-cols-2">
+@foreach(['head_cervical_control'=>'Contrôle / immobilisation cervicale','head_abcde'=>'Évaluation A©BCDE réalisée','head_neuro'=>'Examen neurologique documenté','head_collar'=>'Minerve envisagée / utilisée selon indication','head_transfer'=>'Transfert scoop / planche et sangles selon indication','head_evacuation'=>'Évacuation organisée si requise'] as $key=>$label)
+<label class="flex items-center gap-2 rounded-lg border border-amber-200 bg-white p-3 text-sm"><input type="checkbox" name="protocol_actions[{{ $key }}]" value="1" class="rounded border-slate-300">{{ $label }}</label>
+@endforeach
+</div></div>
+
 <div class="grid gap-3 md:grid-cols-5">
 @foreach(['a'=>'A · Airway','b'=>'B · Breathing','c'=>'C · Circulation','d'=>'D · Disability','e'=>'E · Exposure'] as $key=>$label)
 <label class="text-xs font-semibold">{{ $label }}<textarea name="abcde_assessment[{{ $key }}]" rows="2" class="mt-1 w-full rounded-lg border-slate-300 text-sm"></textarea></label>
@@ -184,4 +200,18 @@ $timelineLabels=[
 </section>
 @endif
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const type = document.getElementById('incident_type');
+    const sca = document.getElementById('fifa-sca-protocol');
+    const head = document.getElementById('fifa-head-protocol');
+    if (!type || !sca || !head) return;
+    const refreshProtocol = () => {
+        sca.classList.toggle('hidden', type.value !== 'cardiac_arrest');
+        head.classList.toggle('hidden', !['cervical_spine','concussion'].includes(type.value));
+    };
+    type.addEventListener('change', refreshProtocol);
+    refreshProtocol();
+});
+</script>
 @endsection

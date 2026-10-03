@@ -36,6 +36,9 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         if (!Schema::hasTable('match_medical_incidents')) {
             (require base_path('database/migrations/2026_10_03_228000_create_match_medical_incidents_table.php'))->up();
         }
+        if (!Schema::hasColumn('match_medical_incidents', 'protocol_code')) {
+            (require base_path('database/migrations/2026_10_03_229000_add_emergency_protocol_to_match_medical_incidents.php'))->up();
+        }
 
         Route::middleware(['web'])->group(function () {
             Route::get('/_t/matches/{match}/medical-emergency-plan', [MatchMedicalEmergencyPlanController::class,'show'])->name('matches.medical-emergency-plan');
@@ -157,4 +160,44 @@ class MatchMedicalEmergencyPlanTest extends TestCase
 
         $this->actingAs($doctor)->post('/_t/matches/'.$this->match->id.'/medical-emergency-plan/validate')->assertStatus(422);
     }
+    public function test_cardiac_incident_activates_versioned_fifa_protocol(): void
+    {
+        $doctor = User::factory()->create([
+            'role'=>'association_medical','association_id'=>$this->association->id,'status'=>'active','tenant_id'=>1,
+        ]);
+
+        $this->actingAs($doctor)->post('/_t/matches/'.$this->match->id.'/medical-incidents', [
+            'incident_type'=>'cardiac_arrest',
+            'doctor_name'=>'Dr Terrain',
+            'protocol_actions'=>[
+                'sca_responsiveness_breathing'=>1,
+                'sca_cpr'=>1,
+                'sca_aed'=>1,
+            ],
+        ])->assertRedirect()->assertSessionHas('success');
+
+        $incident=\App\Models\MatchMedicalIncident::query()->where('match_id',$this->match->id)->latest('id')->firstOrFail();
+        $this->assertSame('FIFA_SCA',$incident->protocol_code);
+        $this->assertSame('FIFA Emergency Care Protocols v3 - March 2025',$incident->protocol_version);
+        $this->assertTrue($incident->protocol_actions['sca_cpr']);
+        $this->assertNotNull($incident->protocol_activated_at);
+    }
+
+    public function test_head_or_cervical_incident_activates_fifa_head_protocol(): void
+    {
+        $doctor = User::factory()->create([
+            'role'=>'club_medical','club_id'=>$this->homeClub->id,'status'=>'active','tenant_id'=>1,
+        ]);
+
+        $this->actingAs($doctor)->post('/_t/matches/'.$this->match->id.'/medical-incidents', [
+            'incident_type'=>'concussion',
+            'doctor_name'=>'Dr Club',
+            'protocol_actions'=>['head_cervical_control'=>1,'head_neuro'=>1],
+        ])->assertRedirect();
+
+        $incident=\App\Models\MatchMedicalIncident::query()->where('match_id',$this->match->id)->latest('id')->firstOrFail();
+        $this->assertSame('FIFA_HEAD_CERVICAL',$incident->protocol_code);
+        $this->assertTrue($incident->protocol_actions['head_neuro']);
+    }
+
 }

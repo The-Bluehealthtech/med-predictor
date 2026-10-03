@@ -86,6 +86,9 @@ class SpeechRecognitionService {
      * @returns {boolean} - Validité de la clé
      */
     testAPIKey() {
+        if (window.PCMA_DICTATION && window.PCMA_DICTATION.available) {
+            return true; // transcription par le serveur FIT : aucune clé dans le navigateur
+        }
         try {
             if (!this.config.apiKey || this.config.apiKey.length < 10) {
                 console.log('⚠️ Clé API invalide ou trop courte');
@@ -268,8 +271,10 @@ class SpeechRecognitionService {
                     // Traitement direct sans setTimeout
                     const result = await this.processAudioDirectly(task.audioBlob);
                     
-                    if (result.success && this.onResultCallback) {
-                        console.log('✅ Résultat traité avec succès');
+                    if (result.success && typeof window.pcmaDictationReview === 'function') {
+                        // Le médecin vérifie et accepte chaque valeur : rien n'est rempli automatiquement.
+                        window.pcmaDictationReview(result);
+                    } else if (result.success && this.onResultCallback) {
                         this.onResultCallback(result.text, result.confidence);
                     }
                     
@@ -291,72 +296,25 @@ class SpeechRecognitionService {
      * NOUVEAU : Traitement audio direct sans récursion
      */
     async processAudioDirectly(audioBlob) {
-        try {
-            if (!this.config.apiKey) {
-                throw new Error('Clé API non configurée');
-            }
-
-            // Convertir l'audio en base64 de manière plus sûre
-            const arrayBuffer = await audioBlob.arrayBuffer();
-            const uint8Array = new Uint8Array(arrayBuffer);
-            let binaryString = '';
-            for (let i = 0; i < uint8Array.length; i++) {
-                binaryString += String.fromCharCode(uint8Array[i]);
-            }
-            const base64Audio = btoa(binaryString);
-
-            // Configuration de l'API
-            const apiUrl = `https://speech.googleapis.com/v1/speech:recognize?key=${this.config.apiKey}`;
-            
-            const requestBody = {
-                config: {
-                    encoding: this.config.encoding,
-                    sampleRateHertz: this.config.sampleRate,
-                    languageCode: this.config.language,
-                    model: this.config.model,
-                    enableAutomaticPunctuation: this.config.enableAutomaticPunctuation
-                },
-                audio: {
-                    content: base64Audio
-                }
-            };
-
-            // Appel à l'API
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Erreur API Google: ${response.status} - ${errorText}`);
-            }
-
-            const result = await response.json();
-            
-            if (result.results && result.results.length > 0) {
-                const transcript = result.results[0].alternatives[0].transcript;
-                const confidence = result.results[0].alternatives[0].confidence;
-                
-                console.log('✅ Reconnaissance réussie:', transcript, 'Confiance:', confidence);
-                
-                return {
-                    success: true,
-                    text: transcript,
-                    confidence: confidence
-                };
-            } else {
-                console.log('📝 Pas de parole détectée dans l\'audio');
-                throw new Error('Aucune parole détectée - parlez plus fort ou plus clairement');
-            }
-
-        } catch (error) {
-            console.error('❌ Erreur dans processAudioDirectly:', error);
-            throw error;
+        // Transcription par le serveur FIT (Google Speech-to-Text, clé gardée côté serveur).
+        const settings = window.PCMA_DICTATION || {};
+        if (!settings.transcribeUrl) {
+            throw new Error('Transcription non disponible sur cette page');
         }
+        const form = new FormData();
+        form.append('audio', audioBlob, 'dictee.webm');
+        const response = await fetch(settings.transcribeUrl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'X-CSRF-TOKEN': settings.csrf || '', 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            body: form
+        });
+        let data = {};
+        try { data = await response.json(); } catch (e) { data = {}; }
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || ('Transcription impossible (HTTP ' + response.status + ')'));
+        }
+        return { success: true, text: data.text, confidence: data.confidence || 0, proposals: data.proposals || [] };
     }
 
     /**

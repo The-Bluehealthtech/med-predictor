@@ -3596,6 +3596,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Charger automatiquement la clé API depuis le serveur
         async function loadApiKeyFromServer() {
+            // Transcription par le serveur FIT : aucune clé n'est chargée dans le navigateur.
+            if (window.PCMA_DICTATION) {
+                if (window.PCMA_DICTATION.available) {
+                    showServiceStatus('Transcription par le serveur FIT disponible', 'success');
+                    elements.initBtn.disabled = false;
+                    elements.testBtn.disabled = false;
+                    setTimeout(() => initService(), 300);
+                } else {
+                    showServiceStatus('Transcription indisponible : clé Google Speech-to-Text non configurée sur le serveur', 'error');
+                }
+                return;
+            }
             try {
                 showServiceStatus(PCMA_LABELS.loadingApiKey, 'info');
                 
@@ -3635,13 +3647,9 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 showServiceStatus(' Initialisation du service...', 'info');
                 
-                // Vérifier que la clé API est présente
-                if (!elements.apiKeyInput.value) {
-                    throw new Error(PCMA_LABELS.errMissingApiKey);
+                if (!(window.PCMA_DICTATION && window.PCMA_DICTATION.available)) {
+                    throw new Error('transcription non configurée sur le serveur');
                 }
-                
-                // Configurer le service avec la clé API
-                speechService.configure({ apiKey: elements.apiKeyInput.value });
                 const success = speechService.testAPIKey();
                 
                 if (success) {
@@ -6233,8 +6241,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Initialiser la console vocale
             initConsoleVocale();
             
-            //  NOUVEAU : Intégration directe avec le service vocal
-            integrateWithSpeechService();
+            // Reconnaissance du navigateur non utilisée : la transcription passe par le serveur FIT.
             
             //  TEST IMMÉDIAT DES BOUTONS DE MODE
             console.log(' TEST IMMÉDIAT DES BOUTONS DE MODE...');
@@ -6571,6 +6578,118 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @push('scripts')
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+// Dictée du PCMA : transcription par le serveur FIT (Google Speech-to-Text, clé côté serveur)
+// et vérification par le médecin avant tout remplissage du formulaire.
+window.PCMA_DICTATION = {
+    available: @json(filled(config('services.google_speech.key'))),
+    transcribeUrl: @json(route('pcma.dictation.transcribe')),
+    parseUrl: @json(route('pcma.dictation.parse')),
+    searchUrl: @json(route('pcma.players.search')),
+    csrf: @json(csrf_token()),
+};
+(() => {
+    const labels = { FIT: 'Apte', CONDITIONAL: 'Apte avec restrictions', NOT_FIT: 'Inapte', goalkeeper: 'Gardien', defender: 'Défenseur', midfielder: 'Milieu', forward: 'Attaquant' };
+    const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const field = (name) => document.querySelector('#pcma-form [name="' + name + '"]');
+    async function getJson(url, options = {}) {
+        const response = await fetch(url, Object.assign({ credentials: 'same-origin', headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': window.PCMA_DICTATION.csrf } }, options));
+        return response.json().catch(() => ({}));
+    }
+    async function selectPlayer(params) {
+        const data = await getJson(window.PCMA_DICTATION.searchUrl + '?' + new URLSearchParams(params));
+        const select = document.getElementById('player_id');
+        if (data.success && select && [...select.options].some(o => o.value === String(data.player.id))) {
+            select.value = String(data.player.id);
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+            return data.player.name;
+        }
+        return null;
+    }
+    function render(dialog, result) {
+        const rows = (result.proposals || []).map((p, i) => `
+            <tr class="border-b align-top">
+                <td class="py-2 pr-2"><input type="checkbox" data-index="${i}" ${p.field === 'final_statement[overall_decision]' ? '' : 'checked'} aria-label="Appliquer ${esc(p.label)}"></td>
+                <td class="py-2 pr-2 text-sm font-medium text-gray-800">${esc(p.label)}</td>
+                <td class="py-2 pr-2"><input data-value="${i}" value="${esc(p.value)}" class="w-full rounded border-gray-300 text-sm px-2 py-1">${labels[p.value] ? `<span class="text-xs text-gray-500">${esc(labels[p.value])}</span>` : ''}</td>
+                <td class="py-2 text-xs text-gray-500 italic">« ${esc(p.excerpt)} »</td>
+            </tr>`).join('');
+        dialog.querySelector('[data-role=body]').innerHTML = `
+            <label class="block text-sm font-medium text-gray-700">Texte transcrit (modifiable)
+                <textarea data-role="text" rows="3" class="mt-1 w-full rounded border-gray-300 text-sm">${esc(result.text)}</textarea></label>
+            <button type="button" data-role="reparse" class="mt-1 text-sm font-semibold text-blue-700">Ré-analyser le texte</button>
+            ${rows ? `<table class="mt-3 w-full"><thead><tr class="text-left text-xs uppercase text-gray-500"><th></th><th>Champ</th><th>Valeur proposée</th><th>Extrait dicté</th></tr></thead><tbody>${rows}</tbody></table>
+                <p class="mt-2 text-xs text-gray-500">La conclusion n'est jamais cochée d'office : elle reste une décision du médecin.</p>`
+                : '<p class="mt-3 text-sm text-amber-800">Aucune valeur reconnue dans ce texte.</p>'}`;
+        dialog._result = result;
+    }
+    async function apply(dialog) {
+        const result = dialog._result;
+        const status = dialog.querySelector('[data-role=status]');
+        let applied = 0;
+        for (const box of dialog.querySelectorAll('input[type=checkbox][data-index]')) {
+            if (!box.checked) continue;
+            const p = result.proposals[box.dataset.index];
+            const value = dialog.querySelector(`[data-value="${box.dataset.index}"]`).value.trim();
+            if (value === '') continue;
+            if (p.field === 'player_name') {
+                const name = await selectPlayer({ name: value });
+                status.textContent = name ? `Joueur sélectionné : ${name}` : `Aucun joueur de votre périmètre ne correspond à « ${value} ».`;
+                if (name) applied++;
+                continue;
+            }
+            if (p.field === 'fifa_connect_id') {
+                if (field('fifa_connect_id')) field('fifa_connect_id').value = value;
+                const name = await selectPlayer({ fifa_id: value });
+                status.textContent = name ? `Joueur sélectionné : ${name}` : `Aucun joueur de votre périmètre avec le FIFA ID ${value}.`;
+                applied++;
+                continue;
+            }
+            const input = field(p.field);
+            if (!input) continue;
+            if (input.tagName === 'SELECT' && ![...input.options].some(o => o.value === value)) continue;
+            input.value = value;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            applied++;
+        }
+        status.textContent = `${applied} valeur(s) reportée(s) dans le formulaire. ${status.textContent.startsWith('Joueur') || status.textContent.startsWith('Aucun') ? status.textContent : ''}`.trim();
+    }
+    window.pcmaDictationReview = function (result) {
+        let dialog = document.getElementById('pcma-dictation-review');
+        if (!dialog) {
+            dialog = document.createElement('div');
+            dialog.id = 'pcma-dictation-review';
+            dialog.setAttribute('role', 'dialog');
+            dialog.setAttribute('aria-modal', 'true');
+            dialog.setAttribute('aria-labelledby', 'pcma-dictation-title');
+            dialog.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4';
+            dialog.innerHTML = `<div class="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-xl bg-white p-5 shadow-xl">
+                <h2 id="pcma-dictation-title" class="text-lg font-semibold text-gray-900">Vérifier la dictée avant de remplir le PCMA</h2>
+                <div data-role="body" class="mt-3"></div>
+                <p data-role="status" class="mt-3 text-sm text-gray-700" aria-live="polite"></p>
+                <div class="mt-4 flex flex-wrap justify-end gap-2">
+                    <button type="button" data-role="close" class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-semibold">Fermer</button>
+                    <button type="button" data-role="apply" class="px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-semibold">Reporter la sélection</button>
+                </div></div>`;
+            document.body.appendChild(dialog);
+            dialog.querySelector('[data-role=close]').addEventListener('click', () => dialog.classList.add('hidden'));
+            dialog.querySelector('[data-role=apply]').addEventListener('click', () => apply(dialog));
+            dialog.addEventListener('click', async (e) => {
+                if (e.target.dataset.role !== 'reparse') return;
+                const text = dialog.querySelector('[data-role=text]').value;
+                const data = await getJson(window.PCMA_DICTATION.parseUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': window.PCMA_DICTATION.csrf }, body: JSON.stringify({ text }) });
+                render(dialog, { text, confidence: dialog._result.confidence, proposals: data.proposals || [] });
+            });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') dialog.classList.add('hidden'); });
+        }
+        dialog.querySelector('[data-role=status]').textContent = '';
+        render(dialog, result);
+        dialog.classList.remove('hidden');
+        dialog.querySelector('[data-role=apply]').focus();
+    };
+})();
+</script>
 <script src="/js/SpeechRecognitionService-laravel.js"></script>
         <script src="/js/ServiceVocal.js"></script>
 
@@ -6888,6 +7007,10 @@ hideVocalContentInManual() {
     }
     
     async configureSpeechService() {
+        if (window.PCMA_DICTATION) {
+            // Transcription par le serveur FIT ; les résultats passent par la vérification du médecin.
+            return Boolean(window.PCMA_DICTATION.available);
+        }
         try {
             const response = await fetch('/api/google-speech-key');
             

@@ -56,4 +56,5 @@ Guide pas à pas : `docs/fhir/INSTALLATION.md` ; vérification : `/admin/fhir-se
 - [ ] Installer un serveur d'autorisation OAuth 2.0 et le contrôle des jetons devant HAPI (IHE IUA) ; renseigner `FIT_FHIR_TOKEN_URL`, `FIT_FHIR_CLIENT_ID`, `FIT_FHIR_CLIENT_SECRET`, `FIT_FHIR_SCOPE`.
 - [ ] Publier la politique de confidentialité de chaque fédération ; configurer et activer Adobe Sign pour les consentements (IHE PCF).
 - [ ] Raccorder les sources (EMR, LIS, RIS, PACS) au serveur et tester un circuit complet : prescription, compte rendu, notification, intégration au dossier.
+- [ ] Créer une clé Google Cloud Speech-to-Text (API activée, restreinte à cette API) et la renseigner dans `GOOGLE_SPEECH_API_KEY` sur le service web : dictée du PCMA transcrite par le serveur FIT, clé jamais transmise au navigateur. Tester une dictée réelle (constantes, antécédents, conclusion) et la vérification champ par champ.
 

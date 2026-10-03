@@ -168,6 +168,14 @@ return [
         'version' => env('HL7_FHIR_VERSION', 'R4'),
     ],
 
+    // Transcription des dictées du PCMA (Google Cloud Speech-to-Text v1) : clé gardée sur le serveur.
+    'google_speech' => [
+        'key' => env('GOOGLE_SPEECH_API_KEY'),
+        'language' => env('GOOGLE_SPEECH_LANGUAGE', 'fr-FR'),
+        'model' => env('GOOGLE_SPEECH_MODEL', 'latest_long'),
+        'timeout' => (int) env('GOOGLE_SPEECH_TIMEOUT', 30),
+    ],
+
     'icd11' => [
         'release' => env('ICD11_RELEASE', '2026-01'),
         'client_id' => env('ICD11_CLIENT_ID'),

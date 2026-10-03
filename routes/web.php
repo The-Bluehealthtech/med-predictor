@@ -3537,6 +3537,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pcma/{pcma}/complete', [App\Http\Controllers\PcmaStatusController::class, 'complete'])->name('pcma.complete');
     Route::post('/pcma/{pcma}/fail', [App\Http\Controllers\PcmaStatusController::class, 'fail'])->name('pcma.fail');
     Route::get('/pcma/players/search', [App\Http\Controllers\PCMAController::class, 'searchPlayers'])->middleware('throttle:60,1')->name('pcma.players.search');
+    Route::post('/pcma/dictation/transcribe', [App\Http\Controllers\PcmaDictationController::class, 'transcribe'])->middleware('throttle:30,1')->name('pcma.dictation.transcribe');
+    Route::post('/pcma/dictation/parse', [App\Http\Controllers\PcmaDictationController::class, 'parse'])->middleware('throttle:60,1')->name('pcma.dictation.parse');
     Route::get('/pcma/{pcma}/files/{field}', [App\Http\Controllers\PcmaDocumentController::class, 'file'])
         ->name('pcma.file');
     // Visionneuse commune des fichiers médicaux (PCMA, documents du pré-accueil)

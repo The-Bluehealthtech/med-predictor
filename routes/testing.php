@@ -152,6 +152,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/medical-files/documents/{document}/frame', [App\Http\Controllers\MedicalFileViewerController::class, 'documentFrame'])->whereNumber('document')->middleware('throttle:180,1')->name('medical-files.document.frame');
     Route::get('/medical-files/documents/{document}/source', [App\Http\Controllers\MedicalFileViewerController::class, 'documentSource'])->whereNumber('document')->name('medical-files.document.source');
     Route::get('/pcma/players/search', [App\Http\Controllers\PCMAController::class, 'searchPlayers'])->name('pcma.players.search');
+    Route::post('/pcma/dictation/transcribe', [App\Http\Controllers\PcmaDictationController::class, 'transcribe'])->middleware('throttle:30,1')->name('pcma.dictation.transcribe');
+    Route::post('/pcma/dictation/parse', [App\Http\Controllers\PcmaDictationController::class, 'parse'])->middleware('throttle:60,1')->name('pcma.dictation.parse');
     Route::get('/pcma/{pcma}/files/{field}', [App\Http\Controllers\PcmaDocumentController::class, 'file'])->name('pcma.file');
     Route::get('/clinical/players/{player}/external-data', [\App\Http\Controllers\Clinical\ExternalClinicalDataController::class, 'show'])->whereNumber('player')->name('clinical.external-data');
     Route::post('/clinical/players/{player}/external-data/integrate', [\App\Http\Controllers\Clinical\ExternalClinicalDataController::class, 'integrate'])->whereNumber('player')->name('clinical.external-data.integrate');

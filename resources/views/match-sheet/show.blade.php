@@ -11,6 +11,7 @@
                 {{ __('Match Sheet') }} - {{ $match->homeTeam->club->name ?? $match->homeTeam->name }} vs {{ $match->awayTeam->club->name ?? $match->awayTeam->name }}
             </h2>
             <div class="flex space-x-2">
+                <a href="{{ route('matches.medical-emergency-plan', $match) }}" class="inline-flex items-center px-4 py-2 bg-red-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-800 transition print:hidden">Plan d’urgence médical</a>
                 <button onclick="window.print()" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 print:hidden">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2m-4 0v4m0 0H8m4 0h4"></path>

@@ -22,6 +22,12 @@ Route::match(['post', 'put'], '/competition-management/matches/{match}/match-she
     ->middleware('auth')->name('competition-management.matches.match-sheet.submit');
 Route::get('/competition-management/competitions/{competition}/standings', [\App\Http\Controllers\CompetitionManagementController::class, 'standings'])
     ->middleware('auth')->name('competition-management.competitions.standings');
+Route::get('/matches/{match}/medical-emergency-plan', [\App\Http\Controllers\MatchMedicalEmergencyPlanController::class, 'show'])
+    ->middleware('auth')->whereNumber('match')->name('matches.medical-emergency-plan');
+Route::put('/matches/{match}/medical-emergency-plan', [\App\Http\Controllers\MatchMedicalEmergencyPlanController::class, 'update'])
+    ->middleware('auth')->whereNumber('match')->name('matches.medical-emergency-plan.update');
+Route::post('/matches/{match}/medical-emergency-plan/validate', [\App\Http\Controllers\MatchMedicalEmergencyPlanController::class, 'validatePlan'])
+    ->middleware('auth')->whereNumber('match')->name('matches.medical-emergency-plan.validate');
 
 // Controllers will be used as needed
 

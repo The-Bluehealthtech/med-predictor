@@ -106,4 +106,9 @@ class MatchModel extends Model
     {
         return $this->hasOne(MatchSheet::class, 'match_id');
     }
+
+    public function medicalEmergencyPlan(): HasOne
+    {
+        return $this->hasOne(MatchMedicalEmergencyPlan::class, 'match_id');
+    }
 } 

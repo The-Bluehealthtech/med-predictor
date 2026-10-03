@@ -5,6 +5,7 @@
 @section('content')
 @php
 $roles=$plan->role_assignments ?? [];
+$connectRoles=$plan->connect_role_assignments ?? [];
 $equipment=$plan->equipment_checklist ?? [];
 $timeline=$plan->timeline_checklist ?? [];
 $equipmentLabels=[
@@ -31,6 +32,12 @@ $timelineLabels=[
 
 @if(session('success'))
 <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('success') }}</div>
+@endif
+@if(session('info'))
+<div class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">{{ session('info') }}</div>
+@endif
+@if(session('error'))
+<div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{{ session('error') }}</div>
 @endif
 
 <section class="grid gap-4 md:grid-cols-4">
@@ -65,16 +72,42 @@ $timelineLabels=[
 </section>
 
 <section class="rounded-2xl border border-slate-200 bg-white p-5">
+<div class="flex flex-wrap items-start justify-between gap-3">
+<div>
 <h2 class="font-semibold text-slate-900">2. Affectation des rôles FIFA</h2>
 <p class="mt-1 text-sm text-slate-600">Les couleurs reprennent les responsabilités du plan d’urgence d’avant-match FIFA.</p>
+</div>
+@if($connectMatch)
+<span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">Connect · Match FIFA {{ $connectMatch->match_fifa_id }}</span>
+@else
+<span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">Aucun match Connect lié</span>
+@endif
+</div>
 <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
 @foreach($roleDefinitions as $key=>$label)
-<label class="rounded-xl border border-slate-200 p-4">
+<div class="rounded-xl border border-slate-200 p-4">
+<label class="block">
 <span class="text-xs font-bold uppercase tracking-wide">{{ ucfirst($key) }} · {{ $label }}</span>
-<input name="role_assignments[{{ $key }}]" value="{{ old('role_assignments.'.$key,$roles[$key]??'') }}" class="mt-3 w-full rounded-lg border-slate-300" placeholder="Nom du professionnel" @disabled(!$canEdit)>
+<input name="role_assignments[{{ $key }}]" data-role-name="{{ $key }}" value="{{ old('role_assignments.'.$key,$roles[$key]??'') }}" class="mt-3 w-full rounded-lg border-slate-300" placeholder="Nom du professionnel" @disabled(!$canEdit)>
 </label>
+@if($connectPeople->isNotEmpty())
+<label class="mt-3 block text-xs font-semibold text-slate-500">Identité FIFA Connect
+<select name="connect_role_assignments[{{ $key }}]" data-role-connect="{{ $key }}" class="mt-1 w-full rounded-lg border-slate-300 text-sm" @disabled(!$canEdit)>
+<option value="">Saisie libre / non liée</option>
+@foreach($connectPeople as $person)
+<option value="{{ $person['person_fifa_id'] }}" data-person-name="{{ $person['name'] }}" @selected((string)old('connect_role_assignments.'.$key,$connectRoles[$key]??'')===(string)$person['person_fifa_id'])>
+{{ $person['name'] }} · {{ $person['role'] }}{{ $person['team'] ? ' · '.$person['team'] : '' }} · FIFA {{ $person['person_fifa_id'] }}
+</option>
+@endforeach
+</select>
+</label>
+@endif
+</div>
 @endforeach
 </div>
+@if($connectPeople->isNotEmpty())
+<p class="mt-3 text-xs text-slate-500">{{ $connectPeople->count() }} officiel(s) / membre(s) de staff issus du modèle FIFA Connect sont disponibles pour l’affectation.</p>
+@endif
 </section>
 
 <section class="rounded-2xl border border-slate-200 bg-white p-5">
@@ -216,6 +249,62 @@ $timelineLabels=[
 </form>
 </section>
 @endif
+
+<section class="rounded-2xl border border-slate-200 bg-white p-5">
+<div class="flex flex-wrap items-start justify-between gap-3">
+<div>
+<h2 class="font-semibold text-slate-900">Signature numérique du plan Medical Matchday</h2>
+<p class="mt-1 text-sm text-slate-600">Utilise le moteur de signature documentaire FIT déjà commun aux PCMA, imagerie et autres documents certifiés.</p>
+</div>
+<span class="rounded-full px-3 py-1 text-xs font-semibold {{ $plan->status==='validated' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">
+{{ $plan->status==='validated' ? 'Document éligible à la signature' : 'Validation médicale requise' }}
+</span>
+</div>
+@php($readySignatureProviders=$signatureProviders->where('status','ready'))
+@if($canRequestSignature)
+<form method="POST" action="{{ route('matches.medical-emergency-plan.signatures.store',$match) }}" class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+@csrf
+<label class="flex-1 text-sm font-medium text-slate-700">Fournisseur
+<select name="provider" class="mt-1 w-full rounded-lg border-slate-300" @disabled($readySignatureProviders->isEmpty()) required>
+@forelse($readySignatureProviders as $provider)
+<option value="{{ $provider['slug'] }}">{{ $provider['name'] }}</option>
+@empty
+<option value="">Aucun fournisseur activé</option>
+@endforelse
+</select>
+</label>
+<button type="submit" @disabled($readySignatureProviders->isEmpty()) class="rounded-lg px-4 py-2.5 text-sm font-semibold {{ $readySignatureProviders->isEmpty() ? 'cursor-not-allowed bg-slate-200 text-slate-500' : 'bg-slate-900 text-white hover:bg-slate-800' }}">Demander la signature numérique</button>
+</form>
+@endif
+@if($readySignatureProviders->isEmpty())
+<p class="mt-3 text-sm text-amber-700">Aucun fournisseur de signature n’est actuellement activé dans Configuration des API.</p>
+@endif
+
+<div class="mt-5 border-t border-slate-100 pt-4">
+<h3 class="text-sm font-semibold text-slate-900">Historique de signature</h3>
+@forelse($signatureRequests as $signatureRequest)
+<div class="mt-2 rounded-xl bg-slate-50 px-4 py-3 text-sm">
+<div class="flex flex-wrap items-center justify-between gap-2">
+<span>{{ $signatureRequest->metadata['provider_name'] ?? $signatureRequest->provider }} · {{ $signatureRequest->signer_name ?? 'Signataire' }}</span>
+<span class="font-medium text-slate-700">{{ ucfirst($signatureRequest->status) }} · {{ optional($signatureRequest->requested_at)->format('d/m/Y H:i') }}</span>
+</div>
+<div class="mt-2 flex flex-wrap gap-2">
+@if($signatureRequest->provider==='adobe_sign' && $signatureRequest->external_reference && in_array($signatureRequest->status,['sent','pending'],true) && $canRequestSignature)
+<form method="POST" action="{{ route('matches.medical-emergency-plan.signatures.sync',[$match,$signatureRequest]) }}">@csrf
+<button type="submit" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">Synchroniser</button>
+</form>
+@endif
+@if(data_get($signatureRequest->metadata,'signed_path'))
+<a href="{{ route('matches.medical-emergency-plan.signatures.download',[$match,$signatureRequest]) }}" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white">Télécharger le PDF signé</a>
+<span class="self-center text-xs text-slate-500">SHA-256 : {{ \Illuminate\Support\Str::limit((string)data_get($signatureRequest->metadata,'signed_sha256'),20,'…') }}</span>
+@endif
+</div>
+</div>
+@empty
+<p class="mt-2 text-sm text-slate-500">Aucune demande de signature pour ce plan.</p>
+@endforelse
+</div>
+</section>
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -227,6 +316,14 @@ document.addEventListener('DOMContentLoaded', () => {
         sca.classList.toggle('hidden', type.value !== 'cardiac_arrest');
         head.classList.toggle('hidden', !['cervical_spine','concussion'].includes(type.value));
     };
+    document.querySelectorAll('[data-role-connect]').forEach((select) => {
+        select.addEventListener('change', () => {
+            const selected = select.options[select.selectedIndex];
+            const input = document.querySelector(`[data-role-name="${select.dataset.roleConnect}"]`);
+            if (input && selected?.dataset.personName) input.value = selected.dataset.personName;
+        });
+    });
+
     document.querySelectorAll('[data-protocol-choice]').forEach((button) => {
         button.addEventListener('click', () => {
             type.value = button.dataset.protocolChoice;

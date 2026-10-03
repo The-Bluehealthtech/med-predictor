@@ -32,6 +32,12 @@ Route::put('/matches/{match}/medical-emergency-plan', [\App\Http\Controllers\Mat
     ->middleware('auth')->whereNumber('match')->name('matches.medical-emergency-plan.update');
 Route::post('/matches/{match}/medical-emergency-plan/validate', [\App\Http\Controllers\MatchMedicalEmergencyPlanController::class, 'validatePlan'])
     ->middleware('auth')->whereNumber('match')->name('matches.medical-emergency-plan.validate');
+Route::post('/matches/{match}/medical-emergency-plan/signatures', [\App\Http\Controllers\MatchdayMedicalSignatureController::class, 'store'])
+    ->middleware('auth')->whereNumber('match')->name('matches.medical-emergency-plan.signatures.store');
+Route::post('/matches/{match}/medical-emergency-plan/signatures/{signature}/sync', [\App\Http\Controllers\MatchdayMedicalSignatureController::class, 'sync'])
+    ->middleware('auth')->whereNumber('match')->whereNumber('signature')->name('matches.medical-emergency-plan.signatures.sync');
+Route::get('/matches/{match}/medical-emergency-plan/signatures/{signature}/download', [\App\Http\Controllers\MatchdayMedicalSignatureController::class, 'download'])
+    ->middleware('auth')->whereNumber('match')->whereNumber('signature')->name('matches.medical-emergency-plan.signatures.download');
 Route::post('/matches/{match}/medical-incidents', [\App\Http\Controllers\MatchMedicalIncidentController::class, 'store'])
     ->middleware('auth')->whereNumber('match')->name('matches.medical-incidents.store');
 

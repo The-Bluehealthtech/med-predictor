@@ -39,6 +39,9 @@ class MatchMedicalEmergencyPlanTest extends TestCase
         if (!Schema::hasColumn('match_medical_incidents', 'protocol_code')) {
             (require base_path('database/migrations/2026_10_03_229000_add_emergency_protocol_to_match_medical_incidents.php'))->up();
         }
+        if (!Schema::hasColumn('match_medical_emergency_plans', 'connect_match_fifa_id')) {
+            (require base_path('database/migrations/2026_10_03_229100_add_connect_context_to_match_medical_emergency_plans.php'))->up();
+        }
 
         Route::middleware(['web'])->group(function () {
             Route::get('/_t/competition-management/matches', [\App\Http\Controllers\MatchdayPreparationController::class,'index'])->name('competition-management.matches.index');
@@ -46,6 +49,9 @@ class MatchMedicalEmergencyPlanTest extends TestCase
             Route::get('/_t/matches/{match}/medical-emergency-plan', [MatchMedicalEmergencyPlanController::class,'show'])->name('matches.medical-emergency-plan');
             Route::put('/_t/matches/{match}/medical-emergency-plan', [MatchMedicalEmergencyPlanController::class,'update'])->name('matches.medical-emergency-plan.update');
             Route::post('/_t/matches/{match}/medical-emergency-plan/validate', [MatchMedicalEmergencyPlanController::class,'validatePlan'])->name('matches.medical-emergency-plan.validate');
+            Route::post('/_t/matches/{match}/medical-emergency-plan/signatures', fn () => back())->name('matches.medical-emergency-plan.signatures.store');
+            Route::post('/_t/matches/{match}/medical-emergency-plan/signatures/{signature}/sync', fn () => back())->name('matches.medical-emergency-plan.signatures.sync');
+            Route::get('/_t/matches/{match}/medical-emergency-plan/signatures/{signature}/download', fn () => response('signed'))->name('matches.medical-emergency-plan.signatures.download');
             Route::post('/_t/matches/{match}/medical-incidents', [MatchMedicalIncidentController::class,'store'])->name('matches.medical-incidents.store');
             Route::get('/_t/match-sheet/{match}', fn () => response('sheet'))->name('competition-management.matches.match-sheet');
         });
@@ -114,6 +120,12 @@ class MatchMedicalEmergencyPlanTest extends TestCase
             ->assertRedirect()->assertSessionHas('success');
 
         $this->assertSame('validated',$plan->fresh()->status);
+
+        $this->actingAs($doctor)
+            ->get('/_t/matches/'.$this->match->id.'/medical-emergency-plan')
+            ->assertOk()
+            ->assertSee('Signature numérique du plan Medical Matchday')
+            ->assertSee('Document éligible à la signature');
     }
 
     public function test_association_admin_can_prepare_but_cannot_medically_validate(): void
@@ -244,6 +256,47 @@ class MatchMedicalEmergencyPlanTest extends TestCase
             ->assertSee('Choisissez la feuille de match')
             ->assertSee('FDM #')
             ->assertSee('Ouvrir le cockpit Match Day');
+    }
+
+
+    public function test_matchday_plan_exposes_fifa_connect_people_and_persists_connect_role_ids(): void
+    {
+        if (!Schema::hasTable('fifa_connect_matches') || !Schema::hasTable('fifa_connect_match_officials')) {
+            $this->markTestSkipped('FIFA Connect canonical tables unavailable.');
+        }
+
+        $admin = User::factory()->create(['role'=>'admin','status'=>'active','tenant_id'=>1]);
+        $connectMatch = \App\Models\FifaConnect\MatchRecord::query()->create([
+            'match_fifa_id'=>'MATCH-FIFA-'.$this->match->id,
+            'status'=>'scheduled',
+            'competition_fifa_id'=>'COMP-FIFA-TEST',
+            'match_id'=>$this->match->id,
+        ]);
+        \App\Models\FifaConnect\MatchOfficial::query()->create([
+            'match_id'=>$connectMatch->id,
+            'person_fifa_id'=>'PERSON-FIFA-MED-1',
+            'role'=>'MedicalOfficial',
+            'role_description'=>'Médecin de match',
+            'international_first_name'=>'Amina',
+            'international_last_name'=>'Doctor',
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/_t/matches/'.$this->match->id.'/medical-emergency-plan')
+            ->assertOk()
+            ->assertSee('MATCH-FIFA-'.$this->match->id)
+            ->assertSee('PERSON-FIFA-MED-1')
+            ->assertSee('Amina Doctor');
+
+        $payload=$this->completePayload();
+        $payload['connect_role_assignments']=['black'=>'PERSON-FIFA-MED-1'];
+        $this->actingAs($admin)
+            ->put('/_t/matches/'.$this->match->id.'/medical-emergency-plan',$payload)
+            ->assertRedirect();
+
+        $plan=MatchMedicalEmergencyPlan::query()->where('match_id',$this->match->id)->firstOrFail();
+        $this->assertSame('MATCH-FIFA-'.$this->match->id,$plan->connect_match_fifa_id);
+        $this->assertSame('PERSON-FIFA-MED-1',$plan->connect_role_assignments['black']);
     }
 
     public function test_admin_can_collect_and_persist_matchday_medical_data(): void

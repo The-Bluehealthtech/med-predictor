@@ -14,6 +14,10 @@
         </div>
         <div class="flex flex-wrap items-center gap-3 text-sm">
             @if($canManage)
+                <form method="POST" action="{{ route('club-officials.sync-connect',$club) }}">
+                    @csrf
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-blue-700 text-white font-semibold hover:bg-blue-800">Synchroniser FIFA Connect</button>
+                </form>
                 <a href="{{ route('club-officials.create', [$club, 'type' => 'TeamOfficial']) }}" class="px-4 py-2 rounded-lg bg-slate-700 text-white font-semibold hover:bg-slate-800">+ Membre du staff</a>
                 <a href="{{ route('club-officials.create', [$club, 'type' => 'OrganisationOfficial']) }}" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50">+ Dirigeant</a>
             @endif
@@ -38,7 +42,7 @@
                         @foreach($items as $o)
                             <tr class="hover:bg-gray-50 {{ $o->isActive() ? '' : 'text-gray-400' }}">
                                 <td class="px-5 py-3 font-medium {{ $o->isActive() ? 'text-gray-900' : '' }}">{{ $o->fullName() }}</td>
-                                <td class="px-5 py-3">{{ $o->roleLabel() }} <span class="font-mono text-xs text-gray-400">{{ $o->roleCode() }}</span>@if($o->is_head_coach) <span class="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">principal</span>@endif</td>
+                                <td class="px-5 py-3">{{ $o->roleLabel() }} <span class="font-mono text-xs text-gray-400">{{ $o->roleCode() }}</span>@if($o->is_head_coach) <span class="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">principal</span>@endif @if($o->source==='FIFAConnect')<span class="ml-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">Connect</span>@endif</td>
                                 <td class="px-5 py-3 font-mono text-xs">{{ $o->person_fifa_id ?: '—' }}</td>
                                 <td class="px-5 py-3">{{ $o->nationality }}</td>
                                 <td class="px-5 py-3 whitespace-nowrap">{{ $d($o->registration_valid_from) }} → {{ $o->registration_valid_to ? $d($o->registration_valid_to) : '…' }}</td>

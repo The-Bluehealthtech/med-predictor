@@ -53,6 +53,29 @@ class ClubOfficialController extends Controller
         return view('club-officials.form', $this->formData($club, new ClubOfficial(['registration_type' => $type, 'status' => 'active', 'discipline' => 'Football', 'registration_valid_from' => today()])));
     }
 
+    public function syncConnect(Request $request, Club $club, \App\Services\ClubOfficials\SyncFifaConnectOfficials $sync)
+    {
+        abort_unless($this->officials->canManage($request->user(), $club), 403);
+
+        $result = $sync->sync($club, $request->user());
+        if (($result['available'] ?? false) === false) {
+            return back()->with('status', 'Les tables FIFA Connect ne sont pas disponibles.');
+        }
+        if (($result['missing_club_fifa_id'] ?? false) === true) {
+            return back()->with('status', 'Le club doit avoir un OrganisationFIFAId / FIFA Club ID avant la synchronisation.');
+        }
+
+        return back()->with(
+            'status',
+            sprintf(
+                'Synchronisation FIFA Connect : %d créé(s), %d mis à jour, %d ignoré(s) car données obligatoires incomplètes.',
+                $result['created'],
+                $result['updated'],
+                $result['skipped']
+            )
+        );
+    }
+
     public function store(Request $request, Club $club)
     {
         abort_unless($this->officials->canManage($request->user(), $club), 403);

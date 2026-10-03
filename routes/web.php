@@ -1709,6 +1709,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clubs/{club}/officials', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'club'])->name('club-officials.club');
     Route::get('/clubs/{club}/officials/create', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'create'])->name('club-officials.create');
     Route::post('/clubs/{club}/officials', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'store'])->name('club-officials.store');
+    Route::post('/clubs/{club}/officials/sync-connect', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'syncConnect'])->name('club-officials.sync-connect');
     Route::get('/clubs/{club}/officials/{official}', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'show'])->whereNumber('official')->name('club-officials.show');
     Route::get('/clubs/{club}/officials/{official}/edit', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'edit'])->whereNumber('official')->name('club-officials.edit');
     Route::put('/clubs/{club}/officials/{official}', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'update'])->whereNumber('official')->name('club-officials.update');

@@ -75,7 +75,7 @@ $timelineLabels=[
 <div class="flex flex-wrap items-start justify-between gap-3">
 <div>
 <h2 class="font-semibold text-slate-900">2. Affectation des rôles FIFA</h2>
-<p class="mt-1 text-sm text-slate-600">Les couleurs reprennent les responsabilités du plan d’urgence d’avant-match FIFA.</p>
+<p class="mt-1 text-sm text-slate-600">Les couleurs reprennent les responsabilités du plan d’urgence d’avant-match FIFA. Les responsables sont issus des fiches Dirigeants & staff des clubs.</p>
 </div>
 @if($connectMatch)
 <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">Connect · Match FIFA {{ $connectMatch->match_fifa_id }}</span>
@@ -96,7 +96,7 @@ $timelineLabels=[
 <option value="">Saisie libre / non liée</option>
 @foreach($connectPeople as $person)
 <option value="{{ $person['person_fifa_id'] }}" data-person-name="{{ $person['name'] }}" @selected((string)old('connect_role_assignments.'.$key,$connectRoles[$key]??'')===(string)$person['person_fifa_id'])>
-{{ $person['name'] }} · {{ $person['role'] }}{{ $person['team'] ? ' · '.$person['team'] : '' }} · FIFA {{ $person['person_fifa_id'] }}
+{{ $person['name'] }} · {{ $person['role'] }} [{{ $person['role_connect_id'] ?: 'Role Connect non renseigné' }}]{{ $person['team'] ? ' · '.$person['team'] : '' }} · FIFA {{ $person['person_fifa_id'] }}
 </option>
 @endforeach
 </select>

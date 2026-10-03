@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClubOfficial;
 use App\Models\MatchMedicalEmergencyPlan;
 use App\Models\MatchModel;
 use App\Models\User;
@@ -32,7 +33,7 @@ final class MatchMedicalEmergencyPlanController extends Controller
         if ($connectMatch && blank($plan->connect_match_fifa_id)) {
             $plan->forceFill(['connect_match_fifa_id' => $connectMatch->match_fifa_id])->save();
         }
-        $connectPeople = $this->connectPeople($connectMatch);
+        $connectPeople = $this->connectPeople($match);
         $signatureProviders = collect(app(DocumentSignatureService::class)->allStatuses());
         $signatureRequests = Schema::hasTable('document_signature_requests')
             ? DocumentSignatureRequest::query()->where('workflow','matchday_medical_plan.final_document')->latest('id')->get()
@@ -85,11 +86,11 @@ final class MatchMedicalEmergencyPlanController extends Controller
         ]);
 
         $connectMatch = $this->connectMatch($match);
-        $validConnectIds = $this->connectPeople($connectMatch)->pluck('person_fifa_id');
+        $validConnectIds = $this->connectPeople($match)->pluck('person_fifa_id');
         foreach (($data['connect_role_assignments'] ?? []) as $role => $personFifaId) {
             if (filled($personFifaId) && !$validConnectIds->contains($personFifaId)) {
                 throw ValidationException::withMessages([
-                    'connect_role_assignments.'.$role => 'Cette identité FIFA Connect n’appartient pas aux officiels ou staffs du match lié.',
+                    'connect_role_assignments.'.$role => 'Cette identité FIFA Connect n’est pas déclarée comme officiel actif dans un des clubs du match.',
                 ]);
             }
         }
@@ -240,34 +241,31 @@ final class MatchMedicalEmergencyPlanController extends Controller
             ->first();
     }
 
-    private function connectPeople(?ConnectMatchRecord $connectMatch)
+    private function connectPeople(MatchModel $match)
     {
-        if (!$connectMatch) return collect();
+        if (!Schema::hasTable('club_officials')) return collect();
 
-        $rows = collect();
-        foreach ($connectMatch->officials as $official) {
-            $rows->push([
+        return ClubOfficial::query()
+            ->with('club:id,name')
+            ->whereIn('club_id', array_filter([$match->home_club_id, $match->away_club_id]))
+            ->where('status', 'active')
+            ->whereNotNull('person_fifa_id')
+            ->where('person_fifa_id', '!=', '')
+            ->orderBy('international_last_name')
+            ->orderBy('international_first_name')
+            ->get()
+            ->map(fn (ClubOfficial $official) => [
+                'club_official_id' => $official->id,
                 'person_fifa_id' => $official->person_fifa_id,
-                'name' => trim(($official->international_first_name ?? '').' '.($official->international_last_name ?? '')) ?: $official->person_fifa_id,
-                'role' => $official->role_description ?: $official->role,
-                'source' => 'MatchOfficial',
-                'team' => null,
-            ]);
-        }
-        foreach ($connectMatch->teams as $team) {
-            foreach ($team->officials as $official) {
-                $rows->push([
-                    'person_fifa_id' => $official->person_fifa_id,
-                    'name' => trim(($official->international_first_name ?? '').' '.($official->international_last_name ?? '')) ?: $official->person_fifa_id,
-                    'role' => $official->role_description ?: $official->role,
-                    'source' => 'TeamOfficial',
-                    'team' => $team->international_name ?: $team->international_short_name,
-                ]);
-            }
-        }
-
-        return $rows->filter(fn ($row) => filled($row['person_fifa_id']))
-            ->unique('person_fifa_id')->sortBy('name')->values();
+                'name' => $official->fullName(),
+                'role' => $official->roleLabel(),
+                'role_connect_id' => $official->roleCode(),
+                'source' => $official->source ?: 'FIT',
+                'team' => $official->club?->name,
+                'club_id' => $official->club_id,
+            ])
+            ->unique(fn ($row) => $row['club_id'].'|'.$row['person_fifa_id'].'|'.$row['role_connect_id'])
+            ->values();
     }
 
     private function canRequestSignature(Request $request, MatchModel $match, MatchMedicalEmergencyPlan $plan): bool

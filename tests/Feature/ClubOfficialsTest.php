@@ -37,8 +37,11 @@ class ClubOfficialsTest extends TestCase
         // La page des officiels renvoie vers la fiche club, absente des routes de test.
         if (!\Illuminate\Support\Facades\Route::has('modules.clubs.show')) {
             \Illuminate\Support\Facades\Route::get('/modules/clubs/{club}', fn () => null)->name('modules.clubs.show');
-            \Illuminate\Support\Facades\Route::getRoutes()->refreshNameLookups();
         }
+        if (!\Illuminate\Support\Facades\Route::has('club-officials.sync-connect')) {
+            \Illuminate\Support\Facades\Route::post('/clubs/{club}/officials/sync-connect', [\App\Http\Controllers\ClubOfficials\ClubOfficialController::class, 'syncConnect'])->name('club-officials.sync-connect');
+        }
+        \Illuminate\Support\Facades\Route::getRoutes()->refreshNameLookups();
     }
 
     private function user(string $role, array $attributes = []): User
@@ -110,6 +113,53 @@ class ClubOfficialsTest extends TestCase
             ->post(route('club-officials.digital-signature', [$this->clubId, $coach]), ['provider' => 'adobe_sign'])->assertForbidden();
         $this->actingAs($this->user('club_admin', ['club_id' => $this->otherClubId]))
             ->post(route('club-officials.digital-signature', [$this->clubId, $coach]), ['provider' => 'adobe_sign'])->assertForbidden();
+    }
+
+    public function test_club_admin_syncs_connect_team_doctor_into_club_officials(): void
+    {
+        if (!Schema::hasTable('fifa_connect_persons') || !Schema::hasTable('fifa_connect_registrations')) {
+            $this->markTestSkipped('FIFA Connect canonical tables unavailable.');
+        }
+
+        $person = \App\Models\FifaConnect\Person::query()->create([
+            'person_fifa_id' => 'MEDCONNECT84',
+            'international_first_name' => 'Leila',
+            'international_last_name' => 'Medecin',
+            'gender' => 'Female',
+            'nationality' => 'FR',
+            'date_of_birth' => '1985-03-14',
+            'country_of_birth' => 'FR',
+            'place_of_birth' => 'Paris',
+        ]);
+        \App\Models\FifaConnect\Registration::query()->create([
+            'person_id' => $person->id,
+            'person_fifa_id' => $person->person_fifa_id,
+            'organisation_fifa_id' => 'ORG123',
+            'registration_type' => 'TeamOfficial',
+            'status' => 'active',
+            'registration_valid_from' => '2026-07-01',
+            'discipline' => 'Football',
+            'team_official_role' => 'TeamDoctor',
+        ]);
+
+        $admin = $this->user('club_admin', ['club_id' => $this->clubId]);
+        $result = app(\App\Services\ClubOfficials\SyncFifaConnectOfficials::class)
+            ->sync(Club::findOrFail($this->clubId), $admin);
+        $this->assertSame(1, $result['created']);
+
+        $official = ClubOfficial::query()->where('club_id', $this->clubId)->where('person_fifa_id', 'MEDCONNECT84')->firstOrFail();
+        $this->assertSame('TeamOfficial', $official->registration_type);
+        $this->assertSame('TeamDoctor', $official->team_official_role);
+        $this->assertSame('FIFAConnect', $official->source);
+        $this->assertSame('Leila Medecin', $official->fullName());
+
+        $this->actingAs($admin)
+            ->get(route('club-officials.club', $this->clubId))
+            ->assertOk()
+            ->assertSee('Leila Medecin')
+            ->assertSee('TeamDoctor')
+            ->assertSee('MEDCONNECT84')
+            ->assertSee('Connect');
     }
 
     public function test_access_follows_club_and_federation(): void

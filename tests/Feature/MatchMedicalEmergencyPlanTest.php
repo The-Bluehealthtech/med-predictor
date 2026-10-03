@@ -259,34 +259,47 @@ class MatchMedicalEmergencyPlanTest extends TestCase
     }
 
 
-    public function test_matchday_plan_exposes_fifa_connect_people_and_persists_connect_role_ids(): void
+    public function test_matchday_plan_uses_declared_club_officials_with_connect_role_ids(): void
     {
-        if (!Schema::hasTable('fifa_connect_matches') || !Schema::hasTable('fifa_connect_match_officials')) {
-            $this->markTestSkipped('FIFA Connect canonical tables unavailable.');
+        if (!Schema::hasTable('fifa_connect_matches') || !Schema::hasTable('club_officials')) {
+            $this->markTestSkipped('FIFA Connect / club officials tables unavailable.');
         }
 
         $admin = User::factory()->create(['role'=>'admin','status'=>'active','tenant_id'=>1]);
-        $connectMatch = \App\Models\FifaConnect\MatchRecord::query()->create([
+        \App\Models\FifaConnect\MatchRecord::query()->create([
             'match_fifa_id'=>'MATCH-FIFA-'.$this->match->id,
             'status'=>'scheduled',
             'competition_fifa_id'=>'COMP-FIFA-TEST',
             'match_id'=>$this->match->id,
         ]);
-        \App\Models\FifaConnect\MatchOfficial::query()->create([
-            'match_id'=>$connectMatch->id,
+
+        $official = new \App\Models\ClubOfficial;
+        $official->club_id = $this->homeClub->id;
+        $official->created_by = $admin->id;
+        $official->fill([
             'person_fifa_id'=>'PERSON-FIFA-MED-1',
-            'role'=>'MedicalOfficial',
-            'role_description'=>'Médecin de match',
             'international_first_name'=>'Amina',
             'international_last_name'=>'Doctor',
+            'gender'=>'female',
+            'date_of_birth'=>'1980-01-01',
+            'nationality'=>'FR',
+            'registration_type'=>\App\Models\ClubOfficial::TEAM_OFFICIAL,
+            'team_official_role'=>'TeamDoctor',
+            'role_description'=>'Doctor',
+            'status'=>'active',
+            'discipline'=>'Football',
+            'registration_valid_from'=>today(),
+            'source'=>'FIFAConnect',
         ]);
+        $official->save();
 
         $this->actingAs($admin)
             ->get('/_t/matches/'.$this->match->id.'/medical-emergency-plan')
             ->assertOk()
             ->assertSee('MATCH-FIFA-'.$this->match->id)
             ->assertSee('PERSON-FIFA-MED-1')
-            ->assertSee('Amina Doctor');
+            ->assertSee('Amina Doctor')
+            ->assertSee('[TeamDoctor]');
 
         $payload=$this->completePayload();
         $payload['connect_role_assignments']=['black'=>'PERSON-FIFA-MED-1'];

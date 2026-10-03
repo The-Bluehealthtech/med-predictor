@@ -11,7 +11,7 @@ return [
         'AssistantCoach' => ['label' => 'Entraîneur adjoint', 'confirmed' => false],
         'GoalkeeperCoach' => ['label' => 'Entraîneur des gardiens', 'confirmed' => false],
         'FitnessCoach' => ['label' => 'Préparateur physique', 'confirmed' => false],
-        'Doctor' => ['label' => 'Médecin', 'confirmed' => false],
+        'TeamDoctor' => ['label' => 'Médecin d’équipe', 'confirmed' => true],
         'Physiotherapist' => ['label' => 'Kinésithérapeute', 'confirmed' => false],
         'TeamManager' => ['label' => 'Team manager', 'confirmed' => false],
         'Other' => ['label' => 'Autre officiel d\'équipe', 'confirmed' => false],
